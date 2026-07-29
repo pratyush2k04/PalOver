@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
 using Pdr.Api.Models;
+using Pdr.Api.Services;
+using Pdr.Api.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,8 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<INoteService, NoteService>();
 
 var app = builder.Build();
 
