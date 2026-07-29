@@ -23,6 +23,11 @@ public class AuthController(IAuthService authService) : ControllerBase
             return Unauthorized(new { message = result.ErrorMessage });
         }
 
+        var bearerToken = $"Bearer {result.Token}";
+
+        Response.Headers["Authorization"] = bearerToken;
+        Response.Headers["Access-Control-Expose-Headers"] = "Authorization";
+
         Response.Cookies.Append("pdr_jwt", result.Token!, new CookieOptions
         {
             HttpOnly = true,
