@@ -97,7 +97,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline.cd
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

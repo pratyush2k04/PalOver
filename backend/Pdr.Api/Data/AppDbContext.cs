@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using Pdr.Api.Data.Configuration;
+using Pdr.Api.Models.MasterChecklist;
+using Pdr.Api.Models.RoleBasedPermissions;
 using Pdr.Api.Models;
+//using System.Reflection;
 
 namespace Pdr.Api.Data;
 
@@ -11,11 +15,17 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<EngagementType> EngagementTypes => Set<EngagementType>();
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
+    public DbSet<EngagementAssignment> EngagementAssignments => Set<EngagementAssignment>();
 
+    // Master CHecklist
+    public DbSet<ChecklistCategory> ChecklistCategories => Set<ChecklistCategory>();
+    public DbSet<VersionStatus> VersionStatuses => Set<VersionStatus>();
+    public DbSet<ChecklistVersion> ChecklistVersions => Set<ChecklistVersion>();
+    public DbSet<ChecklistItem> ChecklistItems => Set<ChecklistItem>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
 
 
         modelBuilder.Entity<Role>(entity =>
