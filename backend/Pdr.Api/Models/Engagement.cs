@@ -18,6 +18,12 @@ public class Engagement
     [MaxLength(100)]
     public string Nature { get; set; } = string.Empty;
  
+     [Required]
+    public int EngagementTypeId { get; set; }
+
+    [ForeignKey(nameof(EngagementTypeId))]
+    public EngagementType EngagementType { get; set; } = null!;
+    
     [Required]
     public DateOnly KickoffDate { get; set; }
  
