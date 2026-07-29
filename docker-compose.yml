@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: pdr
+      POSTGRES_PASSWORD: pdr
+      POSTGRES_DB: pdr
+    ports:
+      # Exposed on the host so a natively-run API (dotnet run) can also reach it.
+      # Defaults to 5432; override (e.g. DB_PORT=5433) if a native Postgres already uses 5432.
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - pdr_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pdr -d pdr"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      # Inside the compose network the database host is the service name "db"
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=pdr;Username=pdr;Password=pdr"
+    ports:
+      - "8080:8080"
+
+volumes:
+  pdr_pgdata:

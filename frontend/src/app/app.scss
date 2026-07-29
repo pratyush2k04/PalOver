@@ -1,0 +1,48 @@
+.container {
+  max-width: 640px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  font-family: system-ui, sans-serif;
+}
+
+.subtitle {
+  color: #555;
+}
+
+.note-form {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+
+  input {
+    flex: 1;
+    padding: 0.5rem;
+  }
+
+  button {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+  }
+}
+
+.error {
+  color: #c0392b;
+}
+
+.notes {
+  list-style: none;
+  padding: 0;
+
+  li {
+    padding: 0.75rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+
+    small {
+      display: block;
+      color: #888;
+      margin-top: 0.25rem;
+    }
+  }
+}

@@ -1,93 +1,86 @@
-# app
+# PDR — Project Delivery Readiness
 
+Monorepo for the PDR application: a **.NET 10 Web API** (PostgreSQL via EF Core) plus an
+**Angular 21** front-end.
 
+- **Production:** the .NET app serves the built Angular app (static files) and the API on a
+  single port.
+- **Local dev:** run the API and Angular independently; `ng serve` proxies `/api` to the API
+  for full hot-reload.
 
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+## Layout
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.pal.tech/project-delivery-readiness/app.git
-git branch -M main
-git push -uf origin main
+pdr-app/
+├─ Pdr.slnx               # .NET 10 solution
+├─ Dockerfile              # single multi-stage image (node build → dotnet publish → runtime)
+├─ docker-compose.yml      # app + postgres
+├─ backend/Pdr.Api/        # .NET Web API, EF Core, /api endpoints, serves wwwroot
+└─ frontend/               # Angular app (proxy.conf.json → /api)
 ```
 
-## Integrate with your tools
+## Prerequisites
 
-- [ ] [Set up project integrations](https://gitlab.pal.tech/project-delivery-readiness/app/-/settings/integrations)
+- .NET SDK 10
+- Node.js 24.12.x (Angular 21) + Angular CLI 21
+- Docker (optional, for the containerized stack / a throwaway Postgres)
 
-## Collaborate with your team
+## Local development
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+You need a Postgres database. Pick **one**:
 
-## Test and Deploy
+- **No local install:** `docker compose up db` (exposes Postgres on `localhost:5432`).
+  If port 5432 is already taken by a native Postgres, run it on another port by setting
+  `DB_PORT` and point the API at that port (see below). Set the variable per your shell:
+  - PowerShell: `$env:DB_PORT=5433; docker compose up db`
+  - cmd.exe: `set DB_PORT=5433&& docker compose up db`
+  - bash: `DB_PORT=5433 docker compose up db`
+  - shell-agnostic: put `DB_PORT=5433` in a `.env` file next to `docker-compose.yml`, then
+    just `docker compose up db`.
+- **Native Postgres:** use your own install. If your credentials differ from the default
+  (`Host=localhost;Port=5432;Database=pdr;Username=pdr;Password=pdr`), override them once
+  without touching tracked files:
+  ```bash
+  cd backend/Pdr.Api
+  dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=pdr;Username=<you>;Password=<pw>"
+  ```
 
-Use the built-in continuous integration in GitLab.
+Then run the two dev servers (separate terminals):
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+```bash
+# Terminal 1 — API on http://localhost:5000 (applies migrations + seeds on startup)
+cd backend/Pdr.Api
+dotnet run
 
-***
+# Terminal 2 — Angular on http://localhost:4200 (proxies /api → :5000)
+cd frontend
+ng serve
+```
 
-# Editing this README
+Open <http://localhost:4200>. The sample page lists/creates notes through the proxy.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+## Run the whole stack in Docker
 
-## Suggestions for a good README
+```bash
+docker compose up --build
+```
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+Open <http://localhost:8080> — the .NET app serves the Angular app and the API from one
+origin, backed by the Postgres container. Data persists in the `pdr_pgdata` volume across
+restarts (`docker compose down` keeps it; `down -v` wipes it).
 
-## Name
-Choose a self-explaining name for your project.
+## Database / migrations
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+The connection string resolves in this order (later wins):
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+1. `appsettings.Development.json` — default `localhost:5432` (works for native **or** dockerized Postgres).
+2. .NET **User Secrets** — per-developer override, untracked.
+3. `ConnectionStrings__DefaultConnection` env var — used by Docker Compose to target the `db` service.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+The API runs `Database.Migrate()` on startup (starter convenience). To manage migrations manually:
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+```bash
+cd backend/Pdr.Api
+dotnet ef migrations add <Name>
+dotnet ef database update
+```
