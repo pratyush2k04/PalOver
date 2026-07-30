@@ -5,17 +5,35 @@ namespace Pdr.Api.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public DbSet<Note> Notes => Set<Note>();
+    public DbSet<Engagement> Engagements => Set<Engagement>();
+
+    public DbSet<EngagementStatus> EngagementStatuses => Set<EngagementStatus>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Note>(entity =>
+        modelBuilder.Entity<Engagement>(entity =>
         {
-            entity.HasKey(n => n.Id);
-            entity.Property(n => n.Title).HasMaxLength(200).IsRequired();
-            entity.Property(n => n.Content).HasMaxLength(2000);
+            entity.HasKey(e => e.EngagementId);
+
+            entity.Property(e => e.ClientName)
+                .HasMaxLength(200)
+                .IsRequired();
+
+            entity.HasOne(e => e.Status)
+                .WithMany(s => s.Engagements)
+                .HasForeignKey(e => e.StatusId);
+        });
+
+        modelBuilder.Entity<EngagementStatus>(entity =>
+        {
+            entity.HasKey(s => s.StatusId);
+
+            entity.Property(s => s.StatusName)
+                .HasMaxLength(50)
+                .IsRequired();
+
         });
     }
 }

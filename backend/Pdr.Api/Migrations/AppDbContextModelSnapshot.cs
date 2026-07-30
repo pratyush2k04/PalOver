@@ -22,7 +22,74 @@ namespace Pdr.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Pdr.Api.Models.Note", b =>
+            modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
+                {
+                    b.Property<long>("EngagementId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("EngagementId"));
+
+                    b.Property<DateOnly?>("BillingStartDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ClientName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<long>("CreatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EngagementDescription")
+                        .HasColumnType("text");
+
+                    b.Property<int>("EngagementTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly>("KickoffDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("StatusId")
+                        .HasColumnType("integer");
+
+                    b.Property<long?>("UpdatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("EngagementId");
+
+                    b.HasIndex("EngagementTypeId");
+
+                    b.HasIndex("StatusId");
+
+                    b.ToTable("Engagements");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.EngagementStatus", b =>
+                {
+                    b.Property<int>("StatusId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("StatusId"));
+
+                    b.Property<string>("StatusName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("StatusId");
+
+                    b.ToTable("EngagementStatuses");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.EngagementType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,21 +97,38 @@ namespace Pdr.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Content")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Title")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Notes");
+                    b.ToTable("EngagementType");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.EngagementType", "EngagementType")
+                        .WithMany()
+                        .HasForeignKey("EngagementTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.EngagementStatus", "Status")
+                        .WithMany("Engagements")
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EngagementType");
+
+                    b.Navigation("Status");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.EngagementStatus", b =>
+                {
+                    b.Navigation("Engagements");
                 });
 #pragma warning restore 612, 618
         }

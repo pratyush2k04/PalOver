@@ -3,6 +3,7 @@ using Pdr.Api.Data;
 using Pdr.Api.Models;
 using Pdr.Api.Services;
 using Pdr.Api.Services.Interfaces;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,15 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<INoteService, NoteService>();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
+
+builder.Services.AddScoped<IEngagementService, EngagementService>();
+
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -25,9 +34,10 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
 
-    if (!db.Notes.Any())
+
+    if (!db.EngagementStatuses.Any(s => s.StatusName == "Kickoff Pending"))
     {
-        db.Notes.Add(new Note { Title = "Welcome to PDR", Content = "This note was seeded on first run." });
+        db.EngagementStatuses.Add(new EngagementStatus { StatusName = "Kickoff Pending" });
         db.SaveChanges();
     }
 }
@@ -41,6 +51,9 @@ if (app.Environment.IsDevelopment())
 // Serve the built Angular app (populated into wwwroot at publish/docker build time).
 app.UseDefaultFiles();
 app.UseStaticFiles();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

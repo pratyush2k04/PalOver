@@ -13,12 +13,8 @@ public class Engagement
     public string ClientName { get; set; } = string.Empty;
  
     public string? EngagementDescription { get; set; } //allowed to be null
- 
+
     [Required]
-    [MaxLength(100)]
-    public string Nature { get; set; } = string.Empty;
- 
-     [Required]
     public int EngagementTypeId { get; set; }
 
     [ForeignKey(nameof(EngagementTypeId))]
