@@ -1,38 +1,27 @@
-import { HttpInterceptorFn, HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, tap, throwError } from 'rxjs';
-
-let inMemoryToken: string | null = null;
+import { catchError, throwError } from 'rxjs';
+import { AuthService } from '../services/auth';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
+  const authService = inject(AuthService);
+  const token = authService.getToken();
 
-  // Attach stored Authorization header if present, plus withCredentials
-  let authReq = req.clone({
-    withCredentials: true
-  });
-
-  if (inMemoryToken) {
-    authReq = authReq.clone({
+  let authReq = req;
+  if (token) {
+    authReq = req.clone({
       setHeaders: {
-        Authorization: inMemoryToken
+        Authorization: `Bearer ${token}`
       }
     });
   }
 
   return next(authReq).pipe(
-    tap((event) => {
-      if (event instanceof HttpResponse) {
-        const authHeader = event.headers.get('Authorization');
-        if (authHeader) {
-          inMemoryToken = authHeader;
-        }
-      }
-    }),
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401) {
-        inMemoryToken = null;
+        authService.clearToken();
         router.navigate(['/login'], {
           queryParams: { reason: 'session_expired' }
         });
