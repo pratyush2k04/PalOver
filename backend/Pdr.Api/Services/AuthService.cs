@@ -1,5 +1,5 @@
 using Pdr.Api.DTOs.Auth;
-using Pdr.Api.Repositories;
+using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;

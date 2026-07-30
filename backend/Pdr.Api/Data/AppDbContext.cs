@@ -3,6 +3,7 @@ using Pdr.Api.Data.Configuration;
 using Pdr.Api.Models.MasterChecklist;
 using Pdr.Api.Models.RoleBasedPermissions;
 using Pdr.Api.Models;
+using Pdr.Api.Models.LoginEntity;
 //using System.Reflection;
 
 namespace Pdr.Api.Data;
@@ -35,8 +36,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.Property(r => r.Id).HasColumnName("id");
             entity.Property(r => r.Name).HasColumnName("name").HasMaxLength(50).IsRequired();
             entity.HasIndex(r => r.Name).IsUnique();
-            entity.Property(r => r.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
-            entity.Property(r => r.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("NOW()");
         });
 
         modelBuilder.Entity<User>(entity =>
