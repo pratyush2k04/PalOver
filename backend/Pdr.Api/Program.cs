@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Pdr.Api.Data;
 using Pdr.Api.Middleware;
 using Pdr.Api.Repositories;
+using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services;
 using Pdr.Api.Services.Interfaces;
 
