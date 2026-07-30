@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pdr.Api.Models.RoleBasedPermissions;
+using Pdr.Api.Models.EngagementAssignment;
 
 namespace Pdr.Api.Data.Configuration
 {

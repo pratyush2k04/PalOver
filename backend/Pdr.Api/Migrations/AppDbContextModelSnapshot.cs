@@ -22,20 +22,65 @@ namespace Pdr.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Pdr.Api.Models.EngagementAssignment.EngagementAssignment", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer")
+                        .HasColumnName("engagement_id");
+
+                    b.Property<int?>("UserId1")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UserId", "EngagementId");
+
+                    b.HasIndex("UserId1");
+
+                    b.ToTable("engagement_assignments", (string)null);
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.LoginEntity.Role", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("name");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("updated_by");
 
                     b.HasKey("Id");
 
@@ -48,22 +93,38 @@ namespace Pdr.Api.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "Pre Sales"
+                            CreatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(387),
+                            CreatedBy = "System",
+                            IsDeleted = false,
+                            Name = "Pre Sales",
+                            UpdatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(391)
                         },
                         new
                         {
                             Id = 2,
-                            Name = "Project Management"
+                            CreatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2443),
+                            CreatedBy = "System",
+                            IsDeleted = false,
+                            Name = "Project Management",
+                            UpdatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2447)
                         },
                         new
                         {
                             Id = 3,
-                            Name = "Tech Lead"
+                            CreatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2451),
+                            CreatedBy = "System",
+                            IsDeleted = false,
+                            Name = "Tech Lead",
+                            UpdatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2451)
                         },
                         new
                         {
                             Id = 4,
-                            Name = "Leadership"
+                            CreatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2453),
+                            CreatedBy = "System",
+                            IsDeleted = false,
+                            Name = "Leadership",
+                            UpdatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2453)
                         });
                 });
 
@@ -81,6 +142,11 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("created_by");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -102,7 +168,13 @@ namespace Pdr.Api.Migrations
 
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("boolean")
-                        .HasColumnName("isAdmin");
+                        .HasColumnName("is_admin");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone")
@@ -124,6 +196,11 @@ namespace Pdr.Api.Migrations
                         .HasColumnName("updated_at")
                         .HasDefaultValueSql("NOW()");
 
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("updated_by");
+
                     b.HasKey("Id");
 
                     b.HasIndex(new[] { "Email" }, "idx_users_email")
@@ -143,22 +220,13 @@ namespace Pdr.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("code");
-
-                    b.Property<string>("DisplayName")
+                    b.Property<string>("CategoryName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("display_name");
+                        .HasColumnName("category_name");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
 
                     b.ToTable("checklist_categories", (string)null);
                 });
@@ -176,6 +244,17 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("category_id");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
                     b.Property<string>("Description")
                         .HasColumnType("text")
                         .HasColumnName("description");
@@ -183,6 +262,12 @@ namespace Pdr.Api.Migrations
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("integer")
                         .HasColumnName("display_order");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
 
                     b.Property<bool>("IsMandatory")
                         .ValueGeneratedOnAdd()
@@ -202,6 +287,17 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("title");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
                     b.Property<long>("VersionId")
                         .HasColumnType("bigint")
                         .HasColumnName("version_id");
@@ -215,6 +311,26 @@ namespace Pdr.Api.Migrations
                     b.ToTable("checklist_items", (string)null);
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.ChecklistStatus", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("StatusName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("status_name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("checklist_statuses", (string)null);
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.ChecklistVersion", b =>
                 {
                     b.Property<long>("Id")
@@ -224,13 +340,37 @@ namespace Pdr.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("Id"));
 
-                    b.Property<long>("CreatedBy")
-                        .HasColumnType("bigint")
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("created_by");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
 
                     b.Property<long>("StatusId")
                         .HasColumnType("bigint")
                         .HasColumnName("status_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
 
                     b.Property<int>("VersionNumber")
                         .HasColumnType("integer")
@@ -243,266 +383,19 @@ namespace Pdr.Api.Migrations
                     b.ToTable("checklist_versions", (string)null);
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.VersionStatus", b =>
+            modelBuilder.Entity("Pdr.Api.Models.EngagementAssignment.EngagementAssignment", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("Id"));
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", null)
+                        .WithMany("EngagementAssignments")
+                        .HasForeignKey("UserId1");
 
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("code");
-
-                    b.Property<string>("DisplayName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("display_name");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.ToTable("version_statuses", (string)null);
-                });
-
-            modelBuilder.Entity("Pdr.Api.Models.RoleBasedPermissions.EngagementAssignment", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("user_id");
-
-                    b.Property<int>("EngagementId")
-                        .HasColumnType("integer")
-                        .HasColumnName("engagement_id");
-
-                    b.HasKey("UserId", "EngagementId");
-
-                    b.ToTable("engagement_assignments", (string)null);
-                });
-
-            modelBuilder.Entity("Pdr.Api.Models.RoleBasedPermissions.RolePermission", b =>
-                {
-                    b.Property<int>("RoleId")
-                        .HasColumnType("integer")
-                        .HasColumnName("role_id");
-
-                    b.Property<string>("Permission")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("permission");
-
-                    b.HasKey("RoleId", "Permission");
-
-                    b.ToTable("role_permissions", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            RoleId = 1,
-                            Permission = "engagement:mark_sow_signed"
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            Permission = "engagement:complete_handover"
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            Permission = "engagement:record_committed_scope"
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            Permission = "document:upload"
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            Permission = "risk:raise"
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            Permission = "discussion:comment"
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            Permission = "engagement:set_commercial_model"
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            Permission = "engagement:record_realistic_scope"
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            Permission = "engagement:query_handover"
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            Permission = "document:upload"
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            Permission = "document:set_visibility"
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            Permission = "stakeholder:manage"
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            Permission = "checklist:tailor"
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            Permission = "checklist:request_waiver"
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            Permission = "governance:plan"
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            Permission = "resource:request"
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            Permission = "risk:raise"
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            Permission = "discussion:comment"
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            Permission = "signoff:request"
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            Permission = "engagement:view_own"
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            Permission = "one_pager:generate"
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            Permission = "engagement:record_realistic_scope"
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            Permission = "engagement:query_handover"
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            Permission = "document:upload"
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            Permission = "checklist:tailor_tech"
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            Permission = "checklist:request_waiver"
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            Permission = "tech_access:track"
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            Permission = "tech_decision:log"
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            Permission = "risk:raise"
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            Permission = "discussion:comment"
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            Permission = "engagement:view_own"
-                        },
-                        new
-                        {
-                            RoleId = 4,
-                            Permission = "engagement:reassign_team"
-                        },
-                        new
-                        {
-                            RoleId = 4,
-                            Permission = "checklist:approve_waiver"
-                        },
-                        new
-                        {
-                            RoleId = 4,
-                            Permission = "change_request:approve"
-                        },
-                        new
-                        {
-                            RoleId = 4,
-                            Permission = "resource:confirm"
-                        },
-                        new
-                        {
-                            RoleId = 4,
-                            Permission = "discussion:comment"
-                        },
-                        new
-                        {
-                            RoleId = 4,
-                            Permission = "signoff:approve"
-                        },
-                        new
-                        {
-                            RoleId = 4,
-                            Permission = "dashboard:view_portfolio"
-                        },
-                        new
-                        {
-                            RoleId = 4,
-                            Permission = "report:run_kpi"
-                        },
-                        new
-                        {
-                            RoleId = 4,
-                            Permission = "audit:view_engagement"
-                        });
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.LoginEntity.User", b =>
@@ -537,7 +430,7 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.ChecklistVersion", b =>
                 {
-                    b.HasOne("Pdr.Api.Models.MasterChecklist.VersionStatus", "Status")
+                    b.HasOne("Pdr.Api.Models.MasterChecklist.ChecklistStatus", "Status")
                         .WithMany()
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -546,31 +439,14 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Status");
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.RoleBasedPermissions.EngagementAssignment", b =>
-                {
-                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Pdr.Api.Models.RoleBasedPermissions.RolePermission", b =>
-                {
-                    b.HasOne("Pdr.Api.Models.LoginEntity.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
-                });
-
             modelBuilder.Entity("Pdr.Api.Models.LoginEntity.Role", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.LoginEntity.User", b =>
+                {
+                    b.Navigation("EngagementAssignments");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.ChecklistVersion", b =>
