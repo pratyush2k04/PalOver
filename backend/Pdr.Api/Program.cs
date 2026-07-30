@@ -21,6 +21,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 
 builder.Services.AddScoped<IEngagementService, EngagementService>();
+builder.Services.AddScoped<IWorkspaceService, WorkspaceService>();
 
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
@@ -35,17 +36,19 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 
 
-    if (!db.EngagementStatuses.Any(s => s.StatusName == "Kickoff Pending"))
-    {
-        db.EngagementStatuses.Add(new EngagementStatus { StatusName = "Kickoff Pending" });
-        db.SaveChanges();
-    }
-
     if (!db.EngagementTypes.Any())
     {
         db.EngagementTypes.AddRange(
             new EngagementType { Name = "Greenfield" },
             new EngagementType { Name = "Brownfield" });
+        db.SaveChanges();
+    }
+
+    if (!db.EngagementStatuses.Any())
+    {
+        db.EngagementStatuses.AddRange(
+            new EngagementStatus { StatusName = "Active" },
+            new EngagementStatus { StatusName = "Inactive" });
         db.SaveChanges();
     }
 }
