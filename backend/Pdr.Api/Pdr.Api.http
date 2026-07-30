@@ -1,0 +1,32 @@
+@Pdr.Api_HostAddress = http://localhost:5000
+
+### 1. Successful Login (Project Manager)
+POST {{Pdr.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "pm@company.com",
+  "password": "Password@123"
+}
+
+### 2. Successful Login (Admin User)
+POST {{Pdr.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@company.com",
+  "password": "Password@123"
+}
+
+### 3. Invalid Credentials Login Test
+POST {{Pdr.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "pm@company.com",
+  "password": "WrongPassword123"
+}
+
+### 4. Logout Test
+POST {{Pdr.Api_HostAddress}}/api/auth/logout
+Content-Type: application/json

@@ -28,27 +28,12 @@ public class AuthController(IAuthService authService) : ControllerBase
         Response.Headers["Authorization"] = bearerToken;
         Response.Headers["Access-Control-Expose-Headers"] = "Authorization";
 
-        Response.Cookies.Append("pdr_jwt", result.Token!, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict,
-            Expires = DateTimeOffset.UtcNow.AddMinutes(30)
-        });
-
         return Ok(new { message = "Logged in successfully." });
     }
 
     [HttpPost("logout")]
     public IActionResult Logout()
     {
-        Response.Cookies.Delete("pdr_jwt", new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict
-        });
-
         return Ok(new { message = "Logged out successfully." });
     }
 }

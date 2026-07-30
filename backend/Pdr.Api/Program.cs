@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using Pdr.Api.Data;
-using Pdr.Api.Middleware;
 using Pdr.Api.Repositories;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services;
@@ -48,18 +47,6 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
     };
-
-    options.Events = new JwtBearerEvents
-    {
-        OnMessageReceived = context =>
-        {
-            if (context.Request.Cookies.TryGetValue("pdr_jwt", out var token))
-            {
-                context.Token = token;
-            }
-            return Task.CompletedTask;
-        }
-    };
 });
 
 builder.Services.AddAuthorization();
@@ -93,8 +80,6 @@ app.Use(async (context, next) =>
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseMiddleware<SlidingSessionMiddleware>();
 
 app.MapControllers();
 
