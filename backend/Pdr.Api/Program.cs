@@ -40,6 +40,14 @@ using (var scope = app.Services.CreateScope())
         db.EngagementStatuses.Add(new EngagementStatus { StatusName = "Kickoff Pending" });
         db.SaveChanges();
     }
+
+    if (!db.EngagementTypes.Any())
+    {
+        db.EngagementTypes.AddRange(
+            new EngagementType { Name = "Greenfield" },
+            new EngagementType { Name = "Brownfield" });
+        db.SaveChanges();
+    }
 }
 
 // Configure the HTTP request pipeline.

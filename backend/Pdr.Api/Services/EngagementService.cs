@@ -10,6 +10,8 @@ public class EngagementService(AppDbContext db) : IEngagementService
 {
     private const string DefaultEngagementStatus = "Kickoff Pending";
 
+    private const long PlaceholderUserId = 0;
+
     public async Task<MarkSowSignedResponse> MarkSowSignedAsync(MarkSowSignedRequest request)
     {
         if (request.BillingStartDate is { } billingStartDate && billingStartDate < request.KickoffDate)
@@ -36,7 +38,7 @@ public class EngagementService(AppDbContext db) : IEngagementService
         {
             existing.KickoffDate = request.KickoffDate;
             existing.BillingStartDate = request.BillingStartDate;
-            existing.UpdatedBy = request.SignedByUserId;
+            existing.UpdatedBy = PlaceholderUserId;
             existing.UpdatedOn = DateTime.UtcNow;
             warnings.Add("This engagement already exists - updated instead of duplicated.");
             engagement = existing;
@@ -53,7 +55,7 @@ public class EngagementService(AppDbContext db) : IEngagementService
                 KickoffDate = request.KickoffDate,
                 BillingStartDate = request.BillingStartDate,
                 StatusId = defaultStatus.StatusId,
-                CreatedBy = request.SignedByUserId,
+                CreatedBy = PlaceholderUserId,
                 CreatedOn = DateTime.UtcNow,
             };
             db.Engagements.Add(engagement);

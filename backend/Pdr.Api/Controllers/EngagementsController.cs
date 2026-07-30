@@ -11,7 +11,8 @@ namespace Pdr.Api.Controllers;
 public class EngagementsController(IEngagementService engagementService) : ControllerBase
 {
     [HttpPost("mark-sow-signed")]
-    [Authorize(Roles = "Presales")]
+    // TODO: restore once the auth scheme (teammate's work) is merged
+    // [Authorize(Roles = "Presales")]
     public async Task<ActionResult<MarkSowSignedResponse>> MarkSowSigned(MarkSowSignedRequest request)
     {
         try

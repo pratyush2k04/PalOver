@@ -9,6 +9,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     public DbSet<EngagementStatus> EngagementStatuses => Set<EngagementStatus>();
 
+    public DbSet<EngagementType> EngagementTypes => Set<EngagementType>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

@@ -5,5 +5,4 @@ public record MarkSowSignedRequest(
     string? EngagementDescription,
     int EngagementTypeId,
     DateOnly KickoffDate,
-    DateOnly? BillingStartDate,
-    long SignedByUserId);
+    DateOnly? BillingStartDate);

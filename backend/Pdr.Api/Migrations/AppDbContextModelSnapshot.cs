@@ -104,7 +104,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EngagementType");
+                    b.ToTable("EngagementTypes");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
