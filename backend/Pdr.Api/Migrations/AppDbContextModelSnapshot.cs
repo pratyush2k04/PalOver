@@ -22,6 +22,118 @@ namespace Pdr.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Pdr.Api.Models.LoginEntity.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Pre Sales"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Project Management"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Tech Lead"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Leadership"
+                        });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.LoginEntity.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("email");
+
+                    b.Property<int>("FailedAttemptCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("failed_attempt_count");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("full_name");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("boolean")
+                        .HasColumnName("isAdmin");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("lockout_end");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("password");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer")
+                        .HasColumnName("role_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex(new[] { "Email" }, "idx_users_email")
+                        .IsUnique();
+
+                    b.HasIndex(new[] { "RoleId" }, "idx_users_role_id");
+
+                    b.ToTable("users", (string)null);
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.ChecklistCategory", b =>
                 {
                     b.Property<long>("Id")
@@ -158,71 +270,6 @@ namespace Pdr.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("version_statuses", (string)null);
-                });
-
-            modelBuilder.Entity("Pdr.Api.Models.Role", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("name");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("roles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2026, 7, 29, 17, 25, 36, 200, DateTimeKind.Utc).AddTicks(3146),
-                            Name = "Pre Sales",
-                            UpdatedAt = new DateTime(2026, 7, 29, 17, 25, 36, 200, DateTimeKind.Utc).AddTicks(3149)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2026, 7, 29, 17, 25, 36, 200, DateTimeKind.Utc).AddTicks(3502),
-                            Name = "Project Management",
-                            UpdatedAt = new DateTime(2026, 7, 29, 17, 25, 36, 200, DateTimeKind.Utc).AddTicks(3502)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(2026, 7, 29, 17, 25, 36, 200, DateTimeKind.Utc).AddTicks(3503),
-                            Name = "Tech Lead",
-                            UpdatedAt = new DateTime(2026, 7, 29, 17, 25, 36, 200, DateTimeKind.Utc).AddTicks(3503)
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAt = new DateTime(2026, 7, 29, 17, 25, 36, 200, DateTimeKind.Utc).AddTicks(3504),
-                            Name = "Leadership",
-                            UpdatedAt = new DateTime(2026, 7, 29, 17, 25, 36, 200, DateTimeKind.Utc).AddTicks(3504)
-                        });
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.RoleBasedPermissions.EngagementAssignment", b =>
@@ -458,71 +505,15 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.User", b =>
+            modelBuilder.Entity("Pdr.Api.Models.LoginEntity.User", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
+                    b.HasOne("Pdr.Api.Models.LoginEntity.Role", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("email");
-
-                    b.Property<int>("FailedAttemptCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0)
-                        .HasColumnName("failed_attempt_count");
-
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("full_name");
-
-                    b.Property<bool>("IsAdmin")
-                        .HasColumnType("boolean")
-                        .HasColumnName("isAdmin");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("lockout_end");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("password");
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("integer")
-                        .HasColumnName("role_id");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex(new[] { "Email" }, "idx_users_email")
-                        .IsUnique();
-
-                    b.HasIndex(new[] { "RoleId" }, "idx_users_role_id");
-
-                    b.ToTable("users", (string)null);
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.ChecklistItem", b =>
@@ -557,7 +548,7 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.RoleBasedPermissions.EngagementAssignment", b =>
                 {
-                    b.HasOne("Pdr.Api.Models.User", "User")
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -568,7 +559,7 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.RoleBasedPermissions.RolePermission", b =>
                 {
-                    b.HasOne("Pdr.Api.Models.Role", "Role")
+                    b.HasOne("Pdr.Api.Models.LoginEntity.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -577,25 +568,14 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.User", b =>
+            modelBuilder.Entity("Pdr.Api.Models.LoginEntity.Role", b =>
                 {
-                    b.HasOne("Pdr.Api.Models.Role", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Role");
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.ChecklistVersion", b =>
                 {
                     b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("Pdr.Api.Models.Role", b =>
-                {
-                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

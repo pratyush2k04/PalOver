@@ -1,6 +1,6 @@
-namespace Pdr.Api.Models;
+namespace Pdr.Api.Models.LoginEntity;
 
-public class Role : BaseAuditableEntity
+public class Role 
 {
     public int Id { get; set; }
 

@@ -1,3 +1,4 @@
+using Pdr.Api.Models.LoginEntity;
 using System.Data;
 
 namespace Pdr.Api.Models.RoleBasedPermissions

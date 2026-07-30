@@ -1,6 +1,6 @@
-using Pdr.Api.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Pdr.Api.Models.LoginEntity;
 
 namespace Pdr.Api.Data.Configuration
 {
