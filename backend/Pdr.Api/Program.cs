@@ -22,6 +22,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
            .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)));
 
+<<<<<<< HEAD
 // Dependency Injection
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -68,6 +69,10 @@ builder.Services.AddAuthorization(options =>
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+=======
+builder.Services.AddScoped<INoteService, NoteService>();
+builder.Services.AddScoped<IWorkspaceService, WorkspaceService>();
+>>>>>>> 79b845a (Added workspace routes, Seeded EngagementTypes&Statuses, Created DbSets for Engagement* Tables in AppDbContext)
 
 var app = builder.Build();
 
@@ -83,6 +88,22 @@ using (var scope = app.Services.CreateScope())
         db.EngagementTypes.AddRange(
             new EngagementType { Name = "Greenfield" },
             new EngagementType { Name = "Brownfield" });
+        db.SaveChanges();
+    }
+
+    if (!db.EngagementStatuses.Any())
+    {
+        db.EngagementStatuses.AddRange(
+            new EngagementStatus { StatusName = "Active" },
+            new EngagementStatus { StatusName = "Inactive" });
+        db.SaveChanges();
+    }
+
+    if (!db.EngagementTypes.Any())
+    {
+        db.EngagementTypes.AddRange(
+            new EngagementType { Name = "GreenField" },
+            new EngagementType { Name = "BrownField" });
         db.SaveChanges();
     }
 
