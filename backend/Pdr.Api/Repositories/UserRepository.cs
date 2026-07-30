@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
-using Pdr.Api.Models;
+using Pdr.Api.Models.LoginEntity;
 
 namespace Pdr.Api.Repositories;
 
