@@ -1,6 +1,9 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Pdr.Api.Data.Configuration;
 using Pdr.Api.Data.Configuration;
 using Pdr.Api.Models;
 using Pdr.Api.Models.LoginEntity;               // Resolves 'Role' and 'User'
@@ -40,6 +43,25 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // Apply Configuration Classes from Assembly
+        modelBuilder.ApplyConfiguration(new RoleConfiguration());
+        modelBuilder.ApplyConfiguration(new EngagementAssignmentConfiguration());
+
+        // Global Query Filters (Soft Delete)
+        modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
+        modelBuilder.Entity<Role>().HasQueryFilter(r => !r.IsDeleted);
+
+        // ChecklistCategory
+        modelBuilder.Entity<ChecklistCategory>(entity =>
+        {
+            entity.ToTable("checklist_categories");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("id").UseIdentityAlwaysColumn();
+            entity.Property(e => e.CategoryName).HasColumnName("category_name").HasMaxLength(100).IsRequired();
+        });
+
+        // ChecklistStatus
+        modelBuilder.Entity<ChecklistStatus>(entity =>
         // Apply Configuration Classes from Assembly
         modelBuilder.ApplyConfiguration(new RoleConfiguration());
         modelBuilder.ApplyConfiguration(new EngagementAssignmentConfiguration());
