@@ -13,7 +13,9 @@ namespace Pdr.Api.Data.Configuration
             builder.HasKey(r => r.Id);
 
             builder.Property(r => r.Id)
-                   .HasColumnName("id");
+                   .HasColumnName("id")
+                   .ValueGeneratedNever();
+                    
 
             builder.Property(r => r.Name)
                    .HasColumnName("name")

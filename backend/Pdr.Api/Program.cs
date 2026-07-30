@@ -8,6 +8,7 @@ using Pdr.Api.Middleware;
 using Pdr.Api.Repositories;
 using Pdr.Api.Services;
 using Pdr.Api.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,8 +22,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Dependency Injection
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 
 // JWT Authentication
 var secretKey = builder.Configuration["JwtSettings:SecretKey"] 
@@ -61,7 +64,13 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("IsAdmin", policy =>
+        policy.RequireClaim("isAdmin", "true"));
+});
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -76,6 +85,8 @@ using (var scope = app.Services.CreateScope())
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseDefaultFiles();
@@ -87,6 +98,7 @@ app.Use(async (context, next) =>
     context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
     context.Response.Headers["Pragma"] = "no-cache";
     context.Response.Headers["Expires"] = "0";
+
     await next();
 });
 
