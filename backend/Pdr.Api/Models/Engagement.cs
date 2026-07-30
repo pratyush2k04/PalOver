@@ -23,13 +23,11 @@ public class Engagement
 
     [ForeignKey(nameof(EngagementTypeId))]
     public EngagementType EngagementType { get; set; } = null!;
-    
+
     [Required]
     public DateOnly KickoffDate { get; set; }
  
     public DateOnly? BillingStartDate { get; set; }
- 
-    public long? MasterChecklistVersionId { get; set; }
  
     public int StatusId { get; set; }
  
