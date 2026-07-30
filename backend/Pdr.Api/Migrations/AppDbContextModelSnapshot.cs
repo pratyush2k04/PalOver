@@ -48,39 +48,11 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("id");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("created_by");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("name");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("updated_by");
 
                     b.HasKey("Id");
 
@@ -93,38 +65,22 @@ namespace Pdr.Api.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(387),
-                            CreatedBy = "System",
-                            IsDeleted = false,
-                            Name = "Pre Sales",
-                            UpdatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(391)
+                            Name = "Pre Sales"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2443),
-                            CreatedBy = "System",
-                            IsDeleted = false,
-                            Name = "Project Management",
-                            UpdatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2447)
+                            Name = "Project Management"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2451),
-                            CreatedBy = "System",
-                            IsDeleted = false,
-                            Name = "Tech Lead",
-                            UpdatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2451)
+                            Name = "Tech Lead"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2453),
-                            CreatedBy = "System",
-                            IsDeleted = false,
-                            Name = "Leadership",
-                            UpdatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2453)
+                            Name = "Leadership"
                         });
                 });
 
