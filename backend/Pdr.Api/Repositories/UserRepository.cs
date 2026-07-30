@@ -13,6 +13,35 @@ public class UserRepository(AppDbContext context) : IUserRepository
             .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
     }
 
+    public async Task<User?> GetByIdAsync(int id)
+    {
+        return await context.Users
+            .Include(u => u.Role)
+            .FirstOrDefaultAsync(u => u.Id == id);
+    }
+
+    public async Task<(List<User> Users, int TotalCount)> SearchAsync(string? search, int page, int pageSize)
+    {
+        var query = context.Users.Include(u => u.Role).AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(u =>
+                EF.Functions.ILike(u.FullName, $"%{search}%") ||
+                EF.Functions.ILike(u.Email, $"%{search}%"));
+        }
+
+        var totalCount = await query.CountAsync();
+
+        var users = await query
+            .OrderBy(u => u.FullName)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (users, totalCount);
+    }
+
     public async Task UpdateAsync(User user)
     {
         context.Users.Update(user);
