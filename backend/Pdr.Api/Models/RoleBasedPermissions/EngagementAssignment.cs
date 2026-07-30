@@ -1,3 +1,5 @@
+using Pdr.Api.Models.LoginEntity;
+
 namespace Pdr.Api.Models.RoleBasedPermissions
 {
     public class EngagementAssignment
