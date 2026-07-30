@@ -12,7 +12,6 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
 
         builder.HasKey(r => r.Id);
 
-        // Fixed explicit primary key IDs 1 to 4 (no GENERATED ALWAYS AS IDENTITY)
         builder.Property(r => r.Id)
                .HasColumnName("id")
                .ValueGeneratedNever();
@@ -22,6 +21,10 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
                .HasMaxLength(50)
                .IsRequired();
 
+        builder.HasIndex(r => r.Name)
+               .IsUnique();
+
+        // Seed System Roles (Fixed IDs 1 to 4)
         builder.HasData(
             new Role { Id = 1, Name = "Pre Sales" },
             new Role { Id = 2, Name = "Project Management" },

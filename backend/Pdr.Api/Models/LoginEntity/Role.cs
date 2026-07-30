@@ -1,5 +1,7 @@
 namespace Pdr.Api.Models.LoginEntity;
 
+using Pdr.Api.Models;
+
 public class Role
 {
     public int Id { get; set; }
