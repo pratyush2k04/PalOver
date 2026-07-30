@@ -12,8 +12,8 @@ using Pdr.Api.Data;
 namespace Pdr.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260730131235_Seed_Checklist_Categories_And_Statuses")]
-    partial class Seed_Checklist_Categories_And_Statuses
+    [Migration("20260730170628_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,12 +35,7 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("engagement_id");
 
-                    b.Property<int?>("UserId1")
-                        .HasColumnType("integer");
-
                     b.HasKey("UserId", "EngagementId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("engagement_assignments", (string)null);
                 });
@@ -96,38 +91,38 @@ namespace Pdr.Api.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(387),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
                             IsDeleted = false,
                             Name = "Pre Sales",
-                            UpdatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(391)
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2443),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
                             IsDeleted = false,
                             Name = "Project Management",
-                            UpdatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2447)
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2451),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
                             IsDeleted = false,
                             Name = "Tech Lead",
-                            UpdatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2451)
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2453),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
                             IsDeleted = false,
                             Name = "Leadership",
-                            UpdatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2453)
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -232,6 +227,38 @@ namespace Pdr.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("checklist_categories", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            CategoryName = "Commercial"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            CategoryName = "Handover"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            CategoryName = "Scope"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            CategoryName = "Governance"
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            CategoryName = "Resourcing"
+                        },
+                        new
+                        {
+                            Id = 6L,
+                            CategoryName = "Technical Readiness"
+                        });
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.ChecklistItem", b =>
@@ -332,6 +359,18 @@ namespace Pdr.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("checklist_statuses", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            StatusName = "Draft"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            StatusName = "Published"
+                        });
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.ChecklistVersion", b =>
@@ -389,14 +428,10 @@ namespace Pdr.Api.Migrations
             modelBuilder.Entity("Pdr.Api.Models.EngagementAssignment.EngagementAssignment", b =>
                 {
                     b.HasOne("Pdr.Api.Models.LoginEntity.User", "User")
-                        .WithMany()
+                        .WithMany("EngagementAssignments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Pdr.Api.Models.LoginEntity.User", null)
-                        .WithMany("EngagementAssignments")
-                        .HasForeignKey("UserId1");
 
                     b.Navigation("User");
                 });

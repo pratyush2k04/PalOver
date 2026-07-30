@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
 using Pdr.Api.Models;
-using Pdr.Api.Services;
-using Pdr.Api.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +12,6 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<INoteService, NoteService>();
 
 var app = builder.Build();
 
@@ -25,11 +22,7 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
 
-    if (!db.Notes.Any())
-    {
-        db.Notes.Add(new Note { Title = "Welcome to PDR", Content = "This note was seeded on first run." });
-        db.SaveChanges();
-    }
+    
 }
 
 // Configure the HTTP request pipeline.
