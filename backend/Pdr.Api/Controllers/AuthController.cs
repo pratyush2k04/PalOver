@@ -23,17 +23,11 @@ public class AuthController(IAuthService authService) : ControllerBase
             return Unauthorized(new { message = result.ErrorMessage });
         }
 
-        var bearerToken = $"Bearer {result.Token}";
+        var responseDto = new LoginResponseDto
+        {
+            Token = result.Token!
+        };
 
-        Response.Headers["Authorization"] = bearerToken;
-        Response.Headers["Access-Control-Expose-Headers"] = "Authorization";
-
-        return Ok(new { message = "Logged in successfully." });
-    }
-
-    [HttpPost("logout")]
-    public IActionResult Logout()
-    {
-        return Ok(new { message = "Logged out successfully." });
+        return Ok(responseDto);
     }
 }
