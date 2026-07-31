@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -22,13 +22,13 @@ export class LoginComponent implements OnInit {
     password: ['', [Validators.required]]
   });
 
-  errorMessage: string | null = null;
-  isLoading = false;
+  errorMessage = signal<string | null>(null);
+  isLoading = signal(false);
 
   ngOnInit(): void {
     const reason = this.route.snapshot.queryParamMap.get('reason');
     if (reason === 'session_expired') {
-      this.errorMessage = 'Your session timed out. Please sign in again.';
+      this.errorMessage.set('Your session timed out. Please sign in again.');
     }
   }
 
@@ -46,24 +46,24 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    this.isLoading = true;
-    this.errorMessage = null;
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
 
     this.authService.login(this.loginForm.value).subscribe({
       next: () => {
         console.log("ih");
-        this.isLoading = false;
+        this.isLoading.set(false);
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
         console.log("hi");
-        this.isLoading = false;
+        this.isLoading.set(false);
         if (err.status === 401 && err.error?.message) {
-          this.errorMessage = err.error.message;
+          this.errorMessage.set(err.error.message);
         } else if (err.status === 429 && err.error?.message) {
-          this.errorMessage = err.error.message;
+          this.errorMessage.set(err.error.message);
         } else {
-          this.errorMessage = 'Your email or password is incorrect.';
+          this.errorMessage.set('Your email or password is incorrect.');
         }
       }
     });
