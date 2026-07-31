@@ -336,6 +336,288 @@ namespace Pdr.Api.Migrations
                     b.HasIndex("VersionId");
 
                     b.ToTable("checklist_items", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            CategoryId = 1L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Confirm the signed commercial contract is on file before kickoff.",
+                            DisplayOrder = 1,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            IsRetired = false,
+                            Title = "Sign commercial contract",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionId = 1L
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            CategoryId = 1L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Verify the approved budget matches the statement of work.",
+                            DisplayOrder = 2,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            IsRetired = false,
+                            Title = "Confirm engagement budget",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionId = 1L
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            CategoryId = 1L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Agree invoicing milestones and payment terms with the client.",
+                            DisplayOrder = 3,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            IsRetired = false,
+                            Title = "Confirm billing schedule",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionId = 1L
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            CategoryId = 2L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Sales team walks delivery team through client history and expectations.",
+                            DisplayOrder = 4,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            IsRetired = false,
+                            Title = "Complete sales-to-delivery handover call",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionId = 1L
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            CategoryId = 2L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Ensure delivery has access to all pre-sales notes and correspondence.",
+                            DisplayOrder = 5,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            IsRetired = false,
+                            Title = "Share CRM opportunity notes",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionId = 1L
+                        },
+                        new
+                        {
+                            Id = 6L,
+                            CategoryId = 2L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Confirm delivery team has contact details for all client stakeholders.",
+                            DisplayOrder = 6,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            IsRetired = false,
+                            Title = "Transfer key client contacts",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionId = 1L
+                        },
+                        new
+                        {
+                            Id = 7L,
+                            CategoryId = 3L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Capture in-scope and out-of-scope items in the kickoff scope document.",
+                            DisplayOrder = 7,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            IsRetired = false,
+                            Title = "Document engagement scope",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionId = 1L
+                        },
+                        new
+                        {
+                            Id = 8L,
+                            CategoryId = 3L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "List and confirm all deliverables committed to the client.",
+                            DisplayOrder = 8,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            IsRetired = false,
+                            Title = "Confirm deliverables list",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionId = 1L
+                        },
+                        new
+                        {
+                            Id = 9L,
+                            CategoryId = 3L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Record assumptions made during the sales cycle that affect scope.",
+                            DisplayOrder = 9,
+                            IsDeleted = false,
+                            IsMandatory = false,
+                            IsRetired = false,
+                            Title = "Identify scope assumptions and exclusions",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionId = 1L
+                        },
+                        new
+                        {
+                            Id = 10L,
+                            CategoryId = 4L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Agree recurring status meetings and escalation paths.",
+                            DisplayOrder = 10,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            IsRetired = false,
+                            Title = "Set up engagement governance cadence",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionId = 1L
+                        },
+                        new
+                        {
+                            Id = 11L,
+                            CategoryId = 4L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Identify decision-makers on both client and delivery sides.",
+                            DisplayOrder = 11,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            IsRetired = false,
+                            Title = "Assign engagement steering committee",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionId = 1L
+                        },
+                        new
+                        {
+                            Id = 12L,
+                            CategoryId = 4L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Agree how scope changes will be raised, approved, and tracked.",
+                            DisplayOrder = 12,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            IsRetired = false,
+                            Title = "Define change control process",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionId = 1L
+                        },
+                        new
+                        {
+                            Id = 13L,
+                            CategoryId = 4L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Assign an owner to maintain the Risks, Assumptions, Issues, and Dependencies log.",
+                            DisplayOrder = 13,
+                            IsDeleted = false,
+                            IsMandatory = false,
+                            IsRetired = false,
+                            Title = "Confirm RAID log owner",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionId = 1L
+                        },
+                        new
+                        {
+                            Id = 14L,
+                            CategoryId = 5L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Confirm named resources are assigned and available for the engagement.",
+                            DisplayOrder = 14,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            IsRetired = false,
+                            Title = "Allocate delivery team members",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionId = 1L
+                        },
+                        new
+                        {
+                            Id = 15L,
+                            CategoryId = 5L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Check assigned resources have capacity for the engagement duration.",
+                            DisplayOrder = 15,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            IsRetired = false,
+                            Title = "Confirm resource availability calendar",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionId = 1L
+                        },
+                        new
+                        {
+                            Id = 16L,
+                            CategoryId = 5L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Name backup resources in case of absence during the engagement.",
+                            DisplayOrder = 16,
+                            IsDeleted = false,
+                            IsMandatory = false,
+                            IsRetired = false,
+                            Title = "Identify backup/on-call resources",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionId = 1L
+                        },
+                        new
+                        {
+                            Id = 17L,
+                            CategoryId = 6L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Request and confirm access to required client systems and environments.",
+                            DisplayOrder = 17,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            IsRetired = false,
+                            Title = "Provision environment access",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionId = 1L
+                        },
+                        new
+                        {
+                            Id = 18L,
+                            CategoryId = 6L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Confirm client infrastructure and tooling meet engagement requirements.",
+                            DisplayOrder = 18,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            IsRetired = false,
+                            Title = "Verify technical prerequisites",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionId = 1L
+                        },
+                        new
+                        {
+                            Id = 19L,
+                            CategoryId = 6L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Ensure delivery team has access to repositories and pipelines.",
+                            DisplayOrder = 19,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            IsRetired = false,
+                            Title = "Set up source control and CI/CD access",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionId = 1L
+                        },
+                        new
+                        {
+                            Id = 20L,
+                            CategoryId = 6L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Review any client-specific security or compliance obligations.",
+                            DisplayOrder = 20,
+                            IsDeleted = false,
+                            IsMandatory = false,
+                            IsRetired = false,
+                            Title = "Confirm security and compliance requirements",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionId = 1L
+                        });
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.ChecklistStatus", b =>
@@ -420,6 +702,17 @@ namespace Pdr.Api.Migrations
                     b.HasIndex("StatusId");
 
                     b.ToTable("checklist_versions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            StatusId = 1L,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            VersionNumber = 1
+                        });
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.EngagementAssignment.EngagementAssignment", b =>
