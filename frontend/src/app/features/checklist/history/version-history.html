@@ -1,0 +1,56 @@
+<div class="version-history">
+  <h1>Version History</h1>
+
+  @if (loading()) {
+    <app-loading-spinner label="Loading version history..." />
+  } @else if (error()) {
+    <div class="version-history__state version-history__state--error">{{ error() }}</div>
+  } @else {
+    <div class="version-history__table-wrapper">
+      <table mat-table [dataSource]="versions()">
+        <ng-container matColumnDef="versionNumber">
+          <th mat-header-cell *matHeaderCellDef>Version</th>
+          <td mat-cell *matCellDef="let v">v{{ v.versionNumber }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="statusName">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let v">
+            <span class="badge" [class.badge--draft]="v.statusName === 'Draft'" [class.badge--published]="v.statusName === 'Published'">
+              {{ v.statusName }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Created</th>
+          <td mat-cell *matCellDef="let v">{{ v.createdAt | date: 'mediumDate' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="publishedAt">
+          <th mat-header-cell *matHeaderCellDef>Published</th>
+          <td mat-cell *matCellDef="let v">
+            {{ publishedAt(v) ? (publishedAt(v) | date: 'mediumDate') : '—' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="view">
+          <th mat-header-cell *matHeaderCellDef aria-label="view"></th>
+          <td mat-cell *matCellDef="let v">
+            <button type="button" mat-stroked-button (click)="onView(v)">
+              <mat-icon>visibility</mat-icon>
+              View
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      @if (versions().length === 0) {
+        <div class="version-history__empty">No versions found.</div>
+      }
+    </div>
+  }
+</div>

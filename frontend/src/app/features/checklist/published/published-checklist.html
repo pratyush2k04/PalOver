@@ -1,0 +1,125 @@
+<div class="published-checklist">
+  <div class="published-checklist__header">
+    <h1>Published Checklist</h1>
+    @if (version(); as v) {
+      <span class="published-checklist__version-badge">
+        {{ v.statusName }} &middot; v{{ v.versionNumber }}
+      </span>
+    }
+  </div>
+
+  <div class="published-checklist__toolbar">
+    <mat-form-field appearance="outline" class="published-checklist__search">
+      <mat-label>Search</mat-label>
+      <input
+        matInput
+        [ngModel]="searchTerm()"
+        (ngModelChange)="searchTerm.set($event); applyFilters()"
+        placeholder="Search by title or description"
+      />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="published-checklist__category">
+      <mat-label>Category</mat-label>
+      <mat-select
+        [ngModel]="selectedCategory()"
+        (ngModelChange)="selectedCategory.set($event); applyFilters()"
+      >
+        <mat-option value="all">All Categories</mat-option>
+        @for (category of categories(); track category) {
+          <mat-option [value]="category">{{ category }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  @if (loading()) {
+    <app-loading-spinner label="Loading published checklist..." />
+  } @else if (notFound()) {
+    <div class="published-checklist__state">
+      No checklist has been published yet. Check back once an admin publishes a version.
+    </div>
+  } @else if (error()) {
+    <div class="published-checklist__state published-checklist__state--error">
+      {{ error() }}
+    </div>
+  } @else {
+    <div class="published-checklist__table-wrapper">
+      <table mat-table [dataSource]="dataSource" matSort multiTemplateDataRows>
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+          <td mat-cell *matCellDef="let item">{{ item.title }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="categoryName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Category</th>
+          <td mat-cell *matCellDef="let item">{{ item.categoryName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="isMandatory">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Mandatory</th>
+          <td mat-cell *matCellDef="let item">
+            @if (item.isMandatory) {
+              <span class="badge badge--mandatory">Mandatory</span>
+            } @else {
+              <span class="badge badge--optional">Optional</span>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="isRetired">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+          <td mat-cell *matCellDef="let item">
+            @if (item.isRetired) {
+              <span class="badge badge--retired">Retired</span>
+            } @else {
+              <span class="badge badge--active">Active</span>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="expand">
+          <th mat-header-cell *matHeaderCellDef aria-label="expand"></th>
+          <td mat-cell *matCellDef="let item">
+            <button
+              type="button"
+              class="published-checklist__expand-btn"
+              (click)="toggleRow(item)"
+              [attr.aria-label]="isExpanded(item) ? 'Collapse row' : 'Expand row'"
+            >
+              <mat-icon>{{ isExpanded(item) ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="expandedDetail">
+          <td mat-cell *matCellDef="let item" [attr.colspan]="displayedColumns.length">
+            <div class="published-checklist__detail" [class.published-checklist__detail--open]="isExpanded(item)">
+              <p>{{ item.description || 'No description provided.' }}</p>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let item; columns: displayedColumns"
+          class="published-checklist__row"
+          (click)="toggleRow(item)"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="let item; columns: ['expandedDetail']"
+          class="published-checklist__detail-row"
+        ></tr>
+      </table>
+
+      @if (dataSource.filteredData.length === 0) {
+        <div class="published-checklist__empty">No checklist items match your filters.</div>
+      }
+    </div>
+
+    <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+  }
+</div>

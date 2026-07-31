@@ -1,0 +1,46 @@
+<h2 mat-dialog-title>
+  Version Details
+  @if (version(); as v) {
+    <span class="version-detail-dialog__badge">{{ v.statusName }} &middot; v{{ v.versionNumber }}</span>
+  }
+</h2>
+
+<mat-dialog-content class="version-detail-dialog__content">
+  @if (loading()) {
+    <app-loading-spinner label="Loading version details..." />
+  } @else if (error()) {
+    <div class="version-detail-dialog__state version-detail-dialog__state--error">{{ error() }}</div>
+  } @else {
+    @for (group of categoryGroups(); track group.categoryName) {
+      <div class="version-detail-dialog__group">
+        <h3 class="version-detail-dialog__group-title">{{ group.categoryName }}</h3>
+        <ul class="version-detail-dialog__item-list">
+          @for (item of group.items; track item.id) {
+            <li class="version-detail-dialog__item">
+              <span class="version-detail-dialog__item-title">
+                {{ item.title }}
+                @if (item.isMandatory) {
+                  <span class="badge badge--mandatory">Mandatory</span>
+                }
+                @if (item.isRetired) {
+                  <span class="badge badge--retired">Retired</span>
+                }
+              </span>
+              @if (item.description) {
+                <span class="version-detail-dialog__item-description">{{ item.description }}</span>
+              }
+            </li>
+          }
+        </ul>
+      </div>
+    }
+
+    @if (categoryGroups().length === 0) {
+      <div class="version-detail-dialog__empty">This version has no items.</div>
+    }
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" mat-flat-button color="primary" mat-dialog-close>Close</button>
+</mat-dialog-actions>

@@ -1,0 +1,39 @@
+<h2 mat-dialog-title>{{ isEdit ? 'Edit Item' : 'Add Item' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSave()">
+  <mat-dialog-content class="item-form-dialog__content">
+    <mat-form-field appearance="outline" class="item-form-dialog__field">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" required />
+      @if (form.controls.title.invalid && form.controls.title.touched) {
+        <mat-error>Title is required.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="item-form-dialog__field">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="3"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="item-form-dialog__field">
+      <mat-label>Category</mat-label>
+      <mat-select formControlName="categoryId" required>
+        @for (category of data.categories; track category.id) {
+          <mat-option [value]="category.id">{{ category.categoryName }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.categoryId.invalid && form.controls.categoryId.touched) {
+        <mat-error>Category is required.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-checkbox formControlName="isMandatory" class="item-form-dialog__checkbox">
+      Mandatory item
+    </mat-checkbox>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button type="button" mat-stroked-button (click)="onCancel()">Cancel</button>
+    <button type="submit" mat-flat-button color="primary">{{ isEdit ? 'Save Changes' : 'Add Item' }}</button>
+  </mat-dialog-actions>
+</form>
