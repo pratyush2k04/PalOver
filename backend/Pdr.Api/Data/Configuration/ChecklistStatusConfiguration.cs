@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Pdr.Api.Models.MasterChecklist;
 using Microsoft.EntityFrameworkCore;
 
