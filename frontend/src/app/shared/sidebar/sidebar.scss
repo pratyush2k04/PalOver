@@ -1,0 +1,102 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  width: 96px;
+  padding: 1.25rem 0;
+  background-color: #1e2a5e;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.logo {
+  margin-bottom: 1.5rem;
+}
+
+.logo-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #1e2a5e;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.nav-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  flex: 1;
+  width: 100%;
+}
+
+.nav-item,
+.sign-out {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.5rem 0.25rem;
+  cursor: pointer;
+  color: #aab3d6;
+  transition: background-color 0.15s ease, color 0.15s ease;
+
+  .label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.1;
+  }
+
+  &:hover {
+    color: #ffffff;
+  }
+
+  &.active {
+    background: #ffffff;
+    color: #1e2a5e;
+    border-radius: 12px;
+    margin: 0 0.5rem;
+    width: calc(100% - 1rem);
+
+    .icon-wrapper {
+      color: #1e2a5e;
+    }
+  }
+}
+
+.icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  font-size: 1.1rem;
+}
+
+.badge-dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #f5a623;
+  border: 2px solid #1e2a5e;
+}
+
+.sign-out {
+  margin-top: auto;
+}
