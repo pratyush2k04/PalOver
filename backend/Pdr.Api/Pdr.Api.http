@@ -17,7 +17,8 @@ Content-Type: {{contentType}}
 
 ###
 
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1Iiwicm9sZSI6WyJMZWFkZXJzaGlwIiwiTGVhZGVyc2hpcCJdLCJlbWFpbCI6ImFkbWluQGNvbXBhbnkuY29tIiwiZnVsbG5hbWUiOiJBZG1pbiBVc2VyIiwiaXNBZG1pbiI6InRydWUiLCJuYmYiOjE3ODU0ODc2MDEsImV4cCI6MTc4NTQ4OTQwMSwiaWF0IjoxNzg1NDg3NjAxLCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.owv47YVereWF_hyksu-jl2NPCna1ZAeyK8i4LWTa9hw
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1Iiwicm9sZSI6WyJMZWFkZXJzaGlwIiwiTGVhZGVyc2hpcCJdLCJlbWFpbCI6ImFkbWluQGNvbXBhbnkuY29tIiwiZnVsbG5hbWUiOiJBZG1pbiBVc2VyIiwiaXNBZG1pbiI6InRydWUiLCJuYmYiOjE3ODU0OTQyODYsImV4cCI6MTc4NTQ5NjA4NiwiaWF0IjoxNzg1NDk0Mjg2LCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.HrevuYgdGmCSMRE0A9o6BRdKUCzOGGzhJef_wHTLdUg
+
 
 ### Login as Project Manager
 POST {{host}}/api/auth/login
@@ -30,8 +31,7 @@ Content-Type: {{contentType}}
 
 ###
 
-@pmToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwicm9sZSI6WyJQcm9qZWN0IE1hbmFnZW1lbnQiLCJQcm9qZWN0IE1hbmFnZW1lbnQiXSwiZW1haWwiOiJwbUBjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiQXNoYSBSYW8iLCJpc0FkbWluIjoiZmFsc2UiLCJuYmYiOjE3ODU0ODY2MTEsImV4cCI6MTc4NTQ4ODQxMSwiaWF0IjoxNzg1NDg2NjExLCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.753QZ87W-qFCPD8XbdoNrxshh6rbJP2yLFN0ubCgRiE
-
+@pmToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwicm9sZSI6WyJUZWNoIExlYWQiLCJUZWNoIExlYWQiXSwiZW1haWwiOiJwbUBjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiQXNoYSBSYW8iLCJpc0FkbWluIjoiZmFsc2UiLCJuYmYiOjE3ODU0OTQzNTAsImV4cCI6MTc4NTQ5NjE1MCwiaWF0IjoxNzg1NDk0MzUwLCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.WB2820o00XWACaCoK4b6ofiCl1x8MuZ93MhU6FEQXAg
 ##############################################################
 #################### ADMIN ENDPOINTS #########################
 ##############################################################
@@ -40,10 +40,6 @@ Content-Type: {{contentType}}
 GET {{host}}/api/checklist/current-draft
 Authorization: Bearer {{adminToken}}
 
-### Debug Claims
-GET {{host}}/api/checklist/claims
-Authorization: Bearer {{adminToken}}
-Accept: application/json
 
 ### Published Version
 GET {{host}}/api/checklist/published
@@ -126,7 +122,7 @@ Authorization: Bearer {{adminToken}}
 ###
 
 ### Publish Version
-POST {{host}}/api/checklist/versions/2/publish
+POST {{host}}/api/checklist/versions/1/publish
 Authorization: Bearer {{adminToken}}
 
 ##############################################################

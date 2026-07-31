@@ -22,8 +22,15 @@ public class EngagementsController(IEngagementService engagementService) : Contr
     [HttpPut("{id:long}")]
     public async Task<IActionResult> EditEngagementInfo(long id, EditEngagementRequest request)
     {
-        var success = await engagementService.EditEngagementAsync(id, request);
-        return success ? NoContent() : NotFound();
+        try
+        {
+            var success = await engagementService.EditEngagementAsync(id, request);
+            return success ? NoContent() : NotFound();
+        }
+        catch (InvalidEngagementTypeException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPost("mark-sow-signed")]
@@ -37,6 +44,10 @@ public class EngagementsController(IEngagementService engagementService) : Contr
             return Ok(response);
         }
         catch (BillingBeforeKickoffException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (InvalidEngagementTypeException ex)
         {
             return BadRequest(ex.Message);
         }

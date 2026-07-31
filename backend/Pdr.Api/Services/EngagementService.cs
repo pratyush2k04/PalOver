@@ -15,6 +15,9 @@ public class EngagementService(AppDbContext db) : IEngagementService
         if (request.BillingStartDate is { } billingStartDate && billingStartDate < request.KickoffDate)
             throw new BillingBeforeKickoffException();
 
+        if (!await db.EngagementTypes.AnyAsync(t => t.Id == request.EngagementTypeId))
+            throw new InvalidEngagementTypeException(request.EngagementTypeId);
+
         var warnings = new List<string>();
         var clientName = request.ClientName;
         if (string.IsNullOrWhiteSpace(clientName))
@@ -84,7 +87,13 @@ public class EngagementService(AppDbContext db) : IEngagementService
 
         if (request.ClientName is not null) engagement.ClientName = request.ClientName;
         if (request.EngagementDescription is not null) engagement.EngagementDescription = request.EngagementDescription;
-        if (request.EngagementTypeId is not null) engagement.EngagementTypeId = request.EngagementTypeId.Value;
+        if (request.EngagementTypeId is not null)
+        {
+            if (!await db.EngagementTypes.AnyAsync(t => t.Id == request.EngagementTypeId.Value))
+                throw new InvalidEngagementTypeException(request.EngagementTypeId.Value);
+
+            engagement.EngagementTypeId = request.EngagementTypeId.Value;
+        }
         if (request.KickoffDate is not null) engagement.KickoffDate = request.KickoffDate.Value;
         if (request.BillingStartDate is not null) engagement.BillingStartDate = request.BillingStartDate;
 
