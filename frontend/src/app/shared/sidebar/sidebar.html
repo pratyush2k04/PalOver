@@ -1,0 +1,26 @@
+<aside class="sidebar">
+  <div class="logo">
+    <span class="logo-badge">✓</span>
+  </div>
+
+  <nav class="nav-items">
+    @for (item of navItems; track item.label) {
+      <div class="nav-item" [class.active]="item.label === 'My Handovers'">
+        <div class="icon-wrapper">
+          <span class="icon">{{ iconGlyph(item.icon) }}</span>
+          @if (item.badge === 'dot') {
+            <span class="badge-dot"></span>
+          }
+        </div>
+        <span class="label">{{ item.label }}</span>
+      </div>
+    }
+  </nav>
+
+  <div class="sign-out">
+    <div class="icon-wrapper">
+      <span class="icon">{{ iconGlyph('sign-out') }}</span>
+    </div>
+    <span class="label">Sign Out</span>
+  </div>
+</aside>

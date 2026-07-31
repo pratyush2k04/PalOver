@@ -6,7 +6,7 @@ namespace Pdr.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-
+[Authorize(Policy = "AdminOnly")]
 public class RolesController(IRoleRepository roleRepository) : ControllerBase
 {
     [HttpGet]
