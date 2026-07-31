@@ -44,4 +44,24 @@ export class AuthService {
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
+
+  isAdmin(): boolean {
+    const token = this.getToken();
+    if (!token) {
+      return false;
+    }
+
+    const payload = this.decodeToken(token);
+    return payload?.['isAdmin'] === true || payload?.['isAdmin'] === 'true';
+  }
+
+  private decodeToken(token: string): Record<string, unknown> | null {
+    try {
+      const payload = token.split('.')[1];
+      const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+      return JSON.parse(json);
+    } catch {
+      return null;
+    }
+  }
 }
