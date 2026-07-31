@@ -8,9 +8,7 @@ namespace Pdr.Api.Services;
 
 public class EngagementService(AppDbContext db) : IEngagementService
 {
-    private const string DefaultEngagementStatus = "Kickoff Pending";
-
-    private const long PlaceholderUserId = 0;
+    private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
 
     public async Task<MarkSowSignedResponse> MarkSowSignedAsync(MarkSowSignedRequest request)
     {
@@ -38,8 +36,6 @@ public class EngagementService(AppDbContext db) : IEngagementService
         {
             existing.KickoffDate = request.KickoffDate;
             existing.BillingStartDate = request.BillingStartDate;
-            existing.UpdatedBy = PlaceholderUserId;
-            existing.UpdatedOn = DateTime.UtcNow;
             warnings.Add("This engagement already exists - updated instead of duplicated.");
             engagement = existing;
         }
@@ -55,13 +51,47 @@ public class EngagementService(AppDbContext db) : IEngagementService
                 KickoffDate = request.KickoffDate,
                 BillingStartDate = request.BillingStartDate,
                 StatusId = defaultStatus.StatusId,
-                CreatedBy = PlaceholderUserId,
-                CreatedOn = DateTime.UtcNow,
             };
             db.Engagements.Add(engagement);
         }
 
         await db.SaveChangesAsync();
         return new MarkSowSignedResponse(engagement, warnings);
+    }
+
+    public async Task<IEnumerable<EngagementTypeDto>> GetEngagementTypesAsync() =>
+        await db.EngagementTypes
+            .Select(t => new EngagementTypeDto(t.Id, t.Name))
+            .ToListAsync();
+
+    public async Task<EngagementInfoDto?> GetEngagementInfoAsync(long id) =>
+        await db.Engagements
+            .Where(e => e.EngagementId == id)
+            .Select(e => new EngagementInfoDto(
+                e.EngagementId,
+                e.ClientName,
+                e.EngagementDescription,
+                e.EngagementType.Name,
+                e.KickoffDate,
+                e.BillingStartDate,
+                e.Status.StatusName))
+            .FirstOrDefaultAsync();
+
+    public async Task<bool> EditEngagementAsync(long id, EditEngagementRequest request)
+    {
+        var engagement = await db.Engagements.FindAsync(id);
+        if (engagement is null) return false;
+
+        if (request.ClientName is not null) engagement.ClientName = request.ClientName;
+        if (request.EngagementDescription is not null) engagement.EngagementDescription = request.EngagementDescription;
+        if (request.EngagementTypeId is not null) engagement.EngagementTypeId = request.EngagementTypeId.Value;
+        if (request.KickoffDate is not null) engagement.KickoffDate = request.KickoffDate.Value;
+        if (request.BillingStartDate is not null) engagement.BillingStartDate = request.BillingStartDate;
+
+        var activeStatus = await db.EngagementStatuses.FirstAsync(s => s.StatusName == EngagementStatusEnum.Active.ToString());
+        engagement.StatusId = activeStatus.StatusId;
+
+        await db.SaveChangesAsync();
+        return true;
     }
 }

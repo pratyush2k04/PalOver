@@ -12,8 +12,8 @@ using Pdr.Api.Data;
 namespace Pdr.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260730131235_Seed_Checklist_Categories_And_Statuses")]
-    partial class Seed_Checklist_Categories_And_Statuses
+    [Migration("20260731052343_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,24 +25,133 @@ namespace Pdr.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
+                {
+                    b.Property<long>("EngagementId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("engagement_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("EngagementId"));
+
+                    b.Property<DateOnly?>("BillingStartDate")
+                        .HasColumnType("date")
+                        .HasColumnName("billing_start_date");
+
+                    b.Property<string>("ClientName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("client_name");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<string>("EngagementDescription")
+                        .HasColumnType("text")
+                        .HasColumnName("engagement_description");
+
+                    b.Property<int>("EngagementTypeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("engagement_type_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<DateOnly>("KickoffDate")
+                        .HasColumnType("date")
+                        .HasColumnName("kickoff_date");
+
+                    b.Property<int>("StatusId")
+                        .HasColumnType("integer")
+                        .HasColumnName("status_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("EngagementId");
+
+                    b.HasIndex("EngagementTypeId");
+
+                    b.HasIndex("StatusId");
+
+                    b.ToTable("engagements", (string)null);
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.EngagementAssignment.EngagementAssignment", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("integer")
                         .HasColumnName("user_id");
 
-                    b.Property<int>("EngagementId")
-                        .HasColumnType("integer")
+                    b.Property<long>("EngagementId")
+                        .HasColumnType("bigint")
                         .HasColumnName("engagement_id");
-
-                    b.Property<int?>("UserId1")
-                        .HasColumnType("integer");
 
                     b.HasKey("UserId", "EngagementId");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("EngagementId");
 
                     b.ToTable("engagement_assignments", (string)null);
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.EngagementStatus", b =>
+                {
+                    b.Property<int>("StatusId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("status_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("StatusId"));
+
+                    b.Property<string>("StatusName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("status_name");
+
+                    b.HasKey("StatusId");
+
+                    b.ToTable("engagement_statuses", (string)null);
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.EngagementType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("engagement_types", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.LoginEntity.Role", b =>
@@ -96,38 +205,38 @@ namespace Pdr.Api.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(387),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
                             IsDeleted = false,
                             Name = "Pre Sales",
-                            UpdatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(391)
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2443),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
                             IsDeleted = false,
                             Name = "Project Management",
-                            UpdatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2447)
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2451),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
                             IsDeleted = false,
                             Name = "Tech Lead",
-                            UpdatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2451)
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2453),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
                             IsDeleted = false,
                             Name = "Leadership",
-                            UpdatedAt = new DateTime(2026, 7, 30, 13, 12, 34, 682, DateTimeKind.Utc).AddTicks(2453)
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -232,6 +341,38 @@ namespace Pdr.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("checklist_categories", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            CategoryName = "Commercial"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            CategoryName = "Handover"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            CategoryName = "Scope"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            CategoryName = "Governance"
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            CategoryName = "Resourcing"
+                        },
+                        new
+                        {
+                            Id = 6L,
+                            CategoryName = "Technical Readiness"
+                        });
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.ChecklistItem", b =>
@@ -332,6 +473,18 @@ namespace Pdr.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("checklist_statuses", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            StatusName = "Draft"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            StatusName = "Published"
+                        });
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.ChecklistVersion", b =>
@@ -386,17 +539,40 @@ namespace Pdr.Api.Migrations
                     b.ToTable("checklist_versions", (string)null);
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.EngagementType", "EngagementType")
+                        .WithMany()
+                        .HasForeignKey("EngagementTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.EngagementStatus", "Status")
+                        .WithMany("Engagements")
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EngagementType");
+
+                    b.Navigation("Status");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.EngagementAssignment.EngagementAssignment", b =>
                 {
+                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
+                        .WithMany("EngagementAssignments")
+                        .HasForeignKey("EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Pdr.Api.Models.LoginEntity.User", "User")
-                        .WithMany()
+                        .WithMany("EngagementAssignments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Pdr.Api.Models.LoginEntity.User", null)
-                        .WithMany("EngagementAssignments")
-                        .HasForeignKey("UserId1");
+                    b.Navigation("Engagement");
 
                     b.Navigation("User");
                 });
@@ -440,6 +616,16 @@ namespace Pdr.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Status");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
+                {
+                    b.Navigation("EngagementAssignments");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.EngagementStatus", b =>
+                {
+                    b.Navigation("Engagements");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.LoginEntity.Role", b =>

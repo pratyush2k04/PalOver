@@ -1,4 +1,4 @@
-namespace Pdr.Api.DTOs.Workspace;
+namespace Pdr.Api.DTOs.Engagements;
 
 public record EngagementInfoDto(
     long EngagementId,

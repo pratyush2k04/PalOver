@@ -21,11 +21,18 @@ public class UsersController(IUserManagementService userManagementService) : Con
     [Authorize(Policy = "IsAdmin")]
     public async Task<IActionResult> ChangeRole(int id, [FromBody] ChangeUserRoleRequestDto request)
     {
-        
-        
+        try
+        {
             var user = await userManagementService.ChangeUserRoleAsync(id, request.NewRoleId);
             return Ok(user);
-        
-        
+        }
+        catch (UserNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (RoleNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 }

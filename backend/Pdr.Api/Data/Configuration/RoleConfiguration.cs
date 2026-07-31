@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-//using Pdr.Api.Models.RoleBasedPermissions;
 using Pdr.Api.Models.LoginEntity;
 
 namespace Pdr.Api.Data.Configuration;
@@ -13,7 +12,6 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
 
         builder.HasKey(r => r.Id);
 
-        // Fixed explicit primary key IDs 1 to 4 (no GENERATED ALWAYS AS IDENTITY)
         builder.Property(r => r.Id)
                .HasColumnName("id")
                .ValueGeneratedNever();
@@ -47,12 +45,47 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
                .HasColumnName("updated_by")
                .HasMaxLength(100);
 
-        // Seed System Roles
+        // Fixed baseline date for seed data
+        var seededAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        // Seed System Roles with static values
         builder.HasData(
-            new Role { Id = 1, Name = "Pre Sales", IsDeleted = false, CreatedBy = "System" },
-            new Role { Id = 2, Name = "Project Management", IsDeleted = false, CreatedBy = "System" },
-            new Role { Id = 3, Name = "Tech Lead", IsDeleted = false, CreatedBy = "System" },
-            new Role { Id = 4, Name = "Leadership", IsDeleted = false, CreatedBy = "System" }
+            new Role
+            {
+                Id = 1,
+                Name = "Pre Sales",
+                IsDeleted = false,
+                CreatedBy = "System",
+                CreatedAt = seededAt,
+                UpdatedAt = seededAt
+            },
+            new Role
+            {
+                Id = 2,
+                Name = "Project Management",
+                IsDeleted = false,
+                CreatedBy = "System",
+                CreatedAt = seededAt,
+                UpdatedAt = seededAt
+            },
+            new Role
+            {
+                Id = 3,
+                Name = "Tech Lead",
+                IsDeleted = false,
+                CreatedBy = "System",
+                CreatedAt = seededAt,
+                UpdatedAt = seededAt
+            },
+            new Role
+            {
+                Id = 4,
+                Name = "Leadership",
+                IsDeleted = false,
+                CreatedBy = "System",
+                CreatedAt = seededAt,
+                UpdatedAt = seededAt
+            }
         );
     }
 }

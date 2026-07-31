@@ -51,10 +51,12 @@ export class LoginComponent implements OnInit {
 
     this.authService.login(this.loginForm.value).subscribe({
       next: () => {
+        console.log("ih");
         this.isLoading = false;
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
+        console.log("hi");
         this.isLoading = false;
         if (err.status === 401 && err.error?.message) {
           this.errorMessage = err.error.message;
