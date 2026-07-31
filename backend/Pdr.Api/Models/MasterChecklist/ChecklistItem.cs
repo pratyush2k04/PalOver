@@ -1,7 +1,8 @@
 namespace Pdr.Api.Models.MasterChecklist
 {
-    public class ChecklistItem
+    public class ChecklistItem : BaseAuditableEntity
     {
+        //tracking changes and supporting soft deletion
         public long Id { get; set; }
         public long VersionId { get; set; }
         public string Title { get; set; } = string.Empty;

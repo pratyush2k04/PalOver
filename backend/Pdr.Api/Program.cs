@@ -1,14 +1,16 @@
 using System.Text;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using Pdr.Api.Data;
-using Pdr.Api.Middleware;
 using Pdr.Api.Repositories;
+using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services;
 using Pdr.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Pdr.Api.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,9 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
            .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)));
+
+// Register FluentValidation Validators
+builder.Services.AddValidatorsFromAssemblyContaining<LoginRequestDtoValidator>();
 
 // Dependency Injection
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -50,18 +55,6 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
     };
-
-    options.Events = new JwtBearerEvents
-    {
-        OnMessageReceived = context =>
-        {
-            if (context.Request.Cookies.TryGetValue("pdr_jwt", out var token))
-            {
-                context.Token = token;
-            }
-            return Task.CompletedTask;
-        }
-    };
 });
 
 builder.Services.AddAuthorization(options =>
@@ -81,7 +74,7 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
-// Configure the HTTP request pipeline.cd
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -104,8 +97,6 @@ app.Use(async (context, next) =>
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseMiddleware<SlidingSessionMiddleware>();
 
 app.MapControllers();
 

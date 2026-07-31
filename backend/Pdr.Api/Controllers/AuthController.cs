@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.DTOs.Auth;
 using Pdr.Api.Services.Interfaces;
@@ -6,11 +7,18 @@ namespace Pdr.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController(IAuthService authService) : ControllerBase
+public class AuthController(IAuthService authService, IValidator<LoginRequestDto> validator) : ControllerBase
 {
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
     {
+        var validationResult = await validator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid login request.";
+            return BadRequest(new { message = firstError });
+        }
+
         var result = await authService.LoginAsync(request);
 
         if (!result.IsSuccess)
@@ -23,32 +31,11 @@ public class AuthController(IAuthService authService) : ControllerBase
             return Unauthorized(new { message = result.ErrorMessage });
         }
 
-        var bearerToken = $"Bearer {result.Token}";
-
-        Response.Headers["Authorization"] = bearerToken;
-        Response.Headers["Access-Control-Expose-Headers"] = "Authorization";
-
-        Response.Cookies.Append("pdr_jwt", result.Token!, new CookieOptions
+        var responseDto = new LoginResponseDto
         {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict,
-            Expires = DateTimeOffset.UtcNow.AddMinutes(30)
-        });
+            Token = result.Token!
+        };
 
-        return Ok(new { message = "Logged in successfully." });
-    }
-
-    [HttpPost("logout")]
-    public IActionResult Logout()
-    {
-        Response.Cookies.Delete("pdr_jwt", new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict
-        });
-
-        return Ok(new { message = "Logged out successfully." });
+        return Ok(responseDto);
     }
 }

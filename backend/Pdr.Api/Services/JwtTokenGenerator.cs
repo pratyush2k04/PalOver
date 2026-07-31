@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using Pdr.Api.Models;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
@@ -23,9 +23,10 @@ public class JwtTokenGenerator(IConfiguration configuration) : IJwtTokenGenerato
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(ClaimTypes.Role, user.Role.Name), // For ASP.NET Core [Authorize(Roles = "...")]
+            new Claim("role", user.Role.Name),           // Clean key for Angular frontend
             new Claim("email", user.Email),
             new Claim("fullname", user.FullName),
-            new Claim("role", user.Role.Name),
             new Claim("isAdmin", user.IsAdmin.ToString().ToLower())
         };
 

@@ -1,4 +1,7 @@
-namespace Pdr.Api.Models;
+namespace Pdr.Api.Models.LoginEntity;
+
+using Pdr.Api.Models;
+using Pdr.Api.Models.EngagementAssignment;
 
 public class User : BaseAuditableEntity
 {
@@ -19,4 +22,6 @@ public class User : BaseAuditableEntity
     public int FailedAttemptCount { get; set; } = 0;
 
     public DateTimeOffset? LockoutEnd { get; set; }
+
+    public ICollection<EngagementAssignment> EngagementAssignments { get; set; } = new List<EngagementAssignment>();
 }

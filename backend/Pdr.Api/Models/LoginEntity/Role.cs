@@ -1,4 +1,6 @@
-namespace Pdr.Api.Models;
+namespace Pdr.Api.Models.LoginEntity;
+
+using Pdr.Api.Models;
 
 public class Role : BaseAuditableEntity
 {
