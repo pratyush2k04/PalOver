@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data.Configuration;
 using Pdr.Api.Models;
-using Pdr.Api.Models.LoginEntity;               // Resolves 'Role' and 'User'
-using Pdr.Api.Models.EngagementAssignment;       // Resolves 'EngagementAssignment'
+using Pdr.Api.Models.LoginEntity;
+using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Models.MasterChecklist;
 
 namespace Pdr.Api.Data;
@@ -20,12 +20,10 @@ public class AppDbContext : DbContext
         _httpContextAccessor = httpContextAccessor;
     }
 
-    // Role Based Permissions and Engagements
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<User> Users => Set<User>();
     public DbSet<EngagementAssignment> EngagementAssignments => Set<EngagementAssignment>();
 
-    // Master Checklist
     public DbSet<ChecklistCategory> ChecklistCategories => Set<ChecklistCategory>();
     public DbSet<ChecklistStatus> ChecklistStatuses => Set<ChecklistStatus>();
     public DbSet<ChecklistVersion> ChecklistVersions => Set<ChecklistVersion>();
@@ -35,30 +33,16 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Apply Configuration Classes from Assembly
+        // Apply Standalone Configurations
         modelBuilder.ApplyConfiguration(new RoleConfiguration());
         modelBuilder.ApplyConfiguration(new EngagementAssignmentConfiguration());
+        modelBuilder.ApplyConfiguration(new ChecklistCategoryConfiguration());
+        modelBuilder.ApplyConfiguration(new ChecklistStatusConfiguration());
 
         // Global Query Filters (Soft Delete)
         modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
-
-        // ChecklistCategory
-        modelBuilder.Entity<ChecklistCategory>(entity =>
-        {
-            entity.ToTable("checklist_categories");
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Id).HasColumnName("id").UseIdentityAlwaysColumn();
-            entity.Property(e => e.CategoryName).HasColumnName("category_name").HasMaxLength(100).IsRequired();
-        });
-
-        // ChecklistStatus
-        modelBuilder.Entity<ChecklistStatus>(entity =>
-        {
-            entity.ToTable("checklist_statuses");
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Id).HasColumnName("id").UseIdentityAlwaysColumn();
-            entity.Property(e => e.StatusName).HasColumnName("status_name").HasMaxLength(50).IsRequired();
-        });
+        modelBuilder.Entity<Role>().HasQueryFilter(r => !r.IsDeleted);
+        modelBuilder.Entity<EngagementAssignment>().HasQueryFilter(ea => !ea.User.IsDeleted);
 
         // ChecklistVersion
         modelBuilder.Entity<ChecklistVersion>(entity =>
@@ -69,14 +53,12 @@ public class AppDbContext : DbContext
             entity.Property(e => e.VersionNumber).HasColumnName("version_number").IsRequired();
             entity.Property(e => e.StatusId).HasColumnName("status_id").IsRequired();
 
-            // BaseAuditableEntity Column Mappings
             entity.Property(e => e.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
             entity.Property(e => e.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("NOW()");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by").HasMaxLength(255);
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by").HasMaxLength(255);
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
 
-            // Global Query Filter for Soft Delete
             entity.HasQueryFilter(e => !e.IsDeleted);
 
             entity.HasOne(d => d.Status)
@@ -98,14 +80,12 @@ public class AppDbContext : DbContext
             entity.Property(e => e.DisplayOrder).HasColumnName("display_order").IsRequired();
             entity.Property(e => e.IsRetired).HasColumnName("is_retired").HasDefaultValue(false);
 
-            // BaseAuditableEntity Column Mappings
             entity.Property(e => e.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
             entity.Property(e => e.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("NOW()");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by").HasMaxLength(255);
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by").HasMaxLength(255);
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
 
-            // Global Query Filter for Soft Delete
             entity.HasQueryFilter(e => !e.IsDeleted);
 
             entity.HasOne(d => d.Version)
@@ -127,7 +107,6 @@ public class AppDbContext : DbContext
             entity.Property(u => u.FullName).HasColumnName("full_name").HasMaxLength(255).IsRequired();
             entity.Property(u => u.Email).HasColumnName("email").HasMaxLength(255).IsRequired();
 
-            // Performance Indexes
             entity.HasIndex(u => u.Email, "idx_users_email").IsUnique();
             entity.HasIndex(u => u.RoleId, "idx_users_role_id");
 
@@ -137,7 +116,6 @@ public class AppDbContext : DbContext
             entity.Property(u => u.FailedAttemptCount).HasColumnName("failed_attempt_count").HasDefaultValue(0);
             entity.Property(u => u.LockoutEnd).HasColumnName("lockout_end");
 
-            // BaseAuditableEntity Column Mappings
             entity.Property(u => u.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
             entity.Property(u => u.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
             entity.Property(u => u.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("NOW()");
