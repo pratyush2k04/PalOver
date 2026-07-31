@@ -19,5 +19,10 @@ public class EngagementAssignmentConfiguration : IEntityTypeConfiguration<Engage
                .WithMany(u => u.EngagementAssignments)
                .HasForeignKey(ea => ea.UserId)
                .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(ea => ea.Engagement)
+               .WithMany(e => e.EngagementAssignments)
+               .HasForeignKey(ea => ea.EngagementId)
+               .OnDelete(DeleteBehavior.Cascade);
     }
 }

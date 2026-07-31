@@ -11,6 +11,9 @@ namespace Pdr.Api.Data;
 
 public class AppDbContext : DbContext
 {
+    public DbSet<Engagement> Engagements => Set<Engagement>();
+    public DbSet<EngagementStatus> EngagementStatuses => Set<EngagementStatus>();
+    public DbSet<EngagementType> EngagementTypes => Set<EngagementType>();
     private readonly IHttpContextAccessor? _httpContextAccessor;
 
     public AppDbContext(
@@ -24,18 +27,18 @@ public class AppDbContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<EngagementAssignment> EngagementAssignments => Set<EngagementAssignment>();
 
-    private static readonly DateTime SeedTimestamp = new(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
     public DbSet<ChecklistCategory> ChecklistCategories => Set<ChecklistCategory>();
     public DbSet<ChecklistStatus> ChecklistStatuses => Set<ChecklistStatus>();
     public DbSet<ChecklistVersion> ChecklistVersions => Set<ChecklistVersion>();
     public DbSet<ChecklistItem> ChecklistItems => Set<ChecklistItem>();
 
+    private static readonly DateTime SeedTimestamp = new(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // Apply Standalone Configurations
+        // Apply Configuration Classes from Assembly
         modelBuilder.ApplyConfiguration(new RoleConfiguration());
         modelBuilder.ApplyConfiguration(new EngagementAssignmentConfiguration());
         modelBuilder.ApplyConfiguration(new ChecklistCategoryConfiguration());
@@ -55,12 +58,14 @@ public class AppDbContext : DbContext
             entity.Property(e => e.VersionNumber).HasColumnName("version_number").IsRequired();
             entity.Property(e => e.StatusId).HasColumnName("status_id").IsRequired();
 
+            // BaseAuditableEntity Column Mappings
             entity.Property(e => e.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
             entity.Property(e => e.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("NOW()");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by").HasMaxLength(255);
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by").HasMaxLength(255);
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
 
+            // Global Query Filter for Soft Delete
             entity.HasQueryFilter(e => !e.IsDeleted);
 
             entity.HasOne(d => d.Status)
@@ -93,12 +98,14 @@ public class AppDbContext : DbContext
             entity.Property(e => e.DisplayOrder).HasColumnName("display_order").IsRequired();
             entity.Property(e => e.IsRetired).HasColumnName("is_retired").HasDefaultValue(false);
 
+            // BaseAuditableEntity Column Mappings
             entity.Property(e => e.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
             entity.Property(e => e.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("NOW()");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by").HasMaxLength(255);
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by").HasMaxLength(255);
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
 
+            // Global Query Filter for Soft Delete
             entity.HasQueryFilter(e => !e.IsDeleted);
 
             entity.HasOne(d => d.Version)
@@ -122,6 +129,7 @@ public class AppDbContext : DbContext
             entity.Property(u => u.FullName).HasColumnName("full_name").HasMaxLength(255).IsRequired();
             entity.Property(u => u.Email).HasColumnName("email").HasMaxLength(255).IsRequired();
 
+            // Performance Indexes
             entity.HasIndex(u => u.Email, "idx_users_email").IsUnique();
             entity.HasIndex(u => u.RoleId, "idx_users_role_id");
 
@@ -131,6 +139,7 @@ public class AppDbContext : DbContext
             entity.Property(u => u.FailedAttemptCount).HasColumnName("failed_attempt_count").HasDefaultValue(0);
             entity.Property(u => u.LockoutEnd).HasColumnName("lockout_end");
 
+            // BaseAuditableEntity Column Mappings
             entity.Property(u => u.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
             entity.Property(u => u.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
             entity.Property(u => u.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("NOW()");
@@ -141,6 +150,122 @@ public class AppDbContext : DbContext
                 .WithMany(r => r.Users)
                 .HasForeignKey(u => u.RoleId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Seed System Users with static values
+            entity.HasData(
+                new User
+                {
+                    Id = 1,
+                    FullName = "Rahul Verma",
+                    Email = "presales@company.com",
+                    Password = "Password@123",
+                    RoleId = 1,
+                    IsAdmin = false,
+                    IsDeleted = false,
+                    CreatedBy = "System",
+                    CreatedAt = SeedTimestamp,
+                    UpdatedAt = SeedTimestamp
+                },
+                new User
+                {
+                    Id = 2,
+                    FullName = "Asha Rao",
+                    Email = "pm@company.com",
+                    Password = "Password@123",
+                    RoleId = 2,
+                    IsAdmin = false,
+                    IsDeleted = false,
+                    CreatedBy = "System",
+                    CreatedAt = SeedTimestamp,
+                    UpdatedAt = SeedTimestamp
+                },
+                new User
+                {
+                    Id = 3,
+                    FullName = "Vikram Singh",
+                    Email = "techlead@company.com",
+                    Password = "Password@123",
+                    RoleId = 3,
+                    IsAdmin = false,
+                    IsDeleted = false,
+                    CreatedBy = "System",
+                    CreatedAt = SeedTimestamp,
+                    UpdatedAt = SeedTimestamp
+                },
+                new User
+                {
+                    Id = 4,
+                    FullName = "Neha Sharma",
+                    Email = "leadership@company.com",
+                    Password = "Password@123",
+                    RoleId = 4,
+                    IsAdmin = false,
+                    IsDeleted = false,
+                    CreatedBy = "System",
+                    CreatedAt = SeedTimestamp,
+                    UpdatedAt = SeedTimestamp
+                },
+                new User
+                {
+                    Id = 5,
+                    FullName = "Admin User",
+                    Email = "admin@company.com",
+                    Password = "Password@123",
+                    RoleId = 4,
+                    IsAdmin = true,
+                    IsDeleted = false,
+                    CreatedBy = "System",
+                    CreatedAt = SeedTimestamp,
+                    UpdatedAt = SeedTimestamp
+                }
+            );
+        });
+
+        modelBuilder.Entity<EngagementStatus>(entity =>
+        {
+            entity.ToTable("engagement_statuses");
+            entity.HasKey(s => s.StatusId);
+            entity.Property(s => s.StatusId).HasColumnName("status_id");
+            entity.Property(s => s.StatusName).HasColumnName("status_name").HasMaxLength(50).IsRequired();
+        });
+
+        modelBuilder.Entity<EngagementType>(entity =>
+        {
+            entity.ToTable("engagement_types");
+            entity.HasKey(t => t.Id);
+            entity.Property(t => t.Id).HasColumnName("id");
+            entity.Property(t => t.Name).HasColumnName("name").HasMaxLength(100).IsRequired();
+        });
+
+        modelBuilder.Entity<Engagement>(entity =>
+        {
+            entity.ToTable("engagements");
+            entity.HasKey(e => e.EngagementId);
+            entity.Property(e => e.EngagementId).HasColumnName("engagement_id");
+            entity.Property(e => e.ClientName).HasColumnName("client_name").HasMaxLength(200).IsRequired();
+            entity.Property(e => e.EngagementDescription).HasColumnName("engagement_description");
+            entity.Property(e => e.EngagementTypeId).HasColumnName("engagement_type_id").IsRequired();
+            entity.Property(e => e.KickoffDate).HasColumnName("kickoff_date").IsRequired();
+            entity.Property(e => e.BillingStartDate).HasColumnName("billing_start_date");
+            entity.Property(e => e.StatusId).HasColumnName("status_id");
+
+            // BaseAuditableEntity Column Mappings
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
+            entity.Property(e => e.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("NOW()");
+            entity.Property(e => e.CreatedBy).HasColumnName("created_by").HasMaxLength(255);
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by").HasMaxLength(255);
+            entity.Property(e => e.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
+
+            // Global Query Filter for Soft Delete
+            entity.HasQueryFilter(e => !e.IsDeleted);
+
+            entity.HasOne(e => e.EngagementType)
+                  .WithMany()
+                  .HasForeignKey(e => e.EngagementTypeId);
+
+            entity.HasOne(e => e.Status)
+                  .WithMany(s => s.Engagements)
+                  .HasForeignKey(e => e.StatusId);
         });
     }
 

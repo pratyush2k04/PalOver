@@ -12,8 +12,8 @@ using Pdr.Api.Data;
 namespace Pdr.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260731053602_SeedMasterChecklistData")]
-    partial class SeedMasterChecklistData
+    [Migration("20260731101456_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,19 +25,133 @@ namespace Pdr.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
+                {
+                    b.Property<long>("EngagementId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("engagement_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("EngagementId"));
+
+                    b.Property<DateOnly?>("BillingStartDate")
+                        .HasColumnType("date")
+                        .HasColumnName("billing_start_date");
+
+                    b.Property<string>("ClientName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("client_name");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<string>("EngagementDescription")
+                        .HasColumnType("text")
+                        .HasColumnName("engagement_description");
+
+                    b.Property<int>("EngagementTypeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("engagement_type_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<DateOnly>("KickoffDate")
+                        .HasColumnType("date")
+                        .HasColumnName("kickoff_date");
+
+                    b.Property<int>("StatusId")
+                        .HasColumnType("integer")
+                        .HasColumnName("status_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("EngagementId");
+
+                    b.HasIndex("EngagementTypeId");
+
+                    b.HasIndex("StatusId");
+
+                    b.ToTable("engagements", (string)null);
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.EngagementAssignment.EngagementAssignment", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("integer")
                         .HasColumnName("user_id");
 
-                    b.Property<int>("EngagementId")
-                        .HasColumnType("integer")
+                    b.Property<long>("EngagementId")
+                        .HasColumnType("bigint")
                         .HasColumnName("engagement_id");
 
                     b.HasKey("UserId", "EngagementId");
 
+                    b.HasIndex("EngagementId");
+
                     b.ToTable("engagement_assignments", (string)null);
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.EngagementStatus", b =>
+                {
+                    b.Property<int>("StatusId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("status_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("StatusId"));
+
+                    b.Property<string>("StatusName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("status_name");
+
+                    b.HasKey("StatusId");
+
+                    b.ToTable("engagement_statuses", (string)null);
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.EngagementType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("engagement_types", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.LoginEntity.Role", b =>
@@ -207,6 +321,78 @@ namespace Pdr.Api.Migrations
                     b.HasIndex(new[] { "RoleId" }, "idx_users_role_id");
 
                     b.ToTable("users", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            Email = "presales@company.com",
+                            FailedAttemptCount = 0,
+                            FullName = "Rahul Verma",
+                            IsAdmin = false,
+                            IsDeleted = false,
+                            Password = "Password@123",
+                            RoleId = 1,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            Email = "pm@company.com",
+                            FailedAttemptCount = 0,
+                            FullName = "Asha Rao",
+                            IsAdmin = false,
+                            IsDeleted = false,
+                            Password = "Password@123",
+                            RoleId = 2,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            Email = "techlead@company.com",
+                            FailedAttemptCount = 0,
+                            FullName = "Vikram Singh",
+                            IsAdmin = false,
+                            IsDeleted = false,
+                            Password = "Password@123",
+                            RoleId = 3,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            Email = "leadership@company.com",
+                            FailedAttemptCount = 0,
+                            FullName = "Neha Sharma",
+                            IsAdmin = false,
+                            IsDeleted = false,
+                            Password = "Password@123",
+                            RoleId = 4,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            Email = "admin@company.com",
+                            FailedAttemptCount = 0,
+                            FullName = "Admin User",
+                            IsAdmin = true,
+                            IsDeleted = false,
+                            Password = "Password@123",
+                            RoleId = 4,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.ChecklistCategory", b =>
@@ -718,13 +904,40 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.EngagementType", "EngagementType")
+                        .WithMany()
+                        .HasForeignKey("EngagementTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.EngagementStatus", "Status")
+                        .WithMany("Engagements")
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EngagementType");
+
+                    b.Navigation("Status");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.EngagementAssignment.EngagementAssignment", b =>
                 {
+                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
+                        .WithMany("EngagementAssignments")
+                        .HasForeignKey("EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Pdr.Api.Models.LoginEntity.User", "User")
                         .WithMany("EngagementAssignments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Engagement");
 
                     b.Navigation("User");
                 });
@@ -768,6 +981,16 @@ namespace Pdr.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Status");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
+                {
+                    b.Navigation("EngagementAssignments");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.EngagementStatus", b =>
+                {
+                    b.Navigation("Engagements");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.LoginEntity.Role", b =>

@@ -6,9 +6,9 @@
     </div>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
-      @if (errorMessage) {
+      @if (errorMessage()) {
         <div class="alert alert-danger" role="alert">
-          {{ errorMessage }}
+          {{ errorMessage() }}
         </div>
       }
 
@@ -48,8 +48,8 @@
         }
       </div>
 
-      <button type="submit" class="btn-submit" [disabled]="isLoading">
-        @if (isLoading) {
+      <button type="submit" class="btn-submit" [disabled]="isLoading()">
+        @if (isLoading()) {
           <span class="spinner"></span> Signing in...
         } @else {
           Sign In

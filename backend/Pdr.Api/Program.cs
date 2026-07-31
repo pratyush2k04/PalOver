@@ -5,10 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using Pdr.Api.Data;
+using Pdr.Api.Models;
 using Pdr.Api.Repositories;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services;
 using Pdr.Api.Services.Interfaces;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authorization;
 using Pdr.Api.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,9 +19,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -29,14 +34,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddValidatorsFromAssemblyContaining<LoginRequestDtoValidator>();
 
 // Dependency Injection
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IEngagementService, EngagementService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 builder.Services.AddScoped<IChecklistRepository, ChecklistRepository>();
 builder.Services.AddScoped<IChecklistService, ChecklistService>();
 
 // JWT Authentication
-var secretKey = builder.Configuration["JwtSettings:SecretKey"] 
+var secretKey = builder.Configuration["JwtSettings:SecretKey"]
     ?? throw new InvalidOperationException("JwtSettings:SecretKey is not configured.");
 builder.Services.AddAuthentication(options =>
 {
@@ -62,10 +71,11 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization(options =>
 {
+    options.AddPolicy("IsAdmin", policy =>
+        policy.RequireClaim("isAdmin", "true"));
+
     options.AddPolicy("AdminOnly", policy =>
-    {
-        policy.RequireClaim("isAdmin", "true");
-    });
+        policy.RequireClaim("isAdmin", "true"));
 });
 
 var app = builder.Build();
@@ -75,7 +85,24 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
+
+    if (!db.EngagementTypes.Any())
+    {
+        db.EngagementTypes.AddRange(
+            Enum.GetValues<EngagementTypeEnum>()
+                .Select(t => new EngagementType { Name = t.ToString() }));
+        db.SaveChanges();
+    }
+
+    if (!db.EngagementStatuses.Any())
+    {
+        db.EngagementStatuses.AddRange(
+            Enum.GetValues<EngagementStatusEnum>()
+                .Select(s => new EngagementStatus { StatusName = s.ToString() }));
+        db.SaveChanges();
+    }
 }
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -93,6 +120,7 @@ app.Use(async (context, next) =>
     context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
     context.Response.Headers["Pragma"] = "no-cache";
     context.Response.Headers["Expires"] = "0";
+
     await next();
 });
 
