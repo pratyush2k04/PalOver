@@ -6,12 +6,10 @@ import { MainLayoutComponent } from './components/main-layout/main-layout';
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'dashboard', component: DashboardComponent },
+
   {
     path: '',
     component: MainLayoutComponent,
-    children: [
-      { path: '', redirectTo: 'admin/users', pathMatch: 'full' },
-      
-    ]
-  }
+    children: [{ path: '', redirectTo: 'admin/users', pathMatch: 'full' }],
+  },
 ];
