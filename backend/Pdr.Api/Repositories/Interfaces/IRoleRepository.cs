@@ -1,6 +1,6 @@
-using Pdr.Api.Models;
+using Pdr.Api.Models.LoginEntity;
 
-namespace Pdr.Api.Repositories;
+namespace Pdr.Api.Repositories.Interfaces;
 
 public interface IRoleRepository
 {

@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Pdr.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class AddUserManagement : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -45,7 +45,12 @@ namespace Pdr.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(type: "integer", nullable: false),
-                    name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
+                    name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    created_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    updated_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
@@ -148,17 +153,11 @@ namespace Pdr.Api.Migrations
                 columns: table => new
                 {
                     user_id = table.Column<int>(type: "integer", nullable: false),
-                    engagement_id = table.Column<int>(type: "integer", nullable: false),
-                    UserId1 = table.Column<int>(type: "integer", nullable: true)
+                    engagement_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_engagement_assignments", x => new { x.user_id, x.engagement_id });
-                    table.ForeignKey(
-                        name: "FK_engagement_assignments_users_UserId1",
-                        column: x => x.UserId1,
-                        principalTable: "users",
-                        principalColumn: "id");
                     table.ForeignKey(
                         name: "FK_engagement_assignments_users_user_id",
                         column: x => x.user_id,
@@ -168,14 +167,36 @@ namespace Pdr.Api.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "roles",
-                columns: new[] { "id", "name" },
+                table: "checklist_categories",
+                columns: new[] { "id", "category_name" },
                 values: new object[,]
                 {
-                    { 1, "Pre Sales" },
-                    { 2, "Project Management" },
-                    { 3, "Tech Lead" },
-                    { 4, "Leadership" }
+                    { 1L, "Commercial" },
+                    { 2L, "Handover" },
+                    { 3L, "Scope" },
+                    { 4L, "Governance" },
+                    { 5L, "Resourcing" },
+                    { 6L, "Technical Readiness" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "checklist_statuses",
+                columns: new[] { "id", "status_name" },
+                values: new object[,]
+                {
+                    { 1L, "Draft" },
+                    { 2L, "Published" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "roles",
+                columns: new[] { "id", "created_at", "created_by", "name", "updated_at", "updated_by" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Pre Sales", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null },
+                    { 2, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Project Management", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null },
+                    { 3, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Tech Lead", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null },
+                    { 4, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Leadership", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null }
                 });
 
             migrationBuilder.CreateIndex(
@@ -192,11 +213,6 @@ namespace Pdr.Api.Migrations
                 name: "IX_checklist_versions_status_id",
                 table: "checklist_versions",
                 column: "status_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_engagement_assignments_UserId1",
-                table: "engagement_assignments",
-                column: "UserId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_roles_name",

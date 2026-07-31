@@ -1,6 +1,8 @@
 using Pdr.Api.DTOs.Common;
 using Pdr.Api.DTOs.Users;
-using Pdr.Api.Repositories;
+using Pdr.Api.Exceptions;
+using Pdr.Api.Models.LoginEntity;
+using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
@@ -22,12 +24,13 @@ public class UserManagementService(IUserRepository userRepository, IRoleReposito
 
     public async Task<UserListItemDto> ChangeUserRoleAsync(int targetUserId, int newRoleId)
     {
-        var user = await userRepository.GetByIdAsync(targetUserId);
+        var user = await userRepository.GetByIdAsync(targetUserId)
+            ?? throw new UserNotFoundException(targetUserId);
 
         if (user.RoleId != newRoleId)
         {
-            var newRole = await roleRepository.GetByIdAsync(newRoleId);
-                
+            var newRole = await roleRepository.GetByIdAsync(newRoleId)
+                ?? throw new RoleNotFoundException(newRoleId);
 
             user.RoleId = newRole.Id;
             user.Role = newRole;
@@ -37,7 +40,7 @@ public class UserManagementService(IUserRepository userRepository, IRoleReposito
         return ToDto(user);
     }
 
-    private static UserListItemDto ToDto(Models.User user) => new()
+    private static UserListItemDto ToDto(User user) => new()
     {
         Id = user.Id,
         FullName = user.FullName,

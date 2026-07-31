@@ -7,7 +7,7 @@ namespace Pdr.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-
+[Authorize(Policy = "IsAdmin")]
 public class UsersController(IUserManagementService userManagementService) : ControllerBase
 {
     [HttpGet]
@@ -18,14 +18,9 @@ public class UsersController(IUserManagementService userManagementService) : Con
     }
 
     [HttpPatch("{id}/role")]
-    [Authorize(Policy = "IsAdmin")]
     public async Task<IActionResult> ChangeRole(int id, [FromBody] ChangeUserRoleRequestDto request)
     {
-        
-        
-            var user = await userManagementService.ChangeUserRoleAsync(id, request.NewRoleId);
-            return Ok(user);
-        
-        
+        var user = await userManagementService.ChangeUserRoleAsync(id, request.NewRoleId);
+        return Ok(user);
     }
 }
