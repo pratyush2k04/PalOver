@@ -3,11 +3,12 @@ using Pdr.Api.Data;
 using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
+using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class EngagementService(AppDbContext db) : IEngagementService
+public class EngagementService(AppDbContext db, IEngagementRepository engagementRepository, ICurrentUserService currentUserService) : IEngagementService
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
 
@@ -121,5 +122,23 @@ public class EngagementService(AppDbContext db) : IEngagementService
 
         await db.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<PmEngagementListResponse> GetMyEngagementsAsync(string sortBy)
+    {
+        var userId = currentUserService.GetUserId();
+        var engagements = await engagementRepository.GetEngagementsForPmAsync(userId, sortBy);
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        var items = engagements
+            .Select(e => new PmEngagementListItemDto(
+                e.EngagementId,
+                e.ClientName,
+                e.KickoffDate,
+                e.KickoffDate.DayNumber - today.DayNumber,
+                ReadinessScore: null))
+            .ToList();
+
+        return new PmEngagementListResponse(items);
     }
 }
