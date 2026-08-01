@@ -17,24 +17,34 @@ Content-Type: {{contentType}}
 
 ###
 
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1Iiwicm9sZSI6WyJMZWFkZXJzaGlwIiwiTGVhZGVyc2hpcCJdLCJlbWFpbCI6ImFkbWluQGNvbXBhbnkuY29tIiwiZnVsbG5hbWUiOiJBZG1pbiBVc2VyIiwiaXNBZG1pbiI6InRydWUiLCJuYmYiOjE3ODU0OTQyODYsImV4cCI6MTc4NTQ5NjA4NiwiaWF0IjoxNzg1NDk0Mjg2LCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.HrevuYgdGmCSMRE0A9o6BRdKUCzOGGzhJef_wHTLdUg
-
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1Iiwicm9sZSI6WyJMZWFkZXJzaGlwIiwiTGVhZGVyc2hpcCJdLCJlbWFpbCI6ImFkbWluQGNvbXBhbnkuY29tIiwiZnVsbG5hbWUiOiJBZG1pbiBVc2VyIiwiaXNBZG1pbiI6InRydWUiLCJuYmYiOjE3ODU1ODEwMzAsImV4cCI6MTc4NTU4MjgzMCwiaWF0IjoxNzg1NTgxMDMwLCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.7yshdqHlAWComq5pleIAmLvG60175cMQd4VLb-QhhQM
 
 ### Login as Project Manager
 POST {{host}}/api/auth/login
 Content-Type: {{contentType}}
 
 {
-  "email": "pm@company.com",
+  "email": "leadership@company.com",
   "password": "Password@123"
 }
 
 ###
 
-@pmToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwicm9sZSI6WyJUZWNoIExlYWQiLCJUZWNoIExlYWQiXSwiZW1haWwiOiJwbUBjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiQXNoYSBSYW8iLCJpc0FkbWluIjoiZmFsc2UiLCJuYmYiOjE3ODU0OTQzNTAsImV4cCI6MTc4NTQ5NjE1MCwiaWF0IjoxNzg1NDk0MzUwLCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.WB2820o00XWACaCoK4b6ofiCl1x8MuZ93MhU6FEQXAg
+@pmToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0Iiwicm9sZSI6WyJMZWFkZXJzaGlwIiwiTGVhZGVyc2hpcCJdLCJlbWFpbCI6ImxlYWRlcnNoaXBAY29tcGFueS5jb20iLCJmdWxsbmFtZSI6Ik5laGEgU2hhcm1hIiwiaXNBZG1pbiI6ImZhbHNlIiwibmJmIjoxNzg1NTgxMjA3LCJleHAiOjE3ODU1ODMwMDcsImlhdCI6MTc4NTU4MTIwNywiaXNzIjoiUGRyQXBpIiwiYXVkIjoiUGRyV2ViIn0.D50Kv5KK5zIP_lKBJ1guGOqUzYHrCv8uHwGm6HHtktk
+
 ##############################################################
 #################### ADMIN ENDPOINTS #########################
 ##############################################################
+
+### Admin Get Home
+GET {{host}}/api/home
+Authorization: Bearer {{adminToken}}
+Accept: application/json
+
+### Non Admin Get Home
+GET {{host}}/api/home
+Authorization: Bearer {{pmToken}}
+Accept: application/json
 
 ### Current Draft
 GET {{host}}/api/checklist/current-draft
