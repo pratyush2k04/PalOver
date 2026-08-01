@@ -20,6 +20,7 @@ public class Engagement : BaseAuditableEntity
     [ForeignKey(nameof(EngagementTypeId))]
     public EngagementType EngagementType { get; set; } = null!;
 
+    
     [Required]
     public int CommercialModelId { get; set; }
 
