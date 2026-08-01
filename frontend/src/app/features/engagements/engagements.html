@@ -1,0 +1,112 @@
+<div class="engagements-page">
+  <div class="page-header">
+    <h2>Engagements</h2>
+    <button type="button" class="btn-mark-sow" (click)="openModal()">+ Mark SOW Signed</button>
+  </div>
+
+  @if (warnings().length > 0) {
+    <div class="alert alert-warning" role="alert">
+      @for (warning of warnings(); track warning) {
+        <div>{{ warning }}</div>
+      }
+    </div>
+  }
+
+  @if (showModal()) {
+    <div class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Mark SOW Signed</h3>
+          <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close">&times;</button>
+        </div>
+
+        <form [formGroup]="engagementForm" (ngSubmit)="onSubmit()" novalidate>
+          @if (errorMessage()) {
+            <div class="alert alert-danger" role="alert">
+              {{ errorMessage() }}
+            </div>
+          }
+
+          <div class="form-group">
+            <label for="clientName">Client name</label>
+            <input id="clientName" type="text" formControlName="clientName" />
+          </div>
+
+          <div class="form-group">
+            <label for="engagementDescription">Engagement description</label>
+            <input id="engagementDescription" type="text" formControlName="engagementDescription" />
+          </div>
+
+          <div class="form-group">
+            <label for="engagementTypeId">Nature</label>
+            <select
+              id="engagementTypeId"
+              formControlName="engagementTypeId"
+              [class.is-invalid]="engagementTypeIdControl?.invalid && (engagementTypeIdControl?.touched || engagementTypeIdControl?.dirty)"
+            >
+              @for (type of engagementTypes(); track type.id) {
+                <option [ngValue]="type.id">{{ type.name }}</option>
+              }
+            </select>
+            @if (engagementTypeIdControl?.invalid && (engagementTypeIdControl?.touched || engagementTypeIdControl?.dirty)) {
+              <div class="invalid-feedback">Nature is required.</div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="commercialModelId">Commercial model</label>
+            <select
+              id="commercialModelId"
+              formControlName="commercialModelId"
+              [class.is-invalid]="commercialModelIdControl?.invalid && (commercialModelIdControl?.touched || commercialModelIdControl?.dirty)"
+            >
+              @for (model of commercialModels(); track model.id) {
+                <option [ngValue]="model.id">{{ model.name }}</option>
+              }
+            </select>
+            @if (commercialModelIdControl?.invalid && (commercialModelIdControl?.touched || commercialModelIdControl?.dirty)) {
+              <div class="invalid-feedback">Commercial model is required.</div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="kickoffDate">Target kickoff date</label>
+            <input
+              id="kickoffDate"
+              type="date"
+              formControlName="kickoffDate"
+              [class.is-invalid]="kickoffDateControl?.invalid && (kickoffDateControl?.touched || kickoffDateControl?.dirty)"
+            />
+            @if (kickoffDateControl?.invalid && (kickoffDateControl?.touched || kickoffDateControl?.dirty)) {
+              <div class="invalid-feedback">Target kickoff date is required.</div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="billingStartDate">Billing start date</label>
+            <input
+              id="billingStartDate"
+              type="date"
+              formControlName="billingStartDate"
+              [class.is-invalid]="engagementForm.errors?.['billingBeforeKickoff'] && (billingStartDateControl?.touched || billingStartDateControl?.dirty)"
+            />
+            @if (engagementForm.errors?.['billingBeforeKickoff'] && (billingStartDateControl?.touched || billingStartDateControl?.dirty)) {
+              <div class="invalid-feedback">Billing start cannot be before the kickoff date.</div>
+            }
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+            <button type="submit" class="btn-submit" [disabled]="isSubmitting()">
+              @if (isSubmitting()) {
+                <span class="spinner"></span> Creating...
+              } @else {
+                Create Engagement
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

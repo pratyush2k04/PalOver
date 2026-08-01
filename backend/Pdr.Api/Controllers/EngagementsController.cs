@@ -10,6 +10,14 @@ namespace Pdr.Api.Controllers;
 [Route("api/[controller]")]
 public class EngagementsController(IEngagementService engagementService) : ControllerBase
 {
+    [HttpGet("my-engagements")]
+    [Authorize(Roles = "Project Management")]
+    public async Task<ActionResult<PmEngagementListResponse>> GetMyEngagements([FromQuery] string sortBy = "kickoff")
+    {
+        var result = await engagementService.GetMyEngagementsAsync(sortBy);
+        return Ok(result);
+    }
+
     //TODO: Authentication & Authorization constraints : Depends on 645
     [HttpGet("{id:long}")]
     public async Task<ActionResult<EngagementInfoDto>> GetEngagementInfo(long id)
@@ -34,8 +42,7 @@ public class EngagementsController(IEngagementService engagementService) : Contr
     }
 
     [HttpPost("mark-sow-signed")]
-    // TODO: restore once the auth scheme (teammate's work) is merged
-    // [Authorize(Roles = "Presales")]
+    [Authorize(Roles = "Pre Sales")]
     public async Task<ActionResult<MarkSowSignedResponse>> MarkSowSigned(MarkSowSignedRequest request)
     {
         try

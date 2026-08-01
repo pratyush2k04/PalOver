@@ -15,6 +15,7 @@ interface NavItem {
 export class SidebarComponent {
   readonly navItems: NavItem[] = [
     { label: 'Home', icon: 'home' },
+    { label: 'Engagements', icon: 'layers' },
     { label: 'My Handovers', icon: 'clipboard' },
     { label: 'Alerts', icon: 'bell', badge: 'dot' },
     { label: 'Profile', icon: 'user' }
