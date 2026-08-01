@@ -14,6 +14,7 @@ public class AppDbContext : DbContext
     public DbSet<Engagement> Engagements => Set<Engagement>();
     public DbSet<EngagementStatus> EngagementStatuses => Set<EngagementStatus>();
     public DbSet<EngagementType> EngagementTypes => Set<EngagementType>();
+    public DbSet<CommercialModel> CommercialModels => Set<CommercialModel>();
     private readonly IHttpContextAccessor? _httpContextAccessor;
 
     public AppDbContext(
@@ -237,6 +238,20 @@ public class AppDbContext : DbContext
             entity.Property(t => t.Name).HasColumnName("name").HasMaxLength(100).IsRequired();
         });
 
+        modelBuilder.Entity<CommercialModel>(entity =>
+        {
+            entity.ToTable("commercial_models");
+            entity.HasKey(m => m.Id);
+            entity.Property(m => m.Id).HasColumnName("id");
+            entity.Property(m => m.Name).HasColumnName("name").HasMaxLength(100).IsRequired();
+
+            entity.HasData(
+                new { Id = 1, Name = "Time and Material" },
+                new { Id = 2, Name = "Fixed" },
+                new { Id = 3, Name = "Capped T&M" }
+            );
+        });
+
         modelBuilder.Entity<Engagement>(entity =>
         {
             entity.ToTable("engagements");
@@ -245,6 +260,7 @@ public class AppDbContext : DbContext
             entity.Property(e => e.ClientName).HasColumnName("client_name").HasMaxLength(200).IsRequired();
             entity.Property(e => e.EngagementDescription).HasColumnName("engagement_description");
             entity.Property(e => e.EngagementTypeId).HasColumnName("engagement_type_id").IsRequired();
+            entity.Property(e => e.CommercialModelId).HasColumnName("commercial_model_id").IsRequired();
             entity.Property(e => e.KickoffDate).HasColumnName("kickoff_date").IsRequired();
             entity.Property(e => e.BillingStartDate).HasColumnName("billing_start_date");
             entity.Property(e => e.StatusId).HasColumnName("status_id");
@@ -262,6 +278,10 @@ public class AppDbContext : DbContext
             entity.HasOne(e => e.EngagementType)
                   .WithMany()
                   .HasForeignKey(e => e.EngagementTypeId);
+
+            entity.HasOne(e => e.CommercialModel)
+                  .WithMany()
+                  .HasForeignKey(e => e.CommercialModelId);
 
             entity.HasOne(e => e.Status)
                   .WithMany(s => s.Engagements)

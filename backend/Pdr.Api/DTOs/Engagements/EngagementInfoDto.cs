@@ -5,6 +5,7 @@ public record EngagementInfoDto(
     string ClientName,
     string? EngagementDescription,
     string EngagementType,
+    string CommercialModel,
     DateOnly KickoffDate,
     DateOnly? BillingStartDate,
     string Status);
