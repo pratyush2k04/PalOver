@@ -6,6 +6,7 @@ public interface IEngagementService
 {
     Task<MarkSowSignedResponse> MarkSowSignedAsync(MarkSowSignedRequest request);
     Task<IEnumerable<EngagementTypeDto>> GetEngagementTypesAsync();
+    Task<IEnumerable<CommercialModelDto>> GetCommercialModelsAsync();
     Task<EngagementInfoDto?> GetEngagementInfoAsync(long id);
     Task<bool> EditEngagementAsync(long id, EditEngagementRequest request);
 }

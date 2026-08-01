@@ -22,6 +22,43 @@ namespace Pdr.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Pdr.Api.Models.CommercialModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("commercial_models", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Time and Material"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Fixed"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Capped T&M"
+                        });
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
                 {
                     b.Property<long>("EngagementId")
@@ -40,6 +77,10 @@ namespace Pdr.Api.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("client_name");
+
+                    b.Property<int>("CommercialModelId")
+                        .HasColumnType("integer")
+                        .HasColumnName("commercial_model_id");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -86,6 +127,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnName("updated_by");
 
                     b.HasKey("EngagementId");
+
+                    b.HasIndex("CommercialModelId");
 
                     b.HasIndex("EngagementTypeId");
 
@@ -903,6 +946,12 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
                 {
+                    b.HasOne("Pdr.Api.Models.CommercialModel", "CommercialModel")
+                        .WithMany()
+                        .HasForeignKey("CommercialModelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Pdr.Api.Models.EngagementType", "EngagementType")
                         .WithMany()
                         .HasForeignKey("EngagementTypeId")
@@ -914,6 +963,8 @@ namespace Pdr.Api.Migrations
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CommercialModel");
 
                     b.Navigation("EngagementType");
 

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
 using Pdr.Api.DTOs.Engagements;
+using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
 using Pdr.Api.Services.Interfaces;
 
@@ -17,6 +18,9 @@ public class EngagementService(AppDbContext db) : IEngagementService
 
         if (!await db.EngagementTypes.AnyAsync(t => t.Id == request.EngagementTypeId))
             throw new InvalidEngagementTypeException(request.EngagementTypeId);
+
+        if (!await db.CommercialModels.AnyAsync(m => m.Id == request.CommercialModelId))
+            throw new InvalidCommercialModelException(request.CommercialModelId);
 
         var warnings = new List<string>();
         var clientName = request.ClientName;
@@ -37,6 +41,7 @@ public class EngagementService(AppDbContext db) : IEngagementService
         Engagement engagement;
         if (existing is not null)
         {
+            existing.CommercialModelId = request.CommercialModelId;
             existing.KickoffDate = request.KickoffDate;
             existing.BillingStartDate = request.BillingStartDate;
             warnings.Add("This engagement already exists - updated instead of duplicated.");
@@ -51,6 +56,7 @@ public class EngagementService(AppDbContext db) : IEngagementService
                 ClientName = clientName,
                 EngagementDescription = request.EngagementDescription,
                 EngagementTypeId = request.EngagementTypeId,
+                CommercialModelId = request.CommercialModelId,
                 KickoffDate = request.KickoffDate,
                 BillingStartDate = request.BillingStartDate,
                 StatusId = defaultStatus.StatusId,
@@ -67,6 +73,11 @@ public class EngagementService(AppDbContext db) : IEngagementService
             .Select(t => new EngagementTypeDto(t.Id, t.Name))
             .ToListAsync();
 
+    public async Task<IEnumerable<CommercialModelDto>> GetCommercialModelsAsync() =>
+        await db.CommercialModels
+            .Select(m => new CommercialModelDto(m.Id, m.Name))
+            .ToListAsync();
+
     public async Task<EngagementInfoDto?> GetEngagementInfoAsync(long id) =>
         await db.Engagements
             .Where(e => e.EngagementId == id)
@@ -75,6 +86,7 @@ public class EngagementService(AppDbContext db) : IEngagementService
                 e.ClientName,
                 e.EngagementDescription,
                 e.EngagementType.Name,
+                e.CommercialModel.Name,
                 e.KickoffDate,
                 e.BillingStartDate,
                 e.Status.StatusName))
@@ -93,6 +105,13 @@ public class EngagementService(AppDbContext db) : IEngagementService
                 throw new InvalidEngagementTypeException(request.EngagementTypeId.Value);
 
             engagement.EngagementTypeId = request.EngagementTypeId.Value;
+        }
+        if (request.CommercialModelId is not null)
+        {
+            if (!await db.CommercialModels.AnyAsync(m => m.Id == request.CommercialModelId.Value))
+                throw new InvalidCommercialModelException(request.CommercialModelId.Value);
+
+            engagement.CommercialModelId = request.CommercialModelId.Value;
         }
         if (request.KickoffDate is not null) engagement.KickoffDate = request.KickoffDate.Value;
         if (request.BillingStartDate is not null) engagement.BillingStartDate = request.BillingStartDate;
