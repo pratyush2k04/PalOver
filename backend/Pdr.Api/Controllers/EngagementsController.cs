@@ -34,8 +34,7 @@ public class EngagementsController(IEngagementService engagementService) : Contr
     }
 
     [HttpPost("mark-sow-signed")]
-    // TODO: restore once the auth scheme (teammate's work) is merged
-    // [Authorize(Roles = "Presales")]
+    [Authorize(Roles = "Pre Sales")]
     public async Task<ActionResult<MarkSowSignedResponse>> MarkSowSigned(MarkSowSignedRequest request)
     {
         try
