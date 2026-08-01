@@ -9,4 +9,5 @@ public interface IEngagementService
     Task<IEnumerable<CommercialModelDto>> GetCommercialModelsAsync();
     Task<EngagementInfoDto?> GetEngagementInfoAsync(long id);
     Task<bool> EditEngagementAsync(long id, EditEngagementRequest request);
+    Task<PmEngagementListResponse> GetMyEngagementsAsync(string sortBy);
 }
