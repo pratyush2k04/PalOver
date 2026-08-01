@@ -8,12 +8,13 @@
     </div>
 
     <div class="current-draft__actions">
-      <button type="button" mat-stroked-button (click)="onAddItem()">
-        <mat-icon>add</mat-icon>
-        Add Item
-      </button>
-      <button type="button" mat-flat-button color="primary" (click)="onPublish()" [disabled]="!draft()">
-        <mat-icon>publish</mat-icon>
+      <button type="button" class="app-button app-button--stroked" (click)="onAddItem()">Add Item</button>
+      <button
+        type="button"
+        class="app-button app-button--flat"
+        (click)="onPublish()"
+        [disabled]="!draft()"
+      >
         Publish Version
       </button>
     </div>
@@ -34,16 +35,20 @@
         <span class="current-draft__hint">Drag to reorder</span>
       </div>
 
-      <div
-        class="current-draft__list"
-        cdkDropList
-        (cdkDropListDropped)="onDrop($event)"
-      >
+      <div class="current-draft__list">
         @for (item of activeItems(); track item.id) {
-          <div class="current-draft__row" cdkDrag>
-            <div class="current-draft__drag-handle" cdkDragHandle>
-              <mat-icon>drag_indicator</mat-icon>
-            </div>
+          <div
+            class="current-draft__row"
+            [class.current-draft__row--dragging]="draggedItemId() === item.id"
+            [class.current-draft__row--drag-over]="dragOverItemId() === item.id"
+            draggable="true"
+            (dragstart)="onDragStart(item)"
+            (dragenter)="onDragEnter(item)"
+            (dragover)="$event.preventDefault()"
+            (dragend)="onDragEnd()"
+            (drop)="onDrop(item)"
+          >
+            <div class="current-draft__drag-handle">&#9776;</div>
 
             <div class="current-draft__row-body">
               <div class="current-draft__row-title">
@@ -59,11 +64,11 @@
             </div>
 
             <div class="current-draft__row-actions">
-              <button type="button" mat-icon-button (click)="onEditItem(item)" aria-label="Edit item">
-                <mat-icon>edit</mat-icon>
+              <button type="button" class="app-button app-button--icon" (click)="onEditItem(item)" aria-label="Edit item">
+                &#9998;
               </button>
-              <button type="button" mat-icon-button (click)="onRetireItem(item)" aria-label="Retire item">
-                <mat-icon>archive</mat-icon>
+              <button type="button" class="app-button app-button--icon" (click)="onRetireItem(item)" aria-label="Retire item">
+                &#128451;
               </button>
             </div>
           </div>

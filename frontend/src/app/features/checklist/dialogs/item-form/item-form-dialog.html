@@ -1,39 +1,40 @@
-<h2 mat-dialog-title>{{ isEdit ? 'Edit Item' : 'Add Item' }}</h2>
+<h2 class="app-dialog__title">{{ isEdit ? 'Edit Item' : 'Add Item' }}</h2>
 
 <form [formGroup]="form" (ngSubmit)="onSave()">
-  <mat-dialog-content class="item-form-dialog__content">
-    <mat-form-field appearance="outline" class="item-form-dialog__field">
-      <mat-label>Title</mat-label>
-      <input matInput formControlName="title" required />
+  <div class="app-dialog__content item-form-dialog__content">
+    <div class="app-field">
+      <label for="item-title">Title</label>
+      <input id="item-title" type="text" formControlName="title" required />
       @if (form.controls.title.invalid && form.controls.title.touched) {
-        <mat-error>Title is required.</mat-error>
+        <span class="app-field__error">Title is required.</span>
       }
-    </mat-form-field>
+    </div>
 
-    <mat-form-field appearance="outline" class="item-form-dialog__field">
-      <mat-label>Description</mat-label>
-      <textarea matInput formControlName="description" rows="3"></textarea>
-    </mat-form-field>
+    <div class="app-field">
+      <label for="item-description">Description</label>
+      <textarea id="item-description" formControlName="description" rows="3"></textarea>
+    </div>
 
-    <mat-form-field appearance="outline" class="item-form-dialog__field">
-      <mat-label>Category</mat-label>
-      <mat-select formControlName="categoryId" required>
+    <div class="app-field">
+      <label for="item-category">Category</label>
+      <select id="item-category" formControlName="categoryId" required>
         @for (category of data.categories; track category.id) {
-          <mat-option [value]="category.id">{{ category.categoryName }}</mat-option>
+          <option [value]="category.id">{{ category.categoryName }}</option>
         }
-      </mat-select>
+      </select>
       @if (form.controls.categoryId.invalid && form.controls.categoryId.touched) {
-        <mat-error>Category is required.</mat-error>
+        <span class="app-field__error">Category is required.</span>
       }
-    </mat-form-field>
+    </div>
 
-    <mat-checkbox formControlName="isMandatory" class="item-form-dialog__checkbox">
+    <label class="app-checkbox item-form-dialog__checkbox">
+      <input type="checkbox" formControlName="isMandatory" />
       Mandatory item
-    </mat-checkbox>
-  </mat-dialog-content>
+    </label>
+  </div>
 
-  <mat-dialog-actions align="end">
-    <button type="button" mat-stroked-button (click)="onCancel()">Cancel</button>
-    <button type="submit" mat-flat-button color="primary">{{ isEdit ? 'Save Changes' : 'Add Item' }}</button>
-  </mat-dialog-actions>
+  <div class="app-dialog__actions">
+    <button type="button" class="app-button app-button--stroked" (click)="onCancel()">Cancel</button>
+    <button type="submit" class="app-button app-button--flat">{{ isEdit ? 'Save Changes' : 'Add Item' }}</button>
+  </div>
 </form>

@@ -1,9 +1,6 @@
-import { Component, OnInit, computed, inject } from '@angular/core';
-import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { DialogService } from '../../../shared/dialog/dialog.service';
+import { ToastService } from '../../../shared/toast/toast.service';
 import { LoadingSpinnerComponent } from '../../../shared/loading-spinner/loading-spinner';
 import { ChecklistService } from '../checklist.service';
 import { ChecklistItem, ChecklistItemOrder } from '../checklist.model';
@@ -13,21 +10,14 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../dialogs/confirm/co
 @Component({
   selector: 'app-current-draft',
   standalone: true,
-  imports: [
-    DragDropModule,
-    MatButtonModule,
-    MatIconModule,
-    MatDialogModule,
-    MatSnackBarModule,
-    LoadingSpinnerComponent,
-  ],
+  imports: [LoadingSpinnerComponent],
   templateUrl: './current-draft.html',
   styleUrl: './current-draft.scss',
 })
 export class CurrentDraftComponent implements OnInit {
   private checklistService = inject(ChecklistService);
-  private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
+  private dialog = inject(DialogService);
+  private toast = inject(ToastService);
 
   readonly loading = this.checklistService.draftLoading;
   readonly error = this.checklistService.draftError;
@@ -45,13 +35,16 @@ export class CurrentDraftComponent implements OnInit {
     (this.draft()?.items ?? []).filter((item) => item.isRetired)
   );
 
+  readonly draggedItemId = signal<number | null>(null);
+  readonly dragOverItemId = signal<number | null>(null);
+
   ngOnInit(): void {
     this.checklistService.getCurrentDraft();
     this.checklistService.loadCategories();
   }
 
   private notify(message: string): void {
-    this.snackBar.open(message, 'Dismiss', { duration: 4000 });
+    this.toast.open(message);
   }
 
   private reload(): void {
@@ -59,7 +52,7 @@ export class CurrentDraftComponent implements OnInit {
   }
 
   onAddItem(): void {
-    const nextDisplayOrder = this.activeItems().length + 1;
+    const nextDisplayOrder = 1;
 
     const dialogRef = this.dialog.open<ItemFormDialogComponent, ItemFormDialogData, ItemFormDialogResult>(
       ItemFormDialogComponent,
@@ -82,12 +75,36 @@ export class CurrentDraftComponent implements OnInit {
           displayOrder: nextDisplayOrder,
         })
         .subscribe({
-          next: () => {
-            this.notify('Item added.');
-            this.reload();
-          },
+          next: (createdItem) => this.promoteNewItemToTop(createdItem),
           error: () => this.notify('Unable to add item. Please try again.'),
         });
+    });
+  }
+
+  private promoteNewItemToTop(createdItem: ChecklistItem): void {
+    const existingItems = this.activeItems().filter((item) => item.id !== createdItem.id);
+
+    const orders: ChecklistItemOrder[] = [
+      { itemId: createdItem.id, displayOrder: 1 },
+      ...existingItems.map((item, index) => ({
+        itemId: item.id,
+        displayOrder: index + 2,
+      })),
+      ...this.retiredItems().map((item, index) => ({
+        itemId: item.id,
+        displayOrder: existingItems.length + index + 2,
+      })),
+    ];
+
+    this.checklistService.reorderItems({ items: orders }).subscribe({
+      next: () => {
+        this.notify('Item added.');
+        this.reload();
+      },
+      error: () => {
+        this.notify('Item added, but reordering to top failed.');
+        this.reload();
+      },
     });
   }
 
@@ -146,14 +163,50 @@ export class CurrentDraftComponent implements OnInit {
     });
   }
 
-  onDrop(event: CdkDragDrop<ChecklistItem[]>): void {
-    const items = [...this.activeItems()];
-    moveItemInArray(items, event.previousIndex, event.currentIndex);
+  onDragStart(item: ChecklistItem): void {
+    this.draggedItemId.set(item.id);
+  }
 
-    const orders: ChecklistItemOrder[] = items.map((item, index) => ({
-      itemId: item.id,
-      displayOrder: index + 1,
-    }));
+  onDragEnter(item: ChecklistItem): void {
+    if (this.draggedItemId() !== null && this.draggedItemId() !== item.id) {
+      this.dragOverItemId.set(item.id);
+    }
+  }
+
+  onDragEnd(): void {
+    this.draggedItemId.set(null);
+    this.dragOverItemId.set(null);
+  }
+
+  onDrop(targetItem: ChecklistItem): void {
+    const draggedId = this.draggedItemId();
+    this.draggedItemId.set(null);
+    this.dragOverItemId.set(null);
+
+    if (draggedId === null || draggedId === targetItem.id) {
+      return;
+    }
+
+    const items = [...this.activeItems()];
+    const fromIndex = items.findIndex((item) => item.id === draggedId);
+    const toIndex = items.findIndex((item) => item.id === targetItem.id);
+    if (fromIndex === -1 || toIndex === -1) {
+      return;
+    }
+
+    const [moved] = items.splice(fromIndex, 1);
+    items.splice(toIndex, 0, moved);
+
+    const orders: ChecklistItemOrder[] = [
+      ...items.map((item, index) => ({
+        itemId: item.id,
+        displayOrder: index + 1,
+      })),
+      ...this.retiredItems().map((item, index) => ({
+        itemId: item.id,
+        displayOrder: items.length + index + 1,
+      })),
+    ];
 
     this.checklistService.reorderItems({ items: orders }).subscribe({
       next: () => {

@@ -7,12 +7,7 @@
   &__content {
     display: flex;
     flex-direction: column;
-    gap: 4px;
     min-width: 360px;
-  }
-
-  &__field {
-    width: 100%;
   }
 
   &__checkbox {

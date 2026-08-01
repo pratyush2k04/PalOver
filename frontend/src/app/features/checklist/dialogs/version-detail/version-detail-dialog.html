@@ -1,11 +1,11 @@
-<h2 mat-dialog-title>
+<h2 class="app-dialog__title">
   Version Details
   @if (version(); as v) {
     <span class="version-detail-dialog__badge">{{ v.statusName }} &middot; v{{ v.versionNumber }}</span>
   }
 </h2>
 
-<mat-dialog-content class="version-detail-dialog__content">
+<div class="app-dialog__content version-detail-dialog__content">
   @if (loading()) {
     <app-loading-spinner label="Loading version details..." />
   } @else if (error()) {
@@ -39,8 +39,8 @@
       <div class="version-detail-dialog__empty">This version has no items.</div>
     }
   }
-</mat-dialog-content>
+</div>
 
-<mat-dialog-actions align="end">
-  <button type="button" mat-flat-button color="primary" mat-dialog-close>Close</button>
-</mat-dialog-actions>
+<div class="app-dialog__actions">
+  <button type="button" class="app-button app-button--flat" (click)="onClose()">Close</button>
+</div>

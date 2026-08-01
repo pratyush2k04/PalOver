@@ -1,6 +1,6 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
+import { DialogRef } from '../../../../shared/dialog/dialog-ref';
+import { DIALOG_DATA } from '../../../../shared/dialog/dialog.service';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner';
 import { ChecklistService } from '../../checklist.service';
 import { ChecklistItem, ChecklistVersion } from '../../checklist.model';
@@ -17,13 +17,14 @@ interface CategoryGroup {
 @Component({
   selector: 'app-version-detail-dialog',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule, LoadingSpinnerComponent],
+  imports: [LoadingSpinnerComponent],
   templateUrl: './version-detail-dialog.html',
   styleUrl: './version-detail-dialog.scss',
 })
 export class VersionDetailDialogComponent implements OnInit {
   private checklistService = inject(ChecklistService);
-  readonly data = inject<VersionDetailDialogData>(MAT_DIALOG_DATA);
+  private dialogRef = inject(DialogRef);
+  readonly data = inject<VersionDetailDialogData>(DIALOG_DATA);
 
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
@@ -58,5 +59,9 @@ export class VersionDetailDialogComponent implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  onClose(): void {
+    this.dialogRef.close();
   }
 }
