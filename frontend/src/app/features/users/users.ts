@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserDirectoryService } from '../../services/user-directory';
+import { ToastService } from '../../services/toast';
 import { UserListItem } from '../../models/user.model';
 import { Role } from '../../models/role.model';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
@@ -22,6 +23,7 @@ interface PendingRoleChange {
 })
 export class UsersComponent implements OnInit {
   private userDirectoryService = inject(UserDirectoryService);
+  private toastService = inject(ToastService);
 
   users = signal<UserListItem[]>([]);
   roles = signal<Role[]>([]);
@@ -109,6 +111,7 @@ export class UsersComponent implements OnInit {
         );
         this.isSavingRoleChange.set(false);
         this.pendingChange.set(null);
+        this.toastService.success('Role updated');
       },
       error: () => {
         this.errorMessage.set('Unable to update the role. Please try again.');
