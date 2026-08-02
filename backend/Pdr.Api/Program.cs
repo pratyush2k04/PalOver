@@ -13,7 +13,6 @@ using Pdr.Api.Services;
 using Pdr.Api.Services.Interfaces;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
-using FluentValidation;
 using Pdr.Api.Validators;
 using System.Text;
 

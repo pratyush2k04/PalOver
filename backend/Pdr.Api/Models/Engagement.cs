@@ -6,7 +6,7 @@ namespace Pdr.Api.Models;
 public class Engagement : BaseAuditableEntity
 {
     [Key]
-    public long EngagementId { get; set; }
+    public int EngagementId { get; set; }
 
     [Required]
     [MaxLength(200)]

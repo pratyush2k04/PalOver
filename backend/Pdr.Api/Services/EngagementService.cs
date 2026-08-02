@@ -79,7 +79,7 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
             .Select(m => new CommercialModelDto(m.Id, m.Name))
             .ToListAsync();
 
-    public async Task<EngagementInfoDto?> GetEngagementInfoAsync(long id) =>
+    public async Task<EngagementInfoDto?> GetEngagementInfoAsync(int id) =>
         await db.Engagements
             .Where(e => e.EngagementId == id)
             .Select(e => new EngagementInfoDto(
@@ -93,7 +93,7 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
                 e.Status.StatusName))
             .FirstOrDefaultAsync();
 
-    public async Task<bool> EditEngagementAsync(long id, EditEngagementRequest request)
+    public async Task<bool> EditEngagementAsync(int id, EditEngagementRequest request)
     {
         var engagement = await db.Engagements.FindAsync(id);
         if (engagement is null) return false;
