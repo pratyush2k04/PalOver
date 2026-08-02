@@ -49,11 +49,6 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/home/admin-home/admin-home').then((m) => m.AdminHomeComponent),
       },
-    ],
-  },
-
-  { path: '**', redirectTo: 'login' },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
         path: 'dashboard',
         loadComponent: () =>
@@ -96,5 +91,5 @@ export const routes: Routes = [
     ],
   },
 
-  { path: '**', redirectTo: 'dashboard' },
+  { path: '**', redirectTo: 'login' },
 ];
