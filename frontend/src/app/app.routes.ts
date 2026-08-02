@@ -3,6 +3,7 @@ import { LoginComponent } from './components/login/login';
 import { DashboardComponent } from './components/dashboard/dashboard';
 import { MainLayoutComponent } from './components/main-layout/main-layout';
 import { EngagementsComponent } from './features/engagements/engagements';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -11,6 +12,7 @@ export const routes: Routes = [
   {
     path: '',
     component: MainLayoutComponent,
+    canActivate: [authGuard],
     children: [
       { path: '', redirectTo: 'admin/users', pathMatch: 'full' },
       { path: 'engagements', component: EngagementsComponent },
