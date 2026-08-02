@@ -2,8 +2,8 @@ import { Injectable, inject, signal } from '@angular/core';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from '../../services/auth';
-import { ChecklistService } from '../checklist/checklist.service';
-import { ChecklistCategory, ChecklistVersion } from '../checklist/checklist.model';
+import { ChecklistService } from '../../services/checklist.service';
+import { ChecklistCategory, ChecklistVersion } from '../../models/checklist.model';
 import { DashboardSummary } from './dashboard.model';
 
 // Mocked until the backend exposes an activity/audit log and change-tracking for drafts.

@@ -2,8 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { DialogService } from '../../../shared/dialog/dialog.service';
 import { LoadingSpinnerComponent } from '../../../shared/loading-spinner/loading-spinner';
-import { ChecklistService } from '../checklist.service';
-import { ChecklistVersionSummary } from '../checklist.model';
+import { ChecklistService } from '../../../services/checklist.service';
+import { ChecklistVersionSummary } from '../../../models/checklist.model';
 import {
   VersionDetailDialogComponent,
   VersionDetailDialogData,

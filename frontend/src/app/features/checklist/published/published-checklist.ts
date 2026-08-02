@@ -1,8 +1,8 @@
 import { Component, OnInit, computed, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LoadingSpinnerComponent } from '../../../shared/loading-spinner/loading-spinner';
-import { ChecklistService } from '../checklist.service';
-import { ChecklistItem } from '../checklist.model';
+import { ChecklistService } from '../../../services/checklist.service';
+import { ChecklistItem } from '../../../models/checklist.model';
 
 type SortColumn = 'title' | 'categoryName' | 'isMandatory' | 'isRetired';
 type SortDirection = 'asc' | 'desc';

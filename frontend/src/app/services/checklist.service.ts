@@ -9,7 +9,7 @@ import {
   CreateChecklistItemRequest,
   ReorderChecklistItemsRequest,
   UpdateChecklistItemRequest,
-} from './checklist.model';
+} from '../models/checklist.model';
 
 @Injectable({
   providedIn: 'root',
