@@ -19,13 +19,13 @@
           type="email"
           formControlName="email"
           placeholder="name@company.com"
-          [class.is-invalid]="emailControl?.invalid && (emailControl.touched || emailControl.dirty)"
+          [class.is-invalid]="emailControl?.invalid && (emailControl?.touched || emailControl?.dirty)"
         />
-        @if (emailControl?.invalid && (emailControl.touched || emailControl.dirty)) {
+        @if (emailControl?.invalid && (emailControl?.touched || emailControl?.dirty)) {
           <div class="invalid-feedback">
-            @if (emailControl.errors?.['required']) {
+            @if (emailControl?.errors?.['required']) {
               Email is required.
-            } @else if (emailControl.errors?.['email']) {
+            } @else if (emailControl?.errors?.['email']) {
               Enter a valid work email address.
             }
           </div>
@@ -39,9 +39,9 @@
           type="password"
           formControlName="password"
           placeholder="Enter your password"
-          [class.is-invalid]="passwordControl?.invalid && (passwordControl.touched || passwordControl.dirty)"
+          [class.is-invalid]="passwordControl?.invalid && (passwordControl?.touched || passwordControl?.dirty)"
         />
-        @if (passwordControl?.invalid && (passwordControl.touched || passwordControl.dirty)) {
+        @if (passwordControl?.invalid && (passwordControl?.touched || passwordControl?.dirty)) {
           <div class="invalid-feedback">
             Password is required.
           </div>

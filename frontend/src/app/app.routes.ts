@@ -18,6 +18,13 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', canActivate: [workspaceRedirectGuard], children: [] },
       { path: 'engagements', component: EngagementsComponent },
       {
+        path: 'demo-documents',
+        loadComponent: () =>
+          import('./features/documents/documents-demo/documents-demo.component').then(
+            (m) => m.DocumentsDemoComponent
+          ),
+      },
+      {
         path: 'my-engagements',
         canActivate: [workspaceGuard],
         loadComponent: () =>
