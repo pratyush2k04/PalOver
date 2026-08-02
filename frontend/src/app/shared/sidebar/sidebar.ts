@@ -32,6 +32,7 @@ export class SidebarComponent {
 
   onSignOut(): void {
     this.authService.logout();
+    this.appContext.reset();
     this.router.navigate(['/login']);
   }
 }
