@@ -1,0 +1,70 @@
+<div class="user-directory">
+  <div class="search-bar">
+    <input
+      type="text"
+      placeholder="Search by name or email"
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearchChange()"
+    />
+  </div>
+
+  @if (errorMessage()) {
+    <div class="alert alert-danger" role="alert">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-name">Name</th>
+          <th class="col-email">Email</th>
+          <th class="col-role">Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of users(); track user.id) {
+          <tr>
+            <td class="col-name">
+              <span class="avatar">{{ initials(user.fullName) }}</span>
+              <span class="name">{{ user.fullName }}</span>
+            </td>
+            <td class="col-email">{{ user.email }}</td>
+            <td class="col-role">
+              <select
+                [ngModel]="user.roleId"
+                (ngModelChange)="onRoleSelected(user, $event)"
+              >
+                @for (role of roles(); track role.id) {
+                  <option [value]="role.id">{{ role.name }}</option>
+                }
+              </select>
+            </td>
+          </tr>
+        } @empty {
+          @if (!isLoading()) {
+            <tr>
+              <td colspan="3" class="empty-row">No users found.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+
+    @if (isLoading()) {
+      <app-loading-spinner label="Loading users..." />
+    }
+  </div>
+</div>
+
+@if (pendingChange(); as pending) {
+  <app-confirm-dialog
+    confirmLabel="Confirm"
+    [isBusy]="isSavingRoleChange()"
+    (confirmed)="confirmRoleChange()"
+    (cancelled)="cancelRoleChange()"
+  >
+    Change {{ pending.user.fullName }} from {{ pending.user.roleName }} to {{ pending.newRoleName }}?
+  </app-confirm-dialog>
+}
