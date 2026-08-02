@@ -1,0 +1,12 @@
+<div class="toast-host">
+  @for (toast of toasts(); track toast.id) {
+    <div class="toast-host__toast">
+      <span class="toast-host__message">{{ toast.message }}</span>
+      @if (toast.actionLabel) {
+        <button type="button" class="toast-host__action" (click)="dismiss(toast.id)">
+          {{ toast.actionLabel }}
+        </button>
+      }
+    </div>
+  }
+</div>

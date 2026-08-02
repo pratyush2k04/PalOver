@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth';
 
 interface NavItem {
   label: string;
@@ -13,6 +15,9 @@ interface NavItem {
   styleUrl: './sidebar.scss'
 })
 export class SidebarComponent {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
   readonly navItems: NavItem[] = [
     { label: 'Home', icon: 'home' },
     { label: 'Engagements', icon: 'layers' },
@@ -32,5 +37,10 @@ export class SidebarComponent {
 
   iconGlyph(icon: string): string {
     return this.glyphs[icon] ?? '•';
+  }
+
+  onSignOut(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }
