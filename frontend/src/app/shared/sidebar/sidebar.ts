@@ -1,25 +1,21 @@
-import { Component } from '@angular/core';
-
-interface NavItem {
-  label: string;
-  icon: string;
-  badge?: number | 'dot';
-}
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { AppContextService } from '../../services/app-context';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
+  imports: [RouterLink, RouterLinkActive],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss'
 })
 export class SidebarComponent {
-  readonly navItems: NavItem[] = [
-    { label: 'Home', icon: 'home' },
-    { label: 'Engagements', icon: 'layers' },
-    { label: 'My Handovers', icon: 'clipboard' },
-    { label: 'Alerts', icon: 'bell', badge: 'dot' },
-    { label: 'Profile', icon: 'user' }
-  ];
+  private appContext = inject(AppContextService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  readonly workspace = this.appContext.workspace;
 
   private readonly glyphs: Record<string, string> = {
     home: '⌂',
@@ -32,5 +28,10 @@ export class SidebarComponent {
 
   iconGlyph(icon: string): string {
     return this.glyphs[icon] ?? '•';
+  }
+
+  onSignOut(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }
