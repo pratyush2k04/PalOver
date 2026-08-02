@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
+import { AppContextService } from '../../services/app-context';
 
 @Component({
   selector: 'app-login',
@@ -14,6 +15,7 @@ import { AuthService } from '../../services/auth';
 export class LoginComponent implements OnInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private appContext = inject(AppContextService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
@@ -50,13 +52,12 @@ export class LoginComponent implements OnInit {
     this.errorMessage.set(null);
 
     this.authService.login(this.loginForm.value).subscribe({
-      next: () => {
-        console.log("ih");
+      next: async () => {
+        const context = await this.appContext.initialize();
         this.isLoading.set(false);
-        this.router.navigate(['/dashboard']);
+        this.router.navigateByUrl(context.workspace.route);
       },
       error: (err) => {
-        console.log("hi");
         this.isLoading.set(false);
         if (err.status === 401 && err.error?.message) {
           this.errorMessage.set(err.error.message);

@@ -1,20 +1,30 @@
-@Pdr.Api_HostAddress = http://localhost:5000
+@hostname = localhost
+@port = 7244
+@host = https://{{hostname}}:{{port}}
+@contentType = application/json
 
-### 1. Successful Login (Project Manager)
-POST {{Pdr.Api_HostAddress}}/api/auth/login
-Content-Type: application/json
+##############################################################
+######################## LOGIN ###############################
+##############################################################
 
+### Login as Admin
+POST {{host}}/api/auth/login
+Content-Type: {{contentType}}
 {
-  "email": "pm@company.com",
+  "email": "admin@company.com",
   "password": "Password@123"
 }
 
-### 2. Successful Login (Admin User)
-POST {{Pdr.Api_HostAddress}}/api/auth/login
-Content-Type: application/json
+###
+
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1Iiwicm9sZSI6WyJMZWFkZXJzaGlwIiwiTGVhZGVyc2hpcCJdLCJlbWFpbCI6ImFkbWluQGNvbXBhbnkuY29tIiwiZnVsbG5hbWUiOiJBZG1pbiBVc2VyIiwiaXNBZG1pbiI6InRydWUiLCJuYmYiOjE3ODU1ODEwMzAsImV4cCI6MTc4NTU4MjgzMCwiaWF0IjoxNzg1NTgxMDMwLCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.7yshdqHlAWComq5pleIAmLvG60175cMQd4VLb-QhhQM
+
+### Login as Project Manager
+POST {{host}}/api/auth/login
+Content-Type: {{contentType}}
 
 {
-  "email": "admin@company.com",
+  "email": "leadership@company.com",
   "password": "Password@123"
 }
 
@@ -77,3 +87,138 @@ Authorization: Bearer {{token}}
 # Replace '1' with a valid document ID
 DELETE {{Pdr.Api_HostAddress}}/api/documents/1
 Authorization: Bearer {{token}}
+###
+
+@pmToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0Iiwicm9sZSI6WyJMZWFkZXJzaGlwIiwiTGVhZGVyc2hpcCJdLCJlbWFpbCI6ImxlYWRlcnNoaXBAY29tcGFueS5jb20iLCJmdWxsbmFtZSI6Ik5laGEgU2hhcm1hIiwiaXNBZG1pbiI6ImZhbHNlIiwibmJmIjoxNzg1NTgxMjA3LCJleHAiOjE3ODU1ODMwMDcsImlhdCI6MTc4NTU4MTIwNywiaXNzIjoiUGRyQXBpIiwiYXVkIjoiUGRyV2ViIn0.D50Kv5KK5zIP_lKBJ1guGOqUzYHrCv8uHwGm6HHtktk
+
+##############################################################
+#################### ADMIN ENDPOINTS #########################
+##############################################################
+
+### Admin Get Home
+GET {{host}}/api/home
+Authorization: Bearer {{adminToken}}
+Accept: application/json
+
+### Non Admin Get Home
+GET {{host}}/api/home
+Authorization: Bearer {{pmToken}}
+Accept: application/json
+
+### Current Draft
+GET {{host}}/api/checklist/current-draft
+Authorization: Bearer {{adminToken}}
+
+
+### Published Version
+GET {{host}}/api/checklist/published
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Version History
+GET {{host}}/api/checklist/versions
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Version By Id
+GET {{host}}/api/checklist/versions/2
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Categories
+GET {{host}}/api/checklist/categories
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Create Item
+POST {{host}}/api/checklist/items
+Authorization: Bearer {{adminToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Conduct Kickoff Meeting",
+  "description": "Conduct the initial project kickoff meeting.",
+  "categoryId": 1,
+  "isMandatory": true,
+  "displayOrder": 1
+}
+
+###
+
+### Update Item
+PUT {{host}}/api/checklist/items/1
+Authorization: Bearer {{adminToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Conduct Project Kickoff Meeting",
+  "description": "Updated description",
+  "categoryId": 1,
+  "isMandatory": true,
+  "displayOrder": 1
+}
+
+###
+
+### Reorder Items
+PUT {{host}}/api/checklist/items/reorder
+Authorization: Bearer {{adminToken}}
+Content-Type: {{contentType}}
+
+{
+  "items": [
+    {
+      "itemId": 1,
+      "displayOrder": 2
+    },
+    {
+      "itemId": 2,
+      "displayOrder": 1
+    }
+  ]
+}
+
+###
+
+### Retire Item
+PUT {{host}}/api/checklist/items/1/retire
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Publish Version
+POST {{host}}/api/checklist/versions/1/publish
+Authorization: Bearer {{adminToken}}
+
+##############################################################
+##################### PM ENDPOINTS ###########################
+##############################################################
+
+### Published Version (Should Succeed)
+GET {{host}}/api/checklist/published
+Authorization: Bearer {{pmToken}}
+
+###
+
+### Current Draft (Should Return 403)
+GET {{host}}/api/checklist/current-draft
+Authorization: Bearer {{pmToken}}
+
+##############################################################
+###################### NO TOKEN ##############################
+##############################################################
+
+### Unauthorized
+GET {{host}}/api/checklist/current-draft
+
+##############################################################
+#################### INVALID TOKEN ###########################
+##############################################################
+
+### Invalid JWT
+GET {{host}}/api/checklist/current-draft
+Authorization: Bearer invalid-token

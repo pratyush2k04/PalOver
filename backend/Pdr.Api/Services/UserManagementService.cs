@@ -1,5 +1,6 @@
 using Pdr.Api.DTOs.Common;
 using Pdr.Api.DTOs.Users;
+using Pdr.Api.Exceptions;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;

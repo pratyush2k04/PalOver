@@ -1,0 +1,40 @@
+<h2 class="app-dialog__title">{{ isEdit ? 'Edit Item' : 'Add Item' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSave()">
+  <div class="app-dialog__content item-form-dialog__content">
+    <div class="app-field">
+      <label for="item-title">Title</label>
+      <input id="item-title" type="text" formControlName="title" required />
+      @if (form.controls.title.invalid && form.controls.title.touched) {
+        <span class="app-field__error">Title is required.</span>
+      }
+    </div>
+
+    <div class="app-field">
+      <label for="item-description">Description</label>
+      <textarea id="item-description" formControlName="description" rows="3"></textarea>
+    </div>
+
+    <div class="app-field">
+      <label for="item-category">Category</label>
+      <select id="item-category" formControlName="categoryId" required>
+        @for (category of data.categories; track category.id) {
+          <option [value]="category.id">{{ category.categoryName }}</option>
+        }
+      </select>
+      @if (form.controls.categoryId.invalid && form.controls.categoryId.touched) {
+        <span class="app-field__error">Category is required.</span>
+      }
+    </div>
+
+    <label class="app-checkbox item-form-dialog__checkbox">
+      <input type="checkbox" formControlName="isMandatory" />
+      Mandatory item
+    </label>
+  </div>
+
+  <div class="app-dialog__actions">
+    <button type="button" class="app-button app-button--stroked" (click)="onCancel()">Cancel</button>
+    <button type="submit" class="app-button app-button--flat">{{ isEdit ? 'Save Changes' : 'Add Item' }}</button>
+  </div>
+</form>

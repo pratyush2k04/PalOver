@@ -37,6 +37,11 @@ yarn-error.log
 testem.log
 /typings
 __screenshots__/
+image (1).png
+test.pdf
+backend/Pdr.Api/Uploads/
+Re_ pdr-app _ Feature_645 login page (!5).eml
+
 
 # System files
 .DS_Store
