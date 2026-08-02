@@ -4,16 +4,13 @@
   </div>
 
   <nav class="nav-items">
-    @for (item of navItems; track item.label) {
-      <div class="nav-item" [class.active]="item.label === 'My Handovers'">
+    @if (workspace(); as ws) {
+      <a class="nav-item" [routerLink]="ws.route" routerLinkActive="active">
         <div class="icon-wrapper">
-          <span class="icon">{{ iconGlyph(item.icon) }}</span>
-          @if (item.badge === 'dot') {
-            <span class="badge-dot"></span>
-          }
+          <span class="icon">{{ iconGlyph('home') }}</span>
         </div>
-        <span class="label">{{ item.label }}</span>
-      </div>
+        <span class="label">{{ ws.title }}</span>
+      </a>
     }
   </nav>
 

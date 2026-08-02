@@ -4,21 +4,18 @@
     <input type="text" placeholder="Search engagements, documents, people, checklist items..." />
   </div>
 
-  <div class="header-actions">
-    <div class="notification-button">
-      <span class="bell-icon">🔔</span>
-      @if (notificationCount > 0) {
-        <span class="notification-badge">{{ notificationCount }}</span>
-      }
-    </div>
+  @if (user(); as currentUser) {
+    <div class="header-actions">
+      <div class="welcome-message">{{ workspace()?.welcomeMessage }}</div>
 
-    <div class="user-info">
-      <span class="avatar">{{ initials(userName) }}</span>
-      <div class="user-text">
-        <span class="user-name">{{ userName }}</span>
-        <span class="user-role">{{ userRole }}</span>
+      <div class="user-info">
+        <span class="avatar">{{ initials(currentUser.fullName) }}</span>
+        <div class="user-text">
+          <span class="user-name">{{ currentUser.fullName }}</span>
+          <span class="user-role">{{ currentUser.role }}</span>
+        </div>
+        <span class="chevron">⌄</span>
       </div>
-      <span class="chevron">⌄</span>
     </div>
-  </div>
+  }
 </header>
