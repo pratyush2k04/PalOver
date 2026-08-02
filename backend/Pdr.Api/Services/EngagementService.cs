@@ -3,6 +3,7 @@ using Pdr.Api.Data;
 using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
+using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
@@ -11,6 +12,8 @@ namespace Pdr.Api.Services;
 public class EngagementService(AppDbContext db, IEngagementRepository engagementRepository, ICurrentUserService currentUserService) : IEngagementService
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
+    private const string ProjectManagerRole = "Project Management";
+    private const string TechLeadRole = "Tech Lead";
 
     public async Task<MarkSowSignedResponse> MarkSowSignedAsync(MarkSowSignedRequest request)
     {
@@ -140,5 +143,56 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
             .ToList();
 
         return new PmEngagementListResponse(items);
+    }
+    //assign
+
+    public async Task<EngagementOwnersDto> GetEngagementOwnersAsync(long engagementId)
+    {
+        if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
+            throw new EngagementNotFoundException(engagementId);
+
+        var assignments = await engagementRepository.GetAssignmentsAsync(engagementId);
+        return BuildOwnersDto(assignments);
+    }
+    
+
+    public async Task<EngagementOwnersDto> AssignProjectManagerAsync(long engagementId, int userId) =>
+        await AssignOwnerAsync(engagementId, userId, ProjectManagerRole);
+
+    public async Task<EngagementOwnersDto> AssignTechLeadAsync(long engagementId, int userId) =>
+        await AssignOwnerAsync(engagementId, userId, TechLeadRole);
+
+    private async Task<EngagementOwnersDto> AssignOwnerAsync(long engagementId, int userId, string requiredRole)
+    {
+        if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
+            throw new EngagementNotFoundException(engagementId);
+
+        var user = await db.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == userId)
+            ?? throw new UserNotFoundException(userId);
+
+        if (user.Role.Name != requiredRole)
+            throw new InvalidOwnerRoleException(userId, requiredRole);
+
+        var existingAssignment = await engagementRepository.GetAssignmentByRoleAsync(engagementId, requiredRole);
+        if (existingAssignment is not null)
+        {
+            if (existingAssignment.UserId == userId) return await GetEngagementOwnersAsync(engagementId);
+            await engagementRepository.RemoveAssignmentAsync(existingAssignment);
+        }
+
+        await engagementRepository.AddAssignmentAsync(engagementId, userId);
+        return await GetEngagementOwnersAsync(engagementId);
+    }
+
+    private static EngagementOwnersDto BuildOwnersDto(List<EngagementAssignment> assignments)
+    {
+        var pm = assignments.FirstOrDefault(a => a.User.Role.Name == ProjectManagerRole);
+        var techLead = assignments.FirstOrDefault(a => a.User.Role.Name == TechLeadRole);
+
+        return new EngagementOwnersDto(
+            pm?.UserId,
+            pm?.User.FullName,
+            techLead?.UserId,
+            techLead?.User.FullName);
     }
 }
