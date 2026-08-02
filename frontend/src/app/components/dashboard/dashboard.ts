@@ -1,28 +1,24 @@
-import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { AuthService } from '../../services/auth';
+import { DashboardService } from '../../features/dashboard/dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  template: `
-    <div style="padding: 2.5rem; text-align: center; font-family: system-ui, sans-serif;">
-      <h2>Dashboard Placeholder</h2>
-      <p>Authentication successful. You have reached the dashboard.</p>
-      <button 
-        (click)="onLogout()" 
-        style="margin-top: 1.5rem; padding: 0.6rem 1.2rem; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">
-        Sign Out
-      </button>
-    </div>
-  `
+  templateUrl: './dashboard.html',
+  styleUrl: './dashboard.scss',
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   private authService = inject(AuthService);
-  private router = inject(Router);
+  private dashboardService = inject(DashboardService);
 
-  onLogout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+  readonly loading = this.dashboardService.loading;
+  readonly error = this.dashboardService.error;
+  readonly summary = this.dashboardService.summary;
+
+  readonly userFullName = computed(() => this.authService.currentUser()?.fullName || 'there');
+
+  ngOnInit(): void {
+    this.dashboardService.loadSummary();
   }
 }

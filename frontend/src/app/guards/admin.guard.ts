@@ -13,7 +13,7 @@ export const adminGuard: CanActivateFn = () => {
   if (!authService.isLoggedIn()) {
     router.navigate(['/login']);
   } else {
-    router.navigate(['/dashboard']);
+    router.navigate(['/access-denied']);
   }
 
   return false;

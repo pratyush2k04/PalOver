@@ -1,0 +1,16 @@
+:host {
+  display: block;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.item-form-dialog {
+  &__content {
+    display: flex;
+    flex-direction: column;
+    min-width: 360px;
+  }
+
+  &__checkbox {
+    margin: 4px 0 12px;
+  }
+}
