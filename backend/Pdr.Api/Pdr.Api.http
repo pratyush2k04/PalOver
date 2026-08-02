@@ -28,5 +28,52 @@ Content-Type: application/json
 }
 
 ### 4. Logout Test
-POST {{Pdr.Api_HostAddress}}/api/auth/logout
-Content-Type: application/json
+# POST {{Pdr.Api_HostAddress}}/api/auth/logout
+# Content-Type: application/json
+
+###
+# ----------------------------------------------------
+# DOCUMENT REPOSITORY ENDPOINTS
+# Ensure you copy a valid JWT token from a login response 
+# and paste it here to test the authenticated endpoints.
+# ----------------------------------------------------
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwicm9sZSI6WyJQcm9qZWN0IE1hbmFnZW1lbnQiLCJQcm9qZWN0IE1hbmFnZW1lbnQiXSwiZW1haWwiOiJwbUBjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiQXNoYSBSYW8iLCJpc0FkbWluIjoiZmFsc2UiLCJuYmYiOjE3ODU0OTUyMjUsImV4cCI6MTc4NTQ5NzAyNSwiaWF0IjoxNzg1NDk1MjI1LCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.zu5HsxSEUimPNbcq8LLZ6ShL3QkZln_IxVl8yW3kykM
+
+### 5. Get Document Categories
+GET {{Pdr.Api_HostAddress}}/api/documents/categories
+Authorization: Bearer {{token}}
+
+### 6. Get Engagement Documents
+GET {{Pdr.Api_HostAddress}}/api/documents/engagement/1
+Authorization: Bearer {{token}}
+
+### 7. Upload Document (Multipart Form Data)
+# Note: Ensure you have a 'test.pdf' file located at the root of the pdr-app folder
+POST {{Pdr.Api_HostAddress}}/api/documents/upload
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="dtos[0].EngagementId"
+
+1
+--boundary
+Content-Disposition: form-data; name="dtos[0].CategoryId"
+
+1
+--boundary
+Content-Disposition: form-data; name="dtos[0].File"; filename="test.pdf"
+Content-Type: application/pdf
+
+< ../../../test.pdf
+--boundary--
+
+### 8. Download Document
+# Replace '1' with a valid document ID returned from upload or list
+GET {{Pdr.Api_HostAddress}}/api/documents/1/download
+Authorization: Bearer {{token}}
+
+### 9. Delete Document
+# Replace '1' with a valid document ID
+DELETE {{Pdr.Api_HostAddress}}/api/documents/1
+Authorization: Bearer {{token}}

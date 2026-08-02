@@ -7,6 +7,7 @@ using Pdr.Api.Models.LoginEntity;               // Resolves 'Role' and 'User'
 using Pdr.Api.Models.EngagementAssignment;       // Resolves 'EngagementAssignment'
 using Pdr.Api.Models.MasterChecklist;
 
+using Pdr.Api.Models.Documents;
 //using System.Reflection;
 
 namespace Pdr.Api.Data;
@@ -35,6 +36,10 @@ public class AppDbContext : DbContext
     public DbSet<ChecklistVersion> ChecklistVersions => Set<ChecklistVersion>();
     public DbSet<ChecklistItem> ChecklistItems => Set<ChecklistItem>();
 
+    // Documents
+    public DbSet<DocumentCategory> DocumentCategories => Set<DocumentCategory>();
+    public DbSet<Document> Documents => Set<Document>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -44,6 +49,8 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new EngagementAssignmentConfiguration());
         modelBuilder.ApplyConfiguration(new ChecklistCategoryConfiguration());
         modelBuilder.ApplyConfiguration(new ChecklistStatusConfiguration());
+        modelBuilder.ApplyConfiguration(new DocumentCategoryConfiguration());
+        modelBuilder.ApplyConfiguration(new DocumentConfiguration());
 
         // Global Query Filters (Soft Delete)
         modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);

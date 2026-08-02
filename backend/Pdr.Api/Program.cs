@@ -12,6 +12,8 @@ using Pdr.Api.Services;
 using Pdr.Api.Services.Interfaces;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
+using FluentValidation;
+using Pdr.Api.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
  
@@ -32,9 +34,15 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IEngagementService, EngagementService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
+
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserManagementService, UserManagementService>();
+builder.Services.AddScoped<IDocumentService, DocumentService>();
+
+// Register FluentValidation Validators
+builder.Services.AddValidatorsFromAssemblyContaining<DocumentUploadDtoValidator>();
 
 // JWT Authentication
 var secretKey = builder.Configuration["JwtSettings:SecretKey"] 
@@ -76,7 +84,6 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
-
 
     if (!db.EngagementTypes.Any())
     {
