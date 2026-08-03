@@ -46,11 +46,11 @@ export class EngagementsComponent implements OnInit {
   engagementForm: FormGroup = this.fb.group(
     {
       clientName: [''],
-      engagementDescription: [''],
+      engagementDescription: ['', [Validators.required]],
       engagementTypeId: [null, [Validators.required]],
       commercialModelId: [null, [Validators.required]],
       kickoffDate: ['', [Validators.required]],
-      billingStartDate: ['']
+      billingStartDate: ['', [Validators.required]]
     },
     { validators: billingNotBeforeKickoffValidator }
   );
@@ -81,6 +81,10 @@ export class EngagementsComponent implements OnInit {
 
   get commercialModelIdControl() {
     return this.engagementForm.get('commercialModelId');
+  }
+
+  get engagementDescriptionControl() {
+    return this.engagementForm.get('engagementDescription');
   }
 
   get kickoffDateControl() {
