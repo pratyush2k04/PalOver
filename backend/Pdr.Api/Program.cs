@@ -131,7 +131,14 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
+    try
+    {
+        db.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[Warning] EF Migration skipped or encountered existing schema: {ex.Message}");
+    }
 
     if (!db.EngagementTypes.Any())
     {
