@@ -6,6 +6,7 @@ using Pdr.Api.Models;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Models.MasterChecklist;
+using Pdr.Api.Models.Handover;
 
 namespace Pdr.Api.Data;
 
@@ -14,6 +15,12 @@ public class AppDbContext : DbContext
     public DbSet<Engagement> Engagements => Set<Engagement>();
     public DbSet<EngagementStatus> EngagementStatuses => Set<EngagementStatus>();
     public DbSet<EngagementType> EngagementTypes => Set<EngagementType>();
+    
+    // Handover entities
+    public DbSet<HandoverInfo> HandoverInfos => Set<HandoverInfo>();
+    public DbSet<Commitment> Commitments => Set<Commitment>();
+    public DbSet<CommitmentType> CommitmentTypes => Set<CommitmentType>();
+    public DbSet<HandoverStatus> HandoverStatuses => Set<HandoverStatus>();
     private readonly IHttpContextAccessor? _httpContextAccessor;
 
     public AppDbContext(
@@ -43,6 +50,12 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new EngagementAssignmentConfiguration());
         modelBuilder.ApplyConfiguration(new ChecklistCategoryConfiguration());
         modelBuilder.ApplyConfiguration(new ChecklistStatusConfiguration());
+        
+        // Handover Configuration
+        modelBuilder.ApplyConfiguration(new HandoverInfoConfiguration());
+        modelBuilder.ApplyConfiguration(new CommitmentConfiguration());
+        modelBuilder.ApplyConfiguration(new CommitmentTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new HandoverStatusConfiguration());
 
         // Global Query Filters (Soft Delete)
         modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
