@@ -86,6 +86,7 @@ builder.Services.AddScoped<IChecklistRepository, ChecklistRepository>();
 builder.Services.AddScoped<IChecklistService, ChecklistService>();
 builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IHandoverAccessService, Pdr.Api.Services.HandoverAccessService>();
 builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IHandoverService, Pdr.Api.Services.HandoverService>();
+builder.Services.AddScoped<Pdr.Api.Services.Interfaces.ICommitmentService, Pdr.Api.Services.CommitmentService>();
 
 // JWT Authentication
 var secretKey = builder.Configuration["JwtSettings:SecretKey"]
