@@ -77,7 +77,7 @@
 
 @if (showUploadModal()) {
   <app-upload-document-dialog
-    [engagementId]="engagementId()"
+    [engagementId]="engagementId()!"
     (closed)="closeUploadModal()"
     (uploaded)="onDocumentUploaded()"
   ></app-upload-document-dialog>

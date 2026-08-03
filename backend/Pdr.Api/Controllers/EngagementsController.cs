@@ -23,6 +23,7 @@ public class EngagementsController(IEngagementService engagementService) : Contr
     [HttpGet("{id:int}")]
     public async Task<ActionResult<EngagementInfoDto>> GetEngagementInfo(int id)
     {
+        Console.WriteLine("GetEngagementInfo called with id: " + id);
         var info = await engagementService.GetEngagementInfoAsync(id);
         return info is null ? NotFound() : Ok(info);
     }

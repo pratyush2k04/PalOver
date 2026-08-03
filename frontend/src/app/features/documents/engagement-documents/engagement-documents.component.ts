@@ -1,13 +1,14 @@
 import {
   Component,
-  OnChanges,
   OnInit,
-  SimpleChanges,
   inject,
-  input,
-  signal
+  signal,
+  computed,
+  effect
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { DocumentService } from '../../../services/document.service';
 import { DocumentItem } from '../../../models/document.model';
 import { UploadDocumentDialogComponent } from '../upload-document-dialog/upload-document-dialog.component';
@@ -19,11 +20,16 @@ import { UploadDocumentDialogComponent } from '../upload-document-dialog/upload-
   templateUrl: './engagement-documents.component.html',
   styleUrl: './engagement-documents.component.scss'
 })
-export class EngagementDocumentsComponent implements OnInit, OnChanges {
+export class EngagementDocumentsComponent {
   private documentService = inject(DocumentService);
+  private route = inject(ActivatedRoute);
 
-  /** Signal input for the engagement ID */
-  engagementId = input.required<number>();
+  private parentParamMap = toSignal(this.route.parent!.paramMap);
+  
+  engagementId = computed(() => {
+    const idStr = this.parentParamMap()?.get('id');
+    return idStr ? +idStr : null;
+  });
 
   documents = signal<DocumentItem[]>([]);
   isLoading = signal<boolean>(true);
@@ -31,28 +37,26 @@ export class EngagementDocumentsComponent implements OnInit, OnChanges {
   showUploadModal = signal<boolean>(false);
   downloadingId = signal<number | null>(null);
 
-  ngOnInit(): void {
-    this.loadDocuments();
+  constructor() {
+    effect(() => {
+      const id = this.engagementId();
+      if (id) {
+        this.loadDocuments(id);
+      } else {
+        this.documents.set([]);
+        this.isLoading.set(false);
+      }
+    });
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['engagementId'] && !changes['engagementId'].isFirstChange()) {
-      this.loadDocuments();
-    }
-  }
-
-  loadDocuments(): void {
-    const id = this.engagementId();
-    if (!id) {
-      this.documents.set([]);
-      this.isLoading.set(false);
-      return;
-    }
+  loadDocuments(id?: number): void {
+    const targetId = id ?? this.engagementId();
+    if (!targetId) return;
 
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    this.documentService.getEngagementDocuments(id).subscribe({
+    this.documentService.getEngagementDocuments(targetId).subscribe({
       next: (docs) => {
         this.documents.set(docs);
         this.isLoading.set(false);

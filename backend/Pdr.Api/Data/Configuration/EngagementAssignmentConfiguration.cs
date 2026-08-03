@@ -24,5 +24,12 @@ public class EngagementAssignmentConfiguration : IEntityTypeConfiguration<Engage
                .WithMany(e => e.EngagementAssignments)
                .HasForeignKey(ea => ea.EngagementId)
                .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasData(
+            new EngagementAssignment { UserId = 1, EngagementId = 1 }, // Rahul Verma (Pre Sales) on FinTech Solutions
+            new EngagementAssignment { UserId = 2, EngagementId = 1 }, // Asha Rao (PM) on FinTech Solutions
+            new EngagementAssignment { UserId = 2, EngagementId = 2 }, // Asha Rao (PM) on HealthCare Plus
+            new EngagementAssignment { UserId = 3, EngagementId = 2 }  // Vikram Singh (Tech Lead) on HealthCare Plus
+        );
     }
 }

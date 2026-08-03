@@ -54,6 +54,19 @@ namespace Pdr.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "commitment_types",
+                columns: table => new
+                {
+                    commitment_type_id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                    type = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_commitment_types", x => x.commitment_type_id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "document_categories",
                 columns: table => new
                 {
@@ -90,6 +103,43 @@ namespace Pdr.Api.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_engagement_types", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "handover_info",
+                columns: table => new
+                {
+                    handover_id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                    engagement_id = table.Column<long>(type: "bigint", nullable: false),
+                    status_id = table.Column<int>(type: "integer", nullable: false),
+                    client_background = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
+                    business_problem = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
+                    client_sentiment = table.Column<string>(type: "text", nullable: false),
+                    deal_origin = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
+                    has_no_commitments = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    updated_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_handover_info", x => x.handover_id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "handover_statuses",
+                columns: table => new
+                {
+                    handover_status_id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                    status_name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_handover_statuses", x => x.handover_status_id);
                 });
 
             migrationBuilder.CreateTable(
@@ -135,6 +185,33 @@ namespace Pdr.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "commitments",
+                columns: table => new
+                {
+                    commitment_id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                    handover_id = table.Column<long>(type: "bigint", nullable: false),
+                    description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
+                    commitment_type_id = table.Column<int>(type: "integer", nullable: false),
+                    quantity = table.Column<string>(type: "text", nullable: true),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    updated_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_commitments", x => x.commitment_id);
+                    table.ForeignKey(
+                        name: "FK_commitments_handover_info_handover_id",
+                        column: x => x.handover_id,
+                        principalTable: "handover_info",
+                        principalColumn: "handover_id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "engagements",
                 columns: table => new
                 {
@@ -147,6 +224,7 @@ namespace Pdr.Api.Migrations
                     kickoff_date = table.Column<DateOnly>(type: "date", nullable: false),
                     billing_start_date = table.Column<DateOnly>(type: "date", nullable: true),
                     status_id = table.Column<int>(type: "integer", nullable: false),
+                    HandoverInfoHandoverId = table.Column<long>(type: "bigint", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
                     created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
@@ -174,6 +252,11 @@ namespace Pdr.Api.Migrations
                         principalTable: "engagement_types",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_engagements_handover_info_HandoverInfoHandoverId",
+                        column: x => x.HandoverInfoHandoverId,
+                        principalTable: "handover_info",
+                        principalColumn: "handover_id");
                 });
 
             migrationBuilder.CreateTable(
@@ -334,6 +417,16 @@ namespace Pdr.Api.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "commitment_types",
+                columns: new[] { "commitment_type_id", "type" },
+                values: new object[,]
+                {
+                    { 1, "Delivery Milestone" },
+                    { 2, "Resource Allocation" },
+                    { 3, "Custom Requirement" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "document_categories",
                 columns: new[] { "id", "category_name" },
                 values: new object[,]
@@ -347,6 +440,39 @@ namespace Pdr.Api.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "engagement_statuses",
+                columns: new[] { "status_id", "status_name" },
+                values: new object[,]
+                {
+                    { 1, "KickoffPending" },
+                    { 2, "Active" },
+                    { 3, "Inactive" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "engagement_types",
+                columns: new[] { "id", "name" },
+                values: new object[,]
+                {
+                    { 1, "Greenfield" },
+                    { 2, "Brownfield" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "handover_info",
+                columns: new[] { "handover_id", "business_problem", "client_background", "client_sentiment", "created_at", "created_by", "deal_origin", "engagement_id", "status_id", "updated_at", "updated_by" },
+                values: new object[] { 1L, "They need a modern core banking platform to support new digital initiatives and mobile apps.", "FinTech Solutions is a mid-sized financial institution expanding its digital footprint.", "Excited but cautious about delivery timelines due to past vendor failures.", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Strategic Partner Referral", 1L, 1, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null });
+
+            migrationBuilder.InsertData(
+                table: "handover_statuses",
+                columns: new[] { "handover_status_id", "status_name" },
+                values: new object[,]
+                {
+                    { 1, "Draft" },
+                    { 2, "Submitted" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "roles",
                 columns: new[] { "id", "created_at", "created_by", "name", "updated_at", "updated_by" },
                 values: new object[,]
@@ -355,6 +481,20 @@ namespace Pdr.Api.Migrations
                     { 2, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Project Management", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null },
                     { 3, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Tech Lead", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null },
                     { 4, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Leadership", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "commitments",
+                columns: new[] { "commitment_id", "commitment_type_id", "created_at", "created_by", "description", "handover_id", "quantity", "updated_at", "updated_by" },
+                values: new object[] { 1L, 1, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Delivery of MVP banking module within 3 months of kickoff.", 1L, "1", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null });
+
+            migrationBuilder.InsertData(
+                table: "engagements",
+                columns: new[] { "engagement_id", "billing_start_date", "client_name", "commercial_model_id", "created_at", "created_by", "engagement_description", "engagement_type_id", "HandoverInfoHandoverId", "kickoff_date", "status_id", "updated_at", "updated_by" },
+                values: new object[,]
+                {
+                    { 1, null, "FinTech Solutions", 1, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Core Banking Greenfield Implementation", 1, null, new DateOnly(2026, 8, 15), 1, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null },
+                    { 2, new DateOnly(2026, 7, 1), "HealthCare Plus", 2, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Legacy System Upgrade and Support", 2, null, new DateOnly(2026, 6, 1), 2, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null }
                 });
 
             migrationBuilder.InsertData(
@@ -372,6 +512,17 @@ namespace Pdr.Api.Migrations
                     { 3, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", "techlead@company.com", "Vikram Singh", false, null, "Password@123", 3, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null },
                     { 4, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", "leadership@company.com", "Neha Sharma", false, null, "Password@123", 4, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null },
                     { 5, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", "admin@company.com", "Admin User", true, null, "Password@123", 4, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "engagement_assignments",
+                columns: new[] { "engagement_id", "user_id" },
+                values: new object[,]
+                {
+                    { 1, 1 },
+                    { 1, 2 },
+                    { 2, 2 },
+                    { 2, 3 }
                 });
 
             migrationBuilder.InsertData(
@@ -439,6 +590,11 @@ namespace Pdr.Api.Migrations
                 values: new object[] { 20L, 6L, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, "Review any client-specific security or compliance obligations.", 20, "Confirm security and compliance requirements", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, 1L });
 
             migrationBuilder.CreateIndex(
+                name: "IX_commitments_handover_id",
+                table: "commitments",
+                column: "handover_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_documents_category_id",
                 table: "documents",
                 column: "category_id");
@@ -462,6 +618,11 @@ namespace Pdr.Api.Migrations
                 name: "IX_engagements_engagement_type_id",
                 table: "engagements",
                 column: "engagement_type_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_engagements_HandoverInfoHandoverId",
+                table: "engagements",
+                column: "HandoverInfoHandoverId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_engagements_status_id",
@@ -505,10 +666,19 @@ namespace Pdr.Api.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "commitment_types");
+
+            migrationBuilder.DropTable(
+                name: "commitments");
+
+            migrationBuilder.DropTable(
                 name: "documents");
 
             migrationBuilder.DropTable(
                 name: "engagement_assignments");
+
+            migrationBuilder.DropTable(
+                name: "handover_statuses");
 
             migrationBuilder.DropTable(
                 name: "master_checklist_items");
@@ -536,6 +706,9 @@ namespace Pdr.Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "engagement_types");
+
+            migrationBuilder.DropTable(
+                name: "handover_info");
 
             migrationBuilder.DropTable(
                 name: "roles");

@@ -95,6 +95,7 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
                 e.BillingStartDate,
                 e.Status.StatusName))
             .FirstOrDefaultAsync();
+    
 
     public async Task<bool> EditEngagementAsync(int id, EditEngagementRequest request)
     {
