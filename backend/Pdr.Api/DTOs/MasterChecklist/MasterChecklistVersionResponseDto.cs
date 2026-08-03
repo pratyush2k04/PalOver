@@ -1,6 +1,6 @@
 namespace Pdr.Api.DTOs.MasterChecklist;
 
-public class ChecklistVersionSummaryResponseDto
+public class MasterChecklistVersionResponseDto
 {
     public long Id { get; set; }
 
@@ -10,7 +10,5 @@ public class ChecklistVersionSummaryResponseDto
 
     public required string StatusName { get; set; }
 
-    public DateTime CreatedAt { get; set; }
-
-    public DateTime UpdatedAt { get; set; }
+    public required List<MasterChecklistItemResponseDto> Items { get; set; }
 }

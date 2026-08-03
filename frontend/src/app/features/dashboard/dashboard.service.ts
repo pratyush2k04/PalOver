@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from '../../services/auth';
-import { ChecklistService } from '../../services/checklist.service';
+import { MasterChecklistService } from '../../services/master-checklist.service';
 import { ChecklistCategory, ChecklistVersion } from '../../models/checklist.model';
 import { DashboardSummary } from './dashboard.model';
 
@@ -24,7 +24,7 @@ const MOCK_RECENT_CHECKLIST_UPDATES: DashboardSummary['recentChecklistUpdates'] 
 })
 export class DashboardService {
   private authService = inject(AuthService);
-  private checklistService = inject(ChecklistService);
+  private masterChecklistService = inject(MasterChecklistService);
 
   private readonly loadingSignal = signal(false);
   private readonly errorSignal = signal<string | null>(null);
@@ -41,12 +41,12 @@ export class DashboardService {
     const isAdmin = this.authService.isAdmin();
 
     forkJoin({
-      published: this.checklistService.fetchPublished().pipe(catchError(() => of(null))),
+      published: this.masterChecklistService.fetchPublished().pipe(catchError(() => of(null))),
       draft: isAdmin
-        ? this.checklistService.fetchCurrentDraft().pipe(catchError(() => of(null)))
+        ? this.masterChecklistService.fetchCurrentDraft().pipe(catchError(() => of(null)))
         : of(null),
       categories: isAdmin
-        ? this.checklistService.fetchCategories().pipe(catchError(() => of<ChecklistCategory[]>([])))
+        ? this.masterChecklistService.fetchCategories().pipe(catchError(() => of<ChecklistCategory[]>([])))
         : of<ChecklistCategory[]>([]),
     }).subscribe(({ published, draft, categories }) => {
       const activeVersion: ChecklistVersion | null = draft ?? published;

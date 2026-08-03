@@ -4,9 +4,9 @@ using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Validators;
 
-public class UpdateChecklistItemRequestDtoValidator : AbstractValidator<UpdateChecklistItemRequestDto>
+public class UpdateMasterChecklistItemRequestDtoValidator : AbstractValidator<UpdateChecklistItemRequestDto>
 {
-    public UpdateChecklistItemRequestDtoValidator(IChecklistRepository checklistRepository)
+    public UpdateMasterChecklistItemRequestDtoValidator(IMasterChecklistRepository checklistRepository)
     {
         RuleFor(x => x.Title)
             .NotEmpty().WithMessage("Title is required.");

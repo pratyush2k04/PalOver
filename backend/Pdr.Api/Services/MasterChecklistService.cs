@@ -5,65 +5,65 @@ using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class ChecklistService(IChecklistRepository checklistRepository) : IChecklistService
+public class MasterChecklistService(IMasterChecklistRepository checklistRepository) : IMasterChecklistService
 {
     private const string DraftStatusName = "Draft";
     private const string PublishedStatusName = "Published";
 
-    public async Task<ChecklistVersionResponseDto?> GetCurrentDraftVersionAsync()
+    public async Task<MasterChecklistVersionResponseDto?> GetCurrentDraftVersionAsync()
     {
         var draftVersion = await checklistRepository.GetCurrentDraftVersionAsync();
         return draftVersion is null ? null : MapVersion(draftVersion);
     }
 
-    public async Task<ChecklistVersionResponseDto?> GetPublishedVersionAsync()
+    public async Task<MasterChecklistVersionResponseDto?> GetPublishedVersionAsync()
     {
         var publishedVersion = await checklistRepository.GetPublishedVersionAsync();
         return publishedVersion is null ? null : MapVersion(publishedVersion);
     }
 
-    public async Task<List<ChecklistVersionSummaryResponseDto>> GetVersionHistoryAsync()
+    public async Task<List<MasterChecklistVersionSummaryResponseDto>> GetVersionHistoryAsync()
     {
         var versions = await checklistRepository.GetVersionHistoryAsync();
         return versions.Select(MapVersionSummary).ToList();
     }
 
-    public async Task<ChecklistResultDto<ChecklistVersionResponseDto>> GetVersionByIdAsync(long versionId)
+    public async Task<ChecklistResultDto<MasterChecklistVersionResponseDto>> GetVersionByIdAsync(long versionId)
     {
         var version = await checklistRepository.GetVersionByIdAsync(versionId);
         if (version is null)
         {
-            return ChecklistResultDto<ChecklistVersionResponseDto>.Failure("Checklist version not found.", isNotFound: true);
+            return ChecklistResultDto<MasterChecklistVersionResponseDto>.Failure("Checklist version not found.", isNotFound: true);
         }
 
-        return ChecklistResultDto<ChecklistVersionResponseDto>.Success(MapVersion(version));
+        return ChecklistResultDto<MasterChecklistVersionResponseDto>.Success(MapVersion(version));
     }
 
-    public async Task<List<ChecklistCategoryResponseDto>> GetCategoriesAsync()
+    public async Task<List<MasterChecklistCategoryResponseDto>> GetCategoriesAsync()
     {
         var categories = await checklistRepository.GetCategoriesAsync();
-        return categories.Select(c => new ChecklistCategoryResponseDto
+        return categories.Select(c => new MasterChecklistCategoryResponseDto
         {
             Id = c.Id,
             CategoryName = c.CategoryName
         }).ToList();
     }
 
-    public async Task<ChecklistResultDto<ChecklistItemResponseDto>> CreateChecklistItemAsync(CreateChecklistItemRequestDto request)
+    public async Task<ChecklistResultDto<MasterChecklistItemResponseDto>> CreateChecklistItemAsync(MasterCreateChecklistItemRequestDto request)
     {
         var draftVersion = await checklistRepository.GetCurrentDraftVersionAsync();
         if (draftVersion is null)
         {
-            return ChecklistResultDto<ChecklistItemResponseDto>.Failure("No Draft version exists to add items to.");
+            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure("No Draft version exists to add items to.");
         }
 
         var category = await checklistRepository.GetCategoryByIdAsync(request.CategoryId);
         if (category is null)
         {
-            return ChecklistResultDto<ChecklistItemResponseDto>.Failure("Selected category does not exist.");
+            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure("Selected category does not exist.");
         }
 
-        var item = new ChecklistItem
+        var item = new MasterChecklistItem
         {
             VersionId = draftVersion.Id,
             Title = request.Title,
@@ -77,26 +77,26 @@ public class ChecklistService(IChecklistRepository checklistRepository) : ICheck
         await checklistRepository.AddChecklistItemAsync(item);
 
         item.Category = category;
-        return ChecklistResultDto<ChecklistItemResponseDto>.Success(MapItem(item));
+        return ChecklistResultDto<MasterChecklistItemResponseDto>.Success(MapItem(item));
     }
 
-    public async Task<ChecklistResultDto<ChecklistItemResponseDto>> UpdateChecklistItemAsync(long id, UpdateChecklistItemRequestDto request)
+    public async Task<ChecklistResultDto<MasterChecklistItemResponseDto>> UpdateChecklistItemAsync(long id, UpdateChecklistItemRequestDto request)
     {
         var item = await checklistRepository.GetChecklistItemAsync(id);
         if (item is null)
         {
-            return ChecklistResultDto<ChecklistItemResponseDto>.Failure("Checklist item not found.", isNotFound: true);
+            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure("Checklist item not found.", isNotFound: true);
         }
 
         if (item.Version.Status.StatusName != DraftStatusName)
         {
-            return ChecklistResultDto<ChecklistItemResponseDto>.Failure("Only items on the Draft version can be edited.");
+            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure("Only items on the Draft version can be edited.");
         }
 
         var category = await checklistRepository.GetCategoryByIdAsync(request.CategoryId);
         if (category is null)
         {
-            return ChecklistResultDto<ChecklistItemResponseDto>.Failure("Selected category does not exist.");
+            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure("Selected category does not exist.");
         }
 
         item.Title = request.Title;
@@ -107,33 +107,33 @@ public class ChecklistService(IChecklistRepository checklistRepository) : ICheck
         await checklistRepository.UpdateChecklistItemAsync(item);
 
         item.Category = category;
-        return ChecklistResultDto<ChecklistItemResponseDto>.Success(MapItem(item));
+        return ChecklistResultDto<MasterChecklistItemResponseDto>.Success(MapItem(item));
     }
 
-    public async Task<ChecklistResultDto<ChecklistItemResponseDto>> RetireChecklistItemAsync(long id)
+    public async Task<ChecklistResultDto<MasterChecklistItemResponseDto>> RetireChecklistItemAsync(long id)
     {
         var item = await checklistRepository.GetChecklistItemAsync(id);
         if (item is null)
         {
-            return ChecklistResultDto<ChecklistItemResponseDto>.Failure("Checklist item not found.", isNotFound: true);
+            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure("Checklist item not found.", isNotFound: true);
         }
 
         if (item.Version.Status.StatusName != DraftStatusName)
         {
-            return ChecklistResultDto<ChecklistItemResponseDto>.Failure("Only items on the Draft version can be retired.");
+            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure("Only items on the Draft version can be retired.");
         }
 
         await checklistRepository.RetireChecklistItemAsync(item);
 
-        return ChecklistResultDto<ChecklistItemResponseDto>.Success(MapItem(item));
+        return ChecklistResultDto<MasterChecklistItemResponseDto>.Success(MapItem(item));
     }
 
-    public async Task<ChecklistResultDto<List<ChecklistItemResponseDto>>> ReorderChecklistItemsAsync(ReorderChecklistItemsRequestDto request)
+    public async Task<ChecklistResultDto<List<MasterChecklistItemResponseDto>>> ReorderChecklistItemsAsync(ReorderMasterChecklistItemsRequestDto request)
     {
         var draftVersion = await checklistRepository.GetCurrentDraftVersionAsync();
         if (draftVersion is null)
         {
-            return ChecklistResultDto<List<ChecklistItemResponseDto>>.Failure("No Draft version exists to reorder.");
+            return ChecklistResultDto<List<MasterChecklistItemResponseDto>>.Failure("No Draft version exists to reorder.");
         }
 
         var draftItemIds = draftVersion.Items.Select(i => i.Id).ToHashSet();
@@ -141,17 +141,17 @@ public class ChecklistService(IChecklistRepository checklistRepository) : ICheck
 
         if (requestedIds.Any(itemId => !draftItemIds.Contains(itemId)))
         {
-            return ChecklistResultDto<List<ChecklistItemResponseDto>>.Failure("One or more items do not belong to the current Draft version.");
+            return ChecklistResultDto<List<MasterChecklistItemResponseDto>>.Failure("One or more items do not belong to the current Draft version.");
         }
 
         if (requestedIds.Count != draftItemIds.Count || requestedIds.Distinct().Count() != requestedIds.Count)
         {
-            return ChecklistResultDto<List<ChecklistItemResponseDto>>.Failure("Reorder request must include every item in the current Draft version exactly once.");
+            return ChecklistResultDto<List<MasterChecklistItemResponseDto>>.Failure("Reorder request must include every item in the current Draft version exactly once.");
         }
 
         if (request.Items.Select(i => i.DisplayOrder).Distinct().Count() != request.Items.Count)
         {
-            return ChecklistResultDto<List<ChecklistItemResponseDto>>.Failure("Display order values must be unique.");
+            return ChecklistResultDto<List<MasterChecklistItemResponseDto>>.Failure("Display order values must be unique.");
         }
 
         var orderByItemId = request.Items.ToDictionary(i => i.ItemId, i => i.DisplayOrder);
@@ -167,40 +167,40 @@ public class ChecklistService(IChecklistRepository checklistRepository) : ICheck
         await checklistRepository.ReorderChecklistItemsAsync(itemsToUpdate);
 
         var orderedItems = draftVersion.Items.OrderBy(i => i.DisplayOrder).Select(MapItem).ToList();
-        return ChecklistResultDto<List<ChecklistItemResponseDto>>.Success(orderedItems);
+        return ChecklistResultDto<List<MasterChecklistItemResponseDto>>.Success(orderedItems);
     }
 
-    public async Task<ChecklistResultDto<ChecklistVersionResponseDto>> PublishVersionAsync(long versionId)
+    public async Task<ChecklistResultDto<MasterChecklistVersionResponseDto>> PublishVersionAsync(long versionId)
     {
         var draftVersion = await checklistRepository.GetVersionByIdAsync(versionId);
         if (draftVersion is null)
         {
-            return ChecklistResultDto<ChecklistVersionResponseDto>.Failure("Checklist version not found.", isNotFound: true);
+            return ChecklistResultDto<MasterChecklistVersionResponseDto>.Failure("Checklist version not found.", isNotFound: true);
         }
 
         if (draftVersion.Status.StatusName != DraftStatusName)
         {
-            return ChecklistResultDto<ChecklistVersionResponseDto>.Failure("Only a Draft version can be published.");
+            return ChecklistResultDto<MasterChecklistVersionResponseDto>.Failure("Only a Draft version can be published.");
         }
 
         var publishedStatus = await checklistRepository.GetStatusByNameAsync(PublishedStatusName);
         var draftStatus = await checklistRepository.GetStatusByNameAsync(DraftStatusName);
         if (publishedStatus is null || draftStatus is null)
         {
-            return ChecklistResultDto<ChecklistVersionResponseDto>.Failure("Checklist statuses are not configured correctly.");
+            return ChecklistResultDto<MasterChecklistVersionResponseDto>.Failure("Checklist statuses are not configured correctly.");
         }
 
         draftVersion.StatusId = publishedStatus.Id;
         draftVersion.Status = publishedStatus;
 
-        var newDraftVersion = new ChecklistVersion
+        var newDraftVersion = new MasterChecklistVersion
         {
             VersionNumber = draftVersion.VersionNumber + 1,
             StatusId = draftStatus.Id,
             Status = draftStatus,
             Items = draftVersion.Items
                 .Where(i => !i.IsRetired)
-                .Select(i => new ChecklistItem
+                .Select(i => new MasterChecklistItem
                 {
                     Title = i.Title,
                     Description = i.Description,
@@ -215,12 +215,12 @@ public class ChecklistService(IChecklistRepository checklistRepository) : ICheck
 
         await checklistRepository.PublishVersionAsync(draftVersion, newDraftVersion);
 
-        return ChecklistResultDto<ChecklistVersionResponseDto>.Success(MapVersion(draftVersion));
+        return ChecklistResultDto<MasterChecklistVersionResponseDto>.Success(MapVersion(draftVersion));
     }
 
-    private static ChecklistVersionResponseDto MapVersion(ChecklistVersion version)
+    private static MasterChecklistVersionResponseDto MapVersion(MasterChecklistVersion version)
     {
-        return new ChecklistVersionResponseDto
+        return new MasterChecklistVersionResponseDto
         {
             Id = version.Id,
             VersionNumber = version.VersionNumber,
@@ -230,9 +230,9 @@ public class ChecklistService(IChecklistRepository checklistRepository) : ICheck
         };
     }
 
-    private static ChecklistVersionSummaryResponseDto MapVersionSummary(ChecklistVersion version)
+    private static MasterChecklistVersionSummaryResponseDto MapVersionSummary(MasterChecklistVersion version)
     {
-        return new ChecklistVersionSummaryResponseDto
+        return new MasterChecklistVersionSummaryResponseDto
         {
             Id = version.Id,
             VersionNumber = version.VersionNumber,
@@ -243,9 +243,9 @@ public class ChecklistService(IChecklistRepository checklistRepository) : ICheck
         };
     }
 
-    private static ChecklistItemResponseDto MapItem(ChecklistItem item)
+    private static MasterChecklistItemResponseDto MapItem(MasterChecklistItem item)
     {
-        return new ChecklistItemResponseDto
+        return new MasterChecklistItemResponseDto
         {
             Id = item.Id,
             VersionId = item.VersionId,

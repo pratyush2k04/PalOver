@@ -3,9 +3,9 @@ using Pdr.Api.DTOs.MasterChecklist;
 
 namespace Pdr.Api.Validators;
 
-public class ReorderChecklistItemsRequestDtoValidator : AbstractValidator<ReorderChecklistItemsRequestDto>
+public class ReorderMasterChecklistItemsRequestDtoValidator : AbstractValidator<ReorderMasterChecklistItemsRequestDto>
 {
-    public ReorderChecklistItemsRequestDtoValidator()
+    public ReorderMasterChecklistItemsRequestDtoValidator()
     {
         RuleFor(x => x.Items)
             .NotEmpty().WithMessage("At least one item is required to reorder.");

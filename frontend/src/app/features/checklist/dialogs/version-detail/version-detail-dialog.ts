@@ -2,7 +2,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DialogRef } from '../../../../shared/dialog/dialog-ref';
 import { DIALOG_DATA } from '../../../../shared/dialog/dialog.service';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner';
-import { ChecklistService } from '../../../../services/checklist.service';
+import { MasterChecklistService } from '../../../../services/master-checklist.service';
 import { ChecklistItem, ChecklistVersion } from '../../../../models/checklist.model';
 
 export interface VersionDetailDialogData {
@@ -22,7 +22,7 @@ interface CategoryGroup {
   styleUrl: './version-detail-dialog.scss',
 })
 export class VersionDetailDialogComponent implements OnInit {
-  private checklistService = inject(ChecklistService);
+  private checklistService = inject(MasterChecklistService);
   private dialogRef = inject(DialogRef);
   readonly data = inject<VersionDetailDialogData>(DIALOG_DATA);
 
