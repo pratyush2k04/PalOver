@@ -18,7 +18,11 @@ export const routes: Routes = [
         canActivate: [engagementAccessGuard],
         loadComponent: () => import('./features/engagement-workspace/engagement-workspace.component').then(m => m.EngagementWorkspaceComponent),
         children: [
-          // Handover will be added here in Branch 5
+          { 
+            path: 'handover', 
+            loadComponent: () => import('./features/engagement-workspace/handover/handover.component').then(m => m.HandoverComponent) 
+          },
+          { path: '', redirectTo: 'handover', pathMatch: 'full' }
         ]
       }
     ],

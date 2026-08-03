@@ -1,0 +1,105 @@
+<div class="handover-container" *ngIf="!isLoading">
+  
+  <div class="header">
+    <h2>Pre-Sales to Delivery Handover</h2>
+    <div class="status-badge" [ngClass]="{'submitted': handover?.status === 'Submitted', 'draft': handover?.status !== 'Submitted'}">
+      Status: {{ handover?.status || 'Not Started' }}
+    </div>
+  </div>
+
+  <div *ngIf="message" class="alert" [ngClass]="{'alert-error': isError, 'alert-success': !isError}">
+    {{ message }}
+  </div>
+
+  <fieldset [disabled]="handover?.status === 'Submitted'">
+    
+    <div class="section client-context">
+      <h3>Client Context</h3>
+      
+      <div class="form-group">
+        <label>Client Background (Required)</label>
+        <textarea [(ngModel)]="clientBackground" rows="3" placeholder="Brief history and overview of the client..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Business Problem (Required)</label>
+        <textarea [(ngModel)]="businessProblem" rows="3" placeholder="What core problem are we solving?"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Client Sentiment (Required)</label>
+        <select [(ngModel)]="clientSentiment">
+          <option value="">-- Select Sentiment --</option>
+          <option value="Positive">Positive</option>
+          <option value="Neutral">Neutral</option>
+          <option value="Concerned">Concerned</option>
+          <option value="Hostile">Hostile</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Deal Origin</label>
+        <input type="text" [(ngModel)]="dealOrigin" placeholder="e.g. RFP, Direct Sales, Partner...">
+      </div>
+    </div>
+
+    <div class="section commitments">
+      <h3>Commitments</h3>
+      
+      <div class="checkbox-group">
+        <input type="checkbox" id="noCommitments" [(ngModel)]="hasNoCommitments" (change)="hasNoCommitments ? commitments = [] : null">
+        <label for="noCommitments">This engagement has NO commitments.</label>
+      </div>
+
+      <div *ngIf="!hasNoCommitments" class="commitments-list">
+        <table *ngIf="commitments.length > 0">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Quantity</th>
+              <th *ngIf="handover?.status !== 'Submitted'">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of commitments">
+              <td>{{ c.commitmentTypeId === 1 ? 'Software' : c.commitmentTypeId === 2 ? 'Services' : 'Training' }}</td>
+              <td>{{ c.description }}</td>
+              <td>{{ c.quantity }}</td>
+              <td *ngIf="handover?.status !== 'Submitted'">
+                <button class="btn-danger-sm" (click)="deleteCommitment(c.commitmentId)">Remove</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <div *ngIf="commitments.length === 0" class="empty-state">
+          No commitments added yet.
+        </div>
+
+        <div class="add-commitment-form" *ngIf="handover?.status !== 'Submitted'">
+          <h4>Add New Commitment</h4>
+          <div class="form-row">
+            <select [(ngModel)]="newCommitment.commitmentTypeId">
+              <option *ngFor="let t of commitmentTypes" [value]="t.id">{{ t.name }}</option>
+            </select>
+            <input type="text" [(ngModel)]="newCommitment.description" placeholder="Description (Required)">
+            <input type="text" [(ngModel)]="newCommitment.quantity" placeholder="Quantity/Details">
+            <button class="btn-primary" (click)="addCommitment()">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions" *ngIf="handover?.status !== 'Submitted'">
+      <button class="btn-secondary" (click)="saveDraft()" [disabled]="isSaving">Save Draft</button>
+      <button class="btn-success" (click)="submitHandover()" [disabled]="isSaving">Submit Handover</button>
+    </div>
+
+  </fieldset>
+
+</div>
+
+<div class="loading" *ngIf="isLoading">
+  Loading handover details...
+</div>
