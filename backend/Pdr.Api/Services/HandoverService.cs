@@ -61,4 +61,63 @@ public class HandoverService : IHandoverService
             Commitments = commitments
         };
     }
+
+    public async Task<HandoverInfoDto> SaveHandoverDraftAsync(long engagementId, SaveHandoverDraftRequest request, string userIdStr)
+    {
+        var handover = await _context.HandoverInfos
+            .FirstOrDefaultAsync(h => h.EngagementId == engagementId);
+
+        if (handover == null)
+        {
+            handover = new HandoverInfo
+            {
+                EngagementId = engagementId,
+                StatusId = 1, // Draft
+                CreatedBy = userIdStr,
+                UpdatedBy = userIdStr
+            };
+            _context.HandoverInfos.Add(handover);
+        }
+        else
+        {
+            handover.UpdatedBy = userIdStr;
+        }
+
+        handover.ClientBackground = request.ClientBackground;
+        handover.BusinessProblem = request.BusinessProblem ?? string.Empty;
+        handover.ClientSentiment = request.ClientSentiment ?? string.Empty;
+        handover.DealOrigin = request.DealOrigin;
+        handover.HasNoCommitments = request.HasNoCommitments;
+
+        await _context.SaveChangesAsync();
+
+        return await GetHandoverAsync(engagementId);
+    }
+
+    public async Task<HandoverInfoDto> SubmitHandoverAsync(long engagementId, string userIdStr)
+    {
+        var handover = await _context.HandoverInfos
+            .FirstOrDefaultAsync(h => h.EngagementId == engagementId);
+
+        if (handover == null)
+            throw new System.Exception("Cannot submit a handover that does not exist.");
+
+        if (string.IsNullOrWhiteSpace(handover.BusinessProblem))
+            throw new System.Exception("Business Problem is required to submit.");
+
+        if (string.IsNullOrWhiteSpace(handover.ClientSentiment))
+            throw new System.Exception("Client Sentiment is required to submit.");
+
+        var hasCommitments = await _context.Commitments.AnyAsync(c => c.HandoverId == handover.HandoverId);
+        
+        if (!hasCommitments && !handover.HasNoCommitments)
+            throw new System.Exception("You must either add at least one commitment or explicitly mark 'HasNoCommitments'.");
+
+        handover.StatusId = 2; // Submitted
+        handover.UpdatedBy = userIdStr;
+
+        await _context.SaveChangesAsync();
+
+        return await GetHandoverAsync(engagementId);
+    }
 }

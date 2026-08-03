@@ -37,4 +37,37 @@ public class HandoversController : ControllerBase
         var dto = await _handoverService.GetHandoverAsync(engagementId);
         return Ok(dto);
     }
+
+    [HttpPut("draft")]
+    public async Task<ActionResult<HandoverInfoDto>> SaveDraft(long engagementId, [FromBody] SaveHandoverDraftRequest request)
+    {
+        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "1";
+        if (int.TryParse(userIdStr, out int userId))
+        {
+            await _accessService.CanAccessHandoverAsync(engagementId, userId);
+        }
+
+        var dto = await _handoverService.SaveHandoverDraftAsync(engagementId, request, userIdStr);
+        return Ok(dto);
+    }
+
+    [HttpPost("submit")]
+    public async Task<ActionResult<HandoverInfoDto>> Submit(long engagementId)
+    {
+        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "1";
+        if (int.TryParse(userIdStr, out int userId))
+        {
+            await _accessService.CanAccessHandoverAsync(engagementId, userId);
+        }
+
+        try
+        {
+            var dto = await _handoverService.SubmitHandoverAsync(engagementId, userIdStr);
+            return Ok(dto);
+        }
+        catch (System.Exception ex) when (ex.Message.Contains("required") || ex.Message.Contains("must either"))
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
 }
