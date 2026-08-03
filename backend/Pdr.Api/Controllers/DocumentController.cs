@@ -17,6 +17,8 @@ public class DocumentController(
 {
     [HttpPost("upload")]
     [Consumes("multipart/form-data")]
+    [RequestSizeLimit(50 * 1024 * 1024)]
+    [RequestFormLimits(MultipartBodyLengthLimit = 50 * 1024 * 1024)]
     public async Task<IActionResult> UploadDocuments([FromForm] List<DocumentUploadDto> dtos)
     {
         if (dtos == null || dtos.Count == 0)

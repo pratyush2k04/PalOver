@@ -97,6 +97,20 @@ export class UploadDocumentDialogComponent implements OnInit {
     const finalName = this.simulatedFileName().trim() || file.name;
     const finalFile = new File([file], finalName, { type: file.type });
 
+    // Client-side pre-validation for allowed extension & size
+    const allowedExtensions = ['.pdf', '.docx', '.xlsx', '.pptx', '.png', '.jpg', '.jpeg', '.msg', '.eml'];
+    const ext = finalName.includes('.') ? finalName.substring(finalName.lastIndexOf('.')).toLowerCase() : '';
+    if (!ext || !allowedExtensions.includes(ext)) {
+      this.errorMessage.set('That file type is not supported.');
+      return;
+    }
+
+    const maxFileSizeBytes = 50 * 1024 * 1024; // 50MB
+    if (finalFile.size > maxFileSizeBytes) {
+      this.errorMessage.set('Files must be 50 MB or smaller.');
+      return;
+    }
+
     this.isUploading.set(true);
     this.errorMessage.set(null);
 
@@ -113,9 +127,20 @@ export class UploadDocumentDialogComponent implements OnInit {
       },
       error: (err) => {
         this.isUploading.set(false);
-        const msg = typeof err.error === 'string' ? err.error : err.error?.message || 'Failed to upload document.';
-        this.errorMessage.set(msg);
+        this.errorMessage.set(this.extractErrorMessage(err));
       }
     });
+  }
+
+  private extractErrorMessage(err: any): string {
+    if (err?.name === 'TypeError' || err?.status === 0 || (typeof err?.message === 'string' && err.message.toLowerCase().includes('fetch'))) {
+      return 'File exceeds server upload size limit or network connection failed.';
+    }
+
+    const body = err?.error;
+    if (Array.isArray(body)) {
+      return body.flatMap((r: any) => r.errors || []).join(', ') || 'Failed to upload document.';
+    }
+    return body?.message || (typeof body === 'string' ? body : 'Failed to upload document.');
   }
 }
