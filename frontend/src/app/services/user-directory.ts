@@ -22,6 +22,10 @@ export class UserDirectoryService {
     return this.http.get<Role[]>('/api/roles');
   }
 
+  getUsersInRole(roleId: number): Observable<UserListItem[]> {
+    return this.http.get<UserListItem[]>(`/api/roles/${roleId}/users`);
+  }
+
   changeUserRole(userId: number, newRoleId: number): Observable<UserListItem> {
     return this.http.patch<UserListItem>(`/api/users/${userId}/role`, { newRoleId });
   }

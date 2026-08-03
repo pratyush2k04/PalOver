@@ -3,6 +3,7 @@ import { LoginComponent } from './components/login/login';
 import { DashboardComponent } from './components/dashboard/dashboard';
 import { MainLayoutComponent } from './components/main-layout/main-layout';
 import { EngagementsComponent } from './features/engagements/engagements';
+import { EngagementDetailComponent } from './features/engagement-detail/engagement-detail';
 import { UsersComponent } from './features/users/users';
 
 export const routes: Routes = [
@@ -14,8 +15,9 @@ export const routes: Routes = [
     component: MainLayoutComponent,
     children: [
       { path: '', redirectTo: 'admin/users', pathMatch: 'full' },
-      { path: 'admin/users', component: UsersComponent },//change made for users 
+      { path: 'admin/users', component: UsersComponent },//change made for users
       { path: 'engagements', component: EngagementsComponent },
+      { path: 'engagements/:id', component: EngagementDetailComponent },//change made for leader to assign pm-tl
     ],
   },
 ];
