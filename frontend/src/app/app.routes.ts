@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login';
 import { MainLayoutComponent } from './components/main-layout/main-layout';
+import { engagementAccessGuard } from './core/guards/engagement-access.guard';
 import { EngagementsComponent } from './features/engagements/engagements';
 import { adminGuard } from './guards/admin.guard';
 import { authGuard } from './guards/auth.guard';
@@ -19,13 +20,7 @@ export const routes: Routes = [
     children: [
       { path: '', pathMatch: 'full', canActivate: [workspaceRedirectGuard], children: [] },
       { path: 'engagements', component: EngagementsComponent },
-      {
-        path: 'demo-documents',
-        loadComponent: () =>
-          import('./features/documents/documents-demo/documents-demo.component').then(
-            (m) => m.DocumentsDemoComponent
-          ),
-      },
+
       {
         path: 'engagement-dashboard',
         canActivate: [workspaceGuard],
@@ -101,6 +96,22 @@ export const routes: Routes = [
       { path: 'admin/users', component: UsersComponent },//change made for users
       { path: 'engagements', component: EngagementsComponent },
       { path: 'engagements/:id', component: EngagementDetailComponent },//change made for leader to assign pm-tl
+      {
+        path: 'engagements/:id/workspace',
+        //canActivate: [engagementAccessGuard],
+        loadComponent: () => import('./features/engagement-workspace/engagement-workspace.component').then(m => m.EngagementWorkspaceComponent),
+        children: [
+          { 
+            path: 'handover', 
+            loadComponent: () => import('./features/engagement-workspace/handover/handover.component').then(m => m.HandoverComponent) 
+          },
+          { 
+            path: 'documents', 
+            loadComponent: () => import('./features/documents/engagement-documents/engagement-documents.component').then(m => m.EngagementDocumentsComponent) 
+          },
+          { path: '', redirectTo: 'handover', pathMatch: 'full' }
+        ]
+      }
     ],
   },
 

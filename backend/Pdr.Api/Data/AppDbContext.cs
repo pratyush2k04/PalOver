@@ -6,6 +6,7 @@ using Pdr.Api.Models;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Models.MasterChecklist;
+using Pdr.Api.Models.Handover;
 
 using Pdr.Api.Models.Documents;
 //using System.Reflection;
@@ -17,6 +18,12 @@ public class AppDbContext : DbContext
     public DbSet<Engagement> Engagements => Set<Engagement>();
     public DbSet<EngagementStatus> EngagementStatuses => Set<EngagementStatus>();
     public DbSet<EngagementType> EngagementTypes => Set<EngagementType>();
+    
+    // Handover entities
+    public DbSet<HandoverInfo> HandoverInfos => Set<HandoverInfo>();
+    public DbSet<Commitment> Commitments => Set<Commitment>();
+    public DbSet<CommitmentType> CommitmentTypes => Set<CommitmentType>();
+    public DbSet<HandoverStatus> HandoverStatuses => Set<HandoverStatus>();
     public DbSet<CommercialModel> CommercialModels => Set<CommercialModel>();
     private readonly IHttpContextAccessor? _httpContextAccessor;
 
@@ -49,8 +56,15 @@ public class AppDbContext : DbContext
         // Apply Configuration Classes from Assembly
         modelBuilder.ApplyConfiguration(new RoleConfiguration());
         modelBuilder.ApplyConfiguration(new EngagementAssignmentConfiguration());
+
+        modelBuilder.ApplyConfiguration(new HandoverInfoConfiguration());
+        modelBuilder.ApplyConfiguration(new CommitmentConfiguration());
+        modelBuilder.ApplyConfiguration(new CommitmentTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new HandoverStatusConfiguration());
+
         modelBuilder.ApplyConfiguration(new MasterChecklistCategoryConfiguration());
         modelBuilder.ApplyConfiguration(new MasterChecklistStatusConfiguration());
+
         modelBuilder.ApplyConfiguration(new DocumentCategoryConfiguration());
         modelBuilder.ApplyConfiguration(new DocumentConfiguration());
 
@@ -237,6 +251,11 @@ public class AppDbContext : DbContext
             entity.HasKey(s => s.StatusId);
             entity.Property(s => s.StatusId).HasColumnName("status_id");
             entity.Property(s => s.StatusName).HasColumnName("status_name").HasMaxLength(50).IsRequired();
+
+            var statusSeeds = Enum.GetValues<EngagementStatusEnum>()
+                .Select((s, index) => new EngagementStatus { StatusId = index + 1, StatusName = s.ToString() })
+                .ToArray();
+            entity.HasData(statusSeeds);
         });
 
         modelBuilder.Entity<EngagementType>(entity =>
@@ -245,6 +264,11 @@ public class AppDbContext : DbContext
             entity.HasKey(t => t.Id);
             entity.Property(t => t.Id).HasColumnName("id");
             entity.Property(t => t.Name).HasColumnName("name").HasMaxLength(100).IsRequired();
+
+            var typeSeeds = Enum.GetValues<EngagementTypeEnum>()
+                .Select((t, index) => new EngagementType { Id = index + 1, Name = t.ToString() })
+                .ToArray();
+            entity.HasData(typeSeeds);
         });
 
         modelBuilder.Entity<CommercialModel>(entity =>
@@ -295,6 +319,38 @@ public class AppDbContext : DbContext
             entity.HasOne(e => e.Status)
                   .WithMany(s => s.Engagements)
                   .HasForeignKey(e => e.StatusId);
+
+            entity.HasData(
+                new Engagement
+                {
+                    EngagementId = 1,
+                    ClientName = "FinTech Solutions",
+                    EngagementDescription = "Core Banking Greenfield Implementation",
+                    EngagementTypeId = 1, // Greenfield
+                    CommercialModelId = 1, // Time and Material
+                    KickoffDate = new DateOnly(2026, 8, 15),
+                    StatusId = 1, // KickoffPending
+                    CreatedAt = SeedTimestamp,
+                    UpdatedAt = SeedTimestamp,
+                    CreatedBy = "System",
+                    IsDeleted = false
+                },
+                new Engagement
+                {
+                    EngagementId = 2,
+                    ClientName = "HealthCare Plus",
+                    EngagementDescription = "Legacy System Upgrade and Support",
+                    EngagementTypeId = 2, // Brownfield
+                    CommercialModelId = 2, // Fixed
+                    KickoffDate = new DateOnly(2026, 6, 1),
+                    BillingStartDate = new DateOnly(2026, 7, 1),
+                    StatusId = 2, // Active
+                    CreatedAt = SeedTimestamp,
+                    UpdatedAt = SeedTimestamp,
+                    CreatedBy = "System",
+                    IsDeleted = false
+                }
+            );
         });
     }
 

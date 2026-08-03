@@ -9,7 +9,7 @@ import { ToastComponent } from '../../shared/toast/toast';
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, SidebarComponent, ToastComponent],
+  imports: [RouterOutlet, HeaderComponent, SidebarComponent, ToastComponent, TopNavComponent],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss'
 })

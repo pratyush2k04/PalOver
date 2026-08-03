@@ -84,6 +84,7 @@ export class AuthService {
       role: (payload['role'] as string) ?? '',
       isAdmin: payload['isAdmin'] === true || payload['isAdmin'] === 'true',
     };
+  }
   hasRole(roleName: string): boolean {
     const token = this.getToken();
     if (!token) {

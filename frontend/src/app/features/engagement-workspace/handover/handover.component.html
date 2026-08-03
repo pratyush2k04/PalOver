@@ -1,0 +1,148 @@
+<div class="handover-container" *ngIf="!isLoading()">
+
+  <div class="header">
+    <h2>Pre-Sales to Delivery Handover</h2>
+    <div class="status-badge" [ngClass]="{'submitted': isSubmitted(), 'draft': !isSubmitted()}">
+      Status: {{ handover()?.status || 'Not Started' }}
+    </div>
+  </div>
+
+  <div *ngIf="message()" class="alert" [ngClass]="{'alert-error': isError(), 'alert-success': !isError()}">
+    {{ message() }}
+  </div>
+
+  <form [formGroup]="clientContextForm">
+    <div class="section client-context">
+      <h3>Client Context</h3>
+
+      <div class="form-group">
+        <label for="clientBackground">Client Background</label>
+        <textarea id="clientBackground" formControlName="clientBackground" rows="3"
+          maxlength="2000" placeholder="Brief history and overview of the client..."></textarea>
+        <div class="char-counter" [class.char-counter-danger]="clientBackgroundControl.value?.length > maxFreeTextLength - 50">
+          {{ clientBackgroundControl.value?.length || 0 }}/{{ maxFreeTextLength }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="businessProblem">Business Problem (Required)</label>
+        <textarea id="businessProblem" formControlName="businessProblem" rows="3"
+          maxlength="2000" placeholder="What core problem are we solving?"></textarea>
+        <div class="char-counter" [class.char-counter-danger]="businessProblemControl.value?.length > maxFreeTextLength - 50">
+          {{ businessProblemControl.value?.length || 0 }}/{{ maxFreeTextLength }}
+        </div>
+        <div class="invalid-feedback" *ngIf="businessProblemControl.invalid && businessProblemControl.touched">
+          Business Problem is required.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="clientSentiment">Client Sentiment (Required)</label>
+        <select id="clientSentiment" formControlName="clientSentiment">
+          <option value="">-- Select Sentiment --</option>
+          <option *ngFor="let s of sentimentOptions" [value]="s">{{ s }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="dealOrigin">Deal Origin</label>
+        <input id="dealOrigin" type="text" formControlName="dealOrigin" maxlength="2000"
+          placeholder="e.g. RFP, Direct Sales, Partner...">
+        <div class="char-counter" [class.char-counter-danger]="dealOriginControl.value?.length > maxFreeTextLength - 50">
+          {{ dealOriginControl.value?.length || 0 }}/{{ maxFreeTextLength }}
+        </div>
+      </div>
+    </div>
+
+    <div class="section commitments">
+      <h3>Commitments</h3>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="noCommitments" formControlName="hasNoCommitments" (change)="onHasNoCommitmentsChange()">
+        <label for="noCommitments">This engagement has NO commitments.</label>
+      </div>
+
+      <div *ngIf="!clientContextForm.get('hasNoCommitments')?.value" class="commitments-list">
+        <table *ngIf="commitments().length > 0">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Quantity</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of commitments()">
+              <ng-container *ngIf="editingCommitmentId() !== c.commitmentId; else editRow">
+                <td>{{ c.commitmentTypeId === 1 ? 'Software' : c.commitmentTypeId === 2 ? 'Services' : 'Training' }}</td>
+                <td>{{ c.description }}</td>
+                <td>{{ c.quantity }}</td>
+                <td class="row-actions">
+                  <ng-container *ngIf="pendingDeleteId() === c.commitmentId; else rowButtons">
+                    <span class="confirm-inline">Remove this commitment?</span>
+                    <button class="btn-danger-sm" [disabled]="isSubmitted()" (click)="confirmDeleteCommitment(c.commitmentId)">Yes</button>
+                    <button class="btn-secondary-sm" [disabled]="isSubmitted()" (click)="cancelDeleteCommitment()">Cancel</button>
+                  </ng-container>
+                  <ng-template #rowButtons>
+                    <button class="btn-secondary-sm" [disabled]="isSubmitted()" (click)="startEditCommitment(c)">Edit</button>
+                    <button class="btn-danger-sm" [disabled]="isSubmitted()" (click)="requestDeleteCommitment(c.commitmentId)">Remove</button>
+                  </ng-template>
+                </td>
+              </ng-container>
+              <ng-template #editRow>
+                <td>
+                  <select [(ngModel)]="editCommitment().commitmentTypeId" [ngModelOptions]="{standalone: true}">
+                    <option *ngFor="let t of commitmentTypes" [value]="t.id">{{ t.name }}</option>
+                  </select>
+                </td>
+                <td>
+                  <input type="text" [(ngModel)]="editCommitment().description" [ngModelOptions]="{standalone: true}" maxlength="2000">
+                </td>
+                <td>
+                  <input type="text" [(ngModel)]="editCommitment().quantity" [ngModelOptions]="{standalone: true}">
+                </td>
+                <td class="row-actions">
+                  <button class="btn-primary-sm" (click)="saveEditCommitment(c.commitmentId)">Save</button>
+                  <button class="btn-secondary-sm" (click)="cancelEditCommitment()">Cancel</button>
+                </td>
+              </ng-template>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="commitments().length === 0" class="empty-state">
+          No commitments added yet.
+        </div>
+
+        <div class="add-commitment-form" [class.add-commitment-form-disabled]="isSubmitted()">
+          <h4>Add New Commitment</h4>
+          <div class="form-row">
+            <select [(ngModel)]="newCommitment().commitmentTypeId" [ngModelOptions]="{standalone: true}" [disabled]="isSubmitted()">
+              <option *ngFor="let t of commitmentTypes" [value]="t.id">{{ t.name }}</option>
+            </select>
+            <input type="text" [(ngModel)]="newCommitment().description" [ngModelOptions]="{standalone: true}"
+              maxlength="2000" placeholder="Description (Required)" [disabled]="isSubmitted()"
+              [class.is-invalid]="newCommitmentTouched() && !newCommitment().description">
+            <input type="text" [(ngModel)]="newCommitment().quantity" [ngModelOptions]="{standalone: true}"
+              placeholder="Quantity/Details" [disabled]="isSubmitted()">
+            <button class="btn-primary" [disabled]="isSubmitted()" (click)="addCommitment()">Add</button>
+          </div>
+          <div class="invalid-feedback" *ngIf="newCommitmentTouched() && !newCommitment().description">
+            Description is required.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-secondary" (click)="saveDraft()" [disabled]="isSaving() || isSubmitted()">Save Draft</button>
+      <button class="btn-success" (click)="submitHandover()" [disabled]="isSaving() || isSubmitted()">Submit Handover</button>
+    </div>
+  </form>
+
+</div>
+
+<div class="loading" *ngIf="isLoading()">
+  Loading handover details...
+</div>
