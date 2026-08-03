@@ -1,6 +1,6 @@
 namespace Pdr.Api.DTOs.MasterChecklist;
 
-public class ChecklistItemResponseDto
+public class MasterChecklistItemResponseDto
 {
     public long Id { get; set; }
 

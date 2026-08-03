@@ -34,7 +34,15 @@
 
           <div class="form-group">
             <label for="engagementDescription">Engagement description</label>
-            <input id="engagementDescription" type="text" formControlName="engagementDescription" />
+            <input
+              id="engagementDescription"
+              type="text"
+              formControlName="engagementDescription"
+              [class.is-invalid]="engagementDescriptionControl?.invalid && (engagementDescriptionControl?.touched || engagementDescriptionControl?.dirty)"
+            />
+            @if (engagementDescriptionControl?.invalid && (engagementDescriptionControl?.touched || engagementDescriptionControl?.dirty)) {
+              <div class="invalid-feedback">Engagement description is required.</div>
+            }
           </div>
 
           <div class="form-group">
@@ -88,9 +96,11 @@
               id="billingStartDate"
               type="date"
               formControlName="billingStartDate"
-              [class.is-invalid]="engagementForm.errors?.['billingBeforeKickoff'] && (billingStartDateControl?.touched || billingStartDateControl?.dirty)"
+              [class.is-invalid]="(billingStartDateControl?.invalid || engagementForm.errors?.['billingBeforeKickoff']) && (billingStartDateControl?.touched || billingStartDateControl?.dirty)"
             />
-            @if (engagementForm.errors?.['billingBeforeKickoff'] && (billingStartDateControl?.touched || billingStartDateControl?.dirty)) {
+            @if (billingStartDateControl?.invalid && (billingStartDateControl?.touched || billingStartDateControl?.dirty)) {
+              <div class="invalid-feedback">Billing start date is required.</div>
+            } @else if (engagementForm.errors?.['billingBeforeKickoff'] && (billingStartDateControl?.touched || billingStartDateControl?.dirty)) {
               <div class="invalid-feedback">Billing start cannot be before the kickoff date.</div>
             }
           </div>

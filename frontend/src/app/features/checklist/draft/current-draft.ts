@@ -2,7 +2,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DialogService } from '../../../shared/dialog/dialog.service';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { LoadingSpinnerComponent } from '../../../shared/loading-spinner/loading-spinner';
-import { ChecklistService } from '../../../services/checklist.service';
+import { MasterChecklistService } from '../../../services/master-checklist.service';
 import { ChecklistItem, ChecklistItemOrder } from '../../../models/checklist.model';
 import { ItemFormDialogComponent, ItemFormDialogData, ItemFormDialogResult } from '../dialogs/item-form/item-form-dialog';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../dialogs/confirm/confirm-dialog';
@@ -15,7 +15,7 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../dialogs/confirm/co
   styleUrl: './current-draft.scss',
 })
 export class CurrentDraftComponent implements OnInit {
-  private checklistService = inject(ChecklistService);
+  private checklistService = inject(MasterChecklistService);
   private dialog = inject(DialogService);
   private toast = inject(ToastService);
 

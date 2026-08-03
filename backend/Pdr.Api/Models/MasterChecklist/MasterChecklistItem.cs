@@ -1,6 +1,6 @@
 namespace Pdr.Api.Models.MasterChecklist
 {
-    public class ChecklistItem : BaseAuditableEntity
+    public class MasterChecklistItem : BaseAuditableEntity
     {
         //tracking changes and supporting soft deletion
         public long Id { get; set; }
@@ -13,7 +13,7 @@ namespace Pdr.Api.Models.MasterChecklist
         public bool IsRetired { get; set; } = false;
 
         // Navigation properties
-        public ChecklistVersion Version { get; set; } = null!;
-        public ChecklistCategory Category { get; set; } = null!;
+        public MasterChecklistVersion Version { get; set; } = null!;
+        public MasterChecklistCategory Category { get; set; } = null!;
     }
 }

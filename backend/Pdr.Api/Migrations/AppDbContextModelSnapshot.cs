@@ -563,7 +563,7 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.ChecklistCategory", b =>
+            modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.MasterChecklistCategory", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -615,7 +615,7 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.ChecklistItem", b =>
+            modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.MasterChecklistItem", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -692,7 +692,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("VersionId");
 
-                    b.ToTable("checklist_items", (string)null);
+                    b.ToTable("master_checklist_items", (string)null);
 
                     b.HasData(
                         new
@@ -977,7 +977,7 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.ChecklistStatus", b =>
+            modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.MasterChecklistStatus", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -1009,7 +1009,7 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.ChecklistVersion", b =>
+            modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.MasterChecklistVersion", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -1058,7 +1058,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("StatusId");
 
-                    b.ToTable("checklist_versions", (string)null);
+                    b.ToTable("master_checklist_versions", (string)null);
 
                     b.HasData(
                         new
@@ -1148,15 +1148,15 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.ChecklistItem", b =>
+            modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.MasterChecklistItem", b =>
                 {
-                    b.HasOne("Pdr.Api.Models.MasterChecklist.ChecklistCategory", "Category")
+                    b.HasOne("Pdr.Api.Models.MasterChecklist.MasterChecklistCategory", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Pdr.Api.Models.MasterChecklist.ChecklistVersion", "Version")
+                    b.HasOne("Pdr.Api.Models.MasterChecklist.MasterChecklistVersion", "Version")
                         .WithMany("Items")
                         .HasForeignKey("VersionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1167,9 +1167,9 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Version");
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.ChecklistVersion", b =>
+            modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.MasterChecklistVersion", b =>
                 {
-                    b.HasOne("Pdr.Api.Models.MasterChecklist.ChecklistStatus", "Status")
+                    b.HasOne("Pdr.Api.Models.MasterChecklist.MasterChecklistStatus", "Status")
                         .WithMany()
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1203,7 +1203,7 @@ namespace Pdr.Api.Migrations
                     b.Navigation("EngagementAssignments");
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.ChecklistVersion", b =>
+            modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.MasterChecklistVersion", b =>
                 {
                     b.Navigation("Items");
                 });

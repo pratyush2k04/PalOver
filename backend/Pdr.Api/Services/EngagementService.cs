@@ -14,7 +14,7 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
 
     public async Task<MarkSowSignedResponse> MarkSowSignedAsync(MarkSowSignedRequest request)
     {
-        if (request.BillingStartDate is { } billingStartDate && billingStartDate < request.KickoffDate)
+        if (request.BillingStartDate < request.KickoffDate)
             throw new BillingBeforeKickoffException();
 
         if (!await db.EngagementTypes.AnyAsync(t => t.Id == request.EngagementTypeId))

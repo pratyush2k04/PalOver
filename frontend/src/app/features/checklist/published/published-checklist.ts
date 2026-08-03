@@ -1,7 +1,7 @@
 import { Component, OnInit, computed, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LoadingSpinnerComponent } from '../../../shared/loading-spinner/loading-spinner';
-import { ChecklistService } from '../../../services/checklist.service';
+import { MasterChecklistService } from '../../../services/master-checklist.service';
 import { ChecklistItem } from '../../../models/checklist.model';
 
 type SortColumn = 'title' | 'categoryName' | 'isMandatory' | 'isRetired';
@@ -15,12 +15,12 @@ type SortDirection = 'asc' | 'desc';
   styleUrl: './published-checklist.scss',
 })
 export class PublishedChecklistComponent implements OnInit {
-  private checklistService = inject(ChecklistService);
+  private masterChecklistService = inject(MasterChecklistService);
 
-  readonly loading = this.checklistService.publishedLoading;
-  readonly error = this.checklistService.publishedError;
-  readonly notFound = this.checklistService.publishedNotFound;
-  readonly version = this.checklistService.publishedChecklist;
+  readonly loading = this.masterChecklistService.publishedLoading;
+  readonly error = this.masterChecklistService.publishedError;
+  readonly notFound = this.masterChecklistService.publishedNotFound;
+  readonly version = this.masterChecklistService.publishedChecklist;
 
   readonly selectedCategory = signal<string>('all');
   readonly expandedRowId = signal<number | null>(null);
@@ -62,7 +62,7 @@ export class PublishedChecklistComponent implements OnInit {
   readonly totalPages = computed(() => Math.max(1, Math.ceil(this.filteredItems().length / this.pageSize())));
 
   ngOnInit(): void {
-    this.checklistService.getPublished();
+    this.masterChecklistService.getPublished();
   }
 
   applyFilters(): void {
