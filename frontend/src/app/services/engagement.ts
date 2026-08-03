@@ -3,7 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
 export interface MarkSowSignedRequest {
-  clientName?: string;
+  engagementName: string;
+  clientName: string;
   engagementDescription?: string;
   engagementTypeId: number;
   commercialModelId: number;
@@ -13,6 +14,7 @@ export interface MarkSowSignedRequest {
 
 export interface Engagement {
   engagementId: number;
+  engagementName: string;
   clientName: string;
   engagementDescription?: string;
   engagementTypeId: number;
@@ -47,6 +49,7 @@ interface GetCommercialModelsResponse {
 
 export interface EngagementInfo {
   engagementId: number;
+  engagementName: string;
   clientName: string;
   engagementDescription?: string;
   engagementType: string;

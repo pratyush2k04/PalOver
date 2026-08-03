@@ -17,6 +17,12 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
 
     public async Task<MarkSowSignedResponse> MarkSowSignedAsync(MarkSowSignedRequest request)
     {
+        if (string.IsNullOrWhiteSpace(request.EngagementName))
+            throw new EngagementNameRequiredException();
+
+        if (string.IsNullOrWhiteSpace(request.ClientName))
+            throw new ClientNameRequiredException();
+
         if (request.BillingStartDate < request.KickoffDate)
             throw new BillingBeforeKickoffException();
 
@@ -28,19 +34,14 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
 
         var warnings = new List<string>();
         var clientName = request.ClientName;
-        if (string.IsNullOrWhiteSpace(clientName))
-        {
-            clientName = string.Empty;
-            warnings.Add("Client name needed");
-        }
 
         if (request.KickoffDate < DateOnly.FromDateTime(DateTime.UtcNow))
             warnings.Add("Kickoff date is in the past.");
 
         var existing = await db.Engagements.FirstOrDefaultAsync(e =>
+            e.EngagementName == request.EngagementName &&
             e.ClientName == clientName &&
-            e.EngagementTypeId == request.EngagementTypeId &&
-            e.EngagementDescription == request.EngagementDescription);
+            e.EngagementTypeId == request.EngagementTypeId);
 
         Engagement engagement;
         if (existing is not null)
@@ -57,6 +58,7 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
 
             engagement = new Engagement
             {
+                EngagementName = request.EngagementName,
                 ClientName = clientName,
                 EngagementDescription = request.EngagementDescription,
                 EngagementTypeId = request.EngagementTypeId,
@@ -87,6 +89,7 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
             .Where(e => e.EngagementId == id)
             .Select(e => new EngagementInfoDto(
                 e.EngagementId,
+                e.EngagementName,
                 e.ClientName,
                 e.EngagementDescription,
                 e.EngagementType.Name,
@@ -102,6 +105,7 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
         var engagement = await db.Engagements.FindAsync(id);
         if (engagement is null) return false;
 
+        if (request.EngagementName is not null) engagement.EngagementName = request.EngagementName;
         if (request.ClientName is not null) engagement.ClientName = request.ClientName;
         if (request.EngagementDescription is not null) engagement.EngagementDescription = request.EngagementDescription;
         if (request.EngagementTypeId is not null)
@@ -137,6 +141,7 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
         var items = engagements
             .Select(e => new PmEngagementListItemDto(
                 e.EngagementId,
+                e.EngagementName,
                 e.ClientName,
                 e.KickoffDate,
                 e.KickoffDate.DayNumber - today.DayNumber,

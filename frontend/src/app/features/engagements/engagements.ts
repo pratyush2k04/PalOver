@@ -45,7 +45,8 @@ export class EngagementsComponent implements OnInit {
 
   engagementForm: FormGroup = this.fb.group(
     {
-      clientName: [''],
+      engagementName: ['', [Validators.required]],
+      clientName: ['', [Validators.required]],
       engagementDescription: ['', [Validators.required]],
       engagementTypeId: [null, [Validators.required]],
       commercialModelId: [null, [Validators.required]],
@@ -73,6 +74,14 @@ export class EngagementsComponent implements OnInit {
         }
       }
     });
+  }
+
+  get engagementNameControl() {
+    return this.engagementForm.get('engagementName');
+  }
+
+  get clientNameControl() {
+    return this.engagementForm.get('clientName');
   }
 
   get engagementTypeIdControl() {
@@ -119,12 +128,13 @@ export class EngagementsComponent implements OnInit {
     this.errorMessage.set(null);
     this.warnings.set([]);
 
-    const { clientName, engagementDescription, engagementTypeId, commercialModelId, kickoffDate, billingStartDate } =
+    const { engagementName, clientName, engagementDescription, engagementTypeId, commercialModelId, kickoffDate, billingStartDate } =
       this.engagementForm.value;
 
     this.engagementService
       .markSowSigned({
-        clientName: clientName || undefined,
+        engagementName,
+        clientName,
         engagementDescription: engagementDescription || undefined,
         engagementTypeId,
         commercialModelId,

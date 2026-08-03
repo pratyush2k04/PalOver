@@ -11,6 +11,11 @@ public class Engagement : BaseAuditableEntity
     [Required]
     [MinLength(1)]
     [MaxLength(200)]
+    public string EngagementName { get; set; } = string.Empty;
+
+    [Required]
+    [MinLength(1)]
+    [MaxLength(200)]
     public string ClientName { get; set; } = string.Empty;
 
     public string? EngagementDescription { get; set; } //allowed to be null

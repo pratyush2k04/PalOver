@@ -225,6 +225,11 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("text")
                         .HasColumnName("engagement_description");
 
+                    b.Property<string>("EngagementName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
                     b.Property<int>("EngagementTypeId")
                         .HasColumnType("integer")
                         .HasColumnName("engagement_type_id");
@@ -278,6 +283,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
                             EngagementDescription = "Core Banking Greenfield Implementation",
+                            EngagementName = "",
                             EngagementTypeId = 1,
                             IsDeleted = false,
                             KickoffDate = new DateOnly(2026, 8, 15),
@@ -293,6 +299,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
                             EngagementDescription = "Legacy System Upgrade and Support",
+                            EngagementName = "",
                             EngagementTypeId = 2,
                             IsDeleted = false,
                             KickoffDate = new DateOnly(2026, 6, 1),

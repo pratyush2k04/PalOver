@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 export interface EngagementInfoDto {
   engagementId: number;
+  engagementName: string;
   clientName: string;
   engagementDescription?: string;
   engagementType: string;
