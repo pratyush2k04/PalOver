@@ -28,10 +28,10 @@ public class AppDbContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<EngagementAssignment> EngagementAssignments => Set<EngagementAssignment>();
 
-    public DbSet<ChecklistCategory> ChecklistCategories => Set<ChecklistCategory>();
-    public DbSet<ChecklistStatus> ChecklistStatuses => Set<ChecklistStatus>();
-    public DbSet<ChecklistVersion> ChecklistVersions => Set<ChecklistVersion>();
-    public DbSet<ChecklistItem> ChecklistItems => Set<ChecklistItem>();
+    public DbSet<MasterChecklistCategory> MasterChecklistCategories => Set<MasterChecklistCategory>();
+    public DbSet<MasterChecklistStatus> MasterChecklistStatuses => Set<MasterChecklistStatus>();
+    public DbSet<MasterChecklistVersion> MasterChecklistVersions => Set<MasterChecklistVersion>();
+    public DbSet<MasterChecklistItem> MasterChecklistItems => Set<MasterChecklistItem>();
 
     private static readonly DateTime SeedTimestamp = new(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
@@ -42,8 +42,8 @@ public class AppDbContext : DbContext
         // Apply Configuration Classes from Assembly
         modelBuilder.ApplyConfiguration(new RoleConfiguration());
         modelBuilder.ApplyConfiguration(new EngagementAssignmentConfiguration());
-        modelBuilder.ApplyConfiguration(new ChecklistCategoryConfiguration());
-        modelBuilder.ApplyConfiguration(new ChecklistStatusConfiguration());
+        modelBuilder.ApplyConfiguration(new MasterChecklistCategoryConfiguration());
+        modelBuilder.ApplyConfiguration(new MasterChecklistStatusConfiguration());
 
         // Global Query Filters (Soft Delete)
         modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
@@ -51,9 +51,9 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<EngagementAssignment>().HasQueryFilter(ea => !ea.User.IsDeleted);
 
         // ChecklistVersion
-        modelBuilder.Entity<ChecklistVersion>(entity =>
+        modelBuilder.Entity<MasterChecklistVersion>(entity =>
         {
-            entity.ToTable("checklist_versions");
+            entity.ToTable("master_checklist_versions");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id").UseIdentityAlwaysColumn();
             entity.Property(e => e.VersionNumber).HasColumnName("version_number").IsRequired();
@@ -86,9 +86,9 @@ public class AppDbContext : DbContext
         });
 
         // ChecklistItem
-        modelBuilder.Entity<ChecklistItem>(entity =>
+        modelBuilder.Entity<MasterChecklistItem>(entity =>
         {
-            entity.ToTable("checklist_items");
+            entity.ToTable("master_checklist_items");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id").UseIdentityAlwaysColumn();
             entity.Property(e => e.VersionId).HasColumnName("version_id").IsRequired();
@@ -118,7 +118,7 @@ public class AppDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(d => d.CategoryId);
 
-            entity.HasData(GetChecklistItemSeedData());
+            entity.HasData(GetMasterChecklistItemSeedData());
         });
 
         // User Configuration
@@ -301,7 +301,7 @@ public class AppDbContext : DbContext
         return base.SaveChanges();
     }
 
-    private static object[] GetChecklistItemSeedData()
+    private static object[] GetMasterChecklistItemSeedData()
     {
         var items = new (string Title, string Description, long CategoryId, bool IsMandatory)[]
         {

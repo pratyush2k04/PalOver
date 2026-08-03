@@ -14,7 +14,7 @@ import {
 @Injectable({
   providedIn: 'root',
 })
-export class ChecklistService {
+export class MasterChecklistService {
   private http = inject(HttpClient);
 
   private readonly publishedLoadingSignal = signal(false);
@@ -53,7 +53,7 @@ export class ChecklistService {
     this.publishedErrorSignal.set(null);
     this.publishedNotFoundSignal.set(false);
 
-    this.http.get<ChecklistVersion>('/api/checklist/published').pipe(
+    this.http.get<ChecklistVersion>('/api/masterchecklist/published').pipe(
       tap({
         next: (version) => {
           this.publishedChecklistSignal.set(version);
@@ -77,7 +77,7 @@ export class ChecklistService {
     this.draftErrorSignal.set(null);
     this.draftNotFoundSignal.set(false);
 
-    this.http.get<ChecklistVersion>('/api/checklist/current-draft').pipe(
+    this.http.get<ChecklistVersion>('/api/masterchecklist/current-draft').pipe(
       tap({
         next: (version) => {
           this.currentDraftSignal.set(version);
@@ -97,7 +97,7 @@ export class ChecklistService {
   }
 
   loadCategories(): void {
-    this.http.get<ChecklistCategory[]>('/api/checklist/categories').subscribe({
+    this.http.get<ChecklistCategory[]>('/api/masterchecklist/categories').subscribe({
       next: (categories) => this.categoriesSignal.set(categories),
     });
   }
@@ -106,7 +106,7 @@ export class ChecklistService {
     this.versionsLoadingSignal.set(true);
     this.versionsErrorSignal.set(null);
 
-    this.http.get<ChecklistVersionSummary[]>('/api/checklist/versions').pipe(
+    this.http.get<ChecklistVersionSummary[]>('/api/masterchecklist/versions').pipe(
       tap({
         next: (versions) => {
           this.versionsSignal.set(versions);
@@ -121,39 +121,39 @@ export class ChecklistService {
   }
 
   getVersionById(versionId: number): Observable<ChecklistVersion> {
-    return this.http.get<ChecklistVersion>(`/api/checklist/versions/${versionId}`);
+    return this.http.get<ChecklistVersion>(`/api/masterchecklist/versions/${versionId}`);
   }
 
   fetchPublished(): Observable<ChecklistVersion> {
-    return this.http.get<ChecklistVersion>('/api/checklist/published');
+    return this.http.get<ChecklistVersion>('/api/masterchecklist/published');
   }
 
   fetchCurrentDraft(): Observable<ChecklistVersion> {
-    return this.http.get<ChecklistVersion>('/api/checklist/current-draft');
+    return this.http.get<ChecklistVersion>('/api/masterchecklist/current-draft');
   }
 
   fetchCategories(): Observable<ChecklistCategory[]> {
-    return this.http.get<ChecklistCategory[]>('/api/checklist/categories');
+    return this.http.get<ChecklistCategory[]>('/api/masterchecklist/categories');
   }
 
   createItem(request: CreateChecklistItemRequest): Observable<ChecklistItem> {
-    return this.http.post<ChecklistItem>('/api/checklist/items', request);
+    return this.http.post<ChecklistItem>('/api/masterchecklist/items', request);
   }
 
   updateItem(id: number, request: UpdateChecklistItemRequest): Observable<ChecklistItem> {
-    return this.http.put<ChecklistItem>(`/api/checklist/items/${id}`, request);
+    return this.http.put<ChecklistItem>(`/api/masterchecklist/items/${id}`, request);
   }
 
   retireItem(id: number): Observable<ChecklistItem> {
-    return this.http.put<ChecklistItem>(`/api/checklist/items/${id}/retire`, {});
+    return this.http.put<ChecklistItem>(`/api/masterchecklist/items/${id}/retire`, {});
   }
 
   reorderItems(request: ReorderChecklistItemsRequest): Observable<ChecklistItem[]> {
-    return this.http.put<ChecklistItem[]>('/api/checklist/items/reorder', request);
+    return this.http.put<ChecklistItem[]>('/api/masterchecklist/items/reorder', request);
   }
 
   publishVersion(versionId: number): Observable<ChecklistVersion> {
-    return this.http.post<ChecklistVersion>(`/api/checklist/versions/${versionId}/publish`, {});
+    return this.http.post<ChecklistVersion>(`/api/masterchecklist/versions/${versionId}/publish`, {});
   }
 
   setCurrentDraft(version: ChecklistVersion): void {

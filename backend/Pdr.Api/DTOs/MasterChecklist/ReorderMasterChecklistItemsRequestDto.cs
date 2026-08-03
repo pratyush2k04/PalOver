@@ -1,6 +1,6 @@
 namespace Pdr.Api.DTOs.MasterChecklist;
 
-public class ReorderChecklistItemsRequestDto
+public class ReorderMasterChecklistItemsRequestDto
 {
     public required List<ChecklistItemOrderDto> Items { get; set; }
 }

@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { DialogService } from '../../../shared/dialog/dialog.service';
 import { LoadingSpinnerComponent } from '../../../shared/loading-spinner/loading-spinner';
-import { ChecklistService } from '../../../services/checklist.service';
+import { MasterChecklistService } from '../../../services/master-checklist.service';
 import { ChecklistVersionSummary } from '../../../models/checklist.model';
 import {
   VersionDetailDialogComponent,
@@ -17,7 +17,7 @@ import {
   styleUrl: './version-history.scss',
 })
 export class VersionHistoryComponent implements OnInit {
-  private checklistService = inject(ChecklistService);
+  private checklistService = inject(MasterChecklistService);
   private dialog = inject(DialogService);
 
   readonly loading = this.checklistService.versionsLoading;

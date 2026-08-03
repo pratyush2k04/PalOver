@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Pdr.Api.Data.Configuration
 {
-    public class ChecklistStatusConfiguration : IEntityTypeConfiguration<ChecklistStatus>
+    public class MasterChecklistStatusConfiguration : IEntityTypeConfiguration<MasterChecklistStatus>
     {
-        public void Configure(EntityTypeBuilder<ChecklistStatus> builder)
+        public void Configure(EntityTypeBuilder<MasterChecklistStatus> builder)
         {
             builder.ToTable("checklist_statuses");
 
@@ -23,8 +23,8 @@ namespace Pdr.Api.Data.Configuration
 
             // Seed Data
             builder.HasData(
-                new ChecklistStatus { Id = 1, StatusName = "Draft" },
-                new ChecklistStatus { Id = 2, StatusName = "Published" }
+                new MasterChecklistStatus { Id = 1, StatusName = "Draft" },
+                new MasterChecklistStatus { Id = 2, StatusName = "Published" }
             );
         }
     }

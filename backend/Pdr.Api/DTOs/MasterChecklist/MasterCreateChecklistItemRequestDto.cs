@@ -1,6 +1,6 @@
 namespace Pdr.Api.DTOs.MasterChecklist;
 
-public class CreateChecklistItemRequestDto
+public class MasterCreateChecklistItemRequestDto
 {
     public required string Title { get; set; }
 

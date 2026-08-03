@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Pdr.Api.Models.MasterChecklist
 {
-    public class ChecklistVersion : BaseAuditableEntity
+    public class MasterChecklistVersion : BaseAuditableEntity
     {
         //have audit timestamps for when draft versions are created or updated
         public long Id { get; set; }
@@ -11,7 +11,7 @@ namespace Pdr.Api.Models.MasterChecklist
         //public long CreatedBy { get; set; }
 
         // Navigation properties
-        public ChecklistStatus Status { get; set; } = null!;
-        public ICollection<ChecklistItem> Items { get; set; } = new List<ChecklistItem>();
+        public MasterChecklistStatus Status { get; set; } = null!;
+        public ICollection<MasterChecklistItem> Items { get; set; } = new List<MasterChecklistItem>();
     }
 }

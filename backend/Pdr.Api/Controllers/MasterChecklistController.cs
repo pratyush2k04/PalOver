@@ -9,11 +9,11 @@ namespace Pdr.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/[controller]")]
-public class ChecklistController(
-    IChecklistService checklistService,
-    IValidator<CreateChecklistItemRequestDto> createItemValidator,
+public class MasterChecklistController(
+    IMasterChecklistService checklistService,
+    IValidator<MasterCreateChecklistItemRequestDto> createItemValidator,
     IValidator<UpdateChecklistItemRequestDto> updateItemValidator,
-    IValidator<ReorderChecklistItemsRequestDto> reorderItemsValidator) : ControllerBase
+    IValidator<ReorderMasterChecklistItemsRequestDto> reorderItemsValidator) : ControllerBase
 {
 
     [HttpGet("current-draft")]
@@ -73,7 +73,7 @@ public class ChecklistController(
 
     [HttpPost("items")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<IActionResult> CreateItem([FromBody] CreateChecklistItemRequestDto request)
+    public async Task<IActionResult> CreateItem([FromBody] MasterCreateChecklistItemRequestDto request)
     {
         var validationResult = await createItemValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
@@ -115,7 +115,7 @@ public class ChecklistController(
 
     [HttpPut("items/reorder")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<IActionResult> ReorderItems([FromBody] ReorderChecklistItemsRequestDto request)
+    public async Task<IActionResult> ReorderItems([FromBody] ReorderMasterChecklistItemsRequestDto request)
     {
         var validationResult = await reorderItemsValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
