@@ -1,38 +1,40 @@
+using System.Security.Claims;
 using System.Threading.Tasks;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.DTOs.Handovers;
 using Pdr.Api.Services.Interfaces;
-using System.Security.Claims;
 
 namespace Pdr.Api.Controllers;
 
 [ApiController]
-// [Authorize] - Commented out for now as per EngagementsController
+[Authorize]
 [Route("api/engagements/{engagementId:long}/handover")]
 public class HandoversController : ControllerBase
 {
     private readonly IHandoverService _handoverService;
     private readonly IHandoverAccessService _accessService;
+    private readonly IValidator<SaveHandoverDraftRequest> _saveDraftValidator;
 
-    public HandoversController(IHandoverService handoverService, IHandoverAccessService accessService)
+    public HandoversController(
+        IHandoverService handoverService,
+        IHandoverAccessService accessService,
+        IValidator<SaveHandoverDraftRequest> saveDraftValidator)
     {
         _handoverService = handoverService;
         _accessService = accessService;
+        _saveDraftValidator = saveDraftValidator;
     }
+
+    private int GetUserId() => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+    private string GetUserIdString() => User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
     [HttpGet]
     public async Task<ActionResult<HandoverInfoDto>> GetHandover(long engagementId)
     {
-        // Extract userId from claims, defaulting to 1 for dev if auth is merged
-        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        int userId = 1; 
-        if (!string.IsNullOrEmpty(userIdStr) && int.TryParse(userIdStr, out int parsed))
-        {
-            userId = parsed;
-        }
-
-        await _accessService.CanAccessHandoverAsync(engagementId, userId);
+        await _accessService.CanAccessHandoverAsync(engagementId, GetUserId());
 
         var dto = await _handoverService.GetHandoverAsync(engagementId);
         return Ok(dto);
@@ -41,33 +43,25 @@ public class HandoversController : ControllerBase
     [HttpPut("draft")]
     public async Task<ActionResult<HandoverInfoDto>> SaveDraft(long engagementId, [FromBody] SaveHandoverDraftRequest request)
     {
-        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "1";
-        if (int.TryParse(userIdStr, out int userId))
+        await _accessService.CanAccessHandoverAsync(engagementId, GetUserId());
+
+        var validationResult = await _saveDraftValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
         {
-            await _accessService.CanAccessHandoverAsync(engagementId, userId);
+            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid handover draft request.";
+            return BadRequest(new { message = firstError });
         }
 
-        var dto = await _handoverService.SaveHandoverDraftAsync(engagementId, request, userIdStr);
+        var dto = await _handoverService.SaveHandoverDraftAsync(engagementId, request, GetUserIdString());
         return Ok(dto);
     }
 
     [HttpPost("submit")]
     public async Task<ActionResult<HandoverInfoDto>> Submit(long engagementId)
     {
-        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "1";
-        if (int.TryParse(userIdStr, out int userId))
-        {
-            await _accessService.CanAccessHandoverAsync(engagementId, userId);
-        }
+        await _accessService.CanAccessHandoverAsync(engagementId, GetUserId());
 
-        try
-        {
-            var dto = await _handoverService.SubmitHandoverAsync(engagementId, userIdStr);
-            return Ok(dto);
-        }
-        catch (System.Exception ex) when (ex.Message.Contains("required") || ex.Message.Contains("must either"))
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
+        var dto = await _handoverService.SubmitHandoverAsync(engagementId, GetUserIdString());
+        return Ok(dto);
     }
 }

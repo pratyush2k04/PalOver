@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
 using Pdr.Api.DTOs.Handovers;
+using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Handover;
 using Pdr.Api.Services.Interfaces;
 
@@ -9,6 +10,8 @@ namespace Pdr.Api.Services;
 
 public class CommitmentService : ICommitmentService
 {
+    private const string SubmittedStatusName = "Submitted";
+
     private readonly AppDbContext _context;
 
     public CommitmentService(AppDbContext context)
@@ -16,34 +19,36 @@ public class CommitmentService : ICommitmentService
         _context = context;
     }
 
-    private async Task<long> EnsureHandoverDraftExistsAsync(long engagementId, string userIdStr)
+    private async Task<HandoverInfo> GetHandoverOrThrowAsync(long engagementId)
     {
         var handover = await _context.HandoverInfos
             .FirstOrDefaultAsync(h => h.EngagementId == engagementId);
 
         if (handover == null)
-        {
-            handover = new HandoverInfo
-            {
-                EngagementId = engagementId,
-                StatusId = 1,
-                CreatedBy = userIdStr,
-                UpdatedBy = userIdStr
-            };
-            _context.HandoverInfos.Add(handover);
-            await _context.SaveChangesAsync();
-        }
+            throw new HandoverNotFoundException(engagementId);
 
-        return handover.HandoverId;
+        return handover;
+    }
+
+    private async Task EnsureNotSubmittedAsync(HandoverInfo handover)
+    {
+        var status = await _context.HandoverStatuses
+            .FirstOrDefaultAsync(s => s.HandoverStatusId == handover.StatusId);
+
+        if (status?.StatusName == SubmittedStatusName)
+        {
+            throw new HandoverSubmittedException("This handover has already been submitted and its commitments can no longer be changed.");
+        }
     }
 
     public async Task<CommitmentDto> AddCommitmentAsync(long engagementId, CreateCommitmentRequest request, string userIdStr)
     {
-        var handoverId = await EnsureHandoverDraftExistsAsync(engagementId, userIdStr);
+        var handover = await GetHandoverOrThrowAsync(engagementId);
+        await EnsureNotSubmittedAsync(handover);
 
         var commitment = new Commitment
         {
-            HandoverId = handoverId,
+            HandoverId = handover.HandoverId,
             Description = request.Description,
             CommitmentTypeId = request.CommitmentTypeId,
             Quantity = request.Quantity,
@@ -52,12 +57,7 @@ public class CommitmentService : ICommitmentService
         };
 
         _context.Commitments.Add(commitment);
-
-        var handover = await _context.HandoverInfos.FindAsync(handoverId);
-        if (handover != null)
-        {
-            handover.HasNoCommitments = false;
-        }
+        handover.HasNoCommitments = false;
 
         await _context.SaveChangesAsync();
 
@@ -73,13 +73,13 @@ public class CommitmentService : ICommitmentService
 
     public async Task<CommitmentDto> UpdateCommitmentAsync(long engagementId, long commitmentId, UpdateCommitmentRequest request, string userIdStr)
     {
-        var handover = await _context.HandoverInfos.FirstOrDefaultAsync(h => h.EngagementId == engagementId);
-        if (handover == null) throw new System.Exception("Handover not found.");
+        var handover = await GetHandoverOrThrowAsync(engagementId);
+        await EnsureNotSubmittedAsync(handover);
 
         var commitment = await _context.Commitments
             .FirstOrDefaultAsync(c => c.CommitmentId == commitmentId && c.HandoverId == handover.HandoverId);
 
-        if (commitment == null) throw new System.Exception("Commitment not found.");
+        if (commitment == null) throw new CommitmentNotFoundException(commitmentId);
 
         commitment.Description = request.Description;
         commitment.CommitmentTypeId = request.CommitmentTypeId;
@@ -100,13 +100,13 @@ public class CommitmentService : ICommitmentService
 
     public async Task DeleteCommitmentAsync(long engagementId, long commitmentId)
     {
-        var handover = await _context.HandoverInfos.FirstOrDefaultAsync(h => h.EngagementId == engagementId);
-        if (handover == null) throw new System.Exception("Handover not found.");
+        var handover = await GetHandoverOrThrowAsync(engagementId);
+        await EnsureNotSubmittedAsync(handover);
 
         var commitment = await _context.Commitments
             .FirstOrDefaultAsync(c => c.CommitmentId == commitmentId && c.HandoverId == handover.HandoverId);
 
-        if (commitment == null) throw new System.Exception("Commitment not found.");
+        if (commitment == null) throw new CommitmentNotFoundException(commitmentId);
 
         _context.Commitments.Remove(commitment);
         await _context.SaveChangesAsync();

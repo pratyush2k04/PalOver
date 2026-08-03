@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
 using Pdr.Api.DTOs.Handovers;
+using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Handover;
 using Pdr.Api.Services.Interfaces;
 
@@ -100,18 +101,18 @@ public class HandoverService : IHandoverService
             .FirstOrDefaultAsync(h => h.EngagementId == engagementId);
 
         if (handover == null)
-            throw new System.Exception("Cannot submit a handover that does not exist.");
+            throw new HandoverIncompleteException("Cannot submit a handover that does not exist.");
 
         if (string.IsNullOrWhiteSpace(handover.BusinessProblem))
-            throw new System.Exception("Business Problem is required to submit.");
+            throw new HandoverIncompleteException("Business Problem is required to submit.");
 
         if (string.IsNullOrWhiteSpace(handover.ClientSentiment))
-            throw new System.Exception("Client Sentiment is required to submit.");
+            throw new HandoverIncompleteException("Client Sentiment is required to submit.");
 
         var hasCommitments = await _context.Commitments.AnyAsync(c => c.HandoverId == handover.HandoverId);
-        
+
         if (!hasCommitments && !handover.HasNoCommitments)
-            throw new System.Exception("You must either add at least one commitment or explicitly mark 'HasNoCommitments'.");
+            throw new HandoverIncompleteException("You must either add at least one commitment or explicitly mark 'HasNoCommitments'.");
 
         handover.StatusId = 2; // Submitted
         handover.UpdatedBy = userIdStr;
