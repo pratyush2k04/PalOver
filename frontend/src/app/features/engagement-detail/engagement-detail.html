@@ -1,0 +1,100 @@
+<div class="engagement-detail-page">
+  @if (engagement(); as info) {
+    <div class="page-header">
+      <h2>{{ info.clientName }}</h2>
+    </div>
+
+    <div class="team-card">
+      <div class="team-card-header">
+        <h3>Team</h3>
+        @if (canAssignOwners) {
+          <button type="button" class="btn-assign" (click)="openAssignModal()">
+            {{ assignButtonLabel }}
+          </button>
+        }
+      </div>
+
+      <div class="team-row">
+        <span class="team-role">Project Manager</span>
+        @if (owners()?.projectManagerName; as name) {
+          <span class="team-owner">{{ name }}</span>
+        } @else {
+          <span class="team-owner unassigned">Unassigned</span>
+        }
+      </div>
+
+      <div class="team-row">
+        <span class="team-role">Tech / Delivery Lead</span>
+        @if (owners()?.techLeadName; as name) {
+          <span class="team-owner">{{ name }}</span>
+        } @else {
+          <span class="team-owner unassigned">Unassigned</span>
+        }
+      </div>
+    </div>
+  }
+
+  @if (showAssignModal()) {
+    <div class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Assign Project Manager and Tech Lead</h3>
+          <button type="button" class="btn-close" (click)="closeAssignModal()" aria-label="Close">&times;</button>
+        </div>
+
+        <p class="modal-subtitle">Routine start-of-engagement assignment — Leadership only.</p>
+
+        <form [formGroup]="assignForm" (ngSubmit)="onSubmitAssignment()" novalidate>
+          @if (errorMessage()) {
+            <div class="alert alert-danger" role="alert">
+              {{ errorMessage() }}
+            </div>
+          }
+
+          <div class="form-group">
+            <label for="projectManagerId">Project Manager</label>
+            <select id="projectManagerId" formControlName="projectManagerId">
+              <option [ngValue]="null">— Select —</option>
+              @for (user of projectManagers(); track user.id) {
+                <option [ngValue]="user.id">{{ user.fullName }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="techLeadId">Tech / Delivery Lead</label>
+            <select id="techLeadId" formControlName="techLeadId">
+              <option [ngValue]="null">— Select —</option>
+              @for (user of techLeads(); track user.id) {
+                <option [ngValue]="user.id">{{ user.fullName }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" (click)="closeAssignModal()">Cancel</button>
+            <button type="submit" class="btn-submit" [disabled]="isSubmitting()">
+              @if (isSubmitting()) {
+                <span class="spinner"></span> Saving...
+              } @else {
+                Save assignment
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  @if (currentConfirmation(); as change) {
+    <app-confirm-dialog
+      title="Reassign mid-engagement?"
+      confirmLabel="Reassign"
+      [isBusy]="isSavingConfirmation()"
+      (confirmed)="confirmPendingChange()"
+      (cancelled)="cancelPendingChange()"
+    >
+      {{ change.userName }} will take over open items.
+    </app-confirm-dialog>
+  }
+</div>

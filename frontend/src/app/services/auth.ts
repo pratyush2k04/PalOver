@@ -83,7 +83,17 @@ export class AuthService {
       email: (payload['email'] as string) ?? '',
       role: (payload['role'] as string) ?? '',
       isAdmin: payload['isAdmin'] === true || payload['isAdmin'] === 'true',
-    };
+    }
+  }
+  hasRole(roleName: string): boolean {
+    const token = this.getToken();
+    if (!token) {
+      return false;
+    }
+
+    const payload = this.decodeToken(token);
+    const role = payload?.['role'];
+    return Array.isArray(role) ? role.includes(roleName) : role === roleName;
   }
 
   private decodeToken(token: string): Record<string, unknown> | null {
@@ -95,4 +105,5 @@ export class AuthService {
       return null;
     }
   }
+
 }

@@ -6,6 +6,8 @@ import { adminGuard } from './guards/admin.guard';
 import { authGuard } from './guards/auth.guard';
 import { workspaceGuard } from './guards/workspace.guard';
 import { workspaceRedirectGuard } from './guards/workspace-redirect.guard';
+import { EngagementDetailComponent } from './features/engagement-detail/engagement-detail';
+import { UsersComponent } from './features/users/users';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -95,6 +97,10 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/access-denied/access-denied').then((m) => m.AccessDeniedComponent),
       },
+      { path: '', redirectTo: 'admin/users', pathMatch: 'full' },
+      { path: 'admin/users', component: UsersComponent },//change made for users
+      { path: 'engagements', component: EngagementsComponent },
+      { path: 'engagements/:id', component: EngagementDetailComponent },//change made for leader to assign pm-tl
     ],
   },
 

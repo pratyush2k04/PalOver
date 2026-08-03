@@ -16,4 +16,14 @@ public class RoleRepository(AppDbContext context) : IRoleRepository
     {
         return await context.Roles.OrderBy(r => r.Name).ToListAsync();
     }
+
+    public async Task<List<User>> GetUsersInRoleAsync(int roleId)
+    {
+        return await context.Users
+            .AsNoTracking()
+            .Include(u => u.Role)
+            .Where(u => u.RoleId == roleId)
+            .OrderBy(u => u.FullName)
+            .ToListAsync();
+    }
 }

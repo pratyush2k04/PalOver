@@ -1,0 +1,64 @@
+:host {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 1.75rem;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2000;
+}
+
+.toast-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.1rem;
+  border-radius: 999px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  pointer-events: auto;
+  animation: rise 0.2s ease-out;
+
+  &.success {
+    background-color: #1e7a3d;
+  }
+
+  &.error {
+    background-color: #dc2626;
+  }
+
+  &.info {
+    background-color: #1e3a5f;
+  }
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

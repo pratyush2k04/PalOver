@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
 using Pdr.Api.Models;
+using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Repositories;
@@ -20,5 +21,33 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
         };
 
         return await query.ToListAsync();
+    }
+        //for assigning 
+    public async Task<List<EngagementAssignment>> GetAssignmentsAsync(long engagementId) =>
+        await context.EngagementAssignments
+            .AsNoTracking()
+            .Include(a => a.User).ThenInclude(u => u.Role)
+            .Where(a => a.EngagementId == engagementId)
+            .ToListAsync();
+
+    public async Task<EngagementAssignment?> GetAssignmentByRoleAsync(long engagementId, string roleName) =>
+        await context.EngagementAssignments
+            .Include(a => a.User).ThenInclude(u => u.Role)
+            .FirstOrDefaultAsync(a => a.EngagementId == engagementId && a.User.Role.Name == roleName);
+
+    public async Task RemoveAssignmentAsync(EngagementAssignment assignment)
+    {
+        context.EngagementAssignments.Remove(assignment);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task AddAssignmentAsync(long engagementId, int userId)
+    {
+        context.EngagementAssignments.Add(new EngagementAssignment
+        {
+            EngagementId = engagementId,
+            UserId = userId
+        });
+        await context.SaveChangesAsync();
     }
 }
