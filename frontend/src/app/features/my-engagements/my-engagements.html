@@ -23,7 +23,9 @@
 
     <div class="sort-control">
       <label for="sortBy">Sort by</label>
+     
       <select id="sortBy" [value]="sortBy()" (change)="onSortChange($any($event.target).value)">
+        <option value="kickoff">Kickoff date</option>
         <option value="readiness">Readiness score</option>
         <option value="client">Client name</option>
       </select>
