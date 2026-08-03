@@ -1,19 +1,30 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { HandoverService, HandoverInfoDto, SaveHandoverDraftRequest, CreateCommitmentRequest, CommitmentDto } from './handover.service';
+import {
+  HandoverService,
+  HandoverInfoDto,
+  SaveHandoverDraftRequest,
+  CreateCommitmentRequest,
+  UpdateCommitmentRequest,
+  CommitmentDto
+} from './handover.service';
+
+const MAX_FREE_TEXT_LENGTH = 2000;
+const SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
 
 @Component({
   selector: 'app-handover',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './handover.component.html',
-  styleUrls: ['./handover.component.css']
+  styleUrl: './handover.component.scss'
 })
 export class HandoverComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private handoverService = inject(HandoverService);
+  private fb = inject(FormBuilder);
 
   engagementId!: number;
   handover: HandoverInfoDto | null = null;
@@ -22,26 +33,49 @@ export class HandoverComponent implements OnInit {
   message = '';
   isError = false;
 
-  // Form Models
-  clientBackground = '';
-  businessProblem = '';
-  clientSentiment = '';
-  dealOrigin = '';
-  hasNoCommitments = false;
+  readonly sentimentOptions = SENTIMENT_OPTIONS;
+  readonly maxFreeTextLength = MAX_FREE_TEXT_LENGTH;
+
+  clientContextForm: FormGroup = this.fb.group({
+    clientBackground: ['', [Validators.maxLength(MAX_FREE_TEXT_LENGTH)]],
+    businessProblem: ['', [Validators.required, Validators.maxLength(MAX_FREE_TEXT_LENGTH)]],
+    clientSentiment: ['', [Validators.required]],
+    dealOrigin: ['', [Validators.maxLength(MAX_FREE_TEXT_LENGTH)]],
+    hasNoCommitments: [false]
+  });
 
   commitments: CommitmentDto[] = [];
-  
-  newCommitment: CreateCommitmentRequest = {
-    description: '',
-    commitmentTypeId: 1, // Default to Software
-    quantity: ''
-  };
+
+  newCommitment: CreateCommitmentRequest = this.emptyCommitment();
+  editingCommitmentId: number | null = null;
+  editCommitment: UpdateCommitmentRequest = this.emptyCommitment();
+  pendingDeleteId: number | null = null;
 
   commitmentTypes = [
     { id: 1, name: 'Software' },
     { id: 2, name: 'Services' },
     { id: 3, name: 'Training' }
   ];
+
+  get clientBackgroundControl() {
+    return this.clientContextForm.get('clientBackground')!;
+  }
+
+  get businessProblemControl() {
+    return this.clientContextForm.get('businessProblem')!;
+  }
+
+  get clientSentimentControl() {
+    return this.clientContextForm.get('clientSentiment')!;
+  }
+
+  get dealOriginControl() {
+    return this.clientContextForm.get('dealOrigin')!;
+  }
+
+  get isSubmitted(): boolean {
+    return this.handover?.status === 'Submitted';
+  }
 
   ngOnInit() {
     this.route.parent?.paramMap.subscribe(params => {
@@ -53,18 +87,27 @@ export class HandoverComponent implements OnInit {
     });
   }
 
+  private emptyCommitment(): CreateCommitmentRequest {
+    return { description: '', commitmentTypeId: 1, quantity: '' };
+  }
+
   loadHandover() {
     this.isLoading = true;
     this.handoverService.getHandover(this.engagementId).subscribe({
       next: (data) => {
         this.handover = data;
-        this.clientBackground = data.clientBackground || '';
-        this.businessProblem = data.businessProblem || '';
-        this.clientSentiment = data.clientSentiment || '';
-        this.dealOrigin = data.dealOrigin || '';
-        this.hasNoCommitments = data.hasNoCommitments;
+        this.clientContextForm.patchValue({
+          clientBackground: data.clientBackground || '',
+          businessProblem: data.businessProblem || '',
+          clientSentiment: data.clientSentiment || '',
+          dealOrigin: data.dealOrigin || '',
+          hasNoCommitments: data.hasNoCommitments
+        });
         this.commitments = data.commitments || [];
         this.isLoading = false;
+        if (this.isSubmitted) {
+          this.clientContextForm.disable();
+        }
       },
       error: (err) => {
         // If 404, it might mean no draft exists yet, we can initialize empty
@@ -81,13 +124,7 @@ export class HandoverComponent implements OnInit {
 
   saveDraft() {
     this.isSaving = true;
-    const request: SaveHandoverDraftRequest = {
-      clientBackground: this.clientBackground,
-      businessProblem: this.businessProblem,
-      clientSentiment: this.clientSentiment,
-      dealOrigin: this.dealOrigin,
-      hasNoCommitments: this.hasNoCommitments
-    };
+    const request: SaveHandoverDraftRequest = this.clientContextForm.getRawValue();
 
     this.handoverService.saveDraft(this.engagementId, request).subscribe({
       next: (data) => {
@@ -95,8 +132,8 @@ export class HandoverComponent implements OnInit {
         this.showMessage('Draft saved successfully', false);
         this.isSaving = false;
       },
-      error: () => {
-        this.showMessage('Failed to save draft', true);
+      error: (err) => {
+        this.showMessage(this.extractErrorMessage(err, 'Failed to save draft'), true);
         this.isSaving = false;
       }
     });
@@ -108,20 +145,19 @@ export class HandoverComponent implements OnInit {
       return;
     }
 
-    if (confirm('Are you sure you want to submit? This cannot be undone.')) {
-      this.isSaving = true;
-      this.handoverService.submit(this.engagementId).subscribe({
-        next: (data) => {
-          this.handover = data;
-          this.showMessage('Handover submitted successfully', false);
-          this.isSaving = false;
-        },
-        error: (err) => {
-          this.showMessage(err.error?.Message || 'Failed to submit handover', true);
-          this.isSaving = false;
-        }
-      });
-    }
+    this.isSaving = true;
+    this.handoverService.submit(this.engagementId).subscribe({
+      next: (data) => {
+        this.handover = data;
+        this.clientContextForm.disable();
+        this.showMessage('Handover submitted successfully', false);
+        this.isSaving = false;
+      },
+      error: (err) => {
+        this.showMessage(this.extractErrorMessage(err, 'Failed to submit handover'), true);
+        this.isSaving = false;
+      }
+    });
   }
 
   addCommitment() {
@@ -133,38 +169,92 @@ export class HandoverComponent implements OnInit {
     this.handoverService.addCommitment(this.engagementId, this.newCommitment).subscribe({
       next: (data) => {
         this.commitments.push(data);
-        this.hasNoCommitments = false;
-        this.newCommitment = { description: '', commitmentTypeId: 1, quantity: '' };
+        this.clientContextForm.patchValue({ hasNoCommitments: false });
+        this.newCommitment = this.emptyCommitment();
         this.showMessage('Commitment added successfully', false);
       },
-      error: () => {
-        this.showMessage('Failed to add commitment', true);
+      error: (err) => {
+        this.showMessage(this.extractErrorMessage(err, 'Failed to add commitment'), true);
       }
     });
   }
 
-  deleteCommitment(id: number) {
-    if (confirm('Delete this commitment?')) {
-      this.handoverService.deleteCommitment(this.engagementId, id).subscribe({
-        next: () => {
-          this.commitments = this.commitments.filter(c => c.commitmentId !== id);
-          this.showMessage('Commitment deleted', false);
-        },
-        error: () => {
-          this.showMessage('Failed to delete commitment', true);
+  startEditCommitment(c: CommitmentDto) {
+    this.editingCommitmentId = c.commitmentId;
+    this.editCommitment = {
+      description: c.description,
+      commitmentTypeId: c.commitmentTypeId,
+      quantity: c.quantity
+    };
+  }
+
+  cancelEditCommitment() {
+    this.editingCommitmentId = null;
+  }
+
+  saveEditCommitment(id: number) {
+    if (!this.editCommitment.description) {
+      this.showMessage('Commitment description is required.', true);
+      return;
+    }
+
+    this.handoverService.updateCommitment(this.engagementId, id, this.editCommitment).subscribe({
+      next: (data) => {
+        const index = this.commitments.findIndex(c => c.commitmentId === id);
+        if (index !== -1) {
+          this.commitments[index] = data;
         }
-      });
+        this.editingCommitmentId = null;
+        this.showMessage('Commitment updated successfully', false);
+      },
+      error: (err) => {
+        this.showMessage(this.extractErrorMessage(err, 'Failed to update commitment'), true);
+      }
+    });
+  }
+
+  requestDeleteCommitment(id: number) {
+    this.pendingDeleteId = id;
+  }
+
+  cancelDeleteCommitment() {
+    this.pendingDeleteId = null;
+  }
+
+  confirmDeleteCommitment(id: number) {
+    this.handoverService.deleteCommitment(this.engagementId, id).subscribe({
+      next: () => {
+        this.commitments = this.commitments.filter(c => c.commitmentId !== id);
+        this.pendingDeleteId = null;
+        this.showMessage('Commitment deleted', false);
+      },
+      error: (err) => {
+        this.pendingDeleteId = null;
+        this.showMessage(this.extractErrorMessage(err, 'Failed to delete commitment'), true);
+      }
+    });
+  }
+
+  onHasNoCommitmentsChange() {
+    if (this.clientContextForm.get('hasNoCommitments')?.value) {
+      this.commitments = [];
     }
   }
 
   private isValidForSubmit(): boolean {
-    if (!this.clientBackground || !this.businessProblem || !this.clientSentiment) {
+    const { businessProblem, clientSentiment, hasNoCommitments } = this.clientContextForm.getRawValue();
+    if (!businessProblem || !clientSentiment) {
       return false;
     }
-    if (this.commitments.length === 0 && !this.hasNoCommitments) {
+    if (this.commitments.length === 0 && !hasNoCommitments) {
       return false;
     }
     return true;
+  }
+
+  private extractErrorMessage(err: unknown, fallback: string): string {
+    const message = (err as { error?: { message?: string } })?.error?.message;
+    return message || fallback;
   }
 
   private showMessage(msg: string, isErr: boolean) {
