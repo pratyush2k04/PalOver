@@ -1,0 +1,157 @@
+<div class="published-checklist">
+  <div class="published-checklist__header">
+    <h1>Published Checklist</h1>
+    @if (version(); as v) {
+      <span class="published-checklist__version-badge">
+        {{ v.statusName }} &middot; v{{ v.versionNumber }}
+      </span>
+    }
+  </div>
+
+  <div class="published-checklist__toolbar">
+    <div class="published-checklist__field published-checklist__category">
+      <label for="category-select">Category</label>
+      <select
+        id="category-select"
+        [ngModel]="selectedCategory()"
+        (ngModelChange)="selectedCategory.set($event); applyFilters()"
+      >
+        <option value="all">All Categories</option>
+        @for (category of categories(); track category) {
+          <option [value]="category">{{ category }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <app-loading-spinner label="Loading published checklist..." />
+  } @else if (notFound()) {
+    <div class="published-checklist__state">
+      No checklist has been published yet. Check back once an admin publishes a version.
+    </div>
+  } @else if (error()) {
+    <div class="published-checklist__state published-checklist__state--error">
+      {{ error() }}
+    </div>
+  } @else {
+    <div class="published-checklist__table-wrapper">
+      <table class="published-checklist__table">
+        <thead>
+          <tr>
+            <th (click)="sortBy('title')" class="sortable">
+              Title
+              @if (sortColumn() === 'title') {
+                <span class="sort-arrow">{{ sortDirection() === 'asc' ? '▲' : '▼' }}</span>
+              }
+            </th>
+            <th (click)="sortBy('categoryName')" class="sortable">
+              Category
+              @if (sortColumn() === 'categoryName') {
+                <span class="sort-arrow">{{ sortDirection() === 'asc' ? '▲' : '▼' }}</span>
+              }
+            </th>
+            <th (click)="sortBy('isMandatory')" class="sortable">
+              Mandatory
+              @if (sortColumn() === 'isMandatory') {
+                <span class="sort-arrow">{{ sortDirection() === 'asc' ? '▲' : '▼' }}</span>
+              }
+            </th>
+            <th (click)="sortBy('isRetired')" class="sortable">
+              Status
+              @if (sortColumn() === 'isRetired') {
+                <span class="sort-arrow">{{ sortDirection() === 'asc' ? '▲' : '▼' }}</span>
+              }
+            </th>
+            <th aria-label="expand"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of pagedItems(); track item.id) {
+            <tr class="published-checklist__row" (click)="toggleRow(item)">
+              <td>{{ item.title }}</td>
+              <td>{{ item.categoryName }}</td>
+              <td>
+                @if (item.isMandatory) {
+                  <span class="badge badge--mandatory">Mandatory</span>
+                } @else {
+                  <span class="badge badge--optional">Optional</span>
+                }
+              </td>
+              <td>
+                @if (item.isRetired) {
+                  <span class="badge badge--retired">Retired</span>
+                } @else {
+                  <span class="badge badge--active">Active</span>
+                }
+              </td>
+              <td>
+                <button
+                  type="button"
+                  class="published-checklist__expand-btn"
+                  (click)="$event.stopPropagation(); toggleRow(item)"
+                  [attr.aria-label]="isExpanded(item) ? 'Collapse row' : 'Expand row'"
+                >
+                  {{ isExpanded(item) ? '▲' : '▼' }}
+                </button>
+              </td>
+            </tr>
+            <tr class="published-checklist__detail-row">
+              <td colspan="5">
+                <div class="published-checklist__detail" [class.published-checklist__detail--open]="isExpanded(item)">
+                  <p>{{ item.description || 'No description provided.' }}</p>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      @if (filteredItems().length === 0) {
+        <div class="published-checklist__empty">No checklist items match your filters.</div>
+      }
+    </div>
+
+    <div class="published-checklist__paginator">
+      <div class="published-checklist__page-size">
+        <label for="page-size-select">Items per page:</label>
+        <select
+          id="page-size-select"
+          [ngModel]="pageSize()"
+          (ngModelChange)="onPageSizeChange($event)"
+        >
+          @for (size of pageSizeOptions; track size) {
+            <option [value]="size">{{ size }}</option>
+          }
+        </select>
+      </div>
+      <div class="published-checklist__page-info">
+        Page {{ pageIndex() + 1 }} of {{ totalPages() }}
+      </div>
+      <div class="published-checklist__page-actions">
+        <button type="button" (click)="goToFirstPage()" [disabled]="pageIndex() === 0" aria-label="First page">
+          &laquo;
+        </button>
+        <button type="button" (click)="goToPreviousPage()" [disabled]="pageIndex() === 0" aria-label="Previous page">
+          &lsaquo;
+        </button>
+        <button
+          type="button"
+          (click)="goToNextPage()"
+          [disabled]="pageIndex() >= totalPages() - 1"
+          aria-label="Next page"
+        >
+          &rsaquo;
+        </button>
+        <button
+          type="button"
+          (click)="goToLastPage()"
+          [disabled]="pageIndex() >= totalPages() - 1"
+          aria-label="Last page"
+        >
+          &raquo;
+        </button>
+      </div>
+    </div>
+  }
+</div>

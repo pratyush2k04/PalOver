@@ -7,7 +7,7 @@ public class EngagementAssignment
 {
     public int UserId { get; set; }
 
-    public long EngagementId { get; set; }
+    public int EngagementId { get; set; }
 
     // Navigation Properties
     public User User { get; set; } = null!;

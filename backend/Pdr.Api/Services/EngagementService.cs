@@ -1,22 +1,27 @@
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
 using Pdr.Api.DTOs.Engagements;
+using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
+using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class EngagementService(AppDbContext db) : IEngagementService
+public class EngagementService(AppDbContext db, IEngagementRepository engagementRepository, ICurrentUserService currentUserService) : IEngagementService
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
 
     public async Task<MarkSowSignedResponse> MarkSowSignedAsync(MarkSowSignedRequest request)
     {
-        if (request.BillingStartDate is { } billingStartDate && billingStartDate < request.KickoffDate)
+        if (request.BillingStartDate < request.KickoffDate)
             throw new BillingBeforeKickoffException();
 
         if (!await db.EngagementTypes.AnyAsync(t => t.Id == request.EngagementTypeId))
             throw new InvalidEngagementTypeException(request.EngagementTypeId);
+
+        if (!await db.CommercialModels.AnyAsync(m => m.Id == request.CommercialModelId))
+            throw new InvalidCommercialModelException(request.CommercialModelId);
 
         var warnings = new List<string>();
         var clientName = request.ClientName;
@@ -37,6 +42,7 @@ public class EngagementService(AppDbContext db) : IEngagementService
         Engagement engagement;
         if (existing is not null)
         {
+            existing.CommercialModelId = request.CommercialModelId;
             existing.KickoffDate = request.KickoffDate;
             existing.BillingStartDate = request.BillingStartDate;
             warnings.Add("This engagement already exists - updated instead of duplicated.");
@@ -51,6 +57,7 @@ public class EngagementService(AppDbContext db) : IEngagementService
                 ClientName = clientName,
                 EngagementDescription = request.EngagementDescription,
                 EngagementTypeId = request.EngagementTypeId,
+                CommercialModelId = request.CommercialModelId,
                 KickoffDate = request.KickoffDate,
                 BillingStartDate = request.BillingStartDate,
                 StatusId = defaultStatus.StatusId,
@@ -67,38 +74,27 @@ public class EngagementService(AppDbContext db) : IEngagementService
             .Select(t => new EngagementTypeDto(t.Id, t.Name))
             .ToListAsync();
 
-    public async Task<EngagementInfoDto?> GetEngagementInfoAsync(long id){
-        Console.WriteLine("GetEngagementInfoAsync called with id: " + id);
-        Console.WriteLine(
-    System.Text.Json.JsonSerializer.Serialize(
-        db.Engagements
+    public async Task<IEnumerable<CommercialModelDto>> GetCommercialModelsAsync() =>
+        await db.CommercialModels
+            .Select(m => new CommercialModelDto(m.Id, m.Name))
+            .ToListAsync();
+
+    public async Task<EngagementInfoDto?> GetEngagementInfoAsync(int id) =>
+        await db.Engagements
             .Where(e => e.EngagementId == id)
             .Select(e => new EngagementInfoDto(
                 e.EngagementId,
                 e.ClientName,
                 e.EngagementDescription,
                 e.EngagementType.Name,
-                e.KickoffDate,
-                e.BillingStartDate,
-                e.Status.StatusName)).ToList(),
-        new System.Text.Json.JsonSerializerOptions
-        {
-            WriteIndented = true
-        }));
-        return await db.Engagements
-            .Where(e => e.EngagementId == id)
-            .Select(e => new EngagementInfoDto(
-                e.EngagementId,
-                e.ClientName,
-                e.EngagementDescription,
-                e.EngagementType.Name,
+                e.CommercialModel.Name,
                 e.KickoffDate,
                 e.BillingStartDate,
                 e.Status.StatusName))
             .FirstOrDefaultAsync();
-    }
+    
 
-    public async Task<bool> EditEngagementAsync(long id, EditEngagementRequest request)
+    public async Task<bool> EditEngagementAsync(int id, EditEngagementRequest request)
     {
         var engagement = await db.Engagements.FindAsync(id);
         if (engagement is null) return false;
@@ -112,6 +108,13 @@ public class EngagementService(AppDbContext db) : IEngagementService
 
             engagement.EngagementTypeId = request.EngagementTypeId.Value;
         }
+        if (request.CommercialModelId is not null)
+        {
+            if (!await db.CommercialModels.AnyAsync(m => m.Id == request.CommercialModelId.Value))
+                throw new InvalidCommercialModelException(request.CommercialModelId.Value);
+
+            engagement.CommercialModelId = request.CommercialModelId.Value;
+        }
         if (request.KickoffDate is not null) engagement.KickoffDate = request.KickoffDate.Value;
         if (request.BillingStartDate is not null) engagement.BillingStartDate = request.BillingStartDate;
 
@@ -120,5 +123,23 @@ public class EngagementService(AppDbContext db) : IEngagementService
 
         await db.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<PmEngagementListResponse> GetMyEngagementsAsync(string sortBy)
+    {
+        var userId = currentUserService.GetUserId();
+        var engagements = await engagementRepository.GetEngagementsForPmAsync(userId, sortBy);
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        var items = engagements
+            .Select(e => new PmEngagementListItemDto(
+                e.EngagementId,
+                e.ClientName,
+                e.KickoffDate,
+                e.KickoffDate.DayNumber - today.DayNumber,
+                ReadinessScore: null))
+            .ToList();
+
+        return new PmEngagementListResponse(items);
     }
 }

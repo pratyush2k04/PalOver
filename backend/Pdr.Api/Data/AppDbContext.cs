@@ -8,6 +8,9 @@ using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Models.MasterChecklist;
 using Pdr.Api.Models.Handover;
 
+using Pdr.Api.Models.Documents;
+//using System.Reflection;
+
 namespace Pdr.Api.Data;
 
 public class AppDbContext : DbContext
@@ -21,6 +24,7 @@ public class AppDbContext : DbContext
     public DbSet<Commitment> Commitments => Set<Commitment>();
     public DbSet<CommitmentType> CommitmentTypes => Set<CommitmentType>();
     public DbSet<HandoverStatus> HandoverStatuses => Set<HandoverStatus>();
+    public DbSet<CommercialModel> CommercialModels => Set<CommercialModel>();
     private readonly IHttpContextAccessor? _httpContextAccessor;
 
     public AppDbContext(
@@ -34,12 +38,16 @@ public class AppDbContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<EngagementAssignment> EngagementAssignments => Set<EngagementAssignment>();
 
-    public DbSet<ChecklistCategory> ChecklistCategories => Set<ChecklistCategory>();
-    public DbSet<ChecklistStatus> ChecklistStatuses => Set<ChecklistStatus>();
-    public DbSet<ChecklistVersion> ChecklistVersions => Set<ChecklistVersion>();
-    public DbSet<ChecklistItem> ChecklistItems => Set<ChecklistItem>();
+    public DbSet<MasterChecklistCategory> MasterChecklistCategories => Set<MasterChecklistCategory>();
+    public DbSet<MasterChecklistStatus> MasterChecklistStatuses => Set<MasterChecklistStatus>();
+    public DbSet<MasterChecklistVersion> MasterChecklistVersions => Set<MasterChecklistVersion>();
+    public DbSet<MasterChecklistItem> MasterChecklistItems => Set<MasterChecklistItem>();
 
     private static readonly DateTime SeedTimestamp = new(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+    // Documents
+    public DbSet<DocumentCategory> DocumentCategories => Set<DocumentCategory>();
+    public DbSet<Document> Documents => Set<Document>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -48,8 +56,6 @@ public class AppDbContext : DbContext
         // Apply Configuration Classes from Assembly
         modelBuilder.ApplyConfiguration(new RoleConfiguration());
         modelBuilder.ApplyConfiguration(new EngagementAssignmentConfiguration());
-        modelBuilder.ApplyConfiguration(new ChecklistCategoryConfiguration());
-        modelBuilder.ApplyConfiguration(new ChecklistStatusConfiguration());
         
         // Handover Configuration
         modelBuilder.ApplyConfiguration(new HandoverInfoConfiguration());
@@ -57,15 +63,21 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new CommitmentTypeConfiguration());
         modelBuilder.ApplyConfiguration(new HandoverStatusConfiguration());
 
+        modelBuilder.ApplyConfiguration(new MasterChecklistCategoryConfiguration());
+        modelBuilder.ApplyConfiguration(new MasterChecklistStatusConfiguration());
+
+        modelBuilder.ApplyConfiguration(new DocumentCategoryConfiguration());
+        modelBuilder.ApplyConfiguration(new DocumentConfiguration());
+
         // Global Query Filters (Soft Delete)
         modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
         modelBuilder.Entity<Role>().HasQueryFilter(r => !r.IsDeleted);
         modelBuilder.Entity<EngagementAssignment>().HasQueryFilter(ea => !ea.User.IsDeleted);
 
         // ChecklistVersion
-        modelBuilder.Entity<ChecklistVersion>(entity =>
+        modelBuilder.Entity<MasterChecklistVersion>(entity =>
         {
-            entity.ToTable("checklist_versions");
+            entity.ToTable("master_checklist_versions");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id").UseIdentityAlwaysColumn();
             entity.Property(e => e.VersionNumber).HasColumnName("version_number").IsRequired();
@@ -98,9 +110,9 @@ public class AppDbContext : DbContext
         });
 
         // ChecklistItem
-        modelBuilder.Entity<ChecklistItem>(entity =>
+        modelBuilder.Entity<MasterChecklistItem>(entity =>
         {
-            entity.ToTable("checklist_items");
+            entity.ToTable("master_checklist_items");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id").UseIdentityAlwaysColumn();
             entity.Property(e => e.VersionId).HasColumnName("version_id").IsRequired();
@@ -130,7 +142,7 @@ public class AppDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(d => d.CategoryId);
 
-            entity.HasData(GetChecklistItemSeedData());
+            entity.HasData(GetMasterChecklistItemSeedData());
         });
 
         // User Configuration
@@ -260,6 +272,20 @@ public class AppDbContext : DbContext
             entity.HasData(typeSeeds);
         });
 
+        modelBuilder.Entity<CommercialModel>(entity =>
+        {
+            entity.ToTable("commercial_models");
+            entity.HasKey(m => m.Id);
+            entity.Property(m => m.Id).HasColumnName("id");
+            entity.Property(m => m.Name).HasColumnName("name").HasMaxLength(100).IsRequired();
+
+            entity.HasData(
+                new { Id = 1, Name = "Time and Material" },
+                new { Id = 2, Name = "Fixed" },
+                new { Id = 3, Name = "Capped T&M" }
+            );
+        });
+
         modelBuilder.Entity<Engagement>(entity =>
         {
             entity.ToTable("engagements");
@@ -268,6 +294,7 @@ public class AppDbContext : DbContext
             entity.Property(e => e.ClientName).HasColumnName("client_name").HasMaxLength(200).IsRequired();
             entity.Property(e => e.EngagementDescription).HasColumnName("engagement_description");
             entity.Property(e => e.EngagementTypeId).HasColumnName("engagement_type_id").IsRequired();
+            entity.Property(e => e.CommercialModelId).HasColumnName("commercial_model_id").IsRequired();
             entity.Property(e => e.KickoffDate).HasColumnName("kickoff_date").IsRequired();
             entity.Property(e => e.BillingStartDate).HasColumnName("billing_start_date");
             entity.Property(e => e.StatusId).HasColumnName("status_id");
@@ -286,6 +313,10 @@ public class AppDbContext : DbContext
                   .WithMany()
                   .HasForeignKey(e => e.EngagementTypeId);
 
+            entity.HasOne(e => e.CommercialModel)
+                  .WithMany()
+                  .HasForeignKey(e => e.CommercialModelId);
+
             entity.HasOne(e => e.Status)
                   .WithMany(s => s.Engagements)
                   .HasForeignKey(e => e.StatusId);
@@ -297,6 +328,7 @@ public class AppDbContext : DbContext
                     ClientName = "FinTech Solutions",
                     EngagementDescription = "Core Banking Greenfield Implementation",
                     EngagementTypeId = 1, // Greenfield
+                    CommercialModelId = 1, // Time and Material
                     KickoffDate = new DateOnly(2026, 8, 15),
                     StatusId = 1, // KickoffPending
                     CreatedAt = SeedTimestamp,
@@ -310,6 +342,7 @@ public class AppDbContext : DbContext
                     ClientName = "HealthCare Plus",
                     EngagementDescription = "Legacy System Upgrade and Support",
                     EngagementTypeId = 2, // Brownfield
+                    CommercialModelId = 2, // Fixed
                     KickoffDate = new DateOnly(2026, 6, 1),
                     BillingStartDate = new DateOnly(2026, 7, 1),
                     StatusId = 2, // Active
@@ -334,7 +367,7 @@ public class AppDbContext : DbContext
         return base.SaveChanges();
     }
 
-    private static object[] GetChecklistItemSeedData()
+    private static object[] GetMasterChecklistItemSeedData()
     {
         var items = new (string Title, string Description, long CategoryId, bool IsMandatory)[]
         {

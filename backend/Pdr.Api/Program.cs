@@ -79,14 +79,23 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IEngagementService, EngagementService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
+
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserManagementService, UserManagementService>();
-builder.Services.AddScoped<IChecklistRepository, ChecklistRepository>();
-builder.Services.AddScoped<IChecklistService, ChecklistService>();
 builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IHandoverAccessService, Pdr.Api.Services.HandoverAccessService>();
 builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IHandoverService, Pdr.Api.Services.HandoverService>();
 builder.Services.AddScoped<Pdr.Api.Services.Interfaces.ICommitmentService, Pdr.Api.Services.CommitmentService>();
+builder.Services.AddScoped<IMasterChecklistRepository, MasterChecklistRepository>();
+builder.Services.AddScoped<IMasterChecklistService, MasterChecklistService>();
+builder.Services.AddScoped<IHomeService, HomeService>();
+builder.Services.AddScoped<IEngagementRepository, EngagementRepository>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IDocumentService, DocumentService>();
+
+// Register FluentValidation Validators
+builder.Services.AddValidatorsFromAssemblyContaining<DocumentUploadDtoValidator>();
 
 // JWT Authentication
 var secretKey = builder.Configuration["JwtSettings:SecretKey"]
@@ -125,7 +134,30 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
+    try
+    {
+        db.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[Warning] EF Migration skipped or encountered existing schema: {ex.Message}");
+    }
+
+    if (!db.EngagementTypes.Any())
+    {
+        db.EngagementTypes.AddRange(
+            Enum.GetValues<EngagementTypeEnum>()
+                .Select(t => new EngagementType { Name = t.ToString() }));
+        db.SaveChanges();
+    }
+
+    if (!db.EngagementStatuses.Any())
+    {
+        db.EngagementStatuses.AddRange(
+            Enum.GetValues<EngagementStatusEnum>()
+                .Select(s => new EngagementStatus { StatusName = s.ToString() }));
+        db.SaveChanges();
+    }
 }
 
 // Configure the HTTP request pipeline.

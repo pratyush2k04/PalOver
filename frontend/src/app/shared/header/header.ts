@@ -1,4 +1,5 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { AppContextService } from '../../services/app-context';
 
 @Component({
   selector: 'app-header',
@@ -7,9 +8,10 @@ import { Component, Input } from '@angular/core';
   styleUrl: './header.scss'
 })
 export class HeaderComponent {
-  @Input() userName = 'Meera Krishnan';
-  @Input() userRole = 'Pre-Sales Representative';
-  @Input() notificationCount = 1;
+  private appContext = inject(AppContextService);
+
+  readonly user = this.appContext.user;
+  readonly workspace = this.appContext.workspace;
 
   initials(name: string): string {
     return name

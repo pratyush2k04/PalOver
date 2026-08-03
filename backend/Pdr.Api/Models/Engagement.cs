@@ -6,7 +6,7 @@ namespace Pdr.Api.Models;
 public class Engagement : BaseAuditableEntity
 {
     [Key]
-    public long EngagementId { get; set; }
+    public int EngagementId { get; set; }
 
     [Required]
     [MinLength(1)]
@@ -20,6 +20,14 @@ public class Engagement : BaseAuditableEntity
 
     [ForeignKey(nameof(EngagementTypeId))]
     public EngagementType EngagementType { get; set; } = null!;
+
+    
+    [Required]
+    public int CommercialModelId { get; set; }
+
+    [ForeignKey(nameof(CommercialModelId))]
+    public CommercialModel CommercialModel { get; set; } = null!;
+
     [Required]
     public DateOnly KickoffDate { get; set; }
 

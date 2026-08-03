@@ -56,6 +56,12 @@
   flex-shrink: 0;
 }
 
+.welcome-message {
+  font-size: 0.85rem;
+  color: #4b5563;
+  white-space: nowrap;
+}
+
 .notification-button {
   position: relative;
   display: flex;

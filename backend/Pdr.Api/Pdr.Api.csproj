@@ -29,6 +29,8 @@
     <Folder Include="DTOs\" />
     <Folder Include="Repositories\Interfaces\" />
     <Folder Include="Services\Interfaces\" />
+    <Folder Include="Validators\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>
