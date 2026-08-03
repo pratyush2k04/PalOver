@@ -1,38 +1,92 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { EngagementInfoDto, EngagementService } from '../../services/engagement.service';
+
+interface WorkspaceTab {
+  label: string;
+  route: string;
+  enabled: boolean;
+}
 
 @Component({
   selector: 'app-engagement-workspace',
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './engagement-workspace.component.html',
-  styleUrls: ['./engagement-workspace.component.css']
+  styleUrl: './engagement-workspace.component.scss'
 })
 export class EngagementWorkspaceComponent implements OnInit {
-  engagementDetails = {
-    engagementName: 'Project Phoenix',
-    clientName: 'Acme Corp',
-    engagementType: 'Delivery',
-    kickoffDate: '2026-09-01',
-    billingDate: '2026-09-15',
-    readinessScore: 85,
-    kickoffReadyState: 'Ready'
-  };
+  private route = inject(ActivatedRoute);
+  private engagementService = inject(EngagementService);
 
-  tabs = [
-    { label: 'Handover', route: 'handover' },
-    { label: 'Documents', route: 'documents' },
-    { label: 'People', route: 'people' },
-    { label: 'Checklist', route: 'checklist' },
-    { label: 'Kickoff', route: 'kickoff' },
-    { label: 'Resourcing', route: 'resourcing' },
-    { label: 'Technical Readiness', route: 'technical-readiness' },
-    { label: 'Risks', route: 'risks' },
-    { label: 'Reporting', route: 'reporting' }
+  engagementId!: number;
+  engagement: EngagementInfoDto | null = null;
+  isLoading = true;
+
+  readonly tabs: WorkspaceTab[] = [
+    { label: 'Handover', route: 'handover', enabled: true },
+    { label: 'Documents', route: 'documents', enabled: false },
+    { label: 'People', route: 'people', enabled: false },
+    { label: 'Checklist', route: 'checklist', enabled: false },
+    { label: 'Kickoff', route: 'kickoff', enabled: false },
+    { label: 'Resourcing', route: 'resourcing', enabled: false },
+    { label: 'Technical Readiness', route: 'technical-readiness', enabled: false },
+    { label: 'Risks', route: 'risks', enabled: false },
+    { label: 'Reporting', route: 'reporting', enabled: false }
   ];
 
+  activeTabIndex = 0;
+
   ngOnInit() {
-    // Future: fetch engagement details dynamically based on route param
+    const idStr = this.route.snapshot.paramMap.get('id');
+    if (idStr) {
+      this.engagementId = +idStr;
+      this.loadEngagement();
+    }
+  }
+
+  private loadEngagement() {
+    this.isLoading = true;
+    this.engagementService.getEngagementInfo(this.engagementId).subscribe({
+      next: (data) => {
+        this.engagement = data;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.engagement = null;
+        this.isLoading = false;
+      }
+    });
+  }
+
+  onTabKeydown(event: KeyboardEvent) {
+    const enabledIndexes = this.tabs
+      .map((tab, index) => ({ tab, index }))
+      .filter(({ tab }) => tab.enabled)
+      .map(({ index }) => index);
+
+    if (enabledIndexes.length === 0) {
+      return;
+    }
+
+    const currentPos = enabledIndexes.indexOf(this.activeTabIndex);
+
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+      event.preventDefault();
+      const nextPos = (currentPos + 1) % enabledIndexes.length;
+      this.focusTab(enabledIndexes[nextPos]);
+    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      const prevPos = (currentPos - 1 + enabledIndexes.length) % enabledIndexes.length;
+      this.focusTab(enabledIndexes[prevPos]);
+    }
+  }
+
+  private focusTab(index: number) {
+    this.activeTabIndex = index;
+    const tabElements = document.querySelectorAll<HTMLElement>('.tab-item');
+    tabElements[index]?.focus();
+    tabElements[index]?.click();
   }
 }

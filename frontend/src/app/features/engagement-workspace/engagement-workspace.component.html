@@ -1,27 +1,41 @@
 <div class="workspace-container">
-  <div class="workspace-header">
+  <div class="workspace-header" *ngIf="!isLoading && engagement">
     <div class="header-info">
-      <h1>{{ engagementDetails.engagementName }}</h1>
-      <p><strong>Client:</strong> {{ engagementDetails.clientName }}</p>
-      <p><strong>Type:</strong> {{ engagementDetails.engagementType }}</p>
+      <h1>{{ engagement.clientName }}</h1>
+      <p><strong>Type:</strong> {{ engagement.engagementType }}</p>
     </div>
     <div class="header-metrics">
-      <p><strong>Kickoff Date:</strong> {{ engagementDetails.kickoffDate }}</p>
-      <p><strong>Billing Date:</strong> {{ engagementDetails.billingDate }}</p>
-      <p><strong>Readiness Score:</strong> {{ engagementDetails.readinessScore }}</p>
-      <p><strong>Kickoff Ready State:</strong> <span class="badge">{{ engagementDetails.kickoffReadyState }}</span></p>
+      <p><strong>Kickoff Date:</strong> {{ engagement.kickoffDate }}</p>
+      <p><strong>Billing Date:</strong> {{ engagement.billingStartDate || '—' }}</p>
+      <p><strong>Readiness Score:</strong> <span class="placeholder">Coming soon</span></p>
+      <p><strong>Kickoff Ready State:</strong> <span class="placeholder">Coming soon</span></p>
     </div>
   </div>
 
-  <div class="workspace-tabs" role="tablist">
-    <a *ngFor="let tab of tabs" 
-       [routerLink]="tab.route" 
-       routerLinkActive="active" 
-       class="tab-item"
-       role="tab"
-       tabindex="0">
-      {{ tab.label }}
-    </a>
+  <div class="workspace-header" *ngIf="isLoading">
+    <p>Loading engagement details...</p>
+  </div>
+
+  <div class="workspace-tabs" role="tablist" (keydown)="onTabKeydown($event)">
+    <ng-container *ngFor="let tab of tabs; let i = index">
+      <a *ngIf="tab.enabled"
+         [routerLink]="tab.route"
+         routerLinkActive="active"
+         class="tab-item"
+         role="tab"
+         [attr.aria-selected]="i === activeTabIndex"
+         [tabindex]="i === activeTabIndex ? 0 : -1">
+        {{ tab.label }}
+      </a>
+      <span *ngIf="!tab.enabled"
+            class="tab-item tab-item-disabled"
+            role="tab"
+            aria-disabled="true"
+            [attr.aria-selected]="false"
+            tabindex="-1">
+        {{ tab.label }}
+      </span>
+    </ng-container>
   </div>
 
   <div class="workspace-content">
