@@ -24,14 +24,13 @@ POST {{host}}/api/auth/login
 Content-Type: {{contentType}}
 
 {
-  "email": "leadership@company.com",
+  "email": "pm@company.com",
   "password": "Password@123"
 }
 
 ###
 
-@pmToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0Iiwicm9sZSI6WyJMZWFkZXJzaGlwIiwiTGVhZGVyc2hpcCJdLCJlbWFpbCI6ImxlYWRlcnNoaXBAY29tcGFueS5jb20iLCJmdWxsbmFtZSI6Ik5laGEgU2hhcm1hIiwiaXNBZG1pbiI6ImZhbHNlIiwibmJmIjoxNzg1NTgxMjA3LCJleHAiOjE3ODU1ODMwMDcsImlhdCI6MTc4NTU4MTIwNywiaXNzIjoiUGRyQXBpIiwiYXVkIjoiUGRyV2ViIn0.D50Kv5KK5zIP_lKBJ1guGOqUzYHrCv8uHwGm6HHtktk
-
+@pmToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwicm9sZSI6WyJQcm9qZWN0IE1hbmFnZW1lbnQiLCJQcm9qZWN0IE1hbmFnZW1lbnQiXSwiZW1haWwiOiJwbUBjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiQXNoYSBSYW8iLCJpc0FkbWluIjoiZmFsc2UiLCJuYmYiOjE3ODU3MzQzOTksImV4cCI6MTc4NTczNjE5OSwiaWF0IjoxNzg1NzM0Mzk5LCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.1834fBWozEoheS6mLHKJ02JXL-pbcxytKZKghUPSFZE
 ##############################################################
 #################### ADMIN ENDPOINTS #########################
 ##############################################################
