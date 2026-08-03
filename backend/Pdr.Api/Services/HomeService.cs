@@ -44,7 +44,7 @@ public class HomeService(AppDbContext db) : IHomeService
 
         return user.Role.Name switch
         {
-            "Project Management" => "/my-engagements",
+            "Project Management" => "/engagement-dashboard",
             "Pre Sales" => "/my-handovers",
             "Tech Lead" => "/technical-readiness",
             "Leadership" => "/portfolio-dashboard",
