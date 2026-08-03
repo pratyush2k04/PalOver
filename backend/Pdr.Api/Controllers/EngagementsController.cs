@@ -59,4 +59,28 @@ public class EngagementsController(IEngagementService engagementService) : Contr
             return BadRequest(ex.Message);
         }
     }
+
+    [HttpGet("{id:long}/owners")]
+    [Authorize(Roles = "Leadership")]
+    public async Task<ActionResult<EngagementOwnersDto>> GetEngagementOwners(long id)
+    {
+        var owners = await engagementService.GetEngagementOwnersAsync(id);
+        return Ok(owners);
+    }
+    //assign
+    [HttpPut("{id:long}/project-manager")]
+    [Authorize(Roles = "Leadership")]
+    public async Task<ActionResult<EngagementOwnersDto>> AssignProjectManager(long id, AssignOwnerRequest request)
+    {
+        var owners = await engagementService.AssignProjectManagerAsync(id, request.UserId);
+        return Ok(owners);
+    }
+
+    [HttpPut("{id:long}/tech-lead")]
+    [Authorize(Roles = "Leadership")]
+    public async Task<ActionResult<EngagementOwnersDto>> AssignTechLead(long id, AssignOwnerRequest request)
+    {
+        var owners = await engagementService.AssignTechLeadAsync(id, request.UserId);
+        return Ok(owners);
+    }
 }

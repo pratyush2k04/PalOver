@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Pdr.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class initialcreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -110,7 +110,7 @@ namespace Pdr.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "checklist_versions",
+                name: "master_checklist_versions",
                 columns: table => new
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
@@ -125,9 +125,9 @@ namespace Pdr.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_checklist_versions", x => x.id);
+                    table.PrimaryKey("PK_master_checklist_versions", x => x.id);
                     table.ForeignKey(
-                        name: "FK_checklist_versions_checklist_statuses_status_id",
+                        name: "FK_master_checklist_versions_checklist_statuses_status_id",
                         column: x => x.status_id,
                         principalTable: "checklist_statuses",
                         principalColumn: "id",
@@ -207,7 +207,7 @@ namespace Pdr.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "checklist_items",
+                name: "master_checklist_items",
                 columns: table => new
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
@@ -227,17 +227,17 @@ namespace Pdr.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_checklist_items", x => x.id);
+                    table.PrimaryKey("PK_master_checklist_items", x => x.id);
                     table.ForeignKey(
-                        name: "FK_checklist_items_checklist_categories_category_id",
+                        name: "FK_master_checklist_items_checklist_categories_category_id",
                         column: x => x.category_id,
                         principalTable: "checklist_categories",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_checklist_items_checklist_versions_version_id",
+                        name: "FK_master_checklist_items_master_checklist_versions_version_id",
                         column: x => x.version_id,
-                        principalTable: "checklist_versions",
+                        principalTable: "master_checklist_versions",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -358,7 +358,7 @@ namespace Pdr.Api.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "checklist_versions",
+                table: "master_checklist_versions",
                 columns: new[] { "id", "created_at", "created_by", "status_id", "updated_at", "updated_by", "version_number" },
                 values: new object[] { 1L, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, 1L, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, 1 });
 
@@ -375,7 +375,7 @@ namespace Pdr.Api.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "checklist_items",
+                table: "master_checklist_items",
                 columns: new[] { "id", "category_id", "created_at", "created_by", "description", "display_order", "is_mandatory", "title", "updated_at", "updated_by", "version_id" },
                 values: new object[,]
                 {
@@ -390,12 +390,12 @@ namespace Pdr.Api.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "checklist_items",
+                table: "master_checklist_items",
                 columns: new[] { "id", "category_id", "created_at", "created_by", "description", "display_order", "title", "updated_at", "updated_by", "version_id" },
                 values: new object[] { 9L, 3L, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, "Record assumptions made during the sales cycle that affect scope.", 9, "Identify scope assumptions and exclusions", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, 1L });
 
             migrationBuilder.InsertData(
-                table: "checklist_items",
+                table: "master_checklist_items",
                 columns: new[] { "id", "category_id", "created_at", "created_by", "description", "display_order", "is_mandatory", "title", "updated_at", "updated_by", "version_id" },
                 values: new object[,]
                 {
@@ -405,12 +405,12 @@ namespace Pdr.Api.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "checklist_items",
+                table: "master_checklist_items",
                 columns: new[] { "id", "category_id", "created_at", "created_by", "description", "display_order", "title", "updated_at", "updated_by", "version_id" },
                 values: new object[] { 13L, 4L, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, "Assign an owner to maintain the Risks, Assumptions, Issues, and Dependencies log.", 13, "Confirm RAID log owner", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, 1L });
 
             migrationBuilder.InsertData(
-                table: "checklist_items",
+                table: "master_checklist_items",
                 columns: new[] { "id", "category_id", "created_at", "created_by", "description", "display_order", "is_mandatory", "title", "updated_at", "updated_by", "version_id" },
                 values: new object[,]
                 {
@@ -419,12 +419,12 @@ namespace Pdr.Api.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "checklist_items",
+                table: "master_checklist_items",
                 columns: new[] { "id", "category_id", "created_at", "created_by", "description", "display_order", "title", "updated_at", "updated_by", "version_id" },
                 values: new object[] { 16L, 5L, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, "Name backup resources in case of absence during the engagement.", 16, "Identify backup/on-call resources", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, 1L });
 
             migrationBuilder.InsertData(
-                table: "checklist_items",
+                table: "master_checklist_items",
                 columns: new[] { "id", "category_id", "created_at", "created_by", "description", "display_order", "is_mandatory", "title", "updated_at", "updated_by", "version_id" },
                 values: new object[,]
                 {
@@ -434,24 +434,9 @@ namespace Pdr.Api.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "checklist_items",
+                table: "master_checklist_items",
                 columns: new[] { "id", "category_id", "created_at", "created_by", "description", "display_order", "title", "updated_at", "updated_by", "version_id" },
                 values: new object[] { 20L, 6L, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, "Review any client-specific security or compliance obligations.", 20, "Confirm security and compliance requirements", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, 1L });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_checklist_items_category_id",
-                table: "checklist_items",
-                column: "category_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_checklist_items_version_id",
-                table: "checklist_items",
-                column: "version_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_checklist_versions_status_id",
-                table: "checklist_versions",
-                column: "status_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_documents_category_id",
@@ -484,6 +469,21 @@ namespace Pdr.Api.Migrations
                 column: "status_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_master_checklist_items_category_id",
+                table: "master_checklist_items",
+                column: "category_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_master_checklist_items_version_id",
+                table: "master_checklist_items",
+                column: "version_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_master_checklist_versions_status_id",
+                table: "master_checklist_versions",
+                column: "status_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_roles_name",
                 table: "roles",
                 column: "name",
@@ -505,19 +505,13 @@ namespace Pdr.Api.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "checklist_items");
-
-            migrationBuilder.DropTable(
                 name: "documents");
 
             migrationBuilder.DropTable(
                 name: "engagement_assignments");
 
             migrationBuilder.DropTable(
-                name: "checklist_categories");
-
-            migrationBuilder.DropTable(
-                name: "checklist_versions");
+                name: "master_checklist_items");
 
             migrationBuilder.DropTable(
                 name: "document_categories");
@@ -529,7 +523,10 @@ namespace Pdr.Api.Migrations
                 name: "users");
 
             migrationBuilder.DropTable(
-                name: "checklist_statuses");
+                name: "checklist_categories");
+
+            migrationBuilder.DropTable(
+                name: "master_checklist_versions");
 
             migrationBuilder.DropTable(
                 name: "commercial_models");
@@ -542,6 +539,9 @@ namespace Pdr.Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "roles");
+
+            migrationBuilder.DropTable(
+                name: "checklist_statuses");
         }
     }
 }

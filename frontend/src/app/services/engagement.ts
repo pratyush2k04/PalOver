@@ -45,6 +45,24 @@ interface GetCommercialModelsResponse {
   commercialModels: CommercialModelOption[];
 }
 
+export interface EngagementInfo {
+  engagementId: number;
+  clientName: string;
+  engagementDescription?: string;
+  engagementType: string;
+  commercialModel: string;
+  kickoffDate: string;
+  billingStartDate?: string;
+  status: string;
+}
+
+export interface EngagementOwners {
+  projectManagerId?: number;
+  projectManagerName?: string;
+  techLeadId?: number;
+  techLeadName?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -65,5 +83,21 @@ export class EngagementService {
     return this.http
       .get<GetCommercialModelsResponse>('/api/CommercialModels')
       .pipe(map((response) => response.commercialModels));
+  }
+
+  getEngagementInfo(id: number): Observable<EngagementInfo> {
+    return this.http.get<EngagementInfo>(`/api/Engagements/${id}`);
+  }
+  //assigning
+  getEngagementOwners(id: number): Observable<EngagementOwners> {
+    return this.http.get<EngagementOwners>(`/api/Engagements/${id}/owners`);
+  }
+
+  assignProjectManager(id: number, userId: number): Observable<EngagementOwners> {
+    return this.http.put<EngagementOwners>(`/api/Engagements/${id}/project-manager`, { userId });
+  }
+
+  assignTechLead(id: number, userId: number): Observable<EngagementOwners> {
+    return this.http.put<EngagementOwners>(`/api/Engagements/${id}/tech-lead`, { userId });
   }
 }
