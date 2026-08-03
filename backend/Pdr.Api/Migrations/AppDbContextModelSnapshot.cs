@@ -61,12 +61,12 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.Documents.Document", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("integer")
                         .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("integer")
@@ -89,8 +89,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("created_by");
 
-                    b.Property<long>("EngagementId")
-                        .HasColumnType("bigint")
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer")
                         .HasColumnName("engagement_id");
 
                     b.Property<string>("FileName")
@@ -189,12 +189,12 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
                 {
-                    b.Property<long>("EngagementId")
+                    b.Property<int>("EngagementId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("integer")
                         .HasColumnName("engagement_id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("EngagementId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EngagementId"));
 
                     b.Property<DateOnly?>("BillingStartDate")
                         .HasColumnType("date")
@@ -271,8 +271,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("user_id");
 
-                    b.Property<long>("EngagementId")
-                        .HasColumnType("bigint")
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer")
                         .HasColumnName("engagement_id");
 
                     b.HasKey("UserId", "EngagementId");
@@ -1070,25 +1070,6 @@ namespace Pdr.Api.Migrations
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             VersionNumber = 1
                         });
-                });
-
-            modelBuilder.Entity("Pdr.Api.Models.Documents.Document", b =>
-                {
-                    b.HasOne("Pdr.Api.Models.Documents.DocumentCategory", "Category")
-                        .WithMany("Documents")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
-                        .WithMany()
-                        .HasForeignKey("EngagementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-
-                    b.Navigation("Engagement");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Documents.Document", b =>
