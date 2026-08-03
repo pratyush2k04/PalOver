@@ -25,8 +25,8 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'my-engagements',
-        // canActivate: [workspaceGuard],
+        path: 'engagement-dashboard',
+        canActivate: [workspaceGuard],
         loadComponent: () =>
           import('./features/home/project-manager-home/project-manager-home').then(
             (m) => m.ProjectManagerHomeComponent

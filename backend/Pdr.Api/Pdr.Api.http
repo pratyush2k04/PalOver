@@ -33,7 +33,7 @@ POST {{host}}/api/auth/login
 Content-Type: {{contentType}}
 
 {
-  "email": "leadership@company.com",
+  "email": "pm@company.com",
   "password": "Password@123"
 }
 
