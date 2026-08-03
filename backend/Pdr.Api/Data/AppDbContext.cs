@@ -7,6 +7,9 @@ using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Models.MasterChecklist;
 
+using Pdr.Api.Models.Documents;
+//using System.Reflection;
+
 namespace Pdr.Api.Data;
 
 public class AppDbContext : DbContext
@@ -35,6 +38,10 @@ public class AppDbContext : DbContext
 
     private static readonly DateTime SeedTimestamp = new(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
+    // Documents
+    public DbSet<DocumentCategory> DocumentCategories => Set<DocumentCategory>();
+    public DbSet<Document> Documents => Set<Document>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -44,6 +51,8 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new EngagementAssignmentConfiguration());
         modelBuilder.ApplyConfiguration(new MasterChecklistCategoryConfiguration());
         modelBuilder.ApplyConfiguration(new MasterChecklistStatusConfiguration());
+        modelBuilder.ApplyConfiguration(new DocumentCategoryConfiguration());
+        modelBuilder.ApplyConfiguration(new DocumentConfiguration());
 
         // Global Query Filters (Soft Delete)
         modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);

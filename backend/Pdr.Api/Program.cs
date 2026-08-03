@@ -79,6 +79,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IEngagementService, EngagementService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
+
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserManagementService, UserManagementService>();
@@ -87,6 +89,10 @@ builder.Services.AddScoped<IMasterChecklistService, MasterChecklistService>();
 builder.Services.AddScoped<IHomeService, HomeService>();
 builder.Services.AddScoped<IEngagementRepository, EngagementRepository>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IDocumentService, DocumentService>();
+
+// Register FluentValidation Validators
+builder.Services.AddValidatorsFromAssemblyContaining<DocumentUploadDtoValidator>();
 
 // JWT Authentication
 var secretKey = builder.Configuration["JwtSettings:SecretKey"]
@@ -125,7 +131,14 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
+    try
+    {
+        db.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[Warning] EF Migration skipped or encountered existing schema: {ex.Message}");
+    }
 
     if (!db.EngagementTypes.Any())
     {

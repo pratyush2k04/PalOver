@@ -10,13 +10,22 @@
 ### Login as Admin
 POST {{host}}/api/auth/login
 Content-Type: {{contentType}}
+
 {
   "email": "admin@company.com",
   "password": "Password@123"
 }
 
-###
+### Login as Pre Sales
+POST {{host}}/api/auth/login
+Content-Type: {{contentType}}
 
+{
+  "email": "presales@company.com",
+  "password": "Password@123"
+}
+
+###
 @adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1Iiwicm9sZSI6WyJMZWFkZXJzaGlwIiwiTGVhZGVyc2hpcCJdLCJlbWFpbCI6ImFkbWluQGNvbXBhbnkuY29tIiwiZnVsbG5hbWUiOiJBZG1pbiBVc2VyIiwiaXNBZG1pbiI6InRydWUiLCJuYmYiOjE3ODU1ODEwMzAsImV4cCI6MTc4NTU4MjgzMCwiaWF0IjoxNzg1NTgxMDMwLCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.7yshdqHlAWComq5pleIAmLvG60175cMQd4VLb-QhhQM
 
 ### Login as Project Manager
@@ -28,9 +37,65 @@ Content-Type: {{contentType}}
   "password": "Password@123"
 }
 
-###
+### 3. Invalid Credentials Login Test
+POST {{host}}/api/auth/login
+Content-Type: application/json
 
-@pmToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwicm9sZSI6WyJQcm9qZWN0IE1hbmFnZW1lbnQiLCJQcm9qZWN0IE1hbmFnZW1lbnQiXSwiZW1haWwiOiJwbUBjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiQXNoYSBSYW8iLCJpc0FkbWluIjoiZmFsc2UiLCJuYmYiOjE3ODU3MzQzOTksImV4cCI6MTc4NTczNjE5OSwiaWF0IjoxNzg1NzM0Mzk5LCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.1834fBWozEoheS6mLHKJ02JXL-pbcxytKZKghUPSFZE
+{
+  "email": "pm@company.com",
+  "password": "WrongPassword123"
+}
+
+###
+# ----------------------------------------------------
+# DOCUMENT REPOSITORY ENDPOINTS
+# Ensure you copy a valid JWT token from a login response 
+# and paste it here to test the authenticated endpoints.
+# ----------------------------------------------------
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZSI6WyJQcmUgU2FsZXMiLCJQcmUgU2FsZXMiXSwiZW1haWwiOiJwcmVzYWxlc0Bjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiUmFodWwgVmVybWEiLCJpc0FkbWluIjoiZmFsc2UiLCJuYmYiOjE3ODU3MzQzNjgsImV4cCI6MTc4NTczNjE2OCwiaWF0IjoxNzg1NzM0MzY4LCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.B3OKXcvLUbG2K-LoSB0kb7xbnSzuByf_UJ6FSP66Lic
+
+### 5. Get Document Categories
+GET {{host}}/api/documents/categories
+Authorization: Bearer {{token}}
+
+### 6. Get Engagement Documents
+GET {{host}}/api/documents/engagement/1
+Authorization: Bearer {{token}}
+
+### 7. Upload Document (Multipart Form Data)
+# Note: Ensure you have a 'test.pdf' file located at the root of the pdr-app folder
+POST {{host}}/api/documents/upload
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="dtos[0].EngagementId"
+
+1
+--boundary
+Content-Disposition: form-data; name="dtos[0].CategoryId"
+
+1
+--boundary
+Content-Disposition: form-data; name="dtos[0].File"; filename="test.pdf"
+Content-Type: application/pdf
+
+< ../../../test.pdf
+--boundary--
+
+### 8. Download Document
+# Replace '1' with a valid document ID returned from upload or list
+GET {{host}}/api/documents/1/download
+Authorization: Bearer {{token}}
+
+### 9. Delete Document
+# Replace '1' with a valid document ID
+DELETE {{host}}/api/documents/1
+Authorization: Bearer {{token}}
+
+###
+@pmToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0Iiwicm9sZSI6WyJMZWFkZXJzaGlwIiwiTGVhZGVyc2hpcCJdLCJlbWFpbCI6ImxlYWRlcnNoaXBAY29tcGFueS5jb20iLCJmdWxsbmFtZSI6Ik5laGEgU2hhcm1hIiwiaXNBZG1pbiI6ImZhbHNlIiwibmJmIjoxNzg1NTgxMjA3LCJleHAiOjE3ODU1ODMwMDcsImlhdCI6MTc4NTU4MTIwNywiaXNzIjoiUGRyQXBpIiwiYXVkIjoiUGRyV2ViIn0.D50Kv5KK5zIP_lKBJ1guGOqUzYHrCv8uHwGm6HHtktk
+
 ##############################################################
 #################### ADMIN ENDPOINTS #########################
 ##############################################################
@@ -49,30 +114,21 @@ Accept: application/json
 GET {{host}}/api/checklist/current-draft
 Authorization: Bearer {{adminToken}}
 
-
 ### Published Version
 GET {{host}}/api/checklist/published
 Authorization: Bearer {{adminToken}}
-
-###
 
 ### Version History
 GET {{host}}/api/checklist/versions
 Authorization: Bearer {{adminToken}}
 
-###
-
 ### Version By Id
 GET {{host}}/api/checklist/versions/2
 Authorization: Bearer {{adminToken}}
 
-###
-
 ### Categories
 GET {{host}}/api/checklist/categories
 Authorization: Bearer {{adminToken}}
-
-###
 
 ### Create Item
 POST {{host}}/api/checklist/items
@@ -87,8 +143,6 @@ Content-Type: {{contentType}}
   "displayOrder": 1
 }
 
-###
-
 ### Update Item
 PUT {{host}}/api/checklist/items/1
 Authorization: Bearer {{adminToken}}
@@ -101,8 +155,6 @@ Content-Type: {{contentType}}
   "isMandatory": true,
   "displayOrder": 1
 }
-
-###
 
 ### Reorder Items
 PUT {{host}}/api/checklist/items/reorder
@@ -122,13 +174,9 @@ Content-Type: {{contentType}}
   ]
 }
 
-###
-
 ### Retire Item
 PUT {{host}}/api/checklist/items/1/retire
 Authorization: Bearer {{adminToken}}
-
-###
 
 ### Publish Version
 POST {{host}}/api/checklist/versions/1/publish
@@ -141,8 +189,6 @@ Authorization: Bearer {{adminToken}}
 ### Published Version (Should Succeed)
 GET {{host}}/api/checklist/published
 Authorization: Bearer {{pmToken}}
-
-###
 
 ### Current Draft (Should Return 403)
 GET {{host}}/api/checklist/current-draft
@@ -162,3 +208,67 @@ GET {{host}}/api/checklist/current-draft
 ### Invalid JWT
 GET {{host}}/api/checklist/current-draft
 Authorization: Bearer invalid-token
+
+##############################################################
+################# ENGAGEMENT ENDPOINTS #######################
+##############################################################
+
+### 10. Get Engagement Types Lookup
+GET {{host}}/api/EngagementTypes
+Accept: application/json
+
+### 11. Get Commercial Models Lookup
+GET {{host}}/api/CommercialModels
+Accept: application/json
+
+### 12. Get My Engagements (Project Manager)
+GET {{host}}/api/Engagements/my-engagements?sortBy=kickoff
+Authorization: Bearer {{pmToken}}
+Accept: application/json
+
+### 13. Get Engagement Info by ID
+GET {{host}}/api/Engagements/1
+Authorization: Bearer {{pmToken}}
+Accept: application/json
+
+### 14. Add New Engagement (Mark SOW Signed - Pre Sales Role)
+POST {{host}}/api/Engagements/mark-sow-signed
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "clientName": "Acme Global Solutions",
+  "engagementDescription": "Enterprise LMS Implementation",
+  "engagementTypeId": 1,
+  "commercialModelId": 1,
+  "kickoffDate": "2026-08-15",
+  "billingStartDate": "2026-09-01"
+}
+
+### 15. Add New Engagement (Validation Failure: Billing Before Kickoff)
+POST {{host}}/api/Engagements/mark-sow-signed
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "clientName": "Acme Global Solutions",
+  "engagementDescription": "Test invalid billing date scenario",
+  "engagementTypeId": 1,
+  "commercialModelId": 1,
+  "kickoffDate": "2026-08-15",
+  "billingStartDate": "2026-08-01"
+}
+
+### 16. Edit Engagement Info
+PUT {{host}}/api/Engagements/1
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "clientName": "Acme Global Solutions - Updated",
+  "engagementDescription": "Updated description for Enterprise LMS Implementation",
+  "engagementTypeId": 1,
+  "commercialModelId": 1,
+  "kickoffDate": "2026-08-15",
+  "billingStartDate": "2026-09-01"
+}

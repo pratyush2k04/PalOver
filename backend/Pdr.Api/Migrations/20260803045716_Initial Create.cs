@@ -41,6 +41,32 @@ namespace Pdr.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "commercial_models",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_commercial_models", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "document_categories",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    category_name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_document_categories", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "engagement_statuses",
                 columns: table => new
                 {
@@ -112,11 +138,12 @@ namespace Pdr.Api.Migrations
                 name: "engagements",
                 columns: table => new
                 {
-                    engagement_id = table.Column<long>(type: "bigint", nullable: false)
+                    engagement_id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     client_name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     engagement_description = table.Column<string>(type: "text", nullable: true),
                     engagement_type_id = table.Column<int>(type: "integer", nullable: false),
+                    commercial_model_id = table.Column<int>(type: "integer", nullable: false),
                     kickoff_date = table.Column<DateOnly>(type: "date", nullable: false),
                     billing_start_date = table.Column<DateOnly>(type: "date", nullable: true),
                     status_id = table.Column<int>(type: "integer", nullable: false),
@@ -129,6 +156,12 @@ namespace Pdr.Api.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_engagements", x => x.engagement_id);
+                    table.ForeignKey(
+                        name: "FK_engagements_commercial_models_commercial_model_id",
+                        column: x => x.commercial_model_id,
+                        principalTable: "commercial_models",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_engagements_engagement_statuses_status_id",
                         column: x => x.status_id,
@@ -210,11 +243,46 @@ namespace Pdr.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "documents",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                    engagement_id = table.Column<int>(type: "integer", nullable: false),
+                    category_id = table.Column<int>(type: "integer", nullable: false),
+                    file_name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    file_path = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    file_size_bytes = table.Column<long>(type: "bigint", nullable: false),
+                    content_type = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    updated_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_documents", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_documents_document_categories_category_id",
+                        column: x => x.category_id,
+                        principalTable: "document_categories",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_documents_engagements_engagement_id",
+                        column: x => x.engagement_id,
+                        principalTable: "engagements",
+                        principalColumn: "engagement_id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "engagement_assignments",
                 columns: table => new
                 {
                     user_id = table.Column<int>(type: "integer", nullable: false),
-                    engagement_id = table.Column<long>(type: "bigint", nullable: false)
+                    engagement_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -253,6 +321,29 @@ namespace Pdr.Api.Migrations
                 {
                     { 1L, "Draft" },
                     { 2L, "Published" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "commercial_models",
+                columns: new[] { "id", "name" },
+                values: new object[,]
+                {
+                    { 1, "Time and Material" },
+                    { 2, "Fixed" },
+                    { 3, "Capped T&M" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "document_categories",
+                columns: new[] { "id", "category_name" },
+                values: new object[,]
+                {
+                    { 1, "RFP" },
+                    { 2, "Proposal" },
+                    { 3, "Signed SOW" },
+                    { 4, "Email Thread" },
+                    { 5, "Design or Approach" },
+                    { 6, "Other" }
                 });
 
             migrationBuilder.InsertData(
@@ -363,9 +454,24 @@ namespace Pdr.Api.Migrations
                 column: "status_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_documents_category_id",
+                table: "documents",
+                column: "category_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_documents_engagement_id",
+                table: "documents",
+                column: "engagement_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_engagement_assignments_engagement_id",
                 table: "engagement_assignments",
                 column: "engagement_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_engagements_commercial_model_id",
+                table: "engagements",
+                column: "commercial_model_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_engagements_engagement_type_id",
@@ -402,6 +508,9 @@ namespace Pdr.Api.Migrations
                 name: "checklist_items");
 
             migrationBuilder.DropTable(
+                name: "documents");
+
+            migrationBuilder.DropTable(
                 name: "engagement_assignments");
 
             migrationBuilder.DropTable(
@@ -411,6 +520,9 @@ namespace Pdr.Api.Migrations
                 name: "checklist_versions");
 
             migrationBuilder.DropTable(
+                name: "document_categories");
+
+            migrationBuilder.DropTable(
                 name: "engagements");
 
             migrationBuilder.DropTable(
@@ -418,6 +530,9 @@ namespace Pdr.Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "checklist_statuses");
+
+            migrationBuilder.DropTable(
+                name: "commercial_models");
 
             migrationBuilder.DropTable(
                 name: "engagement_statuses");

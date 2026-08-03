@@ -19,16 +19,16 @@ public class EngagementsController(IEngagementService engagementService) : Contr
     }
 
     //TODO: Authentication & Authorization constraints : Depends on 645
-    [HttpGet("{id:long}")]
-    public async Task<ActionResult<EngagementInfoDto>> GetEngagementInfo(long id)
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<EngagementInfoDto>> GetEngagementInfo(int id)
     {
         var info = await engagementService.GetEngagementInfoAsync(id);
         return info is null ? NotFound() : Ok(info);
     }
 
     //TODO: Authentication & Authorization constraints : Depends on 645
-    [HttpPut("{id:long}")]
-    public async Task<IActionResult> EditEngagementInfo(long id, EditEngagementRequest request)
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> EditEngagementInfo(int id, EditEngagementRequest request)
     {
         try
         {
