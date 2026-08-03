@@ -5,7 +5,7 @@
 
   <nav class="nav-items">
     @for (item of navItems; track item.label) {
-      <div class="nav-item" [class.active]="item.label === 'My Handovers'">
+      <a class="nav-item" [routerLink]="item.route" routerLinkActive="active">
         <div class="icon-wrapper">
           <span class="icon">{{ iconGlyph(item.icon) }}</span>
           @if (item.badge === 'dot') {
@@ -13,7 +13,7 @@
           }
         </div>
         <span class="label">{{ item.label }}</span>
-      </div>
+      </a>
     }
   </nav>
 

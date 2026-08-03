@@ -45,6 +45,22 @@ interface GetCommercialModelsResponse {
   commercialModels: CommercialModelOption[];
 }
 
+export interface PmEngagementListItem {
+  engagementId: number;
+  clientName: string;
+  engagementTypeName: string;
+  commercialModelName: string;
+  kickoffDate: string;
+  daysToKickoff: number;
+  readinessScore: number | null;
+}
+
+export interface PmEngagementListResponse {
+  engagements: PmEngagementListItem[];
+}
+
+export type EngagementSortBy = 'kickoff' | 'readiness' | 'client';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -65,5 +81,11 @@ export class EngagementService {
     return this.http
       .get<GetCommercialModelsResponse>('/api/CommercialModels')
       .pipe(map((response) => response.commercialModels));
+  }
+
+  getMyEngagements(sortBy: EngagementSortBy = 'kickoff'): Observable<PmEngagementListResponse> {
+    return this.http.get<PmEngagementListResponse>('/api/Engagements/my-engagements', {
+      params: { sortBy }
+    });
   }
 }
