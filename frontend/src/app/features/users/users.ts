@@ -31,6 +31,10 @@ export class UsersComponent implements OnInit {
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
 
+  page = signal(1);
+  pageSize = 5;
+  totalCount = signal(0);
+
   pendingChange = signal<PendingRoleChange | null>(null);
   isSavingRoleChange = signal(false);
 
@@ -45,16 +49,20 @@ export class UsersComponent implements OnInit {
     if (this.searchDebounce) {
       clearTimeout(this.searchDebounce);
     }
-    this.searchDebounce = setTimeout(() => this.loadUsers(), 300);
+    this.searchDebounce = setTimeout(() => {
+      this.page.set(1);
+      this.loadUsers();
+    }, 300);
   }
 
   loadUsers(): void {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    this.userDirectoryService.getUsers(this.searchTerm).subscribe({
+    this.userDirectoryService.getUsers(this.searchTerm, this.page(), this.pageSize).subscribe({
       next: (result) => {
         this.users.set(result.items);
+        this.totalCount.set(result.totalCount);
         this.isLoading.set(false);
       },
       error: () => {
@@ -62,6 +70,26 @@ export class UsersComponent implements OnInit {
         this.isLoading.set(false);
       }
     });
+  }
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.totalCount() / this.pageSize));
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages || page === this.page()) {
+      return;
+    }
+    this.page.set(page);
+    this.loadUsers();
+  }
+
+  previousPage(): void {
+    this.goToPage(this.page() - 1);
+  }
+
+  nextPage(): void {
+    this.goToPage(this.page() + 1);
   }
 
   loadRoles(): void {

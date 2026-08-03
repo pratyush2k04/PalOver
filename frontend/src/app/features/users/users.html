@@ -56,6 +56,14 @@
       <app-loading-spinner label="Loading users..." />
     }
   </div>
+
+  @if (totalCount() > 0) {
+    <div class="pagination">
+      <button type="button" (click)="previousPage()" [disabled]="page() === 1">Previous</button>
+      <span class="pagination-status">Page {{ page() }} of {{ totalPages }}</span>
+      <button type="button" (click)="nextPage()" [disabled]="page() === totalPages">Next</button>
+    </div>
+  }
 </div>
 
 @if (pendingChange(); as pending) {

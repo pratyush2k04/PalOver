@@ -144,3 +144,36 @@ td {
   color: #8b95a3;
   font-size: 0.875rem;
 }
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+
+  button {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #333333;
+    background: #ffffff;
+    border: 1px solid #d7dce2;
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background: #f4f6f9;
+    }
+
+    &:disabled {
+      color: #b3b9c2;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.pagination-status {
+  font-size: 0.85rem;
+  color: #4a5568;
+}
