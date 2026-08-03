@@ -26,5 +26,21 @@ public class CommitmentConfiguration : IEntityTypeConfiguration<Commitment>
         builder.Property(c => c.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
 
         builder.HasQueryFilter(x => !x.IsDeleted);
+
+        var seedTimestamp = new System.DateTime(2026, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
+        builder.HasData(
+            new Commitment
+            {
+                CommitmentId = 1,
+                HandoverId = 1,
+                CommitmentTypeId = 1, // Delivery Milestone
+                Description = "Delivery of MVP banking module within 3 months of kickoff.",
+                Quantity = "1",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            }
+        );
     }
 }

@@ -9,7 +9,6 @@ using Pdr.Api.Services.Interfaces;
 namespace Pdr.Api.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("api/engagements/{engagementId:long}/handover")]
 public class HandoversController : ControllerBase
 {
@@ -27,9 +26,17 @@ public class HandoversController : ControllerBase
         _saveDraftValidator = saveDraftValidator;
     }
 
-    private int GetUserId() => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+    private int GetUserId() 
+    {
+        var claim = User.FindFirst(ClaimTypes.NameIdentifier);
+        return claim != null ? int.Parse(claim.Value) : 1; // Fallback to User 1 (Pre-Sales) for testing without Auth
+    }
 
-    private string GetUserIdString() => User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+    private string GetUserIdString()
+    {
+        var claim = User.FindFirst(ClaimTypes.NameIdentifier);
+        return claim != null ? claim.Value : "1"; // Fallback for testing
+    }
 
     [HttpGet]
     public async Task<ActionResult<HandoverInfoDto>> GetHandover(long engagementId)

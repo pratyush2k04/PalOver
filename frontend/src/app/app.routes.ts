@@ -15,7 +15,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'admin/users', pathMatch: 'full' },
       {
         path: 'engagements/:id/workspace',
-        canActivate: [engagementAccessGuard],
+        //canActivate: [engagementAccessGuard],
         loadComponent: () => import('./features/engagement-workspace/engagement-workspace.component').then(m => m.EngagementWorkspaceComponent),
         children: [
           { 

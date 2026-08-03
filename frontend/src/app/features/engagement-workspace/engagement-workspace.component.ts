@@ -1,6 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { EngagementInfoDto, EngagementService } from '../../services/engagement.service';
 
 interface WorkspaceTab {
@@ -16,15 +17,21 @@ interface WorkspaceTab {
   templateUrl: './engagement-workspace.component.html',
   styleUrl: './engagement-workspace.component.scss'
 })
-export class EngagementWorkspaceComponent implements OnInit {
+export class EngagementWorkspaceComponent {
   private route = inject(ActivatedRoute);
   private engagementService = inject(EngagementService);
 
-  engagementId!: number;
-  engagement: EngagementInfoDto | null = null;
-  isLoading = true;
+  private paramMap = toSignal(this.route.paramMap);
+  
+  engagementId = computed(() => {
+    const idStr = this.paramMap()?.get('id');
+    return idStr ? +idStr : null;
+  });
 
-  readonly tabs: WorkspaceTab[] = [
+  engagement = signal<EngagementInfoDto | null>(null);
+  isLoading = signal<boolean>(true);
+
+  readonly tabs = signal<WorkspaceTab[]>([
     { label: 'Handover', route: 'handover', enabled: true },
     { label: 'Documents', route: 'documents', enabled: false },
     { label: 'People', route: 'people', enabled: false },
@@ -34,34 +41,39 @@ export class EngagementWorkspaceComponent implements OnInit {
     { label: 'Technical Readiness', route: 'technical-readiness', enabled: false },
     { label: 'Risks', route: 'risks', enabled: false },
     { label: 'Reporting', route: 'reporting', enabled: false }
-  ];
+  ]);
 
-  activeTabIndex = 0;
+  activeTabIndex = signal<number>(0);
 
-  ngOnInit() {
-    const idStr = this.route.snapshot.paramMap.get('id');
-    if (idStr) {
-      this.engagementId = +idStr;
-      this.loadEngagement();
-    }
+  constructor() {
+    effect(() => {
+      const id = this.engagementId();
+      if (id) {
+        this.loadEngagement(id);
+      }
+    });
   }
 
-  private loadEngagement() {
-    this.isLoading = true;
-    this.engagementService.getEngagementInfo(this.engagementId).subscribe({
+  private loadEngagement(id: number) {
+    this.isLoading.set(true);
+    this.engagementService.getEngagementInfo(id).subscribe({
       next: (data) => {
-        this.engagement = data;
-        this.isLoading = false;
+        console.log("Engagement loaded properly");
+        console.log(data);
+        this.engagement.set(data);
+        this.isLoading.set(false);
       },
-      error: () => {
-        this.engagement = null;
-        this.isLoading = false;
+      error: (error) => {
+        console.log("Error loading engagement");
+        console.error(error);
+        this.engagement.set(null);
+        this.isLoading.set(false);
       }
     });
   }
 
   onTabKeydown(event: KeyboardEvent) {
-    const enabledIndexes = this.tabs
+    const enabledIndexes = this.tabs()
       .map((tab, index) => ({ tab, index }))
       .filter(({ tab }) => tab.enabled)
       .map(({ index }) => index);
@@ -70,7 +82,7 @@ export class EngagementWorkspaceComponent implements OnInit {
       return;
     }
 
-    const currentPos = enabledIndexes.indexOf(this.activeTabIndex);
+    const currentPos = enabledIndexes.indexOf(this.activeTabIndex());
 
     if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
       event.preventDefault();
@@ -84,7 +96,7 @@ export class EngagementWorkspaceComponent implements OnInit {
   }
 
   private focusTab(index: number) {
-    this.activeTabIndex = index;
+    this.activeTabIndex.set(index);
     const tabElements = document.querySelectorAll<HTMLElement>('.tab-item');
     tabElements[index]?.focus();
     tabElements[index]?.click();

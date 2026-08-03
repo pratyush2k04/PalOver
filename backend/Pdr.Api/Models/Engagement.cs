@@ -9,6 +9,7 @@ public class Engagement : BaseAuditableEntity
     public long EngagementId { get; set; }
 
     [Required]
+    [MinLength(1)]
     [MaxLength(200)]
     public string ClientName { get; set; } = string.Empty;
 

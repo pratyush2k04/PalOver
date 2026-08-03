@@ -41,6 +41,19 @@ namespace Pdr.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "commitment_types",
+                columns: table => new
+                {
+                    commitment_type_id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                    type = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_commitment_types", x => x.commitment_type_id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "engagement_statuses",
                 columns: table => new
                 {
@@ -64,6 +77,19 @@ namespace Pdr.Api.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_engagement_types", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "handover_statuses",
+                columns: table => new
+                {
+                    handover_status_id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                    status_name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_handover_statuses", x => x.handover_status_id);
                 });
 
             migrationBuilder.CreateTable(
@@ -210,6 +236,36 @@ namespace Pdr.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "handover_info",
+                columns: table => new
+                {
+                    handover_id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                    engagement_id = table.Column<long>(type: "bigint", nullable: false),
+                    status_id = table.Column<int>(type: "integer", nullable: false),
+                    client_background = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
+                    business_problem = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
+                    client_sentiment = table.Column<string>(type: "text", nullable: false),
+                    deal_origin = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
+                    has_no_commitments = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    updated_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_handover_info", x => x.handover_id);
+                    table.ForeignKey(
+                        name: "FK_handover_info_engagements_engagement_id",
+                        column: x => x.engagement_id,
+                        principalTable: "engagements",
+                        principalColumn: "engagement_id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "engagement_assignments",
                 columns: table => new
                 {
@@ -233,6 +289,33 @@ namespace Pdr.Api.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "commitments",
+                columns: table => new
+                {
+                    commitment_id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                    handover_id = table.Column<long>(type: "bigint", nullable: false),
+                    description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
+                    commitment_type_id = table.Column<int>(type: "integer", nullable: false),
+                    quantity = table.Column<string>(type: "text", nullable: true),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    updated_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_commitments", x => x.commitment_id);
+                    table.ForeignKey(
+                        name: "FK_commitments_handover_info_handover_id",
+                        column: x => x.handover_id,
+                        principalTable: "handover_info",
+                        principalColumn: "handover_id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "checklist_categories",
                 columns: new[] { "id", "category_name" },
@@ -253,6 +336,25 @@ namespace Pdr.Api.Migrations
                 {
                     { 1L, "Draft" },
                     { 2L, "Published" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "commitment_types",
+                columns: new[] { "commitment_type_id", "type" },
+                values: new object[,]
+                {
+                    { 1, "Delivery Milestone" },
+                    { 2, "Resource Allocation" },
+                    { 3, "Custom Requirement" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "handover_statuses",
+                columns: new[] { "handover_status_id", "status_name" },
+                values: new object[,]
+                {
+                    { 1, "Draft" },
+                    { 2, "Submitted" }
                 });
 
             migrationBuilder.InsertData(
@@ -363,6 +465,11 @@ namespace Pdr.Api.Migrations
                 column: "status_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_commitments_handover_id",
+                table: "commitments",
+                column: "handover_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_engagement_assignments_engagement_id",
                 table: "engagement_assignments",
                 column: "engagement_id");
@@ -376,6 +483,12 @@ namespace Pdr.Api.Migrations
                 name: "IX_engagements_status_id",
                 table: "engagements",
                 column: "status_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_handover_info_engagement_id",
+                table: "handover_info",
+                column: "engagement_id",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_roles_name",
@@ -402,7 +515,16 @@ namespace Pdr.Api.Migrations
                 name: "checklist_items");
 
             migrationBuilder.DropTable(
+                name: "commitment_types");
+
+            migrationBuilder.DropTable(
+                name: "commitments");
+
+            migrationBuilder.DropTable(
                 name: "engagement_assignments");
+
+            migrationBuilder.DropTable(
+                name: "handover_statuses");
 
             migrationBuilder.DropTable(
                 name: "checklist_categories");
@@ -411,7 +533,7 @@ namespace Pdr.Api.Migrations
                 name: "checklist_versions");
 
             migrationBuilder.DropTable(
-                name: "engagements");
+                name: "handover_info");
 
             migrationBuilder.DropTable(
                 name: "users");
@@ -420,13 +542,16 @@ namespace Pdr.Api.Migrations
                 name: "checklist_statuses");
 
             migrationBuilder.DropTable(
+                name: "engagements");
+
+            migrationBuilder.DropTable(
+                name: "roles");
+
+            migrationBuilder.DropTable(
                 name: "engagement_statuses");
 
             migrationBuilder.DropTable(
                 name: "engagement_types");
-
-            migrationBuilder.DropTable(
-                name: "roles");
         }
     }
 }

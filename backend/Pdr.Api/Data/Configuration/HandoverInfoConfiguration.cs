@@ -34,5 +34,24 @@ public class HandoverInfoConfiguration : IEntityTypeConfiguration<HandoverInfo>
             .WithOne()
             .HasForeignKey(c => c.HandoverId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        var seedTimestamp = new System.DateTime(2026, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
+        builder.HasData(
+            new HandoverInfo
+            {
+                HandoverId = 1,
+                EngagementId = 1,
+                StatusId = 1, // Draft
+                ClientBackground = "FinTech Solutions is a mid-sized financial institution expanding its digital footprint.",
+                BusinessProblem = "They need a modern core banking platform to support new digital initiatives and mobile apps.",
+                ClientSentiment = "Excited but cautious about delivery timelines due to past vendor failures.",
+                DealOrigin = "Strategic Partner Referral",
+                HasNoCommitments = false,
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            }
+        );
     }
 }

@@ -240,6 +240,11 @@ public class AppDbContext : DbContext
             entity.HasKey(s => s.StatusId);
             entity.Property(s => s.StatusId).HasColumnName("status_id");
             entity.Property(s => s.StatusName).HasColumnName("status_name").HasMaxLength(50).IsRequired();
+
+            var statusSeeds = Enum.GetValues<EngagementStatusEnum>()
+                .Select((s, index) => new EngagementStatus { StatusId = index + 1, StatusName = s.ToString() })
+                .ToArray();
+            entity.HasData(statusSeeds);
         });
 
         modelBuilder.Entity<EngagementType>(entity =>
@@ -248,6 +253,11 @@ public class AppDbContext : DbContext
             entity.HasKey(t => t.Id);
             entity.Property(t => t.Id).HasColumnName("id");
             entity.Property(t => t.Name).HasColumnName("name").HasMaxLength(100).IsRequired();
+
+            var typeSeeds = Enum.GetValues<EngagementTypeEnum>()
+                .Select((t, index) => new EngagementType { Id = index + 1, Name = t.ToString() })
+                .ToArray();
+            entity.HasData(typeSeeds);
         });
 
         modelBuilder.Entity<Engagement>(entity =>
@@ -279,6 +289,36 @@ public class AppDbContext : DbContext
             entity.HasOne(e => e.Status)
                   .WithMany(s => s.Engagements)
                   .HasForeignKey(e => e.StatusId);
+
+            entity.HasData(
+                new Engagement
+                {
+                    EngagementId = 1,
+                    ClientName = "FinTech Solutions",
+                    EngagementDescription = "Core Banking Greenfield Implementation",
+                    EngagementTypeId = 1, // Greenfield
+                    KickoffDate = new DateOnly(2026, 8, 15),
+                    StatusId = 1, // KickoffPending
+                    CreatedAt = SeedTimestamp,
+                    UpdatedAt = SeedTimestamp,
+                    CreatedBy = "System",
+                    IsDeleted = false
+                },
+                new Engagement
+                {
+                    EngagementId = 2,
+                    ClientName = "HealthCare Plus",
+                    EngagementDescription = "Legacy System Upgrade and Support",
+                    EngagementTypeId = 2, // Brownfield
+                    KickoffDate = new DateOnly(2026, 6, 1),
+                    BillingStartDate = new DateOnly(2026, 7, 1),
+                    StatusId = 2, // Active
+                    CreatedAt = SeedTimestamp,
+                    UpdatedAt = SeedTimestamp,
+                    CreatedBy = "System",
+                    IsDeleted = false
+                }
+            );
         });
     }
 

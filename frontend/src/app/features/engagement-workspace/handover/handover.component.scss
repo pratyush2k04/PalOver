@@ -259,3 +259,10 @@ button {
   color: $color-danger-text;
   border: 1px solid $color-danger-border;
 }
+
+input.is-invalid, textarea.is-invalid, select.is-invalid {
+  border-color: $color-danger !important;
+  &:focus {
+    box-shadow: 0 0 0 3px rgba($color-danger, 0.2) !important;
+  }
+}

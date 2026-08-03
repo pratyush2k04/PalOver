@@ -67,8 +67,25 @@ public class EngagementService(AppDbContext db) : IEngagementService
             .Select(t => new EngagementTypeDto(t.Id, t.Name))
             .ToListAsync();
 
-    public async Task<EngagementInfoDto?> GetEngagementInfoAsync(long id) =>
-        await db.Engagements
+    public async Task<EngagementInfoDto?> GetEngagementInfoAsync(long id){
+        Console.WriteLine("GetEngagementInfoAsync called with id: " + id);
+        Console.WriteLine(
+    System.Text.Json.JsonSerializer.Serialize(
+        db.Engagements
+            .Where(e => e.EngagementId == id)
+            .Select(e => new EngagementInfoDto(
+                e.EngagementId,
+                e.ClientName,
+                e.EngagementDescription,
+                e.EngagementType.Name,
+                e.KickoffDate,
+                e.BillingStartDate,
+                e.Status.StatusName)).ToList(),
+        new System.Text.Json.JsonSerializerOptions
+        {
+            WriteIndented = true
+        }));
+        return await db.Engagements
             .Where(e => e.EngagementId == id)
             .Select(e => new EngagementInfoDto(
                 e.EngagementId,
@@ -79,6 +96,7 @@ public class EngagementService(AppDbContext db) : IEngagementService
                 e.BillingStartDate,
                 e.Status.StatusName))
             .FirstOrDefaultAsync();
+    }
 
     public async Task<bool> EditEngagementAsync(long id, EditEngagementRequest request)
     {

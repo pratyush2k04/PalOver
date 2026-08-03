@@ -126,22 +126,6 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
-
-    if (!db.EngagementTypes.Any())
-    {
-        db.EngagementTypes.AddRange(
-            Enum.GetValues<EngagementTypeEnum>()
-                .Select(t => new EngagementType { Name = t.ToString() }));
-        db.SaveChanges();
-    }
-
-    if (!db.EngagementStatuses.Any())
-    {
-        db.EngagementStatuses.AddRange(
-            Enum.GetValues<EngagementStatusEnum>()
-                .Select(s => new EngagementStatus { StatusName = s.ToString() }));
-        db.SaveChanges();
-    }
 }
 
 // Configure the HTTP request pipeline.
