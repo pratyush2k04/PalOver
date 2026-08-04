@@ -152,7 +152,7 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
     }
     //assign
 
-    public async Task<EngagementOwnersDto> GetEngagementOwnersAsync(long engagementId)
+    public async Task<EngagementOwnersDto> GetEngagementOwnersAsync(int engagementId)
     {
         if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
             throw new EngagementNotFoundException(engagementId);
@@ -162,13 +162,13 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
     }
     
 
-    public async Task<EngagementOwnersDto> AssignProjectManagerAsync(long engagementId, int userId) =>
+    public async Task<EngagementOwnersDto> AssignProjectManagerAsync(int engagementId, int userId) =>
         await AssignOwnerAsync(engagementId, userId, ProjectManagerRole);
 
-    public async Task<EngagementOwnersDto> AssignTechLeadAsync(long engagementId, int userId) =>
+    public async Task<EngagementOwnersDto> AssignTechLeadAsync(int engagementId, int userId) =>
         await AssignOwnerAsync(engagementId, userId, TechLeadRole);
 
-    private async Task<EngagementOwnersDto> AssignOwnerAsync(long engagementId, int userId, string requiredRole)
+    private async Task<EngagementOwnersDto> AssignOwnerAsync(int engagementId, int userId, string requiredRole)
     {
         if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
             throw new EngagementNotFoundException(engagementId);
