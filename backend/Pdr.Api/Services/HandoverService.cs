@@ -45,9 +45,31 @@ public class HandoverService : IHandoverService
                 HandoverId = c.HandoverId,
                 Description = c.Description,
                 CommitmentTypeId = c.CommitmentTypeId,
-                Quantity = c.Quantity
+                Title = c.Title,
+                Timeline = c.Timeline,
+                TimelineUnit = c.TimelineUnit
             })
             .ToListAsync();
+
+        var commitmentIds = commitments.Select(c => c.CommitmentId).ToList();
+        var realisticByCommitmentId = await _context.RealisticCommitments
+            .Where(rc => commitmentIds.Contains(rc.CommitmentId))
+            .ToDictionaryAsync(rc => rc.CommitmentId);
+
+        foreach (var commitmentDto in commitments)
+        {
+            if (realisticByCommitmentId.TryGetValue(commitmentDto.CommitmentId, out var realistic))
+            {
+                commitmentDto.RealisticCommitment = new RealisticCommitmentDto
+                {
+                    Description = realistic.Description,
+                    Timeline = realistic.Timeline,
+                    TimelineUnit = realistic.TimelineUnit,
+                    AcknowledgementMessage = realistic.AcknowledgementMessage,
+                    IsPossible = realistic.IsPossible
+                };
+            }
+        }
 
         return new HandoverInfoDto
         {
@@ -58,7 +80,6 @@ public class HandoverService : IHandoverService
             BusinessProblem = handover.BusinessProblem,
             ClientSentiment = handover.ClientSentiment,
             DealOrigin = handover.DealOrigin,
-            HasNoCommitments = handover.HasNoCommitments,
             Commitments = commitments
         };
     }
@@ -88,7 +109,6 @@ public class HandoverService : IHandoverService
         handover.BusinessProblem = request.BusinessProblem ?? string.Empty;
         handover.ClientSentiment = request.ClientSentiment ?? string.Empty;
         handover.DealOrigin = request.DealOrigin;
-        handover.HasNoCommitments = request.HasNoCommitments;
 
         await _context.SaveChangesAsync();
 
@@ -108,11 +128,6 @@ public class HandoverService : IHandoverService
 
         if (string.IsNullOrWhiteSpace(handover.ClientSentiment))
             throw new HandoverIncompleteException("Client Sentiment is required to submit.");
-
-        var hasCommitments = await _context.Commitments.AnyAsync(c => c.HandoverId == handover.HandoverId);
-
-        if (!hasCommitments && !handover.HasNoCommitments)
-            throw new HandoverIncompleteException("You must either add at least one commitment or explicitly mark 'HasNoCommitments'.");
 
         handover.StatusId = 2; // Submitted
         handover.UpdatedBy = userIdStr;

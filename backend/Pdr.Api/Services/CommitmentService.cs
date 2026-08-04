@@ -51,13 +51,14 @@ public class CommitmentService : ICommitmentService
             HandoverId = handover.HandoverId,
             Description = request.Description,
             CommitmentTypeId = request.CommitmentTypeId,
-            Quantity = request.Quantity,
+            Title = request.Title,
+            Timeline = request.Timeline,
+            TimelineUnit = request.TimelineUnit,
             CreatedBy = userIdStr,
             UpdatedBy = userIdStr
         };
 
         _context.Commitments.Add(commitment);
-        handover.HasNoCommitments = false;
 
         await _context.SaveChangesAsync();
 
@@ -67,7 +68,9 @@ public class CommitmentService : ICommitmentService
             HandoverId = commitment.HandoverId,
             Description = commitment.Description,
             CommitmentTypeId = commitment.CommitmentTypeId,
-            Quantity = commitment.Quantity
+            Title = commitment.Title,
+            Timeline = commitment.Timeline,
+            TimelineUnit = commitment.TimelineUnit
         };
     }
 
@@ -83,7 +86,9 @@ public class CommitmentService : ICommitmentService
 
         commitment.Description = request.Description;
         commitment.CommitmentTypeId = request.CommitmentTypeId;
-        commitment.Quantity = request.Quantity;
+        commitment.Title = request.Title;
+        commitment.Timeline = request.Timeline;
+        commitment.TimelineUnit = request.TimelineUnit;
         commitment.UpdatedBy = userIdStr;
 
         await _context.SaveChangesAsync();
@@ -94,7 +99,9 @@ public class CommitmentService : ICommitmentService
             HandoverId = commitment.HandoverId,
             Description = commitment.Description,
             CommitmentTypeId = commitment.CommitmentTypeId,
-            Quantity = commitment.Quantity
+            Title = commitment.Title,
+            Timeline = commitment.Timeline,
+            TimelineUnit = commitment.TimelineUnit
         };
     }
 
