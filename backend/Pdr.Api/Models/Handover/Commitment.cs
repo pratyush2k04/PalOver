@@ -17,5 +17,14 @@ public class Commitment : BaseAuditableEntity
     [Required]
     public int CommitmentTypeId { get; set; }
 
-    public string? Quantity { get; set; }
+    [Required]
+    [MaxLength(100)]
+    public string Title { get; set; } = string.Empty;
+
+    [Required]
+    public int Timeline { get; set; }
+
+    [Required]
+    [MaxLength(20)]
+    public string TimelineUnit { get; set; } = string.Empty;
 }
