@@ -143,6 +143,8 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
                 e.EngagementId,
                 e.EngagementName,
                 e.ClientName,
+                e.EngagementType.Name,
+                e.CommercialModel.Name,
                 e.KickoffDate,
                 e.KickoffDate.DayNumber - today.DayNumber,
                 ReadinessScore: null))

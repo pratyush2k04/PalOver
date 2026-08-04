@@ -9,6 +9,7 @@ import { workspaceGuard } from './guards/workspace.guard';
 import { workspaceRedirectGuard } from './guards/workspace-redirect.guard';
 import { EngagementDetailComponent } from './features/engagement-detail/engagement-detail';
 import { UsersComponent } from './features/users/users';
+import { MyEngagementsComponent } from './features/my-engagements/my-engagements';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -112,6 +113,7 @@ export const routes: Routes = [
           { path: '', redirectTo: 'handover', pathMatch: 'full' }
         ]
       }
+      { path: 'my-engagements', component: MyEngagementsComponent },
     ],
   },
 
