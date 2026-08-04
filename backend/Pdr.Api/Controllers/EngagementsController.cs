@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Services;
 using Pdr.Api.Services.Interfaces;
+using Pdr.Api.Exceptions;
 
 namespace Pdr.Api.Controllers;
 
@@ -22,6 +23,7 @@ public class EngagementsController(IEngagementService engagementService) : Contr
     [HttpGet("{id:int}")]
     public async Task<ActionResult<EngagementInfoDto>> GetEngagementInfo(int id)
     {
+        Console.WriteLine("GetEngagementInfo called with id: " + id);
         var info = await engagementService.GetEngagementInfoAsync(id);
         return info is null ? NotFound() : Ok(info);
     }
@@ -45,19 +47,10 @@ public class EngagementsController(IEngagementService engagementService) : Contr
     [Authorize(Roles = "Pre Sales")]
     public async Task<ActionResult<MarkSowSignedResponse>> MarkSowSigned(MarkSowSignedRequest request)
     {
-        try
-        {
+       
             var response = await engagementService.MarkSowSignedAsync(request);
             return Ok(response);
-        }
-        catch (BillingBeforeKickoffException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (InvalidEngagementTypeException ex)
-        {
-            return BadRequest(ex.Message);
-        }
+   
     }
 
     [HttpGet("{id:long}/owners")]

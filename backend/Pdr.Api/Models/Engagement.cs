@@ -9,6 +9,12 @@ public class Engagement : BaseAuditableEntity
     public int EngagementId { get; set; }
 
     [Required]
+    [MinLength(1)]
+    [MaxLength(200)]
+    public string EngagementName { get; set; } = string.Empty;
+
+    [Required]
+    [MinLength(1)]
     [MaxLength(200)]
     public string ClientName { get; set; } = string.Empty;
 
@@ -36,6 +42,8 @@ public class Engagement : BaseAuditableEntity
 
     // Navigation Property
     public EngagementStatus Status { get; set; } = null!;
+
+    public Pdr.Api.Models.Handover.HandoverInfo? HandoverInfo { get; set; }
 
     public ICollection<Pdr.Api.Models.EngagementAssignment.EngagementAssignment> EngagementAssignments { get; set; } = new List<Pdr.Api.Models.EngagementAssignment.EngagementAssignment>();
 }

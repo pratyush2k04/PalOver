@@ -1,7 +1,8 @@
 namespace Pdr.Api.DTOs.Engagements;
 
 public record MarkSowSignedRequest(
-    string? ClientName,
+    string EngagementName,
+    string ClientName,
     string EngagementDescription,
     int EngagementTypeId,
     int CommercialModelId,
