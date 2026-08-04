@@ -22,6 +22,7 @@ public class AppDbContext : DbContext
     // Handover entities
     public DbSet<HandoverInfo> HandoverInfos => Set<HandoverInfo>();
     public DbSet<Commitment> Commitments => Set<Commitment>();
+    public DbSet<RealisticCommitment> RealisticCommitments => Set<RealisticCommitment>();
     public DbSet<CommitmentType> CommitmentTypes => Set<CommitmentType>();
     public DbSet<HandoverStatus> HandoverStatuses => Set<HandoverStatus>();
     public DbSet<CommercialModel> CommercialModels => Set<CommercialModel>();
@@ -59,6 +60,7 @@ public class AppDbContext : DbContext
 
         modelBuilder.ApplyConfiguration(new HandoverInfoConfiguration());
         modelBuilder.ApplyConfiguration(new CommitmentConfiguration());
+        modelBuilder.ApplyConfiguration(new RealisticCommitmentConfiguration());
         modelBuilder.ApplyConfiguration(new CommitmentTypeConfiguration());
         modelBuilder.ApplyConfiguration(new HandoverStatusConfiguration());
 
