@@ -11,8 +11,8 @@ public interface IEngagementService
     Task<bool> EditEngagementAsync(int id, EditEngagementRequest request);
     Task<PmEngagementListResponse> GetMyEngagementsAsync(string sortBy);
     //assigning
-    Task<EngagementOwnersDto> GetEngagementOwnersAsync(long engagementId);
+    Task<EngagementOwnersDto> GetEngagementOwnersAsync(int engagementId);
 
-    Task<EngagementOwnersDto> AssignProjectManagerAsync(long engagementId, int userId);
-    Task<EngagementOwnersDto> AssignTechLeadAsync(long engagementId, int userId);
+    Task<EngagementOwnersDto> AssignProjectManagerAsync(int engagementId, int userId);
+    Task<EngagementOwnersDto> AssignTechLeadAsync(int engagementId, int userId);
 }

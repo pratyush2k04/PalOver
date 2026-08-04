@@ -28,7 +28,7 @@ public class MasterChecklistService(IMasterChecklistRepository checklistReposito
         return versions.Select(MapVersionSummary).ToList();
     }
 
-    public async Task<ChecklistResultDto<MasterChecklistVersionResponseDto>> GetVersionByIdAsync(long versionId)
+    public async Task<ChecklistResultDto<MasterChecklistVersionResponseDto>> GetVersionByIdAsync(int versionId)
     {
         var version = await checklistRepository.GetVersionByIdAsync(versionId);
         if (version is null)
@@ -80,7 +80,7 @@ public class MasterChecklistService(IMasterChecklistRepository checklistReposito
         return ChecklistResultDto<MasterChecklistItemResponseDto>.Success(MapItem(item));
     }
 
-    public async Task<ChecklistResultDto<MasterChecklistItemResponseDto>> UpdateChecklistItemAsync(long id, UpdateChecklistItemRequestDto request)
+    public async Task<ChecklistResultDto<MasterChecklistItemResponseDto>> UpdateChecklistItemAsync(int id, UpdateChecklistItemRequestDto request)
     {
         var item = await checklistRepository.GetChecklistItemAsync(id);
         if (item is null)
@@ -110,7 +110,7 @@ public class MasterChecklistService(IMasterChecklistRepository checklistReposito
         return ChecklistResultDto<MasterChecklistItemResponseDto>.Success(MapItem(item));
     }
 
-    public async Task<ChecklistResultDto<MasterChecklistItemResponseDto>> RetireChecklistItemAsync(long id)
+    public async Task<ChecklistResultDto<MasterChecklistItemResponseDto>> RetireChecklistItemAsync(int id)
     {
         var item = await checklistRepository.GetChecklistItemAsync(id);
         if (item is null)
@@ -170,7 +170,7 @@ public class MasterChecklistService(IMasterChecklistRepository checklistReposito
         return ChecklistResultDto<List<MasterChecklistItemResponseDto>>.Success(orderedItems);
     }
 
-    public async Task<ChecklistResultDto<MasterChecklistVersionResponseDto>> PublishVersionAsync(long versionId)
+    public async Task<ChecklistResultDto<MasterChecklistVersionResponseDto>> PublishVersionAsync(int versionId)
     {
         var draftVersion = await checklistRepository.GetVersionByIdAsync(versionId);
         if (draftVersion is null)

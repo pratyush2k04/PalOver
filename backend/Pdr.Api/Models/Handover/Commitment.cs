@@ -5,10 +5,10 @@ namespace Pdr.Api.Models.Handover;
 public class Commitment : BaseAuditableEntity
 {
     [Key]
-    public long CommitmentId { get; set; }
+    public int CommitmentId { get; set; }
 
     [Required]
-    public long HandoverId { get; set; }
+    public int HandoverId { get; set; }
 
     [Required]
     [MaxLength(2000)]

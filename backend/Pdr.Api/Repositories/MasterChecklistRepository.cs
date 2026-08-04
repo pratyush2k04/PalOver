@@ -37,7 +37,7 @@ public class MasterChecklistRepository(AppDbContext context) : IMasterChecklistR
             .ToListAsync();
     }
 
-    public async Task<MasterChecklistVersion?> GetVersionByIdAsync(long versionId)
+    public async Task<MasterChecklistVersion?> GetVersionByIdAsync(int versionId)
     {
         return await context.MasterChecklistVersions
             .Include(v => v.Status)
@@ -53,13 +53,13 @@ public class MasterChecklistRepository(AppDbContext context) : IMasterChecklistR
             .ToListAsync();
     }
 
-    public async Task<MasterChecklistCategory?> GetCategoryByIdAsync(long categoryId)
+    public async Task<MasterChecklistCategory?> GetCategoryByIdAsync(int categoryId)
     {
         return await context.MasterChecklistCategories
             .FirstOrDefaultAsync(c => c.Id == categoryId);
     }
 
-    public async Task<MasterChecklistItem?> GetChecklistItemAsync(long id)
+    public async Task<MasterChecklistItem?> GetChecklistItemAsync(int id)
     {
         return await context.MasterChecklistItems
             .Include(i => i.Version)

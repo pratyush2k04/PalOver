@@ -22,6 +22,7 @@ export interface Engagement {
   kickoffDate: string;
   billingStartDate?: string;
   statusId: number;
+  checklistVersionId?: number;
 }
 
 export interface MarkSowSignedResponse {
