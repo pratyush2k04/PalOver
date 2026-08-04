@@ -14,20 +14,29 @@ namespace Pdr.Api.Controllers;
 public class CommitmentsController : ControllerBase
 {
     private readonly ICommitmentService _commitmentService;
+    private readonly IRealisticCommitmentService _realisticCommitmentService;
     private readonly IHandoverAccessService _accessService;
     private readonly IValidator<CreateCommitmentRequest> _createValidator;
     private readonly IValidator<UpdateCommitmentRequest> _updateValidator;
+    private readonly IValidator<CreateRealisticCommitmentRequest> _createRealisticValidator;
+    private readonly IValidator<UpdateRealisticCommitmentRequest> _updateRealisticValidator;
 
     public CommitmentsController(
         ICommitmentService commitmentService,
+        IRealisticCommitmentService realisticCommitmentService,
         IHandoverAccessService accessService,
         IValidator<CreateCommitmentRequest> createValidator,
-        IValidator<UpdateCommitmentRequest> updateValidator)
+        IValidator<UpdateCommitmentRequest> updateValidator,
+        IValidator<CreateRealisticCommitmentRequest> createRealisticValidator,
+        IValidator<UpdateRealisticCommitmentRequest> updateRealisticValidator)
     {
         _commitmentService = commitmentService;
+        _realisticCommitmentService = realisticCommitmentService;
         _accessService = accessService;
         _createValidator = createValidator;
         _updateValidator = updateValidator;
+        _createRealisticValidator = createRealisticValidator;
+        _updateRealisticValidator = updateRealisticValidator;
     }
 
     private async Task CheckAccessAsync(long engagementId)
@@ -77,5 +86,37 @@ public class CommitmentsController : ControllerBase
 
         await _commitmentService.DeleteCommitmentAsync(engagementId, commitmentId);
         return NoContent();
+    }
+
+    [HttpPost("{commitmentId:long}/realistic")]
+    public async Task<ActionResult<RealisticCommitmentDto>> CreateRealisticCommitment(long engagementId, long commitmentId, [FromBody] CreateRealisticCommitmentRequest request)
+    {
+        await CheckAccessAsync(engagementId);
+
+        var validationResult = await _createRealisticValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid realistic commitment request.";
+            return BadRequest(new { message = firstError });
+        }
+
+        var dto = await _realisticCommitmentService.CreateRealisticCommitmentAsync(engagementId, commitmentId, request, GetUserId());
+        return CreatedAtAction(nameof(CreateRealisticCommitment), new { engagementId, commitmentId }, dto);
+    }
+
+    [HttpPut("{commitmentId:long}/realistic")]
+    public async Task<ActionResult<RealisticCommitmentDto>> UpdateRealisticCommitment(long engagementId, long commitmentId, [FromBody] UpdateRealisticCommitmentRequest request)
+    {
+        await CheckAccessAsync(engagementId);
+
+        var validationResult = await _updateRealisticValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid realistic commitment request.";
+            return BadRequest(new { message = firstError });
+        }
+
+        var dto = await _realisticCommitmentService.UpdateRealisticCommitmentAsync(engagementId, commitmentId, request, GetUserId());
+        return Ok(dto);
     }
 }
