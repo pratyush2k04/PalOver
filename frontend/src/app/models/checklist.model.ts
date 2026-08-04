@@ -1,4 +1,4 @@
-export interface ChecklistItem {
+export interface MasterChecklistItem {
   id: number;
   versionId: number;
   title: string;
@@ -10,15 +10,15 @@ export interface ChecklistItem {
   isRetired: boolean;
 }
 
-export interface ChecklistVersion {
+export interface MasterChecklistVersion {
   id: number;
   versionNumber: number;
   statusId: number;
   statusName: string;
-  items: ChecklistItem[];
+  items: MasterChecklistItem[];
 }
 
-export interface ChecklistVersionSummary {
+export interface MasterChecklistVersionSummary {
   id: number;
   versionNumber: number;
   statusId: number;
@@ -27,12 +27,12 @@ export interface ChecklistVersionSummary {
   updatedAt: string;
 }
 
-export interface ChecklistCategory {
+export interface MasterChecklistCategory {
   id: number;
   categoryName: string;
 }
 
-export interface CreateChecklistItemRequest {
+export interface CreateMasterChecklistItemRequest {
   title: string;
   description: string | null;
   categoryId: number;
@@ -40,18 +40,18 @@ export interface CreateChecklistItemRequest {
   displayOrder: number;
 }
 
-export interface UpdateChecklistItemRequest {
+export interface UpdateMasterChecklistItemRequest {
   title: string;
   description: string | null;
   categoryId: number;
   isMandatory: boolean;
 }
 
-export interface ChecklistItemOrder {
+export interface MasterChecklistItemOrder {
   itemId: number;
   displayOrder: number;
 }
 
-export interface ReorderChecklistItemsRequest {
-  items: ChecklistItemOrder[];
+export interface ReorderMasterChecklistItemsRequest {
+  items: MasterChecklistItemOrder[];
 }

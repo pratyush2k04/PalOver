@@ -3,7 +3,7 @@ import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from '../../services/auth';
 import { MasterChecklistService } from '../../services/master-checklist.service';
-import { ChecklistCategory, ChecklistVersion } from '../../models/checklist.model';
+import { MasterChecklistCategory, MasterChecklistVersion } from '../../models/checklist.model';
 import { DashboardSummary } from './dashboard.model';
 
 // Mocked until the backend exposes an activity/audit log and change-tracking for drafts.
@@ -46,10 +46,10 @@ export class DashboardService {
         ? this.masterChecklistService.fetchCurrentDraft().pipe(catchError(() => of(null)))
         : of(null),
       categories: isAdmin
-        ? this.masterChecklistService.fetchCategories().pipe(catchError(() => of<ChecklistCategory[]>([])))
-        : of<ChecklistCategory[]>([]),
+        ? this.masterChecklistService.fetchCategories().pipe(catchError(() => of<MasterChecklistCategory[]>([])))
+        : of<MasterChecklistCategory[]>([]),
     }).subscribe(({ published, draft, categories }) => {
-      const activeVersion: ChecklistVersion | null = draft ?? published;
+      const activeVersion: MasterChecklistVersion | null = draft ?? published;
       const activeItems = (activeVersion?.items ?? []).filter((item) => !item.isRetired);
 
       this.summarySignal.set({
