@@ -68,40 +68,44 @@ export class AuthService {
   }
 
   private readUserFromToken(): User | null {
-    const token = this.getToken();
-    if (!token) {
-      return null;
-    }
-
-    const payload = this.decodeToken(token);
-    if (!payload) {
-      return null;
-    }
-
-    return {
-      fullName: (payload['fullName'] as string) ?? '',
-      email: (payload['email'] as string) ?? '',
-      role: (payload['role'] as string) ?? '',
-      isAdmin: payload['isAdmin'] === true || payload['isAdmin'] === 'true',
-    };
-  hasRole(roleName: string): boolean {
-    const token = this.getToken();
-    if (!token) {
-      return false;
-    }
-
-    const payload = this.decodeToken(token);
-    const role = payload?.['role'];
-    return Array.isArray(role) ? role.includes(roleName) : role === roleName;
+  const token = this.getToken();
+  if (!token) {
+    return null;
   }
 
-  private decodeToken(token: string): Record<string, unknown> | null {
-    try {
-      const payload = token.split('.')[1];
-      const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
-      return JSON.parse(json);
-    } catch {
-      return null;
-    }
+  const payload = this.decodeToken(token);
+  if (!payload) {
+    return null;
   }
+
+  return {
+    fullName: (payload['fullName'] as string) ?? '',
+    email: (payload['email'] as string) ?? '',
+    role: (payload['role'] as string) ?? '',
+    isAdmin: payload['isAdmin'] === true || payload['isAdmin'] === 'true',
+  };
 }
+
+hasRole(roleName: string): boolean {
+  const token = this.getToken();
+  if (!token) {
+    return false;
+  }
+
+  const payload = this.decodeToken(token);
+  const role = payload?.['role'];
+
+  return Array.isArray(role)
+    ? role.includes(roleName)
+    : role === roleName;
+}
+
+private decodeToken(token: string): Record<string, unknown> | null {
+  try {
+    const payload = token.split('.')[1];
+    const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}}

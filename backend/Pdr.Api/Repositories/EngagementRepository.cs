@@ -45,7 +45,7 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
     {
         context.EngagementAssignments.Add(new EngagementAssignment
         {
-            EngagementId = engagementId,
+            EngagementId = (int)engagementId,
             UserId = userId
         });
         await context.SaveChangesAsync();
