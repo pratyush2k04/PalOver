@@ -26,7 +26,7 @@ Content-Type: {{contentType}}
 }
 
 ###
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1Iiwicm9sZSI6WyJMZWFkZXJzaGlwIiwiTGVhZGVyc2hpcCJdLCJlbWFpbCI6ImFkbWluQGNvbXBhbnkuY29tIiwiZnVsbG5hbWUiOiJBZG1pbiBVc2VyIiwiaXNBZG1pbiI6InRydWUiLCJuYmYiOjE3ODU1ODEwMzAsImV4cCI6MTc4NTU4MjgzMCwiaWF0IjoxNzg1NTgxMDMwLCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.7yshdqHlAWComq5pleIAmLvG60175cMQd4VLb-QhhQM
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1Iiwicm9sZSI6WyJMZWFkZXJzaGlwIiwiTGVhZGVyc2hpcCJdLCJlbWFpbCI6ImFkbWluQGNvbXBhbnkuY29tIiwiZnVsbG5hbWUiOiJBZG1pbiBVc2VyIiwiaXNBZG1pbiI6InRydWUiLCJuYmYiOjE3ODU4MzE5MzUsImV4cCI6MTc4NTgzMzczNSwiaWF0IjoxNzg1ODMxOTM1LCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.GtBIzJYcTodh8_tO8XluTl5RwLnfV6dMiS1gHBpEDaw
 
 ### Login as Project Manager
 POST {{host}}/api/auth/login
@@ -111,27 +111,27 @@ Authorization: Bearer {{pmToken}}
 Accept: application/json
 
 ### Current Draft
-GET {{host}}/api/checklist/current-draft
+GET {{host}}/api/masterchecklist/current-draft
 Authorization: Bearer {{adminToken}}
 
 ### Published Version
-GET {{host}}/api/checklist/published
+GET {{host}}/api/masterchecklist/published
 Authorization: Bearer {{adminToken}}
 
 ### Version History
-GET {{host}}/api/checklist/versions
+GET {{host}}/api/masterchecklist/versions
 Authorization: Bearer {{adminToken}}
 
 ### Version By Id
-GET {{host}}/api/checklist/versions/2
+GET {{host}}/api/masterchecklist/versions/2
 Authorization: Bearer {{adminToken}}
 
 ### Categories
-GET {{host}}/api/checklist/categories
+GET {{host}}/api/masterchecklist/categories
 Authorization: Bearer {{adminToken}}
 
 ### Create Item
-POST {{host}}/api/checklist/items
+POST {{host}}/api/masterchecklist/items
 Authorization: Bearer {{adminToken}}
 Content-Type: {{contentType}}
 
@@ -144,7 +144,7 @@ Content-Type: {{contentType}}
 }
 
 ### Update Item
-PUT {{host}}/api/checklist/items/1
+PUT {{host}}/api/masterchecklist/items/1
 Authorization: Bearer {{adminToken}}
 Content-Type: {{contentType}}
 
@@ -157,7 +157,7 @@ Content-Type: {{contentType}}
 }
 
 ### Reorder Items
-PUT {{host}}/api/checklist/items/reorder
+PUT {{host}}/api/masterchecklist/items/reorder
 Authorization: Bearer {{adminToken}}
 Content-Type: {{contentType}}
 
@@ -175,11 +175,11 @@ Content-Type: {{contentType}}
 }
 
 ### Retire Item
-PUT {{host}}/api/checklist/items/1/retire
+PUT {{host}}/api/masterchecklist/items/1/retire
 Authorization: Bearer {{adminToken}}
 
 ### Publish Version
-POST {{host}}/api/checklist/versions/1/publish
+POST {{host}}/api/masterchecklist/versions/1/publish
 Authorization: Bearer {{adminToken}}
 
 ##############################################################
@@ -187,11 +187,11 @@ Authorization: Bearer {{adminToken}}
 ##############################################################
 
 ### Published Version (Should Succeed)
-GET {{host}}/api/checklist/published
+GET {{host}}/api/masterchecklist/published
 Authorization: Bearer {{pmToken}}
 
 ### Current Draft (Should Return 403)
-GET {{host}}/api/checklist/current-draft
+GET {{host}}/api/masterchecklist/current-draft
 Authorization: Bearer {{pmToken}}
 
 ##############################################################
@@ -199,14 +199,14 @@ Authorization: Bearer {{pmToken}}
 ##############################################################
 
 ### Unauthorized
-GET {{host}}/api/checklist/current-draft
+GET {{host}}/api/masterchecklist/current-draft
 
 ##############################################################
 #################### INVALID TOKEN ###########################
 ##############################################################
 
 ### Invalid JWT
-GET {{host}}/api/checklist/current-draft
+GET {{host}}/api/masterchecklist/current-draft
 Authorization: Bearer invalid-token
 
 ##############################################################
