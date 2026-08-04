@@ -57,79 +57,143 @@
     <div class="section commitments">
       <h3>Commitments</h3>
 
-      <div class="checkbox-group">
-        <input type="checkbox" id="noCommitments" formControlName="hasNoCommitments" (change)="onHasNoCommitmentsChange()">
-        <label for="noCommitments">This engagement has NO commitments.</label>
+      <div class="add-commitment-form" *ngIf="isPreSales() && !isSubmitted()">
+        <h4>Add New Commitment</h4>
+        <div class="form-row">
+          <input type="text" [(ngModel)]="newCommitment().title" [ngModelOptions]="{standalone: true}"
+            maxlength="100" placeholder="Title (Required)"
+            [class.is-invalid]="newCommitmentTouched() && !newCommitment().title">
+          <select [(ngModel)]="newCommitment().commitmentTypeId" [ngModelOptions]="{standalone: true}">
+            <option *ngFor="let t of commitmentTypes" [value]="t.id">{{ t.name }}</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <input type="text" [(ngModel)]="newCommitment().description" [ngModelOptions]="{standalone: true}"
+            maxlength="2000" placeholder="Description (Required)"
+            [class.is-invalid]="newCommitmentTouched() && !newCommitment().description">
+        </div>
+        <div class="form-row">
+          <input type="number" min="1" [(ngModel)]="newCommitment().timeline" [ngModelOptions]="{standalone: true}" placeholder="Timeline">
+          <select [(ngModel)]="newCommitment().timelineUnit" [ngModelOptions]="{standalone: true}">
+            <option *ngFor="let u of timelineUnits" [value]="u">{{ u }}</option>
+          </select>
+          <button class="btn-primary" (click)="addCommitment()">Add Commitment</button>
+        </div>
+        <div class="invalid-feedback" *ngIf="newCommitmentTouched() && (!newCommitment().title || !newCommitment().description)">
+          Title and Description are required.
+        </div>
       </div>
 
-      <div *ngIf="!clientContextForm.get('hasNoCommitments')?.value" class="commitments-list">
-        <table *ngIf="commitments().length > 0">
-          <thead>
-            <tr>
-              <th>Type</th>
-              <th>Description</th>
-              <th>Quantity</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let c of commitments()">
-              <ng-container *ngIf="editingCommitmentId() !== c.commitmentId; else editRow">
-                <td>{{ c.commitmentTypeId === 1 ? 'Software' : c.commitmentTypeId === 2 ? 'Services' : 'Training' }}</td>
-                <td>{{ c.description }}</td>
-                <td>{{ c.quantity }}</td>
-                <td class="row-actions">
-                  <ng-container *ngIf="pendingDeleteId() === c.commitmentId; else rowButtons">
-                    <span class="confirm-inline">Remove this commitment?</span>
-                    <button class="btn-danger-sm" [disabled]="isSubmitted()" (click)="confirmDeleteCommitment(c.commitmentId)">Yes</button>
-                    <button class="btn-secondary-sm" [disabled]="isSubmitted()" (click)="cancelDeleteCommitment()">Cancel</button>
-                  </ng-container>
-                  <ng-template #rowButtons>
-                    <button class="btn-secondary-sm" [disabled]="isSubmitted()" (click)="startEditCommitment(c)">Edit</button>
-                    <button class="btn-danger-sm" [disabled]="isSubmitted()" (click)="requestDeleteCommitment(c.commitmentId)">Remove</button>
-                  </ng-template>
-                </td>
+      <div *ngIf="commitments().length === 0" class="empty-state empty-state-prominent">
+        No Commitments
+      </div>
+
+      <div class="commitment-cards" *ngIf="commitments().length > 0">
+        <div class="commitment-card" *ngFor="let c of commitments()"
+          [class.commitment-card-impossible]="c.realisticCommitment && !c.realisticCommitment.isPossible">
+
+          <div class="commitment-square promised-square">
+            <div class="square-header">
+              <span class="square-label">Promised</span>
+              <button *ngIf="isPreSales() && !isSubmitted() && editingCommitmentId() !== c.commitmentId"
+                class="btn-icon" (click)="startEditCommitment(c)" aria-label="Edit promised commitment">&#9998;</button>
+            </div>
+
+            <ng-container *ngIf="editingCommitmentId() !== c.commitmentId; else editPromisedTemplate">
+              <h4>{{ c.title }}</h4>
+              <p>{{ c.description }}</p>
+              <p class="timeline-info">{{ c.timeline }} {{ c.timelineUnit }}</p>
+              <p class="type-info">{{ c.commitmentTypeId === 1 ? 'Software' : c.commitmentTypeId === 2 ? 'Services' : 'Training' }}</p>
+            </ng-container>
+            <ng-template #editPromisedTemplate>
+              <input type="text" [(ngModel)]="editCommitment().title" [ngModelOptions]="{standalone: true}" maxlength="100" placeholder="Title">
+              <input type="text" [(ngModel)]="editCommitment().description" [ngModelOptions]="{standalone: true}" maxlength="2000" placeholder="Description">
+              <div class="form-row">
+                <input type="number" min="1" [(ngModel)]="editCommitment().timeline" [ngModelOptions]="{standalone: true}">
+                <select [(ngModel)]="editCommitment().timelineUnit" [ngModelOptions]="{standalone: true}">
+                  <option *ngFor="let u of timelineUnits" [value]="u">{{ u }}</option>
+                </select>
+              </div>
+              <div class="row-actions">
+                <button class="btn-primary-sm" (click)="saveEditCommitment(c.commitmentId)">Save</button>
+                <button class="btn-secondary-sm" (click)="cancelEditCommitment()">Cancel</button>
+              </div>
+            </ng-template>
+
+            <div class="row-actions" *ngIf="isPreSales() && !isSubmitted() && editingCommitmentId() !== c.commitmentId">
+              <ng-container *ngIf="pendingDeleteId() === c.commitmentId; else deleteButton">
+                <span class="confirm-inline">Remove this commitment?</span>
+                <button class="btn-danger-sm" (click)="confirmDeleteCommitment(c.commitmentId)">Yes</button>
+                <button class="btn-secondary-sm" (click)="cancelDeleteCommitment()">Cancel</button>
               </ng-container>
-              <ng-template #editRow>
-                <td>
-                  <select [(ngModel)]="editCommitment().commitmentTypeId" [ngModelOptions]="{standalone: true}">
-                    <option *ngFor="let t of commitmentTypes" [value]="t.id">{{ t.name }}</option>
-                  </select>
-                </td>
-                <td>
-                  <input type="text" [(ngModel)]="editCommitment().description" [ngModelOptions]="{standalone: true}" maxlength="2000">
-                </td>
-                <td>
-                  <input type="text" [(ngModel)]="editCommitment().quantity" [ngModelOptions]="{standalone: true}">
-                </td>
-                <td class="row-actions">
-                  <button class="btn-primary-sm" (click)="saveEditCommitment(c.commitmentId)">Save</button>
-                  <button class="btn-secondary-sm" (click)="cancelEditCommitment()">Cancel</button>
-                </td>
+              <ng-template #deleteButton>
+                <button class="btn-danger-sm" (click)="requestDeleteCommitment(c.commitmentId)">Delete</button>
               </ng-template>
-            </tr>
-          </tbody>
-        </table>
-
-        <div *ngIf="commitments().length === 0" class="empty-state">
-          No commitments added yet.
-        </div>
-
-        <div class="add-commitment-form" [class.add-commitment-form-disabled]="isSubmitted()">
-          <h4>Add New Commitment</h4>
-          <div class="form-row">
-            <select [(ngModel)]="newCommitment().commitmentTypeId" [ngModelOptions]="{standalone: true}" [disabled]="isSubmitted()">
-              <option *ngFor="let t of commitmentTypes" [value]="t.id">{{ t.name }}</option>
-            </select>
-            <input type="text" [(ngModel)]="newCommitment().description" [ngModelOptions]="{standalone: true}"
-              maxlength="2000" placeholder="Description (Required)" [disabled]="isSubmitted()"
-              [class.is-invalid]="newCommitmentTouched() && !newCommitment().description">
-            <input type="text" [(ngModel)]="newCommitment().quantity" [ngModelOptions]="{standalone: true}"
-              placeholder="Quantity/Details" [disabled]="isSubmitted()">
-            <button class="btn-primary" [disabled]="isSubmitted()" (click)="addCommitment()">Add</button>
+            </div>
           </div>
-          <div class="invalid-feedback" *ngIf="newCommitmentTouched() && !newCommitment().description">
-            Description is required.
+
+          <div class="commitment-square realistic-square">
+            <div class="square-header">
+              <span class="square-label">Realistic</span>
+              <button *ngIf="isProjectManagement() && !isSubmitted() && c.realisticCommitment && editingRealisticCommitmentId() !== c.commitmentId"
+                class="btn-icon" (click)="startEditRealisticCommitment(c)" aria-label="Edit realistic commitment">&#9998;</button>
+            </div>
+
+            <ng-container *ngIf="editingRealisticCommitmentId() !== c.commitmentId; else editRealisticTemplate">
+              <ng-container *ngIf="c.realisticCommitment; else noRealisticYet">
+                <p [class.strikethrough]="!c.realisticCommitment.isPossible">{{ c.realisticCommitment.description }}</p>
+                <p class="timeline-info" [class.strikethrough]="!c.realisticCommitment.isPossible">
+                  {{ c.realisticCommitment.timeline }} {{ c.realisticCommitment.timelineUnit }}
+                </p>
+                <p *ngIf="c.realisticCommitment.acknowledgementMessage" class="acknowledgement-info"
+                  [class.strikethrough]="!c.realisticCommitment.isPossible">
+                  Acknowledged: {{ c.realisticCommitment.acknowledgementMessage }}
+                </p>
+
+                <button *ngIf="isProjectManagement() && !isSubmitted()" class="btn-toggle"
+                  [class.btn-toggle-active]="!c.realisticCommitment.isPossible"
+                  (click)="toggleMarkImpossible(c)">
+                  {{ c.realisticCommitment.isPossible ? 'Mark Impossible' : 'Marked Impossible' }}
+                </button>
+
+                <button *ngIf="commitmentHasGap(c) && !c.realisticCommitment.acknowledgementMessage && isProjectManagement() && !isSubmitted()"
+                  class="btn-warning" (click)="startEditRealisticCommitment(c)">
+                  Acknowledge Estimation Gap
+                </button>
+              </ng-container>
+              <ng-template #noRealisticYet>
+                <button *ngIf="isProjectManagement() && !isSubmitted()" class="click-to-edit-placeholder"
+                  (click)="startEditRealisticCommitment(c)">
+                  Click on any field to enter edit mode.
+                </button>
+                <p *ngIf="!isProjectManagement()" class="empty-state">Not yet provided.</p>
+              </ng-template>
+            </ng-container>
+
+            <ng-template #editRealisticTemplate>
+              <textarea [(ngModel)]="realisticEditForm().description" [ngModelOptions]="{standalone: true}"
+                maxlength="2000" placeholder="Realistic description" rows="2"></textarea>
+              <div class="form-row">
+                <input type="number" min="1" [(ngModel)]="realisticEditForm().timeline" [ngModelOptions]="{standalone: true}">
+                <select [(ngModel)]="realisticEditForm().timelineUnit" [ngModelOptions]="{standalone: true}">
+                  <option *ngFor="let u of timelineUnits" [value]="u">{{ u }}</option>
+                </select>
+              </div>
+
+              <div *ngIf="editFormHasGap(c)" class="form-group">
+                <label>Acknowledge Estimation Gap</label>
+                <input type="text" [(ngModel)]="realisticEditForm().acknowledgementMessage" [ngModelOptions]="{standalone: true}"
+                  maxlength="2000" placeholder="Why does the realistic estimate differ?">
+                <div class="warning-text" *ngIf="acknowledgementWarningVisible()">
+                  You've changed your realistic estimates. Consider revisiting your acknowledgement message.
+                </div>
+              </div>
+
+              <div class="row-actions">
+                <button class="btn-primary-sm" (click)="saveRealisticCommitment(c)">Save</button>
+                <button class="btn-secondary-sm" (click)="cancelEditRealisticCommitment()">Cancel</button>
+              </div>
+            </ng-template>
           </div>
         </div>
       </div>
