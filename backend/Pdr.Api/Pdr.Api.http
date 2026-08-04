@@ -26,7 +26,7 @@ Content-Type: {{contentType}}
 }
 
 ###
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1Iiwicm9sZSI6WyJMZWFkZXJzaGlwIiwiTGVhZGVyc2hpcCJdLCJlbWFpbCI6ImFkbWluQGNvbXBhbnkuY29tIiwiZnVsbG5hbWUiOiJBZG1pbiBVc2VyIiwiaXNBZG1pbiI6InRydWUiLCJuYmYiOjE3ODU4MzE5MzUsImV4cCI6MTc4NTgzMzczNSwiaWF0IjoxNzg1ODMxOTM1LCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.GtBIzJYcTodh8_tO8XluTl5RwLnfV6dMiS1gHBpEDaw
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1Iiwicm9sZSI6WyJMZWFkZXJzaGlwIiwiTGVhZGVyc2hpcCJdLCJlbWFpbCI6ImFkbWluQGNvbXBhbnkuY29tIiwiZnVsbG5hbWUiOiJBZG1pbiBVc2VyIiwiaXNBZG1pbiI6InRydWUiLCJuYmYiOjE3ODU4MzQ2NjUsImV4cCI6MTc4NTgzNjQ2NSwiaWF0IjoxNzg1ODM0NjY1LCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.1fKcpmKtKDLwW_rahaNwVg7PmE60AoZQsVa8fE_xImI
 
 ### Login as Project Manager
 POST {{host}}/api/auth/login
@@ -144,12 +144,12 @@ Content-Type: {{contentType}}
 }
 
 ### Update Item
-PUT {{host}}/api/masterchecklist/items/1
+PUT {{host}}/api/masterchecklist/items/64
 Authorization: Bearer {{adminToken}}
 Content-Type: {{contentType}}
 
 {
-  "title": "Conduct Project Kickoff Meeting",
+  "title": "Meow",
   "description": "Updated description",
   "categoryId": 1,
   "isMandatory": true,
