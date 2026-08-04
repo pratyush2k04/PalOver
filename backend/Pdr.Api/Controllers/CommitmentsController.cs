@@ -39,10 +39,10 @@ public class CommitmentsController : ControllerBase
         _updateRealisticValidator = updateRealisticValidator;
     }
 
-    private async Task CheckAccessAsync(long engagementId)
+    private async Task CheckAccessAsync(long engagementId, string requiredRole)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        await _accessService.CanAccessHandoverAsync(engagementId, userId);
+        await _accessService.CanAccessHandoverAsync(engagementId, userId, requiredRole);
     }
 
     private string GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
@@ -50,7 +50,7 @@ public class CommitmentsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<CommitmentDto>> AddCommitment(long engagementId, [FromBody] CreateCommitmentRequest request)
     {
-        await CheckAccessAsync(engagementId);
+        await CheckAccessAsync(engagementId, "Pre Sales");
 
         var validationResult = await _createValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
@@ -66,7 +66,7 @@ public class CommitmentsController : ControllerBase
     [HttpPut("{commitmentId:long}")]
     public async Task<ActionResult<CommitmentDto>> UpdateCommitment(long engagementId, long commitmentId, [FromBody] UpdateCommitmentRequest request)
     {
-        await CheckAccessAsync(engagementId);
+        await CheckAccessAsync(engagementId, "Pre Sales");
 
         var validationResult = await _updateValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
@@ -82,7 +82,7 @@ public class CommitmentsController : ControllerBase
     [HttpDelete("{commitmentId:long}")]
     public async Task<IActionResult> DeleteCommitment(long engagementId, long commitmentId)
     {
-        await CheckAccessAsync(engagementId);
+        await CheckAccessAsync(engagementId, "Pre Sales");
 
         await _commitmentService.DeleteCommitmentAsync(engagementId, commitmentId);
         return NoContent();
@@ -91,7 +91,7 @@ public class CommitmentsController : ControllerBase
     [HttpPost("{commitmentId:long}/realistic")]
     public async Task<ActionResult<RealisticCommitmentDto>> CreateRealisticCommitment(long engagementId, long commitmentId, [FromBody] CreateRealisticCommitmentRequest request)
     {
-        await CheckAccessAsync(engagementId);
+        await CheckAccessAsync(engagementId, "Project Management");
 
         var validationResult = await _createRealisticValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
@@ -107,7 +107,7 @@ public class CommitmentsController : ControllerBase
     [HttpPut("{commitmentId:long}/realistic")]
     public async Task<ActionResult<RealisticCommitmentDto>> UpdateRealisticCommitment(long engagementId, long commitmentId, [FromBody] UpdateRealisticCommitmentRequest request)
     {
-        await CheckAccessAsync(engagementId);
+        await CheckAccessAsync(engagementId, "Project Management");
 
         var validationResult = await _updateRealisticValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
