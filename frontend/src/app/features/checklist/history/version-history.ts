@@ -3,7 +3,7 @@ import { DatePipe } from '@angular/common';
 import { DialogService } from '../../../shared/dialog/dialog.service';
 import { LoadingSpinnerComponent } from '../../../shared/loading-spinner/loading-spinner';
 import { MasterChecklistService } from '../../../services/master-checklist.service';
-import { ChecklistVersionSummary } from '../../../models/checklist.model';
+import { MasterChecklistVersionSummary } from '../../../models/checklist.model';
 import {
   VersionDetailDialogComponent,
   VersionDetailDialogData,
@@ -17,22 +17,22 @@ import {
   styleUrl: './version-history.scss',
 })
 export class VersionHistoryComponent implements OnInit {
-  private checklistService = inject(MasterChecklistService);
+  private masterChecklistService = inject(MasterChecklistService);
   private dialog = inject(DialogService);
 
-  readonly loading = this.checklistService.versionsLoading;
-  readonly error = this.checklistService.versionsError;
-  readonly versions = this.checklistService.versions;
+  readonly loading = this.masterChecklistService.versionsLoading;
+  readonly error = this.masterChecklistService.versionsError;
+  readonly versions = this.masterChecklistService.versions;
 
   ngOnInit(): void {
-    this.checklistService.getVersionHistory();
+    this.masterChecklistService.getVersionHistory();
   }
 
-  publishedAt(version: ChecklistVersionSummary): string | null {
+  publishedAt(version: MasterChecklistVersionSummary): string | null {
     return version.statusName === 'Published' ? version.updatedAt : null;
   }
 
-  onView(version: ChecklistVersionSummary): void {
+  onView(version: MasterChecklistVersionSummary): void {
     this.dialog.open<VersionDetailDialogComponent, VersionDetailDialogData>(VersionDetailDialogComponent, {
       data: { versionId: version.id },
     });

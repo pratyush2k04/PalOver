@@ -2,13 +2,13 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import {
-  ChecklistCategory,
-  ChecklistItem,
-  ChecklistVersion,
-  ChecklistVersionSummary,
-  CreateChecklistItemRequest,
-  ReorderChecklistItemsRequest,
-  UpdateChecklistItemRequest,
+  MasterChecklistCategory,
+  MasterChecklistItem,
+  MasterChecklistVersion,
+  MasterChecklistVersionSummary,
+  CreateMasterChecklistItemRequest,
+  ReorderMasterChecklistItemsRequest,
+  UpdateMasterChecklistItemRequest,
 } from '../models/checklist.model';
 
 @Injectable({
@@ -20,7 +20,7 @@ export class MasterChecklistService {
   private readonly publishedLoadingSignal = signal(false);
   private readonly publishedErrorSignal = signal<string | null>(null);
   private readonly publishedNotFoundSignal = signal(false);
-  private readonly publishedChecklistSignal = signal<ChecklistVersion | null>(null);
+  private readonly publishedChecklistSignal = signal<MasterChecklistVersion | null>(null);
 
   readonly publishedLoading = this.publishedLoadingSignal.asReadonly();
   readonly publishedError = this.publishedErrorSignal.asReadonly();
@@ -30,19 +30,19 @@ export class MasterChecklistService {
   private readonly draftLoadingSignal = signal(false);
   private readonly draftErrorSignal = signal<string | null>(null);
   private readonly draftNotFoundSignal = signal(false);
-  private readonly currentDraftSignal = signal<ChecklistVersion | null>(null);
+  private readonly currentDraftSignal = signal<MasterChecklistVersion | null>(null);
 
   readonly draftLoading = this.draftLoadingSignal.asReadonly();
   readonly draftError = this.draftErrorSignal.asReadonly();
   readonly draftNotFound = this.draftNotFoundSignal.asReadonly();
   readonly currentDraft = this.currentDraftSignal.asReadonly();
 
-  private readonly categoriesSignal = signal<ChecklistCategory[]>([]);
+  private readonly categoriesSignal = signal<MasterChecklistCategory[]>([]);
   readonly categories = this.categoriesSignal.asReadonly();
 
   private readonly versionsLoadingSignal = signal(false);
   private readonly versionsErrorSignal = signal<string | null>(null);
-  private readonly versionsSignal = signal<ChecklistVersionSummary[]>([]);
+  private readonly versionsSignal = signal<MasterChecklistVersionSummary[]>([]);
 
   readonly versionsLoading = this.versionsLoadingSignal.asReadonly();
   readonly versionsError = this.versionsErrorSignal.asReadonly();
@@ -53,7 +53,7 @@ export class MasterChecklistService {
     this.publishedErrorSignal.set(null);
     this.publishedNotFoundSignal.set(false);
 
-    this.http.get<ChecklistVersion>('/api/masterchecklist/published').pipe(
+    this.http.get<MasterChecklistVersion>('/api/masterchecklist/published').pipe(
       tap({
         next: (version) => {
           this.publishedChecklistSignal.set(version);
@@ -77,7 +77,7 @@ export class MasterChecklistService {
     this.draftErrorSignal.set(null);
     this.draftNotFoundSignal.set(false);
 
-    this.http.get<ChecklistVersion>('/api/masterchecklist/current-draft').pipe(
+    this.http.get<MasterChecklistVersion>('/api/masterchecklist/current-draft').pipe(
       tap({
         next: (version) => {
           this.currentDraftSignal.set(version);
@@ -97,7 +97,7 @@ export class MasterChecklistService {
   }
 
   loadCategories(): void {
-    this.http.get<ChecklistCategory[]>('/api/masterchecklist/categories').subscribe({
+    this.http.get<MasterChecklistCategory[]>('/api/masterchecklist/categories').subscribe({
       next: (categories) => this.categoriesSignal.set(categories),
     });
   }
@@ -106,7 +106,7 @@ export class MasterChecklistService {
     this.versionsLoadingSignal.set(true);
     this.versionsErrorSignal.set(null);
 
-    this.http.get<ChecklistVersionSummary[]>('/api/masterchecklist/versions').pipe(
+    this.http.get<MasterChecklistVersionSummary[]>('/api/masterchecklist/versions').pipe(
       tap({
         next: (versions) => {
           this.versionsSignal.set(versions);
@@ -120,43 +120,43 @@ export class MasterChecklistService {
     ).subscribe();
   }
 
-  getVersionById(versionId: number): Observable<ChecklistVersion> {
-    return this.http.get<ChecklistVersion>(`/api/masterchecklist/versions/${versionId}`);
+  getVersionById(versionId: number): Observable<MasterChecklistVersion> {
+    return this.http.get<MasterChecklistVersion>(`/api/masterchecklist/versions/${versionId}`);
   }
 
-  fetchPublished(): Observable<ChecklistVersion> {
-    return this.http.get<ChecklistVersion>('/api/masterchecklist/published');
+  fetchPublished(): Observable<MasterChecklistVersion> {
+    return this.http.get<MasterChecklistVersion>('/api/masterchecklist/published');
   }
 
-  fetchCurrentDraft(): Observable<ChecklistVersion> {
-    return this.http.get<ChecklistVersion>('/api/masterchecklist/current-draft');
+  fetchCurrentDraft(): Observable<MasterChecklistVersion> {
+    return this.http.get<MasterChecklistVersion>('/api/masterchecklist/current-draft');
   }
 
-  fetchCategories(): Observable<ChecklistCategory[]> {
-    return this.http.get<ChecklistCategory[]>('/api/masterchecklist/categories');
+  fetchCategories(): Observable<MasterChecklistCategory[]> {
+    return this.http.get<MasterChecklistCategory[]>('/api/masterchecklist/categories');
   }
 
-  createItem(request: CreateChecklistItemRequest): Observable<ChecklistItem> {
-    return this.http.post<ChecklistItem>('/api/masterchecklist/items', request);
+  createItem(request: CreateMasterChecklistItemRequest): Observable<MasterChecklistItem> {
+    return this.http.post<MasterChecklistItem>('/api/masterchecklist/items', request);
   }
 
-  updateItem(id: number, request: UpdateChecklistItemRequest): Observable<ChecklistItem> {
-    return this.http.put<ChecklistItem>(`/api/masterchecklist/items/${id}`, request);
+  updateItem(id: number, request: UpdateMasterChecklistItemRequest): Observable<MasterChecklistItem> {
+    return this.http.put<MasterChecklistItem>(`/api/masterchecklist/items/${id}`, request);
   }
 
-  retireItem(id: number): Observable<ChecklistItem> {
-    return this.http.put<ChecklistItem>(`/api/masterchecklist/items/${id}/retire`, {});
+  retireItem(id: number): Observable<MasterChecklistItem> {
+    return this.http.put<MasterChecklistItem>(`/api/masterchecklist/items/${id}/retire`, {});
   }
 
-  reorderItems(request: ReorderChecklistItemsRequest): Observable<ChecklistItem[]> {
-    return this.http.put<ChecklistItem[]>('/api/masterchecklist/items/reorder', request);
+  reorderItems(request: ReorderMasterChecklistItemsRequest): Observable<MasterChecklistItem[]> {
+    return this.http.put<MasterChecklistItem[]>('/api/masterchecklist/items/reorder', request);
   }
 
-  publishVersion(versionId: number): Observable<ChecklistVersion> {
-    return this.http.post<ChecklistVersion>(`/api/masterchecklist/versions/${versionId}/publish`, {});
+  publishVersion(versionId: number): Observable<MasterChecklistVersion> {
+    return this.http.post<MasterChecklistVersion>(`/api/masterchecklist/versions/${versionId}/publish`, {});
   }
 
-  setCurrentDraft(version: ChecklistVersion): void {
+  setCurrentDraft(version: MasterChecklistVersion): void {
     this.currentDraftSignal.set(version);
   }
 }

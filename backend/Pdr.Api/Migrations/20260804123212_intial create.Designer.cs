@@ -12,7 +12,7 @@ using Pdr.Api.Data;
 namespace Pdr.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260804104458_intial create")]
+    [Migration("20260804123212_intial create")]
     partial class intialcreate
     {
         /// <inheritdoc />

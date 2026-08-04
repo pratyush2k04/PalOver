@@ -10,13 +10,13 @@ interface NavTab {
 
 const ADMIN_NAV_TABS: NavTab[] = [
   { label: 'Dashboard', path: '/dashboard', adminOnly: false },
-  { label: 'Master Checklist', path: '/checklist/draft', adminOnly: true },
-  { label: 'Version History', path: '/checklist/history', adminOnly: true },
+  { label: 'Master Checklist', path: '/master-checklist/draft', adminOnly: true },
+  { label: 'Version History', path: '/master-checklist/history', adminOnly: true },
 ];
 
 const NON_ADMIN_NAV_TABS: NavTab[] = [
   { label: 'Dashboard', path: '/dashboard', adminOnly: false },
-  { label: 'Checklist', path: '/checklist/published', adminOnly: false },
+  { label: 'Checklist', path: 'checklist/published', adminOnly: false },
 ];
 
 @Component({
