@@ -12,8 +12,8 @@ using Pdr.Api.Data;
 namespace Pdr.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260803131832_AddEngagementName")]
-    partial class AddEngagementName
+    [Migration("20260804104458_intial create")]
+    partial class intialcreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

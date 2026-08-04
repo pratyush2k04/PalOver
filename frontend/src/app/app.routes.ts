@@ -112,7 +112,7 @@ export const routes: Routes = [
           },
           { path: '', redirectTo: 'handover', pathMatch: 'full' }
         ]
-      }
+      },
       { path: 'my-engagements', component: MyEngagementsComponent },
     ],
   },

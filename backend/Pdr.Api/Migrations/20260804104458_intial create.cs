@@ -217,6 +217,7 @@ namespace Pdr.Api.Migrations
                 {
                     engagement_id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    EngagementName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     client_name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     engagement_description = table.Column<string>(type: "text", nullable: true),
                     engagement_type_id = table.Column<int>(type: "integer", nullable: false),
@@ -490,11 +491,11 @@ namespace Pdr.Api.Migrations
 
             migrationBuilder.InsertData(
                 table: "engagements",
-                columns: new[] { "engagement_id", "billing_start_date", "client_name", "commercial_model_id", "created_at", "created_by", "engagement_description", "engagement_type_id", "HandoverInfoHandoverId", "kickoff_date", "status_id", "updated_at", "updated_by" },
+                columns: new[] { "engagement_id", "billing_start_date", "client_name", "commercial_model_id", "created_at", "created_by", "engagement_description", "EngagementName", "engagement_type_id", "HandoverInfoHandoverId", "kickoff_date", "status_id", "updated_at", "updated_by" },
                 values: new object[,]
                 {
-                    { 1, null, "FinTech Solutions", 1, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Core Banking Greenfield Implementation", 1, null, new DateOnly(2026, 8, 15), 1, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null },
-                    { 2, new DateOnly(2026, 7, 1), "HealthCare Plus", 2, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Legacy System Upgrade and Support", 2, null, new DateOnly(2026, 6, 1), 2, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null }
+                    { 1, null, "FinTech Solutions", 1, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Core Banking Greenfield Implementation", "", 1, null, new DateOnly(2026, 8, 15), 1, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null },
+                    { 2, new DateOnly(2026, 7, 1), "HealthCare Plus", 2, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Legacy System Upgrade and Support", "", 2, null, new DateOnly(2026, 6, 1), 2, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null }
                 });
 
             migrationBuilder.InsertData(

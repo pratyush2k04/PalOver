@@ -12,7 +12,7 @@ namespace Pdr.Api.Controllers;
 public class EngagementsController(IEngagementService engagementService) : ControllerBase
 {
     [HttpGet("my-engagements")]
-    [Authorize(Roles = "Project Management")]
+    [Authorize(Roles = "Project Management,Tech Lead")]
     public async Task<ActionResult<PmEngagementListResponse>> GetMyEngagements([FromQuery] string sortBy = "kickoff")
     {
         var result = await engagementService.GetMyEngagementsAsync(sortBy);

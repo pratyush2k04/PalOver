@@ -94,7 +94,7 @@ export class MyEngagementsComponent implements OnInit {
   }
 
   openEngagement(engagementId: number): void {
-    this.router.navigate(['/engagements', engagementId]);
+    this.router.navigate(['/engagements', engagementId, 'workspace']);
   }
 
   formatKickoffDate(kickoffDate: string): string {
