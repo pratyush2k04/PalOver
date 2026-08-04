@@ -59,7 +59,7 @@ export const routes: Routes = [
           import('./components/dashboard/dashboard').then((m) => m.DashboardComponent),
       },
       {
-        path: 'checklist',
+        path: 'masterchecklist',
         children: [
           { path: '', redirectTo: 'published', pathMatch: 'full' },
           {

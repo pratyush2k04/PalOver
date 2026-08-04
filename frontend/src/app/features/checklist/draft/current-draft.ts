@@ -3,7 +3,7 @@ import { DialogService } from '../../../shared/dialog/dialog.service';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { LoadingSpinnerComponent } from '../../../shared/loading-spinner/loading-spinner';
 import { MasterChecklistService } from '../../../services/master-checklist.service';
-import { ChecklistItem, ChecklistItemOrder } from '../../../models/checklist.model';
+import { MasterChecklistItem, MasterChecklistItemOrder } from '../../../models/checklist.model';
 import { ItemFormDialogComponent, ItemFormDialogData, ItemFormDialogResult } from '../dialogs/item-form/item-form-dialog';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../dialogs/confirm/confirm-dialog';
 
@@ -15,15 +15,15 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../dialogs/confirm/co
   styleUrl: './current-draft.scss',
 })
 export class CurrentDraftComponent implements OnInit {
-  private checklistService = inject(MasterChecklistService);
+  private masterChecklistService = inject(MasterChecklistService);
   private dialog = inject(DialogService);
   private toast = inject(ToastService);
 
-  readonly loading = this.checklistService.draftLoading;
-  readonly error = this.checklistService.draftError;
-  readonly notFound = this.checklistService.draftNotFound;
-  readonly draft = this.checklistService.currentDraft;
-  readonly categories = this.checklistService.categories;
+  readonly loading = this.masterChecklistService.draftLoading;
+  readonly error = this.masterChecklistService.draftError;
+  readonly notFound = this.masterChecklistService.draftNotFound;
+  readonly draft = this.masterChecklistService.currentDraft;
+  readonly categories = this.masterChecklistService.categories;
 
   readonly activeItems = computed(() =>
     (this.draft()?.items ?? [])
@@ -39,8 +39,8 @@ export class CurrentDraftComponent implements OnInit {
   readonly dragOverItemId = signal<number | null>(null);
 
   ngOnInit(): void {
-    this.checklistService.getCurrentDraft();
-    this.checklistService.loadCategories();
+    this.masterChecklistService.getCurrentDraft();
+    this.masterChecklistService.loadCategories();
   }
 
   private notify(message: string): void {
@@ -48,7 +48,7 @@ export class CurrentDraftComponent implements OnInit {
   }
 
   private reload(): void {
-    this.checklistService.getCurrentDraft();
+    this.masterChecklistService.getCurrentDraft();
   }
 
   onAddItem(): void {
@@ -66,7 +66,7 @@ export class CurrentDraftComponent implements OnInit {
         return;
       }
 
-      this.checklistService
+      this.masterChecklistService
         .createItem({
           title: result.title,
           description: result.description,
@@ -81,10 +81,10 @@ export class CurrentDraftComponent implements OnInit {
     });
   }
 
-  private promoteNewItemToTop(createdItem: ChecklistItem): void {
+  private promoteNewItemToTop(createdItem: MasterChecklistItem): void {
     const existingItems = this.activeItems().filter((item) => item.id !== createdItem.id);
 
-    const orders: ChecklistItemOrder[] = [
+    const orders: MasterChecklistItemOrder[] = [
       { itemId: createdItem.id, displayOrder: 1 },
       ...existingItems.map((item, index) => ({
         itemId: item.id,
@@ -96,7 +96,7 @@ export class CurrentDraftComponent implements OnInit {
       })),
     ];
 
-    this.checklistService.reorderItems({ items: orders }).subscribe({
+    this.masterChecklistService.reorderItems({ items: orders }).subscribe({
       next: () => {
         this.notify('Item added.');
         this.reload();
@@ -108,7 +108,7 @@ export class CurrentDraftComponent implements OnInit {
     });
   }
 
-  onEditItem(item: ChecklistItem): void {
+  onEditItem(item: MasterChecklistItem): void {
     const dialogRef = this.dialog.open<ItemFormDialogComponent, ItemFormDialogData, ItemFormDialogResult>(
       ItemFormDialogComponent,
       {
@@ -121,7 +121,7 @@ export class CurrentDraftComponent implements OnInit {
         return;
       }
 
-      this.checklistService
+      this.masterChecklistService
         .updateItem(item.id, {
           title: result.title,
           description: result.description,
@@ -138,7 +138,7 @@ export class CurrentDraftComponent implements OnInit {
     });
   }
 
-  onRetireItem(item: ChecklistItem): void {
+  onRetireItem(item: MasterChecklistItem): void {
     const dialogRef = this.dialog.open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
       data: {
         title: 'Retire this item?',
@@ -153,7 +153,7 @@ export class CurrentDraftComponent implements OnInit {
         return;
       }
 
-      this.checklistService.retireItem(item.id).subscribe({
+      this.masterChecklistService.retireItem(item.id).subscribe({
         next: () => {
           this.notify('Item retired.');
           this.reload();
@@ -163,11 +163,11 @@ export class CurrentDraftComponent implements OnInit {
     });
   }
 
-  onDragStart(item: ChecklistItem): void {
+  onDragStart(item: MasterChecklistItem): void {
     this.draggedItemId.set(item.id);
   }
 
-  onDragEnter(item: ChecklistItem): void {
+  onDragEnter(item: MasterChecklistItem): void {
     if (this.draggedItemId() !== null && this.draggedItemId() !== item.id) {
       this.dragOverItemId.set(item.id);
     }
@@ -178,7 +178,7 @@ export class CurrentDraftComponent implements OnInit {
     this.dragOverItemId.set(null);
   }
 
-  onDrop(targetItem: ChecklistItem): void {
+  onDrop(targetItem: MasterChecklistItem): void {
     const draggedId = this.draggedItemId();
     this.draggedItemId.set(null);
     this.dragOverItemId.set(null);
@@ -197,7 +197,7 @@ export class CurrentDraftComponent implements OnInit {
     const [moved] = items.splice(fromIndex, 1);
     items.splice(toIndex, 0, moved);
 
-    const orders: ChecklistItemOrder[] = [
+    const orders: MasterChecklistItemOrder[] = [
       ...items.map((item, index) => ({
         itemId: item.id,
         displayOrder: index + 1,
@@ -208,7 +208,7 @@ export class CurrentDraftComponent implements OnInit {
       })),
     ];
 
-    this.checklistService.reorderItems({ items: orders }).subscribe({
+    this.masterChecklistService.reorderItems({ items: orders }).subscribe({
       next: () => {
         this.notify('Order updated.');
         this.reload();
@@ -236,7 +236,7 @@ export class CurrentDraftComponent implements OnInit {
         return;
       }
 
-      this.checklistService.publishVersion(draft.id).subscribe({
+      this.masterChecklistService.publishVersion(draft.id).subscribe({
         next: () => {
           this.notify('Version published.');
           this.reload();
