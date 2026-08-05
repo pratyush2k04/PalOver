@@ -5,7 +5,7 @@ namespace Pdr.Api.Services.Interfaces;
 
 public interface IHandoverService
 {
-    Task<HandoverInfoDto> GetHandoverAsync(long engagementId);
-    Task<HandoverInfoDto> SaveHandoverDraftAsync(long engagementId, SaveHandoverDraftRequest request, string userIdStr);
-    Task<HandoverInfoDto> SubmitHandoverAsync(long engagementId, string userIdStr);
+    Task<HandoverInfoDto> GetHandoverAsync(int engagementId);
+    Task<HandoverInfoDto> SaveHandoverDraftAsync(int engagementId, SaveHandoverDraftRequest request, string userIdStr);
+    Task<HandoverInfoDto> SubmitHandoverAsync(int engagementId, string userIdStr);
 }

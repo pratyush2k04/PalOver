@@ -53,25 +53,25 @@ public class EngagementsController(IEngagementService engagementService) : Contr
    
     }
 
-    [HttpGet("{id:long}/owners")]
+    [HttpGet("{id:int}/owners")]
     [Authorize(Roles = "Leadership")]
-    public async Task<ActionResult<EngagementOwnersDto>> GetEngagementOwners(long id)
+    public async Task<ActionResult<EngagementOwnersDto>> GetEngagementOwners(int id)
     {
         var owners = await engagementService.GetEngagementOwnersAsync(id);
         return Ok(owners);
     }
     //assign
-    [HttpPut("{id:long}/project-manager")]
+    [HttpPut("{id:int}/project-manager")]
     [Authorize(Roles = "Leadership")]
-    public async Task<ActionResult<EngagementOwnersDto>> AssignProjectManager(long id, AssignOwnerRequest request)
+    public async Task<ActionResult<EngagementOwnersDto>> AssignProjectManager(int id, AssignOwnerRequest request)
     {
         var owners = await engagementService.AssignProjectManagerAsync(id, request.UserId);
         return Ok(owners);
     }
 
-    [HttpPut("{id:long}/tech-lead")]
+    [HttpPut("{id:int}/tech-lead")]
     [Authorize(Roles = "Leadership")]
-    public async Task<ActionResult<EngagementOwnersDto>> AssignTechLead(long id, AssignOwnerRequest request)
+    public async Task<ActionResult<EngagementOwnersDto>> AssignTechLead(int id, AssignOwnerRequest request)
     {
         var owners = await engagementService.AssignTechLeadAsync(id, request.UserId);
         return Ok(owners);

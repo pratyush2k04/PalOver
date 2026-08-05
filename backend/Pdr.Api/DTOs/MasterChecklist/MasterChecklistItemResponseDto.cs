@@ -2,15 +2,15 @@ namespace Pdr.Api.DTOs.MasterChecklist;
 
 public class MasterChecklistItemResponseDto
 {
-    public long Id { get; set; }
+    public int Id { get; set; }
 
-    public long VersionId { get; set; }
+    public int VersionId { get; set; }
 
     public required string Title { get; set; }
 
     public string? Description { get; set; }
 
-    public long CategoryId { get; set; }
+    public int CategoryId { get; set; }
 
     public required string CategoryName { get; set; }
 
