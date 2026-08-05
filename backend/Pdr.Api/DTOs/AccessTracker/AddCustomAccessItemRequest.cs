@@ -8,4 +8,5 @@ public class AddCustomAccessItemRequest
     public bool IsClientSide { get; set; }
     public int OwnerId { get; set; }
     public string? TimeZoneNote { get; set; }
+    public int? ExpectedTurnaroundDays { get; set; }
 }

@@ -9,6 +9,9 @@ public class AccessItemDto
     public string OwnerFullName { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public string? TimeZoneNote { get; set; }
+    public int? ExpectedTurnaroundDays { get; set; }
+    public int? DaysUntilBillingDate { get; set; }
+    public bool IsOverdueWithClient { get; set; }
     public DateOnly? GrantedDate { get; set; }
     public string? BlockReason { get; set; }
 }

@@ -13,6 +13,7 @@ public class AccessTrackerRepository(AppDbContext context) : IAccessTrackerRepos
         await context.AccessItems
             .AsNoTracking()
             .Include(a => a.Owner)
+            .Include(a => a.Engagement)
             .Include(a => a.AccessItemDefinition)
             .Where(a => a.EngagementId == engagementId)
             .OrderBy(a => a.AccessItemDefinition != null ? a.AccessItemDefinition.DisplayOrder : int.MaxValue)
@@ -23,6 +24,7 @@ public class AccessTrackerRepository(AppDbContext context) : IAccessTrackerRepos
     public async Task<AccessItem?> GetAccessItemByIdAsync(int accessItemId) =>
         await context.AccessItems
             .Include(a => a.Owner)
+            .Include(a => a.Engagement)
             .FirstOrDefaultAsync(a => a.AccessItemId == accessItemId);
 
     public async Task AddAccessItemAsync(AccessItem item)

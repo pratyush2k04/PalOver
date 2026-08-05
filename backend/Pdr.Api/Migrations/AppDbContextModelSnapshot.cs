@@ -46,6 +46,9 @@ namespace Pdr.Api.Migrations
                     b.Property<int>("EngagementId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("ExpectedTurnaroundDays")
+                        .HasColumnType("integer");
+
                     b.Property<DateOnly?>("GrantedDate")
                         .HasColumnType("date");
 
