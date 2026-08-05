@@ -27,7 +27,8 @@ public class DocumentCategoryConfiguration : IEntityTypeConfiguration<DocumentCa
             new DocumentCategory { Id = 3, CategoryName = "Signed SOW" },
             new DocumentCategory { Id = 4, CategoryName = "Email Thread" },
             new DocumentCategory { Id = 5, CategoryName = "Design or Approach" },
-            new DocumentCategory { Id = 6, CategoryName = "Other" }
+            new DocumentCategory { Id = 6, CategoryName = "Other" },
+            new DocumentCategory { Id = 7, CategoryName = "Commercial" }
         );
     }
 }

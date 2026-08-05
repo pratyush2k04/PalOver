@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Pdr.Api.DTOs.Documents;
+using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Documents;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
@@ -17,6 +18,21 @@ public class DocumentService(
     ICurrentUserService currentUserService) : IDocumentService
 {
     private const string UploadsFolder = "Uploads/Documents";
+
+    // ── Role-check helpers ──────────────────────────────────────────────────
+
+    /// <summary>PM, Leadership, and Admin users can see and download PM-only documents.</summary>
+    private bool CanAccessPmOnlyDocuments() =>
+        currentUserService.IsInRole("Project Management")
+        || currentUserService.IsInRole("Leadership")
+        || currentUserService.IsAdmin();
+
+    /// <summary>Only PM and Admin can change a document's visibility.</summary>
+    private bool CanManageDocumentVisibility() =>
+        currentUserService.IsInRole("Project Management")
+        || currentUserService.IsAdmin();
+
+    // ── CRUD ────────────────────────────────────────────────────────────────
 
     public async Task<DocumentResponseDto> UploadDocumentAsync(DocumentUploadDto dto)
     {
@@ -41,9 +57,10 @@ public class DocumentService(
             FileName = dto.File.FileName,
             FilePath = filePath,
             FileSizeBytes = dto.File.Length,
-            ContentType = string.IsNullOrWhiteSpace(dto.File.ContentType) 
-                ? "application/octet-stream" 
-                : dto.File.ContentType
+            ContentType = string.IsNullOrWhiteSpace(dto.File.ContentType)
+                ? "application/octet-stream"
+                : dto.File.ContentType,
+            Visibility = dto.Visibility
         };
 
         var saved = await repository.AddAsync(document);
@@ -54,7 +71,8 @@ public class DocumentService(
 
     public async Task<IEnumerable<DocumentResponseDto>> GetDocumentsByEngagementAsync(int engagementId)
     {
-        var docs = await repository.GetByEngagementIdAsync(engagementId);
+        var includePmOnly = CanAccessPmOnlyDocuments();
+        var docs = await repository.GetByEngagementIdAsync(engagementId, includePmOnly);
         return docs.Select(MapToResponseDto);
     }
 
@@ -64,6 +82,12 @@ public class DocumentService(
         if (doc == null || !File.Exists(doc.FilePath))
         {
             return null;
+        }
+
+        // Enforce PM-only visibility on download
+        if (doc.Visibility == "PM-only" && !CanAccessPmOnlyDocuments())
+        {
+            throw new DocumentAccessDeniedException("You do not have permission to download this document.");
         }
 
         var stream = new FileStream(doc.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -113,6 +137,27 @@ public class DocumentService(
         return await repository.SoftDeleteAsync(id, reason, updatedBy);
     }
 
+    public async Task<DocumentResponseDto> UpdateDocumentVisibilityAsync(int id, string visibility)
+    {
+        if (!CanManageDocumentVisibility())
+        {
+            throw new DocumentAccessDeniedException("You do not have permission to change document visibility. Only Project Managers and Admins can do this.");
+        }
+
+        var userEmail = currentUserService.GetEmail();
+        var updatedBy = userEmail ?? currentUserService.GetUserId().ToString();
+
+        var updated = await repository.UpdateVisibilityAsync(id, visibility, updatedBy);
+        if (updated == null)
+        {
+            throw new KeyNotFoundException($"Document with id {id} was not found.");
+        }
+
+        return MapToResponseDto(updated);
+    }
+
+    // ── Mapping ─────────────────────────────────────────────────────────────
+
     private static DocumentResponseDto MapToResponseDto(Document doc)
     {
         return new DocumentResponseDto
@@ -124,8 +169,9 @@ public class DocumentService(
             FileName = doc.FileName,
             FileSizeBytes = doc.FileSizeBytes,
             ContentType = doc.ContentType,
-            UploadedBy = doc.CreatedBy ?? string.Empty, // Automatically populated by AppDbContext
-            UploadedAt = doc.CreatedAt
+            UploadedBy = doc.CreatedBy ?? string.Empty,
+            UploadedAt = doc.CreatedAt,
+            Visibility = doc.Visibility
         };
     }
 }

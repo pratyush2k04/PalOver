@@ -19,4 +19,6 @@ public class DocumentResponseDto
     public string UploadedBy { get; set; } = string.Empty;
 
     public DateTime UploadedAt { get; set; }
+
+    public string Visibility { get; set; } = "Team-wide";
 }

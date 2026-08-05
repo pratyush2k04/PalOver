@@ -68,7 +68,15 @@ export class UploadDocumentDialogComponent implements OnInit {
   }
 
   onCategoryChange(catId: string): void {
-    this.selectedCategoryId.set(Number(catId));
+    const id = Number(catId);
+    this.selectedCategoryId.set(id);
+    // Auto-default visibility based on category
+    const cat = this.categories().find(c => c.id === id);
+    if (cat && (cat.categoryName === 'Commercial' || cat.categoryName === 'Proposal')) {
+      this.selectedVisibility.set('PM-only');
+    } else {
+      this.selectedVisibility.set('Team-wide');
+    }
   }
 
   onVisibilityChange(visibility: string): void {
@@ -93,8 +101,14 @@ export class UploadDocumentDialogComponent implements OnInit {
       return;
     }
 
-    // Rename file if user edited the simulated file name
-    const finalName = this.simulatedFileName().trim() || file.name;
+    // Preserve the original file extension if the user left it out when renaming
+    const originalExt = file.name.includes('.')
+      ? file.name.substring(file.name.lastIndexOf('.')).toLowerCase()
+      : '';
+    const typedName = this.simulatedFileName().trim() || file.name;
+    const finalName = typedName.includes('.')
+      ? typedName
+      : typedName + originalExt;
     const finalFile = new File([file], finalName, { type: file.type });
 
     // Client-side pre-validation for allowed extension & size
@@ -114,7 +128,7 @@ export class UploadDocumentDialogComponent implements OnInit {
     this.isUploading.set(true);
     this.errorMessage.set(null);
 
-    this.documentService.uploadDocument(finalFile, this.engagementId, catId).subscribe({
+    this.documentService.uploadDocument(finalFile, this.engagementId, catId, this.selectedVisibility()).subscribe({
       next: (results) => {
         this.isUploading.set(false);
         const failed = results.find((r) => !r.success);

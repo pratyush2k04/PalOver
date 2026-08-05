@@ -14,7 +14,8 @@ namespace Pdr.Api.Controllers;
 public class DocumentController(
     IDocumentService documentService,
     IValidator<DocumentUploadDto> uploadValidator,
-    IValidator<RemoveDocumentRequestDto> removeValidator) : ControllerBase
+    IValidator<RemoveDocumentRequestDto> removeValidator,
+    IValidator<UpdateDocumentVisibilityDto> visibilityValidator) : ControllerBase
 {
     [HttpPost("upload")]
     [Consumes("multipart/form-data")]
@@ -138,6 +139,33 @@ public class DocumentController(
         catch (InvalidOperationException ex)
         {
             return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpPatch("{id:int}/visibility")]
+    public async Task<IActionResult> UpdateVisibility(int id, [FromBody] UpdateDocumentVisibilityDto request)
+    {
+        if (request == null)
+        {
+            return BadRequest(new { message = "Visibility request body is required." });
+        }
+
+        var validationResult = await visibilityValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(new { message = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid visibility value." });
+        }
+
+        // DocumentAccessDeniedException is handled by ExceptionHandlingMiddleware → 403
+        // KeyNotFoundException falls through to the generic 500 handler, so catch it here
+        try
+        {
+            var updated = await documentService.UpdateDocumentVisibilityAsync(id, request.Visibility);
+            return Ok(updated);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
         }
     }
 }

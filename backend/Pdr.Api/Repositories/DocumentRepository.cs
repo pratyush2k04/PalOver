@@ -23,11 +23,18 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
             .FirstOrDefaultAsync(d => d.Id == id);
     }
 
-    public async Task<IEnumerable<Document>> GetByEngagementIdAsync(int engagementId)
+    public async Task<IEnumerable<Document>> GetByEngagementIdAsync(int engagementId, bool includePmOnly)
     {
-        return await context.Documents
+        var query = context.Documents
             .Include(d => d.Category)
-            .Where(d => d.EngagementId == engagementId)
+            .Where(d => d.EngagementId == engagementId);
+
+        if (!includePmOnly)
+        {
+            query = query.Where(d => d.Visibility != "PM-only");
+        }
+
+        return await query
             .OrderByDescending(d => d.CreatedAt)
             .ToListAsync();
     }
@@ -35,7 +42,8 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
     public async Task<IEnumerable<DocumentCategory>> GetCategoriesAsync()
     {
         return await context.DocumentCategories
-            .OrderBy(c => c.Id)
+            .OrderBy(c => c.CategoryName == "Other" ? 1 : 0)
+            .ThenBy(c => c.Id)
             .ToListAsync();
     }
 
@@ -50,5 +58,20 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
         doc.UpdatedBy = updatedBy;
         await context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<Document?> UpdateVisibilityAsync(int id, string visibility, string updatedBy)
+    {
+        var doc = await context.Documents
+            .Include(d => d.Category)
+            .FirstOrDefaultAsync(d => d.Id == id);
+
+        if (doc == null) return null;
+
+        doc.Visibility = visibility;
+        doc.UpdatedAt = DateTime.UtcNow;
+        doc.UpdatedBy = updatedBy;
+        await context.SaveChangesAsync();
+        return doc;
     }
 }

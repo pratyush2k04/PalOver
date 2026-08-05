@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { DocumentCategory, DocumentItem, DocumentUploadResult } from '../models/document.model';
+import { DocumentCategory, DocumentItem, DocumentUploadResult, UpdateDocumentVisibilityRequest } from '../models/document.model';
 
 @Injectable({
   providedIn: 'root'
@@ -17,11 +17,12 @@ export class DocumentService {
     return this.http.get<DocumentCategory[]>('/api/documents/categories');
   }
 
-  uploadDocument(file: File, engagementId: number, categoryId: number): Observable<DocumentUploadResult[]> {
+  uploadDocument(file: File, engagementId: number, categoryId: number, visibility: string): Observable<DocumentUploadResult[]> {
     const formData = new FormData();
     formData.append('[0].File', file, file.name);
     formData.append('[0].EngagementId', engagementId.toString());
     formData.append('[0].CategoryId', categoryId.toString());
+    formData.append('[0].Visibility', visibility);
 
     return this.http.post<DocumentUploadResult[]>('/api/documents/upload', formData);
   }
@@ -43,5 +44,10 @@ export class DocumentService {
 
   deleteDocument(id: number, reason: string): Observable<void> {
     return this.http.post<void>(`/api/documents/${id}/remove`, { reason });
+  }
+
+  updateVisibility(id: number, visibility: string): Observable<DocumentItem> {
+    const body: UpdateDocumentVisibilityRequest = { visibility: visibility as 'PM-only' | 'Team-wide' };
+    return this.http.patch<DocumentItem>(`/api/documents/${id}/visibility`, body);
   }
 }

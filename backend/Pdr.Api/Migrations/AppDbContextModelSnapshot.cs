@@ -251,6 +251,14 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("updated_by");
 
+                    b.Property<string>("Visibility")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasDefaultValue("Team-wide")
+                        .HasColumnName("visibility");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
@@ -309,6 +317,11 @@ namespace Pdr.Api.Migrations
                         {
                             Id = 6,
                             CategoryName = "Other"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CategoryName = "Commercial"
                         });
                 });
 

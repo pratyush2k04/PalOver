@@ -11,6 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DocumentService } from '../../../services/document.service';
 import { DocumentItem } from '../../../models/document.model';
+import { AuthService } from '../../../services/auth';
 import { UploadDocumentDialogComponent } from '../upload-document-dialog/upload-document-dialog.component';
 import { RemoveDocumentDialogComponent } from '../remove-document-dialog/remove-document-dialog.component';
 
@@ -24,9 +25,10 @@ import { RemoveDocumentDialogComponent } from '../remove-document-dialog/remove-
 export class EngagementDocumentsComponent {
   private documentService = inject(DocumentService);
   private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
 
   private parentParamMap = toSignal(this.route.parent!.paramMap);
-  
+
   engagementId = computed(() => {
     const idStr = this.parentParamMap()?.get('id');
     return idStr ? +idStr : null;
@@ -38,6 +40,11 @@ export class EngagementDocumentsComponent {
   showUploadModal = signal<boolean>(false);
   selectedDocForRemoval = signal<DocumentItem | null>(null);
   downloadingId = signal<number | null>(null);
+
+  /** True for PM and Admin — can edit visibility inline */
+  canManageVisibility = computed(() =>
+    this.authService.hasRole('Project Management') || this.authService.isAdmin()
+  );
 
   constructor() {
     effect(() => {
@@ -104,6 +111,29 @@ export class EngagementDocumentsComponent {
       error: () => {
         this.downloadingId.set(null);
         alert(`Failed to download ${doc.fileName}`);
+      }
+    });
+  }
+
+  onVisibilityChange(doc: DocumentItem, newVisibility: string): void {
+    // Optimistic update
+    this.documents.update(docs =>
+      docs.map(d => d.id === doc.id ? { ...d, visibility: newVisibility } : d)
+    );
+
+    this.documentService.updateVisibility(doc.id, newVisibility).subscribe({
+      next: (updated) => {
+        this.documents.update(docs =>
+          docs.map(d => d.id === updated.id ? updated : d)
+        );
+      },
+      error: (err) => {
+        // Revert on failure
+        this.documents.update(docs =>
+          docs.map(d => d.id === doc.id ? { ...d, visibility: doc.visibility } : d)
+        );
+        const msg = err.error?.message || 'Failed to update visibility.';
+        this.errorMessage.set(msg);
       }
     });
   }

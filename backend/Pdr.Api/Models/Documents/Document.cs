@@ -18,6 +18,8 @@ public class Document : BaseAuditableEntity
 
     public string? DeletionReason { get; set; }
 
+    public string Visibility { get; set; } = "Team-wide";
+
     // Navigation properties
     public DocumentCategory Category { get; set; } = null!;
     

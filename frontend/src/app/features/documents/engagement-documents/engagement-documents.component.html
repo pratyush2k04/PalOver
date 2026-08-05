@@ -40,6 +40,7 @@
               <th class="col-category">CATEGORY</th>
               <th class="col-uploader">UPLOADER</th>
               <th class="col-date">DATE</th>
+              <th class="col-visibility">VISIBILITY</th>
               <th class="col-actions">ACTIONS</th>
             </tr>
           </thead>
@@ -66,6 +67,36 @@
                 </td>
                 <td class="col-date">
                   <span class="upload-date">{{ formatDate(doc.uploadedAt) }}</span>
+                </td>
+                <td class="col-visibility">
+                  @if (canManageVisibility()) {
+                    <!-- PM / Admin: inline editable dropdown -->
+                    <select
+                      class="visibility-select"
+                      [class.is-pm-only]="doc.visibility === 'PM-only'"
+                      [value]="doc.visibility"
+                      (change)="onVisibilityChange(doc, $any($event.target).value)"
+                      [attr.aria-label]="'Visibility for ' + doc.fileName"
+                    >
+                      <option value="Team-wide">Team-wide</option>
+                      <option value="PM-only">PM-only</option>
+                    </select>
+                  } @else {
+                    <!-- Leadership / others: read-only badge -->
+                    <span
+                      class="visibility-badge"
+                      [class.badge-pm-only]="doc.visibility === 'PM-only'"
+                      [class.badge-team-wide]="doc.visibility !== 'PM-only'"
+                    >
+                      @if (doc.visibility === 'PM-only') {
+                        <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                      }
+                      {{ doc.visibility === 'PM-only' ? 'PM-only' : 'Team-wide' }}
+                    </span>
+                  }
                 </td>
                 <td class="col-actions">
                   <button

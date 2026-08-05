@@ -30,6 +30,10 @@ public class DocumentUploadDtoValidator : AbstractValidator<DocumentUploadDto>
             .GreaterThan(0).WithMessage("EngagementId must be greater than 0.");
 
         RuleFor(x => x.CategoryId)
-            .InclusiveBetween(1, 6).WithMessage("CategoryId must be between 1 and 6.");
+            .GreaterThan(0).WithMessage("A valid CategoryId is required.");
+
+        RuleFor(x => x.Visibility)
+            .Must(v => v == "PM-only" || v == "Team-wide")
+            .WithMessage("Visibility must be either 'PM-only' or 'Team-wide'.");
     }
 }

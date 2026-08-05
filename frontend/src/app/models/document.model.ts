@@ -8,6 +8,7 @@ export interface DocumentItem {
   contentType: string;
   uploadedBy: string;
   uploadedAt: string;
+  visibility: 'PM-only' | 'Team-wide' | string;
 }
 
 export interface DocumentCategory {
@@ -24,4 +25,8 @@ export interface DocumentUploadResult {
 
 export interface RemoveDocumentRequest {
   reason: string;
+}
+
+export interface UpdateDocumentVisibilityRequest {
+  visibility: 'PM-only' | 'Team-wide';
 }
