@@ -40,6 +40,7 @@
               <th class="col-category">CATEGORY</th>
               <th class="col-uploader">UPLOADER</th>
               <th class="col-date">DATE</th>
+              <th class="col-actions">ACTIONS</th>
             </tr>
           </thead>
           <tbody>
@@ -66,6 +67,19 @@
                 <td class="col-date">
                   <span class="upload-date">{{ formatDate(doc.uploadedAt) }}</span>
                 </td>
+                <td class="col-actions">
+                  <button
+                    type="button"
+                    class="btn-action-icon btn-remove"
+                    title="Remove document"
+                    (click)="openRemoveModal(doc)"
+                  >
+                    <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </button>
+                </td>
               </tr>
             }
           </tbody>
@@ -81,4 +95,13 @@
     (closed)="closeUploadModal()"
     (uploaded)="onDocumentUploaded()"
   ></app-upload-document-dialog>
+}
+
+@if (selectedDocForRemoval()) {
+  <app-remove-document-dialog
+    [documentId]="selectedDocForRemoval()!.id"
+    [documentName]="selectedDocForRemoval()!.fileName"
+    (closed)="closeRemoveModal()"
+    (removed)="onDocumentRemoved()"
+  ></app-remove-document-dialog>
 }

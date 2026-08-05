@@ -13,7 +13,8 @@ namespace Pdr.Api.Services;
 
 public class DocumentService(
     IDocumentRepository repository,
-    IWebHostEnvironment environment) : IDocumentService
+    IWebHostEnvironment environment,
+    ICurrentUserService currentUserService) : IDocumentService
 {
     private const string UploadsFolder = "Uploads/Documents";
 
@@ -79,9 +80,39 @@ public class DocumentService(
         });
     }
 
-    public async Task<bool> DeleteDocumentAsync(int id)
+    public async Task<bool> DeleteDocumentAsync(int id, string reason)
     {
-        return await repository.SoftDeleteAsync(id);
+        var doc = await repository.GetByIdAsync(id);
+        if (doc == null || doc.IsDeleted)
+        {
+            return false;
+        }
+
+        var userIdStr = currentUserService.GetUserId().ToString();
+        var userEmail = currentUserService.GetEmail();
+        var userFullName = currentUserService.GetFullName();
+
+        bool isUploader = string.Equals(doc.CreatedBy, userIdStr, StringComparison.OrdinalIgnoreCase)
+            || (userEmail != null && string.Equals(doc.CreatedBy, userEmail, StringComparison.OrdinalIgnoreCase))
+            || (userFullName != null && string.Equals(doc.CreatedBy, userFullName, StringComparison.OrdinalIgnoreCase));
+
+        bool isPm = currentUserService.IsInRole("Project Management");
+        bool isAdmin = currentUserService.IsAdmin();
+
+        if (!isUploader && !isPm && !isAdmin)
+        {
+            throw new UnauthorizedAccessException("You do not have permission to remove this document. Only the uploader or a Project Manager can remove it.");
+        }
+
+        // Signed SOW Guard (CategoryId = 3 or CategoryName = "Signed SOW")
+        bool isSignedSow = doc.CategoryId == 3 || string.Equals(doc.Category?.CategoryName, "Signed SOW", StringComparison.OrdinalIgnoreCase);
+        if (isSignedSow && doc.Engagement?.HandoverInfo != null && doc.Engagement.HandoverInfo.StatusId == 2)
+        {
+            throw new InvalidOperationException("The signed SOW cannot be removed because a submitted handover is relying on it.");
+        }
+
+        var updatedBy = userEmail ?? userIdStr;
+        return await repository.SoftDeleteAsync(id, reason, updatedBy);
     }
 
     private static DocumentResponseDto MapToResponseDto(Document doc)

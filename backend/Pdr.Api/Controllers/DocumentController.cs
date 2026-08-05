@@ -13,7 +13,8 @@ namespace Pdr.Api.Controllers;
 [Route("api/documents")]
 public class DocumentController(
     IDocumentService documentService,
-    IValidator<DocumentUploadDto> uploadValidator) : ControllerBase
+    IValidator<DocumentUploadDto> uploadValidator,
+    IValidator<RemoveDocumentRequestDto> removeValidator) : ControllerBase
 {
     [HttpPost("upload")]
     [Consumes("multipart/form-data")]
@@ -107,14 +108,36 @@ public class DocumentController(
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> DeleteDocument(int id)
+    public async Task<IActionResult> DeleteDocument(int id, [FromBody] RemoveDocumentRequestDto request)
     {
-        var deleted = await documentService.DeleteDocumentAsync(id);
-        if (!deleted)
+        if (request == null)
         {
-            return NotFound(new { message = "Document not found or already deleted." });
+            return BadRequest(new { message = "Removal request body with a valid reason is required." });
         }
 
-        return NoContent();
+        var validationResult = await removeValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(new { message = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid removal request." });
+        }
+
+        try
+        {
+            var deleted = await documentService.DeleteDocumentAsync(id, request.Reason);
+            if (!deleted)
+            {
+                return NotFound(new { message = "Document not found or already deleted." });
+            }
+
+            return NoContent();
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(403, new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 }

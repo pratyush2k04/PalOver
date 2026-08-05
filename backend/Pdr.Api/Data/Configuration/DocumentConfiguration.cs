@@ -43,6 +43,10 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
                .HasMaxLength(100)
                .IsRequired();
 
+        builder.Property(d => d.DeletionReason)
+               .HasColumnName("deletion_reason")
+               .HasMaxLength(500);
+
         // BaseAuditableEntity Column Mappings
         builder.Property(d => d.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
         builder.Property(d => d.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("NOW()");

@@ -18,6 +18,8 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
     {
         return await context.Documents
             .Include(d => d.Category)
+            .Include(d => d.Engagement)
+                .ThenInclude(e => e.HandoverInfo)
             .FirstOrDefaultAsync(d => d.Id == id);
     }
 
@@ -37,12 +39,15 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
             .ToListAsync();
     }
 
-    public async Task<bool> SoftDeleteAsync(int id)
+    public async Task<bool> SoftDeleteAsync(int id, string reason, string updatedBy)
     {
         var doc = await context.Documents.FindAsync(id);
         if (doc == null || doc.IsDeleted) return false;
 
         doc.IsDeleted = true;
+        doc.DeletionReason = reason;
+        doc.UpdatedAt = DateTime.UtcNow;
+        doc.UpdatedBy = updatedBy;
         await context.SaveChangesAsync();
         return true;
     }

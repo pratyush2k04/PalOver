@@ -12,5 +12,5 @@ public interface IDocumentRepository
 
     Task<IEnumerable<DocumentCategory>> GetCategoriesAsync();
 
-    Task<bool> SoftDeleteAsync(int id);
+    Task<bool> SoftDeleteAsync(int id, string reason, string updatedBy);
 }

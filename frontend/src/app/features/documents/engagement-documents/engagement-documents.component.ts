@@ -12,11 +12,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { DocumentService } from '../../../services/document.service';
 import { DocumentItem } from '../../../models/document.model';
 import { UploadDocumentDialogComponent } from '../upload-document-dialog/upload-document-dialog.component';
+import { RemoveDocumentDialogComponent } from '../remove-document-dialog/remove-document-dialog.component';
 
 @Component({
   selector: 'app-engagement-documents',
   standalone: true,
-  imports: [CommonModule, UploadDocumentDialogComponent],
+  imports: [CommonModule, UploadDocumentDialogComponent, RemoveDocumentDialogComponent],
   templateUrl: './engagement-documents.component.html',
   styleUrl: './engagement-documents.component.scss'
 })
@@ -35,6 +36,7 @@ export class EngagementDocumentsComponent {
   isLoading = signal<boolean>(true);
   errorMessage = signal<string | null>(null);
   showUploadModal = signal<boolean>(false);
+  selectedDocForRemoval = signal<DocumentItem | null>(null);
   downloadingId = signal<number | null>(null);
 
   constructor() {
@@ -78,6 +80,18 @@ export class EngagementDocumentsComponent {
   }
 
   onDocumentUploaded(): void {
+    this.loadDocuments();
+  }
+
+  openRemoveModal(doc: DocumentItem): void {
+    this.selectedDocForRemoval.set(doc);
+  }
+
+  closeRemoveModal(): void {
+    this.selectedDocForRemoval.set(null);
+  }
+
+  onDocumentRemoved(): void {
     this.loadDocuments();
   }
 

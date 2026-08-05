@@ -89,6 +89,11 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("created_by");
 
+                    b.Property<string>("DeletionReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("deletion_reason");
+
                     b.Property<int>("EngagementId")
                         .HasColumnType("integer")
                         .HasColumnName("engagement_id");

@@ -21,3 +21,7 @@ export interface DocumentUploadResult {
   document?: DocumentItem;
   errors?: string[];
 }
+
+export interface RemoveDocumentRequest {
+  reason: string;
+}

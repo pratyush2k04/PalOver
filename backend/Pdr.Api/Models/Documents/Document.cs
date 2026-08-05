@@ -16,6 +16,8 @@ public class Document : BaseAuditableEntity
 
     public required string ContentType { get; set; }
 
+    public string? DeletionReason { get; set; }
+
     // Navigation properties
     public DocumentCategory Category { get; set; } = null!;
     
