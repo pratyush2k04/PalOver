@@ -1,0 +1,287 @@
+// Variables
+$color-bg: #f8f9fb;
+$color-card-bg: #ffffff;
+$color-border: #e8eaed;
+$color-header-bg: #f1f3f6;
+$color-text-primary: #1a1d23;
+$color-text-secondary: #6b7280;
+$color-text-muted: #9ca3af;
+
+$color-mandatory-bg: #fef2f2;
+$color-mandatory-text: #dc2626;
+$color-optional-bg: #f3f4f6;
+$color-optional-text: #6b7280;
+$color-incomplete-bg: #f3f4f6;
+$color-incomplete-text: #6b7280;
+$color-incomplete-border: #d1d5db;
+
+$color-feature-badge-bg: #eff6ff;
+$color-feature-badge-text: #1d4ed8;
+$color-story-badge-bg: #f0fdf4;
+$color-story-badge-text: #16a34a;
+
+$color-callout-bg: #eff6ff;
+$color-callout-border: #bfdbfe;
+$color-callout-text: #1e40af;
+
+// Loading & Error states
+.checklist-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  gap: 16px;
+  color: $color-text-secondary;
+
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid $color-border;
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  p { font-size: 14px; margin: 0; }
+}
+
+.checklist-error {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  margin: 24px;
+  color: #dc2626;
+
+  .error-icon { font-size: 20px; }
+  p { margin: 0; font-size: 14px; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// Container
+.checklist-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+  background: $color-bg;
+  min-height: 100%;
+}
+
+// Header
+.checklist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.checklist-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checklist-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: $color-text-primary;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.checklist-header-right {
+  display: flex;
+  align-items: center;
+}
+
+.checklist-version {
+  font-size: 12px;
+  color: $color-text-muted;
+  font-style: italic;
+}
+
+// Badges
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+
+  &.badge-feature {
+    background: $color-feature-badge-bg;
+    color: $color-feature-badge-text;
+    border: 1px solid #bfdbfe;
+  }
+
+  &.badge-story {
+    background: $color-story-badge-bg;
+    color: $color-story-badge-text;
+    border: 1px solid #bbf7d0;
+  }
+}
+
+// Callout
+.callout {
+  display: flex;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: 10px;
+  border: 1px solid $color-callout-border;
+  background: $color-callout-bg;
+
+  &.callout-info {
+    border-left: 4px solid #3b82f6;
+  }
+}
+
+.callout-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.callout-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.callout-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.callout-headline {
+  font-size: 13px;
+  font-weight: 700;
+  color: $color-callout-text;
+  margin: 0;
+}
+
+.callout-text {
+  font-size: 13px;
+  color: #1e3a5f;
+  margin: 0;
+  line-height: 1.5;
+}
+
+// Category cards
+.category-card {
+  background: $color-card-bg;
+  border: 1px solid $color-border;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: $color-header-bg;
+  border-bottom: 1px solid $color-border;
+}
+
+.category-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: $color-text-primary;
+  letter-spacing: 0.8px;
+}
+
+.category-count {
+  font-size: 11px;
+  color: $color-text-muted;
+}
+
+// Table
+.checklist-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead tr {
+    border-bottom: 1px solid $color-border;
+  }
+
+  th {
+    padding: 10px 20px;
+    font-size: 11px;
+    font-weight: 600;
+    color: $color-text-muted;
+    letter-spacing: 0.5px;
+    text-align: left;
+    background: $color-card-bg;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid $color-border;
+    transition: background 0.15s ease;
+
+    &:last-child { border-bottom: none; }
+    &:hover { background: $color-bg; }
+  }
+
+  td {
+    padding: 13px 20px;
+    vertical-align: middle;
+  }
+}
+
+.col-item { width: 60%; }
+.col-mandatory { width: 20%; }
+.col-status { width: 20%; }
+
+.cell-item {
+  font-size: 13px;
+  color: $color-text-primary;
+  line-height: 1.4;
+}
+
+.cell-mandatory,
+.cell-status {
+  font-size: 13px;
+}
+
+// Pills
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &.pill-mandatory {
+    background: $color-mandatory-bg;
+    color: $color-mandatory-text;
+    border: 1px solid #fecaca;
+  }
+
+  &.pill-optional {
+    background: $color-optional-bg;
+    color: $color-optional-text;
+    border: 1px solid #e5e7eb;
+  }
+
+  &.pill-incomplete {
+    background: $color-incomplete-bg;
+    color: $color-incomplete-text;
+    border: 1px solid $color-incomplete-border;
+  }
+}
