@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Pdr.Api.Models;
- 
+
 public class Engagement : BaseAuditableEntity
 {
     [Key]
@@ -26,7 +26,7 @@ public class Engagement : BaseAuditableEntity
     [ForeignKey(nameof(EngagementTypeId))]
     public EngagementType EngagementType { get; set; } = null!;
 
-    
+
     [Required]
     public int CommercialModelId { get; set; }
 
@@ -48,4 +48,6 @@ public class Engagement : BaseAuditableEntity
     public Pdr.Api.Models.Handover.HandoverInfo? HandoverInfo { get; set; }
 
     public ICollection<Pdr.Api.Models.EngagementAssignment.EngagementAssignment> EngagementAssignments { get; set; } = new List<Pdr.Api.Models.EngagementAssignment.EngagementAssignment>();
+
+    public ICollection<Person> People { get; set; } = new List<Person>();
 }
