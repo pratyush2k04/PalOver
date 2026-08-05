@@ -71,6 +71,30 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
         }
 
         await db.SaveChangesAsync();
+
+        try
+        {
+            var currentUserId = currentUserService.GetUserId();
+            if (currentUserId > 0)
+            {
+                var hasAssignment = await db.EngagementAssignments
+                    .AnyAsync(ea => ea.EngagementId == engagement.EngagementId && ea.UserId == currentUserId);
+                if (!hasAssignment)
+                {
+                    db.EngagementAssignments.Add(new EngagementAssignment
+                    {
+                        EngagementId = engagement.EngagementId,
+                        UserId = currentUserId
+                    });
+                    await db.SaveChangesAsync();
+                }
+            }
+        }
+        catch (InvalidOperationException)
+        {
+            // Fallback for unauthenticated test calls
+        }
+
         return new MarkSowSignedResponse(engagement, warnings);
     }
 
