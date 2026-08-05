@@ -22,6 +22,126 @@ namespace Pdr.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItem", b =>
+                {
+                    b.Property<int>("AccessItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AccessItemId"));
+
+                    b.Property<int?>("AccessItemDefinitionId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("BlockReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly?>("GrantedDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsClientSide")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TimeZoneNote")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("AccessItemId");
+
+                    b.HasIndex("AccessItemDefinitionId");
+
+                    b.HasIndex("EngagementId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("AccessItems");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItemDefinition", b =>
+                {
+                    b.Property<int>("AccessItemDefinitionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AccessItemDefinitionId"));
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsClientSide")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("AccessItemDefinitionId");
+
+                    b.ToTable("AccessItemDefinitions");
+
+                    b.HasData(
+                        new
+                        {
+                            AccessItemDefinitionId = 1,
+                            DisplayOrder = 1,
+                            IsActive = true,
+                            IsClientSide = false,
+                            Name = "VPN Access"
+                        },
+                        new
+                        {
+                            AccessItemDefinitionId = 2,
+                            DisplayOrder = 2,
+                            IsActive = true,
+                            IsClientSide = true,
+                            Name = "Jira"
+                        },
+                        new
+                        {
+                            AccessItemDefinitionId = 3,
+                            DisplayOrder = 3,
+                            IsActive = true,
+                            IsClientSide = true,
+                            Name = "SandBox"
+                        });
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.CommercialModel", b =>
                 {
                     b.Property<int>("Id")
@@ -1226,6 +1346,123 @@ namespace Pdr.Api.Migrations
                             Id = 2,
                             Name = "Brownfield"
                         });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition", b =>
+                {
+                    b.Property<int>("EnvironmentToolingDefinitionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EnvironmentToolingDefinitionId"));
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsMandatory")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("EnvironmentToolingDefinitionId");
+
+                    b.ToTable("EnvironmentToolingDefinitions");
+
+                    b.HasData(
+                        new
+                        {
+                            EnvironmentToolingDefinitionId = 1,
+                            DisplayOrder = 1,
+                            IsActive = true,
+                            IsMandatory = true,
+                            Name = "CI/CD"
+                        },
+                        new
+                        {
+                            EnvironmentToolingDefinitionId = 2,
+                            DisplayOrder = 2,
+                            IsActive = true,
+                            IsMandatory = true,
+                            Name = "Dev"
+                        },
+                        new
+                        {
+                            EnvironmentToolingDefinitionId = 3,
+                            DisplayOrder = 3,
+                            IsActive = true,
+                            IsMandatory = false,
+                            Name = "UAT Environment"
+                        });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem", b =>
+                {
+                    b.Property<int>("EnvironmentToolingItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EnvironmentToolingItemId"));
+
+                    b.Property<string>("BlockReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CustomName")
+                        .HasColumnType("text");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("EnvironmentToolingDefinitionId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("NotApplicableReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("EnvironmentToolingItemId");
+
+                    b.HasIndex("EngagementId");
+
+                    b.HasIndex("EnvironmentToolingDefinitionId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("EnvironmentToolingItems");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Handover.Commitment", b =>
@@ -2509,6 +2746,78 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.Risk.Risk", b =>
+                {
+                    b.Property<int>("RiskId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RiskId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("RiskId");
+
+                    b.HasIndex("EngagementId");
+
+                    b.ToTable("Risks");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItem", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.AccessTracker.AccessItemDefinition", "AccessItemDefinition")
+                        .WithMany("AccessItems")
+                        .HasForeignKey("AccessItemDefinitionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
+                        .WithMany("AccessItems")
+                        .HasForeignKey("EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "Owner")
+                        .WithMany("AccessItems")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AccessItemDefinition");
+
+                    b.Navigation("Engagement");
+
+                    b.Navigation("Owner");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Documents.Document", b =>
                 {
                     b.HasOne("Pdr.Api.Models.Documents.DocumentCategory", "Category")
@@ -2604,6 +2913,33 @@ namespace Pdr.Api.Migrations
                     b.Navigation("EngagementChecklist");
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
+                        .WithMany("EnvironmentToolingItems")
+                        .HasForeignKey("EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition", "EnvironmentToolingDefinition")
+                        .WithMany("EnvironmentToolingItems")
+                        .HasForeignKey("EnvironmentToolingDefinitionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "Owner")
+                        .WithMany("EnvironmentToolingItems")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Engagement");
+
+                    b.Navigation("EnvironmentToolingDefinition");
+
+                    b.Navigation("Owner");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Handover.Commitment", b =>
                 {
                     b.HasOne("Pdr.Api.Models.Handover.HandoverInfo", null)
@@ -2663,6 +2999,22 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Status");
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.Risk.Risk", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
+                        .WithMany("Risks")
+                        .HasForeignKey("EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Engagement");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItemDefinition", b =>
+                {
+                    b.Navigation("AccessItems");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Documents.DocumentCategory", b =>
                 {
                     b.Navigation("Documents");
@@ -2670,11 +3022,17 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
                 {
+                    b.Navigation("AccessItems");
+
                     b.Navigation("Checklist");
 
                     b.Navigation("EngagementAssignments");
 
+                    b.Navigation("EnvironmentToolingItems");
+
                     b.Navigation("HandoverInfo");
+
+                    b.Navigation("Risks");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.EngagementChecklist.EngagementChecklist", b =>
@@ -2687,6 +3045,11 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Engagements");
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition", b =>
+                {
+                    b.Navigation("EnvironmentToolingItems");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.LoginEntity.Role", b =>
                 {
                     b.Navigation("Users");
@@ -2694,7 +3057,11 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.LoginEntity.User", b =>
                 {
+                    b.Navigation("AccessItems");
+
                     b.Navigation("EngagementAssignments");
+
+                    b.Navigation("EnvironmentToolingItems");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.MasterChecklistVersion", b =>
