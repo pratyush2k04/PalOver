@@ -107,7 +107,7 @@ public class DocumentController(
         return Ok(categories);
     }
 
-    [HttpDelete("{id:int}")]
+    [HttpPost("{id:int}/remove")]
     public async Task<IActionResult> DeleteDocument(int id, [FromBody] RemoveDocumentRequestDto request)
     {
         if (request == null)

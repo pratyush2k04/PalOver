@@ -61,7 +61,7 @@ public class DocumentService(
     public async Task<(Stream FileStream, string ContentType, string FileName)?> DownloadDocumentAsync(int id)
     {
         var doc = await repository.GetByIdAsync(id);
-        if (doc == null || doc.IsDeleted || !File.Exists(doc.FilePath))
+        if (doc == null || !File.Exists(doc.FilePath))
         {
             return null;
         }
@@ -90,11 +90,9 @@ public class DocumentService(
 
         var userIdStr = currentUserService.GetUserId().ToString();
         var userEmail = currentUserService.GetEmail();
-        var userFullName = currentUserService.GetFullName();
 
         bool isUploader = string.Equals(doc.CreatedBy, userIdStr, StringComparison.OrdinalIgnoreCase)
-            || (userEmail != null && string.Equals(doc.CreatedBy, userEmail, StringComparison.OrdinalIgnoreCase))
-            || (userFullName != null && string.Equals(doc.CreatedBy, userFullName, StringComparison.OrdinalIgnoreCase));
+            || (userEmail != null && string.Equals(doc.CreatedBy, userEmail, StringComparison.OrdinalIgnoreCase));
 
         bool isPm = currentUserService.IsInRole("Project Management");
         bool isAdmin = currentUserService.IsAdmin();

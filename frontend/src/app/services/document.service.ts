@@ -42,8 +42,6 @@ export class DocumentService {
   }
 
   deleteDocument(id: number, reason: string): Observable<void> {
-    return this.http.delete<void>(`/api/documents/${id}`, {
-      body: { reason }
-    });
+    return this.http.post<void>(`/api/documents/${id}/remove`, { reason });
   }
 }
