@@ -12,7 +12,7 @@ namespace Pdr.Api.Controllers;
 public class EngagementsController(IEngagementService engagementService) : ControllerBase
 {
     [HttpGet("my-engagements")]
-    [Authorize(Roles = "Project Management")]
+    [Authorize(Roles = "Project Management,Tech Lead")]
     public async Task<ActionResult<PmEngagementListResponse>> GetMyEngagements([FromQuery] string sortBy = "kickoff")
     {
         var result = await engagementService.GetMyEngagementsAsync(sortBy);
@@ -53,7 +53,6 @@ public class EngagementsController(IEngagementService engagementService) : Contr
    
     }
 
-    //assign
     [HttpGet("{id:int}/owners")]
     [Authorize(Roles = "Leadership")]
     public async Task<ActionResult<EngagementOwnersDto>> GetEngagementOwners(int id)
@@ -61,6 +60,7 @@ public class EngagementsController(IEngagementService engagementService) : Contr
         var owners = await engagementService.GetEngagementOwnersAsync(id);
         return Ok(owners);
     }
+    //assign
     [HttpPut("{id:int}/project-manager")]
     [Authorize(Roles = "Leadership")]
     public async Task<ActionResult<EngagementOwnersDto>> AssignProjectManager(int id, AssignOwnerRequest request)

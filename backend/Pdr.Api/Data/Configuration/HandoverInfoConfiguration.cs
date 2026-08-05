@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Pdr.Api.Models;
 using Pdr.Api.Models.Handover;
 
 namespace Pdr.Api.Data.Configuration;
@@ -34,6 +35,11 @@ public class HandoverInfoConfiguration : IEntityTypeConfiguration<HandoverInfo>
             .WithOne()
             .HasForeignKey(c => c.HandoverId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne<Engagement>()
+            .WithOne(e => e.HandoverInfo)
+            .HasForeignKey<HandoverInfo>(h => h.EngagementId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         var seedTimestamp = new System.DateTime(2026, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
         builder.HasData(

@@ -12,6 +12,14 @@
         <span class="label">{{ ws.title }}</span>
       </a>
     }
+    @for (item of navItems; track item.label) {
+      <a class="nav-item" [routerLink]="item.route" routerLinkActive="active">
+        <div class="icon-wrapper">
+          <span class="icon">{{ iconGlyph(item.icon) }}</span>
+        </div>
+        <span class="label">{{ item.label }}</span>
+      </a>
+    }
   </nav>
 
   <div class="sign-out" (click)="onSignOut()">

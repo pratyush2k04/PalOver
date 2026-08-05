@@ -6,7 +6,7 @@ public class MasterCreateChecklistItemRequestDto
 
     public string? Description { get; set; }
 
-    public long CategoryId { get; set; }
+    public int CategoryId { get; set; }
 
     public bool IsMandatory { get; set; } = true;
 

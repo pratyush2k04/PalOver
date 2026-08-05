@@ -4,5 +4,5 @@ namespace Pdr.Api.Services.Interfaces;
 
 public interface IHandoverAccessService
 {
-    Task<bool> CanAccessHandoverAsync(long engagementId, int userId);
+    Task<bool> CanAccessHandoverAsync(int engagementId, int userId);
 }

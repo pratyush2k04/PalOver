@@ -2,7 +2,7 @@ import { Component, OnInit, computed, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LoadingSpinnerComponent } from '../../../shared/loading-spinner/loading-spinner';
 import { MasterChecklistService } from '../../../services/master-checklist.service';
-import { ChecklistItem } from '../../../models/checklist.model';
+import { MasterChecklistItem } from '../../../models/checklist.model';
 
 type SortColumn = 'title' | 'categoryName' | 'isMandatory' | 'isRetired';
 type SortDirection = 'asc' | 'desc';
@@ -78,11 +78,11 @@ export class PublishedChecklistComponent implements OnInit {
     }
   }
 
-  toggleRow(item: ChecklistItem): void {
+  toggleRow(item: MasterChecklistItem): void {
     this.expandedRowId.set(this.expandedRowId() === item.id ? null : item.id);
   }
 
-  isExpanded(item: ChecklistItem): boolean {
+  isExpanded(item: MasterChecklistItem): boolean {
     return this.expandedRowId() === item.id;
   }
 

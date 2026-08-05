@@ -7,7 +7,7 @@ public class ReorderMasterChecklistItemsRequestDto
 
 public class ChecklistItemOrderDto
 {
-    public long ItemId { get; set; }
+    public int ItemId { get; set; }
 
     public int DisplayOrder { get; set; }
 }

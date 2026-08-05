@@ -5,9 +5,9 @@ namespace Pdr.Api.Models.MasterChecklist
     public class MasterChecklistVersion : BaseAuditableEntity
     {
         //have audit timestamps for when draft versions are created or updated
-        public long Id { get; set; }
+        public int Id { get; set; }
         public int VersionNumber { get; set; }
-        public long StatusId { get; set; }
+        public int StatusId { get; set; }
         //public long CreatedBy { get; set; }
 
         // Navigation properties

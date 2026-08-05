@@ -56,6 +56,11 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
         {
             var defaultStatus = await db.EngagementStatuses.FirstAsync(s => s.StatusName == DefaultEngagementStatus);
 
+            var publishedChecklistVersion = await db.MasterChecklistVersions
+                .Where(v => v.Status.StatusName == "Published")
+                .OrderByDescending(v => v.VersionNumber)
+                .FirstOrDefaultAsync();
+
             engagement = new Engagement
             {
                 EngagementName = request.EngagementName,
@@ -66,6 +71,7 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
                 KickoffDate = request.KickoffDate,
                 BillingStartDate = request.BillingStartDate,
                 StatusId = defaultStatus.StatusId,
+                ChecklistVersionId = publishedChecklistVersion?.Id,
             };
             db.Engagements.Add(engagement);
         }
@@ -143,6 +149,8 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
                 e.EngagementId,
                 e.EngagementName,
                 e.ClientName,
+                e.EngagementType.Name,
+                e.CommercialModel.Name,
                 e.KickoffDate,
                 e.KickoffDate.DayNumber - today.DayNumber,
                 ReadinessScore: null))

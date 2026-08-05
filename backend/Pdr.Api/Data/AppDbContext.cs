@@ -99,9 +99,18 @@ public class AppDbContext : DbContext
             entity.HasData(
                 new
                 {
-                    Id = 1L,
+                    Id = 1,
+                    VersionNumber = 0,
+                    StatusId = 2,
+                    CreatedAt = SeedTimestamp,
+                    UpdatedAt = SeedTimestamp,
+                    IsDeleted = false
+                },
+                new
+                {
+                    Id = 2,
                     VersionNumber = 1,
-                    StatusId = 1L,
+                    StatusId = 1,
                     CreatedAt = SeedTimestamp,
                     UpdatedAt = SeedTimestamp,
                     IsDeleted = false
@@ -297,6 +306,7 @@ public class AppDbContext : DbContext
             entity.Property(e => e.KickoffDate).HasColumnName("kickoff_date").IsRequired();
             entity.Property(e => e.BillingStartDate).HasColumnName("billing_start_date");
             entity.Property(e => e.StatusId).HasColumnName("status_id");
+            entity.Property(e => e.ChecklistVersionId).HasColumnName("checklist_version_id");
 
             // BaseAuditableEntity Column Mappings
             entity.Property(e => e.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
@@ -319,6 +329,11 @@ public class AppDbContext : DbContext
             entity.HasOne(e => e.Status)
                   .WithMany(s => s.Engagements)
                   .HasForeignKey(e => e.StatusId);
+
+            entity.HasOne(e => e.ChecklistVersion)
+                  .WithMany()
+                  .HasForeignKey(e => e.ChecklistVersionId)
+                  .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasData(
                 new Engagement
@@ -368,7 +383,7 @@ public class AppDbContext : DbContext
 
     private static object[] GetMasterChecklistItemSeedData()
     {
-        var items = new (string Title, string Description, long CategoryId, bool IsMandatory)[]
+        var items = new (string Title, string Description, int CategoryId, bool IsMandatory)[]
         {
             ("Sign commercial contract", "Confirm the signed commercial contract is on file before kickoff.", 1, true),
             ("Confirm engagement budget", "Verify the approved budget matches the statement of work.", 1, true),
@@ -393,23 +408,28 @@ public class AppDbContext : DbContext
         };
 
         var seed = new List<object>();
-        for (var i = 0; i < items.Length; i++)
+        var versionIds = new[] { 1, 2 };
+        var nextId = 1;
+        foreach (var versionId in versionIds)
         {
-            var (title, description, categoryId, isMandatory) = items[i];
-            seed.Add(new
+            for (var i = 0; i < items.Length; i++)
             {
-                Id = (long)(i + 1),
-                VersionId = 1L,
-                Title = title,
-                Description = description,
-                CategoryId = categoryId,
-                IsMandatory = isMandatory,
-                DisplayOrder = i + 1,
-                IsRetired = false,
-                CreatedAt = SeedTimestamp,
-                UpdatedAt = SeedTimestamp,
-                IsDeleted = false
-            });
+                var (title, description, categoryId, isMandatory) = items[i];
+                seed.Add(new
+                {
+                    Id = nextId++,
+                    VersionId = versionId,
+                    Title = title,
+                    Description = description,
+                    CategoryId = categoryId,
+                    IsMandatory = isMandatory,
+                    DisplayOrder = i + 1,
+                    IsRetired = false,
+                    CreatedAt = SeedTimestamp,
+                    UpdatedAt = SeedTimestamp,
+                    IsDeleted = false
+                });
+            }
         }
 
         return seed.ToArray();
