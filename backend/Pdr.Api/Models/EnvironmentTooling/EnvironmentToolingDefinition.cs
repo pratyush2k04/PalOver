@@ -1,6 +1,6 @@
 namespace Pdr.Api.Models.EnvironmentTooling
 {
-    public class EnvironmentToolingDefinition : BaseAuditableEntity
+    public class EnvironmentToolingDefinition 
     {
         public int EnvironmentToolingDefinitionId { get; set; }
 

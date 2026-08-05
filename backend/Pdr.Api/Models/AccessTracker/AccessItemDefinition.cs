@@ -1,6 +1,6 @@
 namespace Pdr.Api.Models.AccessTracker
 {
-    public class AccessItemDefinition : BaseAuditableEntity
+    public class AccessItemDefinition 
     {
         public int AccessItemDefinitionId { get; set; }
 

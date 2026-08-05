@@ -1,6 +1,9 @@
-﻿namespace Pdr.Api.Models.EnvironmentTooling
+namespace Pdr.Api.Models.EnvironmentTooling
 {
-    public class EnvironmentToolingStatus
+    public enum EnvironmentToolingStatus
     {
+        NotReady = 1,
+        Ready = 2,
+        NotApplicable = 3
     }
 }

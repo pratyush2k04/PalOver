@@ -31,26 +31,7 @@ namespace Pdr.Api.Data.Configuration.AccessTracker
                 .HasForeignKey(x => x.OwnerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(x => x.// backend\Pdr.Api\Models\AccessTracker\AccessItem.cs
-public class AccessItem : BaseAuditableEntity
-{
-  public int AccessItemId { get; set; }
-  public string Name { get; set; }
-  public int EngagementId { get; set; }
-  public Engagement Engagement { get; set; }
-  public int OwnerId { get; set; }
-  public User Owner { get; set; }
-
-  // Added to match AccessItemConfiguration
-  public int? AccessItemDefinitionId { get; set; }
-  public AccessItemDefinition? AccessItemDefinition { get; set; }
-
-  public AccessItemStatus Status { get; set; }
-  public bool IsClientSide { get; set; }
-  public string? TimeZoneNote { get; set; }
-  public DateOnly? GrantedDate { get; set; }
-  public string? BlockReason { get; set; }
-}AccessItemDefinition)
+            builder.HasOne(x => x.AccessItemDefinition)
                 .WithMany(x => x.AccessItems)
                 .HasForeignKey(x => x.AccessItemDefinitionId)
                 .OnDelete(DeleteBehavior.Restrict);

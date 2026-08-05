@@ -11,6 +11,8 @@ namespace Pdr.Api.Models.AccessTracker
         public int OwnerId { get; set; }
         public User Owner { get; set; } = null!;
         public AccessItemStatus Status { get; set; } = AccessItemStatus.InProgress;
+        public int? AccessItemDefinitionId { get; set; }
+        public AccessItemDefinition? AccessItemDefinition { get; set; }
         public bool IsClientSide { get; set; }
         public string? TimeZoneNote { get; set; }
         public DateOnly? GrantedDate { get; set; }

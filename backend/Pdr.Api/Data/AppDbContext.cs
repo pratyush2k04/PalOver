@@ -49,6 +49,13 @@ public class AppDbContext : DbContext
     public DbSet<DocumentCategory> DocumentCategories => Set<DocumentCategory>();
     public DbSet<Document> Documents => Set<Document>();
 
+    // Technical Readiness (Access Tracker, Environment & Tooling, Risk)
+    public DbSet<Pdr.Api.Models.AccessTracker.AccessItem> AccessItems => Set<Pdr.Api.Models.AccessTracker.AccessItem>();
+    public DbSet<Pdr.Api.Models.AccessTracker.AccessItemDefinition> AccessItemDefinitions => Set<Pdr.Api.Models.AccessTracker.AccessItemDefinition>();
+    public DbSet<Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem> EnvironmentToolingItems => Set<Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem>();
+    public DbSet<Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition> EnvironmentToolingDefinitions => Set<Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition>();
+    public DbSet<Pdr.Api.Models.Risk.Risk> Risks => Set<Pdr.Api.Models.Risk.Risk>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -67,6 +74,13 @@ public class AppDbContext : DbContext
 
         modelBuilder.ApplyConfiguration(new DocumentCategoryConfiguration());
         modelBuilder.ApplyConfiguration(new DocumentConfiguration());
+
+        // Technical Readiness Configurations
+        modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.AccessTracker.AccessItemConfiguration());
+        modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.AccessTracker.AccessItemDefinitionConfiguration());
+        modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.EnvironmentTooling.EnvironmentToolingItemConfiguration());
+        modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.EnvironmentTooling.EnvironmentToolingDefinitionConfiguration());
+        modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.RIsk.RiskConfiguration());
 
         // Global Query Filters (Soft Delete)
         modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
