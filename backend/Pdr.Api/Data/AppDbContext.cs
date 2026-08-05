@@ -7,6 +7,7 @@ using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Models.MasterChecklist;
 using Pdr.Api.Models.Handover;
+using Pdr.Api.Models.EngagementChecklist;
 
 using Pdr.Api.Models.Documents;
 //using System.Reflection;
@@ -43,6 +44,10 @@ public class AppDbContext : DbContext
     public DbSet<MasterChecklistVersion> MasterChecklistVersions => Set<MasterChecklistVersion>();
     public DbSet<MasterChecklistItem> MasterChecklistItems => Set<MasterChecklistItem>();
 
+    // Engagement Checklist entities
+    public DbSet<EngagementChecklist> EngagementChecklists => Set<EngagementChecklist>();
+    public DbSet<EngagementChecklistItem> EngagementChecklistItems => Set<EngagementChecklistItem>();
+
     private static readonly DateTime SeedTimestamp = new(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
     // Documents
@@ -74,6 +79,11 @@ public class AppDbContext : DbContext
 
         modelBuilder.ApplyConfiguration(new DocumentCategoryConfiguration());
         modelBuilder.ApplyConfiguration(new DocumentConfiguration());
+
+        // Engagement & Engagement Checklist
+        modelBuilder.ApplyConfiguration(new EngagementConfiguration());
+        modelBuilder.ApplyConfiguration(new EngagementChecklistConfiguration());
+        modelBuilder.ApplyConfiguration(new EngagementChecklistItemConfiguration());
 
         // Technical Readiness Configurations
         modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.AccessTracker.AccessItemConfiguration());
@@ -305,80 +315,6 @@ public class AppDbContext : DbContext
                 new { Id = 1, Name = "Time and Material" },
                 new { Id = 2, Name = "Fixed" },
                 new { Id = 3, Name = "Capped T&M" }
-            );
-        });
-
-        modelBuilder.Entity<Engagement>(entity =>
-        {
-            entity.ToTable("engagements");
-            entity.HasKey(e => e.EngagementId);
-            entity.Property(e => e.EngagementId).HasColumnName("engagement_id");
-            entity.Property(e => e.ClientName).HasColumnName("client_name").HasMaxLength(200).IsRequired();
-            entity.Property(e => e.EngagementDescription).HasColumnName("engagement_description");
-            entity.Property(e => e.EngagementTypeId).HasColumnName("engagement_type_id").IsRequired();
-            entity.Property(e => e.CommercialModelId).HasColumnName("commercial_model_id").IsRequired();
-            entity.Property(e => e.KickoffDate).HasColumnName("kickoff_date").IsRequired();
-            entity.Property(e => e.BillingStartDate).HasColumnName("billing_start_date");
-            entity.Property(e => e.StatusId).HasColumnName("status_id");
-            entity.Property(e => e.ChecklistVersionId).HasColumnName("checklist_version_id");
-
-            // BaseAuditableEntity Column Mappings
-            entity.Property(e => e.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
-            entity.Property(e => e.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("NOW()");
-            entity.Property(e => e.CreatedBy).HasColumnName("created_by").HasMaxLength(255);
-            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by").HasMaxLength(255);
-            entity.Property(e => e.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
-
-            // Global Query Filter for Soft Delete
-            entity.HasQueryFilter(e => !e.IsDeleted);
-
-            entity.HasOne(e => e.EngagementType)
-                  .WithMany()
-                  .HasForeignKey(e => e.EngagementTypeId);
-
-            entity.HasOne(e => e.CommercialModel)
-                  .WithMany()
-                  .HasForeignKey(e => e.CommercialModelId);
-
-            entity.HasOne(e => e.Status)
-                  .WithMany(s => s.Engagements)
-                  .HasForeignKey(e => e.StatusId);
-
-            entity.HasOne(e => e.ChecklistVersion)
-                  .WithMany()
-                  .HasForeignKey(e => e.ChecklistVersionId)
-                  .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasData(
-                new Engagement
-                {
-                    EngagementId = 1,
-                    ClientName = "FinTech Solutions",
-                    EngagementDescription = "Core Banking Greenfield Implementation",
-                    EngagementTypeId = 1, // Greenfield
-                    CommercialModelId = 1, // Time and Material
-                    KickoffDate = new DateOnly(2026, 8, 15),
-                    StatusId = 1, // KickoffPending
-                    CreatedAt = SeedTimestamp,
-                    UpdatedAt = SeedTimestamp,
-                    CreatedBy = "System",
-                    IsDeleted = false
-                },
-                new Engagement
-                {
-                    EngagementId = 2,
-                    ClientName = "HealthCare Plus",
-                    EngagementDescription = "Legacy System Upgrade and Support",
-                    EngagementTypeId = 2, // Brownfield
-                    CommercialModelId = 2, // Fixed
-                    KickoffDate = new DateOnly(2026, 6, 1),
-                    BillingStartDate = new DateOnly(2026, 7, 1),
-                    StatusId = 2, // Active
-                    CreatedAt = SeedTimestamp,
-                    UpdatedAt = SeedTimestamp,
-                    CreatedBy = "System",
-                    IsDeleted = false
-                }
             );
         });
     }

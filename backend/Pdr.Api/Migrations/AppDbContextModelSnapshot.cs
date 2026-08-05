@@ -200,10 +200,6 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("date")
                         .HasColumnName("billing_start_date");
 
-                    b.Property<int?>("ChecklistVersionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("checklist_version_id");
-
                     b.Property<string>("ClientName")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -232,7 +228,8 @@ namespace Pdr.Api.Migrations
                     b.Property<string>("EngagementName")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("engagement_name");
 
                     b.Property<int>("EngagementTypeId")
                         .HasColumnType("integer")
@@ -265,8 +262,6 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("EngagementId");
 
-                    b.HasIndex("ChecklistVersionId");
-
                     b.HasIndex("CommercialModelId");
 
                     b.HasIndex("EngagementTypeId");
@@ -284,7 +279,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
                             EngagementDescription = "Core Banking Greenfield Implementation",
-                            EngagementName = "",
+                            EngagementName = "FinTech Core Banking",
                             EngagementTypeId = 1,
                             IsDeleted = false,
                             KickoffDate = new DateOnly(2026, 8, 15),
@@ -300,7 +295,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
                             EngagementDescription = "Legacy System Upgrade and Support",
-                            EngagementName = "",
+                            EngagementName = "HealthCare Legacy Upgrade",
                             EngagementTypeId = 2,
                             IsDeleted = false,
                             KickoffDate = new DateOnly(2026, 6, 1),
@@ -345,6 +340,822 @@ namespace Pdr.Api.Migrations
                         {
                             UserId = 3,
                             EngagementId = 2
+                        });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.EngagementChecklist.EngagementChecklist", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer")
+                        .HasColumnName("engagement_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<int>("SourceMasterVersionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("source_master_version_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.Property<int>("VersionNumber")
+                        .HasColumnType("integer")
+                        .HasColumnName("version_number");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EngagementId")
+                        .IsUnique();
+
+                    b.ToTable("engagement_checklists", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            EngagementId = 1,
+                            IsDeleted = false,
+                            SourceMasterVersionId = 1,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedBy = "System",
+                            VersionNumber = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            EngagementId = 2,
+                            IsDeleted = false,
+                            SourceMasterVersionId = 1,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedBy = "System",
+                            VersionNumber = 0
+                        });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.EngagementChecklist.EngagementChecklistItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer")
+                        .HasColumnName("category_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("description");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("display_order");
+
+                    b.Property<int>("EngagementChecklistId")
+                        .HasColumnType("integer")
+                        .HasColumnName("engagement_checklist_id");
+
+                    b.Property<bool>("IsApplicable")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_applicable");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsMandatory")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_mandatory");
+
+                    b.Property<int?>("SourceMasterItemId")
+                        .HasColumnType("integer")
+                        .HasColumnName("source_master_item_id");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("EngagementChecklistId");
+
+                    b.ToTable("engagement_checklist_items", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoryId = 1,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 1,
+                            EngagementChecklistId = 1,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 1,
+                            Status = "Incomplete",
+                            Title = "Sign commercial contract",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CategoryId = 1,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 2,
+                            EngagementChecklistId = 1,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 2,
+                            Status = "Incomplete",
+                            Title = "Confirm engagement budget",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoryId = 1,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 3,
+                            EngagementChecklistId = 1,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 3,
+                            Status = "Incomplete",
+                            Title = "Confirm billing schedule",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CategoryId = 2,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 4,
+                            EngagementChecklistId = 1,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 4,
+                            Status = "Incomplete",
+                            Title = "Complete sales-to-delivery handover call",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CategoryId = 2,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 5,
+                            EngagementChecklistId = 1,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 5,
+                            Status = "Incomplete",
+                            Title = "Share CRM opportunity notes",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CategoryId = 2,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 6,
+                            EngagementChecklistId = 1,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 6,
+                            Status = "Incomplete",
+                            Title = "Transfer key client contacts",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CategoryId = 3,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 7,
+                            EngagementChecklistId = 1,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 7,
+                            Status = "Incomplete",
+                            Title = "Document engagement scope",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CategoryId = 3,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 8,
+                            EngagementChecklistId = 1,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 8,
+                            Status = "Incomplete",
+                            Title = "Confirm deliverables list",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CategoryId = 3,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 9,
+                            EngagementChecklistId = 1,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = false,
+                            SourceMasterItemId = 9,
+                            Status = "Incomplete",
+                            Title = "Identify scope assumptions and exclusions",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CategoryId = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 10,
+                            EngagementChecklistId = 1,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 10,
+                            Status = "Incomplete",
+                            Title = "Set up engagement governance cadence",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CategoryId = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 11,
+                            EngagementChecklistId = 1,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 11,
+                            Status = "Incomplete",
+                            Title = "Assign engagement steering committee",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CategoryId = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 12,
+                            EngagementChecklistId = 1,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 12,
+                            Status = "Incomplete",
+                            Title = "Define change control process",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CategoryId = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 13,
+                            EngagementChecklistId = 1,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = false,
+                            SourceMasterItemId = 13,
+                            Status = "Incomplete",
+                            Title = "Confirm RAID log owner",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CategoryId = 5,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 14,
+                            EngagementChecklistId = 1,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 14,
+                            Status = "Incomplete",
+                            Title = "Allocate delivery team members",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CategoryId = 5,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 15,
+                            EngagementChecklistId = 1,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 15,
+                            Status = "Incomplete",
+                            Title = "Confirm resource availability calendar",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 16,
+                            CategoryId = 5,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 16,
+                            EngagementChecklistId = 1,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = false,
+                            SourceMasterItemId = 16,
+                            Status = "Incomplete",
+                            Title = "Identify backup/on-call resources",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CategoryId = 6,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 17,
+                            EngagementChecklistId = 1,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 17,
+                            Status = "Incomplete",
+                            Title = "Provision environment access",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CategoryId = 6,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 18,
+                            EngagementChecklistId = 1,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 18,
+                            Status = "Incomplete",
+                            Title = "Verify technical prerequisites",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 19,
+                            CategoryId = 6,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 19,
+                            EngagementChecklistId = 1,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 19,
+                            Status = "Incomplete",
+                            Title = "Set up source control and CI/CD access",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 20,
+                            CategoryId = 6,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 20,
+                            EngagementChecklistId = 1,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = false,
+                            SourceMasterItemId = 20,
+                            Status = "Incomplete",
+                            Title = "Confirm security and compliance requirements",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 21,
+                            CategoryId = 1,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 1,
+                            EngagementChecklistId = 2,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 1,
+                            Status = "Incomplete",
+                            Title = "Sign commercial contract",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 22,
+                            CategoryId = 1,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 2,
+                            EngagementChecklistId = 2,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 2,
+                            Status = "Incomplete",
+                            Title = "Confirm engagement budget",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 23,
+                            CategoryId = 1,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 3,
+                            EngagementChecklistId = 2,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 3,
+                            Status = "Incomplete",
+                            Title = "Confirm billing schedule",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 24,
+                            CategoryId = 2,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 4,
+                            EngagementChecklistId = 2,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 4,
+                            Status = "Incomplete",
+                            Title = "Complete sales-to-delivery handover call",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 25,
+                            CategoryId = 2,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 5,
+                            EngagementChecklistId = 2,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 5,
+                            Status = "Incomplete",
+                            Title = "Share CRM opportunity notes",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 26,
+                            CategoryId = 2,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 6,
+                            EngagementChecklistId = 2,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 6,
+                            Status = "Incomplete",
+                            Title = "Transfer key client contacts",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 27,
+                            CategoryId = 3,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 7,
+                            EngagementChecklistId = 2,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 7,
+                            Status = "Incomplete",
+                            Title = "Document engagement scope",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 28,
+                            CategoryId = 3,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 8,
+                            EngagementChecklistId = 2,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 8,
+                            Status = "Incomplete",
+                            Title = "Confirm deliverables list",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 29,
+                            CategoryId = 3,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 9,
+                            EngagementChecklistId = 2,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = false,
+                            SourceMasterItemId = 9,
+                            Status = "Incomplete",
+                            Title = "Identify scope assumptions and exclusions",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 30,
+                            CategoryId = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 10,
+                            EngagementChecklistId = 2,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 10,
+                            Status = "Incomplete",
+                            Title = "Set up engagement governance cadence",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 31,
+                            CategoryId = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 11,
+                            EngagementChecklistId = 2,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 11,
+                            Status = "Incomplete",
+                            Title = "Assign engagement steering committee",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 32,
+                            CategoryId = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 12,
+                            EngagementChecklistId = 2,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 12,
+                            Status = "Incomplete",
+                            Title = "Define change control process",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 33,
+                            CategoryId = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 13,
+                            EngagementChecklistId = 2,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = false,
+                            SourceMasterItemId = 13,
+                            Status = "Incomplete",
+                            Title = "Confirm RAID log owner",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 34,
+                            CategoryId = 5,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 14,
+                            EngagementChecklistId = 2,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 14,
+                            Status = "Incomplete",
+                            Title = "Allocate delivery team members",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 35,
+                            CategoryId = 5,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 15,
+                            EngagementChecklistId = 2,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 15,
+                            Status = "Incomplete",
+                            Title = "Confirm resource availability calendar",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 36,
+                            CategoryId = 5,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 16,
+                            EngagementChecklistId = 2,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = false,
+                            SourceMasterItemId = 16,
+                            Status = "Incomplete",
+                            Title = "Identify backup/on-call resources",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 37,
+                            CategoryId = 6,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 17,
+                            EngagementChecklistId = 2,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 17,
+                            Status = "Incomplete",
+                            Title = "Provision environment access",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 38,
+                            CategoryId = 6,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 18,
+                            EngagementChecklistId = 2,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 18,
+                            Status = "Incomplete",
+                            Title = "Verify technical prerequisites",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 39,
+                            CategoryId = 6,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 19,
+                            EngagementChecklistId = 2,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = true,
+                            SourceMasterItemId = 19,
+                            Status = "Incomplete",
+                            Title = "Set up source control and CI/CD access",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 40,
+                            CategoryId = 6,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DisplayOrder = 20,
+                            EngagementChecklistId = 2,
+                            IsApplicable = true,
+                            IsDeleted = false,
+                            IsMandatory = false,
+                            SourceMasterItemId = 20,
+                            Status = "Incomplete",
+                            Title = "Confirm security and compliance requirements",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -1719,11 +2530,6 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
                 {
-                    b.HasOne("Pdr.Api.Models.MasterChecklist.MasterChecklistVersion", "ChecklistVersion")
-                        .WithMany()
-                        .HasForeignKey("ChecklistVersionId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Pdr.Api.Models.CommercialModel", "CommercialModel")
                         .WithMany()
                         .HasForeignKey("CommercialModelId")
@@ -1741,8 +2547,6 @@ namespace Pdr.Api.Migrations
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ChecklistVersion");
 
                     b.Navigation("CommercialModel");
 
@@ -1768,6 +2572,36 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Engagement");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.EngagementChecklist.EngagementChecklist", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
+                        .WithOne("Checklist")
+                        .HasForeignKey("Pdr.Api.Models.EngagementChecklist.EngagementChecklist", "EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Engagement");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.EngagementChecklist.EngagementChecklistItem", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.MasterChecklist.MasterChecklistCategory", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.EngagementChecklist.EngagementChecklist", "EngagementChecklist")
+                        .WithMany("Items")
+                        .HasForeignKey("EngagementChecklistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("EngagementChecklist");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Handover.Commitment", b =>
@@ -1836,9 +2670,16 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
                 {
+                    b.Navigation("Checklist");
+
                     b.Navigation("EngagementAssignments");
 
                     b.Navigation("HandoverInfo");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.EngagementChecklist.EngagementChecklist", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.EngagementStatus", b =>

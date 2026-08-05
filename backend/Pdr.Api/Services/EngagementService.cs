@@ -9,7 +9,11 @@ using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class EngagementService(AppDbContext db, IEngagementRepository engagementRepository, ICurrentUserService currentUserService) : IEngagementService
+public class EngagementService(
+    AppDbContext db,
+    IEngagementRepository engagementRepository,
+    ICurrentUserService currentUserService,
+    IEngagementChecklistService engagementChecklistService) : IEngagementService
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
     private const string ProjectManagerRole = "Project Management";
@@ -56,11 +60,6 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
         {
             var defaultStatus = await db.EngagementStatuses.FirstAsync(s => s.StatusName == DefaultEngagementStatus);
 
-            var publishedChecklistVersion = await db.MasterChecklistVersions
-                .Where(v => v.Status.StatusName == "Published")
-                .OrderByDescending(v => v.VersionNumber)
-                .FirstOrDefaultAsync();
-
             engagement = new Engagement
             {
                 EngagementName = request.EngagementName,
@@ -71,12 +70,18 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
                 KickoffDate = request.KickoffDate,
                 BillingStartDate = request.BillingStartDate,
                 StatusId = defaultStatus.StatusId,
-                ChecklistVersionId = publishedChecklistVersion?.Id,
             };
             db.Engagements.Add(engagement);
         }
 
         await db.SaveChangesAsync();
+
+        // Apply master checklist snapshot only for new engagements
+        if (existing is null)
+        {
+            await engagementChecklistService.ApplyMasterChecklistToEngagementAsync(engagement.EngagementId);
+        }
+
         return new MarkSowSignedResponse(engagement, warnings);
     }
 
