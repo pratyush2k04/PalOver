@@ -1,4 +1,4 @@
-﻿namespace Pdr.Api.Models.EnvironmentTooling
+namespace Pdr.Api.Models.EnvironmentTooling
 {
     public class EnvironmentToolingItem
     {

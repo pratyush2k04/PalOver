@@ -1,5 +1,9 @@
+using Pdr.Api.Models.AccessTracker;
+using Pdr.Api.Models.EnvironmentTooling;
+using Pdr.Api.Models.EngagementAssignment;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 
 namespace Pdr.Api.Models;
  
@@ -45,9 +49,19 @@ public class Engagement : BaseAuditableEntity
 
     public int? ChecklistVersionId { get; set; }
 
-    public Pdr.Api.Models.MasterChecklist.MasterChecklistVersion? ChecklistVersion { get; set; }
+    public MasterChecklist.MasterChecklistVersion? ChecklistVersion { get; set; }
 
-    public Pdr.Api.Models.Handover.HandoverInfo? HandoverInfo { get; set; }
+    public Handover.HandoverInfo? HandoverInfo { get; set; }
 
-    public ICollection<Pdr.Api.Models.EngagementAssignment.EngagementAssignment> EngagementAssignments { get; set; } = new List<Pdr.Api.Models.EngagementAssignment.EngagementAssignment>();
+    //Technical Readiness
+    public ICollection<EngagementAssignment.EngagementAssignment> EngagementAssignments { get; set; } = new List<EngagementAssignment.EngagementAssignment>();
+
+    public ICollection<AccessItem> AccessItems { get; set; }
+    = new List<AccessItem>();
+
+    public ICollection<EnvironmentToolingItem> EnvironmentToolingItems { get; set; }
+        = new List<EnvironmentToolingItem>();
+
+    public ICollection<Pdr.Api.Models.Risk.Risk> Risks { get; set; }
+        = new List<Pdr.Api.Models.Risk.Risk>();
 }
