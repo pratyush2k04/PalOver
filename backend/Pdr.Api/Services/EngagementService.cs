@@ -100,10 +100,11 @@ public class EngagementService(
         }
 
 
-        // Apply master checklist snapshot only for new engagements
+        // Apply master checklist snapshot and technical readiness items for new engagements
         if (existing is null)
         {
             await engagementChecklistService.ApplyMasterChecklistToEngagementAsync(engagement.EngagementId);
+            await InitializeTechnicalReadinessItemsAsync(engagement.EngagementId);
         }
 
         return new MarkSowSignedResponse(engagement, warnings);
@@ -224,7 +225,84 @@ public class EngagementService(
         }
 
         await engagementRepository.AddAssignmentAsync(engagementId, userId);
+
+        if (requiredRole == TechLeadRole)
+        {
+            var accessItems = await db.AccessItems.Where(a => a.EngagementId == engagementId).ToListAsync();
+            foreach (var item in accessItems)
+            {
+                item.OwnerId = userId;
+            }
+
+            var toolingItems = await db.EnvironmentToolingItems.Where(t => t.EngagementId == engagementId).ToListAsync();
+            foreach (var item in toolingItems)
+            {
+                item.OwnerId = userId;
+            }
+
+            await db.SaveChangesAsync();
+        }
+
         return await GetEngagementOwnersAsync(engagementId);
+    }
+
+    private async Task InitializeTechnicalReadinessItemsAsync(int engagementId)
+    {
+        var techLeadAssignment = await db.EngagementAssignments
+            .Include(ea => ea.User)
+            .ThenInclude(u => u.Role)
+            .FirstOrDefaultAsync(ea => ea.EngagementId == engagementId && ea.User.Role.Name == TechLeadRole);
+
+        int ownerId = techLeadAssignment?.UserId ?? 0;
+        if (ownerId == 0)
+        {
+            try
+            {
+                ownerId = currentUserService.GetUserId();
+            }
+            catch (InvalidOperationException)
+            {
+                ownerId = 1;
+            }
+        }
+        if (ownerId == 0) ownerId = 1;
+
+        var activeAccessDefs = await db.AccessItemDefinitions
+            .Where(d => d.IsActive)
+            .OrderBy(d => d.DisplayOrder)
+            .ToListAsync();
+
+        foreach (var def in activeAccessDefs)
+        {
+            db.AccessItems.Add(new Pdr.Api.Models.AccessTracker.AccessItem
+            {
+                EngagementId = engagementId,
+                AccessItemDefinitionId = def.AccessItemDefinitionId,
+                Name = def.Name,
+                IsClientSide = def.IsClientSide,
+                OwnerId = ownerId,
+                Status = Pdr.Api.Models.AccessTracker.AccessItemStatus.InProgress
+            });
+        }
+
+        var activeToolingDefs = await db.EnvironmentToolingDefinitions
+            .Where(d => d.IsActive)
+            .OrderBy(d => d.DisplayOrder)
+            .ToListAsync();
+
+        foreach (var def in activeToolingDefs)
+        {
+            db.EnvironmentToolingItems.Add(new Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem
+            {
+                EngagementId = engagementId,
+                EnvironmentToolingDefinitionId = def.EnvironmentToolingDefinitionId,
+                Name = def.Name,
+                OwnerId = ownerId,
+                Status = Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingStatus.NotReady
+            });
+        }
+
+        await db.SaveChangesAsync();
     }
 
     private static EngagementOwnersDto BuildOwnersDto(List<EngagementAssignment> assignments)
