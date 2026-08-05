@@ -166,6 +166,13 @@ export const routes: Routes = [
               ).then(m => m.EngagementDocumentsComponent),
           },
           {
+            path: 'checklist',
+            loadComponent: () =>
+              import(
+                './features/engagement-workspace/checklist/engagement-checklist.component'
+              ).then(m => m.EngagementChecklistComponent),
+          },
+          {
             path: '',
             redirectTo: 'handover',
             pathMatch: 'full',
@@ -197,6 +204,10 @@ export const routes: Routes = [
           { 
             path: 'documents', 
             loadComponent: () => import('./features/documents/engagement-documents/engagement-documents.component').then(m => m.EngagementDocumentsComponent) 
+          },
+          {
+            path: 'checklist',
+            loadComponent: () => import('./features/engagement-workspace/checklist/engagement-checklist.component').then(m => m.EngagementChecklistComponent)
           },
           { path: '', redirectTo: 'handover', pathMatch: 'full' }
         ]

@@ -1,6 +1,8 @@
 namespace Pdr.Api.Models.LoginEntity;
 
+using Pdr.Api.Models.EnvironmentTooling;
 using Pdr.Api.Models;
+using Pdr.Api.Models.AccessTracker;
 using Pdr.Api.Models.EngagementAssignment;
 
 public class User : BaseAuditableEntity
@@ -24,4 +26,11 @@ public class User : BaseAuditableEntity
     public DateTimeOffset? LockoutEnd { get; set; }
 
     public ICollection<EngagementAssignment> EngagementAssignments { get; set; } = new List<EngagementAssignment>();
+
+    //Technical Readiness
+    public ICollection<AccessItem> AccessItems { get; set; }
+    = new List<AccessItem>();
+
+    public ICollection<EnvironmentToolingItem> EnvironmentToolingItems { get; set; }
+        = new List<EnvironmentToolingItem>();
 }
