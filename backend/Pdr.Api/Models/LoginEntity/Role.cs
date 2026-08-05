@@ -8,5 +8,6 @@ public class Role : BaseAuditableEntity
 
     public required string Name { get; set; }
 
+    [System.Text.Json.Serialization.JsonIgnore]
     public ICollection<User> Users { get; set; } = new List<User>();
 }

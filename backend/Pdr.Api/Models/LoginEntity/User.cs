@@ -25,12 +25,15 @@ public class User : BaseAuditableEntity
 
     public DateTimeOffset? LockoutEnd { get; set; }
 
+    [System.Text.Json.Serialization.JsonIgnore]
     public ICollection<EngagementAssignment> EngagementAssignments { get; set; } = new List<EngagementAssignment>();
 
     //Technical Readiness
+    [System.Text.Json.Serialization.JsonIgnore]
     public ICollection<AccessItem> AccessItems { get; set; }
     = new List<AccessItem>();
 
+    [System.Text.Json.Serialization.JsonIgnore]
     public ICollection<EnvironmentToolingItem> EnvironmentToolingItems { get; set; }
         = new List<EnvironmentToolingItem>();
 }

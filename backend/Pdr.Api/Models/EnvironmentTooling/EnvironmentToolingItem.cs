@@ -10,6 +10,7 @@ namespace Pdr.Api.Models.EnvironmentTooling
         public EnvironmentToolingDefinition? EnvironmentToolingDefinition { get; set; }
 
         public int EngagementId { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
         public Engagement Engagement { get; set; } = null!;
 
         public int OwnerId { get; set; }

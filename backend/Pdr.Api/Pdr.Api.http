@@ -21,7 +21,7 @@ POST {{host}}/api/auth/login
 Content-Type: {{contentType}}
 
 {
-  "email": "presales@company.com",
+  "email": "techlead@company.com",
   "password": "Password@123"
 }
 

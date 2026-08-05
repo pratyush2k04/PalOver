@@ -16,6 +16,7 @@ public class EngagementChecklistItem : BaseAuditableEntity
     public string Status { get; set; } = "Incomplete";
 
     // Navigation properties
+    [System.Text.Json.Serialization.JsonIgnore]
     public EngagementChecklist EngagementChecklist { get; set; } = null!;
     public MasterChecklistCategory Category { get; set; } = null!;
 }
