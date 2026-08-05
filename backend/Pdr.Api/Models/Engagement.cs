@@ -43,11 +43,9 @@ public class Engagement : BaseAuditableEntity
     // Navigation Property
     public EngagementStatus Status { get; set; } = null!;
 
-    public int? ChecklistVersionId { get; set; }
-
-    public Pdr.Api.Models.MasterChecklist.MasterChecklistVersion? ChecklistVersion { get; set; }
-
     public Pdr.Api.Models.Handover.HandoverInfo? HandoverInfo { get; set; }
 
     public ICollection<Pdr.Api.Models.EngagementAssignment.EngagementAssignment> EngagementAssignments { get; set; } = new List<Pdr.Api.Models.EngagementAssignment.EngagementAssignment>();
+
+    public ICollection<Person> People { get; set; } = new List<Person>();
 }
