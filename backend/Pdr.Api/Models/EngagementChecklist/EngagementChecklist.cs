@@ -8,6 +8,7 @@ public class EngagementChecklist : BaseAuditableEntity
     public int VersionNumber { get; set; }
 
     // Navigation properties
+    [System.Text.Json.Serialization.JsonIgnore]
     public Engagement Engagement { get; set; } = null!;
     public ICollection<EngagementChecklistItem> Items { get; set; } = new List<EngagementChecklistItem>();
 }
