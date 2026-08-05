@@ -317,7 +317,8 @@ Content-Type: {{contentType}}
   "name": "AWS Production Read-Only Access",
   "isClientSide": true,
   "ownerId": 3,
-  "timeZoneNote": "EST (UTC-5)"
+  "timeZoneNote": "EST (UTC-5)",
+  "expectedTurnaroundDays": 3
 }
 
 ### 19. Update Access Item Status to Granted
