@@ -19,53 +19,33 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "PDR API", Version = "v1" });
+
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter your JWT token"
+    });
+
+    c.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
+    {
+        [
+            new OpenApiSecuritySchemeReference("Bearer", doc)
+        ] = new List<string>()
+    });
+});
 
 // Add services to the container.
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-});
-
-builder.Services.AddOpenApi(options =>
-{
-    options.AddDocumentTransformer((document, context, cancellationToken) =>
-    {
-        document.Info = new()
-        {
-            Title = "PDR API",
-            Version = "v1"
-        };
-
-        document.Components ??= new();
-
-        document.Components.SecuritySchemes ??=
-            new Dictionary<string, IOpenApiSecurityScheme>();
-
-        document.Components.SecuritySchemes["Bearer"] =
-            new OpenApiSecurityScheme
-            {
-                Type = SecuritySchemeType.Http,
-                Scheme = "bearer",
-                BearerFormat = "JWT",
-                Description = "Enter your JWT token"
-            };
-
-        document.Security ??= [];
-
-        document.Security.Add(
-            new OpenApiSecurityRequirement
-            {
-                [
-                    new OpenApiSecuritySchemeReference(
-                        "Bearer",
-                        document)
-                ] = []
-            });
-
-        return Task.CompletedTask;
-    });
 });
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -168,12 +148,11 @@ using (var scope = app.Services.CreateScope())
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    
-    app.MapOpenApi();
+    app.UseSwagger();
 
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/openapi/v1.json", "PDR API v1");
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "PDR API v1");
     });
 }
 
