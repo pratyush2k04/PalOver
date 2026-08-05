@@ -11,7 +11,7 @@ public class EnvironmentToolingService(
     IEnvironmentToolingRepository repository,
     IRiskService riskService) : IEnvironmentToolingService
 {
-    public async Task<List<EnvironmentToolingItemDto>> GetItemsByEngagementIdAsync(int engagementId)
+    public async Task<EnvironmentToolingReadinessResponse> GetItemsByEngagementIdAsync(int engagementId)
     {
         if (!await repository.EngagementExistsAsync(engagementId))
         {
@@ -19,7 +19,20 @@ public class EnvironmentToolingService(
         }
 
         var items = await repository.GetByEngagementIdAsync(engagementId);
-        return items.Select(MapToDto).ToList();
+        var dtos = items.Select(MapToDto).ToList();
+
+        var readyCount = dtos.Count(i => i.Status == EnvironmentToolingStatus.Ready || i.Status == EnvironmentToolingStatus.NotApplicable);
+        var totalCount = dtos.Count;
+
+        return new EnvironmentToolingReadinessResponse
+        {
+            EngagementId = engagementId,
+            ReadyCount = readyCount,
+            TotalCount = totalCount,
+            IsTechnicallyReady = readyCount == totalCount && totalCount > 0,
+            OutstandingItems = dtos.Where(i => i.Status == EnvironmentToolingStatus.NotReady).ToList(),
+            Items = dtos
+        };
     }
 
     public async Task<EnvironmentToolingItemDto> AddCustomItemAsync(int engagementId, AddCustomEnvironmentToolingItemRequest request)

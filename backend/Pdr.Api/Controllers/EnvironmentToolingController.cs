@@ -19,8 +19,8 @@ public class EnvironmentToolingController(IEnvironmentToolingService service) : 
     {
         try
         {
-            var items = await service.GetItemsByEngagementIdAsync(engagementId);
-            return Ok(items);
+            var response = await service.GetItemsByEngagementIdAsync(engagementId);
+            return Ok(response);
         }
         catch (AppException ex)
         {
