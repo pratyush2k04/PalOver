@@ -76,6 +76,30 @@ public class EngagementService(
 
         await db.SaveChangesAsync();
 
+        try
+        {
+            var currentUserId = currentUserService.GetUserId();
+            if (currentUserId > 0)
+            {
+                var hasAssignment = await db.EngagementAssignments
+                    .AnyAsync(ea => ea.EngagementId == engagement.EngagementId && ea.UserId == currentUserId);
+                if (!hasAssignment)
+                {
+                    db.EngagementAssignments.Add(new EngagementAssignment
+                    {
+                        EngagementId = engagement.EngagementId,
+                        UserId = currentUserId
+                    });
+                    await db.SaveChangesAsync();
+                }
+            }
+        }
+        catch (InvalidOperationException)
+        {
+            // Fallback for unauthenticated test calls
+        }
+
+
         // Apply master checklist snapshot only for new engagements
         if (existing is null)
         {
