@@ -9,6 +9,7 @@ using Pdr.Api.Models.MasterChecklist;
 using Pdr.Api.Models.Handover;
 
 using Pdr.Api.Models.Documents;
+using Pdr.Api.Models.Cadence;
 //using System.Reflection;
 
 namespace Pdr.Api.Data;
@@ -49,6 +50,9 @@ public class AppDbContext : DbContext
     public DbSet<DocumentCategory> DocumentCategories => Set<DocumentCategory>();
     public DbSet<Document> Documents => Set<Document>();
 
+    // Communication Cadences
+    public DbSet<CommunicationCadence> CommunicationCadences => Set<CommunicationCadence>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -67,6 +71,7 @@ public class AppDbContext : DbContext
 
         modelBuilder.ApplyConfiguration(new DocumentCategoryConfiguration());
         modelBuilder.ApplyConfiguration(new DocumentConfiguration());
+        modelBuilder.ApplyConfiguration(new CommunicationCadenceConfiguration());
 
         // Global Query Filters (Soft Delete)
         modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
