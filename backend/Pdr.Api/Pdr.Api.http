@@ -21,7 +21,7 @@ POST {{host}}/api/auth/login
 Content-Type: {{contentType}}
 
 {
-  "email": "presales@company.com",
+  "email": "ps@company.com",
   "password": "Password@123"
 }
 
@@ -285,3 +285,236 @@ Content-Type: {{contentType}}
   "kickoffDate": "2026-08-15",
   "billingStartDate": "2026-09-01"
 }
+
+
+##############################################################
+############# TECHNICAL READINESS - ACCESS TRACKER ###########
+##############################################################
+
+### Login as Tech Lead (Vikram Singh)
+POST {{host}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "techlead@company.com",
+  "password": "Password@123"
+}
+
+###
+@techLeadToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwicm9sZSI6WyJUZWNoIExlYWQiLCJUZWNoIExlYWQiXSwiZW1haWwiOiJ0ZWNobGVhZEBjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiVmlrcmFtIFNpbmdoIiwiaXNBZG1pbiI6ImZhbHNlIiwibmJmIjoxNzg1OTMzNTQ0LCJleHAiOjE3ODU5MzUzNDQsImlhdCI6MTc4NTkzMzU0NCwiaXNzIjoiUGRyQXBpIiwiYXVkIjoiUGRyV2ViIn0.fU70SNe1OxKZPSZUwW9LbSxv92OFjq4qbLKnYHuNeMU
+
+### 17. Get All Access Items for Engagement 1
+GET {{host}}/api/engagements/1/access-items
+Authorization: Bearer {{techLeadToken}}
+Accept: {{contentType}}
+
+### 18. Add Custom Access Item to Engagement 1
+POST {{host}}/api/engagements/1/access-items
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "name": "AWS Production Read-Only Access",
+  "isClientSide": true,
+  "ownerId": 3,
+  "timeZoneNote": "EST (UTC-5)",
+  "expectedTurnaroundDays": 3
+}
+
+### 19. Update Access Item Status to Granted
+PATCH {{host}}/api/access-items/1/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 2
+}
+
+### 20. Update Access Item Status to Blocked (Requires BlockReason)
+PATCH {{host}}/api/access-items/1/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 3,
+  "blockReason": "Waiting for client IT security team approval on firewall rules"
+}
+
+### 21. Unblock Access Item (Status -> InProgress)
+PATCH {{host}}/api/access-items/1/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 1
+}
+
+### 22. Reassign Access Item Owner
+PATCH {{host}}/api/access-items/1/owner
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "ownerId": 3
+}
+
+### 23. Evaluate US3 Client-Side 2-Day Billing Risk (Test Endpoint)
+POST {{host}}/api/engagements/1/access-items/evaluate-risks
+Authorization: Bearer {{techLeadToken}}
+Accept: {{contentType}}
+
+##############################################################
+##### ACCESS TRACKER - ERROR & VALIDATION TEST CASES #########
+##############################################################
+
+### 24. Validation Error: Set status to Blocked without blockReason (Should return 400 Bad Request)
+PATCH {{host}}/api/access-items/1/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 3
+}
+
+### 25. Validation Error: Invalid Status Transition e.g. InProgress -> InProgress (Should return 422 Unprocessable Entity)
+PATCH {{host}}/api/access-items/1/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 1
+}
+
+### 26. Not Found Error: Engagement does not exist (Should return 404 Not Found)
+GET {{host}}/api/engagements/999/access-items
+Authorization: Bearer {{techLeadToken}}
+Accept: {{contentType}}
+
+### 27. Not Found Error: Access Item does not exist (Should return 404 Not Found)
+PATCH {{host}}/api/access-items/999/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 2
+}
+
+### 28. Not Found Error: Owner User does not exist (Should return 404 Not Found)
+PATCH {{host}}/api/access-items/1/owner
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "ownerId": 999
+}
+
+### 29. Authorization Error: Non-Tech Lead attempting edit (Should return 403 Forbidden)
+POST {{host}}/api/engagements/1/access-items
+Authorization: Bearer {{pmToken}}
+Content-Type: {{contentType}}
+
+{
+  "name": "Unauthorized Test Item",
+  "isClientSide": false,
+  "ownerId": 2
+}
+
+##############################################################
+##### TECHNICAL READINESS - ENVIRONMENT & TOOLING ############
+##############################################################
+
+### 30. Get Environment & Tooling Items for Engagement 1
+GET {{host}}/api/engagements/1/environment-tooling
+Authorization: Bearer {{techLeadToken}}
+Accept: {{contentType}}
+
+### 31. Add Custom Environment & Tooling Item to Engagement 1
+POST {{host}}/api/engagements/1/environment-tooling
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "customName": "SonarQube Code Quality Scanner",
+  "ownerId": 3
+}
+
+### 32. Update Environment & Tooling Status to Ready (Status = 2)
+PATCH {{host}}/api/environment-tooling/1/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 2
+}
+
+### 33. Update Environment & Tooling Status to NotApplicable (Requires NotApplicableReason)
+PATCH {{host}}/api/environment-tooling/1/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 3,
+  "notApplicableReason": "Mobile-only engagement, backend UAT environment not required."
+}
+
+### 34. Block Environment & Tooling Item (Triggers Risk Creation)
+PATCH {{host}}/api/environment-tooling/1/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 1,
+  "blockReason": "Missing Kubernetes cluster access credentials from client infra team"
+}
+
+### 35. Reassign Environment & Tooling Owner
+PATCH {{host}}/api/environment-tooling/1/owner
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "ownerId": 3
+}
+
+### 36. Validation Error: Set status to NotApplicable without reason (Should return 400 Bad Request)
+PATCH {{host}}/api/environment-tooling/1/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 3
+}
+
+### 37. Not Found Error: Engagement does not exist (Should return 404 Not Found)
+GET {{host}}/api/engagements/999/environment-tooling
+Authorization: Bearer {{techLeadToken}}
+Accept: {{contentType}}
+
+### 38. Not Found Error: Environment/Tooling Item does not exist (Should return 404 Not Found)
+PATCH {{host}}/api/environment-tooling/999/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 2
+}
+
+### 39. Not Found Error: Owner User does not exist (Should return 404 Not Found)
+PATCH {{host}}/api/environment-tooling/1/owner
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "ownerId": 999
+}
+
+### 40. Authorization Error: Non-Tech Lead attempting edit (Should return 403 Forbidden)
+POST {{host}}/api/engagements/5/environment-tooling
+Authorization: Bearer {{pmToken}}
+Content-Type: {{contentType}}
+
+{
+  "customName": "Unauthorized Tool Test",
+  "ownerId": 2
+}
+

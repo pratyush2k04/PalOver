@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using Pdr.Api.Data;
 using Pdr.Api.Models;
 using Pdr.Api.Middleware;
@@ -77,6 +78,14 @@ builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<IEngagementChecklistRepository, EngagementChecklistRepository>();
 builder.Services.AddScoped<IEngagementChecklistService, EngagementChecklistService>();
 
+// Technical Readiness — Access Tracker & Environment Tooling
+builder.Services.AddScoped<Pdr.Api.Repositories.Interfaces.IAccessTrackerRepository, Pdr.Api.Repositories.AccessTrackerRepository>();
+builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IAccessTrackerService, Pdr.Api.Services.AccessTrackerService>();
+builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IRiskService, Pdr.Api.Services.RiskService>();
+builder.Services.AddScoped<Pdr.Api.Repositories.Interfaces.IEnvironmentToolingRepository, Pdr.Api.Repositories.EnvironmentToolingRepository>();
+builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IEnvironmentToolingService, Pdr.Api.Services.EnvironmentToolingService>();
+
+
 // Register FluentValidation Validators
 builder.Services.AddValidatorsFromAssemblyContaining<DocumentUploadDtoValidator>();
 
@@ -101,7 +110,8 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = builder.Configuration["JwtSettings:Audience"],
         ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero
+        ClockSkew = TimeSpan.Zero,
+        RoleClaimType = System.Security.Claims.ClaimTypes.Role
     };
 });
 
