@@ -46,4 +46,6 @@ public class Engagement : BaseAuditableEntity
     public Pdr.Api.Models.Handover.HandoverInfo? HandoverInfo { get; set; }
 
     public ICollection<Pdr.Api.Models.EngagementAssignment.EngagementAssignment> EngagementAssignments { get; set; } = new List<Pdr.Api.Models.EngagementAssignment.EngagementAssignment>();
+
+    public ICollection<Person> People { get; set; } = new List<Person>();
 }

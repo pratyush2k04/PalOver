@@ -49,6 +49,9 @@ public class AppDbContext : DbContext
     public DbSet<DocumentCategory> DocumentCategories => Set<DocumentCategory>();
     public DbSet<Document> Documents => Set<Document>();
 
+    // People
+    public DbSet<Person> People => Set<Person>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -67,6 +70,7 @@ public class AppDbContext : DbContext
 
         modelBuilder.ApplyConfiguration(new DocumentCategoryConfiguration());
         modelBuilder.ApplyConfiguration(new DocumentConfiguration());
+        modelBuilder.ApplyConfiguration(new PersonConfiguration());
 
         // Global Query Filters (Soft Delete)
         modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
