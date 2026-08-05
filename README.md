@@ -38,11 +38,11 @@ You need a Postgres database. Pick **one**:
   - shell-agnostic: put `DB_PORT=5433` in a `.env` file next to `docker-compose.yml`, then
     just `docker compose up db`.
 - **Native Postgres:** use your own install. If your credentials differ from the default
-  (`Host=localhost;Port=5432;Database=pdr;Username=pdr;Password=pdr`), override them once
-  without touching tracked files:
+  (`Host=localhost;Port=5432;Database=pdrDB;Username=postgres;Password=root`), override them
+  once without touching tracked files:
   ```bash
   cd backend/Pdr.Api
-  dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=pdr;Username=<you>;Password=<pw>"
+  dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=pdrDB;Username=<you>;Password=<pw>"
   ```
 
 Then run the two dev servers (separate terminals):

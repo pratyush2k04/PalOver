@@ -1,0 +1,24 @@
+<div class="modal-backdrop" (click)="onBackdropClick()">
+  <div class="modal-card" (click)="onDialogClick($event)">
+    <div class="modal-header">
+      <h3>{{ title }}</h3>
+      <button type="button" class="close-btn" (click)="cancelled.emit()" aria-label="Close">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <p><ng-content /></p>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" (click)="cancelled.emit()" [disabled]="isBusy">
+        {{ cancelLabel }}
+      </button>
+      <button type="button" class="btn-danger" (click)="confirmed.emit()" [disabled]="isBusy">
+        @if (isBusy) {
+          <span class="spinner"></span>
+        }
+        {{ confirmLabel }}
+      </button>
+    </div>
+  </div>
+</div>

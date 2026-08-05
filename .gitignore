@@ -5,6 +5,8 @@
 *.suo
 .vs/
 appsettings.*.local.json
+Pdr.Api.http
+backend/Pdr.Api/Uploads/Documents/*
 
 # ---- Node / Angular ----
 node_modules/

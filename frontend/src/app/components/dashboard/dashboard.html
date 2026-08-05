@@ -1,0 +1,75 @@
+<div class="dashboard">
+  <div class="dashboard__welcome">
+    <h1>Welcome back, {{ userFullName() }}</h1>
+    <p>Here's what's happening with your checklist today.</p>
+  </div>
+
+  @if (loading()) {
+    <div class="dashboard__loading">Loading dashboard...</div>
+  } @else if (error()) {
+    <div class="dashboard__error">{{ error() }}</div>
+  } @else if (summary(); as data) {
+    <div class="dashboard__grid">
+      <div class="widget widget--version">
+        <h2 class="widget__title">Latest Published Version</h2>
+        @if (data.latestPublishedVersion; as version) {
+          <p class="widget__headline">{{ version.versionLabel }}</p>
+        } @else {
+          <p class="widget__meta">No version has been published yet.</p>
+        }
+      </div>
+
+      <div class="widget widget--pending">
+        <h2 class="widget__title">Pending Draft Changes</h2>
+        <p class="widget__headline">{{ data.pendingDraftChangesCount }}</p>
+        <p class="widget__meta">Changes awaiting publish (estimated)</p>
+      </div>
+
+      <div class="widget widget--stats">
+        <h2 class="widget__title">Quick Statistics</h2>
+        <div class="widget__stat-row">
+          <span class="widget__stat-value">{{ data.quickStatistics.totalItems }}</span>
+          <span class="widget__stat-label">Total Items</span>
+        </div>
+        <div class="widget__stat-row">
+          <span class="widget__stat-value">{{ data.quickStatistics.totalCategories ?? '—' }}</span>
+          <span class="widget__stat-label">Categories</span>
+        </div>
+        <div class="widget__stat-row">
+          <span class="widget__stat-value">{{ data.quickStatistics.activeVersion }}</span>
+          <span class="widget__stat-label">Active Version</span>
+        </div>
+      </div>
+
+      <div class="widget widget--activity">
+        <h2 class="widget__title">
+          Recent Activity
+          <span class="widget__preview-tag">Preview data</span>
+        </h2>
+        <ul class="widget__list">
+          @for (activity of data.recentActivity; track activity.id) {
+            <li class="widget__list-item">
+              <span class="widget__list-primary">{{ activity.description }}</span>
+              <span class="widget__list-secondary">{{ activity.actor }} &middot; {{ activity.timestamp }}</span>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <div class="widget widget--updates">
+        <h2 class="widget__title">
+          Recent Checklist Updates
+          <span class="widget__preview-tag">Preview data</span>
+        </h2>
+        <ul class="widget__list">
+          @for (update of data.recentChecklistUpdates; track update.id) {
+            <li class="widget__list-item">
+              <span class="widget__list-primary">{{ update.itemName }}</span>
+              <span class="widget__list-secondary">{{ update.category }} &middot; {{ update.updatedAt }}</span>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  }
+</div>

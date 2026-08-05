@@ -1,0 +1,43 @@
+<div class="workspace-container">
+  <div class="workspace-header" *ngIf="!isLoading() && engagement()">
+    <div class="header-info">
+      <h1>{{ engagement()!.engagementName }}</h1>
+      <p><strong>Type:</strong> {{ engagement()!.engagementType }}</p>
+    </div>
+    <div class="header-metrics">
+      <p><strong>Kickoff Date:</strong> {{ engagement()!.kickoffDate }}</p>
+      <p><strong>Billing Date:</strong> {{ engagement()!.billingStartDate || '—' }}</p>
+      <p><strong>Readiness Score:</strong> {{ 50 }}</p>
+    </div>
+  </div>
+
+  <div class="workspace-header" *ngIf="isLoading()">
+    <p>Loading engagement details...</p>
+  </div>
+
+  <div class="workspace-tabs" role="tablist" (keydown)="onTabKeydown($event)">
+    <ng-container *ngFor="let tab of tabs(); let i = index">
+      <a *ngIf="tab.enabled"
+         [routerLink]="tab.route"
+         routerLinkActive="active"
+         class="tab-item"
+         role="tab"
+         [attr.aria-selected]="i === activeTabIndex()"
+         [tabindex]="i === activeTabIndex() ? 0 : -1">
+        {{ tab.label }}
+      </a>
+      <span *ngIf="!tab.enabled"
+            class="tab-item tab-item-disabled"
+            role="tab"
+            aria-disabled="true"
+            [attr.aria-selected]="false"
+            tabindex="-1">
+        {{ tab.label }}
+      </span>
+    </ng-container>
+  </div>
+
+  <div class="workspace-content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

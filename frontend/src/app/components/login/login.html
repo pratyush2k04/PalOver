@@ -1,0 +1,60 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h2>Sign In</h2>
+      <p>Enter your credentials to access your workspace</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+      @if (errorMessage()) {
+        <div class="alert alert-danger" role="alert">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <div class="form-group">
+        <label for="email">Work Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="name@company.com"
+          [class.is-invalid]="emailControl?.invalid && (emailControl?.touched || emailControl?.dirty)"
+        />
+        @if (emailControl?.invalid && (emailControl?.touched || emailControl?.dirty)) {
+          <div class="invalid-feedback">
+            @if (emailControl?.errors?.['required']) {
+              Email is required.
+            } @else if (emailControl?.errors?.['email']) {
+              Enter a valid work email address.
+            }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="Enter your password"
+          [class.is-invalid]="passwordControl?.invalid && (passwordControl?.touched || passwordControl?.dirty)"
+        />
+        @if (passwordControl?.invalid && (passwordControl?.touched || passwordControl?.dirty)) {
+          <div class="invalid-feedback">
+            Password is required.
+          </div>
+        }
+      </div>
+
+      <button type="submit" class="btn-submit" [disabled]="isLoading()">
+        @if (isLoading()) {
+          <span class="spinner"></span> Signing in...
+        } @else {
+          Sign In
+        }
+      </button>
+    </form>
+  </div>
+</div>
