@@ -89,10 +89,12 @@ builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<IEngagementChecklistRepository, EngagementChecklistRepository>();
 builder.Services.AddScoped<IEngagementChecklistService, EngagementChecklistService>();
 
-// Technical Readiness — Access Tracker
+// Technical Readiness — Access Tracker & Environment Tooling
 builder.Services.AddScoped<Pdr.Api.Repositories.Interfaces.IAccessTrackerRepository, Pdr.Api.Repositories.AccessTrackerRepository>();
 builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IAccessTrackerService, Pdr.Api.Services.AccessTrackerService>();
 builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IRiskService, Pdr.Api.Services.RiskService>();
+builder.Services.AddScoped<Pdr.Api.Repositories.Interfaces.IEnvironmentToolingRepository, Pdr.Api.Repositories.EnvironmentToolingRepository>();
+builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IEnvironmentToolingService, Pdr.Api.Services.EnvironmentToolingService>();
 
 
 // Register FluentValidation Validators

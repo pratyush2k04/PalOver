@@ -418,4 +418,68 @@ Content-Type: {{contentType}}
   "ownerId": 2
 }
 
+##############################################################
+##### TECHNICAL READINESS - ENVIRONMENT & TOOLING ############
+##############################################################
 
+### 30. Get Environment & Tooling Items for Engagement 1
+GET {{host}}/api/engagements/1/environment-tooling
+Authorization: Bearer {{techLeadToken}}
+Accept: {{contentType}}
+
+### 31. Add Custom Environment & Tooling Item to Engagement 1
+POST {{host}}/api/engagements/1/environment-tooling
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "customName": "SonarQube Code Quality Scanner",
+  "ownerId": 3
+}
+
+### 32. Update Environment & Tooling Status to Ready (Status = 2)
+PATCH {{host}}/api/environment-tooling/1/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 2
+}
+
+### 33. Update Environment & Tooling Status to NotApplicable (Requires NotApplicableReason)
+PATCH {{host}}/api/environment-tooling/1/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 3,
+  "notApplicableReason": "Mobile-only engagement, backend UAT environment not required."
+}
+
+### 34. Block Environment & Tooling Item (Triggers Risk Creation)
+PATCH {{host}}/api/environment-tooling/1/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 1,
+  "blockReason": "Missing Kubernetes cluster access credentials from client infra team"
+}
+
+### 35. Reassign Environment & Tooling Owner
+PATCH {{host}}/api/environment-tooling/1/owner
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "ownerId": 3
+}
+
+### 36. Validation Error: Set status to NotApplicable without reason (Should return 400 Bad Request)
+PATCH {{host}}/api/environment-tooling/1/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 3
+}
