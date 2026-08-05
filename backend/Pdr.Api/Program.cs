@@ -96,6 +96,8 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<ICommunicationCadenceRepository, CommunicationCadenceRepository>();
 builder.Services.AddScoped<ICommunicationCadenceService, CommunicationCadenceService>();
+builder.Services.AddScoped<IEngagementChecklistRepository, EngagementChecklistRepository>();
+builder.Services.AddScoped<IEngagementChecklistService, EngagementChecklistService>();
 
 // Register FluentValidation Validators
 builder.Services.AddValidatorsFromAssemblyContaining<DocumentUploadDtoValidator>();
