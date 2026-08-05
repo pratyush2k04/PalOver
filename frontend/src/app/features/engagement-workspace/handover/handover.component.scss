@@ -1,4 +1,5 @@
 @use '../../../../styles/variables' as *;
+@use 'sass:color';
 
 .handover-container {
   max-width: 900px;
@@ -60,6 +61,7 @@
 
 textarea,
 input[type='text'],
+input[type='number'],
 select {
   width: 100%;
   padding: 0.75rem;
@@ -147,6 +149,14 @@ select {
 
   &.commitment-card-impossible {
     border-top-color: $color-danger;
+    
+    .commitment-square h4,
+    .commitment-square p,
+    .commitment-square span:not(.square-label),
+    .commitment-square .timeline-info,
+    .commitment-square .type-info {
+      opacity: 0.5;
+    }
   }
 }
 
@@ -186,6 +196,7 @@ select {
   padding-bottom: 0.625rem;
   margin-bottom: 0.25rem;
   border-bottom: 1px solid $color-border-soft;
+  min-height: 2.5rem;
 }
 
 .square-label {
@@ -224,9 +235,28 @@ select {
   font-style: italic;
 }
 
-.strikethrough {
-  text-decoration: line-through;
-  opacity: 0.7;
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.realistic-header {
+  justify-content: flex-end;
+}
+
+.rejected-placeholder {
+  color: color.mix($color-danger, $color-text, 70%);
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 1.5rem 1rem;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .click-to-edit-placeholder {
@@ -386,6 +416,18 @@ button {
 .btn-danger-sm {
   padding: 0.4rem 0.75rem;
   font-size: 0.8125rem;
+}
+
+.inline-errors {
+  list-style-type: none;
+  padding: 0;
+  margin: 0 0 0.75rem 0;
+  color: $color-danger;
+  font-size: 0.8125rem;
+  
+  li {
+    margin-bottom: 0.25rem;
+  }
 }
 
 .alert {

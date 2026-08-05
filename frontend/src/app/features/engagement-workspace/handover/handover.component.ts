@@ -103,6 +103,9 @@ export class HandoverComponent {
   realisticEditForm = signal<RealisticEditForm>(this.emptyRealisticEditForm());
   private originalAcknowledgementMessage = signal<string>('');
 
+  editCommitmentErrors = signal<string[]>([]);
+  realisticEditErrors = signal<string[]>([]);
+
   commitmentTypes = [
     { id: 1, name: 'Software' },
     { id: 2, name: 'Services' },
@@ -259,6 +262,7 @@ export class HandoverComponent {
   }
 
   startEditCommitment(c: CommitmentDto) {
+    this.editCommitmentErrors.set([]);
     this.editingCommitmentId.set(c.commitmentId);
     this.editCommitment.set({
       description: c.description,
@@ -271,6 +275,7 @@ export class HandoverComponent {
 
   cancelEditCommitment() {
     this.editingCommitmentId.set(null);
+    this.editCommitmentErrors.set([]);
   }
 
   saveEditCommitment(commitmentId: number) {
@@ -278,10 +283,16 @@ export class HandoverComponent {
     if (!id) return;
 
     const currentEdit = this.editCommitment();
-    if (!currentEdit.description || !currentEdit.title) {
-      this.showMessage('Title and Description are required.', true);
+    const errors: string[] = [];
+    if (!currentEdit.title) errors.push('Title is required.');
+    if (!currentEdit.description) errors.push('Description is required.');
+    
+    if (errors.length > 0) {
+      this.editCommitmentErrors.set(errors);
       return;
     }
+
+    this.editCommitmentErrors.set([]);
 
     this.handoverService.updateCommitment(id, commitmentId, currentEdit).subscribe({
       next: (data) => {
@@ -326,6 +337,7 @@ export class HandoverComponent {
   }
 
   startEditRealisticCommitment(c: CommitmentDto) {
+    this.realisticEditErrors.set([]);
     this.editingRealisticCommitmentId.set(c.commitmentId);
     const existing = c.realisticCommitment;
     const ackMessage = existing?.acknowledgementMessage || '';
@@ -342,6 +354,7 @@ export class HandoverComponent {
   cancelEditRealisticCommitment() {
     this.editingRealisticCommitmentId.set(null);
     this.originalAcknowledgementMessage.set('');
+    this.realisticEditErrors.set([]);
   }
 
   commitmentHasGap(c: CommitmentDto): boolean {
@@ -359,10 +372,15 @@ export class HandoverComponent {
     if (!id) return;
 
     const form = this.realisticEditForm();
-    if (!form.description) {
-      this.showMessage('Description is required.', true);
+    const errors: string[] = [];
+    if (!form.description) errors.push('Description is required.');
+
+    if (errors.length > 0) {
+      this.realisticEditErrors.set(errors);
       return;
     }
+
+    this.realisticEditErrors.set([]);
 
     const payload = {
       description: form.description,
@@ -413,6 +431,13 @@ export class HandoverComponent {
         this.showMessage(this.extractErrorMessage(err, 'Failed to update commitment'), true);
       }
     });
+  }
+
+  formatTimeline(timeline: number, unit: string): string {
+    if (!timeline || !unit) return '';
+    return timeline === 1 && unit.endsWith('s')
+      ? `${timeline} ${unit.slice(0, -1)}`
+      : `${timeline} ${unit}`;
   }
 
   private isValidForSubmit(): boolean {

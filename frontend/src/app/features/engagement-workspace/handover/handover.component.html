@@ -100,10 +100,14 @@
             </div>
 
             <ng-container *ngIf="editingCommitmentId() !== c.commitmentId; else editPromisedTemplate">
-              <h4>{{ c.title }}</h4>
-              <p>{{ c.description }}</p>
-              <p class="timeline-info">{{ c.timeline }} {{ c.timelineUnit }}</p>
-              <p class="type-info">{{ c.commitmentTypeId === 1 ? 'Software' : c.commitmentTypeId === 2 ? 'Services' : 'Training' }}</p>
+              <div class="content-header">
+                <div>
+                  <h4>{{ c.title }}</h4>
+                  <p class="type-info">{{ c.commitmentTypeId === 1 ? 'Software' : c.commitmentTypeId === 2 ? 'Services' : 'Training' }}</p>
+                </div>
+                <span class="timeline-info">{{ formatTimeline(c.timeline, c.timelineUnit) }}</span>
+              </div>
+              <p class="description">{{ c.description }}</p>
             </ng-container>
             <ng-template #editPromisedTemplate>
               <input type="text" [(ngModel)]="editCommitment().title" [ngModelOptions]="{standalone: true}" maxlength="100" placeholder="Title">
@@ -114,6 +118,9 @@
                   <option *ngFor="let u of timelineUnits" [value]="u">{{ u }}</option>
                 </select>
               </div>
+              <ul class="inline-errors" *ngIf="editCommitmentErrors().length > 0">
+                <li *ngFor="let err of editCommitmentErrors()">{{ err }}</li>
+              </ul>
               <div class="row-actions">
                 <button class="btn-primary-sm" (click)="saveEditCommitment(c.commitmentId)">Save</button>
                 <button class="btn-secondary-sm" (click)="cancelEditCommitment()">Cancel</button>
@@ -141,14 +148,20 @@
 
             <ng-container *ngIf="editingRealisticCommitmentId() !== c.commitmentId; else editRealisticTemplate">
               <ng-container *ngIf="c.realisticCommitment; else noRealisticYet">
-                <p [class.strikethrough]="!c.realisticCommitment.isPossible">{{ c.realisticCommitment.description }}</p>
-                <p class="timeline-info" [class.strikethrough]="!c.realisticCommitment.isPossible">
-                  {{ c.realisticCommitment.timeline }} {{ c.realisticCommitment.timelineUnit }}
-                </p>
-                <p *ngIf="c.realisticCommitment.acknowledgementMessage" class="acknowledgement-info"
-                  [class.strikethrough]="!c.realisticCommitment.isPossible">
-                  Acknowledged: {{ c.realisticCommitment.acknowledgementMessage }}
-                </p>
+                <ng-container *ngIf="c.realisticCommitment.isPossible; else rejectedByPm">
+                  <div class="content-header realistic-header">
+                    <span class="timeline-info">
+                      {{ formatTimeline(c.realisticCommitment.timeline, c.realisticCommitment.timelineUnit) }}
+                    </span>
+                  </div>
+                  <p class="description">{{ c.realisticCommitment.description }}</p>
+                  <p *ngIf="c.realisticCommitment.acknowledgementMessage" class="acknowledgement-info">
+                    Acknowledged: {{ c.realisticCommitment.acknowledgementMessage }}
+                  </p>
+                </ng-container>
+                <ng-template #rejectedByPm>
+                  <div class="rejected-placeholder">Rejected by PM</div>
+                </ng-template>
 
                 <button *ngIf="isProjectManagement() && !isSubmitted()" class="btn-toggle"
                   [class.btn-toggle-active]="!c.realisticCommitment.isPossible"
@@ -189,6 +202,9 @@
                 </div>
               </div>
 
+              <ul class="inline-errors" *ngIf="realisticEditErrors().length > 0">
+                <li *ngFor="let err of realisticEditErrors()">{{ err }}</li>
+              </ul>
               <div class="row-actions">
                 <button class="btn-primary-sm" (click)="saveRealisticCommitment(c)">Save</button>
                 <button class="btn-secondary-sm" (click)="cancelEditRealisticCommitment()">Cancel</button>
