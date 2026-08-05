@@ -21,7 +21,7 @@ POST {{host}}/api/auth/login
 Content-Type: {{contentType}}
 
 {
-  "email": "techlead@company.com",
+  "email": "ps@company.com",
   "password": "Password@123"
 }
 
@@ -301,7 +301,7 @@ Content-Type: {{contentType}}
 }
 
 ###
-@techLeadToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwicm9sZSI6WyJUZWNoIExlYWQiLCJUZWNoIExlYWQiXSwiZW1haWwiOiJ0ZWNobGVhZEBjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiVmlrcmFtIFNpbmdoIiwiaXNBZG1pbiI6ImZhbHNlIiwibmJmIjoxNzg1ODU1MzAzLCJleHAiOjE3ODU4NTcxMDMsImlhdCI6MTc4NTg1NTMwMywiaXNzIjoiUGRyQXBpIiwiYXVkIjoiUGRyV2ViIn0.fakeTokenForTestingPlaceholder
+@techLeadToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwicm9sZSI6WyJUZWNoIExlYWQiLCJUZWNoIExlYWQiXSwiZW1haWwiOiJ0ZWNobGVhZEBjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiVmlrcmFtIFNpbmdoIiwiaXNBZG1pbiI6ImZhbHNlIiwibmJmIjoxNzg1OTMzNTQ0LCJleHAiOjE3ODU5MzUzNDQsImlhdCI6MTc4NTkzMzU0NCwiaXNzIjoiUGRyQXBpIiwiYXVkIjoiUGRyV2ViIn0.fU70SNe1OxKZPSZUwW9LbSxv92OFjq4qbLKnYHuNeMU
 
 ### 17. Get All Access Items for Engagement 1
 GET {{host}}/api/engagements/1/access-items
@@ -483,3 +483,37 @@ Content-Type: {{contentType}}
 {
   "status": 3
 }
+
+### 37. Not Found Error: Engagement does not exist (Should return 404 Not Found)
+GET {{host}}/api/engagements/999/environment-tooling
+Authorization: Bearer {{techLeadToken}}
+Accept: {{contentType}}
+
+### 38. Not Found Error: Environment/Tooling Item does not exist (Should return 404 Not Found)
+PATCH {{host}}/api/environment-tooling/999/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 2
+}
+
+### 39. Not Found Error: Owner User does not exist (Should return 404 Not Found)
+PATCH {{host}}/api/environment-tooling/1/owner
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "ownerId": 999
+}
+
+### 40. Authorization Error: Non-Tech Lead attempting edit (Should return 403 Forbidden)
+POST {{host}}/api/engagements/1/environment-tooling
+Authorization: Bearer {{pmToken}}
+Content-Type: {{contentType}}
+
+{
+  "customName": "Unauthorized Tool Test",
+  "ownerId": 2
+}
+
