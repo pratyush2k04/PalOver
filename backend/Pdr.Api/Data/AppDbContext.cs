@@ -52,6 +52,9 @@ public class AppDbContext : DbContext
     // People
     public DbSet<Person> People => Set<Person>();
 
+    // Kickoff Records
+    public DbSet<KickoffRecord> KickoffRecords => Set<KickoffRecord>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -71,6 +74,7 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new DocumentCategoryConfiguration());
         modelBuilder.ApplyConfiguration(new DocumentConfiguration());
         modelBuilder.ApplyConfiguration(new PersonConfiguration());
+        modelBuilder.ApplyConfiguration(new KickoffRecordConfiguration());
 
         // Global Query Filters (Soft Delete)
         modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);

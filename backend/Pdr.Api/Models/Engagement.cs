@@ -48,4 +48,6 @@ public class Engagement : BaseAuditableEntity
     public ICollection<Pdr.Api.Models.EngagementAssignment.EngagementAssignment> EngagementAssignments { get; set; } = new List<Pdr.Api.Models.EngagementAssignment.EngagementAssignment>();
 
     public ICollection<Person> People { get; set; } = new List<Person>();
+
+    public KickoffRecord? KickoffRecord { get; set; }
 }

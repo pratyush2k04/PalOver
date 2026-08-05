@@ -655,6 +655,60 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.KickoffRecord", b =>
+                {
+                    b.Property<int>("KickoffRecordId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("kickoff_record_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("KickoffRecordId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer")
+                        .HasColumnName("engagement_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("Outcomes")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("outcomes");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("KickoffRecordId");
+
+                    b.HasIndex("EngagementId")
+                        .IsUnique();
+
+                    b.ToTable("kickoff_records", (string)null);
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.LoginEntity.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -1584,6 +1638,17 @@ namespace Pdr.Api.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.KickoffRecord", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
+                        .WithOne("KickoffRecord")
+                        .HasForeignKey("Pdr.Api.Models.KickoffRecord", "EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Engagement");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.LoginEntity.User", b =>
                 {
                     b.HasOne("Pdr.Api.Models.LoginEntity.Role", "Role")
@@ -1644,6 +1709,8 @@ namespace Pdr.Api.Migrations
             modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
                 {
                     b.Navigation("EngagementAssignments");
+
+                    b.Navigation("KickoffRecord");
 
                     b.Navigation("People");
                 });
