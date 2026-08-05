@@ -1,6 +1,19 @@
-﻿namespace Pdr.Api.Models.AccessTracker
+using Pdr.Api.Models.LoginEntity;
+
+namespace Pdr.Api.Models.AccessTracker
 {
-    public class AccessItem
+    public class AccessItem : BaseAuditableEntity
     {
+        public int AccessItemId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public int EngagementId { get; set; }
+        public Engagement Engagement { get; set; } = null!;
+        public int OwnerId { get; set; }
+        public User Owner { get; set; } = null!;
+        public AccessItemStatus Status { get; set; } = AccessItemStatus.InProgress;
+        public bool IsClientSide { get; set; }
+        public string? TimeZoneNote { get; set; }
+        public DateOnly? GrantedDate { get; set; }
+        public string? BlockReason { get; set; }
     }
 }

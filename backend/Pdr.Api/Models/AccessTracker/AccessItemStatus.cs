@@ -1,6 +1,9 @@
-﻿namespace Pdr.Api.Models.AccessTracker
+namespace Pdr.Api.Models.AccessTracker
 {
-    public class AccessItemStatus
+    public enum AccessItemStatus
     {
+        InProgress = 1,
+        Granted = 2,
+        Blocked = 3
     }
 }
