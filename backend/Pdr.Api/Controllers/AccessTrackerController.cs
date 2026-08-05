@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.DTOs.AccessTracker;
 using Pdr.Api.Exceptions;
+using Pdr.Api.Exceptions.AccessItemExceptions;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Controllers;
