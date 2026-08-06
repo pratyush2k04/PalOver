@@ -1,3 +1,4 @@
+using Pdr.Api.DTOs.Risk;
 using Pdr.Api.Models.EnvironmentTooling;
 
 namespace Pdr.Api.DTOs.EnvironmentTooling
@@ -14,5 +15,6 @@ namespace Pdr.Api.DTOs.EnvironmentTooling
         public EnvironmentToolingStatus Status { get; set; }
         public string? NotApplicableReason { get; set; }
         public string? BlockReason { get; set; }
+        public List<RiskDto> Risks { get; set; } = [];
     }
 }

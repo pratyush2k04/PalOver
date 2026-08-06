@@ -1,3 +1,5 @@
+using Pdr.Api.DTOs.Risk;
+
 namespace Pdr.Api.DTOs.AccessTracker;
 
 public class AccessItemDto
@@ -14,4 +16,5 @@ public class AccessItemDto
     public bool IsOverdueWithClient { get; set; }
     public DateOnly? GrantedDate { get; set; }
     public string? BlockReason { get; set; }
+    public List<RiskDto> Risks { get; set; } = [];
 }
