@@ -6,6 +6,8 @@ public class RiskDto
 {
     public int RiskId { get; set; }
     public int EngagementId { get; set; }
+    public int? AccessItemId { get; set; }
+    public int? EnvironmentToolingItemId { get; set; }
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public RiskStatus Status { get; set; }

@@ -24,6 +24,26 @@ public class RiskRepository(AppDbContext context) : IRiskRepository
                                       r.Title == title &&
                                       r.Status == RiskStatus.Open);
 
+    public async Task<Risk?> GetOpenRiskAsync(int engagementId, string title, int? accessItemId = null, int? environmentToolingItemId = null)
+    {
+        var query = context.Risks.Where(r => r.EngagementId == engagementId && r.Status == RiskStatus.Open);
+
+        if (accessItemId.HasValue)
+        {
+            query = query.Where(r => r.AccessItemId == accessItemId.Value);
+        }
+        else if (environmentToolingItemId.HasValue)
+        {
+            query = query.Where(r => r.EnvironmentToolingItemId == environmentToolingItemId.Value);
+        }
+        else
+        {
+            query = query.Where(r => r.Title == title);
+        }
+
+        return await query.FirstOrDefaultAsync();
+    }
+
     public async Task AddAsync(Risk risk)
     {
         await context.Risks.AddAsync(risk);

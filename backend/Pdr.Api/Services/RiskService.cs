@@ -9,9 +9,9 @@ namespace Pdr.Api.Services;
 
 public class RiskService(IRiskRepository repository) : IRiskService
 {
-    public async Task CreateRiskAsync(int engagementId, string title, string description)
+    public async Task CreateRiskAsync(int engagementId, string title, string description, int? accessItemId = null, int? environmentToolingItemId = null)
     {
-        var existingOpenRisk = await repository.GetOpenByTitleAsync(engagementId, title);
+        var existingOpenRisk = await repository.GetOpenRiskAsync(engagementId, title, accessItemId, environmentToolingItemId);
         if (existingOpenRisk != null)
         {
             return;
@@ -20,6 +20,8 @@ public class RiskService(IRiskRepository repository) : IRiskService
         var risk = new Risk
         {
             EngagementId = engagementId,
+            AccessItemId = accessItemId,
+            EnvironmentToolingItemId = environmentToolingItemId,
             Title = title,
             Description = description,
             Status = RiskStatus.Open
@@ -29,9 +31,9 @@ public class RiskService(IRiskRepository repository) : IRiskService
         await repository.SaveChangesAsync();
     }
 
-    public async Task ResolveRiskAsync(int engagementId, string title)
+    public async Task ResolveRiskAsync(int engagementId, string title, int? accessItemId = null, int? environmentToolingItemId = null)
     {
-        var openRisk = await repository.GetOpenByTitleAsync(engagementId, title);
+        var openRisk = await repository.GetOpenRiskAsync(engagementId, title, accessItemId, environmentToolingItemId);
         if (openRisk != null)
         {
             openRisk.Status = RiskStatus.Closed;
@@ -39,11 +41,11 @@ public class RiskService(IRiskRepository repository) : IRiskService
         }
     }
 
-    public async Task CreateClientSideRiskAsync(int engagementId, string accessItemName)
+    public async Task CreateClientSideRiskAsync(int engagementId, string accessItemName, int? accessItemId = null)
     {
         var title = $"Client Access Not Granted: {accessItemName}";
         var description = $"The client-side access item '{accessItemName}' has not been granted and billing is starting within 2 days.";
-        await CreateRiskAsync(engagementId, title, description);
+        await CreateRiskAsync(engagementId, title, description, accessItemId: accessItemId);
     }
 
     public async Task<List<RiskDto>> GetRisksByEngagementIdAsync(int engagementId)
@@ -93,6 +95,8 @@ public class RiskService(IRiskRepository repository) : IRiskService
     {
         RiskId = risk.RiskId,
         EngagementId = risk.EngagementId,
+        AccessItemId = risk.AccessItemId,
+        EnvironmentToolingItemId = risk.EnvironmentToolingItemId,
         Title = risk.Title,
         Description = risk.Description,
         Status = risk.Status,

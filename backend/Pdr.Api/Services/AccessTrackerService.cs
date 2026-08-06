@@ -100,7 +100,7 @@ public class AccessTrackerService(
                 item.BlockReason = null;
                 // If unblocking to Granted, resolve the linked risk
                 if (previousStatus == AccessItemStatus.Blocked)
-                    await riskService.ResolveRiskAsync(item.EngagementId, BuildRiskTitle(item.Name));
+                    await riskService.ResolveRiskAsync(item.EngagementId, BuildRiskTitle(item.Name), accessItemId: item.AccessItemId);
                 break;
 
             case AccessItemStatus.Blocked:
@@ -108,13 +108,14 @@ public class AccessTrackerService(
                 await riskService.CreateRiskAsync(
                     item.EngagementId,
                     BuildRiskTitle(item.Name),
-                    $"Access item '{item.Name}' is blocked. Reason: {request.BlockReason}");
+                    $"Access item '{item.Name}' is blocked. Reason: {request.BlockReason}",
+                    accessItemId: item.AccessItemId);
                 break;
 
             case AccessItemStatus.InProgress:
                 // Unblocking back to InProgress — clear reason and resolve linked risk
                 item.BlockReason = null;
-                await riskService.ResolveRiskAsync(item.EngagementId, BuildRiskTitle(item.Name));
+                await riskService.ResolveRiskAsync(item.EngagementId, BuildRiskTitle(item.Name), accessItemId: item.AccessItemId);
                 break;
         }
 
@@ -182,7 +183,7 @@ public class AccessTrackerService(
 
         foreach (var item in items.Where(i => i.IsClientSide && i.Status != AccessItemStatus.Granted))
         {
-            await riskService.CreateClientSideRiskAsync(engagementId, item.Name);
+            await riskService.CreateClientSideRiskAsync(engagementId, item.Name, accessItemId: item.AccessItemId);
         }
     }
 

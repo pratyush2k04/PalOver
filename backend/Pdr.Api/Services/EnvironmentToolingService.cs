@@ -93,12 +93,12 @@ public class EnvironmentToolingService(
         if (!wasBlocked && isNowBlocked)
         {
             item.BlockReason = request.BlockReason;
-            await riskService.CreateRiskAsync(item.EngagementId, $"Blocked Environment/Tooling: {itemName}", request.BlockReason!);
+            await riskService.CreateRiskAsync(item.EngagementId, $"Blocked Environment/Tooling: {itemName}", request.BlockReason!, environmentToolingItemId: item.EnvironmentToolingItemId);
         }
         else if (wasBlocked && !isNowBlocked)
         {
             item.BlockReason = null;
-            await riskService.ResolveRiskAsync(item.EngagementId, $"Blocked Environment/Tooling: {itemName}");
+            await riskService.ResolveRiskAsync(item.EngagementId, $"Blocked Environment/Tooling: {itemName}", environmentToolingItemId: item.EnvironmentToolingItemId);
         }
         else if (isNowBlocked)
         {
