@@ -47,6 +47,9 @@ namespace Pdr.Api.Migrations
                     b.Property<int>("EngagementId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("ExpectedTurnaroundDays")
+                        .HasColumnType("integer");
+
                     b.Property<DateOnly?>("GrantedDate")
                         .HasColumnType("date");
 
@@ -1451,7 +1454,7 @@ namespace Pdr.Api.Migrations
                     b.Property<int>("EngagementId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("EnvironmentToolingDefinitionId")
+                    b.Property<int?>("EnvironmentToolingDefinitionId")
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsDeleted")
@@ -2948,8 +2951,7 @@ namespace Pdr.Api.Migrations
                     b.HasOne("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition", "EnvironmentToolingDefinition")
                         .WithMany("EnvironmentToolingItems")
                         .HasForeignKey("EnvironmentToolingDefinitionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Pdr.Api.Models.LoginEntity.User", "Owner")
                         .WithMany("EnvironmentToolingItems")

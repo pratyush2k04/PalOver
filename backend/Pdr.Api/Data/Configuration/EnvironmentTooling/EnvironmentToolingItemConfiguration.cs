@@ -33,6 +33,7 @@ namespace Pdr.Api.Data.Configuration.EnvironmentTooling
             builder.HasOne(x => x.EnvironmentToolingDefinition)
                 .WithMany(x => x.EnvironmentToolingItems)
                 .HasForeignKey(x => x.EnvironmentToolingDefinitionId)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

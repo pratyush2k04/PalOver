@@ -6,10 +6,11 @@ namespace Pdr.Api.Models.EnvironmentTooling
     {
         public int EnvironmentToolingItemId { get; set; }
         public string Name { get; set; } = string.Empty;
-        public int EnvironmentToolingDefinitionId { get; set; }
-        public EnvironmentToolingDefinition EnvironmentToolingDefinition { get; set; } = null!;
+        public int? EnvironmentToolingDefinitionId { get; set; }
+        public EnvironmentToolingDefinition? EnvironmentToolingDefinition { get; set; }
 
         public int EngagementId { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
         public Engagement Engagement { get; set; } = null!;
 
         public int OwnerId { get; set; }

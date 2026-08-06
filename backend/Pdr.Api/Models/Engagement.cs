@@ -6,7 +6,7 @@ using Pdr.Api.Models.EngagementAssignment;
 namespace Pdr.Api.Models;
 
 public class Engagement : BaseAuditableEntity
-{
+{   
     public int EngagementId { get; set; }
 
     public string EngagementName { get; set; } = string.Empty;
