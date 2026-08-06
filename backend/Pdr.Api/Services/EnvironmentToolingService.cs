@@ -7,9 +7,7 @@ using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class EnvironmentToolingService(
-    IEnvironmentToolingRepository repository,
-    IRiskService riskService) : IEnvironmentToolingService
+public class EnvironmentToolingService(IEnvironmentToolingRepository repository) : IEnvironmentToolingService
 {
     public async Task<EnvironmentToolingReadinessResponse> GetItemsByEngagementIdAsync(int engagementId)
     {
@@ -85,26 +83,7 @@ public class EnvironmentToolingService(
             item.NotApplicableReason = null;
         }
 
-        // Risk integration on BlockReason changes
-        var itemName = GetItemDisplayName(item);
-        var wasBlocked = !string.IsNullOrWhiteSpace(item.BlockReason);
-        var isNowBlocked = !string.IsNullOrWhiteSpace(request.BlockReason);
-
-        if (!wasBlocked && isNowBlocked)
-        {
-            item.BlockReason = request.BlockReason;
-            await riskService.CreateRiskAsync(item.EngagementId, $"Blocked Environment/Tooling: {itemName}", request.BlockReason!);
-        }
-        else if (wasBlocked && !isNowBlocked)
-        {
-            item.BlockReason = null;
-            await riskService.ResolveRiskAsync(item.EngagementId, $"Blocked Environment/Tooling: {itemName}");
-        }
-        else if (isNowBlocked)
-        {
-            item.BlockReason = request.BlockReason;
-        }
-
+        item.BlockReason = request.BlockReason;
         item.Status = request.Status;
         await repository.SaveChangesAsync();
 
