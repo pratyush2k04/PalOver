@@ -60,6 +60,7 @@ public class AppDbContext : DbContext
     public DbSet<Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem> EnvironmentToolingItems => Set<Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem>();
     public DbSet<Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition> EnvironmentToolingDefinitions => Set<Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition>();
     public DbSet<Pdr.Api.Models.Risk.Risk> Risks => Set<Pdr.Api.Models.Risk.Risk>();
+    public DbSet<Pdr.Api.Models.ChangeRequest.ChangeRequest> ChangeRequests => Set<Pdr.Api.Models.ChangeRequest.ChangeRequest>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -91,6 +92,7 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.EnvironmentTooling.EnvironmentToolingItemConfiguration());
         modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.EnvironmentTooling.EnvironmentToolingDefinitionConfiguration());
         modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.RIsk.RiskConfiguration());
+        modelBuilder.ApplyConfiguration(new ChangeRequestConfiguration());
 
         // Global Query Filters (Soft Delete)
         modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
