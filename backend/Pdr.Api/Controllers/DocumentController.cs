@@ -111,17 +111,7 @@ public class DocumentController(
     [HttpPost("{id:int}/remove")]
     public async Task<IActionResult> DeleteDocument(int id, [FromBody] RemoveDocumentRequestDto request)
     {
-        if (request == null)
-        {
-            return BadRequest(new { message = "Removal request body with a valid reason is required." });
-        }
-
-        var validationResult = await removeValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            return BadRequest(new { message = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid removal request." });
-        }
-
+        await removeValidator.ValidateAndThrowAsync(request);
         await documentService.DeleteDocumentAsync(id, request.Reason);
         return NoContent();
     }
@@ -129,17 +119,7 @@ public class DocumentController(
     [HttpPatch("{id:int}/visibility")]
     public async Task<IActionResult> UpdateVisibility(int id, [FromBody] UpdateDocumentVisibilityDto request)
     {
-        if (request == null)
-        {
-            return BadRequest(new { message = "Visibility request body is required." });
-        }
-
-        var validationResult = await visibilityValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            return BadRequest(new { message = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid visibility value." });
-        }
-
+        await visibilityValidator.ValidateAndThrowAsync(request);
         var updated = await documentService.UpdateDocumentVisibilityAsync(id, request);
         return Ok(updated);
     }
