@@ -92,6 +92,8 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.EnvironmentTooling.EnvironmentToolingItemConfiguration());
         modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.EnvironmentTooling.EnvironmentToolingDefinitionConfiguration());
         modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.RIsk.RiskConfiguration());
+
+        //change Request
         modelBuilder.ApplyConfiguration(new ChangeRequestConfiguration());
 
         // Global Query Filters (Soft Delete)
