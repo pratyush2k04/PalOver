@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
+using Pdr.Api.Models;
 using Pdr.Api.Models.Documents;
 using Pdr.Api.Repositories.Interfaces;
 
@@ -23,7 +24,7 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
             .FirstOrDefaultAsync(d => d.Id == id);
     }
 
-    public async Task<IEnumerable<Document>> GetByEngagementIdAsync(int engagementId, string? userRole, bool isAdmin, bool isPm)
+    public async Task<IEnumerable<Document>> GetByEngagementIdAsync(int engagementId, int? userRoleId, bool isAdmin, bool isPm)
     {
         var query = context.Documents
             .Include(d => d.Category)
@@ -33,8 +34,8 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
         {
             query = query.Where(d =>
                 d.Visibility == "Team-wide"
-                || (d.Visibility == "PM-only" && userRole == "Leadership")
-                || (d.Visibility == "Custom" && userRole != null && d.AllowedRoles.Contains(userRole)));
+                || (d.Visibility == "PM-only" && userRoleId == (int)RoleEnum.Leadership)
+                || (d.Visibility == "Custom" && userRoleId.HasValue && d.AllowedRoles.Contains(userRoleId.Value)));
         }
 
         return await query
@@ -63,7 +64,7 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
         return true;
     }
 
-    public async Task<Document?> UpdateVisibilityAsync(int id, string visibility, List<string> allowedRoles, string updatedBy)
+    public async Task<Document?> UpdateVisibilityAsync(int id, string visibility, List<int> allowedRoles, string updatedBy)
     {
         var doc = await context.Documents
             .Include(d => d.Category)
@@ -72,7 +73,7 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
         if (doc == null) return null;
 
         doc.Visibility = visibility;
-        doc.AllowedRoles = allowedRoles ?? new List<string>();
+        doc.AllowedRoles = allowedRoles ?? new List<int>();
         doc.UpdatedAt = DateTime.UtcNow;
         doc.UpdatedBy = updatedBy;
         await context.SaveChangesAsync();

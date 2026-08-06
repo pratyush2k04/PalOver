@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
 using Pdr.Api.Exceptions;
+using Pdr.Api.Models;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
@@ -19,7 +20,6 @@ public class HandoverAccessService : IHandoverAccessService
     {
         var assignment = await _context.EngagementAssignments
             .Include(ea => ea.User)
-            .ThenInclude(u => u.Role)
             .FirstOrDefaultAsync(ea => ea.EngagementId == engagementId && ea.UserId == userId);
 
         if (assignment == null)
@@ -27,8 +27,8 @@ public class HandoverAccessService : IHandoverAccessService
             throw new HandoverAccessDeniedException("You don't have access to Handover.");
         }
 
-        var roleName = assignment.User.Role.Name;
-        if (roleName != "Pre Sales" && roleName != "Project Management")
+        var roleId = assignment.User.RoleId;
+        if (roleId != (int)RoleEnum.PreSales && roleId != (int)RoleEnum.ProjectManagement)
         {
             throw new HandoverAccessDeniedException("You don't have access to Handover.");
         }

@@ -13,7 +13,7 @@ using Pdr.Api.Data;
 namespace Pdr.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260806134207_AddDocumentAllowedRoles")]
+    [Migration("20260806135542_AddDocumentAllowedRoles")]
     partial class AddDocumentAllowedRoles
     {
         /// <inheritdoc />
@@ -270,10 +270,10 @@ namespace Pdr.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
-                    b.PrimitiveCollection<List<string>>("AllowedRoles")
+                    b.PrimitiveCollection<List<int>>("AllowedRoles")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("text[]")
+                        .HasColumnType("integer[]")
                         .HasColumnName("allowed_roles")
                         .HasDefaultValueSql("'{}'");
 

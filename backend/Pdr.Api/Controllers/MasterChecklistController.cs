@@ -2,6 +2,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.DTOs.MasterChecklist;
+using Pdr.Api.Models;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Controllers;
@@ -30,7 +31,7 @@ public class MasterChecklistController(
     }
 
     [HttpGet("published")]
-    [Authorize(Roles = "Project Management,Tech Lead,Leadership,Pre Sales")]
+    [Authorize(Roles = $"{RoleNames.ProjectManagement},{RoleNames.TechLead},{RoleNames.Leadership},{RoleNames.PreSales}")]
     public async Task<IActionResult> GetPublished()
     {
         var publishedVersion = await checklistService.GetPublishedVersionAsync();

@@ -4,7 +4,7 @@ public class UpdateDocumentVisibilityDto
 {
     public string? Visibility { get; set; }
 
-    public List<string>? AllowedRoles { get; set; }
+    public List<int>? AllowedRoles { get; set; }
 
     public bool ResetToCategoryDefault { get; set; } = false;
 }

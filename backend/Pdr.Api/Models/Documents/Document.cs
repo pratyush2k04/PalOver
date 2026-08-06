@@ -20,7 +20,7 @@ public class Document : BaseAuditableEntity
 
     public string Visibility { get; set; } = "Team-wide";
 
-    public List<string> AllowedRoles { get; set; } = new();
+    public List<int> AllowedRoles { get; set; } = new();
 
     // Navigation properties
     public DocumentCategory Category { get; set; } = null!;

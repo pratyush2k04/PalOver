@@ -1,15 +1,13 @@
+using System;
+using System.Linq;
 using FluentValidation;
 using Pdr.Api.DTOs.Documents;
+using Pdr.Api.Models;
 
 namespace Pdr.Api.Validators;
 
 public class UpdateDocumentVisibilityDtoValidator : AbstractValidator<UpdateDocumentVisibilityDto>
 {
-    private static readonly HashSet<string> ValidRoles = new()
-    {
-        "Pre Sales", "Project Management", "Tech Lead", "Leadership"
-    };
-
     public UpdateDocumentVisibilityDtoValidator()
     {
         // Visibility is only required when not resetting to the category default
@@ -26,8 +24,8 @@ public class UpdateDocumentVisibilityDtoValidator : AbstractValidator<UpdateDocu
                     .NotNull().WithMessage("Allowed roles must be provided when setting custom visibility.")
                     .Must(roles => roles != null && roles.Count > 0)
                     .WithMessage("At least one role must be selected for custom visibility.")
-                    .Must(roles => roles == null || roles.All(r => ValidRoles.Contains(r)))
-                    .WithMessage($"One or more roles are invalid. Valid roles: {string.Join(", ", ValidRoles)}.");
+                    .Must(roles => roles == null || roles.All(r => Enum.IsDefined(typeof(RoleEnum), r)))
+                    .WithMessage("One or more role IDs are invalid.");
             });
         });
     }

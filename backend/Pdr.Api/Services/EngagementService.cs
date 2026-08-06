@@ -16,8 +16,6 @@ public class EngagementService(
     IEngagementChecklistService engagementChecklistService) : IEngagementService
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
-    private const string ProjectManagerRole = "Project Management";
-    private const string TechLeadRole = "Tech Lead";
 
     public async Task<MarkSowSignedResponse> MarkSowSignedAsync(MarkSowSignedRequest request)
     {
@@ -201,12 +199,12 @@ public class EngagementService(
     
 
     public async Task<EngagementOwnersDto> AssignProjectManagerAsync(int engagementId, int userId) =>
-        await AssignOwnerAsync(engagementId, userId, ProjectManagerRole);
+        await AssignOwnerAsync(engagementId, userId, RoleEnum.ProjectManagement, RoleNames.ProjectManagement);
 
     public async Task<EngagementOwnersDto> AssignTechLeadAsync(int engagementId, int userId) =>
-        await AssignOwnerAsync(engagementId, userId, TechLeadRole);
+        await AssignOwnerAsync(engagementId, userId, RoleEnum.TechLead, RoleNames.TechLead);
 
-    private async Task<EngagementOwnersDto> AssignOwnerAsync(int engagementId, int userId, string requiredRole)
+    private async Task<EngagementOwnersDto> AssignOwnerAsync(int engagementId, int userId, RoleEnum requiredRole, string roleName)
     {
         if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
             throw new EngagementNotFoundException(engagementId);
@@ -214,10 +212,10 @@ public class EngagementService(
         var user = await db.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == userId)
             ?? throw new UserNotFoundException(userId);
 
-        if (user.Role.Name != requiredRole)
-            throw new InvalidOwnerRoleException(userId, requiredRole);
+        if (user.RoleId != (int)requiredRole)
+            throw new InvalidOwnerRoleException(userId, roleName);
 
-        var existingAssignment = await engagementRepository.GetAssignmentByRoleAsync(engagementId, requiredRole);
+        var existingAssignment = await engagementRepository.GetAssignmentByRoleIdAsync(engagementId, (int)requiredRole);
         if (existingAssignment is not null)
         {
             if (existingAssignment.UserId == userId) return await GetEngagementOwnersAsync(engagementId);
@@ -226,7 +224,7 @@ public class EngagementService(
 
         await engagementRepository.AddAssignmentAsync(engagementId, userId);
 
-        if (requiredRole == TechLeadRole)
+        if (requiredRole == RoleEnum.TechLead)
         {
             var accessItems = await db.AccessItems.Where(a => a.EngagementId == engagementId).ToListAsync();
             foreach (var item in accessItems)
@@ -250,8 +248,7 @@ public class EngagementService(
     {
         var techLeadAssignment = await db.EngagementAssignments
             .Include(ea => ea.User)
-            .ThenInclude(u => u.Role)
-            .FirstOrDefaultAsync(ea => ea.EngagementId == engagementId && ea.User.Role.Name == TechLeadRole);
+            .FirstOrDefaultAsync(ea => ea.EngagementId == engagementId && ea.User.RoleId == (int)RoleEnum.TechLead);
 
         int ownerId = techLeadAssignment?.UserId ?? 0;
         if (ownerId == 0)
@@ -307,8 +304,8 @@ public class EngagementService(
 
     private static EngagementOwnersDto BuildOwnersDto(List<EngagementAssignment> assignments)
     {
-        var pm = assignments.FirstOrDefault(a => a.User.Role.Name == ProjectManagerRole);
-        var techLead = assignments.FirstOrDefault(a => a.User.Role.Name == TechLeadRole);
+        var pm = assignments.FirstOrDefault(a => a.User.RoleId == (int)RoleEnum.ProjectManagement);
+        var techLead = assignments.FirstOrDefault(a => a.User.RoleId == (int)RoleEnum.TechLead);
 
         return new EngagementOwnersDto(
             pm?.UserId,

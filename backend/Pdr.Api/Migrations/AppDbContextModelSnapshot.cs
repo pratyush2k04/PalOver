@@ -267,10 +267,10 @@ namespace Pdr.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
-                    b.PrimitiveCollection<List<string>>("AllowedRoles")
+                    b.PrimitiveCollection<List<int>>("AllowedRoles")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("text[]")
+                        .HasColumnType("integer[]")
                         .HasColumnName("allowed_roles")
                         .HasDefaultValueSql("'{}'");
 

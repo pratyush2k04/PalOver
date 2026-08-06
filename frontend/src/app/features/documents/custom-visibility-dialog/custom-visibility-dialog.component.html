@@ -43,12 +43,12 @@
         </div>
 
         <div class="roles-grid">
-          @for (role of availableRoles; track role.name) {
-            <label class="role-checkbox-card" [class.is-selected]="isRoleSelected(role.name)">
+          @for (role of availableRoles; track role.id) {
+            <label class="role-checkbox-card" [class.is-selected]="isRoleSelected(role.id)">
               <input
                 type="checkbox"
-                [checked]="isRoleSelected(role.name)"
-                (change)="toggleRole(role.name, $event)"
+                [checked]="isRoleSelected(role.id)"
+                (change)="toggleRole(role.id, $event)"
               />
               <span class="role-name">{{ role.label }}</span>
             </label>

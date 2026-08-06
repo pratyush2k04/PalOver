@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.DTOs.EnvironmentTooling;
 using Pdr.Api.Exceptions;
+using Pdr.Api.Models;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Controllers;
@@ -14,7 +15,7 @@ public class EnvironmentToolingController(IEnvironmentToolingService service) : 
     // GET api/engagements/{engagementId}/environment-tooling
     // Tech Lead, Project Management, Leadership — view access
     [HttpGet]
-    [Authorize(Roles = "Tech Lead,Project Management,Leadership")]
+    [Authorize(Roles = $"{RoleNames.TechLead},{RoleNames.ProjectManagement},{RoleNames.Leadership}")]
     public async Task<IActionResult> GetItems(int engagementId)
     {
         try
@@ -31,7 +32,7 @@ public class EnvironmentToolingController(IEnvironmentToolingService service) : 
     // POST api/engagements/{engagementId}/environment-tooling
     // Tech Lead — edit access
     [HttpPost]
-    [Authorize(Roles = "Tech Lead")]
+    [Authorize(Roles = RoleNames.TechLead)]
     public async Task<IActionResult> AddCustomItem(int engagementId, [FromBody] AddCustomEnvironmentToolingItemRequest request)
     {
         try
@@ -55,7 +56,7 @@ public class EnvironmentToolingItemsController(IEnvironmentToolingService servic
     // PATCH api/environment-tooling/{id}/status
     // Tech Lead — edit access
     [HttpPatch("{id:int}/status")]
-    [Authorize(Roles = "Tech Lead")]
+    [Authorize(Roles = RoleNames.TechLead)]
     public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateEnvironmentToolingStatusRequest request)
     {
         try
@@ -72,7 +73,7 @@ public class EnvironmentToolingItemsController(IEnvironmentToolingService servic
     // PATCH api/environment-tooling/{id}/owner
     // Tech Lead — edit access
     [HttpPatch("{id:int}/owner")]
-    [Authorize(Roles = "Tech Lead")]
+    [Authorize(Roles = RoleNames.TechLead)]
     public async Task<IActionResult> UpdateOwner(int id, [FromBody] UpdateEnvironmentToolingOwnerRequest request)
     {
         try

@@ -34,8 +34,8 @@ export const DOCUMENT_CONFIG = {
     { id: 6, categoryName: 'Other' }
   ],
   AVAILABLE_CUSTOM_VISIBILITY_ROLES: [
-    { name: 'Leadership', label: 'Leadership' },
-    { name: 'Tech Lead', label: 'Tech Lead' },
-    { name: 'Pre Sales', label: 'Pre Sales' }
+    { id: 4, name: 'Leadership', label: 'Leadership' },
+    { id: 3, name: 'Tech Lead', label: 'Tech Lead' },
+    { id: 1, name: 'Pre Sales', label: 'Pre Sales' }
   ]
 } as const;

@@ -1,5 +1,7 @@
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Pdr.Api.Models;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
@@ -23,6 +25,40 @@ public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICur
             ?? User?.FindFirst("role")?.Value;
     }
 
+    public int? GetRoleId()
+    {
+        var roleIdClaim = User?.FindFirst("roleId")?.Value
+            ?? User?.FindFirst("role_id")?.Value;
+
+        if (roleIdClaim != null && int.TryParse(roleIdClaim, out var roleId))
+        {
+            return roleId;
+        }
+
+        var roleName = GetRole();
+        if (roleName != null)
+        {
+            return roleName.ToLowerInvariant() switch
+            {
+                "pre sales" => (int)RoleEnum.PreSales,
+                "project management" => (int)RoleEnum.ProjectManagement,
+                "tech lead" => (int)RoleEnum.TechLead,
+                "leadership" => (int)RoleEnum.Leadership,
+                _ => null
+            };
+        }
+
+        return null;
+    }
+
+    public RoleEnum? GetRoleEnum()
+    {
+        var id = GetRoleId();
+        return id.HasValue && Enum.IsDefined(typeof(RoleEnum), id.Value)
+            ? (RoleEnum)id.Value
+            : null;
+    }
+
     public string? GetEmail()
     {
         return User?.FindFirst("email")?.Value
@@ -38,6 +74,16 @@ public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICur
     {
         if (User == null) return false;
         return User.IsInRole(role) || string.Equals(GetRole(), role, StringComparison.OrdinalIgnoreCase);
+    }
+
+    public bool IsInRole(RoleEnum role)
+    {
+        return IsInRole((int)role);
+    }
+
+    public bool IsInRole(int roleId)
+    {
+        return GetRoleId() == roleId;
     }
 
     public bool IsAdmin()

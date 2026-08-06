@@ -21,28 +21,28 @@ export class CustomVisibilityDialogComponent {
   @Output() closed = new EventEmitter<void>();
   @Output() updated = new EventEmitter<DocumentItem>();
 
-  // Project Management is intentionally excluded — PMs always have access regardless.
+  // Project Management (ID 2) is intentionally excluded — PMs always have access regardless.
   readonly availableRoles = DOCUMENT_CONFIG.AVAILABLE_CUSTOM_VISIBILITY_ROLES;
 
-  selectedRoles = signal<string[]>(
+  selectedRoles = signal<number[]>(
     this.document?.allowedRoles?.length
-      ? [...this.document.allowedRoles].filter(r => r !== 'Project Management')
-      : ['Leadership']   // sensible non-PM default
+      ? [...this.document.allowedRoles].filter(r => r !== 2)
+      : [4]   // sensible non-PM default (Leadership ID = 4)
   );
   isSubmitting = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
 
-  isRoleSelected(roleName: string): boolean {
-    return this.selectedRoles().includes(roleName);
+  isRoleSelected(roleId: number): boolean {
+    return this.selectedRoles().includes(roleId);
   }
 
-  toggleRole(roleName: string, event: Event): void {
+  toggleRole(roleId: number, event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
     this.selectedRoles.update((roles) => {
       if (checked) {
-        return roles.includes(roleName) ? roles : [...roles, roleName];
+        return roles.includes(roleId) ? roles : [...roles, roleId];
       } else {
-        return roles.filter((r) => r !== roleName);
+        return roles.filter((r) => r !== roleId);
       }
     });
   }

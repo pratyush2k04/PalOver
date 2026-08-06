@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Pdr.Api.DTOs.Documents;
 using Pdr.Api.Exceptions;
+using Pdr.Api.Models;
 using Pdr.Api.Models.Documents;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
@@ -23,28 +24,28 @@ public class DocumentService(
 
     /// <summary>Only PM and Admin can change a document's visibility.</summary>
     private bool CanManageDocumentVisibility() =>
-        currentUserService.IsInRole("Project Management")
+        currentUserService.IsInRole(RoleEnum.ProjectManagement)
         || currentUserService.IsAdmin();
 
     private bool CanAccessDocument(Document doc)
     {
-        if (currentUserService.IsAdmin() || currentUserService.IsInRole("Project Management"))
+        if (currentUserService.IsAdmin() || currentUserService.IsInRole(RoleEnum.ProjectManagement))
         {
             return true;
         }
 
-        var role = currentUserService.GetRole();
         if (doc.Visibility == "Team-wide")
         {
             return true;
         }
 
-        if (doc.Visibility == "PM-only" && currentUserService.IsInRole("Leadership"))
+        if (doc.Visibility == "PM-only" && currentUserService.IsInRole(RoleEnum.Leadership))
         {
             return true;
         }
 
-        if (doc.Visibility == "Custom" && role != null && doc.AllowedRoles != null && doc.AllowedRoles.Contains(role))
+        var roleId = currentUserService.GetRoleId();
+        if (doc.Visibility == "Custom" && roleId.HasValue && doc.AllowedRoles != null && doc.AllowedRoles.Contains(roleId.Value))
         {
             return true;
         }
@@ -99,10 +100,10 @@ public class DocumentService(
 
     public async Task<IEnumerable<DocumentResponseDto>> GetDocumentsByEngagementAsync(int engagementId)
     {
-        var userRole = currentUserService.GetRole();
+        var userRoleId = currentUserService.GetRoleId();
         var isAdmin = currentUserService.IsAdmin();
-        var isPm = currentUserService.IsInRole("Project Management");
-        var docs = await repository.GetByEngagementIdAsync(engagementId, userRole, isAdmin, isPm);
+        var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
+        var docs = await repository.GetByEngagementIdAsync(engagementId, userRoleId, isAdmin, isPm);
         return docs.Select(MapToResponseDto);
     }
 
@@ -147,7 +148,7 @@ public class DocumentService(
         bool isUploader = string.Equals(doc.CreatedBy, userIdStr, StringComparison.OrdinalIgnoreCase)
             || (userEmail != null && string.Equals(doc.CreatedBy, userEmail, StringComparison.OrdinalIgnoreCase));
 
-        bool isPm = currentUserService.IsInRole("Project Management");
+        bool isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
         bool isAdmin = currentUserService.IsAdmin();
 
         if (!isUploader && !isPm && !isAdmin)
@@ -183,11 +184,11 @@ public class DocumentService(
             ? GetCategoryDefaultVisibility(doc.Category?.CategoryName)
             : dto.Visibility ?? GetCategoryDefaultVisibility(doc.Category?.CategoryName);
 
-        var allowedRoles = dto.AllowedRoles ?? new List<string>();
+        var allowedRoles = dto.AllowedRoles ?? new List<int>();
 
         if (dto.ResetToCategoryDefault || targetVisibility != "Custom")
         {
-            allowedRoles = new List<string>();
+            allowedRoles = new List<int>();
         }
 
         var userEmail = currentUserService.GetEmail();
@@ -219,7 +220,7 @@ public class DocumentService(
             UploadedBy = doc.CreatedBy ?? string.Empty,
             UploadedAt = doc.CreatedAt,
             Visibility = doc.Visibility,
-            AllowedRoles = doc.AllowedRoles ?? new List<string>(),
+            AllowedRoles = doc.AllowedRoles ?? new List<int>(),
             CategoryDefaultVisibility = categoryDefault
         };
     }

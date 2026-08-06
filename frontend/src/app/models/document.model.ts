@@ -9,7 +9,7 @@ export interface DocumentItem {
   uploadedBy: string;
   uploadedAt: string;
   visibility: 'PM-only' | 'Team-wide' | 'Custom' | string;
-  allowedRoles?: string[];
+  allowedRoles?: number[];
   isCustomVisibility?: boolean;
   categoryDefaultVisibility?: string;
 }
@@ -32,6 +32,6 @@ export interface RemoveDocumentRequest {
 
 export interface UpdateDocumentVisibilityRequest {
   visibility?: 'PM-only' | 'Team-wide' | 'Custom' | string;
-  allowedRoles?: string[];
+  allowedRoles?: number[];
   resetToCategoryDefault?: boolean;
 }
