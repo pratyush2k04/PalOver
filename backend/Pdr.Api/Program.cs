@@ -70,6 +70,10 @@ builder.Services.AddScoped<IHandoverAccessService, HandoverAccessService>();
 builder.Services.AddScoped<IHandoverService, HandoverService>();
 builder.Services.AddScoped<ICommitmentService, CommitmentService>();
 builder.Services.AddScoped<IRealisticCommitmentService, RealisticCommitmentService>();
+// Handover repositories
+builder.Services.AddScoped<IHandoverRepository, HandoverRepository>();
+builder.Services.AddScoped<ICommitmentRepository, CommitmentRepository>();
+builder.Services.AddScoped<IRealisticCommitmentRepository, RealisticCommitmentRepository>();
 builder.Services.AddScoped<IMasterChecklistRepository, MasterChecklistRepository>();
 builder.Services.AddScoped<IMasterChecklistService, MasterChecklistService>();
 builder.Services.AddScoped<IHomeService, HomeService>();
