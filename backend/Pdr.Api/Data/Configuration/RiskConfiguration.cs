@@ -25,6 +25,16 @@ namespace Pdr.Api.Data.Configuration
                 .WithMany(x => x.Risks)
                 .HasForeignKey(x => x.EngagementId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(x => x.AccessItem)
+                .WithMany(x => x.Risks)
+                .HasForeignKey(x => x.AccessItemId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.HasOne(x => x.EnvironmentToolingItem)
+                .WithMany(x => x.Risks)
+                .HasForeignKey(x => x.EnvironmentToolingItemId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
