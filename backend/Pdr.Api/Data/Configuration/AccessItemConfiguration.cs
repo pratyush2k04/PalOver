@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Pdr.Api.Models.AccessTracker;
 
 
-namespace Pdr.Api.Data.Configuration.AccessTracker
+namespace Pdr.Api.Data.Configuration
 {
     public class AccessItemConfiguration : IEntityTypeConfiguration<AccessItem>
     {

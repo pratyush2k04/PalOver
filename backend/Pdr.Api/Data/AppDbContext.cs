@@ -8,9 +8,7 @@ using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Models.MasterChecklist;
 using Pdr.Api.Models.Handover;
 using Pdr.Api.Models.EngagementChecklist;
-
 using Pdr.Api.Models.Documents;
-//using System.Reflection;
 
 namespace Pdr.Api.Data;
 
@@ -44,7 +42,6 @@ public class AppDbContext : DbContext
     public DbSet<MasterChecklistVersion> MasterChecklistVersions => Set<MasterChecklistVersion>();
     public DbSet<MasterChecklistItem> MasterChecklistItems => Set<MasterChecklistItem>();
 
-    // Engagement Checklist entities
     public DbSet<EngagementChecklist> EngagementChecklists => Set<EngagementChecklist>();
     public DbSet<EngagementChecklistItem> EngagementChecklistItems => Set<EngagementChecklistItem>();
 
@@ -54,12 +51,11 @@ public class AppDbContext : DbContext
     public DbSet<DocumentCategory> DocumentCategories => Set<DocumentCategory>();
     public DbSet<Document> Documents => Set<Document>();
 
-    // Technical Readiness (Access Tracker, Environment & Tooling, Risk)
-    public DbSet<Pdr.Api.Models.AccessTracker.AccessItem> AccessItems => Set<Pdr.Api.Models.AccessTracker.AccessItem>();
-    public DbSet<Pdr.Api.Models.AccessTracker.AccessItemDefinition> AccessItemDefinitions => Set<Pdr.Api.Models.AccessTracker.AccessItemDefinition>();
-    public DbSet<Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem> EnvironmentToolingItems => Set<Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem>();
-    public DbSet<Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition> EnvironmentToolingDefinitions => Set<Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition>();
-    public DbSet<Pdr.Api.Models.Risk.Risk> Risks => Set<Pdr.Api.Models.Risk.Risk>();
+    // Technical Readiness (Access Tracker, Environment & Tooling)
+    public DbSet<Models.AccessTracker.AccessItem> AccessItems => Set<Models.AccessTracker.AccessItem>();
+    public DbSet<Models.AccessTracker.AccessItemDefinition> AccessItemDefinitions => Set<Models.AccessTracker.AccessItemDefinition>();
+    public DbSet<Models.EnvironmentTooling.EnvironmentToolingItem> EnvironmentToolingItems => Set<Models.EnvironmentTooling.EnvironmentToolingItem>();
+    public DbSet<Models.EnvironmentTooling.EnvironmentToolingDefinition> EnvironmentToolingDefinitions => Set<Models.EnvironmentTooling.EnvironmentToolingDefinition>();
     public DbSet<Pdr.Api.Models.ChangeRequest.ChangeRequest> ChangeRequests => Set<Pdr.Api.Models.ChangeRequest.ChangeRequest>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -87,11 +83,14 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new EngagementChecklistItemConfiguration());
 
         // Technical Readiness Configurations
-        modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.AccessTracker.AccessItemConfiguration());
-        modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.AccessTracker.AccessItemDefinitionConfiguration());
-        modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.EnvironmentTooling.EnvironmentToolingItemConfiguration());
-        modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.EnvironmentTooling.EnvironmentToolingDefinitionConfiguration());
-        modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.RIsk.RiskConfiguration());
+        // modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.AccessTracker.AccessItemConfiguration());
+        // modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.AccessTracker.AccessItemDefinitionConfiguration());
+        // modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.EnvironmentTooling.EnvironmentToolingItemConfiguration());
+        // modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.EnvironmentTooling.EnvironmentToolingDefinitionConfiguration());
+        modelBuilder.ApplyConfiguration(new AccessItemConfiguration());
+        modelBuilder.ApplyConfiguration(new AccessItemDefinitionConfiguration());
+        modelBuilder.ApplyConfiguration(new EnvironmentToolingItemConfiguration());
+        modelBuilder.ApplyConfiguration(new EnvironmentToolingDefinitionConfiguration());
 
         //change Request
         modelBuilder.ApplyConfiguration(new ChangeRequestConfiguration());
