@@ -44,7 +44,4 @@ public class Engagement : BaseAuditableEntity
 
     public ICollection<EnvironmentToolingItem> EnvironmentToolingItems { get; set; }
         = new List<EnvironmentToolingItem>();
-
-    public ICollection<Pdr.Api.Models.Risk.Risk> Risks { get; set; }
-        = new List<Pdr.Api.Models.Risk.Risk>();
 }
