@@ -1,26 +1,22 @@
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Pdr.Api.Data;
 using Pdr.Api.Exceptions;
+using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
 public class HandoverAccessService : IHandoverAccessService
 {
-    private readonly AppDbContext _context;
+    private readonly IEngagementRepository _engagementRepository;
 
-    public HandoverAccessService(AppDbContext context)
+    public HandoverAccessService(IEngagementRepository engagementRepository)
     {
-        _context = context;
+        _engagementRepository = engagementRepository;
     }
 
     public async Task<bool> CanAccessHandoverAsync(int engagementId, int userId)
     {
-        var assignment = await _context.EngagementAssignments
-            .Include(ea => ea.User)
-            .ThenInclude(u => u.Role)
-            .FirstOrDefaultAsync(ea => ea.EngagementId == engagementId && ea.UserId == userId);
+        var assignment = await _engagementRepository.GetAssignmentByUserAsync(engagementId, userId);
 
         if (assignment == null)
         {
@@ -36,12 +32,9 @@ public class HandoverAccessService : IHandoverAccessService
         return true;
     }
 
-    public async Task<bool> CanAccessHandoverAsync(long engagementId, int userId, string requiredRole)
+    public async Task<bool> CanAccessHandoverAsync(int engagementId, int userId, string requiredRole)
     {
-        var assignment = await _context.EngagementAssignments
-            .Include(ea => ea.User)
-            .ThenInclude(u => u.Role)
-            .FirstOrDefaultAsync(ea => ea.EngagementId == engagementId && ea.UserId == userId);
+        var assignment = await _engagementRepository.GetAssignmentByUserAsync(engagementId, userId);
 
         if (assignment == null)
         {

@@ -1,28 +1,32 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Pdr.Api.Data;
 using Pdr.Api.DTOs.Handovers;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Handover;
+using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
 public class HandoverService : IHandoverService
 {
-    private readonly AppDbContext _context;
+    private readonly IHandoverRepository _handoverRepository;
+    private readonly ICommitmentRepository _commitmentRepository;
+    private readonly IRealisticCommitmentRepository _realisticCommitmentRepository;
 
-    public HandoverService(AppDbContext context)
+    public HandoverService(
+        IHandoverRepository handoverRepository,
+        ICommitmentRepository commitmentRepository,
+        IRealisticCommitmentRepository realisticCommitmentRepository)
     {
-        _context = context;
+        _handoverRepository = handoverRepository;
+        _commitmentRepository = commitmentRepository;
+        _realisticCommitmentRepository = realisticCommitmentRepository;
     }
 
     public async Task<HandoverInfoDto> GetHandoverAsync(int engagementId)
     {
-        var handover = await _context.HandoverInfos
-            .FirstOrDefaultAsync(h => h.EngagementId == engagementId);
+        var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
 
         if (handover == null)
         {
@@ -34,29 +38,25 @@ public class HandoverService : IHandoverService
             };
         }
 
-        var status = await _context.HandoverStatuses
-            .FirstOrDefaultAsync(s => s.HandoverStatusId == handover.StatusId);
+        var status = await _handoverRepository.GetStatusByIdAsync(handover.StatusId);
 
-        var commitments = await _context.Commitments
-            .Where(c => c.HandoverId == handover.HandoverId)
-            .Select(c => new CommitmentDto
-            {
-                CommitmentId = c.CommitmentId,
-                HandoverId = c.HandoverId,
-                Description = c.Description,
-                CommitmentTypeId = c.CommitmentTypeId,
-                Title = c.Title,
-                Timeline = c.Timeline,
-                TimelineUnit = c.TimelineUnit
-            })
-            .ToListAsync();
+        var commitments = await _commitmentRepository.GetByHandoverIdAsync(handover.HandoverId);
 
-        var commitmentIds = commitments.Select(c => c.CommitmentId).ToList();
-        var realisticByCommitmentId = await _context.RealisticCommitments
-            .Where(rc => commitmentIds.Contains(rc.CommitmentId))
-            .ToDictionaryAsync(rc => rc.CommitmentId);
+        var commitmentDtos = commitments.Select(c => new CommitmentDto
+        {
+            CommitmentId = c.CommitmentId,
+            HandoverId = c.HandoverId,
+            Description = c.Description,
+            CommitmentTypeId = c.CommitmentTypeId,
+            Title = c.Title,
+            Timeline = c.Timeline,
+            TimelineUnit = c.TimelineUnit
+        }).ToList();
 
-        foreach (var commitmentDto in commitments)
+        var commitmentIds = commitmentDtos.Select(c => c.CommitmentId).ToList();
+        var realisticByCommitmentId = await _realisticCommitmentRepository.GetByCommitmentIdsAsync(commitmentIds);
+
+        foreach (var commitmentDto in commitmentDtos)
         {
             if (realisticByCommitmentId.TryGetValue(commitmentDto.CommitmentId, out var realistic))
             {
@@ -80,14 +80,13 @@ public class HandoverService : IHandoverService
             BusinessProblem = handover.BusinessProblem,
             ClientSentiment = handover.ClientSentiment,
             DealOrigin = handover.DealOrigin,
-            Commitments = commitments
+            Commitments = commitmentDtos
         };
     }
 
     public async Task<HandoverInfoDto> SaveHandoverDraftAsync(int engagementId, SaveHandoverDraftRequest request, string userIdStr)
     {
-        var handover = await _context.HandoverInfos
-            .FirstOrDefaultAsync(h => h.EngagementId == engagementId);
+        var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
 
         if (handover == null)
         {
@@ -98,7 +97,7 @@ public class HandoverService : IHandoverService
                 CreatedBy = userIdStr,
                 UpdatedBy = userIdStr
             };
-            _context.HandoverInfos.Add(handover);
+            await _handoverRepository.AddAsync(handover);
         }
         else
         {
@@ -110,15 +109,14 @@ public class HandoverService : IHandoverService
         handover.ClientSentiment = request.ClientSentiment ?? string.Empty;
         handover.DealOrigin = request.DealOrigin;
 
-        await _context.SaveChangesAsync();
+        await _handoverRepository.SaveChangesAsync();
 
         return await GetHandoverAsync(engagementId);
     }
 
     public async Task<HandoverInfoDto> SubmitHandoverAsync(int engagementId, string userIdStr)
     {
-        var handover = await _context.HandoverInfos
-            .FirstOrDefaultAsync(h => h.EngagementId == engagementId);
+        var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
 
         if (handover == null)
             throw new HandoverIncompleteException("Cannot submit a handover that does not exist.");
@@ -132,7 +130,7 @@ public class HandoverService : IHandoverService
         handover.StatusId = 2; // Submitted
         handover.UpdatedBy = userIdStr;
 
-        await _context.SaveChangesAsync();
+        await _handoverRepository.SaveChangesAsync();
 
         return await GetHandoverAsync(engagementId);
     }

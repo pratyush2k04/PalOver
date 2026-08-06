@@ -1,10 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Pdr.Api.Data;
 using Pdr.Api.DTOs.Handovers;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Handover;
+using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
@@ -19,11 +18,18 @@ public class RealisticCommitmentService : IRealisticCommitmentService
     private const long GapThresholdSeconds = SecondsPerDay * 3;
     private const decimal GapThresholdRatio = 0.25m;
 
-    private readonly AppDbContext _context;
+    private readonly IHandoverRepository _handoverRepository;
+    private readonly ICommitmentRepository _commitmentRepository;
+    private readonly IRealisticCommitmentRepository _realisticCommitmentRepository;
 
-    public RealisticCommitmentService(AppDbContext context)
+    public RealisticCommitmentService(
+        IHandoverRepository handoverRepository,
+        ICommitmentRepository commitmentRepository,
+        IRealisticCommitmentRepository realisticCommitmentRepository)
     {
-        _context = context;
+        _handoverRepository = handoverRepository;
+        _commitmentRepository = commitmentRepository;
+        _realisticCommitmentRepository = realisticCommitmentRepository;
     }
 
     private static long ToSeconds(int timeline, string unit) => unit switch
@@ -46,10 +52,9 @@ public class RealisticCommitmentService : IRealisticCommitmentService
         return (decimal)diff / promisedSeconds > GapThresholdRatio;
     }
 
-    private async Task<HandoverInfo> GetHandoverOrThrowAsync(long engagementId)
+    private async Task<HandoverInfo> GetHandoverOrThrowAsync(int engagementId)
     {
-        var handover = await _context.HandoverInfos
-            .FirstOrDefaultAsync(h => h.EngagementId == engagementId);
+        var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
 
         if (handover == null)
             throw new HandoverNotFoundException(engagementId);
@@ -59,8 +64,7 @@ public class RealisticCommitmentService : IRealisticCommitmentService
 
     private async Task EnsureNotSubmittedAsync(HandoverInfo handover)
     {
-        var status = await _context.HandoverStatuses
-            .FirstOrDefaultAsync(s => s.HandoverStatusId == handover.StatusId);
+        var status = await _handoverRepository.GetStatusByIdAsync(handover.StatusId);
 
         if (status?.StatusName == SubmittedStatusName)
         {
@@ -68,12 +72,11 @@ public class RealisticCommitmentService : IRealisticCommitmentService
         }
     }
 
-    private async Task<Commitment> GetCommitmentOrThrowAsync(long engagementId, long commitmentId)
+    private async Task<Commitment> GetCommitmentOrThrowAsync(int engagementId, int commitmentId)
     {
         var handover = await GetHandoverOrThrowAsync(engagementId);
 
-        var commitment = await _context.Commitments
-            .FirstOrDefaultAsync(c => c.CommitmentId == commitmentId && c.HandoverId == handover.HandoverId);
+        var commitment = await _commitmentRepository.GetByIdAsync(commitmentId, handover.HandoverId);
 
         if (commitment == null)
             throw new CommitmentNotFoundException(commitmentId);
@@ -81,21 +84,20 @@ public class RealisticCommitmentService : IRealisticCommitmentService
         return commitment;
     }
 
-    public async Task<RealisticCommitmentDto> CreateRealisticCommitmentAsync(long engagementId, long commitmentId, CreateRealisticCommitmentRequest request, string userIdStr)
+    public async Task<RealisticCommitmentDto> CreateRealisticCommitmentAsync(int engagementId, int commitmentId, CreateRealisticCommitmentRequest request, string userIdStr)
     {
         var commitment = await GetCommitmentOrThrowAsync(engagementId, commitmentId);
         var handover = await GetHandoverOrThrowAsync(engagementId);
         await EnsureNotSubmittedAsync(handover);
 
-        var existing = await _context.RealisticCommitments
-            .FirstOrDefaultAsync(rc => rc.CommitmentId == commitmentId);
+        var existing = await _realisticCommitmentRepository.GetByCommitmentIdAsync(commitmentId);
 
         if (existing != null)
             throw new RealisticCommitmentAlreadyExistsException(commitmentId);
 
         var realistic = new RealisticCommitment
         {
-            CommitmentId = commitmentId,
+            CommitmentId = commitment.CommitmentId,
             Description = request.Description,
             Timeline = request.Timeline,
             TimelineUnit = request.TimelineUnit,
@@ -105,8 +107,8 @@ public class RealisticCommitmentService : IRealisticCommitmentService
             UpdatedBy = userIdStr
         };
 
-        _context.RealisticCommitments.Add(realistic);
-        await _context.SaveChangesAsync();
+        await _realisticCommitmentRepository.AddAsync(realistic);
+        await _realisticCommitmentRepository.SaveChangesAsync();
 
         return new RealisticCommitmentDto
         {
@@ -118,14 +120,13 @@ public class RealisticCommitmentService : IRealisticCommitmentService
         };
     }
 
-    public async Task<RealisticCommitmentDto> UpdateRealisticCommitmentAsync(long engagementId, long commitmentId, UpdateRealisticCommitmentRequest request, string userIdStr)
+    public async Task<RealisticCommitmentDto> UpdateRealisticCommitmentAsync(int engagementId, int commitmentId, UpdateRealisticCommitmentRequest request, string userIdStr)
     {
         var commitment = await GetCommitmentOrThrowAsync(engagementId, commitmentId);
         var handover = await GetHandoverOrThrowAsync(engagementId);
         await EnsureNotSubmittedAsync(handover);
 
-        var realistic = await _context.RealisticCommitments
-            .FirstOrDefaultAsync(rc => rc.CommitmentId == commitmentId);
+        var realistic = await _realisticCommitmentRepository.GetByCommitmentIdAsync(commitmentId);
 
         if (realistic == null)
             throw new RealisticCommitmentNotFoundException(commitmentId);
@@ -147,7 +148,7 @@ public class RealisticCommitmentService : IRealisticCommitmentService
         realistic.IsPossible = request.IsPossible;
         realistic.UpdatedBy = userIdStr;
 
-        await _context.SaveChangesAsync();
+        await _realisticCommitmentRepository.SaveChangesAsync();
 
         return new RealisticCommitmentDto
         {
