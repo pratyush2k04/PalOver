@@ -1,7 +1,9 @@
 using Pdr.Api.DTOs.AccessTracker;
+using Pdr.Api.DTOs.Risk;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Exceptions.AccessItemExceptions;
 using Pdr.Api.Models.AccessTracker;
+using Pdr.Api.Models.Risk;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
@@ -222,9 +224,25 @@ public class AccessTrackerService(
             DaysUntilBillingDate = daysUntilBillingDate,
             IsOverdueWithClient = isOverdueWithClient,
             GrantedDate = item.GrantedDate,
-            BlockReason = item.BlockReason
+            BlockReason = item.BlockReason,
+            Risks = item.Risks.Select(MapRiskToDto).ToList()
         };
     }
+
+    private static RiskDto MapRiskToDto(Risk risk) => new()
+    {
+        RiskId = risk.RiskId,
+        EngagementId = risk.EngagementId,
+        AccessItemId = risk.AccessItemId,
+        EnvironmentToolingItemId = risk.EnvironmentToolingItemId,
+        Title = risk.Title,
+        Description = risk.Description,
+        Status = risk.Status,
+        CreatedAt = risk.CreatedAt,
+        UpdatedAt = risk.UpdatedAt,
+        CreatedBy = risk.CreatedBy,
+        UpdatedBy = risk.UpdatedBy
+    };
 
     private static int CalculateWorkingDays(DateOnly startDate, DateOnly endDate)
     {

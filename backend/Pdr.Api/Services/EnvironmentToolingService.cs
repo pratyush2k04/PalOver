@@ -1,7 +1,9 @@
 using Pdr.Api.DTOs.EnvironmentTooling;
+using Pdr.Api.DTOs.Risk;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Exceptions.EnvironmentToolingExceptions;
 using Pdr.Api.Models.EnvironmentTooling;
+using Pdr.Api.Models.Risk;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
@@ -148,6 +150,22 @@ public class EnvironmentToolingService(
             CustomName = item.CustomName,
             Status = item.Status,
             NotApplicableReason = item.NotApplicableReason,
-            BlockReason = item.BlockReason
+            BlockReason = item.BlockReason,
+            Risks = item.Risks.Select(MapRiskToDto).ToList()
         };
+
+    private static RiskDto MapRiskToDto(Risk risk) => new()
+    {
+        RiskId = risk.RiskId,
+        EngagementId = risk.EngagementId,
+        AccessItemId = risk.AccessItemId,
+        EnvironmentToolingItemId = risk.EnvironmentToolingItemId,
+        Title = risk.Title,
+        Description = risk.Description,
+        Status = risk.Status,
+        CreatedAt = risk.CreatedAt,
+        UpdatedAt = risk.UpdatedAt,
+        CreatedBy = risk.CreatedBy,
+        UpdatedBy = risk.UpdatedBy
+    };
 }
