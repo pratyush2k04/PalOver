@@ -13,7 +13,7 @@ using Pdr.Api.Data;
 namespace Pdr.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260806091043_AddDocumentAllowedRoles")]
+    [Migration("20260806113055_AddDocumentAllowedRoles")]
     partial class AddDocumentAllowedRoles
     {
         /// <inheritdoc />
@@ -48,6 +48,9 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("text");
 
                     b.Property<int>("EngagementId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ExpectedTurnaroundDays")
                         .HasColumnType("integer");
 
                     b.Property<DateOnly?>("GrantedDate")
@@ -194,8 +197,10 @@ namespace Pdr.Api.Migrations
 
                     b.PrimitiveCollection<List<string>>("AllowedRoles")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("text[]")
-                        .HasColumnName("allowed_roles");
+                        .HasColumnName("allowed_roles")
+                        .HasDefaultValueSql("'{}'");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("integer")
@@ -1454,7 +1459,7 @@ namespace Pdr.Api.Migrations
                     b.Property<int>("EngagementId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("EnvironmentToolingDefinitionId")
+                    b.Property<int?>("EnvironmentToolingDefinitionId")
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsDeleted")
@@ -2773,52 +2778,6 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.Risk.Risk", b =>
-                {
-                    b.Property<int>("RiskId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RiskId"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<int>("EngagementId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.HasKey("RiskId");
-
-                    b.HasIndex("EngagementId");
-
-                    b.ToTable("Risks");
-                });
-
             modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItem", b =>
                 {
                     b.HasOne("Pdr.Api.Models.AccessTracker.AccessItemDefinition", "AccessItemDefinition")
@@ -2951,8 +2910,7 @@ namespace Pdr.Api.Migrations
                     b.HasOne("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition", "EnvironmentToolingDefinition")
                         .WithMany("EnvironmentToolingItems")
                         .HasForeignKey("EnvironmentToolingDefinitionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Pdr.Api.Models.LoginEntity.User", "Owner")
                         .WithMany("EnvironmentToolingItems")
@@ -3026,17 +2984,6 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Status");
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.Risk.Risk", b =>
-                {
-                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
-                        .WithMany("Risks")
-                        .HasForeignKey("EngagementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Engagement");
-                });
-
             modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItemDefinition", b =>
                 {
                     b.Navigation("AccessItems");
@@ -3058,8 +3005,6 @@ namespace Pdr.Api.Migrations
                     b.Navigation("EnvironmentToolingItems");
 
                     b.Navigation("HandoverInfo");
-
-                    b.Navigation("Risks");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.EngagementChecklist.EngagementChecklist", b =>
