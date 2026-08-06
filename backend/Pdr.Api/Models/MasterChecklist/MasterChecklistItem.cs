@@ -13,6 +13,7 @@ namespace Pdr.Api.Models.MasterChecklist
         public bool IsRetired { get; set; } = false;
 
         // Navigation properties
+        [System.Text.Json.Serialization.JsonIgnore]
         public MasterChecklistVersion Version { get; set; } = null!;
         public MasterChecklistCategory Category { get; set; } = null!;
     }

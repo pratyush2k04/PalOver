@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Pdr.Api.Models.EnvironmentTooling;
 using Microsoft.EntityFrameworkCore;
 
-namespace Pdr.Api.Data.Configuration.EnvironmentTooling
+namespace Pdr.Api.Data.Configuration
 {
     public class EnvironmentToolingItemConfiguration : IEntityTypeConfiguration<EnvironmentToolingItem>
     {
@@ -33,6 +33,7 @@ namespace Pdr.Api.Data.Configuration.EnvironmentTooling
             builder.HasOne(x => x.EnvironmentToolingDefinition)
                 .WithMany(x => x.EnvironmentToolingItems)
                 .HasForeignKey(x => x.EnvironmentToolingDefinitionId)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

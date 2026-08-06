@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using Pdr.Api.Data;
 using Pdr.Api.Models;
 using Pdr.Api.Middleware;
@@ -65,9 +66,9 @@ builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserManagementService, UserManagementService>();
-builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IHandoverAccessService, Pdr.Api.Services.HandoverAccessService>();
-builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IHandoverService, Pdr.Api.Services.HandoverService>();
-builder.Services.AddScoped<Pdr.Api.Services.Interfaces.ICommitmentService, Pdr.Api.Services.CommitmentService>();
+builder.Services.AddScoped<IHandoverAccessService, HandoverAccessService>();
+builder.Services.AddScoped<IHandoverService, HandoverService>();
+builder.Services.AddScoped<ICommitmentService, CommitmentService>();
 builder.Services.AddScoped<IMasterChecklistRepository, MasterChecklistRepository>();
 builder.Services.AddScoped<IMasterChecklistService, MasterChecklistService>();
 builder.Services.AddScoped<IHomeService, HomeService>();
@@ -79,8 +80,11 @@ builder.Services.AddScoped<ICommunicationCadenceService, CommunicationCadenceSer
 builder.Services.AddScoped<IEngagementChecklistRepository, EngagementChecklistRepository>();
 builder.Services.AddScoped<IEngagementChecklistService, EngagementChecklistService>();
 
-// Register FluentValidation Validators
-builder.Services.AddValidatorsFromAssemblyContaining<DocumentUploadDtoValidator>();
+// Technical Readiness — Access Tracker, Environment Tooling
+builder.Services.AddScoped<IAccessTrackerRepository, AccessTrackerRepository>();
+builder.Services.AddScoped<IAccessTrackerService, AccessTrackerService>();
+builder.Services.AddScoped<IEnvironmentToolingRepository, EnvironmentToolingRepository>();
+builder.Services.AddScoped<IEnvironmentToolingService, EnvironmentToolingService>();
 
 // JWT Authentication
 var secretKey = builder.Configuration["JwtSettings:SecretKey"]
@@ -103,7 +107,8 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = builder.Configuration["JwtSettings:Audience"],
         ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero
+        ClockSkew = TimeSpan.Zero,
+        RoleClaimType = System.Security.Claims.ClaimTypes.Role
     };
 });
 
