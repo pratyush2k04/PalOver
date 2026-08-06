@@ -55,11 +55,11 @@ public class AppDbContext : DbContext
     public DbSet<Document> Documents => Set<Document>();
 
     // Technical Readiness (Access Tracker, Environment & Tooling, Risk)
-    public DbSet<Pdr.Api.Models.AccessTracker.AccessItem> AccessItems => Set<Pdr.Api.Models.AccessTracker.AccessItem>();
-    public DbSet<Pdr.Api.Models.AccessTracker.AccessItemDefinition> AccessItemDefinitions => Set<Pdr.Api.Models.AccessTracker.AccessItemDefinition>();
-    public DbSet<Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem> EnvironmentToolingItems => Set<Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem>();
-    public DbSet<Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition> EnvironmentToolingDefinitions => Set<Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition>();
-    public DbSet<Pdr.Api.Models.Risk.Risk> Risks => Set<Pdr.Api.Models.Risk.Risk>();
+    public DbSet<Models.AccessTracker.AccessItem> AccessItems => Set<Models.AccessTracker.AccessItem>();
+    public DbSet<Models.AccessTracker.AccessItemDefinition> AccessItemDefinitions => Set<Models.AccessTracker.AccessItemDefinition>();
+    public DbSet<Models.EnvironmentTooling.EnvironmentToolingItem> EnvironmentToolingItems => Set<Models.EnvironmentTooling.EnvironmentToolingItem>();
+    public DbSet<Models.EnvironmentTooling.EnvironmentToolingDefinition> EnvironmentToolingDefinitions => Set<Models.EnvironmentTooling.EnvironmentToolingDefinition>();
+    public DbSet<Models.Risk.Risk> Risks => Set<Models.Risk.Risk>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -19,5 +19,7 @@ namespace Pdr.Api.Models.AccessTracker
         public int? ExpectedTurnaroundDays { get; set; }
         public DateOnly? GrantedDate { get; set; }
         public string? BlockReason { get; set; }
+
+        public ICollection<Risk.Risk> Risks { get; set; } = new List<Risk.Risk>();
     }
 }

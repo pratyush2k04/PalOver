@@ -27,5 +27,7 @@ namespace Pdr.Api.Models.EnvironmentTooling
 
         // Required when item is blocked
         public string? BlockReason { get; set; }
+
+        public ICollection<Risk.Risk> Risks { get; set; } = new List<Risk.Risk>();
     }
 }
