@@ -8,9 +8,7 @@ using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Models.MasterChecklist;
 using Pdr.Api.Models.Handover;
 using Pdr.Api.Models.EngagementChecklist;
-
 using Pdr.Api.Models.Documents;
-//using System.Reflection;
 
 namespace Pdr.Api.Data;
 
@@ -44,7 +42,6 @@ public class AppDbContext : DbContext
     public DbSet<MasterChecklistVersion> MasterChecklistVersions => Set<MasterChecklistVersion>();
     public DbSet<MasterChecklistItem> MasterChecklistItems => Set<MasterChecklistItem>();
 
-    // Engagement Checklist entities
     public DbSet<EngagementChecklist> EngagementChecklists => Set<EngagementChecklist>();
     public DbSet<EngagementChecklistItem> EngagementChecklistItems => Set<EngagementChecklistItem>();
 
@@ -54,12 +51,11 @@ public class AppDbContext : DbContext
     public DbSet<DocumentCategory> DocumentCategories => Set<DocumentCategory>();
     public DbSet<Document> Documents => Set<Document>();
 
-    // Technical Readiness (Access Tracker, Environment & Tooling, Risk)
+    // Technical Readiness (Access Tracker, Environment & Tooling)
     public DbSet<Models.AccessTracker.AccessItem> AccessItems => Set<Models.AccessTracker.AccessItem>();
     public DbSet<Models.AccessTracker.AccessItemDefinition> AccessItemDefinitions => Set<Models.AccessTracker.AccessItemDefinition>();
     public DbSet<Models.EnvironmentTooling.EnvironmentToolingItem> EnvironmentToolingItems => Set<Models.EnvironmentTooling.EnvironmentToolingItem>();
     public DbSet<Models.EnvironmentTooling.EnvironmentToolingDefinition> EnvironmentToolingDefinitions => Set<Models.EnvironmentTooling.EnvironmentToolingDefinition>();
-    public DbSet<Models.Risk.Risk> Risks => Set<Models.Risk.Risk>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -90,12 +86,6 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new AccessItemDefinitionConfiguration());
         modelBuilder.ApplyConfiguration(new EnvironmentToolingItemConfiguration());
         modelBuilder.ApplyConfiguration(new EnvironmentToolingDefinitionConfiguration());
-        modelBuilder.ApplyConfiguration(new RiskConfiguration());
-
-        // Global Query Filters (Soft Delete)
-        modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
-        modelBuilder.Entity<Role>().HasQueryFilter(r => !r.IsDeleted);
-        modelBuilder.Entity<EngagementAssignment>().HasQueryFilter(ea => !ea.User.IsDeleted);
 
         // ChecklistVersion
         modelBuilder.Entity<MasterChecklistVersion>(entity =>

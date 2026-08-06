@@ -52,7 +52,7 @@ Content-Type: application/json
 # Ensure you copy a valid JWT token from a login response 
 # and paste it here to test the authenticated endpoints.
 # ----------------------------------------------------
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZSI6WyJQcmUgU2FsZXMiLCJQcmUgU2FsZXMiXSwiZW1haWwiOiJwcmVzYWxlc0Bjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiUmFodWwgVmVybWEiLCJpc0FkbWluIjoiZmFsc2UiLCJuYmYiOjE3ODU5OTUyOTgsImV4cCI6MTc4NTk5NzA5OCwiaWF0IjoxNzg1OTk1Mjk4LCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.Asb74VLKBFR7NyBqPYQz4qVggEKpgo6T1kbH5leQBS8
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZSI6WyJQcmUgU2FsZXMiLCJQcmUgU2FsZXMiXSwiZW1haWwiOiJwcmVzYWxlc0Bjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiUmFodWwgVmVybWEiLCJpc0FkbWluIjoiZmFsc2UiLCJuYmYiOjE3ODYwMDMzMDQsImV4cCI6MTc4NjAwNTEwNCwiaWF0IjoxNzg2MDAzMzA0LCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.E-_YhEe-HHDMxrCgwxQqqrv7iBwXbGjwQPoYX2PQvfk
 
 ### 5. Get Document Categories
 GET {{host}}/api/documents/categories
@@ -254,7 +254,7 @@ Content-Type: {{contentType}}
   "clientName": "Acme Global Solutions",
   "engagementDescription": "Enterprise LMS Implementation",
   "engagementTypeId": 1,
-  "engagementName" : "La Land",
+  "engagementName" : "SPidy",
   "commercialModelId": 1,
   "kickoffDate": "2026-08-15",
   "billingStartDate": "2026-09-01"
@@ -303,7 +303,7 @@ Content-Type: {{contentType}}
 }
 
 ###
-@techLeadToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwicm9sZSI6WyJUZWNoIExlYWQiLCJUZWNoIExlYWQiXSwiZW1haWwiOiJ0ZWNobGVhZEBjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiVmlrcmFtIFNpbmdoIiwiaXNBZG1pbiI6ImZhbHNlIiwibmJmIjoxNzg1OTk1MzYxLCJleHAiOjE3ODU5OTcxNjEsImlhdCI6MTc4NTk5NTM2MSwiaXNzIjoiUGRyQXBpIiwiYXVkIjoiUGRyV2ViIn0.t7RASJVomxGNfbQGAIk-IIbE3Y1QG575u9NRwwQpaRA
+@techLeadToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwicm9sZSI6WyJUZWNoIExlYWQiLCJUZWNoIExlYWQiXSwiZW1haWwiOiJ0ZWNobGVhZEBjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiVmlrcmFtIFNpbmdoIiwiaXNBZG1pbiI6ImZhbHNlIiwibmJmIjoxNzg2MDAzMzY2LCJleHAiOjE3ODYwMDUxNjYsImlhdCI6MTc4NjAwMzM2NiwiaXNzIjoiUGRyQXBpIiwiYXVkIjoiUGRyV2ViIn0.WJC-4TkMlNmhtqKkQsjnffEglizaLynyT_qoF9-WHtc
 
 ### 17. Get All Access Items for Engagement 1
 GET {{host}}/api/engagements/6/access-items
@@ -333,7 +333,7 @@ Content-Type: {{contentType}}
 }
 
 ### 20. Update Access Item Status to Blocked (Requires BlockReason)
-PATCH {{host}}/api/access-items/8/status
+PATCH {{host}}/api/access-items/9/status
 Authorization: Bearer {{techLeadToken}}
 Content-Type: {{contentType}}
 
@@ -450,7 +450,7 @@ Content-Type: {{contentType}}
 }
 
 ### 33. Update Environment & Tooling Status to NotApplicable (Requires NotApplicableReason)
-PATCH {{host}}/api/environment-tooling/8/status
+PATCH {{host}}/api/environment-tooling/9/status
 Authorization: Bearer {{techLeadToken}}
 Content-Type: {{contentType}}
 
@@ -460,7 +460,7 @@ Content-Type: {{contentType}}
 }
 
 ### 34. Block Environment & Tooling Item (Triggers Risk Creation)
-PATCH {{host}}/api/environment-tooling/8/status
+PATCH {{host}}/api/environment-tooling/9/status
 Authorization: Bearer {{techLeadToken}}
 Content-Type: {{contentType}}
 
@@ -525,7 +525,7 @@ Content-Type: {{contentType}}
 ##############################################################
 
 ### 41. Get All Risks for Engagement 1 (Tech Lead / PM / Leadership)
-GET {{host}}/api/engagements/7/risks
+GET {{host}}/api/engagements/9/risks
 Authorization: Bearer {{techLeadToken}}
 Accept: {{contentType}}
 
