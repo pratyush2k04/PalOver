@@ -5,7 +5,7 @@ namespace Pdr.Api.Models.Handover;
 public class RealisticCommitment : BaseAuditableEntity
 {
     [Key]
-    public long CommitmentId { get; set; }
+    public int CommitmentId { get; set; }
 
     [Required]
     [MaxLength(2000)]
