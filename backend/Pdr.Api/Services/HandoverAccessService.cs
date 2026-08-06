@@ -15,7 +15,7 @@ public class HandoverAccessService : IHandoverAccessService
         _context = context;
     }
 
-    public async Task<bool> CanAccessHandoverAsync(long engagementId, int userId)
+    public async Task<bool> CanAccessHandoverAsync(int engagementId, int userId)
     {
         var assignment = await _context.EngagementAssignments
             .Include(ea => ea.User)

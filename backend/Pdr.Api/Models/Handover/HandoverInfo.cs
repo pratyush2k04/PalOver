@@ -5,10 +5,10 @@ namespace Pdr.Api.Models.Handover;
 public class HandoverInfo : BaseAuditableEntity
 {
     [Key]
-    public long HandoverId { get; set; }
+    public int HandoverId { get; set; }
 
     [Required]
-    public long EngagementId { get; set; }
+    public int EngagementId { get; set; }
 
     [Required]
     public int StatusId { get; set; }

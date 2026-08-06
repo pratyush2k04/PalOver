@@ -19,7 +19,7 @@ public class CommitmentService : ICommitmentService
         _context = context;
     }
 
-    private async Task<HandoverInfo> GetHandoverOrThrowAsync(long engagementId)
+    private async Task<HandoverInfo> GetHandoverOrThrowAsync(int engagementId)
     {
         var handover = await _context.HandoverInfos
             .FirstOrDefaultAsync(h => h.EngagementId == engagementId);
@@ -41,7 +41,7 @@ public class CommitmentService : ICommitmentService
         }
     }
 
-    public async Task<CommitmentDto> AddCommitmentAsync(long engagementId, CreateCommitmentRequest request, string userIdStr)
+    public async Task<CommitmentDto> AddCommitmentAsync(int engagementId, CreateCommitmentRequest request, string userIdStr)
     {
         var handover = await GetHandoverOrThrowAsync(engagementId);
         await EnsureNotSubmittedAsync(handover);
@@ -74,7 +74,7 @@ public class CommitmentService : ICommitmentService
         };
     }
 
-    public async Task<CommitmentDto> UpdateCommitmentAsync(long engagementId, long commitmentId, UpdateCommitmentRequest request, string userIdStr)
+    public async Task<CommitmentDto> UpdateCommitmentAsync(int engagementId, int commitmentId, UpdateCommitmentRequest request, string userIdStr)
     {
         var handover = await GetHandoverOrThrowAsync(engagementId);
         await EnsureNotSubmittedAsync(handover);
@@ -105,7 +105,7 @@ public class CommitmentService : ICommitmentService
         };
     }
 
-    public async Task DeleteCommitmentAsync(long engagementId, long commitmentId)
+    public async Task DeleteCommitmentAsync(int engagementId, int commitmentId)
     {
         var handover = await GetHandoverOrThrowAsync(engagementId);
         await EnsureNotSubmittedAsync(handover);

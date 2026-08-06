@@ -2,12 +2,12 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogRef } from '../../../../shared/dialog/dialog-ref';
 import { DIALOG_DATA } from '../../../../shared/dialog/dialog.service';
-import { ChecklistCategory, ChecklistItem } from '../../../../models/checklist.model';
+import { MasterChecklistCategory, MasterChecklistItem } from '../../../../models/checklist.model';
 
 export interface ItemFormDialogData {
   mode: 'create' | 'edit';
-  item: ChecklistItem | null;
-  categories: ChecklistCategory[];
+  item: MasterChecklistItem | null;
+  categories: MasterChecklistCategory[];
   nextDisplayOrder: number;
 }
 

@@ -21,19 +21,19 @@ POST {{host}}/api/auth/login
 Content-Type: {{contentType}}
 
 {
-  "email": "presales@company.com",
+  "email": "pm@company.com",
   "password": "Password@123"
 }
 
 ###
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1Iiwicm9sZSI6WyJMZWFkZXJzaGlwIiwiTGVhZGVyc2hpcCJdLCJlbWFpbCI6ImFkbWluQGNvbXBhbnkuY29tIiwiZnVsbG5hbWUiOiJBZG1pbiBVc2VyIiwiaXNBZG1pbiI6InRydWUiLCJuYmYiOjE3ODU1ODEwMzAsImV4cCI6MTc4NTU4MjgzMCwiaWF0IjoxNzg1NTgxMDMwLCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.7yshdqHlAWComq5pleIAmLvG60175cMQd4VLb-QhhQM
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1Iiwicm9sZSI6WyJMZWFkZXJzaGlwIiwiTGVhZGVyc2hpcCJdLCJlbWFpbCI6ImFkbWluQGNvbXBhbnkuY29tIiwiZnVsbG5hbWUiOiJBZG1pbiBVc2VyIiwiaXNBZG1pbiI6InRydWUiLCJuYmYiOjE3ODU4NTUzMDMsImV4cCI6MTc4NTg1NzEwMywiaWF0IjoxNzg1ODU1MzAzLCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.400AP5foFFLEKM0SrTdtyW5t7Lwjs-RRUjTmfGV1Mlk
 
 ### Login as Project Manager
 POST {{host}}/api/auth/login
 Content-Type: {{contentType}}
 
 {
-  "email": "pm@company.com",
+  "email": "presales@company.com",
   "password": "Password@123"
 }
 
@@ -42,7 +42,7 @@ POST {{host}}/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "pm@company.com",
+  "email": "presales@company.com",
   "password": "WrongPassword123"
 }
 
@@ -52,7 +52,7 @@ Content-Type: application/json
 # Ensure you copy a valid JWT token from a login response 
 # and paste it here to test the authenticated endpoints.
 # ----------------------------------------------------
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZSI6WyJQcmUgU2FsZXMiLCJQcmUgU2FsZXMiXSwiZW1haWwiOiJwcmVzYWxlc0Bjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiUmFodWwgVmVybWEiLCJpc0FkbWluIjoiZmFsc2UiLCJuYmYiOjE3ODU3MzQzNjgsImV4cCI6MTc4NTczNjE2OCwiaWF0IjoxNzg1NzM0MzY4LCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.B3OKXcvLUbG2K-LoSB0kb7xbnSzuByf_UJ6FSP66Lic
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZSI6WyJQcmUgU2FsZXMiLCJQcmUgU2FsZXMiXSwiZW1haWwiOiJwcmVzYWxlc0Bjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiUmFodWwgVmVybWEiLCJpc0FkbWluIjoiZmFsc2UiLCJuYmYiOjE3ODYwMDMzMDQsImV4cCI6MTc4NjAwNTEwNCwiaWF0IjoxNzg2MDAzMzA0LCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.E-_YhEe-HHDMxrCgwxQqqrv7iBwXbGjwQPoYX2PQvfk
 
 ### 5. Get Document Categories
 GET {{host}}/api/documents/categories
@@ -107,31 +107,45 @@ Accept: application/json
 
 ### Non Admin Get Home
 GET {{host}}/api/home
-Authorization: Bearer {{pmToken}}
+Authorization: Bearer {{token}}
 Accept: application/json
 
 ### Current Draft
-GET {{host}}/api/checklist/current-draft
+GET {{host}}/api/masterchecklist/current-draft
 Authorization: Bearer {{adminToken}}
 
 ### Published Version
-GET {{host}}/api/checklist/published
+GET {{host}}/api/masterchecklist/published
 Authorization: Bearer {{adminToken}}
 
+### 14. Add New Engagement (Mark SOW Signed - Pre Sales Role)
+POST {{host}}/api/Engagements/mark-sow-signed
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "clientName": "Acme Global Solutions",
+  "engagementDescription": "Enterprise LMS Implementation",
+  "engagementName": "wrgbwetb",
+  "engagementTypeId": 1,
+  "commercialModelId": 1,
+  "kickoffDate": "2026-08-15",
+  "billingStartDate": "2026-09-01"
+}
 ### Version History
-GET {{host}}/api/checklist/versions
+GET {{host}}/api/masterchecklist/versions
 Authorization: Bearer {{adminToken}}
 
 ### Version By Id
-GET {{host}}/api/checklist/versions/2
+GET {{host}}/api/masterchecklist/versions/1
 Authorization: Bearer {{adminToken}}
 
 ### Categories
-GET {{host}}/api/checklist/categories
+GET {{host}}/api/masterchecklist/categories
 Authorization: Bearer {{adminToken}}
 
 ### Create Item
-POST {{host}}/api/checklist/items
+POST {{host}}/api/masterchecklist/items
 Authorization: Bearer {{adminToken}}
 Content-Type: {{contentType}}
 
@@ -144,12 +158,12 @@ Content-Type: {{contentType}}
 }
 
 ### Update Item
-PUT {{host}}/api/checklist/items/1
+PUT {{host}}/api/masterchecklist/items/41
 Authorization: Bearer {{adminToken}}
 Content-Type: {{contentType}}
 
 {
-  "title": "Conduct Project Kickoff Meeting",
+  "title": "Meow",
   "description": "Updated description",
   "categoryId": 1,
   "isMandatory": true,
@@ -157,7 +171,7 @@ Content-Type: {{contentType}}
 }
 
 ### Reorder Items
-PUT {{host}}/api/checklist/items/reorder
+PUT {{host}}/api/masterchecklist/items/reorder
 Authorization: Bearer {{adminToken}}
 Content-Type: {{contentType}}
 
@@ -175,11 +189,11 @@ Content-Type: {{contentType}}
 }
 
 ### Retire Item
-PUT {{host}}/api/checklist/items/1/retire
+PUT {{host}}/api/masterchecklist/items/41/retire
 Authorization: Bearer {{adminToken}}
 
 ### Publish Version
-POST {{host}}/api/checklist/versions/1/publish
+POST {{host}}/api/masterchecklist/versions/1/publish
 Authorization: Bearer {{adminToken}}
 
 ##############################################################
@@ -187,11 +201,11 @@ Authorization: Bearer {{adminToken}}
 ##############################################################
 
 ### Published Version (Should Succeed)
-GET {{host}}/api/checklist/published
-Authorization: Bearer {{pmToken}}
+GET {{host}}/api/masterchecklist/published
+Authorization: Bearer {{token}}
 
 ### Current Draft (Should Return 403)
-GET {{host}}/api/checklist/current-draft
+GET {{host}}/api/masterchecklist/current-draft
 Authorization: Bearer {{pmToken}}
 
 ##############################################################
@@ -199,14 +213,14 @@ Authorization: Bearer {{pmToken}}
 ##############################################################
 
 ### Unauthorized
-GET {{host}}/api/checklist/current-draft
+GET {{host}}/api/masterchecklist/current-draft
 
 ##############################################################
 #################### INVALID TOKEN ###########################
 ##############################################################
 
 ### Invalid JWT
-GET {{host}}/api/checklist/current-draft
+GET {{host}}/api/masterchecklist/current-draft
 Authorization: Bearer invalid-token
 
 ##############################################################
@@ -227,7 +241,7 @@ Authorization: Bearer {{pmToken}}
 Accept: application/json
 
 ### 13. Get Engagement Info by ID
-GET {{host}}/api/Engagements/1
+GET {{host}}/api/Engagements/7
 Authorization: Bearer {{pmToken}}
 Accept: application/json
 
@@ -240,6 +254,7 @@ Content-Type: {{contentType}}
   "clientName": "Acme Global Solutions",
   "engagementDescription": "Enterprise LMS Implementation",
   "engagementTypeId": 1,
+  "engagementName" : "venom",
   "commercialModelId": 1,
   "kickoffDate": "2026-08-15",
   "billingStartDate": "2026-09-01"
@@ -272,3 +287,298 @@ Content-Type: {{contentType}}
   "kickoffDate": "2026-08-15",
   "billingStartDate": "2026-09-01"
 }
+
+
+##############################################################
+############# TECHNICAL READINESS - ACCESS TRACKER ###########
+##############################################################
+
+### Login as Tech Lead (Vikram Singh)
+POST {{host}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "techlead@company.com",
+  "password": "Password@123"
+}
+
+###
+@techLeadToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwicm9sZSI6WyJUZWNoIExlYWQiLCJUZWNoIExlYWQiXSwiZW1haWwiOiJ0ZWNobGVhZEBjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiVmlrcmFtIFNpbmdoIiwiaXNBZG1pbiI6ImZhbHNlIiwibmJmIjoxNzg2MDAzMzY2LCJleHAiOjE3ODYwMDUxNjYsImlhdCI6MTc4NjAwMzM2NiwiaXNzIjoiUGRyQXBpIiwiYXVkIjoiUGRyV2ViIn0.WJC-4TkMlNmhtqKkQsjnffEglizaLynyT_qoF9-WHtc
+
+### 17. Get All Access Items for Engagement 1
+GET {{host}}/api/engagements/6/access-items
+Authorization: Bearer {{techLeadToken}}
+Accept: {{contentType}}
+
+### 18. Add Custom Access Item to Engagement 1
+POST {{host}}/api/engagements/1/access-items
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "name": "AWS Production Read-Only Access",
+  "isClientSide": true,
+  "ownerId": 3,
+  "timeZoneNote": "EST (UTC-5)",
+  "expectedTurnaroundDays": 3
+}
+
+### 19. Update Access Item Status to Granted
+PATCH {{host}}/api/access-items/1/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 2
+}
+
+### 20. Update Access Item Status to Blocked (Requires BlockReason)
+PATCH {{host}}/api/access-items/10/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 3,
+  "blockReason": "Waiting for client IT security team approval on firewall rules"
+}
+
+### 21. Unblock Access Item (Status -> InProgress)
+PATCH {{host}}/api/access-items/6/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 1
+}
+
+### 22. Reassign Access Item Owner
+PATCH {{host}}/api/access-items/1/owner
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "ownerId": 3
+}
+
+### 23. Evaluate US3 Client-Side 2-Day Billing Risk (Test Endpoint)
+POST {{host}}/api/engagements/1/access-items/evaluate-risks
+Authorization: Bearer {{techLeadToken}}
+Accept: {{contentType}}
+
+##############################################################
+##### ACCESS TRACKER - ERROR & VALIDATION TEST CASES #########
+##############################################################
+
+### 24. Validation Error: Set status to Blocked without blockReason (Should return 400 Bad Request)
+PATCH {{host}}/api/access-items/1/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 3
+}
+
+### 25. Validation Error: Invalid Status Transition e.g. InProgress -> InProgress (Should return 422 Unprocessable Entity)
+PATCH {{host}}/api/access-items/1/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 1
+}
+
+### 26. Not Found Error: Engagement does not exist (Should return 404 Not Found)
+GET {{host}}/api/engagements/999/access-items
+Authorization: Bearer {{techLeadToken}}
+Accept: {{contentType}}
+
+### 27. Not Found Error: Access Item does not exist (Should return 404 Not Found)
+PATCH {{host}}/api/access-items/999/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 2
+}
+
+### 28. Not Found Error: Owner User does not exist (Should return 404 Not Found)
+PATCH {{host}}/api/access-items/1/owner
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "ownerId": 999
+}
+
+### 29. Authorization Error: Non-Tech Lead attempting edit (Should return 403 Forbidden)
+POST {{host}}/api/engagements/1/access-items
+Authorization: Bearer {{pmToken}}
+Content-Type: {{contentType}}
+
+{
+  "name": "Unauthorized Test Item",
+  "isClientSide": false,
+  "ownerId": 2
+}
+
+##############################################################
+##### TECHNICAL READINESS - ENVIRONMENT & TOOLING ############
+##############################################################
+
+### 30. Get Environment & Tooling Items for Engagement 1
+GET {{host}}/api/engagements/10/environment-tooling
+Authorization: Bearer {{techLeadToken}}
+Accept: {{contentType}}
+
+### 31. Add Custom Environment & Tooling Item to Engagement 1
+POST {{host}}/api/engagements/1/environment-tooling
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "customName": "SonarQube Code Quality Scanner",
+  "ownerId": 3
+}
+
+### 32. Update Environment & Tooling Status to Ready (Status = 2)
+PATCH {{host}}/api/environment-tooling/1/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 2
+}
+
+### 33. Update Environment & Tooling Status to NotApplicable (Requires NotApplicableReason)
+PATCH {{host}}/api/environment-tooling/25/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 3,
+  "notApplicableReason": "Meowwww"
+}
+
+### 34. Block Environment & Tooling Item (Triggers Risk Creation)
+PATCH {{host}}/api/environment-tooling/25/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 1,
+  "blockReason": "Missing Kubernetes cluster access credentials from client infra team"
+}
+
+### 35. Reassign Environment & Tooling Owner
+PATCH {{host}}/api/environment-tooling/1/owner
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "ownerId": 3
+}
+
+### 36. Validation Error: Set status to NotApplicable without reason (Should return 400 Bad Request)
+PATCH {{host}}/api/environment-tooling/1/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 3
+}
+
+### 37. Not Found Error: Engagement does not exist (Should return 404 Not Found)
+GET {{host}}/api/engagements/999/environment-tooling
+Authorization: Bearer {{techLeadToken}}
+Accept: {{contentType}}
+
+### 38. Not Found Error: Environment/Tooling Item does not exist (Should return 404 Not Found)
+PATCH {{host}}/api/environment-tooling/999/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 2
+}
+
+### 39. Not Found Error: Owner User does not exist (Should return 404 Not Found)
+PATCH {{host}}/api/environment-tooling/1/owner
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "ownerId": 999
+}
+
+### 40. Authorization Error: Non-Tech Lead attempting edit (Should return 403 Forbidden)
+POST {{host}}/api/engagements/5/environment-tooling
+Authorization: Bearer {{pmToken}}
+Content-Type: {{contentType}}
+
+{
+  "customName": "Unauthorized Tool Test",
+  "ownerId": 2
+}
+
+##############################################################
+##### USER STORY 3 - RISK ASSESSMENT & MANAGEMENT ############
+##############################################################
+
+### 41. Get All Risks for Engagement 1 (Tech Lead / PM / Leadership)
+GET {{host}}/api/engagements/10/risks
+Authorization: Bearer {{techLeadToken}}
+Accept: {{contentType}}
+
+### 42. Create Manual Risk for Engagement 1
+POST {{host}}/api/engagements/10/risks
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Spider party dependency",
+  "description": "Payment gateway vendor clearance takes up to 10 business days."
+}
+
+### 43. Update Risk Status to Closed (Risk 1)
+PATCH {{host}}/api/risks/16/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 2
+}
+
+### 44. Re-open Risk Status to Open (Risk 1)
+PATCH {{host}}/api/risks/3/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 1
+}
+
+### 45. Error Test: Not Found Error - Non-existent engagement risks (Should return 404 Not Found)
+GET {{host}}/api/engagements/999/risks
+Authorization: Bearer {{techLeadToken}}
+Accept: {{contentType}}
+
+### 46. Error Test: Not Found Error - Non-existent risk id status update (Should return 404 Not Found)
+PATCH {{host}}/api/risks/999/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 2
+}
+
+### 47. Error Test: Authorization Error - Non-authorized user edit attempt (Should return 403 Forbidden)
+POST {{host}}/api/engagements/1/risks
+Authorization: Bearer {{unauthorizedToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Unauthorized Risk Creation",
+  "description": "This request should fail with HTTP 403 Forbidden"
+}
+
+

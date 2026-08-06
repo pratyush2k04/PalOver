@@ -3,7 +3,7 @@ import { DialogRef } from '../../../../shared/dialog/dialog-ref';
 import { DIALOG_DATA } from '../../../../shared/dialog/dialog.service';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner';
 import { MasterChecklistService } from '../../../../services/master-checklist.service';
-import { ChecklistItem, ChecklistVersion } from '../../../../models/checklist.model';
+import { MasterChecklistItem, MasterChecklistVersion } from '../../../../models/checklist.model';
 
 export interface VersionDetailDialogData {
   versionId: number;
@@ -11,7 +11,7 @@ export interface VersionDetailDialogData {
 
 interface CategoryGroup {
   categoryName: string;
-  items: ChecklistItem[];
+  items: MasterChecklistItem[];
 }
 
 @Component({
@@ -22,17 +22,17 @@ interface CategoryGroup {
   styleUrl: './version-detail-dialog.scss',
 })
 export class VersionDetailDialogComponent implements OnInit {
-  private checklistService = inject(MasterChecklistService);
+  private masterChecklistService = inject(MasterChecklistService);
   private dialogRef = inject(DialogRef);
   readonly data = inject<VersionDetailDialogData>(DIALOG_DATA);
 
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
-  readonly version = signal<ChecklistVersion | null>(null);
+  readonly version = signal<MasterChecklistVersion | null>(null);
 
   readonly categoryGroups = computed<CategoryGroup[]>(() => {
     const items = this.version()?.items ?? [];
-    const groups = new Map<string, ChecklistItem[]>();
+    const groups = new Map<string, MasterChecklistItem[]>();
 
     for (const item of items) {
       const group = groups.get(item.categoryName) ?? [];
@@ -49,7 +49,7 @@ export class VersionDetailDialogComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.checklistService.getVersionById(this.data.versionId).subscribe({
+    this.masterChecklistService.getVersionById(this.data.versionId).subscribe({
       next: (version) => {
         this.version.set(version);
         this.loading.set(false);

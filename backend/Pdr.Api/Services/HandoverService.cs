@@ -19,7 +19,7 @@ public class HandoverService : IHandoverService
         _context = context;
     }
 
-    public async Task<HandoverInfoDto> GetHandoverAsync(long engagementId)
+    public async Task<HandoverInfoDto> GetHandoverAsync(int engagementId)
     {
         var handover = await _context.HandoverInfos
             .FirstOrDefaultAsync(h => h.EngagementId == engagementId);
@@ -84,7 +84,7 @@ public class HandoverService : IHandoverService
         };
     }
 
-    public async Task<HandoverInfoDto> SaveHandoverDraftAsync(long engagementId, SaveHandoverDraftRequest request, string userIdStr)
+    public async Task<HandoverInfoDto> SaveHandoverDraftAsync(int engagementId, SaveHandoverDraftRequest request, string userIdStr)
     {
         var handover = await _context.HandoverInfos
             .FirstOrDefaultAsync(h => h.EngagementId == engagementId);
@@ -115,7 +115,7 @@ public class HandoverService : IHandoverService
         return await GetHandoverAsync(engagementId);
     }
 
-    public async Task<HandoverInfoDto> SubmitHandoverAsync(long engagementId, string userIdStr)
+    public async Task<HandoverInfoDto> SubmitHandoverAsync(int engagementId, string userIdStr)
     {
         var handover = await _context.HandoverInfos
             .FirstOrDefaultAsync(h => h.EngagementId == engagementId);

@@ -22,6 +22,7 @@ export interface Engagement {
   kickoffDate: string;
   billingStartDate?: string;
   statusId: number;
+  checklistVersionId?: number;
 }
 
 export interface MarkSowSignedResponse {
@@ -66,6 +67,22 @@ export interface EngagementOwners {
   techLeadName?: string;
 }
 
+export interface PmEngagementListItem {
+  engagementId: number;
+  clientName: string;
+  engagementTypeName: string;
+  commercialModelName: string;
+  kickoffDate: string;
+  daysToKickoff: number;
+  readinessScore: number | null;
+}
+
+export interface PmEngagementListResponse {
+  engagements: PmEngagementListItem[];
+}
+
+export type EngagementSortBy = 'kickoff' | 'readiness' | 'client';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -102,5 +119,10 @@ export class EngagementService {
 
   assignTechLead(id: number, userId: number): Observable<EngagementOwners> {
     return this.http.put<EngagementOwners>(`/api/Engagements/${id}/tech-lead`, { userId });
+  }
+  getMyEngagements(sortBy: EngagementSortBy = 'kickoff'): Observable<PmEngagementListResponse> {
+    return this.http.get<PmEngagementListResponse>('/api/Engagements/my-engagements', {
+      params: { sortBy }
+    });
   }
 }

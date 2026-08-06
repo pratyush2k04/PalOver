@@ -7,10 +7,10 @@ public interface IMasterChecklistRepository
     Task<MasterChecklistVersion?> GetCurrentDraftVersionAsync();
     Task<MasterChecklistVersion?> GetPublishedVersionAsync();
     Task<List<MasterChecklistVersion>> GetVersionHistoryAsync();
-    Task<MasterChecklistVersion?> GetVersionByIdAsync(long versionId);
+    Task<MasterChecklistVersion?> GetVersionByIdAsync(int versionId);
     Task<List<MasterChecklistCategory>> GetCategoriesAsync();
-    Task<MasterChecklistCategory?> GetCategoryByIdAsync(long categoryId);
-    Task<MasterChecklistItem?> GetChecklistItemAsync(long id);
+    Task<MasterChecklistCategory?> GetCategoryByIdAsync(int categoryId);
+    Task<MasterChecklistItem?> GetChecklistItemAsync(int id);
     Task<MasterChecklistStatus?> GetStatusByNameAsync(string statusName);
     Task AddChecklistItemAsync(MasterChecklistItem item);
     Task UpdateChecklistItemAsync(MasterChecklistItem item);

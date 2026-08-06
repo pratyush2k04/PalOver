@@ -10,7 +10,7 @@ namespace Pdr.Api.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("api/engagements/{engagementId:long}/handover/commitments")]
+[Route("api/engagements/{engagementId:int}/handover/commitments")]
 public class CommitmentsController : ControllerBase
 {
     private readonly ICommitmentService _commitmentService;
@@ -39,7 +39,11 @@ public class CommitmentsController : ControllerBase
         _updateRealisticValidator = updateRealisticValidator;
     }
 
+<<<<<<< HEAD
     private async Task CheckAccessAsync(long engagementId, string requiredRole)
+=======
+    private async Task CheckAccessAsync(int engagementId)
+>>>>>>> dev
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         await _accessService.CanAccessHandoverAsync(engagementId, userId, requiredRole);
@@ -48,7 +52,7 @@ public class CommitmentsController : ControllerBase
     private string GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
     [HttpPost]
-    public async Task<ActionResult<CommitmentDto>> AddCommitment(long engagementId, [FromBody] CreateCommitmentRequest request)
+    public async Task<ActionResult<CommitmentDto>> AddCommitment(int engagementId, [FromBody] CreateCommitmentRequest request)
     {
         await CheckAccessAsync(engagementId, "Pre Sales");
 
@@ -63,8 +67,8 @@ public class CommitmentsController : ControllerBase
         return CreatedAtAction(nameof(AddCommitment), new { engagementId, commitmentId = dto.CommitmentId }, dto);
     }
 
-    [HttpPut("{commitmentId:long}")]
-    public async Task<ActionResult<CommitmentDto>> UpdateCommitment(long engagementId, long commitmentId, [FromBody] UpdateCommitmentRequest request)
+    [HttpPut("{commitmentId:int}")]
+    public async Task<ActionResult<CommitmentDto>> UpdateCommitment(int engagementId, int commitmentId, [FromBody] UpdateCommitmentRequest request)
     {
         await CheckAccessAsync(engagementId, "Pre Sales");
 
@@ -79,8 +83,8 @@ public class CommitmentsController : ControllerBase
         return Ok(dto);
     }
 
-    [HttpDelete("{commitmentId:long}")]
-    public async Task<IActionResult> DeleteCommitment(long engagementId, long commitmentId)
+    [HttpDelete("{commitmentId:int}")]
+    public async Task<IActionResult> DeleteCommitment(int engagementId, int commitmentId)
     {
         await CheckAccessAsync(engagementId, "Pre Sales");
 

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -30,7 +30,6 @@
     <Folder Include="Repositories\Interfaces\" />
     <Folder Include="Services\Interfaces\" />
     <Folder Include="Validators\" />
-    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

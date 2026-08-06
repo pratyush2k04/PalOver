@@ -12,6 +12,8 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
     {
         var query = context.Engagements
             .AsNoTracking()
+            .Include(e => e.EngagementType)
+            .Include(e => e.CommercialModel)
             .Where(e => e.EngagementAssignments.Any(a => a.UserId == userId));
 
         query = sortBy switch
@@ -23,14 +25,14 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
         return await query.ToListAsync();
     }
         //for assigning 
-    public async Task<List<EngagementAssignment>> GetAssignmentsAsync(long engagementId) =>
+    public async Task<List<EngagementAssignment>> GetAssignmentsAsync(int engagementId) =>
         await context.EngagementAssignments
             .AsNoTracking()
             .Include(a => a.User).ThenInclude(u => u.Role)
             .Where(a => a.EngagementId == engagementId)
             .ToListAsync();
 
-    public async Task<EngagementAssignment?> GetAssignmentByRoleAsync(long engagementId, string roleName) =>
+    public async Task<EngagementAssignment?> GetAssignmentByRoleAsync(int engagementId, string roleName) =>
         await context.EngagementAssignments
             .Include(a => a.User).ThenInclude(u => u.Role)
             .FirstOrDefaultAsync(a => a.EngagementId == engagementId && a.User.Role.Name == roleName);
@@ -41,11 +43,11 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
         await context.SaveChangesAsync();
     }
 
-    public async Task AddAssignmentAsync(long engagementId, int userId)
+    public async Task AddAssignmentAsync(int engagementId, int userId)
     {
         context.EngagementAssignments.Add(new EngagementAssignment
         {
-            EngagementId = (int)engagementId,
+            EngagementId = engagementId,
             UserId = userId
         });
         await context.SaveChangesAsync();
