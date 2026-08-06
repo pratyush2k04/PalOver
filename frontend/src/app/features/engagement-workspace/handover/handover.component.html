@@ -57,32 +57,6 @@
     <div class="section commitments">
       <h3>Commitments</h3>
 
-      <div class="add-commitment-form" *ngIf="isPreSales() && !isSubmitted()">
-        <h4>Add New Commitment</h4>
-        <div class="form-row">
-          <input type="text" [(ngModel)]="newCommitment().title" [ngModelOptions]="{standalone: true}"
-            maxlength="100" placeholder="Title (Required)"
-            [class.is-invalid]="newCommitmentTouched() && !newCommitment().title">
-          <select [(ngModel)]="newCommitment().commitmentTypeId" [ngModelOptions]="{standalone: true}">
-            <option *ngFor="let t of commitmentTypes" [value]="t.id">{{ t.name }}</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <input type="text" [(ngModel)]="newCommitment().description" [ngModelOptions]="{standalone: true}"
-            maxlength="2000" placeholder="Description (Required)"
-            [class.is-invalid]="newCommitmentTouched() && !newCommitment().description">
-        </div>
-        <div class="form-row">
-          <input type="number" min="1" [(ngModel)]="newCommitment().timeline" [ngModelOptions]="{standalone: true}" placeholder="Timeline">
-          <select [(ngModel)]="newCommitment().timelineUnit" [ngModelOptions]="{standalone: true}">
-            <option *ngFor="let u of timelineUnits" [value]="u">{{ u }}</option>
-          </select>
-          <button class="btn-primary" (click)="addCommitment()">Add Commitment</button>
-        </div>
-        <div class="invalid-feedback" *ngIf="newCommitmentTouched() && (!newCommitment().title || !newCommitment().description)">
-          Title and Description are required.
-        </div>
-      </div>
 
       <div *ngIf="commitments().length === 0" class="empty-state empty-state-prominent">
         No Commitments
@@ -210,6 +184,37 @@
                 <button class="btn-secondary-sm" (click)="cancelEditRealisticCommitment()">Cancel</button>
               </div>
             </ng-template>
+          </div>
+        </div>
+      </div>
+
+      <div class="add-commitment-form" *ngIf="isPreSales() && !isSubmitted()">
+        <div class="add-commitment-form-inner">
+          <h4>Add New Commitment</h4>
+          <div class="form-row">
+            <input type="text" [(ngModel)]="newCommitment().title" [ngModelOptions]="{standalone: true}"
+              maxlength="100" placeholder="Title (Required)"
+              [class.is-invalid]="newCommitmentTouched() && !newCommitment().title" style="flex: 2;">
+            <select [(ngModel)]="newCommitment().commitmentTypeId" [ngModelOptions]="{standalone: true}" style="flex: 1;">
+              <option *ngFor="let t of commitmentTypes" [value]="t.id">{{ t.name }}</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <textarea [(ngModel)]="newCommitment().description" [ngModelOptions]="{standalone: true}"
+              maxlength="2000" placeholder="Description (Required)" rows="2"
+              [class.is-invalid]="newCommitmentTouched() && !newCommitment().description"></textarea>
+          </div>
+          <div class="form-row form-row-timeline">
+            <input type="number" min="1" [(ngModel)]="newCommitment().timeline" [ngModelOptions]="{standalone: true}" placeholder="Timeline">
+            <select [(ngModel)]="newCommitment().timelineUnit" [ngModelOptions]="{standalone: true}">
+              <option *ngFor="let u of timelineUnits" [value]="u">{{ u }}</option>
+            </select>
+          </div>
+          <div class="invalid-feedback" *ngIf="newCommitmentTouched() && (!newCommitment().title || !newCommitment().description)">
+            Title and Description are required.
+          </div>
+          <div class="row-actions add-form-actions">
+            <button class="btn-primary" (click)="addCommitment()">Add Commitment</button>
           </div>
         </div>
       </div>

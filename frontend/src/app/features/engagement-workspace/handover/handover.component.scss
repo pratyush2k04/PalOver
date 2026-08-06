@@ -319,13 +319,42 @@ select {
 
 .add-commitment-form {
   background: $color-bg;
-  padding: 1rem;
+  padding: 1.5rem;
   border-radius: $radius-sm;
   transition: opacity $transition-base;
+  margin-top: 1.5rem;
 
   &.add-commitment-form-disabled {
     opacity: 0.6;
   }
+
+  input[type='text'],
+  input[type='number'],
+  textarea,
+  select {
+    padding: 0.5rem 0.65rem;
+    font-size: 0.9rem;
+  }
+}
+
+.add-commitment-form-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+
+
+.add-form-actions {
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.form-row-timeline {
+  justify-content: flex-start;
+  max-width: 350px;
 }
 
 .form-row {
