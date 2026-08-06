@@ -4,9 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DocumentService } from '../../../services/document.service';
 import { DocumentCategory } from '../../../models/document.model';
-
-const ALLOWED_EXTENSIONS = ['.pdf', '.docx', '.xlsx', '.pptx', '.png', '.jpg', '.jpeg', '.msg', '.eml'];
-const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB
+import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from '../../../shared/constants/document.constants';
 
 @Component({
   selector: 'app-upload-document-dialog',
@@ -52,15 +50,7 @@ export class UploadDocumentDialogComponent implements OnInit {
         }
       },
       error: () => {
-        const defaults: DocumentCategory[] = [
-          { id: 1, categoryName: 'RFP' },
-          { id: 2, categoryName: 'Proposal' },
-          { id: 3, categoryName: 'Signed SOW' },
-          { id: 4, categoryName: 'Email Thread' },
-          { id: 5, categoryName: 'Design or Approach' },
-          { id: 7, categoryName: 'Commercial' },
-          { id: 6, categoryName: 'Other' }
-        ];
+        const defaults: DocumentCategory[] = [...DOCUMENT_CONFIG.DEFAULT_CATEGORIES];
         this.categories.set(defaults);
         this.selectedCategoryId.set(defaults[0].id);
       }
@@ -111,12 +101,12 @@ export class UploadDocumentDialogComponent implements OnInit {
     const catId = this.selectedCategoryId();
 
     if (files.length === 0) {
-      this.errorMessage.set('Please select at least one file to upload.');
+      this.errorMessage.set(DOCUMENT_MESSAGES.UPLOAD_NO_FILES_SELECTED);
       return;
     }
 
     if (!catId) {
-      this.errorMessage.set('Please select a category.');
+      this.errorMessage.set(DOCUMENT_MESSAGES.UPLOAD_NO_CATEGORY_SELECTED);
       return;
     }
 
@@ -139,12 +129,12 @@ export class UploadDocumentDialogComponent implements OnInit {
       const ext = f.name.includes('.')
         ? f.name.substring(f.name.lastIndexOf('.')).toLowerCase()
         : '';
-      if (!ext || !ALLOWED_EXTENSIONS.includes(ext)) {
-        this.errorMessage.set(`"${f.name}" is not a supported file type.`);
+      if (!ext || !DOCUMENT_CONFIG.ALLOWED_EXTENSIONS.includes(ext)) {
+        this.errorMessage.set(DOCUMENT_MESSAGES.UPLOAD_UNSUPPORTED_FILE_TYPE(f.name));
         return;
       }
-      if (f.size > MAX_FILE_SIZE_BYTES) {
-        this.errorMessage.set(`"${f.name}" exceeds the 50 MB size limit.`);
+      if (f.size > DOCUMENT_CONFIG.MAX_FILE_SIZE_BYTES) {
+        this.errorMessage.set(DOCUMENT_MESSAGES.UPLOAD_FILE_EXCEEDS_SIZE_LIMIT(f.name));
         return;
       }
     }
@@ -173,12 +163,12 @@ export class UploadDocumentDialogComponent implements OnInit {
 
   private extractErrorMessage(err: any): string {
     if (err?.name === 'TypeError' || err?.status === 0 || (typeof err?.message === 'string' && err.message.toLowerCase().includes('fetch'))) {
-      return 'File exceeds server upload size limit or network connection failed.';
+      return DOCUMENT_MESSAGES.UPLOAD_NETWORK_OR_SERVER_LIMIT_ERROR;
     }
     const body = err?.error;
     if (Array.isArray(body)) {
-      return body.flatMap((r: any) => r.errors || []).join(', ') || 'Failed to upload document.';
+      return body.flatMap((r: any) => r.errors || []).join(', ') || DOCUMENT_MESSAGES.UPLOAD_FAILED;
     }
-    return body?.message || (typeof body === 'string' ? body : 'Failed to upload document.');
+    return body?.message || (typeof body === 'string' ? body : DOCUMENT_MESSAGES.UPLOAD_FAILED);
   }
 }

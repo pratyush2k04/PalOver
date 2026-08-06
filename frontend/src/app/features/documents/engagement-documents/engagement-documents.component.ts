@@ -18,6 +18,8 @@ import { UploadDocumentDialogComponent } from '../upload-document-dialog/upload-
 import { RemoveDocumentDialogComponent } from '../remove-document-dialog/remove-document-dialog.component';
 import { CustomVisibilityDialogComponent } from '../custom-visibility-dialog/custom-visibility-dialog.component';
 
+import { DOCUMENT_MESSAGES } from '../../../shared/constants/document.constants';
+
 @Component({
   selector: 'app-engagement-documents',
   standalone: true,
@@ -77,7 +79,7 @@ export class EngagementDocumentsComponent {
       },
       error: (err) => {
         this.isLoading.set(false);
-        const msg = typeof err.error === 'string' ? err.error : err.error?.message || 'Failed to load documents.';
+        const msg = typeof err.error === 'string' ? err.error : err.error?.message || DOCUMENT_MESSAGES.LOAD_FAILED;
         this.errorMessage.set(msg);
       }
     });
@@ -115,7 +117,7 @@ export class EngagementDocumentsComponent {
       },
       error: () => {
         this.downloadingId.set(null);
-        alert(`Failed to download ${doc.fileName}`);
+        alert(DOCUMENT_MESSAGES.DOWNLOAD_FAILED(doc.fileName));
       }
     });
   }
@@ -160,7 +162,7 @@ export class EngagementDocumentsComponent {
         this.documents.update(docs =>
           docs.map(d => d.id === doc.id ? { ...d, visibility: doc.visibility } : d)
         );
-        const msg = err.error?.message || 'Failed to update visibility.';
+        const msg = err.error?.message || DOCUMENT_MESSAGES.UPDATE_VISIBILITY_FAILED;
         this.errorMessage.set(msg);
       }
     });

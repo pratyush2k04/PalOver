@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DocumentService } from '../../../services/document.service';
 import { DocumentItem } from '../../../models/document.model';
+import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from '../../../shared/constants/document.constants';
 
 @Component({
   selector: 'app-custom-visibility-dialog',
@@ -21,11 +22,7 @@ export class CustomVisibilityDialogComponent {
   @Output() updated = new EventEmitter<DocumentItem>();
 
   // Project Management is intentionally excluded — PMs always have access regardless.
-  readonly availableRoles = [
-    { name: 'Leadership', label: 'Leadership' },
-    { name: 'Tech Lead', label: 'Tech Lead' },
-    { name: 'Pre Sales', label: 'Pre Sales' }
-  ];
+  readonly availableRoles = DOCUMENT_CONFIG.AVAILABLE_CUSTOM_VISIBILITY_ROLES;
 
   selectedRoles = signal<string[]>(
     this.document?.allowedRoles?.length
@@ -53,7 +50,7 @@ export class CustomVisibilityDialogComponent {
   onSave(): void {
     const roles = this.selectedRoles();
     if (roles.length === 0) {
-      this.errorMessage.set('Please select at least one role to restrict access.');
+      this.errorMessage.set(DOCUMENT_MESSAGES.CUSTOM_VISIBILITY_NO_ROLE_SELECTED);
       return;
     }
 
@@ -75,7 +72,7 @@ export class CustomVisibilityDialogComponent {
         },
         error: (err) => {
           this.isSubmitting.set(false);
-          const msg = err.error?.message || 'Failed to update custom visibility.';
+          const msg = err.error?.message || DOCUMENT_MESSAGES.CUSTOM_VISIBILITY_UPDATE_FAILED;
           this.errorMessage.set(msg);
         }
       });
@@ -98,7 +95,7 @@ export class CustomVisibilityDialogComponent {
         },
         error: (err) => {
           this.isSubmitting.set(false);
-          const msg = err.error?.message || 'Failed to remove visibility override.';
+          const msg = err.error?.message || DOCUMENT_MESSAGES.CUSTOM_VISIBILITY_REMOVE_FAILED;
           this.errorMessage.set(msg);
         }
       });

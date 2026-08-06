@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { EngagementChecklistService } from '../../../services/engagement-checklist.service';
 import { EngagementChecklist } from '../../../models/engagement-checklist.model';
+import { ENGAGEMENT_CHECKLIST_MESSAGES } from '../../../shared/constants/checklist.constants';
 
 @Component({
   selector: 'app-engagement-checklist',
@@ -45,7 +46,7 @@ export class EngagementChecklistComponent {
         this.isLoading.set(false);
       },
       error: () => {
-        this.error.set('Failed to load the engagement checklist. Please try again.');
+        this.error.set(ENGAGEMENT_CHECKLIST_MESSAGES.LOAD_FAILED);
         this.isLoading.set(false);
       }
     });

@@ -11,6 +11,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { DocumentService } from '../../../services/document.service';
+import { DOCUMENT_MESSAGES } from '../../../shared/constants/document.constants';
 
 @Component({
   selector: 'app-remove-document-dialog',
@@ -68,7 +69,7 @@ export class RemoveDocumentDialogComponent {
         this.isSubmitting.set(false);
         const msg = typeof err.error === 'string' 
           ? err.error 
-          : err.error?.message || 'Failed to remove document.';
+          : err.error?.message || DOCUMENT_MESSAGES.REMOVE_FAILED;
         this.errorMessage.set(msg);
       }
     });
