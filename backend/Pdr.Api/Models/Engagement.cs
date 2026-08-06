@@ -32,7 +32,7 @@ public class Engagement : BaseAuditableEntity
     // Navigation Property
     public EngagementStatus Status { get; set; } = null!;
 
-    public Models.EngagementChecklist.EngagementChecklist? Checklist { get; set; }
+    public EngagementChecklist.EngagementChecklist? Checklist { get; set; }
 
     public Handover.HandoverInfo? HandoverInfo { get; set; }
 
@@ -45,6 +45,6 @@ public class Engagement : BaseAuditableEntity
     public ICollection<EnvironmentToolingItem> EnvironmentToolingItems { get; set; }
         = new List<EnvironmentToolingItem>();
 
-    public ICollection<Models.Risk.Risk> Risks { get; set; }
-        = new List<Models.Risk.Risk>();
+    public ICollection<Pdr.Api.Models.Risk.Risk> Risks { get; set; }
+        = new List<Pdr.Api.Models.Risk.Risk>();
 }

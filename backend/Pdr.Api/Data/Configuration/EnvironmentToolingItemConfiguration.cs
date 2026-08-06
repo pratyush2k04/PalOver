@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Pdr.Api.Models.EnvironmentTooling;
 using Microsoft.EntityFrameworkCore;
 
-namespace Pdr.Api.Data.Configuration.EnvironmentTooling
+namespace Pdr.Api.Data.Configuration
 {
     public class EnvironmentToolingItemConfiguration : IEntityTypeConfiguration<EnvironmentToolingItem>
     {
