@@ -36,7 +36,6 @@ public class Engagement : BaseAuditableEntity
 
     public Models.EngagementChecklist.EngagementChecklist? Checklist { get; set; }
 
-    public ICollection<Pdr.Api.Models.EngagementAssignment.EngagementAssignment> EngagementAssignments { get; set; } = new List<Pdr.Api.Models.EngagementAssignment.EngagementAssignment>();
 
     public ICollection<Person> People { get; set; } = new List<Person>();
 
