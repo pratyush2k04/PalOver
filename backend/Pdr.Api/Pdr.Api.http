@@ -254,7 +254,7 @@ Content-Type: {{contentType}}
   "clientName": "Acme Global Solutions",
   "engagementDescription": "Enterprise LMS Implementation",
   "engagementTypeId": 1,
-  "engagementName" : "SPidy",
+  "engagementName" : "venom",
   "commercialModelId": 1,
   "kickoffDate": "2026-08-15",
   "billingStartDate": "2026-09-01"
@@ -333,7 +333,7 @@ Content-Type: {{contentType}}
 }
 
 ### 20. Update Access Item Status to Blocked (Requires BlockReason)
-PATCH {{host}}/api/access-items/9/status
+PATCH {{host}}/api/access-items/10/status
 Authorization: Bearer {{techLeadToken}}
 Content-Type: {{contentType}}
 
@@ -426,7 +426,7 @@ Content-Type: {{contentType}}
 ##############################################################
 
 ### 30. Get Environment & Tooling Items for Engagement 1
-GET {{host}}/api/engagements/6/environment-tooling
+GET {{host}}/api/engagements/10/environment-tooling
 Authorization: Bearer {{techLeadToken}}
 Accept: {{contentType}}
 
@@ -450,17 +450,17 @@ Content-Type: {{contentType}}
 }
 
 ### 33. Update Environment & Tooling Status to NotApplicable (Requires NotApplicableReason)
-PATCH {{host}}/api/environment-tooling/9/status
+PATCH {{host}}/api/environment-tooling/25/status
 Authorization: Bearer {{techLeadToken}}
 Content-Type: {{contentType}}
 
 {
   "status": 3,
-  "notApplicableReason": "Mobile-only engagement, backend UAT environment not required."
+  "notApplicableReason": "Meowwww"
 }
 
 ### 34. Block Environment & Tooling Item (Triggers Risk Creation)
-PATCH {{host}}/api/environment-tooling/9/status
+PATCH {{host}}/api/environment-tooling/25/status
 Authorization: Bearer {{techLeadToken}}
 Content-Type: {{contentType}}
 
@@ -525,22 +525,22 @@ Content-Type: {{contentType}}
 ##############################################################
 
 ### 41. Get All Risks for Engagement 1 (Tech Lead / PM / Leadership)
-GET {{host}}/api/engagements/9/risks
+GET {{host}}/api/engagements/10/risks
 Authorization: Bearer {{techLeadToken}}
 Accept: {{contentType}}
 
 ### 42. Create Manual Risk for Engagement 1
-POST {{host}}/api/engagements/6/risks
+POST {{host}}/api/engagements/10/risks
 Authorization: Bearer {{techLeadToken}}
 Content-Type: {{contentType}}
 
 {
-  "title": "Third-Party API Dependency Delay",
+  "title": "Spider party dependency",
   "description": "Payment gateway vendor clearance takes up to 10 business days."
 }
 
 ### 43. Update Risk Status to Closed (Risk 1)
-PATCH {{host}}/api/risks/3/status
+PATCH {{host}}/api/risks/16/status
 Authorization: Bearer {{techLeadToken}}
 Content-Type: {{contentType}}
 
