@@ -12,7 +12,6 @@ public class EnvironmentToolingRepository(AppDbContext context) : IEnvironmentTo
             .AsNoTracking()
             .Include(e => e.Owner)
             .Include(e => e.EnvironmentToolingDefinition)
-            .Include(e => e.Risks)
             .Where(e => e.EngagementId == engagementId)
             .OrderBy(e => e.EnvironmentToolingDefinition != null ? e.EnvironmentToolingDefinition.DisplayOrder : int.MaxValue)
             .ThenBy(e => e.EnvironmentToolingItemId)
@@ -22,7 +21,6 @@ public class EnvironmentToolingRepository(AppDbContext context) : IEnvironmentTo
         await context.EnvironmentToolingItems
             .Include(e => e.Owner)
             .Include(e => e.EnvironmentToolingDefinition)
-            .Include(e => e.Risks)
             .FirstOrDefaultAsync(e => e.EnvironmentToolingItemId == id);
 
     public async Task AddAsync(EnvironmentToolingItem item)

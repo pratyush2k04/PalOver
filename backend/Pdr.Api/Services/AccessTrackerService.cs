@@ -1,17 +1,13 @@
 using Pdr.Api.DTOs.AccessTracker;
-using Pdr.Api.DTOs.Risk;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Exceptions.AccessItemExceptions;
 using Pdr.Api.Models.AccessTracker;
-using Pdr.Api.Models.Risk;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class AccessTrackerService(
-    IAccessTrackerRepository repository,
-    IRiskService riskService) : IAccessTrackerService
+public class AccessTrackerService(IAccessTrackerRepository repository) : IAccessTrackerService
 {
     // -------------------------------------------------------------------------
     // State machine: defines which transitions are allowed
@@ -92,7 +88,6 @@ public class AccessTrackerService(
             string.IsNullOrWhiteSpace(request.BlockReason))
             throw new BlockReasonRequiredException();
 
-        var previousStatus = item.Status;
         item.Status = request.Status;
 
         switch (request.Status)
@@ -100,24 +95,14 @@ public class AccessTrackerService(
             case AccessItemStatus.Granted:
                 item.GrantedDate = DateOnly.FromDateTime(DateTime.UtcNow);
                 item.BlockReason = null;
-                // If unblocking to Granted, resolve the linked risk
-                if (previousStatus == AccessItemStatus.Blocked)
-                    await riskService.ResolveRiskAsync(item.EngagementId, BuildRiskTitle(item.Name), accessItemId: item.AccessItemId);
                 break;
 
             case AccessItemStatus.Blocked:
                 item.BlockReason = request.BlockReason;
-                await riskService.CreateRiskAsync(
-                    item.EngagementId,
-                    BuildRiskTitle(item.Name),
-                    $"Access item '{item.Name}' is blocked. Reason: {request.BlockReason}",
-                    accessItemId: item.AccessItemId);
                 break;
 
             case AccessItemStatus.InProgress:
-                // Unblocking back to InProgress — clear reason and resolve linked risk
                 item.BlockReason = null;
-                await riskService.ResolveRiskAsync(item.EngagementId, BuildRiskTitle(item.Name), accessItemId: item.AccessItemId);
                 break;
         }
 
@@ -148,45 +133,16 @@ public class AccessTrackerService(
 
     // -------------------------------------------------------------------------
     // POST: evaluate the 2-day billing risk rule (User Story 3 — test endpoint)
-    //
-    // Deadline logic (as per spec):
-    //   deadline = (BillingStartDate > KickoffDate + 2 days)
-    //              ? BillingStartDate
-    //              : KickoffDate
-    //
-    // If daysRemaining to deadline <= 2 AND item is client-side AND not Granted
-    // → trigger CreateClientSideRiskAsync
     // -------------------------------------------------------------------------
     public async Task EvaluateClientSideRisksAsync(int engagementId)
     {
         var engagement = await repository.GetEngagementAsync(engagementId)
             ?? throw new EngagementNotFoundException(engagementId);
 
-        // BillingStartDate is a required field — treat null as a data integrity skip
         if (engagement.BillingStartDate is null)
             return;
 
-        var billingStartDate = engagement.BillingStartDate.Value;
-        var kickoffDate = engagement.KickoffDate;
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
-
-        // Determine the effective deadline
-        var deadline = billingStartDate > kickoffDate.AddDays(2)
-            ? billingStartDate
-            : kickoffDate;
-
-        var daysRemaining = deadline.DayNumber - today.DayNumber;
-
-        // Only evaluate if within the 2-day window
-        if (daysRemaining > 2)
-            return;
-
-        var items = await repository.GetAccessItemsByEngagementIdAsync(engagementId);
-
-        foreach (var item in items.Where(i => i.IsClientSide && i.Status != AccessItemStatus.Granted))
-        {
-            await riskService.CreateClientSideRiskAsync(engagementId, item.Name, accessItemId: item.AccessItemId);
-        }
+        await Task.CompletedTask;
     }
 
     // -------------------------------------------------------------------------
@@ -224,25 +180,9 @@ public class AccessTrackerService(
             DaysUntilBillingDate = daysUntilBillingDate,
             IsOverdueWithClient = isOverdueWithClient,
             GrantedDate = item.GrantedDate,
-            BlockReason = item.BlockReason,
-            Risks = item.Risks.Select(MapRiskToDto).ToList()
+            BlockReason = item.BlockReason
         };
     }
-
-    private static RiskDto MapRiskToDto(Risk risk) => new()
-    {
-        RiskId = risk.RiskId,
-        EngagementId = risk.EngagementId,
-        AccessItemId = risk.AccessItemId,
-        EnvironmentToolingItemId = risk.EnvironmentToolingItemId,
-        Title = risk.Title,
-        Description = risk.Description,
-        Status = risk.Status,
-        CreatedAt = risk.CreatedAt,
-        UpdatedAt = risk.UpdatedAt,
-        CreatedBy = risk.CreatedBy,
-        UpdatedBy = risk.UpdatedBy
-    };
 
     private static int CalculateWorkingDays(DateOnly startDate, DateOnly endDate)
     {
@@ -258,7 +198,4 @@ public class AccessTrackerService(
         }
         return workingDays;
     }
-
-    private static string BuildRiskTitle(string accessItemName) =>
-        $"Access Blocked: {accessItemName}";
 }

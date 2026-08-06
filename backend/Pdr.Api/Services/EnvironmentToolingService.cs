@@ -1,17 +1,13 @@
 using Pdr.Api.DTOs.EnvironmentTooling;
-using Pdr.Api.DTOs.Risk;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Exceptions.EnvironmentToolingExceptions;
 using Pdr.Api.Models.EnvironmentTooling;
-using Pdr.Api.Models.Risk;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class EnvironmentToolingService(
-    IEnvironmentToolingRepository repository,
-    IRiskService riskService) : IEnvironmentToolingService
+public class EnvironmentToolingService(IEnvironmentToolingRepository repository) : IEnvironmentToolingService
 {
     public async Task<EnvironmentToolingReadinessResponse> GetItemsByEngagementIdAsync(int engagementId)
     {
@@ -87,26 +83,7 @@ public class EnvironmentToolingService(
             item.NotApplicableReason = null;
         }
 
-        // Risk integration on BlockReason changes
-        var itemName = GetItemDisplayName(item);
-        var wasBlocked = !string.IsNullOrWhiteSpace(item.BlockReason);
-        var isNowBlocked = !string.IsNullOrWhiteSpace(request.BlockReason);
-
-        if (!wasBlocked && isNowBlocked)
-        {
-            item.BlockReason = request.BlockReason;
-            await riskService.CreateRiskAsync(item.EngagementId, $"Blocked Environment/Tooling: {itemName}", request.BlockReason!, environmentToolingItemId: item.EnvironmentToolingItemId);
-        }
-        else if (wasBlocked && !isNowBlocked)
-        {
-            item.BlockReason = null;
-            await riskService.ResolveRiskAsync(item.EngagementId, $"Blocked Environment/Tooling: {itemName}", environmentToolingItemId: item.EnvironmentToolingItemId);
-        }
-        else if (isNowBlocked)
-        {
-            item.BlockReason = request.BlockReason;
-        }
-
+        item.BlockReason = request.BlockReason;
         item.Status = request.Status;
         await repository.SaveChangesAsync();
 
@@ -150,22 +127,6 @@ public class EnvironmentToolingService(
             CustomName = item.CustomName,
             Status = item.Status,
             NotApplicableReason = item.NotApplicableReason,
-            BlockReason = item.BlockReason,
-            Risks = item.Risks.Select(MapRiskToDto).ToList()
+            BlockReason = item.BlockReason
         };
-
-    private static RiskDto MapRiskToDto(Risk risk) => new()
-    {
-        RiskId = risk.RiskId,
-        EngagementId = risk.EngagementId,
-        AccessItemId = risk.AccessItemId,
-        EnvironmentToolingItemId = risk.EnvironmentToolingItemId,
-        Title = risk.Title,
-        Description = risk.Description,
-        Status = risk.Status,
-        CreatedAt = risk.CreatedAt,
-        UpdatedAt = risk.UpdatedAt,
-        CreatedBy = risk.CreatedBy,
-        UpdatedBy = risk.UpdatedBy
-    };
 }
