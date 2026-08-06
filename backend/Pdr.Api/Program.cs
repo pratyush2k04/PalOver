@@ -78,17 +78,11 @@ builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<IEngagementChecklistRepository, EngagementChecklistRepository>();
 builder.Services.AddScoped<IEngagementChecklistService, EngagementChecklistService>();
 
-// Technical Readiness — Access Tracker, Environment Tooling & Risks
+// Technical Readiness — Access Tracker, Environment Tooling
 builder.Services.AddScoped<IAccessTrackerRepository, AccessTrackerRepository>();
 builder.Services.AddScoped<IAccessTrackerService, AccessTrackerService>();
-builder.Services.AddScoped<IRiskRepository, RiskRepository>();
-builder.Services.AddScoped<IRiskService, RiskService>();
 builder.Services.AddScoped<IEnvironmentToolingRepository, EnvironmentToolingRepository>();
 builder.Services.AddScoped<IEnvironmentToolingService, EnvironmentToolingService>();
-
-
-// Register FluentValidation Validators
-builder.Services.AddValidatorsFromAssemblyContaining<DocumentUploadDtoValidator>();
 
 // JWT Authentication
 var secretKey = builder.Configuration["JwtSettings:SecretKey"]
