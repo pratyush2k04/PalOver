@@ -9,7 +9,7 @@
       <div class="welcome-message">{{ workspace()?.welcomeMessage }}</div>
 
       <div class="user-info">
-        <span class="avatar">{{ initials(currentUser.fullName) }}</span>
+        <app-avatar [name]="currentUser.fullName" />
         <div class="user-text">
           <span class="user-name">{{ currentUser.fullName }}</span>
           <span class="user-role">{{ currentUser.role }}</span>

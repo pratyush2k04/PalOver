@@ -1,0 +1,9 @@
+<div
+  class="alert"
+  [class.alert--danger]="variant() === 'danger'"
+  [class.alert--warning]="variant() === 'warning'"
+  [class.alert--neutral]="variant() === 'neutral'"
+  role="alert"
+>
+  <ng-content />
+</div>

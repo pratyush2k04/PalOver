@@ -1,15 +1,15 @@
 <div class="engagements-page">
   <div class="page-header">
     <h2>Engagements</h2>
-    <button type="button" class="btn-mark-sow" (click)="openModal()">+ Mark SOW Signed</button>
+    <app-button type="button" variant="accent" (click)="openModal()">+ Mark SOW Signed</app-button>
   </div>
 
   @if (warnings().length > 0) {
-    <div class="alert alert-warning" role="alert">
+    <app-alert variant="warning">
       @for (warning of warnings(); track warning) {
         <div>{{ warning }}</div>
       }
-    </div>
+    </app-alert>
   }
 
   @if (showModal()) {
@@ -17,14 +17,12 @@
       <div class="modal-card">
         <div class="modal-header">
           <h3>Mark SOW Signed</h3>
-          <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close">&times;</button>
+          <app-button type="button" variant="icon" ariaLabel="Close" (click)="closeModal()">&times;</app-button>
         </div>
 
         <form [formGroup]="engagementForm" (ngSubmit)="onSubmit()" novalidate>
           @if (errorMessage()) {
-            <div class="alert alert-danger" role="alert">
-              {{ errorMessage() }}
-            </div>
+            <app-alert>{{ errorMessage() }}</app-alert>
           }
 
           <div class="form-group">
@@ -127,14 +125,10 @@
           </div>
 
           <div class="modal-actions">
-            <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
-            <button type="submit" class="btn-submit" [disabled]="isSubmitting()">
-              @if (isSubmitting()) {
-                <span class="spinner"></span> Creating...
-              } @else {
-                Create Engagement
-              }
-            </button>
+            <app-button type="button" variant="stroked" (click)="closeModal()">Cancel</app-button>
+            <app-button type="submit" variant="accent" [loading]="isSubmitting()">
+              {{ isSubmitting() ? 'Creating...' : 'Create Engagement' }}
+            </app-button>
           </div>
         </form>
       </div>

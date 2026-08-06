@@ -1,6 +1,8 @@
 import { Component, OnInit, computed, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LoadingSpinnerComponent } from '../../../shared/loading-spinner/loading-spinner';
+import { LoadingSpinnerComponent } from '../../../common/components/loading-spinner/loading-spinner';
+import { StatusBadgeComponent } from '../../../common/components/status-badge/status-badge';
+import { PaginatorComponent } from '../../../common/components/paginator/paginator';
 import { MasterChecklistService } from '../../../services/master-checklist.service';
 import { MasterChecklistItem } from '../../../models/checklist.model';
 
@@ -10,7 +12,7 @@ type SortDirection = 'asc' | 'desc';
 @Component({
   selector: 'app-published-checklist',
   standalone: true,
-  imports: [FormsModule, LoadingSpinnerComponent],
+  imports: [FormsModule, LoadingSpinnerComponent, StatusBadgeComponent, PaginatorComponent],
   templateUrl: './published-checklist.html',
   styleUrl: './published-checklist.scss',
 })
@@ -91,19 +93,7 @@ export class PublishedChecklistComponent implements OnInit {
     this.pageIndex.set(0);
   }
 
-  goToFirstPage(): void {
-    this.pageIndex.set(0);
-  }
-
-  goToPreviousPage(): void {
-    this.pageIndex.set(Math.max(0, this.pageIndex() - 1));
-  }
-
-  goToNextPage(): void {
-    this.pageIndex.set(Math.min(this.totalPages() - 1, this.pageIndex() + 1));
-  }
-
-  goToLastPage(): void {
-    this.pageIndex.set(this.totalPages() - 1);
+  onPageChange(page: number): void {
+    this.pageIndex.set(page - 1);
   }
 }

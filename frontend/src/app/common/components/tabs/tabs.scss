@@ -1,0 +1,41 @@
+:host {
+  display: block;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #e5e9ef;
+}
+
+.tab-item {
+  padding: 0.75rem 1.5rem;
+  text-decoration: none;
+  color: #333333;
+  font-size: 0.875rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  &:hover:not(.tab-item--disabled) {
+    background-color: #f4f6f9;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+
+  &.active {
+    color: #2563eb;
+    border-bottom-color: #2563eb;
+    font-weight: 600;
+  }
+
+  &--disabled {
+    color: #8b95a3;
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

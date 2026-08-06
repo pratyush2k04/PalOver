@@ -11,6 +11,9 @@ import {
   UpdateCommitmentRequest,
   CommitmentDto
 } from './handover.service';
+import { AlertComponent } from '../../../common/components/alert/alert';
+import { EmptyStateComponent } from '../../../common/components/empty-state/empty-state';
+import { ButtonComponent } from '../../../common/components/button/button';
 
 const MAX_FREE_TEXT_LENGTH = 2000;
 const SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
@@ -18,7 +21,7 @@ const SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
 @Component({
   selector: 'app-handover',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, AlertComponent, EmptyStateComponent, ButtonComponent],
   templateUrl: './handover.component.html',
   styleUrl: './handover.component.scss'
 })

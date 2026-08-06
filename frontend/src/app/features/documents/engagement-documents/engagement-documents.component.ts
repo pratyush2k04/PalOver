@@ -12,11 +12,13 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { DocumentService } from '../../../services/document.service';
 import { DocumentItem } from '../../../models/document.model';
 import { UploadDocumentDialogComponent } from '../upload-document-dialog/upload-document-dialog.component';
+import { AlertComponent } from '../../../common/components/alert/alert';
+import { ButtonComponent } from '../../../common/components/button/button';
 
 @Component({
   selector: 'app-engagement-documents',
   standalone: true,
-  imports: [CommonModule, UploadDocumentDialogComponent],
+  imports: [CommonModule, UploadDocumentDialogComponent, AlertComponent, ButtonComponent],
   templateUrl: './engagement-documents.component.html',
   styleUrl: './engagement-documents.component.scss'
 })

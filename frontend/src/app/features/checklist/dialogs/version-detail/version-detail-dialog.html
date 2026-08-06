@@ -20,10 +20,10 @@
               <span class="version-detail-dialog__item-title">
                 {{ item.title }}
                 @if (item.isMandatory) {
-                  <span class="badge badge--mandatory">Mandatory</span>
+                  <app-status-badge tone="info">Mandatory</app-status-badge>
                 }
                 @if (item.isRetired) {
-                  <span class="badge badge--retired">Retired</span>
+                  <app-status-badge tone="danger">Retired</app-status-badge>
                 }
               </span>
               @if (item.description) {
@@ -42,5 +42,5 @@
 </div>
 
 <div class="app-dialog__actions">
-  <button type="button" class="app-button app-button--flat" (click)="onClose()">Close</button>
+  <app-button type="button" variant="flat" (click)="onClose()">Close</app-button>
 </div>

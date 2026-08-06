@@ -1,0 +1,41 @@
+<div class="tabs" role="tablist" (keydown)="onKeydown($event)">
+  @for (tab of tabs(); track tab.id) {
+    @if (isEnabled(tab) && tab.route) {
+      <a
+        [attr.data-tab-id]="tab.id"
+        [routerLink]="tab.route"
+        routerLinkActive="active"
+        class="tab-item"
+        role="tab"
+        [attr.aria-selected]="isActive(tab)"
+        [tabindex]="isActive(tab) ? 0 : -1"
+        (click)="select(tab)"
+      >
+        {{ tab.label }}
+      </a>
+    } @else if (isEnabled(tab)) {
+      <button
+        type="button"
+        [attr.data-tab-id]="tab.id"
+        class="tab-item"
+        [class.active]="isActive(tab)"
+        role="tab"
+        [attr.aria-selected]="isActive(tab)"
+        [tabindex]="isActive(tab) ? 0 : -1"
+        (click)="select(tab)"
+      >
+        {{ tab.label }}
+      </button>
+    } @else {
+      <span
+        class="tab-item tab-item--disabled"
+        role="tab"
+        aria-disabled="true"
+        aria-selected="false"
+        tabindex="-1"
+      >
+        {{ tab.label }}
+      </span>
+    }
+  }
+</div>

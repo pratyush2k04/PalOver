@@ -2,14 +2,12 @@
   <div class="modal-dialog" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h3 class="modal-title">Upload document</h3>
-      <button type="button" class="btn-close" (click)="onClose()" aria-label="Close">&times;</button>
+      <app-button type="button" variant="icon" ariaLabel="Close" (click)="onClose()">&times;</app-button>
     </div>
 
     <div class="modal-body">
       @if (errorMessage()) {
-        <div class="alert alert-danger">
-          {{ errorMessage() }}
-        </div>
+        <app-alert>{{ errorMessage() }}</app-alert>
       }
 
       <div class="form-group">
@@ -67,15 +65,12 @@
     </div>
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-cancel" (click)="onClose()" [disabled]="isUploading()">
+      <app-button type="button" variant="stroked" [disabled]="isUploading()" (click)="onClose()">
         Cancel
-      </button>
-      <button type="button" class="btn btn-upload" (click)="onSubmit()" [disabled]="isUploading()">
-        @if (isUploading()) {
-          <span class="spinner"></span>
-        }
+      </app-button>
+      <app-button type="button" variant="accent" [loading]="isUploading()" (click)="onSubmit()">
         Upload
-      </button>
+      </app-button>
     </div>
   </div>
 </div>

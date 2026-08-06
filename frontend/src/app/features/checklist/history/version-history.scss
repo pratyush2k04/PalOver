@@ -70,21 +70,3 @@
   }
 }
 
-.badge {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 500;
-  padding: 2px 10px;
-  border-radius: 12px;
-
-  &--draft {
-    background-color: #fff7ed;
-    color: #c2410c;
-  }
-
-  &--published {
-    background-color: #ecfdf5;
-    color: #047857;
-  }
-}
-

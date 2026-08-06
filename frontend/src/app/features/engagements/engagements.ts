@@ -13,6 +13,8 @@ import {
   EngagementService,
   EngagementTypeOption
 } from '../../services/engagement';
+import { AlertComponent } from '../../common/components/alert/alert';
+import { ButtonComponent } from '../../common/components/button/button';
 
 function billingNotBeforeKickoffValidator(group: AbstractControl): ValidationErrors | null {
   const kickoffDate = group.get('kickoffDate')?.value;
@@ -28,7 +30,7 @@ function billingNotBeforeKickoffValidator(group: AbstractControl): ValidationErr
 @Component({
   selector: 'app-engagements',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, AlertComponent, ButtonComponent],
   templateUrl: './engagements.html',
   styleUrl: './engagements.scss'
 })

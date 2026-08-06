@@ -2,12 +2,12 @@
   <div class="home-workspace">
     <h1>{{ ws.title }}</h1>
 
-    <app-welcome-banner [welcomeMessage]="ws.welcomeMessage" />
+    <app-banner [message]="ws.welcomeMessage" />
 
     @if (user(); as currentUser) {
-      <app-role-badge [role]="currentUser.role" />
+      <app-badge [text]="currentUser.role" />
     }
 
-    <app-workspace-placeholder [emptyState]="ws.emptyState" />
+    <app-workspace-card [emptyState]="ws.emptyState" />
   </div>
 }

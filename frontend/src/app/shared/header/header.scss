@@ -99,20 +99,6 @@
   cursor: pointer;
 }
 
-.avatar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background-color: #f5a623;
-  color: #ffffff;
-  font-size: 0.8rem;
-  font-weight: 600;
-  flex-shrink: 0;
-}
-
 .user-text {
   display: flex;
   flex-direction: column;

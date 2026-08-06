@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DocumentService } from '../../../services/document.service';
 import { DocumentCategory } from '../../../models/document.model';
+import { AlertComponent } from '../../../common/components/alert/alert';
+import { ButtonComponent } from '../../../common/components/button/button';
 
 @Component({
   selector: 'app-upload-document-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AlertComponent, ButtonComponent],
   templateUrl: './upload-document-dialog.component.html',
   styleUrl: './upload-document-dialog.component.scss'
 })

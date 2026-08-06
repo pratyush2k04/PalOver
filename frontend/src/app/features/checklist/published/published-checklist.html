@@ -73,16 +73,16 @@
               <td>{{ item.categoryName }}</td>
               <td>
                 @if (item.isMandatory) {
-                  <span class="badge badge--mandatory">Mandatory</span>
+                  <app-status-badge tone="info">Mandatory</app-status-badge>
                 } @else {
-                  <span class="badge badge--optional">Optional</span>
+                  <app-status-badge tone="neutral">Optional</app-status-badge>
                 }
               </td>
               <td>
                 @if (item.isRetired) {
-                  <span class="badge badge--retired">Retired</span>
+                  <app-status-badge tone="danger">Retired</app-status-badge>
                 } @else {
-                  <span class="badge badge--active">Active</span>
+                  <app-status-badge tone="success">Active</app-status-badge>
                 }
               </td>
               <td>
@@ -112,46 +112,14 @@
       }
     </div>
 
-    <div class="published-checklist__paginator">
-      <div class="published-checklist__page-size">
-        <label for="page-size-select">Items per page:</label>
-        <select
-          id="page-size-select"
-          [ngModel]="pageSize()"
-          (ngModelChange)="onPageSizeChange($event)"
-        >
-          @for (size of pageSizeOptions; track size) {
-            <option [value]="size">{{ size }}</option>
-          }
-        </select>
-      </div>
-      <div class="published-checklist__page-info">
-        Page {{ pageIndex() + 1 }} of {{ totalPages() }}
-      </div>
-      <div class="published-checklist__page-actions">
-        <button type="button" (click)="goToFirstPage()" [disabled]="pageIndex() === 0" aria-label="First page">
-          &laquo;
-        </button>
-        <button type="button" (click)="goToPreviousPage()" [disabled]="pageIndex() === 0" aria-label="Previous page">
-          &lsaquo;
-        </button>
-        <button
-          type="button"
-          (click)="goToNextPage()"
-          [disabled]="pageIndex() >= totalPages() - 1"
-          aria-label="Next page"
-        >
-          &rsaquo;
-        </button>
-        <button
-          type="button"
-          (click)="goToLastPage()"
-          [disabled]="pageIndex() >= totalPages() - 1"
-          aria-label="Last page"
-        >
-          &raquo;
-        </button>
-      </div>
-    </div>
+    <app-paginator
+      [page]="pageIndex() + 1"
+      [totalPages]="totalPages()"
+      [pageSize]="pageSize()"
+      [pageSizeOptions]="pageSizeOptions"
+      [showFirstLast]="true"
+      (pageChange)="onPageChange($event)"
+      (pageSizeChange)="onPageSizeChange($event)"
+    />
   }
 </div>

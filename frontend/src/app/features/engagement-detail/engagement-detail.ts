@@ -6,8 +6,10 @@ import { EngagementInfo, EngagementOwners, EngagementService } from '../../servi
 import { UserDirectoryService } from '../../services/user-directory';
 import { UserListItem } from '../../models/user.model';
 import { AuthService } from '../../services/auth';
-import { ToastService } from '../../services/toast';
-import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
+import { ToastService } from '../../common/services/toast/toast';
+import { ConfirmDialogComponent } from '../../common/components/confirm-dialog/confirm-dialog';
+import { AlertComponent } from '../../common/components/alert/alert';
+import { ButtonComponent } from '../../common/components/button/button';
 
 const PROJECT_MANAGEMENT_ROLE_ID = 2;
 const TECH_LEAD_ROLE_ID = 3;
@@ -25,7 +27,7 @@ interface OwnerChange {
 @Component({
   selector: 'app-engagement-detail',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ConfirmDialogComponent],
+  imports: [CommonModule, ReactiveFormsModule, ConfirmDialogComponent, AlertComponent, ButtonComponent],
   templateUrl: './engagement-detail.html',
   styleUrl: './engagement-detail.scss'
 })

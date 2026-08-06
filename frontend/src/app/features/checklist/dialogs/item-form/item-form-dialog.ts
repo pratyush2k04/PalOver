@@ -1,8 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DialogRef } from '../../../../shared/dialog/dialog-ref';
-import { DIALOG_DATA } from '../../../../shared/dialog/dialog.service';
+import { DialogRef } from '../../../../common/services/dialog/dialog-ref';
+import { DIALOG_DATA } from '../../../../common/services/dialog/dialog.service';
 import { MasterChecklistCategory, MasterChecklistItem } from '../../../../models/checklist.model';
+import { ButtonComponent } from '../../../../common/components/button/button';
 
 export interface ItemFormDialogData {
   mode: 'create' | 'edit';
@@ -21,7 +22,7 @@ export interface ItemFormDialogResult {
 @Component({
   selector: 'app-item-form-dialog',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, ButtonComponent],
   templateUrl: './item-form-dialog.html',
   styleUrl: './item-form-dialog.scss',
 })

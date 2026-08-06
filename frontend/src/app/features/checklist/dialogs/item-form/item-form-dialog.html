@@ -34,7 +34,7 @@
   </div>
 
   <div class="app-dialog__actions">
-    <button type="button" class="app-button app-button--stroked" (click)="onCancel()">Cancel</button>
-    <button type="submit" class="app-button app-button--flat">{{ isEdit ? 'Save Changes' : 'Add Item' }}</button>
+    <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+    <app-button type="submit" variant="flat">{{ isEdit ? 'Save Changes' : 'Add Item' }}</app-button>
   </div>
 </form>

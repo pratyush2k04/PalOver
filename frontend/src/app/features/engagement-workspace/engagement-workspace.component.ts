@@ -1,28 +1,25 @@
 import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs';
 import { EngagementInfoDto, EngagementService } from '../../services/engagement.service';
-
-interface WorkspaceTab {
-  label: string;
-  route: string;
-  enabled: boolean;
-}
+import { TabItem, TabsComponent } from '../../common/components/tabs/tabs';
 
 @Component({
   selector: 'app-engagement-workspace',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterOutlet, TabsComponent],
   templateUrl: './engagement-workspace.component.html',
   styleUrl: './engagement-workspace.component.scss'
 })
 export class EngagementWorkspaceComponent {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private engagementService = inject(EngagementService);
 
   private paramMap = toSignal(this.route.paramMap);
-  
+
   engagementId = computed(() => {
     const idStr = this.paramMap()?.get('id');
     return idStr ? +idStr : null;
@@ -31,19 +28,29 @@ export class EngagementWorkspaceComponent {
   engagement = signal<EngagementInfoDto | null>(null);
   isLoading = signal<boolean>(true);
 
-  readonly tabs = signal<WorkspaceTab[]>([
-    { label: 'Handover', route: 'handover', enabled: true },
-    { label: 'Documents', route: 'documents', enabled: true },
-    { label: 'People', route: 'people', enabled: false },
-    { label: 'Checklist', route: 'checklist', enabled: true },
-    { label: 'Kickoff', route: 'kickoff', enabled: false },
-    { label: 'Resourcing', route: 'resourcing', enabled: false },
-    { label: 'Technical Readiness', route: 'technical-readiness', enabled: false },
-    { label: 'Risks', route: 'risks', enabled: false },
-    { label: 'Reporting', route: 'reporting', enabled: false }
-  ]);
+  readonly tabs: TabItem[] = [
+    { id: 'handover', label: 'Handover', route: 'handover' },
+    { id: 'documents', label: 'Documents', route: 'documents' },
+    { id: 'people', label: 'People', route: 'people', enabled: false },
+    { id: 'checklist', label: 'Checklist', route: 'checklist' },
+    { id: 'kickoff', label: 'Kickoff', route: 'kickoff', enabled: false },
+    { id: 'resourcing', label: 'Resourcing', route: 'resourcing', enabled: false },
+    { id: 'technical-readiness', label: 'Technical Readiness', route: 'technical-readiness', enabled: false },
+    { id: 'risks', label: 'Risks', route: 'risks', enabled: false },
+    { id: 'reporting', label: 'Reporting', route: 'reporting', enabled: false }
+  ];
 
-  activeTabIndex = signal<number>(0);
+  private readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      map(() => this.router.url)
+    ),
+    { initialValue: this.router.url }
+  );
+
+  readonly activeTabId = computed(
+    () => this.tabs.find((tab) => this.currentUrl().includes(`/${tab.route}`))?.id ?? null
+  );
 
   constructor() {
     effect(() => {
@@ -70,35 +77,5 @@ export class EngagementWorkspaceComponent {
         this.isLoading.set(false);
       }
     });
-  }
-
-  onTabKeydown(event: KeyboardEvent) {
-    const enabledIndexes = this.tabs()
-      .map((tab, index) => ({ tab, index }))
-      .filter(({ tab }) => tab.enabled)
-      .map(({ index }) => index);
-
-    if (enabledIndexes.length === 0) {
-      return;
-    }
-
-    const currentPos = enabledIndexes.indexOf(this.activeTabIndex());
-
-    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
-      event.preventDefault();
-      const nextPos = (currentPos + 1) % enabledIndexes.length;
-      this.focusTab(enabledIndexes[nextPos]);
-    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
-      event.preventDefault();
-      const prevPos = (currentPos - 1 + enabledIndexes.length) % enabledIndexes.length;
-      this.focusTab(enabledIndexes[prevPos]);
-    }
-  }
-
-  private focusTab(index: number) {
-    this.activeTabIndex.set(index);
-    const tabElements = document.querySelectorAll<HTMLElement>('.tab-item');
-    tabElements[index]?.focus();
-    tabElements[index]?.click();
   }
 }

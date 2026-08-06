@@ -7,9 +7,9 @@
     </div>
   </div>
 
-  <div *ngIf="message()" class="alert" [ngClass]="{'alert-error': isError(), 'alert-success': !isError()}">
+  <app-alert *ngIf="message()" [variant]="isError() ? 'danger' : 'neutral'">
     {{ message() }}
-  </div>
+  </app-alert>
 
   <form [formGroup]="clientContextForm">
     <div class="section client-context">
@@ -81,12 +81,12 @@
                 <td class="row-actions">
                   <ng-container *ngIf="pendingDeleteId() === c.commitmentId; else rowButtons">
                     <span class="confirm-inline">Remove this commitment?</span>
-                    <button class="btn-danger-sm" [disabled]="isSubmitted()" (click)="confirmDeleteCommitment(c.commitmentId)">Yes</button>
-                    <button class="btn-secondary-sm" [disabled]="isSubmitted()" (click)="cancelDeleteCommitment()">Cancel</button>
+                    <app-button variant="danger" size="sm" [disabled]="isSubmitted()" (click)="confirmDeleteCommitment(c.commitmentId)">Yes</app-button>
+                    <app-button variant="stroked" size="sm" [disabled]="isSubmitted()" (click)="cancelDeleteCommitment()">Cancel</app-button>
                   </ng-container>
                   <ng-template #rowButtons>
-                    <button class="btn-secondary-sm" [disabled]="isSubmitted()" (click)="startEditCommitment(c)">Edit</button>
-                    <button class="btn-danger-sm" [disabled]="isSubmitted()" (click)="requestDeleteCommitment(c.commitmentId)">Remove</button>
+                    <app-button variant="stroked" size="sm" [disabled]="isSubmitted()" (click)="startEditCommitment(c)">Edit</app-button>
+                    <app-button variant="danger" size="sm" [disabled]="isSubmitted()" (click)="requestDeleteCommitment(c.commitmentId)">Remove</app-button>
                   </ng-template>
                 </td>
               </ng-container>
@@ -103,17 +103,15 @@
                   <input type="text" [(ngModel)]="editCommitment().quantity" [ngModelOptions]="{standalone: true}">
                 </td>
                 <td class="row-actions">
-                  <button class="btn-primary-sm" (click)="saveEditCommitment(c.commitmentId)">Save</button>
-                  <button class="btn-secondary-sm" (click)="cancelEditCommitment()">Cancel</button>
+                  <app-button variant="flat" size="sm" (click)="saveEditCommitment(c.commitmentId)">Save</app-button>
+                  <app-button variant="stroked" size="sm" (click)="cancelEditCommitment()">Cancel</app-button>
                 </td>
               </ng-template>
             </tr>
           </tbody>
         </table>
 
-        <div *ngIf="commitments().length === 0" class="empty-state">
-          No commitments added yet.
-        </div>
+        <app-empty-state *ngIf="commitments().length === 0" message="No commitments added yet." />
 
         <div class="add-commitment-form" [class.add-commitment-form-disabled]="isSubmitted()">
           <h4>Add New Commitment</h4>
@@ -126,7 +124,7 @@
               [class.is-invalid]="newCommitmentTouched() && !newCommitment().description">
             <input type="text" [(ngModel)]="newCommitment().quantity" [ngModelOptions]="{standalone: true}"
               placeholder="Quantity/Details" [disabled]="isSubmitted()">
-            <button class="btn-primary" [disabled]="isSubmitted()" (click)="addCommitment()">Add</button>
+            <app-button variant="flat" [disabled]="isSubmitted()" (click)="addCommitment()">Add</app-button>
           </div>
           <div class="invalid-feedback" *ngIf="newCommitmentTouched() && !newCommitment().description">
             Description is required.
@@ -136,8 +134,8 @@
     </div>
 
     <div class="actions">
-      <button class="btn-secondary" (click)="saveDraft()" [disabled]="isSaving() || isSubmitted()">Save Draft</button>
-      <button class="btn-success" (click)="submitHandover()" [disabled]="isSaving() || isSubmitted()">Submit Handover</button>
+      <app-button variant="stroked" [disabled]="isSaving() || isSubmitted()" (click)="saveDraft()">Save Draft</app-button>
+      <app-button variant="flat" [disabled]="isSaving() || isSubmitted()" (click)="submitHandover()">Submit Handover</app-button>
     </div>
   </form>
 

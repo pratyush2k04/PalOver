@@ -22,18 +22,14 @@
             <tr>
               <td>v{{ v.versionNumber }}</td>
               <td>
-                <span
-                  class="badge"
-                  [class.badge--draft]="v.statusName === 'Draft'"
-                  [class.badge--published]="v.statusName === 'Published'"
-                >
+                <app-status-badge [tone]="statusTone(v.statusName)">
                   {{ v.statusName }}
-                </span>
+                </app-status-badge>
               </td>
               <td>{{ v.createdAt | date: 'mediumDate' }}</td>
               <td>{{ publishedAt(v) ? (publishedAt(v) | date: 'mediumDate') : '—' }}</td>
               <td>
-                <button type="button" class="app-button app-button--stroked" (click)="onView(v)">View</button>
+                <app-button type="button" variant="stroked" (click)="onView(v)">View</app-button>
               </td>
             </tr>
           }

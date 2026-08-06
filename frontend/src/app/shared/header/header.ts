@@ -1,9 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { AppContextService } from '../../services/app-context';
+import { AvatarComponent } from '../../common/components/avatar/avatar';
 
 @Component({
   selector: 'app-header',
   standalone: true,
+  imports: [AvatarComponent],
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })
@@ -12,13 +14,4 @@ export class HeaderComponent {
 
   readonly user = this.appContext.user;
   readonly workspace = this.appContext.workspace;
-
-  initials(name: string): string {
-    return name
-      .split(' ')
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase())
-      .join('');
-  }
 }

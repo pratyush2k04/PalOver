@@ -2,6 +2,10 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { EngagementSortBy, EngagementService, PmEngagementListItem } from '../../services/engagement';
+import { AlertComponent } from '../../common/components/alert/alert';
+import { EmptyStateComponent } from '../../common/components/empty-state/empty-state';
+import { TabItem, TabsComponent } from '../../common/components/tabs/tabs';
+import { ButtonComponent } from '../../common/components/button/button';
 
 interface MyEngagementRow extends PmEngagementListItem {
   displayReadinessScore: number;
@@ -21,7 +25,7 @@ const SAMPLE_READINESS_SCORES: Record<number, number> = {
 @Component({
   selector: 'app-my-engagements',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AlertComponent, EmptyStateComponent, TabsComponent, ButtonComponent],
   templateUrl: './my-engagements.html',
   styleUrl: './my-engagements.scss'
 })
@@ -52,6 +56,11 @@ export class MyEngagementsComponent implements OnInit {
 
   activeCount = computed(() => this.engagements().length);
   pastCount = computed(() => this.pastEngagements.length);
+
+  readonly tabItems = computed<TabItem[]>(() => [
+    { id: 'active', label: `Active (${this.activeCount()})` },
+    { id: 'past', label: `Past Engagements (${this.pastCount()})` }
+  ]);
 
   ngOnInit(): void {
     this.loadEngagements();
@@ -86,6 +95,10 @@ export class MyEngagementsComponent implements OnInit {
 
   selectTab(tab: EngagementTab): void {
     this.activeTab.set(tab);
+  }
+
+  onTabChange(tabId: string): void {
+    this.selectTab(tabId as EngagementTab);
   }
 
   onSortChange(sortBy: SortOption): void {

@@ -1,7 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { DialogService } from '../../../shared/dialog/dialog.service';
-import { LoadingSpinnerComponent } from '../../../shared/loading-spinner/loading-spinner';
+import { DialogService } from '../../../common/services/dialog/dialog.service';
+import { LoadingSpinnerComponent } from '../../../common/components/loading-spinner/loading-spinner';
+import { StatusBadgeComponent, StatusBadgeTone } from '../../../common/components/status-badge/status-badge';
+import { ButtonComponent } from '../../../common/components/button/button';
 import { MasterChecklistService } from '../../../services/master-checklist.service';
 import { MasterChecklistVersionSummary } from '../../../models/checklist.model';
 import {
@@ -12,7 +14,7 @@ import {
 @Component({
   selector: 'app-version-history',
   standalone: true,
-  imports: [DatePipe, LoadingSpinnerComponent],
+  imports: [DatePipe, LoadingSpinnerComponent, StatusBadgeComponent, ButtonComponent],
   templateUrl: './version-history.html',
   styleUrl: './version-history.scss',
 })
@@ -30,6 +32,12 @@ export class VersionHistoryComponent implements OnInit {
 
   publishedAt(version: MasterChecklistVersionSummary): string | null {
     return version.statusName === 'Published' ? version.updatedAt : null;
+  }
+
+  statusTone(statusName: string): StatusBadgeTone {
+    if (statusName === 'Draft') return 'warning';
+    if (statusName === 'Published') return 'success';
+    return 'neutral';
   }
 
   onView(version: MasterChecklistVersionSummary): void {

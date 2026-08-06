@@ -3,27 +3,12 @@
     <h2>My Engagements</h2>
   </div>
 
-  <div class="tabs">
-    <button
-      type="button"
-      class="tab"
-      [class.active]="activeTab() === 'active'"
-      (click)="selectTab('active')"
-    >
-      Active ({{ activeCount() }})
-    </button>
-    <button
-      type="button"
-      class="tab"
-      [class.active]="activeTab() === 'past'"
-      (click)="selectTab('past')"
-    >
-      Past Engagements ({{ pastCount() }})
-    </button>
+  <div class="tabs-row">
+    <app-tabs [tabs]="tabItems()" [activeId]="activeTab()" (tabChange)="onTabChange($event)" />
 
     <div class="sort-control">
       <label for="sortBy">Sort by</label>
-     
+
       <select id="sortBy" [value]="sortBy()" (change)="onSortChange($any($event.target).value)">
         <option value="kickoff">Kickoff date</option>
         <option value="readiness">Readiness score</option>
@@ -33,16 +18,12 @@
   </div>
 
   @if (errorMessage()) {
-    <div class="alert alert-danger" role="alert">
-      {{ errorMessage() }}
-    </div>
+    <app-alert>{{ errorMessage() }}</app-alert>
   }
 
   @if (activeTab() === 'active') {
     @if (!isLoading() && engagements().length === 0) {
-      <div class="empty-state">
-        You have no engagements yet. They appear here once assigned to you.
-      </div>
+      <app-empty-state message="You have no engagements yet. They appear here once assigned to you." />
     } @else {
       <div class="engagement-list">
         @for (engagement of engagements(); track engagement.engagementId) {
@@ -79,13 +60,13 @@
                 <span class="readiness-value">{{ engagement.displayReadinessScore }}%</span>
               </div>
 
-              <button
+              <app-button
                 type="button"
-                class="btn-open"
+                variant="stroked"
                 (click)="$event.stopPropagation(); openEngagement(engagement.engagementId)"
               >
                 Open
-              </button>
+              </app-button>
             </div>
           </div>
         }
@@ -93,9 +74,7 @@
     }
   } @else {
     @if (pastEngagements.length === 0) {
-      <div class="empty-state">
-        You have no engagements yet. They appear here once assigned to you.
-      </div>
+      <app-empty-state message="You have no engagements yet. They appear here once assigned to you." />
     } @else {
       <div class="engagement-list">
         @for (engagement of pastEngagements; track engagement.engagementId) {
@@ -132,13 +111,13 @@
                 <span class="readiness-value">{{ engagement.displayReadinessScore }}%</span>
               </div>
 
-              <button
+              <app-button
                 type="button"
-                class="btn-open"
+                variant="stroked"
                 (click)="$event.stopPropagation(); openEngagement(engagement.engagementId)"
               >
                 Open
-              </button>
+              </app-button>
             </div>
           </div>
         }

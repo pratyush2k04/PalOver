@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  border: 1px dashed #d1d5db;
+  border-radius: 8px;
+  color: #9aa4b2;
+  font-size: 0.9rem;
+  text-align: center;
+}

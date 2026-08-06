@@ -1,13 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { AppContextService } from '../../../services/app-context';
-import { WelcomeBannerComponent } from '../../../shared/welcome-banner/welcome-banner';
-import { RoleBadgeComponent } from '../../../shared/role-badge/role-badge';
-import { WorkspacePlaceholderComponent } from '../../../shared/workspace-placeholder/workspace-placeholder';
+import { BannerComponent } from '../../../common/components/banner/banner';
+import { BadgeComponent } from '../../../common/components/badge/badge';
+import { WorkspaceCardComponent } from '../../../shared/workspace-card/workspace-card';
 
 @Component({
   selector: 'app-tech-lead-home',
   standalone: true,
-  imports: [WelcomeBannerComponent, RoleBadgeComponent, WorkspacePlaceholderComponent],
+  imports: [BannerComponent, BadgeComponent, WorkspaceCardComponent],
   templateUrl: './tech-lead-home.html',
   styleUrl: './tech-lead-home.scss'
 })
