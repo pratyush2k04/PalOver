@@ -9,6 +9,8 @@ using Pdr.Api.Models.MasterChecklist;
 using Pdr.Api.Models.Handover;
 using Pdr.Api.Models.EngagementChecklist;
 using Pdr.Api.Models.Documents;
+using Pdr.Api.Models.Cadence;
+//using System.Reflection;
 
 namespace Pdr.Api.Data;
 
@@ -50,7 +52,7 @@ public class AppDbContext : DbContext
     // Documents
     public DbSet<DocumentCategory> DocumentCategories => Set<DocumentCategory>();
     public DbSet<Document> Documents => Set<Document>();
-
+    public DbSet<CommunicationCadence> CommunicationCadences => Set<CommunicationCadence>();
     // Technical Readiness (Access Tracker, Environment & Tooling)
     public DbSet<Models.AccessTracker.AccessItem> AccessItems => Set<Models.AccessTracker.AccessItem>();
     public DbSet<Models.AccessTracker.AccessItemDefinition> AccessItemDefinitions => Set<Models.AccessTracker.AccessItemDefinition>();
@@ -76,6 +78,7 @@ public class AppDbContext : DbContext
 
         modelBuilder.ApplyConfiguration(new DocumentCategoryConfiguration());
         modelBuilder.ApplyConfiguration(new DocumentConfiguration());
+        modelBuilder.ApplyConfiguration(new CommunicationCadenceConfiguration());
 
         // Engagement & Engagement Checklist
         modelBuilder.ApplyConfiguration(new EngagementConfiguration());
