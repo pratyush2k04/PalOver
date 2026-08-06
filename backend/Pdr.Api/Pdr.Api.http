@@ -21,7 +21,7 @@ POST {{host}}/api/auth/login
 Content-Type: {{contentType}}
 
 {
-  "email": "ps@company.com",
+  "email": "pm@company.com",
   "password": "Password@123"
 }
 
@@ -33,7 +33,7 @@ POST {{host}}/api/auth/login
 Content-Type: {{contentType}}
 
 {
-  "email": "pm@company.com",
+  "email": "presales@company.com",
   "password": "Password@123"
 }
 
@@ -42,7 +42,7 @@ POST {{host}}/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "pm@company.com",
+  "email": "presales@company.com",
   "password": "WrongPassword123"
 }
 
@@ -52,7 +52,8 @@ Content-Type: application/json
 # Ensure you copy a valid JWT token from a login response 
 # and paste it here to test the authenticated endpoints.
 # ----------------------------------------------------
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZSI6WyJQcmUgU2FsZXMiLCJQcmUgU2FsZXMiXSwiZW1haWwiOiJwcmVzYWxlc0Bjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiUmFodWwgVmVybWEiLCJpc0FkbWluIjoiZmFsc2UiLCJuYmYiOjE3ODU4NTU4MzIsImV4cCI6MTc4NTg1NzYzMiwiaWF0IjoxNzg1ODU1ODMyLCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.T6b8JCvG8cFVHdq1cpVnwsPOnqbwhOtNCLZpH_NIMFQ
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZSI6WyJQcmUgU2FsZXMiLCJQcmUgU2FsZXMiXSwiZW1haWwiOiJwcmVzYWxlc0Bjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiUmFodWwgVmVybWEiLCJpc0FkbWluIjoiZmFsc2UiLCJuYmYiOjE3ODYwMDMzMDQsImV4cCI6MTc4NjAwNTEwNCwiaWF0IjoxNzg2MDAzMzA0LCJpc3MiOiJQZHJBcGkiLCJhdWQiOiJQZHJXZWIifQ.E-_YhEe-HHDMxrCgwxQqqrv7iBwXbGjwQPoYX2PQvfk
+
 ### 5. Get Document Categories
 GET {{host}}/api/documents/categories
 Authorization: Bearer {{token}}
@@ -240,7 +241,7 @@ Authorization: Bearer {{pmToken}}
 Accept: application/json
 
 ### 13. Get Engagement Info by ID
-GET {{host}}/api/Engagements/1
+GET {{host}}/api/Engagements/7
 Authorization: Bearer {{pmToken}}
 Accept: application/json
 
@@ -253,6 +254,7 @@ Content-Type: {{contentType}}
   "clientName": "Acme Global Solutions",
   "engagementDescription": "Enterprise LMS Implementation",
   "engagementTypeId": 1,
+  "engagementName" : "venom",
   "commercialModelId": 1,
   "kickoffDate": "2026-08-15",
   "billingStartDate": "2026-09-01"
@@ -301,10 +303,10 @@ Content-Type: {{contentType}}
 }
 
 ###
-@techLeadToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwicm9sZSI6WyJUZWNoIExlYWQiLCJUZWNoIExlYWQiXSwiZW1haWwiOiJ0ZWNobGVhZEBjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiVmlrcmFtIFNpbmdoIiwiaXNBZG1pbiI6ImZhbHNlIiwibmJmIjoxNzg1OTMzNTQ0LCJleHAiOjE3ODU5MzUzNDQsImlhdCI6MTc4NTkzMzU0NCwiaXNzIjoiUGRyQXBpIiwiYXVkIjoiUGRyV2ViIn0.fU70SNe1OxKZPSZUwW9LbSxv92OFjq4qbLKnYHuNeMU
+@techLeadToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwicm9sZSI6WyJUZWNoIExlYWQiLCJUZWNoIExlYWQiXSwiZW1haWwiOiJ0ZWNobGVhZEBjb21wYW55LmNvbSIsImZ1bGxuYW1lIjoiVmlrcmFtIFNpbmdoIiwiaXNBZG1pbiI6ImZhbHNlIiwibmJmIjoxNzg2MDAzMzY2LCJleHAiOjE3ODYwMDUxNjYsImlhdCI6MTc4NjAwMzM2NiwiaXNzIjoiUGRyQXBpIiwiYXVkIjoiUGRyV2ViIn0.WJC-4TkMlNmhtqKkQsjnffEglizaLynyT_qoF9-WHtc
 
 ### 17. Get All Access Items for Engagement 1
-GET {{host}}/api/engagements/1/access-items
+GET {{host}}/api/engagements/6/access-items
 Authorization: Bearer {{techLeadToken}}
 Accept: {{contentType}}
 
@@ -331,7 +333,7 @@ Content-Type: {{contentType}}
 }
 
 ### 20. Update Access Item Status to Blocked (Requires BlockReason)
-PATCH {{host}}/api/access-items/1/status
+PATCH {{host}}/api/access-items/10/status
 Authorization: Bearer {{techLeadToken}}
 Content-Type: {{contentType}}
 
@@ -341,7 +343,7 @@ Content-Type: {{contentType}}
 }
 
 ### 21. Unblock Access Item (Status -> InProgress)
-PATCH {{host}}/api/access-items/1/status
+PATCH {{host}}/api/access-items/6/status
 Authorization: Bearer {{techLeadToken}}
 Content-Type: {{contentType}}
 
@@ -424,7 +426,7 @@ Content-Type: {{contentType}}
 ##############################################################
 
 ### 30. Get Environment & Tooling Items for Engagement 1
-GET {{host}}/api/engagements/1/environment-tooling
+GET {{host}}/api/engagements/10/environment-tooling
 Authorization: Bearer {{techLeadToken}}
 Accept: {{contentType}}
 
@@ -448,17 +450,17 @@ Content-Type: {{contentType}}
 }
 
 ### 33. Update Environment & Tooling Status to NotApplicable (Requires NotApplicableReason)
-PATCH {{host}}/api/environment-tooling/1/status
+PATCH {{host}}/api/environment-tooling/25/status
 Authorization: Bearer {{techLeadToken}}
 Content-Type: {{contentType}}
 
 {
   "status": 3,
-  "notApplicableReason": "Mobile-only engagement, backend UAT environment not required."
+  "notApplicableReason": "Meowwww"
 }
 
 ### 34. Block Environment & Tooling Item (Triggers Risk Creation)
-PATCH {{host}}/api/environment-tooling/1/status
+PATCH {{host}}/api/environment-tooling/25/status
 Authorization: Bearer {{techLeadToken}}
 Content-Type: {{contentType}}
 
@@ -517,4 +519,66 @@ Content-Type: {{contentType}}
   "customName": "Unauthorized Tool Test",
   "ownerId": 2
 }
+
+##############################################################
+##### USER STORY 3 - RISK ASSESSMENT & MANAGEMENT ############
+##############################################################
+
+### 41. Get All Risks for Engagement 1 (Tech Lead / PM / Leadership)
+GET {{host}}/api/engagements/10/risks
+Authorization: Bearer {{techLeadToken}}
+Accept: {{contentType}}
+
+### 42. Create Manual Risk for Engagement 1
+POST {{host}}/api/engagements/10/risks
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Spider party dependency",
+  "description": "Payment gateway vendor clearance takes up to 10 business days."
+}
+
+### 43. Update Risk Status to Closed (Risk 1)
+PATCH {{host}}/api/risks/16/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 2
+}
+
+### 44. Re-open Risk Status to Open (Risk 1)
+PATCH {{host}}/api/risks/3/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 1
+}
+
+### 45. Error Test: Not Found Error - Non-existent engagement risks (Should return 404 Not Found)
+GET {{host}}/api/engagements/999/risks
+Authorization: Bearer {{techLeadToken}}
+Accept: {{contentType}}
+
+### 46. Error Test: Not Found Error - Non-existent risk id status update (Should return 404 Not Found)
+PATCH {{host}}/api/risks/999/status
+Authorization: Bearer {{techLeadToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": 2
+}
+
+### 47. Error Test: Authorization Error - Non-authorized user edit attempt (Should return 403 Forbidden)
+POST {{host}}/api/engagements/1/risks
+Authorization: Bearer {{unauthorizedToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Unauthorized Risk Creation",
+  "description": "This request should fail with HTTP 403 Forbidden"
+}
+
 
