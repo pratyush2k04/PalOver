@@ -14,9 +14,9 @@ public class CommitmentConfiguration : IEntityTypeConfiguration<Commitment>
         builder.Property(c => c.CommitmentId).HasColumnName("commitment_id").UseIdentityAlwaysColumn();
         
         builder.Property(c => c.HandoverId).HasColumnName("handover_id").IsRequired();
+        builder.Property(c => c.Title).HasColumnName("title").HasMaxLength(100).IsRequired();
         builder.Property(c => c.Description).HasColumnName("description").HasMaxLength(2000).IsRequired();
         builder.Property(c => c.CommitmentTypeId).HasColumnName("commitment_type_id").IsRequired();
-        builder.Property(c => c.Title).HasColumnName("title").HasMaxLength(100).IsRequired();
         builder.Property(c => c.Timeline).HasColumnName("timeline").IsRequired();
         builder.Property(c => c.TimelineUnit).HasColumnName("timeline_unit").HasMaxLength(20).IsRequired();
 
