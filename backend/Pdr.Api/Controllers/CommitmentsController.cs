@@ -39,11 +39,7 @@ public class CommitmentsController : ControllerBase
         _updateRealisticValidator = updateRealisticValidator;
     }
 
-<<<<<<< HEAD
-    private async Task CheckAccessAsync(long engagementId, string requiredRole)
-=======
-    private async Task CheckAccessAsync(int engagementId)
->>>>>>> dev
+    private async Task CheckAccessAsync(int engagementId, string requiredRole)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         await _accessService.CanAccessHandoverAsync(engagementId, userId, requiredRole);
@@ -92,8 +88,8 @@ public class CommitmentsController : ControllerBase
         return NoContent();
     }
 
-    [HttpPost("{commitmentId:long}/realistic")]
-    public async Task<ActionResult<RealisticCommitmentDto>> CreateRealisticCommitment(long engagementId, long commitmentId, [FromBody] CreateRealisticCommitmentRequest request)
+    [HttpPost("{commitmentId:int}/realistic")]
+    public async Task<ActionResult<RealisticCommitmentDto>> CreateRealisticCommitment(int engagementId, int commitmentId, [FromBody] CreateRealisticCommitmentRequest request)
     {
         await CheckAccessAsync(engagementId, "Project Management");
 
@@ -108,8 +104,8 @@ public class CommitmentsController : ControllerBase
         return CreatedAtAction(nameof(CreateRealisticCommitment), new { engagementId, commitmentId }, dto);
     }
 
-    [HttpPut("{commitmentId:long}/realistic")]
-    public async Task<ActionResult<RealisticCommitmentDto>> UpdateRealisticCommitment(long engagementId, long commitmentId, [FromBody] UpdateRealisticCommitmentRequest request)
+    [HttpPut("{commitmentId:int}/realistic")]
+    public async Task<ActionResult<RealisticCommitmentDto>> UpdateRealisticCommitment(int engagementId, int commitmentId, [FromBody] UpdateRealisticCommitmentRequest request)
     {
         await CheckAccessAsync(engagementId, "Project Management");
 

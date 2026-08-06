@@ -69,7 +69,7 @@ builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 builder.Services.AddScoped<IHandoverAccessService, HandoverAccessService>();
 builder.Services.AddScoped<IHandoverService, HandoverService>();
 builder.Services.AddScoped<ICommitmentService, CommitmentService>();
-builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IRealisticCommitmentService, Pdr.Api.Services.RealisticCommitmentService>();
+builder.Services.AddScoped<IRealisticCommitmentService, RealisticCommitmentService>();
 builder.Services.AddScoped<IMasterChecklistRepository, MasterChecklistRepository>();
 builder.Services.AddScoped<IMasterChecklistService, MasterChecklistService>();
 builder.Services.AddScoped<IHomeService, HomeService>();
