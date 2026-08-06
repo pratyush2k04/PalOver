@@ -9,7 +9,7 @@ using Pdr.Api.Services.Interfaces;
 namespace Pdr.Api.Controllers;
 
 [ApiController]
-[Route("api/engagements/{engagementId:long}/handover")]
+[Route("api/engagements/{engagementId:int}/handover")]
 public class HandoversController : ControllerBase
 {
     private readonly IHandoverService _handoverService;
@@ -39,7 +39,7 @@ public class HandoversController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<HandoverInfoDto>> GetHandover(long engagementId)
+    public async Task<ActionResult<HandoverInfoDto>> GetHandover(int engagementId)
     {
         await _accessService.CanAccessHandoverAsync(engagementId, GetUserId());
 
@@ -48,7 +48,7 @@ public class HandoversController : ControllerBase
     }
 
     [HttpPut("draft")]
-    public async Task<ActionResult<HandoverInfoDto>> SaveDraft(long engagementId, [FromBody] SaveHandoverDraftRequest request)
+    public async Task<ActionResult<HandoverInfoDto>> SaveDraft(int engagementId, [FromBody] SaveHandoverDraftRequest request)
     {
         await _accessService.CanAccessHandoverAsync(engagementId, GetUserId());
 
@@ -64,7 +64,7 @@ public class HandoversController : ControllerBase
     }
 
     [HttpPost("submit")]
-    public async Task<ActionResult<HandoverInfoDto>> Submit(long engagementId)
+    public async Task<ActionResult<HandoverInfoDto>> Submit(int engagementId)
     {
         await _accessService.CanAccessHandoverAsync(engagementId, GetUserId());
 

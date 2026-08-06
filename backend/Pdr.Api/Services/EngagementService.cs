@@ -9,7 +9,11 @@ using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class EngagementService(AppDbContext db, IEngagementRepository engagementRepository, ICurrentUserService currentUserService) : IEngagementService
+public class EngagementService(
+    AppDbContext db,
+    IEngagementRepository engagementRepository,
+    ICurrentUserService currentUserService,
+    IEngagementChecklistService engagementChecklistService) : IEngagementService
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
     private const string ProjectManagerRole = "Project Management";
@@ -95,6 +99,14 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
             // Fallback for unauthenticated test calls
         }
 
+
+        // Apply master checklist snapshot and technical readiness items for new engagements
+        if (existing is null)
+        {
+            await engagementChecklistService.ApplyMasterChecklistToEngagementAsync(engagement.EngagementId);
+            await InitializeTechnicalReadinessItemsAsync(engagement.EngagementId);
+        }
+
         return new MarkSowSignedResponse(engagement, warnings);
     }
 
@@ -178,7 +190,7 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
     }
     //assign
 
-    public async Task<EngagementOwnersDto> GetEngagementOwnersAsync(long engagementId)
+    public async Task<EngagementOwnersDto> GetEngagementOwnersAsync(int engagementId)
     {
         if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
             throw new EngagementNotFoundException(engagementId);
@@ -188,13 +200,13 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
     }
     
 
-    public async Task<EngagementOwnersDto> AssignProjectManagerAsync(long engagementId, int userId) =>
+    public async Task<EngagementOwnersDto> AssignProjectManagerAsync(int engagementId, int userId) =>
         await AssignOwnerAsync(engagementId, userId, ProjectManagerRole);
 
-    public async Task<EngagementOwnersDto> AssignTechLeadAsync(long engagementId, int userId) =>
+    public async Task<EngagementOwnersDto> AssignTechLeadAsync(int engagementId, int userId) =>
         await AssignOwnerAsync(engagementId, userId, TechLeadRole);
 
-    private async Task<EngagementOwnersDto> AssignOwnerAsync(long engagementId, int userId, string requiredRole)
+    private async Task<EngagementOwnersDto> AssignOwnerAsync(int engagementId, int userId, string requiredRole)
     {
         if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
             throw new EngagementNotFoundException(engagementId);
@@ -213,7 +225,84 @@ public class EngagementService(AppDbContext db, IEngagementRepository engagement
         }
 
         await engagementRepository.AddAssignmentAsync(engagementId, userId);
+
+        if (requiredRole == TechLeadRole)
+        {
+            var accessItems = await db.AccessItems.Where(a => a.EngagementId == engagementId).ToListAsync();
+            foreach (var item in accessItems)
+            {
+                item.OwnerId = userId;
+            }
+
+            var toolingItems = await db.EnvironmentToolingItems.Where(t => t.EngagementId == engagementId).ToListAsync();
+            foreach (var item in toolingItems)
+            {
+                item.OwnerId = userId;
+            }
+
+            await db.SaveChangesAsync();
+        }
+
         return await GetEngagementOwnersAsync(engagementId);
+    }
+
+    private async Task InitializeTechnicalReadinessItemsAsync(int engagementId)
+    {
+        var techLeadAssignment = await db.EngagementAssignments
+            .Include(ea => ea.User)
+            .ThenInclude(u => u.Role)
+            .FirstOrDefaultAsync(ea => ea.EngagementId == engagementId && ea.User.Role.Name == TechLeadRole);
+
+        int ownerId = techLeadAssignment?.UserId ?? 0;
+        if (ownerId == 0)
+        {
+            try
+            {
+                ownerId = currentUserService.GetUserId();
+            }
+            catch (InvalidOperationException)
+            {
+                ownerId = 1;
+            }
+        }
+        if (ownerId == 0) ownerId = 1;
+
+        var activeAccessDefs = await db.AccessItemDefinitions
+            .Where(d => d.IsActive)
+            .OrderBy(d => d.DisplayOrder)
+            .ToListAsync();
+
+        foreach (var def in activeAccessDefs)
+        {
+            db.AccessItems.Add(new Pdr.Api.Models.AccessTracker.AccessItem
+            {
+                EngagementId = engagementId,
+                AccessItemDefinitionId = def.AccessItemDefinitionId,
+                Name = def.Name,
+                IsClientSide = def.IsClientSide,
+                OwnerId = ownerId,
+                Status = Pdr.Api.Models.AccessTracker.AccessItemStatus.InProgress
+            });
+        }
+
+        var activeToolingDefs = await db.EnvironmentToolingDefinitions
+            .Where(d => d.IsActive)
+            .OrderBy(d => d.DisplayOrder)
+            .ToListAsync();
+
+        foreach (var def in activeToolingDefs)
+        {
+            db.EnvironmentToolingItems.Add(new Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem
+            {
+                EngagementId = engagementId,
+                EnvironmentToolingDefinitionId = def.EnvironmentToolingDefinitionId,
+                Name = def.Name,
+                OwnerId = ownerId,
+                Status = Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingStatus.NotReady
+            });
+        }
+
+        await db.SaveChangesAsync();
     }
 
     private static EngagementOwnersDto BuildOwnersDto(List<EngagementAssignment> assignments)

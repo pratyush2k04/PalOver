@@ -7,6 +7,7 @@ using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Models.MasterChecklist;
 using Pdr.Api.Models.Handover;
+using Pdr.Api.Models.EngagementChecklist;
 
 using Pdr.Api.Models.Documents;
 //using System.Reflection;
@@ -43,6 +44,10 @@ public class AppDbContext : DbContext
     public DbSet<MasterChecklistVersion> MasterChecklistVersions => Set<MasterChecklistVersion>();
     public DbSet<MasterChecklistItem> MasterChecklistItems => Set<MasterChecklistItem>();
 
+    // Engagement Checklist entities
+    public DbSet<EngagementChecklist> EngagementChecklists => Set<EngagementChecklist>();
+    public DbSet<EngagementChecklistItem> EngagementChecklistItems => Set<EngagementChecklistItem>();
+
     private static readonly DateTime SeedTimestamp = new(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
     // Documents
@@ -54,6 +59,12 @@ public class AppDbContext : DbContext
 
     // Kickoff Records
     public DbSet<KickoffRecord> KickoffRecords => Set<KickoffRecord>();
+    // Technical Readiness (Access Tracker, Environment & Tooling, Risk)
+    public DbSet<Pdr.Api.Models.AccessTracker.AccessItem> AccessItems => Set<Pdr.Api.Models.AccessTracker.AccessItem>();
+    public DbSet<Pdr.Api.Models.AccessTracker.AccessItemDefinition> AccessItemDefinitions => Set<Pdr.Api.Models.AccessTracker.AccessItemDefinition>();
+    public DbSet<Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem> EnvironmentToolingItems => Set<Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem>();
+    public DbSet<Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition> EnvironmentToolingDefinitions => Set<Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition>();
+    public DbSet<Pdr.Api.Models.Risk.Risk> Risks => Set<Pdr.Api.Models.Risk.Risk>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -75,6 +86,18 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new DocumentConfiguration());
         modelBuilder.ApplyConfiguration(new PersonConfiguration());
         modelBuilder.ApplyConfiguration(new KickoffRecordConfiguration());
+
+        // Engagement & Engagement Checklist
+        modelBuilder.ApplyConfiguration(new EngagementConfiguration());
+        modelBuilder.ApplyConfiguration(new EngagementChecklistConfiguration());
+        modelBuilder.ApplyConfiguration(new EngagementChecklistItemConfiguration());
+
+        // Technical Readiness Configurations
+        modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.AccessTracker.AccessItemConfiguration());
+        modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.AccessTracker.AccessItemDefinitionConfiguration());
+        modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.EnvironmentTooling.EnvironmentToolingItemConfiguration());
+        modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.EnvironmentTooling.EnvironmentToolingDefinitionConfiguration());
+        modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.RIsk.RiskConfiguration());
 
         // Global Query Filters (Soft Delete)
         modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
@@ -107,9 +130,18 @@ public class AppDbContext : DbContext
             entity.HasData(
                 new
                 {
-                    Id = 1L,
+                    Id = 1,
+                    VersionNumber = 0,
+                    StatusId = 2,
+                    CreatedAt = SeedTimestamp,
+                    UpdatedAt = SeedTimestamp,
+                    IsDeleted = false
+                },
+                new
+                {
+                    Id = 2,
                     VersionNumber = 1,
-                    StatusId = 1L,
+                    StatusId = 1,
                     CreatedAt = SeedTimestamp,
                     UpdatedAt = SeedTimestamp,
                     IsDeleted = false
@@ -292,74 +324,6 @@ public class AppDbContext : DbContext
                 new { Id = 3, Name = "Capped T&M" }
             );
         });
-
-        modelBuilder.Entity<Engagement>(entity =>
-        {
-            entity.ToTable("engagements");
-            entity.HasKey(e => e.EngagementId);
-            entity.Property(e => e.EngagementId).HasColumnName("engagement_id");
-            entity.Property(e => e.ClientName).HasColumnName("client_name").HasMaxLength(200).IsRequired();
-            entity.Property(e => e.EngagementDescription).HasColumnName("engagement_description");
-            entity.Property(e => e.EngagementTypeId).HasColumnName("engagement_type_id").IsRequired();
-            entity.Property(e => e.CommercialModelId).HasColumnName("commercial_model_id").IsRequired();
-            entity.Property(e => e.KickoffDate).HasColumnName("kickoff_date").IsRequired();
-            entity.Property(e => e.BillingStartDate).HasColumnName("billing_start_date");
-            entity.Property(e => e.StatusId).HasColumnName("status_id");
-
-            // BaseAuditableEntity Column Mappings
-            entity.Property(e => e.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
-            entity.Property(e => e.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("NOW()");
-            entity.Property(e => e.CreatedBy).HasColumnName("created_by").HasMaxLength(255);
-            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by").HasMaxLength(255);
-            entity.Property(e => e.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
-
-            // Global Query Filter for Soft Delete
-            entity.HasQueryFilter(e => !e.IsDeleted);
-
-            entity.HasOne(e => e.EngagementType)
-                  .WithMany()
-                  .HasForeignKey(e => e.EngagementTypeId);
-
-            entity.HasOne(e => e.CommercialModel)
-                  .WithMany()
-                  .HasForeignKey(e => e.CommercialModelId);
-
-            entity.HasOne(e => e.Status)
-                  .WithMany(s => s.Engagements)
-                  .HasForeignKey(e => e.StatusId);
-
-            entity.HasData(
-                new Engagement
-                {
-                    EngagementId = 1,
-                    ClientName = "FinTech Solutions",
-                    EngagementDescription = "Core Banking Greenfield Implementation",
-                    EngagementTypeId = 1, // Greenfield
-                    CommercialModelId = 1, // Time and Material
-                    KickoffDate = new DateOnly(2026, 8, 15),
-                    StatusId = 1, // KickoffPending
-                    CreatedAt = SeedTimestamp,
-                    UpdatedAt = SeedTimestamp,
-                    CreatedBy = "System",
-                    IsDeleted = false
-                },
-                new Engagement
-                {
-                    EngagementId = 2,
-                    ClientName = "HealthCare Plus",
-                    EngagementDescription = "Legacy System Upgrade and Support",
-                    EngagementTypeId = 2, // Brownfield
-                    CommercialModelId = 2, // Fixed
-                    KickoffDate = new DateOnly(2026, 6, 1),
-                    BillingStartDate = new DateOnly(2026, 7, 1),
-                    StatusId = 2, // Active
-                    CreatedAt = SeedTimestamp,
-                    UpdatedAt = SeedTimestamp,
-                    CreatedBy = "System",
-                    IsDeleted = false
-                }
-            );
-        });
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -376,7 +340,7 @@ public class AppDbContext : DbContext
 
     private static object[] GetMasterChecklistItemSeedData()
     {
-        var items = new (string Title, string Description, long CategoryId, bool IsMandatory)[]
+        var items = new (string Title, string Description, int CategoryId, bool IsMandatory)[]
         {
             ("Sign commercial contract", "Confirm the signed commercial contract is on file before kickoff.", 1, true),
             ("Confirm engagement budget", "Verify the approved budget matches the statement of work.", 1, true),
@@ -401,23 +365,28 @@ public class AppDbContext : DbContext
         };
 
         var seed = new List<object>();
-        for (var i = 0; i < items.Length; i++)
+        var versionIds = new[] { 1, 2 };
+        var nextId = 1;
+        foreach (var versionId in versionIds)
         {
-            var (title, description, categoryId, isMandatory) = items[i];
-            seed.Add(new
+            for (var i = 0; i < items.Length; i++)
             {
-                Id = (long)(i + 1),
-                VersionId = 1L,
-                Title = title,
-                Description = description,
-                CategoryId = categoryId,
-                IsMandatory = isMandatory,
-                DisplayOrder = i + 1,
-                IsRetired = false,
-                CreatedAt = SeedTimestamp,
-                UpdatedAt = SeedTimestamp,
-                IsDeleted = false
-            });
+                var (title, description, categoryId, isMandatory) = items[i];
+                seed.Add(new
+                {
+                    Id = nextId++,
+                    VersionId = versionId,
+                    Title = title,
+                    Description = description,
+                    CategoryId = categoryId,
+                    IsMandatory = isMandatory,
+                    DisplayOrder = i + 1,
+                    IsRetired = false,
+                    CreatedAt = SeedTimestamp,
+                    UpdatedAt = SeedTimestamp,
+                    IsDeleted = false
+                });
+            }
         }
 
         return seed.ToArray();

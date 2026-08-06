@@ -37,7 +37,7 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
             .ToListAsync();
     }
 
-    public async Task<bool> SoftDeleteAsync(long id)
+    public async Task<bool> SoftDeleteAsync(int id)
     {
         var doc = await context.Documents.FindAsync(id);
         if (doc == null || doc.IsDeleted) return false;

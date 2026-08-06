@@ -2,11 +2,11 @@ namespace Pdr.Api.DTOs.MasterChecklist;
 
 public class MasterChecklistVersionResponseDto
 {
-    public long Id { get; set; }
+    public int Id { get; set; }
 
     public int VersionNumber { get; set; }
 
-    public long StatusId { get; set; }
+    public int StatusId { get; set; }
 
     public required string StatusName { get; set; }
 
