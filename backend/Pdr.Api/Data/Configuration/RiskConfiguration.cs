@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Pdr.Api.Models.Risk;
 
-namespace Pdr.Api.Data.Configuration.RIsk
+namespace Pdr.Api.Data.Configuration
 {
     public class RiskConfiguration : IEntityTypeConfiguration<Risk>
     {
