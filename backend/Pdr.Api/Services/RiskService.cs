@@ -1,56 +1,104 @@
+using Pdr.Api.DTOs.Risk;
+using Pdr.Api.Exceptions;
+using Pdr.Api.Exceptions.RiskExceptions;
+using Pdr.Api.Models.Risk;
+using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-/// <summary>
-/// Stub implementation of IRiskService.
-/// All methods are no-ops until the Risk module developer implements them.
-///
-/// IMPLEMENTATION NOTES FOR RISK DEVELOPER:
-/// ------------------------------------------
-/// - Inject AppDbContext (or IRiskRepository once created) via constructor.
-/// - Risk model fields available: RiskId, EngagementId, Title, Description, Status (Open/Closed).
-/// - All methods that create risks should guard against duplicate Open risks
-///   for the same (EngagementId + Title) combination.
-/// - Use RiskStatus.Open when creating, RiskStatus.Closed when resolving.
-/// </summary>
-public class RiskService : IRiskService
+public class RiskService(IRiskRepository repository) : IRiskService
 {
-    /// <summary>
-    /// TODO: Implement risk creation.
-    /// - Query Risks where EngagementId == engagementId AND Title == title AND Status == Open.
-    /// - If none found, insert a new Risk with Status = Open.
-    /// - SaveChanges.
-    /// </summary>
-    public Task CreateRiskAsync(int engagementId, string title, string description)
+    public async Task CreateRiskAsync(int engagementId, string title, string description)
     {
-        // Stub — to be implemented by Risk module developer
-        return Task.CompletedTask;
+        var existingOpenRisk = await repository.GetOpenByTitleAsync(engagementId, title);
+        if (existingOpenRisk != null)
+        {
+            return;
+        }
+
+        var risk = new Risk
+        {
+            EngagementId = engagementId,
+            Title = title,
+            Description = description,
+            Status = RiskStatus.Open
+        };
+
+        await repository.AddAsync(risk);
+        await repository.SaveChangesAsync();
     }
 
-    /// <summary>
-    /// TODO: Implement risk resolution.
-    /// - Query Risks where EngagementId == engagementId AND Title == title AND Status == Open.
-    /// - If found, set Status = Closed.
-    /// - SaveChanges.
-    /// </summary>
-    public Task ResolveRiskAsync(int engagementId, string title)
+    public async Task ResolveRiskAsync(int engagementId, string title)
     {
-        // Stub — to be implemented by Risk module developer
-        return Task.CompletedTask;
+        var openRisk = await repository.GetOpenByTitleAsync(engagementId, title);
+        if (openRisk != null)
+        {
+            openRisk.Status = RiskStatus.Closed;
+            await repository.SaveChangesAsync();
+        }
     }
 
-    /// <summary>
-    /// TODO: Implement client-side billing risk creation (User Story 3).
-    /// - Title format: $"Client Access Not Granted: {accessItemName}"
-    /// - Description format: $"The client-side access item '{accessItemName}' has not been granted
-    ///   and billing is starting within 2 days."
-    /// - Guard against duplicate Open risks for the same (EngagementId + Title).
-    /// - SaveChanges.
-    /// </summary>
-    public Task CreateClientSideRiskAsync(int engagementId, string accessItemName)
+    public async Task CreateClientSideRiskAsync(int engagementId, string accessItemName)
     {
-        // Stub — to be implemented by Risk module developer
-        return Task.CompletedTask;
+        var title = $"Client Access Not Granted: {accessItemName}";
+        var description = $"The client-side access item '{accessItemName}' has not been granted and billing is starting within 2 days.";
+        await CreateRiskAsync(engagementId, title, description);
     }
+
+    public async Task<List<RiskDto>> GetRisksByEngagementIdAsync(int engagementId)
+    {
+        if (!await repository.EngagementExistsAsync(engagementId))
+        {
+            throw new EngagementNotFoundException(engagementId);
+        }
+
+        var risks = await repository.GetByEngagementIdAsync(engagementId);
+        return risks.Select(MapToDto).ToList();
+    }
+
+    public async Task<RiskDto> CreateManualRiskAsync(int engagementId, CreateRiskRequest request)
+    {
+        if (!await repository.EngagementExistsAsync(engagementId))
+        {
+            throw new EngagementNotFoundException(engagementId);
+        }
+
+        var risk = new Risk
+        {
+            EngagementId = engagementId,
+            Title = request.Title,
+            Description = request.Description,
+            Status = RiskStatus.Open
+        };
+
+        await repository.AddAsync(risk);
+        await repository.SaveChangesAsync();
+
+        return MapToDto(risk);
+    }
+
+    public async Task<RiskDto> UpdateRiskStatusAsync(int riskId, UpdateRiskStatusRequest request)
+    {
+        var risk = await repository.GetByIdAsync(riskId)
+            ?? throw new RiskNotFoundException(riskId);
+
+        risk.Status = request.Status;
+        await repository.SaveChangesAsync();
+
+        return MapToDto(risk);
+    }
+
+    private static RiskDto MapToDto(Risk risk) => new()
+    {
+        RiskId = risk.RiskId,
+        EngagementId = risk.EngagementId,
+        Title = risk.Title,
+        Description = risk.Description,
+        Status = risk.Status,
+        CreatedAt = risk.CreatedAt,
+        UpdatedAt = risk.UpdatedAt,
+        CreatedBy = risk.CreatedBy,
+        UpdatedBy = risk.UpdatedBy
+    };
 }
