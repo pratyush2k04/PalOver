@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -15,8 +15,7 @@ namespace Pdr.Api.Migrations
                 name: "allowed_roles",
                 table: "documents",
                 type: "text[]",
-                nullable: false,
-                defaultValueSql: "'{}'");
+                nullable: false);
         }
 
         /// <inheritdoc />

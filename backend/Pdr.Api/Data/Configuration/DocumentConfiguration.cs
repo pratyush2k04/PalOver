@@ -54,8 +54,7 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
                .HasDefaultValue("Team-wide");
 
         builder.Property(d => d.AllowedRoles)
-               .HasColumnName("allowed_roles")
-               .HasDefaultValueSql("'{}'");
+               .HasColumnName("allowed_roles");
 
         // BaseAuditableEntity Column Mappings
         builder.Property(d => d.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
