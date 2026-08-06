@@ -53,6 +53,9 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
                .IsRequired()
                .HasDefaultValue("Team-wide");
 
+        builder.Property(d => d.AllowedRoles)
+               .HasColumnName("allowed_roles");
+
         // BaseAuditableEntity Column Mappings
         builder.Property(d => d.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
         builder.Property(d => d.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("NOW()");

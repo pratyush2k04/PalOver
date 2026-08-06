@@ -1,0 +1,92 @@
+<div class="modal-overlay" (click)="onCancel()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title">Custom Document Visibility</h3>
+      <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="doc-info-banner">
+        <div class="doc-name-row">
+          <svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+          <span class="file-name">{{ document.fileName }}</span>
+        </div>
+        <div class="doc-meta">
+          <span class="meta-item">Category: <strong>{{ document.categoryName || 'Other' }}</strong></span>
+          <span class="meta-item">Category default: <strong>{{ document.categoryDefaultVisibility || 'Team-wide' }}</strong></span>
+        </div>
+      </div>
+
+      @if (errorMessage()) {
+        <div class="alert alert-danger">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <div class="form-group">
+        <label class="section-label">SELECT ALLOWED ROLES</label>
+        <p class="section-hint">Restrict access to specific roles. Project Managers and Admins always have access.</p>
+
+        <div class="always-granted-notice">
+          <svg class="shield-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          <span>Project Management &amp; Admin — always granted</span>
+        </div>
+
+        <div class="roles-grid">
+          @for (role of availableRoles; track role.name) {
+            <label class="role-checkbox-card" [class.is-selected]="isRoleSelected(role.name)">
+              <input
+                type="checkbox"
+                [checked]="isRoleSelected(role.name)"
+                (change)="toggleRole(role.name, $event)"
+              />
+              <span class="role-name">{{ role.label }}</span>
+            </label>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      @if (document.visibility === 'Custom' || (document.allowedRoles && document.allowedRoles.length > 0)) {
+        <button
+          type="button"
+          class="btn btn-outline-warning btn-remove-override"
+          (click)="onRemoveOverride()"
+          [disabled]="isSubmitting()"
+        >
+          Remove Override
+        </button>
+      }
+
+      <div class="footer-actions">
+        <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="isSubmitting()">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="onSave()"
+          [disabled]="isSubmitting() || selectedRoles().length === 0"
+        >
+          @if (isSubmitting()) {
+            <span class="spinner"></span>
+            <span>Saving...</span>
+          } @else {
+            <span>Apply Restriction</span>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

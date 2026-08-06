@@ -23,15 +23,18 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
             .FirstOrDefaultAsync(d => d.Id == id);
     }
 
-    public async Task<IEnumerable<Document>> GetByEngagementIdAsync(int engagementId, bool includePmOnly)
+    public async Task<IEnumerable<Document>> GetByEngagementIdAsync(int engagementId, string? userRole, bool isAdmin, bool isPm)
     {
         var query = context.Documents
             .Include(d => d.Category)
             .Where(d => d.EngagementId == engagementId);
 
-        if (!includePmOnly)
+        if (!isAdmin && !isPm)
         {
-            query = query.Where(d => d.Visibility != "PM-only");
+            query = query.Where(d =>
+                d.Visibility == "Team-wide"
+                || (d.Visibility == "PM-only" && userRole == "Leadership")
+                || (d.Visibility == "Custom" && userRole != null && d.AllowedRoles.Contains(userRole)));
         }
 
         return await query
@@ -60,7 +63,7 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
         return true;
     }
 
-    public async Task<Document?> UpdateVisibilityAsync(int id, string visibility, string updatedBy)
+    public async Task<Document?> UpdateVisibilityAsync(int id, string visibility, List<string> allowedRoles, string updatedBy)
     {
         var doc = await context.Documents
             .Include(d => d.Category)
@@ -69,6 +72,7 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
         if (doc == null) return null;
 
         doc.Visibility = visibility;
+        doc.AllowedRoles = allowedRoles ?? new List<string>();
         doc.UpdatedAt = DateTime.UtcNow;
         doc.UpdatedBy = updatedBy;
         await context.SaveChangesAsync();

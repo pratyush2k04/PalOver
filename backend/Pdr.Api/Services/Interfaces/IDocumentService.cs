@@ -15,5 +15,5 @@ public interface IDocumentService
 
     Task<bool> DeleteDocumentAsync(int id, string reason);
 
-    Task<DocumentResponseDto> UpdateDocumentVisibilityAsync(int id, string visibility);
+    Task<DocumentResponseDto> UpdateDocumentVisibilityAsync(int id, UpdateDocumentVisibilityDto dto);
 }

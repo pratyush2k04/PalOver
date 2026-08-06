@@ -70,31 +70,57 @@
                 </td>
                 <td class="col-visibility">
                   @if (canManageVisibility()) {
-                    <!-- PM / Admin: inline editable dropdown -->
-                    <select
-                      class="visibility-select"
-                      [class.is-pm-only]="doc.visibility === 'PM-only'"
-                      [value]="doc.visibility"
-                      (change)="onVisibilityChange(doc, $any($event.target).value)"
-                      [attr.aria-label]="'Visibility for ' + doc.fileName"
-                    >
-                      <option value="Team-wide">Team-wide</option>
-                      <option value="PM-only">PM-only</option>
-                    </select>
+                    <!-- PM / Admin: inline editable dropdown & custom edit trigger -->
+                    <div class="visibility-cell-wrapper">
+                      <select
+                        class="visibility-select"
+                        [class.is-pm-only]="doc.visibility === 'PM-only'"
+                        [class.is-custom]="doc.visibility === 'Custom'"
+                        [value]="doc.visibility === 'Custom' ? 'Custom' : doc.visibility"
+                        (change)="onVisibilityChange(doc, $any($event.target).value)"
+                        [attr.aria-label]="'Visibility for ' + doc.fileName"
+                      >
+                        <option value="Team-wide">Team-wide</option>
+                        <option value="PM-only">PM-only</option>
+                        <option value="Custom">Custom visibility</option>
+                      </select>
+                      @if (doc.visibility === 'Custom') {
+                        <button
+                          type="button"
+                          class="btn-edit-custom"
+                          title="Edit allowed roles"
+                          (click)="openCustomVisibilityModal(doc)"
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                          </svg>
+                        </button>
+                      }
+                    </div>
                   } @else {
-                    <!-- Leadership / others: read-only badge -->
+                    <!-- Viewers: read-only badge -->
                     <span
                       class="visibility-badge"
+                      [class.badge-custom-visibility]="doc.visibility === 'Custom'"
                       [class.badge-pm-only]="doc.visibility === 'PM-only'"
-                      [class.badge-team-wide]="doc.visibility !== 'PM-only'"
+                      [class.badge-team-wide]="doc.visibility === 'Team-wide'"
                     >
-                      @if (doc.visibility === 'PM-only') {
+                      @if (doc.visibility === 'Custom') {
                         <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                           <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                         </svg>
+                        Custom visibility
+                      } @else if (doc.visibility === 'PM-only') {
+                        <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        PM-only
+                      } @else {
+                        Team-wide
                       }
-                      {{ doc.visibility === 'PM-only' ? 'PM-only' : 'Team-wide' }}
                     </span>
                   }
                 </td>
@@ -135,4 +161,12 @@
     (closed)="closeRemoveModal()"
     (removed)="onDocumentRemoved()"
   ></app-remove-document-dialog>
+}
+
+@if (selectedDocForCustomVisibility()) {
+  <app-custom-visibility-dialog
+    [document]="selectedDocForCustomVisibility()!"
+    (closed)="closeCustomVisibilityModal()"
+    (updated)="onCustomVisibilityUpdated($event)"
+  ></app-custom-visibility-dialog>
 }

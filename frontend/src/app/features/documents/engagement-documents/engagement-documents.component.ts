@@ -16,11 +16,12 @@ import { DocumentItem } from '../../../models/document.model';
 import { AuthService } from '../../../services/auth';
 import { UploadDocumentDialogComponent } from '../upload-document-dialog/upload-document-dialog.component';
 import { RemoveDocumentDialogComponent } from '../remove-document-dialog/remove-document-dialog.component';
+import { CustomVisibilityDialogComponent } from '../custom-visibility-dialog/custom-visibility-dialog.component';
 
 @Component({
   selector: 'app-engagement-documents',
   standalone: true,
-  imports: [CommonModule, UploadDocumentDialogComponent, RemoveDocumentDialogComponent],
+  imports: [CommonModule, UploadDocumentDialogComponent, RemoveDocumentDialogComponent, CustomVisibilityDialogComponent],
   templateUrl: './engagement-documents.component.html',
   styleUrl: './engagement-documents.component.scss'
 })
@@ -42,6 +43,7 @@ export class EngagementDocumentsComponent {
   errorMessage = signal<string | null>(null);
   showUploadModal = signal<boolean>(false);
   selectedDocForRemoval = signal<DocumentItem | null>(null);
+  selectedDocForCustomVisibility = signal<DocumentItem | null>(null);
   downloadingId = signal<number | null>(null);
 
   /** True for PM and Admin — can edit visibility inline */
@@ -118,10 +120,33 @@ export class EngagementDocumentsComponent {
     });
   }
 
+  openCustomVisibilityModal(doc: DocumentItem): void {
+    this.selectedDocForCustomVisibility.set(doc);
+  }
+
+  closeCustomVisibilityModal(): void {
+    this.selectedDocForCustomVisibility.set(null);
+  }
+
+  onCustomVisibilityUpdated(updatedDoc: DocumentItem): void {
+    this.documents.update(docs =>
+      docs.map(d => d.id === updatedDoc.id ? updatedDoc : d)
+    );
+    // Keep the signal fresh so re-opening the modal shows current allowedRoles
+    if (this.selectedDocForCustomVisibility()?.id === updatedDoc.id) {
+      this.selectedDocForCustomVisibility.set(updatedDoc);
+    }
+  }
+
   onVisibilityChange(doc: DocumentItem, newVisibility: string): void {
+    if (newVisibility === 'Custom') {
+      this.openCustomVisibilityModal(doc);
+      return;
+    }
+
     // Optimistic update
     this.documents.update(docs =>
-      docs.map(d => d.id === doc.id ? { ...d, visibility: newVisibility } : d)
+      docs.map(d => d.id === doc.id ? { ...d, visibility: newVisibility, allowedRoles: [] } : d)
     );
 
     this.documentService.updateVisibility(doc.id, newVisibility).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({

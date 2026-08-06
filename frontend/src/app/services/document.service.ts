@@ -51,8 +51,11 @@ export class DocumentService {
     return this.http.post<void>(`/api/documents/${id}/remove`, { reason });
   }
 
-  updateVisibility(id: number, visibility: string): Observable<DocumentItem> {
-    const body: UpdateDocumentVisibilityRequest = { visibility: visibility as 'PM-only' | 'Team-wide' };
+  updateVisibility(id: number, request: UpdateDocumentVisibilityRequest | string): Observable<DocumentItem> {
+    const body: UpdateDocumentVisibilityRequest =
+      typeof request === 'string'
+        ? { visibility: request }
+        : request;
     return this.http.patch<DocumentItem>(`/api/documents/${id}/visibility`, body);
   }
 }

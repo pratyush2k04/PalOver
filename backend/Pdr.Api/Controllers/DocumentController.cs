@@ -160,7 +160,7 @@ public class DocumentController(
         // KeyNotFoundException falls through to the generic 500 handler, so catch it here
         try
         {
-            var updated = await documentService.UpdateDocumentVisibilityAsync(id, request.Visibility);
+            var updated = await documentService.UpdateDocumentVisibilityAsync(id, request);
             return Ok(updated);
         }
         catch (KeyNotFoundException ex)

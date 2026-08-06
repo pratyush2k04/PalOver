@@ -8,7 +8,10 @@ export interface DocumentItem {
   contentType: string;
   uploadedBy: string;
   uploadedAt: string;
-  visibility: 'PM-only' | 'Team-wide' | string;
+  visibility: 'PM-only' | 'Team-wide' | 'Custom' | string;
+  allowedRoles?: string[];
+  isCustomVisibility?: boolean;
+  categoryDefaultVisibility?: string;
 }
 
 export interface DocumentCategory {
@@ -28,5 +31,7 @@ export interface RemoveDocumentRequest {
 }
 
 export interface UpdateDocumentVisibilityRequest {
-  visibility: 'PM-only' | 'Team-wide';
+  visibility?: 'PM-only' | 'Team-wide' | 'Custom' | string;
+  allowedRoles?: string[];
+  resetToCategoryDefault?: boolean;
 }

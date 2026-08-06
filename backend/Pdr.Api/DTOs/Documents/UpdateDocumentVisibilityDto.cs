@@ -2,5 +2,9 @@ namespace Pdr.Api.DTOs.Documents;
 
 public class UpdateDocumentVisibilityDto
 {
-    public required string Visibility { get; set; }
+    public string? Visibility { get; set; }
+
+    public List<string>? AllowedRoles { get; set; }
+
+    public bool ResetToCategoryDefault { get; set; } = false;
 }

@@ -19,18 +19,46 @@ public class DocumentService(
 {
     private const string UploadsFolder = "Uploads/Documents";
 
-    // ── Role-check helpers ──────────────────────────────────────────────────
-
-    /// <summary>PM, Leadership, and Admin users can see and download PM-only documents.</summary>
-    private bool CanAccessPmOnlyDocuments() =>
-        currentUserService.IsInRole("Project Management")
-        || currentUserService.IsInRole("Leadership")
-        || currentUserService.IsAdmin();
+    // ── Helper methods ──────────────────────────────────────────────────────
 
     /// <summary>Only PM and Admin can change a document's visibility.</summary>
     private bool CanManageDocumentVisibility() =>
         currentUserService.IsInRole("Project Management")
         || currentUserService.IsAdmin();
+
+    private bool CanAccessDocument(Document doc)
+    {
+        if (currentUserService.IsAdmin() || currentUserService.IsInRole("Project Management"))
+        {
+            return true;
+        }
+
+        var role = currentUserService.GetRole();
+        if (doc.Visibility == "Team-wide")
+        {
+            return true;
+        }
+
+        if (doc.Visibility == "PM-only" && currentUserService.IsInRole("Leadership"))
+        {
+            return true;
+        }
+
+        if (doc.Visibility == "Custom" && role != null && doc.AllowedRoles != null && doc.AllowedRoles.Contains(role))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static string GetCategoryDefaultVisibility(string? categoryName)
+    {
+        return string.Equals(categoryName, "Commercial", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(categoryName, "Proposal", StringComparison.OrdinalIgnoreCase)
+            ? "PM-only"
+            : "Team-wide";
+    }
 
     // ── CRUD ────────────────────────────────────────────────────────────────
 
@@ -71,8 +99,10 @@ public class DocumentService(
 
     public async Task<IEnumerable<DocumentResponseDto>> GetDocumentsByEngagementAsync(int engagementId)
     {
-        var includePmOnly = CanAccessPmOnlyDocuments();
-        var docs = await repository.GetByEngagementIdAsync(engagementId, includePmOnly);
+        var userRole = currentUserService.GetRole();
+        var isAdmin = currentUserService.IsAdmin();
+        var isPm = currentUserService.IsInRole("Project Management");
+        var docs = await repository.GetByEngagementIdAsync(engagementId, userRole, isAdmin, isPm);
         return docs.Select(MapToResponseDto);
     }
 
@@ -84,8 +114,7 @@ public class DocumentService(
             return null;
         }
 
-        // Enforce PM-only visibility on download
-        if (doc.Visibility == "PM-only" && !CanAccessPmOnlyDocuments())
+        if (!CanAccessDocument(doc))
         {
             throw new DocumentAccessDeniedException("You do not have permission to download this document.");
         }
@@ -137,17 +166,34 @@ public class DocumentService(
         return await repository.SoftDeleteAsync(id, reason, updatedBy);
     }
 
-    public async Task<DocumentResponseDto> UpdateDocumentVisibilityAsync(int id, string visibility)
+    public async Task<DocumentResponseDto> UpdateDocumentVisibilityAsync(int id, UpdateDocumentVisibilityDto dto)
     {
         if (!CanManageDocumentVisibility())
         {
             throw new DocumentAccessDeniedException("You do not have permission to change document visibility. Only Project Managers and Admins can do this.");
         }
 
+        var doc = await repository.GetByIdAsync(id);
+        if (doc == null)
+        {
+            throw new KeyNotFoundException($"Document with id {id} was not found.");
+        }
+
+        var targetVisibility = dto.ResetToCategoryDefault
+            ? GetCategoryDefaultVisibility(doc.Category?.CategoryName)
+            : dto.Visibility ?? GetCategoryDefaultVisibility(doc.Category?.CategoryName);
+
+        var allowedRoles = dto.AllowedRoles ?? new List<string>();
+
+        if (dto.ResetToCategoryDefault || targetVisibility != "Custom")
+        {
+            allowedRoles = new List<string>();
+        }
+
         var userEmail = currentUserService.GetEmail();
         var updatedBy = userEmail ?? currentUserService.GetUserId().ToString();
 
-        var updated = await repository.UpdateVisibilityAsync(id, visibility, updatedBy);
+        var updated = await repository.UpdateVisibilityAsync(id, targetVisibility, allowedRoles, updatedBy);
         if (updated == null)
         {
             throw new KeyNotFoundException($"Document with id {id} was not found.");
@@ -160,6 +206,7 @@ public class DocumentService(
 
     private static DocumentResponseDto MapToResponseDto(Document doc)
     {
+        var categoryDefault = GetCategoryDefaultVisibility(doc.Category?.CategoryName);
         return new DocumentResponseDto
         {
             Id = doc.Id,
@@ -171,7 +218,9 @@ public class DocumentService(
             ContentType = doc.ContentType,
             UploadedBy = doc.CreatedBy ?? string.Empty,
             UploadedAt = doc.CreatedAt,
-            Visibility = doc.Visibility
+            Visibility = doc.Visibility,
+            AllowedRoles = doc.AllowedRoles ?? new List<string>(),
+            CategoryDefaultVisibility = categoryDefault
         };
     }
 }
