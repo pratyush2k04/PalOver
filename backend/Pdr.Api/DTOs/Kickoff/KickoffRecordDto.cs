@@ -7,4 +7,5 @@ public class KickoffRecordDto
     public string Outcomes { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+    public List<KickoffActionItemDto> ActionItems { get; set; } = new();
 }

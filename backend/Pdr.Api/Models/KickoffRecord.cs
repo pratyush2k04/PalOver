@@ -9,4 +9,6 @@ public class KickoffRecord : BaseAuditableEntity
     public Engagement Engagement { get; set; } = null!;
 
     public string Outcomes { get; set; } = string.Empty;
+
+    public ICollection<KickoffActionItem> ActionItems { get; set; } = new List<KickoffActionItem>();
 }

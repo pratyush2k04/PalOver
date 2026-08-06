@@ -57,8 +57,9 @@ public class AppDbContext : DbContext
     // People
     public DbSet<Person> People => Set<Person>();
 
-    // Kickoff Records
+    // Kickoff Records & Action Items
     public DbSet<KickoffRecord> KickoffRecords => Set<KickoffRecord>();
+    public DbSet<KickoffActionItem> KickoffActionItems => Set<KickoffActionItem>();
     // Technical Readiness (Access Tracker, Environment & Tooling, Risk)
     public DbSet<Pdr.Api.Models.AccessTracker.AccessItem> AccessItems => Set<Pdr.Api.Models.AccessTracker.AccessItem>();
     public DbSet<Pdr.Api.Models.AccessTracker.AccessItemDefinition> AccessItemDefinitions => Set<Pdr.Api.Models.AccessTracker.AccessItemDefinition>();
@@ -86,6 +87,7 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new DocumentConfiguration());
         modelBuilder.ApplyConfiguration(new PersonConfiguration());
         modelBuilder.ApplyConfiguration(new KickoffRecordConfiguration());
+        modelBuilder.ApplyConfiguration(new KickoffActionItemConfiguration());
 
         // Engagement & Engagement Checklist
         modelBuilder.ApplyConfiguration(new EngagementConfiguration());

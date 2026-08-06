@@ -1710,6 +1710,96 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.KickoffActionItem", b =>
+                {
+                    b.Property<int>("KickoffActionItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("kickoff_action_item_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("KickoffActionItemId"));
+
+                    b.Property<int?>("AssignedToUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("assigned_to_user_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateOnly>("DueDate")
+                        .HasColumnType("date")
+                        .HasColumnName("due_date");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer")
+                        .HasColumnName("engagement_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsNotified")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_notified");
+
+                    b.Property<int>("KickoffRecordId")
+                        .HasColumnType("integer")
+                        .HasColumnName("kickoff_record_id");
+
+                    b.Property<string>("OwnerName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("owner_name");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasDefaultValue("Open")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("KickoffActionItemId");
+
+                    b.HasIndex("AssignedToUserId");
+
+                    b.HasIndex("EngagementId");
+
+                    b.HasIndex("KickoffRecordId");
+
+                    b.ToTable("kickoff_action_items", (string)null);
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.KickoffRecord", b =>
                 {
                     b.Property<int>("KickoffRecordId")
@@ -3113,6 +3203,32 @@ namespace Pdr.Api.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.KickoffActionItem", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "AssignedToUser")
+                        .WithMany()
+                        .HasForeignKey("AssignedToUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
+                        .WithMany("KickoffActionItems")
+                        .HasForeignKey("EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.KickoffRecord", "KickoffRecord")
+                        .WithMany("ActionItems")
+                        .HasForeignKey("KickoffRecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AssignedToUser");
+
+                    b.Navigation("Engagement");
+
+                    b.Navigation("KickoffRecord");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.KickoffRecord", b =>
                 {
                     b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
@@ -3209,6 +3325,8 @@ namespace Pdr.Api.Migrations
 
                     b.Navigation("HandoverInfo");
 
+                    b.Navigation("KickoffActionItems");
+
                     b.Navigation("KickoffRecord");
 
                     b.Navigation("People");
@@ -3229,6 +3347,11 @@ namespace Pdr.Api.Migrations
             modelBuilder.Entity("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition", b =>
                 {
                     b.Navigation("EnvironmentToolingItems");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.KickoffRecord", b =>
+                {
+                    b.Navigation("ActionItems");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.LoginEntity.Role", b =>
