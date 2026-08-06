@@ -173,6 +173,13 @@ export const routes: Routes = [
               ).then(m => m.EngagementChecklistComponent),
           },
           {
+            path: 'technical-readiness',
+            loadComponent: () =>
+              import(
+                './features/engagement-workspace/technical-readiness/technical-readiness.component'
+              ).then(m => m.TechnicalReadinessComponent),
+          },
+          {
             path: '',
             redirectTo: 'handover',
             pathMatch: 'full',
@@ -208,6 +215,10 @@ export const routes: Routes = [
           {
             path: 'checklist',
             loadComponent: () => import('./features/engagement-workspace/checklist/engagement-checklist.component').then(m => m.EngagementChecklistComponent)
+          },
+          {
+            path: 'technical-readiness',
+            loadComponent: () => import('./features/engagement-workspace/technical-readiness/technical-readiness.component').then(m => m.TechnicalReadinessComponent)
           },
           { path: '', redirectTo: 'handover', pathMatch: 'full' }
         ]
