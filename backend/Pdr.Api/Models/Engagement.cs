@@ -41,11 +41,6 @@ public class Engagement : BaseAuditableEntity
 
     public KickoffRecord? KickoffRecord { get; set; }
 
-
-    public ICollection<Person> People { get; set; } = new List<Person>();
-
-    public KickoffRecord? KickoffRecord { get; set; }
-
     public Handover.HandoverInfo? HandoverInfo { get; set; }
 
     public ICollection<EngagementAssignment.EngagementAssignment> EngagementAssignments { get; set; } = new List<EngagementAssignment.EngagementAssignment>();
