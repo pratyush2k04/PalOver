@@ -75,6 +75,8 @@ builder.Services.AddScoped<IHomeService, HomeService>();
 builder.Services.AddScoped<IEngagementRepository, EngagementRepository>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
+builder.Services.AddScoped<ICommunicationCadenceRepository, CommunicationCadenceRepository>();
+builder.Services.AddScoped<ICommunicationCadenceService, CommunicationCadenceService>();
 builder.Services.AddScoped<IEngagementChecklistRepository, EngagementChecklistRepository>();
 builder.Services.AddScoped<IEngagementChecklistService, EngagementChecklistService>();
 
