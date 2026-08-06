@@ -138,7 +138,7 @@ public class DocumentService(
         var doc = await repository.GetByIdAsync(id);
         if (doc == null || doc.IsDeleted)
         {
-            return false;
+            throw new DocumentNotFoundException(id);
         }
 
         var userIdStr = currentUserService.GetUserId().ToString();
@@ -152,14 +152,14 @@ public class DocumentService(
 
         if (!isUploader && !isPm && !isAdmin)
         {
-            throw new UnauthorizedAccessException("You do not have permission to remove this document. Only the uploader or a Project Manager can remove it.");
+            throw new DocumentAccessDeniedException("You do not have permission to remove this document. Only the uploader or a Project Manager can remove it.");
         }
 
         // Signed SOW Guard (CategoryId = 3 or CategoryName = "Signed SOW")
         bool isSignedSow = doc.CategoryId == 3 || string.Equals(doc.Category?.CategoryName, "Signed SOW", StringComparison.OrdinalIgnoreCase);
         if (isSignedSow && doc.Engagement?.HandoverInfo != null && doc.Engagement.HandoverInfo.StatusId == 2)
         {
-            throw new InvalidOperationException("The signed SOW cannot be removed because a submitted handover is relying on it.");
+            throw new HandoverSubmittedException("The signed SOW cannot be removed because a submitted handover is relying on it.");
         }
 
         var updatedBy = userEmail ?? userIdStr;
@@ -176,7 +176,7 @@ public class DocumentService(
         var doc = await repository.GetByIdAsync(id);
         if (doc == null)
         {
-            throw new KeyNotFoundException($"Document with id {id} was not found.");
+            throw new DocumentNotFoundException(id);
         }
 
         var targetVisibility = dto.ResetToCategoryDefault
@@ -196,7 +196,7 @@ public class DocumentService(
         var updated = await repository.UpdateVisibilityAsync(id, targetVisibility, allowedRoles, updatedBy);
         if (updated == null)
         {
-            throw new KeyNotFoundException($"Document with id {id} was not found.");
+            throw new DocumentNotFoundException(id);
         }
 
         return MapToResponseDto(updated);

@@ -122,24 +122,8 @@ public class DocumentController(
             return BadRequest(new { message = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid removal request." });
         }
 
-        try
-        {
-            var deleted = await documentService.DeleteDocumentAsync(id, request.Reason);
-            if (!deleted)
-            {
-                return NotFound(new { message = "Document not found or already deleted." });
-            }
-
-            return NoContent();
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return StatusCode(403, new { message = ex.Message });
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        await documentService.DeleteDocumentAsync(id, request.Reason);
+        return NoContent();
     }
 
     [HttpPatch("{id:int}/visibility")]
@@ -156,16 +140,7 @@ public class DocumentController(
             return BadRequest(new { message = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid visibility value." });
         }
 
-        // DocumentAccessDeniedException is handled by ExceptionHandlingMiddleware → 403
-        // KeyNotFoundException falls through to the generic 500 handler, so catch it here
-        try
-        {
-            var updated = await documentService.UpdateDocumentVisibilityAsync(id, request);
-            return Ok(updated);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
+        var updated = await documentService.UpdateDocumentVisibilityAsync(id, request);
+        return Ok(updated);
     }
 }
