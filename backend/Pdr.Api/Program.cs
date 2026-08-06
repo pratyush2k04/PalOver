@@ -85,6 +85,9 @@ builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IRiskService, Pdr.Api.Ser
 builder.Services.AddScoped<Pdr.Api.Repositories.Interfaces.IEnvironmentToolingRepository, Pdr.Api.Repositories.EnvironmentToolingRepository>();
 builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IEnvironmentToolingService, Pdr.Api.Services.EnvironmentToolingService>();
 
+// Change Requests
+builder.Services.AddScoped<Pdr.Api.Repositories.Interfaces.IChangeRequestRepository, Pdr.Api.Repositories.ChangeRequestRepository>();
+builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IChangeRequestService, Pdr.Api.Services.ChangeRequestService>();
 
 // Register FluentValidation Validators
 builder.Services.AddValidatorsFromAssemblyContaining<DocumentUploadDtoValidator>();
