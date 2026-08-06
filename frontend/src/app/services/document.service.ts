@@ -18,12 +18,17 @@ export class DocumentService {
   }
 
   uploadDocument(file: File, engagementId: number, categoryId: number, visibility: string): Observable<DocumentUploadResult[]> {
-    const formData = new FormData();
-    formData.append('[0].File', file, file.name);
-    formData.append('[0].EngagementId', engagementId.toString());
-    formData.append('[0].CategoryId', categoryId.toString());
-    formData.append('[0].Visibility', visibility);
+    return this.uploadDocuments([file], engagementId, categoryId, visibility);
+  }
 
+  uploadDocuments(files: File[], engagementId: number, categoryId: number, visibility: string): Observable<DocumentUploadResult[]> {
+    const formData = new FormData();
+    files.forEach((file, i) => {
+      formData.append(`[${i}].File`, file, file.name);
+      formData.append(`[${i}].EngagementId`, engagementId.toString());
+      formData.append(`[${i}].CategoryId`, categoryId.toString());
+      formData.append(`[${i}].Visibility`, visibility);
+    });
     return this.http.post<DocumentUploadResult[]>('/api/documents/upload', formData);
   }
 

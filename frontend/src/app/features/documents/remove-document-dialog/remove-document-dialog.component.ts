@@ -1,5 +1,6 @@
 import {
   Component,
+  DestroyRef,
   Input,
   Output,
   EventEmitter,
@@ -7,6 +8,7 @@ import {
   signal,
   computed
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { DocumentService } from '../../../services/document.service';
 
@@ -25,6 +27,7 @@ export class RemoveDocumentDialogComponent {
   @Output() removed = new EventEmitter<void>();
 
   private documentService = inject(DocumentService);
+  private destroyRef = inject(DestroyRef);
 
   reason = signal<string>('');
   isSubmitting = signal<boolean>(false);
@@ -55,7 +58,7 @@ export class RemoveDocumentDialogComponent {
     this.isSubmitting.set(true);
     this.errorMessage.set(null);
 
-    this.documentService.deleteDocument(this.documentId, this.trimmedReason()).subscribe({
+    this.documentService.deleteDocument(this.documentId, this.trimmedReason()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.isSubmitting.set(false);
         this.removed.emit();

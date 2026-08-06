@@ -1,11 +1,13 @@
 import {
   Component,
+  DestroyRef,
   OnInit,
   inject,
   signal,
   computed,
   effect
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -26,6 +28,7 @@ export class EngagementDocumentsComponent {
   private documentService = inject(DocumentService);
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
+  private destroyRef = inject(DestroyRef);
 
   private parentParamMap = toSignal(this.route.parent!.paramMap);
 
@@ -65,7 +68,7 @@ export class EngagementDocumentsComponent {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    this.documentService.getEngagementDocuments(targetId).subscribe({
+    this.documentService.getEngagementDocuments(targetId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (docs) => {
         this.documents.set(docs);
         this.isLoading.set(false);
@@ -104,7 +107,7 @@ export class EngagementDocumentsComponent {
 
   onDownload(doc: DocumentItem): void {
     this.downloadingId.set(doc.id);
-    this.documentService.downloadDocument(doc.id, doc.fileName).subscribe({
+    this.documentService.downloadDocument(doc.id, doc.fileName).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.downloadingId.set(null);
       },
@@ -121,7 +124,7 @@ export class EngagementDocumentsComponent {
       docs.map(d => d.id === doc.id ? { ...d, visibility: newVisibility } : d)
     );
 
-    this.documentService.updateVisibility(doc.id, newVisibility).subscribe({
+    this.documentService.updateVisibility(doc.id, newVisibility).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (updated) => {
         this.documents.update(docs =>
           docs.map(d => d.id === updated.id ? updated : d)

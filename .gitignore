@@ -7,6 +7,9 @@
 appsettings.*.local.json
 Pdr.Api.http
 backend/Pdr.Api/Uploads/Documents/*
+test.pdf
+image(1).png
+Re_ pdr-app _ Feature_645 login page (!5).eml
 
 # ---- Node / Angular ----
 node_modules/
