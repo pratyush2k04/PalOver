@@ -26,17 +26,10 @@ public class HandoversController : ControllerBase
         _saveDraftValidator = saveDraftValidator;
     }
 
-    private int GetUserId() 
-    {
-        var claim = User.FindFirst(ClaimTypes.NameIdentifier);
-        return claim != null ? int.Parse(claim.Value) : 1; // Fallback to User 1 (Pre-Sales) for testing without Auth
-    }
+    private int GetUserId() => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-    private string GetUserIdString()
-    {
-        var claim = User.FindFirst(ClaimTypes.NameIdentifier);
-        return claim != null ? claim.Value : "1"; // Fallback for testing
-    }
+    private string GetUserIdString() => User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+
 
     [HttpGet]
     public async Task<ActionResult<HandoverInfoDto>> GetHandover(int engagementId)
