@@ -40,6 +40,10 @@ builder.Services.AddSwaggerGen(c =>
             new OpenApiSecuritySchemeReference("Bearer", doc)
         ] = new List<string>()
     });
+
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
 });
 
 // Add services to the container.

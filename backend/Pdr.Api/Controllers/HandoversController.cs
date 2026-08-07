@@ -10,6 +10,7 @@ namespace Pdr.Api.Controllers;
 
 [ApiController]
 [Route("api/engagements/{engagementId:int}/handover")]
+[Produces("application/json")]
 public class HandoversController : ControllerBase
 {
     private readonly IHandoverService _handoverService;
@@ -31,7 +32,15 @@ public class HandoversController : ControllerBase
     private string GetUserIdString() => User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
 
+    /// <summary>
+    /// Retrieves the handover information and associated commitments for a specific engagement.
+    /// </summary>
+    /// <param name="engagementId">The unique identifier of the engagement.</param>
+    /// <returns>The handover details.</returns>
     [HttpGet]
+    [ProducesResponseType(typeof(HandoverInfoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<HandoverInfoDto>> GetHandover(int engagementId)
     {
         await _accessService.CanAccessHandoverAsync(engagementId, GetUserId());
@@ -40,7 +49,17 @@ public class HandoversController : ControllerBase
         return Ok(dto);
     }
 
+    /// <summary>
+    /// Saves or updates the handover details as a draft.
+    /// </summary>
+    /// <param name="engagementId">The unique identifier of the engagement.</param>
+    /// <param name="request">The draft data to save.</param>
+    /// <returns>The updated handover details.</returns>
     [HttpPut("draft")]
+    [ProducesResponseType(typeof(HandoverInfoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<HandoverInfoDto>> SaveDraft(int engagementId, [FromBody] SaveHandoverDraftRequest request)
     {
         await _accessService.CanAccessHandoverAsync(engagementId, GetUserId());
@@ -56,7 +75,16 @@ public class HandoversController : ControllerBase
         return Ok(dto);
     }
 
+    /// <summary>
+    /// Submits the handover, finalizing its state and locking it from further edits.
+    /// </summary>
+    /// <param name="engagementId">The unique identifier of the engagement.</param>
+    /// <returns>The submitted handover details.</returns>
     [HttpPost("submit")]
+    [ProducesResponseType(typeof(HandoverInfoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<HandoverInfoDto>> Submit(int engagementId)
     {
         await _accessService.CanAccessHandoverAsync(engagementId, GetUserId());
