@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed, effect } from '@angular/core';
-
+import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -15,7 +15,7 @@ import { CADENCE_CONSTANTS } from '../../../../../constants/cadence.constants';
 @Component({
   selector: 'app-governance-process',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './governance-process.component.html',
   styleUrl: './governance-process.component.scss'
 })

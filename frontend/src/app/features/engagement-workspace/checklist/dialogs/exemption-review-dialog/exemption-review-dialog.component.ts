@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-
+import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogRef } from '../../../../../shared/dialog/dialog-ref';
 import { DIALOG_DATA } from '../../../../../shared/dialog/dialog.service';
@@ -18,7 +18,7 @@ export interface ExemptionReviewDialogResult {
 @Component({
   selector: 'app-exemption-review-dialog',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './exemption-review-dialog.component.html',
   styleUrl: './exemption-review-dialog.component.scss'
 })

@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { EngagementSortBy, EngagementService, PmEngagementListItem } from '../../services/engagement';
 
@@ -21,7 +21,7 @@ const SAMPLE_READINESS_SCORES: Record<number, number> = {
 @Component({
   selector: 'app-my-engagements',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './my-engagements.html',
   styleUrl: './my-engagements.scss'
 })

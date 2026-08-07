@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed, effect } from '@angular/core';
-
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TECHNICAL_READINESS_ROUTES } from '../../constants/app.constants';
@@ -15,7 +15,7 @@ interface WorkspaceTab {
 @Component({
   selector: 'app-engagement-workspace',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './engagement-workspace.component.html',
   styleUrl: './engagement-workspace.component.scss'
 })

@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-
+import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
   FormBuilder,
@@ -28,7 +28,7 @@ function billingNotBeforeKickoffValidator(group: AbstractControl): ValidationErr
 @Component({
   selector: 'app-engagements',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './engagements.html',
   styleUrl: './engagements.scss'
 })
