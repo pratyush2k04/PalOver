@@ -41,6 +41,10 @@ builder.Services.AddSwaggerGen(c =>
             new OpenApiSecuritySchemeReference("Bearer", doc)
         ] = new List<string>()
     });
+
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
 });
 
 // Add services to the container.
@@ -73,6 +77,11 @@ builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 builder.Services.AddScoped<IHandoverAccessService, HandoverAccessService>();
 builder.Services.AddScoped<IHandoverService, HandoverService>();
 builder.Services.AddScoped<ICommitmentService, CommitmentService>();
+builder.Services.AddScoped<IRealisticCommitmentService, RealisticCommitmentService>();
+// Handover repositories
+builder.Services.AddScoped<IHandoverRepository, HandoverRepository>();
+builder.Services.AddScoped<ICommitmentRepository, CommitmentRepository>();
+builder.Services.AddScoped<IRealisticCommitmentRepository, RealisticCommitmentRepository>();
 builder.Services.AddScoped<IMasterChecklistRepository, MasterChecklistRepository>();
 builder.Services.AddScoped<IMasterChecklistService, MasterChecklistService>();
 builder.Services.AddScoped<IHomeService, HomeService>();
@@ -84,6 +93,19 @@ builder.Services.AddScoped<ICommunicationCadenceService, CommunicationCadenceSer
 builder.Services.AddScoped<IEngagementChecklistRepository, EngagementChecklistRepository>();
 builder.Services.AddScoped<IEngagementChecklistService, EngagementChecklistService>();
 
+// // Technical Readiness — Access Tracker & Environment Tooling
+// builder.Services.AddScoped<Pdr.Api.Repositories.Interfaces.IAccessTrackerRepository, Pdr.Api.Repositories.AccessTrackerRepository>();
+// builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IAccessTrackerService, Pdr.Api.Services.AccessTrackerService>();
+// builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IRiskService, Pdr.Api.Services.RiskService>();
+// builder.Services.AddScoped<Pdr.Api.Repositories.Interfaces.IEnvironmentToolingRepository, Pdr.Api.Repositories.EnvironmentToolingRepository>();
+// builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IEnvironmentToolingService, Pdr.Api.Services.EnvironmentToolingService>();
+
+// Change Requests
+builder.Services.AddScoped<Pdr.Api.Repositories.Interfaces.IChangeRequestRepository, Pdr.Api.Repositories.ChangeRequestRepository>();
+builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IChangeRequestService, Pdr.Api.Services.ChangeRequestService>();
+
+// Register FluentValidation Validators
+builder.Services.AddValidatorsFromAssemblyContaining<DocumentUploadDtoValidator>();
 // Technical Readiness — Access Tracker, Environment Tooling
 builder.Services.AddScoped<IAccessTrackerRepository, AccessTrackerRepository>();
 builder.Services.AddScoped<IAccessTrackerService, AccessTrackerService>();
