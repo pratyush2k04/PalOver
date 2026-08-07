@@ -130,7 +130,10 @@ export const routes: Routes = [
       // Admin
       {
         path: 'admin/users',
-        component: UsersComponent,
+        loadChildren: () =>
+          import('./features/users/users.routes').then(
+            m => m.USERS_ROUTES
+          ),
       },
 
       // Engagements
@@ -196,7 +199,6 @@ export const routes: Routes = [
           ),
       },
       { path: '', redirectTo: 'admin/users', pathMatch: 'full' },
-      { path: 'admin/users', component: UsersComponent },//change made for users
       { path: 'engagements', component: EngagementsComponent },
       { path: 'engagements/:id', component: EngagementDetailComponent },//change made for leader to assign pm-tl
       {

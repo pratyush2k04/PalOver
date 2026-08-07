@@ -2,6 +2,7 @@ import { Component, inject, computed } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AppContextService } from '../../../services/app-context';
 import { AuthService } from '../../../services/auth';
+import { APP_ROUTES, USER_ROLES } from '../../../constants/app.constants';
 
 export interface NavItem {
   label: string;
@@ -30,29 +31,34 @@ export class SidebarComponent {
     if (!currentUser) return [];
 
     const ws = this.workspace();
-    const homeRoute = ws?.route ?? '/dashboard';
+    const homeRoute = ws?.route ?? APP_ROUTES.DASHBOARD;
 
     const items: NavItem[] = [
       { label: 'Home', icon: 'home', route: homeRoute }
     ];
 
+    // Users link: visible ONLY to Admin
+    if (currentUser.isAdmin || currentUser.role === USER_ROLES.ADMIN) {
+      items.push({ label: 'Users', icon: 'users', route: APP_ROUTES.USERS });
+    }
+
     // Engagements link: visible ONLY to Pre Sales
-    if (currentUser.role === 'Pre Sales') {
-      items.push({ label: 'Engagements', icon: 'layers', route: '/engagements' });
+    if (currentUser.role === USER_ROLES.PRE_SALES) {
+      items.push({ label: 'Engagements', icon: 'layers', route: APP_ROUTES.ENGAGEMENTS });
     }
 
     // Role Queue link (route: /my-engagements): hidden for Admin
-    if (!currentUser.isAdmin && currentUser.role !== 'Admin') {
+    if (!currentUser.isAdmin && currentUser.role !== USER_ROLES.ADMIN) {
       let queueLabel = 'My\nEngagements';
       let icon = 'briefcase';
 
-      if (currentUser.role === 'Tech Lead') {
+      if (currentUser.role === USER_ROLES.TECH_LEAD) {
         queueLabel = 'Tech\nQueue';
         icon = 'briefcase';
-      } else if (currentUser.role === 'Pre Sales') {
+      } else if (currentUser.role === USER_ROLES.PRE_SALES) {
         queueLabel = 'My\nHandovers';
         icon = 'clipboard';
-      } else if (currentUser.role === 'Project Management' || currentUser.role === 'Leadership') {
+      } else if (currentUser.role === USER_ROLES.PROJECT_MANAGEMENT || currentUser.role === USER_ROLES.LEADERSHIP) {
         queueLabel = 'My\nEngagements';
         icon = 'briefcase';
       }
@@ -60,7 +66,7 @@ export class SidebarComponent {
       items.push({
         label: queueLabel,
         icon: icon,
-        route: '/my-engagements'
+        route: APP_ROUTES.MY_ENGAGEMENTS
       });
     }
 
@@ -76,6 +82,6 @@ export class SidebarComponent {
   onSignOut(): void {
     this.authService.logout();
     this.appContext.reset();
-    this.router.navigate(['/login']);
+    this.router.navigate([APP_ROUTES.LOGIN]);
   }
 }
