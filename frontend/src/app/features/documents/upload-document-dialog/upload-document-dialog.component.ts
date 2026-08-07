@@ -80,8 +80,7 @@ export class UploadDocumentDialogComponent implements OnInit {
   onCategoryChange(catId: string): void {
     const id = Number(catId);
     this.selectedCategoryId.set(id);
-    const cat = this.categories().find(c => c.id === id);
-    if (cat && DOCUMENT_CONFIG.PM_ONLY_CATEGORIES.includes(cat.categoryName)) {
+    if (DOCUMENT_CONFIG.PM_ONLY_CATEGORY_IDS.includes(id)) {
       this.selectedVisibility.set(DOCUMENT_CONFIG.VISIBILITY.PM_ONLY);
     } else {
       this.selectedVisibility.set(DOCUMENT_CONFIG.VISIBILITY.TEAM_WIDE);

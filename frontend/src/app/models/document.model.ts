@@ -19,6 +19,16 @@ export interface DocumentCategory {
   categoryName: string;
 }
 
+export enum DocumentCategoryId {
+  Rfp = 1,
+  Proposal = 2,
+  SignedSow = 3,
+  EmailThread = 4,
+  DesignOrApproach = 5,
+  Other = 6,
+  Commercial = 7
+}
+
 export interface DocumentUploadResult {
   fileName?: string;
   success: boolean;

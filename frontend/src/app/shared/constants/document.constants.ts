@@ -1,3 +1,5 @@
+import { DocumentCategoryId } from '../../models/document.model';
+
 export const DOCUMENT_MESSAGES = {
   // Engagement Documents List
   LOAD_FAILED: 'Failed to load documents.',
@@ -25,20 +27,23 @@ export const DOCUMENT_CONFIG = {
   ALLOWED_EXTENSIONS: ['.pdf', '.docx', '.xlsx', '.pptx', '.png', '.jpg', '.jpeg', '.msg', '.eml'] as readonly string[],
   MAX_FILE_SIZE_BYTES: 50 * 1024 * 1024, // 50 MB
   DEFAULT_CATEGORIES: [
-    { id: 1, categoryName: 'RFP' },
-    { id: 2, categoryName: 'Proposal' },
-    { id: 3, categoryName: 'Signed SOW' },
-    { id: 4, categoryName: 'Email Thread' },
-    { id: 5, categoryName: 'Design or Approach' },
-    { id: 7, categoryName: 'Commercial' },
-    { id: 6, categoryName: 'Other' }
+    { id: DocumentCategoryId.Rfp, categoryName: 'RFP' },
+    { id: DocumentCategoryId.Proposal, categoryName: 'Proposal' },
+    { id: DocumentCategoryId.SignedSow, categoryName: 'Signed SOW' },
+    { id: DocumentCategoryId.EmailThread, categoryName: 'Email Thread' },
+    { id: DocumentCategoryId.DesignOrApproach, categoryName: 'Design or Approach' },
+    { id: DocumentCategoryId.Commercial, categoryName: 'Commercial' },
+    { id: DocumentCategoryId.Other, categoryName: 'Other' }
   ],
   VISIBILITY: {
     TEAM_WIDE: 'Team-wide',
     PM_ONLY: 'PM-only',
     CUSTOM: 'Custom'
   },
-  PM_ONLY_CATEGORIES: ['Commercial', 'Proposal'] as readonly string[],
+  PM_ONLY_CATEGORY_IDS: [
+    DocumentCategoryId.Proposal,
+    DocumentCategoryId.Commercial
+  ] as readonly number[],
   ROLE_IDS: {
     PRE_SALES: 1,
     PROJECT_MANAGEMENT: 2,
