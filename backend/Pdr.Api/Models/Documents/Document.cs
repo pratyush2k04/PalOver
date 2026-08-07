@@ -16,6 +16,12 @@ public class Document : BaseAuditableEntity
 
     public required string ContentType { get; set; }
 
+    public string? DeletionReason { get; set; }
+
+    public string Visibility { get; set; } = "Team-wide";
+
+    public List<int> AllowedRoles { get; set; } = new();
+
     // Navigation properties
     public DocumentCategory Category { get; set; } = null!;
     

@@ -2,7 +2,9 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Pdr.Api.Attributes;
 using Pdr.Api.DTOs.CommunicationCadences;
+using Pdr.Api.Models;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Controllers;
@@ -13,14 +15,10 @@ namespace Pdr.Api.Controllers;
 public class CommunicationCadencesController : ControllerBase
 {
     private readonly ICommunicationCadenceService _cadenceService;
-    private readonly IValidator<CreateCommunicationCadenceRequest> _createValidator;
 
-    public CommunicationCadencesController(
-        ICommunicationCadenceService cadenceService,
-        IValidator<CreateCommunicationCadenceRequest> createValidator)
+    public CommunicationCadencesController(ICommunicationCadenceService cadenceService)
     {
         _cadenceService = cadenceService;
-        _createValidator = createValidator;
     }
 
     [HttpGet]
@@ -46,7 +44,7 @@ public class CommunicationCadencesController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "Project Management")]
+    [AuthorizeRoles(RoleEnum.ProjectManagement)]
     [EndpointSummary("Create a communication cadence for a stakeholder role (Project Manager only)")]
     [ProducesResponseType(typeof(CommunicationCadenceResponseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -57,13 +55,6 @@ public class CommunicationCadencesController : ControllerBase
         int engagementId,
         [FromBody] CreateCommunicationCadenceRequest request)
     {
-        var validationResult = await _createValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid communication cadence request.";
-            return BadRequest(new { message = firstError });
-        }
-
         var result = await _cadenceService.AddCadenceAsync(engagementId, request);
         return CreatedAtAction(nameof(GetCadences), new { engagementId }, result);
     }

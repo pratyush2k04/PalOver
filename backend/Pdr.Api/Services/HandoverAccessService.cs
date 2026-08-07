@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Pdr.Api.Exceptions;
+using Pdr.Api.Models;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
@@ -18,13 +19,14 @@ public class HandoverAccessService : IHandoverAccessService
     {
         var assignment = await _engagementRepository.GetAssignmentByUserAsync(engagementId, userId);
 
+
         if (assignment == null)
         {
             throw new HandoverAccessDeniedException("You don't have access to Handover.");
         }
 
-        var roleName = assignment.User.Role.Name;
-        if (roleName != "Pre Sales" && roleName != "Project Management")
+        var roleId = assignment.User.RoleId;
+        if (roleId != (int)RoleEnum.PreSales && roleId != (int)RoleEnum.ProjectManagement)
         {
             throw new HandoverAccessDeniedException("You don't have access to Handover.");
         }
