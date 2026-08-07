@@ -1,4 +1,10 @@
 export const CADENCE_CONSTANTS = {
+  // API Endpoint Paths
+  API_GET_CADENCES: (engagementId: number) => `/api/engagements/${engagementId}/cadences`,
+  API_GET_ASSIGNED_PARTICIPANTS: (engagementId: number) => `/api/engagements/${engagementId}/cadences/assigned-participants`,
+  API_ADD_CADENCE: (engagementId: number) => `/api/engagements/${engagementId}/cadences`,
+
+  // UI Strings
   TITLE: 'Governance & Change-Request Process',
   BTN_ADD_CADENCE: '+ Add cadence',
   EMPTY_STATE: 'No communication cadences recorded yet. Click "+ Add cadence" to set client communication expectations.',
@@ -14,4 +20,4 @@ export const CADENCE_CONSTANTS = {
   BTN_CANCEL: 'Cancel',
   BTN_ADD: 'Add',
   BTN_ADDING: 'Adding...'
-} as const;
+};

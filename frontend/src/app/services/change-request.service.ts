@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ChangeRequest, CreateChangeRequest, RejectChangeRequest } from '../models/change-request.model';
+import { CHANGE_REQUEST_CONSTANTS } from '../constants/change-request.constants';
 
 @Injectable({
   providedIn: 'root'
@@ -14,18 +15,22 @@ export class ChangeRequestService {
     if (status && status !== 'All') {
       params = params.set('status', status);
     }
-    return this.http.get<ChangeRequest[]>(`/api/engagements/${engagementId}/change-requests`, { params });
+    const url = CHANGE_REQUEST_CONSTANTS.API_ENGAGEMENT_CHANGE_REQUESTS(engagementId);
+    return this.http.get<ChangeRequest[]>(url, { params });
   }
 
   createChangeRequest(engagementId: number, request: CreateChangeRequest): Observable<ChangeRequest> {
-    return this.http.post<ChangeRequest>(`/api/engagements/${engagementId}/change-requests`, request);
+    const url = CHANGE_REQUEST_CONSTANTS.API_ENGAGEMENT_CHANGE_REQUESTS(engagementId);
+    return this.http.post<ChangeRequest>(url, request);
   }
 
   approveChangeRequest(id: number): Observable<ChangeRequest> {
-    return this.http.put<ChangeRequest>(`/api/change-requests/${id}/approve`, {});
+    const url = CHANGE_REQUEST_CONSTANTS.API_APPROVE_CHANGE_REQUEST(id);
+    return this.http.put<ChangeRequest>(url, {});
   }
 
   rejectChangeRequest(id: number, request: RejectChangeRequest): Observable<ChangeRequest> {
-    return this.http.put<ChangeRequest>(`/api/change-requests/${id}/reject`, request);
+    const url = CHANGE_REQUEST_CONSTANTS.API_REJECT_CHANGE_REQUEST(id);
+    return this.http.put<ChangeRequest>(url, request);
   }
 }

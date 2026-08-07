@@ -6,6 +6,7 @@ import {
   CreateCommunicationCadence,
   EngagementParticipant
 } from '../models/cadence.model';
+import { CADENCE_CONSTANTS } from '../constants/cadence.constants';
 
 @Injectable({
   providedIn: 'root'
@@ -14,14 +15,17 @@ export class CommunicationCadenceService {
   private http = inject(HttpClient);
 
   getCadences(engagementId: number): Observable<CommunicationCadence[]> {
-    return this.http.get<CommunicationCadence[]>(`/api/engagements/${engagementId}/cadences`);
+    const url = CADENCE_CONSTANTS.API_GET_CADENCES(engagementId);
+    return this.http.get<CommunicationCadence[]>(url);
   }
 
   getAssignedParticipants(engagementId: number): Observable<EngagementParticipant[]> {
-    return this.http.get<EngagementParticipant[]>(`/api/engagements/${engagementId}/cadences/assigned-participants`);
+    const url = CADENCE_CONSTANTS.API_GET_ASSIGNED_PARTICIPANTS(engagementId);
+    return this.http.get<EngagementParticipant[]>(url);
   }
 
   addCadence(engagementId: number, request: CreateCommunicationCadence): Observable<CommunicationCadence> {
-    return this.http.post<CommunicationCadence>(`/api/engagements/${engagementId}/cadences`, request);
+    const url = CADENCE_CONSTANTS.API_ADD_CADENCE(engagementId);
+    return this.http.post<CommunicationCadence>(url, request);
   }
 }

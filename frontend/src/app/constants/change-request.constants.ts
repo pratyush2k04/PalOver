@@ -1,4 +1,10 @@
 export const CHANGE_REQUEST_CONSTANTS = {
+  // API Endpoint Paths
+  API_ENGAGEMENT_CHANGE_REQUESTS: (engagementId: number) => `/api/engagements/${engagementId}/change-requests`,
+  API_APPROVE_CHANGE_REQUEST: (id: number) => `/api/change-requests/${id}/approve`,
+  API_REJECT_CHANGE_REQUEST: (id: number) => `/api/change-requests/${id}/reject`,
+
+  // UI Strings
   TITLE: 'Change Requests',
   BTN_LOG_CR: '+ Log CR',
 
