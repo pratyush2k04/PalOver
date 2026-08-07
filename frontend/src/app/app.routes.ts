@@ -180,6 +180,13 @@ export const routes: Routes = [
               ).then(m => m.KickoffComponent),
           },
           {
+            path: 'technical-readiness',
+            loadComponent: () =>
+              import(
+                './features/engagements/technical/technical-readiness.component'
+              ).then(m => m.TechnicalReadinessComponent),
+          },
+          {
             path: '',
             redirectTo: 'handover',
             pathMatch: 'full',
@@ -219,6 +226,10 @@ export const routes: Routes = [
           {
             path: 'kickoff',
             loadComponent: () => import('./features/engagement-workspace/kickoff/kickoff.component').then(m => m.KickoffComponent)
+          },
+          {
+            path: 'technical-readiness',
+            loadComponent: () => import('./features/engagements/technical/technical-readiness.component').then(m => m.TechnicalReadinessComponent)
           },
           { path: '', redirectTo: 'handover', pathMatch: 'full' }
         ]

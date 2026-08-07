@@ -1,0 +1,31 @@
+<div class="technical-readiness-container">
+  <!-- Day-1 Readiness Banner -->
+  <div class="readiness-banner" [ngClass]="{ 'ready': isDayOneReady() }">
+    <div class="banner-content">
+      <div class="banner-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+      </div>
+      <div class="banner-text">
+        @if (!isDayOneReady()) {
+          <strong>Not yet able to start Day-1</strong>
+        } @else {
+          <strong>Ready for Day-1</strong>
+        }
+        <span> &mdash; access {{ grantedCount() }}/{{ totalCount() }} granted</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Access Tracker Section -->
+  @if (engagementId()) {
+    <div class="readiness-section">
+      <app-access-tracker
+        [engagementId]="engagementId()!"
+        (itemsUpdated)="onAccessItemsUpdated($event)">
+      </app-access-tracker>
+    </div>
+  }
+</div>
