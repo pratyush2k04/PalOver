@@ -6,4 +6,5 @@ public interface IKickoffReadinessService
 {
     Task<KickoffReadinessDto> GetReadinessAsync(int engagementId);
     Task<bool> IsFullyReadyAsync(int engagementId);
+    Task MarkKickoffReadyAsync(int engagementId, bool isLeadership);
 }

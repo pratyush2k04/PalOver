@@ -1,4 +1,6 @@
 using Pdr.Api.DTOs.Engagements;
+using Pdr.Api.Exceptions;
+using Pdr.Api.Exceptions.KickoffReadinessExceptions;
 using Pdr.Api.Models.AccessTracker;
 using Pdr.Api.Models.Handover;
 using Pdr.Api.Repositories.Interfaces;
@@ -7,6 +9,7 @@ using Pdr.Api.Services.Interfaces;
 namespace Pdr.Api.Services;
 
 public class KickoffReadinessService(
+    IEngagementRepository engagementRepository,
     IHandoverRepository handoverRepository,
     ICommitmentRepository commitmentRepository,
     IRealisticCommitmentRepository realisticCommitmentRepository,
@@ -42,6 +45,22 @@ public class KickoffReadinessService(
     {
         var readiness = await GetReadinessAsync(engagementId);
         return readiness.Score == 100;
+    }
+
+    public async Task MarkKickoffReadyAsync(int engagementId, bool isLeadership)
+    {
+        var engagement = await engagementRepository.GetByIdAsync(engagementId)
+            ?? throw new EngagementNotFoundException(engagementId);
+
+        if (!isLeadership)
+        {
+            var readiness = await GetReadinessAsync(engagementId);
+            if (readiness.Score != 100)
+                throw new KickoffNotReadyException();
+        }
+
+        engagement.IsKickoffReady = true;
+        await engagementRepository.SaveChangesAsync();
     }
 
     private static ReadinessCheck EvaluateHandoverMandatoryFields(HandoverInfo? handover)

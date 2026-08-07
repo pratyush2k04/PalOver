@@ -88,4 +88,13 @@ public class EngagementsController(
         var readiness = await kickoffReadinessService.GetReadinessAsync(id);
         return Ok(readiness);
     }
+
+    [HttpPost("{id:int}/kickoff-ready")]
+    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.Leadership)]
+    public async Task<IActionResult> MarkKickoffReady(int id)
+    {
+        var isLeadership = User.IsInRole(RoleEnum.Leadership.ToRoleName());
+        await kickoffReadinessService.MarkKickoffReadyAsync(id, isLeadership);
+        return NoContent();
+    }
 }
