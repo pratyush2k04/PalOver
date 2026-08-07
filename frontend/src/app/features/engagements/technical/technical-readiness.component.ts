@@ -2,7 +2,7 @@ import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { AccessItemDto } from '../../../models/technical-readiness.model';
+import { AccessItemDto } from './models/technical-readiness.model';
 import { AccessTrackerComponent } from './access-tracker/access-tracker.component';
 
 @Component({

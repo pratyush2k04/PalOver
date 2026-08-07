@@ -176,7 +176,7 @@ export const routes: Routes = [
             path: 'technical-readiness',
             loadComponent: () =>
               import(
-                './features/engagement-workspace/technical-readiness/technical-readiness.component'
+                './features/engagements/technical/technical-readiness.component'
               ).then(m => m.TechnicalReadinessComponent),
           },
           {
@@ -218,7 +218,7 @@ export const routes: Routes = [
           },
           {
             path: 'technical-readiness',
-            loadComponent: () => import('./features/engagement-workspace/technical-readiness/technical-readiness.component').then(m => m.TechnicalReadinessComponent)
+            loadComponent: () => import('./features/engagements/technical/technical-readiness.component').then(m => m.TechnicalReadinessComponent)
           },
           { path: '', redirectTo: 'handover', pathMatch: 'full' }
         ]

@@ -1,9 +1,9 @@
 import { Component, inject, input, output, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TechnicalReadinessService } from '../../../../services/technical-readiness.service';
+import { TechnicalReadinessService } from '../services/technical-readiness.service';
 import { AuthService } from '../../../../services/auth';
-import { AccessItemDto, AccessItemStatus } from '../../../../models/technical-readiness.model';
+import { AccessItemDto, AccessItemStatus } from '../models/technical-readiness.model';
 
 @Component({
   selector: 'app-access-tracker',
