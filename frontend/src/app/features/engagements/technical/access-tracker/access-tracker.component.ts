@@ -1,4 +1,5 @@
-import { Component, inject, input, output, signal, computed, effect } from '@angular/core';
+import { Component, inject, input, output, signal, computed, effect, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TechnicalReadinessService } from '../services/technical-readiness.service';
@@ -18,6 +19,7 @@ export class AccessTrackerComponent {
 
   private readinessService = inject(TechnicalReadinessService);
   private authService = inject(AuthService);
+  private destroyRef = inject(DestroyRef);
 
   accessItems = signal<AccessItemDto[]>([]);
   isLoading = signal<boolean>(true);
@@ -51,7 +53,9 @@ export class AccessTrackerComponent {
 
   loadItems(id: number) {
     this.isLoading.set(true);
-    this.readinessService.getAccessItems(id).subscribe({
+    this.readinessService.getAccessItems(id).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next: (items) => {
         const finalItems = items && items.length > 0 ? items : this.getDummyItems();
         this.accessItems.set(finalItems);
@@ -152,7 +156,9 @@ export class AccessTrackerComponent {
       blockReason: newStatusNum === AccessItemStatus.Blocked ? blockReason : undefined
     };
 
-    this.readinessService.updateAccessItemStatus(item.accessItemId, payload).subscribe({
+    this.readinessService.updateAccessItemStatus(item.accessItemId, payload).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next: (updatedItem) => {
         const updatedList = this.accessItems().map(i =>
           i.accessItemId === updatedItem.accessItemId ? updatedItem : i
@@ -218,7 +224,9 @@ export class AccessTrackerComponent {
       ownerId: 1 // Default to Rahul Verma (ID 1)
     };
 
-    this.readinessService.addCustomAccessItem(this.engagementId(), requestData).subscribe({
+    this.readinessService.addCustomAccessItem(this.engagementId(), requestData).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next: (newItem) => {
         const updatedList = [...this.accessItems(), newItem];
         this.accessItems.set(updatedList);
