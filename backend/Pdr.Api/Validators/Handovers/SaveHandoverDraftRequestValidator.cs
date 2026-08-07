@@ -1,6 +1,7 @@
 using FluentValidation;
 using Pdr.Api.DTOs.Handovers;
 using System.Linq;
+using Pdr.Api.Constants.Handovers;
 
 namespace Pdr.Api.Validators.Handovers;
 
@@ -11,16 +12,16 @@ public class SaveHandoverDraftRequestValidator : AbstractValidator<SaveHandoverD
     public SaveHandoverDraftRequestValidator()
     {
         RuleFor(x => x.ClientBackground)
-            .MaximumLength(2000).WithMessage("Client Background cannot exceed 2000 characters.");
+            .MaximumLength(2000).WithMessage(SaveHandoverDraftRequestConstants.ClientBackgroundMaxLength);
 
         RuleFor(x => x.BusinessProblem)
-            .MaximumLength(2000).WithMessage("Business Problem cannot exceed 2000 characters.");
+            .MaximumLength(2000).WithMessage(SaveHandoverDraftRequestConstants.BusinessProblemMaxLength);
 
         RuleFor(x => x.ClientSentiment)
             .Must(s => string.IsNullOrEmpty(s) || _validSentiments.Contains(s))
-            .WithMessage("Client Sentiment must be one of: New, Warm, Strained.");
+            .WithMessage(SaveHandoverDraftRequestConstants.ClientSentimentInvalid);
 
         RuleFor(x => x.DealOrigin)
-            .MaximumLength(2000).WithMessage("Deal Origin cannot exceed 2000 characters.");
+            .MaximumLength(2000).WithMessage(SaveHandoverDraftRequestConstants.DealOriginMaxLength);
     }
 }

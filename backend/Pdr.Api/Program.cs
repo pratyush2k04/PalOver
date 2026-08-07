@@ -40,6 +40,10 @@ builder.Services.AddSwaggerGen(c =>
             new OpenApiSecuritySchemeReference("Bearer", doc)
         ] = new List<string>()
     });
+
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
 });
 
 // Add services to the container.
@@ -69,6 +73,11 @@ builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 builder.Services.AddScoped<IHandoverAccessService, HandoverAccessService>();
 builder.Services.AddScoped<IHandoverService, HandoverService>();
 builder.Services.AddScoped<ICommitmentService, CommitmentService>();
+builder.Services.AddScoped<IRealisticCommitmentService, RealisticCommitmentService>();
+// Handover repositories
+builder.Services.AddScoped<IHandoverRepository, HandoverRepository>();
+builder.Services.AddScoped<ICommitmentRepository, CommitmentRepository>();
+builder.Services.AddScoped<IRealisticCommitmentRepository, RealisticCommitmentRepository>();
 builder.Services.AddScoped<IMasterChecklistRepository, MasterChecklistRepository>();
 builder.Services.AddScoped<IMasterChecklistService, MasterChecklistService>();
 builder.Services.AddScoped<IHomeService, HomeService>();

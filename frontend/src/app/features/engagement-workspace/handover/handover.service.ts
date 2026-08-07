@@ -2,12 +2,23 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+export interface RealisticCommitmentDto {
+  description: string;
+  timeline: number;
+  timelineUnit: string;
+  acknowledgementMessage?: string | null;
+  isPossible: boolean;
+}
+
 export interface CommitmentDto {
   commitmentId: number;
   handoverId: number;
   description: string;
   commitmentTypeId: number;
-  quantity?: string;
+  title: string;
+  timeline: number;
+  timelineUnit: string;
+  realisticCommitment?: RealisticCommitmentDto | null;
 }
 
 export interface HandoverInfoDto {
@@ -18,7 +29,6 @@ export interface HandoverInfoDto {
   businessProblem: string;
   clientSentiment: string;
   dealOrigin?: string;
-  hasNoCommitments: boolean;
   commitments: CommitmentDto[];
 }
 
@@ -27,19 +37,38 @@ export interface SaveHandoverDraftRequest {
   businessProblem?: string;
   clientSentiment?: string;
   dealOrigin?: string;
-  hasNoCommitments: boolean;
 }
 
 export interface CreateCommitmentRequest {
   description: string;
   commitmentTypeId: number;
-  quantity?: string;
+  title: string;
+  timeline: number;
+  timelineUnit: string;
 }
 
 export interface UpdateCommitmentRequest {
   description: string;
   commitmentTypeId: number;
-  quantity?: string;
+  title: string;
+  timeline: number;
+  timelineUnit: string;
+}
+
+export interface CreateRealisticCommitmentRequest {
+  description: string;
+  timeline: number;
+  timelineUnit: string;
+  acknowledgementMessage?: string | null;
+  isPossible: boolean;
+}
+
+export interface UpdateRealisticCommitmentRequest {
+  description: string;
+  timeline: number;
+  timelineUnit: string;
+  acknowledgementMessage?: string | null;
+  isPossible: boolean;
 }
 
 @Injectable({
@@ -71,5 +100,13 @@ export class HandoverService {
 
   deleteCommitment(engagementId: number, commitmentId: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${engagementId}/handover/commitments/${commitmentId}`);
+  }
+
+  createRealisticCommitment(engagementId: number, commitmentId: number, request: CreateRealisticCommitmentRequest): Observable<RealisticCommitmentDto> {
+    return this.http.post<RealisticCommitmentDto>(`${this.baseUrl}/${engagementId}/handover/commitments/${commitmentId}/realistic`, request);
+  }
+
+  updateRealisticCommitment(engagementId: number, commitmentId: number, request: UpdateRealisticCommitmentRequest): Observable<RealisticCommitmentDto> {
+    return this.http.put<RealisticCommitmentDto>(`${this.baseUrl}/${engagementId}/handover/commitments/${commitmentId}/realistic`, request);
   }
 }

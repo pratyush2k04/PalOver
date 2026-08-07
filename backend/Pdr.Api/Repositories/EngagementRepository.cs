@@ -37,6 +37,11 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
             .Include(a => a.User).ThenInclude(u => u.Role)
             .FirstOrDefaultAsync(a => a.EngagementId == engagementId && a.User.Role.Name == roleName);
 
+    public async Task<EngagementAssignment?> GetAssignmentByUserAsync(int engagementId, int userId) =>
+        await context.EngagementAssignments
+            .Include(a => a.User).ThenInclude(u => u.Role)
+            .FirstOrDefaultAsync(a => a.EngagementId == engagementId && a.UserId == userId);
+
     public async Task RemoveAssignmentAsync(EngagementAssignment assignment)
     {
         context.EngagementAssignments.Remove(assignment);

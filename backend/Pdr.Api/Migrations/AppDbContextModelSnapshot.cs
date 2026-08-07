@@ -1677,9 +1677,21 @@ namespace Pdr.Api.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("is_deleted");
 
-                    b.Property<string>("Quantity")
-                        .HasColumnType("text")
-                        .HasColumnName("quantity");
+                    b.Property<int>("Timeline")
+                        .HasColumnType("integer")
+                        .HasColumnName("timeline");
+
+                    b.Property<string>("TimelineUnit")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("timeline_unit");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("title");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -1708,7 +1720,9 @@ namespace Pdr.Api.Migrations
                             Description = "Delivery of MVP banking module within 3 months of kickoff.",
                             HandoverId = 1,
                             IsDeleted = false,
-                            Quantity = "1",
+                            Timeline = 3,
+                            TimelineUnit = "Months",
+                            Title = "MVP Banking Module Delivery",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
@@ -1795,12 +1809,6 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("engagement_id");
 
-                    b.Property<bool>("HasNoCommitments")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("has_no_commitments");
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -1840,7 +1848,6 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DealOrigin = "Strategic Partner Referral",
                             EngagementId = 1,
-                            HasNoCommitments = false,
                             IsDeleted = false,
                             StatusId = 1,
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -1877,6 +1884,72 @@ namespace Pdr.Api.Migrations
                             HandoverStatusId = 2,
                             StatusName = "Submitted"
                         });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Handover.RealisticCommitment", b =>
+                {
+                    b.Property<int>("CommitmentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("commitment_id");
+
+                    b.Property<string>("AcknowledgementMessage")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("acknowledgement_message");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsPossible")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_possible");
+
+                    b.Property<int>("Timeline")
+                        .HasColumnType("integer")
+                        .HasColumnName("timeline");
+
+                    b.Property<string>("TimelineUnit")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("timeline_unit");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("CommitmentId");
+
+                    b.ToTable("realistic_commitments", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.LoginEntity.Role", b =>
@@ -3094,6 +3167,15 @@ namespace Pdr.Api.Migrations
                         .WithOne("HandoverInfo")
                         .HasForeignKey("Pdr.Api.Models.Handover.HandoverInfo", "EngagementId")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Handover.RealisticCommitment", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Handover.Commitment", null)
+                        .WithOne()
+                        .HasForeignKey("Pdr.Api.Models.Handover.RealisticCommitment", "CommitmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
