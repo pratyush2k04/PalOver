@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { UpperCasePipe } from '@angular/common';
 import { LoadingSpinnerComponent } from '../../../shared/loading-spinner/loading-spinner';
 import { MasterChecklistService } from '../services/master-checklist.service';
-import { MasterChecklistItem } from '../models/checklist.model';
+import { MasterChecklistItem } from '../models/master-checklist.model';
 
 type SortColumn = 'title' | 'categoryName' | 'isMandatory' | 'isRetired';
 type SortDirection = 'asc' | 'desc';

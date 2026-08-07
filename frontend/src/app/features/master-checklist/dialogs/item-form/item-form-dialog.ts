@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogRef } from '../../../../shared/dialog/dialog-ref';
 import { DIALOG_DATA } from '../../../../shared/dialog/dialog.service';
-import { MasterChecklistCategory, MasterChecklistItem } from '../../models/checklist.model';
+import { MasterChecklistCategory, MasterChecklistItem } from '../../models/master-checklist.model';
 
 export interface ItemFormDialogData {
   mode: 'create' | 'edit';
