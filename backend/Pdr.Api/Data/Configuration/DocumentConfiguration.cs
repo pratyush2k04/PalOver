@@ -67,6 +67,9 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
         // Global Query Filter for Soft Delete
         builder.HasQueryFilter(d => !d.IsDeleted);
 
+        builder.HasIndex(d => new { d.EngagementId, d.IsDeleted });
+
+
         builder.HasOne(d => d.Category)
                .WithMany(c => c.Documents)
                .HasForeignKey(d => d.CategoryId)
