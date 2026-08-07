@@ -39,12 +39,12 @@
         cursor: pointer;
 
         &.app-button--flat {
-          background-color: #f59e0b;
+          background-color: #2563eb;
           color: #ffffff;
           border: none;
 
           &:hover {
-            background-color: #d97706;
+            background-color: #1d4ed8;
           }
         }
       }
@@ -148,7 +148,7 @@
   background-color: #ffffff;
 
   &:focus {
-    border-color: #f59e0b;
+    border-color: #2563eb;
   }
 }
 
@@ -199,8 +199,8 @@
         font-family: inherit;
 
         &:focus {
-          border-color: #f59e0b;
-          box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.1);
+          border-color: #2563eb;
+          box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
         }
       }
     }
@@ -218,12 +218,12 @@
         cursor: pointer;
 
         &.app-button--flat {
-          background-color: #f59e0b;
+          background-color: #2563eb;
           color: #ffffff;
           border: none;
 
           &:hover {
-            background-color: #d97706;
+            background-color: #1d4ed8;
           }
         }
       }

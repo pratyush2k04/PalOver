@@ -27,11 +27,16 @@ export class TechnicalReadinessComponent {
   accessItems = signal<AccessItemDto[]>([]);
   toolingItems = signal<EnvironmentToolingItemDto[]>([]);
 
-  // Access Metrics
-  accessGrantedCount = computed(() =>
-    this.accessItems().filter(i => i.status === 'Granted' || i.status === '2').length
+  // Access Metrics (Calculated against InProgress and Granted only)
+  accessApplicableItems = computed(() =>
+    this.accessItems().filter(i =>
+      i.status === 'Granted' || i.status === '2' || i.status === 'InProgress' || i.status === '1'
+    )
   );
-  accessTotalCount = computed(() => this.accessItems().length);
+  accessGrantedCount = computed(() =>
+    this.accessApplicableItems().filter(i => i.status === 'Granted' || i.status === '2').length
+  );
+  accessTotalCount = computed(() => this.accessApplicableItems().length);
 
   // Tooling Metrics (Not Applicable items are excluded from required total)
   toolingApplicableItems = computed(() =>
