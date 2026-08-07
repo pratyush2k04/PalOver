@@ -48,6 +48,9 @@
                 @if (item.isClientSide) {
                   <span class="badge badge-clientside">Client-side</span>
                 }
+                @if (item.isOverdueWithClient) {
+                  <span class="badge badge-overdue">Overdue</span>
+                }
                 @if (item.timeZoneNote) {
                   <span class="note-text">{{ item.timeZoneNote }}</span>
                 }
