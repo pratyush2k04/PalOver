@@ -6,6 +6,7 @@
 .vs/
 appsettings.*.local.json
 Pdr.Api.http
+backend/Pdr.Api/Uploads/Documents/*
 
 # ---- Node / Angular ----
 node_modules/
@@ -17,3 +18,5 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 *.swp
+#agents 
+.agents/

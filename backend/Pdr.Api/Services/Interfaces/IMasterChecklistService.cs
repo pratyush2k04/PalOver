@@ -7,13 +7,13 @@ public interface IMasterChecklistService
     Task<MasterChecklistVersionResponseDto?> GetCurrentDraftVersionAsync();
     Task<MasterChecklistVersionResponseDto?> GetPublishedVersionAsync();
     Task<List<MasterChecklistVersionSummaryResponseDto>> GetVersionHistoryAsync();
-    Task<ChecklistResultDto<MasterChecklistVersionResponseDto>> GetVersionByIdAsync(long versionId);
+    Task<ChecklistResultDto<MasterChecklistVersionResponseDto>> GetVersionByIdAsync(int versionId);
     Task<List<MasterChecklistCategoryResponseDto>> GetCategoriesAsync();
     Task<ChecklistResultDto<MasterChecklistItemResponseDto>> CreateChecklistItemAsync(MasterCreateChecklistItemRequestDto request);
-    Task<ChecklistResultDto<MasterChecklistItemResponseDto>> UpdateChecklistItemAsync(long id, UpdateChecklistItemRequestDto request);
-    Task<ChecklistResultDto<MasterChecklistItemResponseDto>> RetireChecklistItemAsync(long id);
+    Task<ChecklistResultDto<MasterChecklistItemResponseDto>> UpdateChecklistItemAsync(int id, UpdateChecklistItemRequestDto request);
+    Task<ChecklistResultDto<MasterChecklistItemResponseDto>> RetireChecklistItemAsync(int id);
     Task<ChecklistResultDto<List<MasterChecklistItemResponseDto>>> ReorderChecklistItemsAsync(ReorderMasterChecklistItemsRequestDto request);
-    Task<ChecklistResultDto<MasterChecklistVersionResponseDto>> PublishVersionAsync(long versionId);
+    Task<ChecklistResultDto<MasterChecklistVersionResponseDto>> PublishVersionAsync(int versionId);
 }
 
 public class ChecklistResultDto<T>

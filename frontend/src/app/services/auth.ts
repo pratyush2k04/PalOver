@@ -32,7 +32,7 @@ export class AuthService {
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>('/api/auth/login', credentials).pipe(
       tap((response) => {
-        if (response && response.token) {
+        if (response?.token) {
           localStorage.setItem(TOKEN_KEY, response.token);
           this.currentUserSignal.set(this.readUserFromToken());
         }
@@ -64,7 +64,25 @@ export class AuthService {
     }
 
     const payload = this.decodeToken(token);
-    return payload?.['isAdmin'] === true || payload?.['isAdmin'] === 'true';
+
+    return (
+      payload?.['isAdmin'] === true ||
+      payload?.['isAdmin'] === 'true'
+    );
+  }
+
+  hasRole(roleName: string): boolean {
+    const token = this.getToken();
+    if (!token) {
+      return false;
+    }
+
+    const payload = this.decodeToken(token);
+    const role = payload?.['role'];
+
+    return Array.isArray(role)
+      ? role.includes(roleName)
+      : role === roleName;
   }
 
   private readUserFromToken(): User | null {
@@ -82,18 +100,10 @@ export class AuthService {
       fullName: (payload['fullName'] as string) ?? '',
       email: (payload['email'] as string) ?? '',
       role: (payload['role'] as string) ?? '',
-      isAdmin: payload['isAdmin'] === true || payload['isAdmin'] === 'true',
-    }
-  }
-  hasRole(roleName: string): boolean {
-    const token = this.getToken();
-    if (!token) {
-      return false;
-    }
-
-    const payload = this.decodeToken(token);
-    const role = payload?.['role'];
-    return Array.isArray(role) ? role.includes(roleName) : role === roleName;
+      isAdmin:
+        payload['isAdmin'] === true ||
+        payload['isAdmin'] === 'true'
+    };
   }
 
   private decodeToken(token: string): Record<string, unknown> | null {
@@ -105,5 +115,4 @@ export class AuthService {
       return null;
     }
   }
-
 }

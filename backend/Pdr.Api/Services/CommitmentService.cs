@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Pdr.Api.Data;
 using Pdr.Api.DTOs.Handovers;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Handover;
+using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
@@ -12,17 +11,20 @@ public class CommitmentService : ICommitmentService
 {
     private const string SubmittedStatusName = "Submitted";
 
-    private readonly AppDbContext _context;
+    private readonly IHandoverRepository _handoverRepository;
+    private readonly ICommitmentRepository _commitmentRepository;
 
-    public CommitmentService(AppDbContext context)
+    public CommitmentService(
+        IHandoverRepository handoverRepository,
+        ICommitmentRepository commitmentRepository)
     {
-        _context = context;
+        _handoverRepository = handoverRepository;
+        _commitmentRepository = commitmentRepository;
     }
 
-    private async Task<HandoverInfo> GetHandoverOrThrowAsync(long engagementId)
+    private async Task<HandoverInfo> GetHandoverOrThrowAsync(int engagementId)
     {
-        var handover = await _context.HandoverInfos
-            .FirstOrDefaultAsync(h => h.EngagementId == engagementId);
+        var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
 
         if (handover == null)
             throw new HandoverNotFoundException(engagementId);
@@ -32,8 +34,7 @@ public class CommitmentService : ICommitmentService
 
     private async Task EnsureNotSubmittedAsync(HandoverInfo handover)
     {
-        var status = await _context.HandoverStatuses
-            .FirstOrDefaultAsync(s => s.HandoverStatusId == handover.StatusId);
+        var status = await _handoverRepository.GetStatusByIdAsync(handover.StatusId);
 
         if (status?.StatusName == SubmittedStatusName)
         {
@@ -41,7 +42,7 @@ public class CommitmentService : ICommitmentService
         }
     }
 
-    public async Task<CommitmentDto> AddCommitmentAsync(long engagementId, CreateCommitmentRequest request, string userIdStr)
+    public async Task<CommitmentDto> AddCommitmentAsync(int engagementId, CreateCommitmentRequest request, string userIdStr)
     {
         var handover = await GetHandoverOrThrowAsync(engagementId);
         await EnsureNotSubmittedAsync(handover);
@@ -51,15 +52,15 @@ public class CommitmentService : ICommitmentService
             HandoverId = handover.HandoverId,
             Description = request.Description,
             CommitmentTypeId = request.CommitmentTypeId,
-            Quantity = request.Quantity,
+            Title = request.Title,
+            Timeline = request.Timeline,
+            TimelineUnit = request.TimelineUnit,
             CreatedBy = userIdStr,
             UpdatedBy = userIdStr
         };
 
-        _context.Commitments.Add(commitment);
-        handover.HasNoCommitments = false;
-
-        await _context.SaveChangesAsync();
+        await _commitmentRepository.AddAsync(commitment);
+        await _commitmentRepository.SaveChangesAsync();
 
         return new CommitmentDto
         {
@@ -67,26 +68,29 @@ public class CommitmentService : ICommitmentService
             HandoverId = commitment.HandoverId,
             Description = commitment.Description,
             CommitmentTypeId = commitment.CommitmentTypeId,
-            Quantity = commitment.Quantity
+            Title = commitment.Title,
+            Timeline = commitment.Timeline,
+            TimelineUnit = commitment.TimelineUnit
         };
     }
 
-    public async Task<CommitmentDto> UpdateCommitmentAsync(long engagementId, long commitmentId, UpdateCommitmentRequest request, string userIdStr)
+    public async Task<CommitmentDto> UpdateCommitmentAsync(int engagementId, int commitmentId, UpdateCommitmentRequest request, string userIdStr)
     {
         var handover = await GetHandoverOrThrowAsync(engagementId);
         await EnsureNotSubmittedAsync(handover);
 
-        var commitment = await _context.Commitments
-            .FirstOrDefaultAsync(c => c.CommitmentId == commitmentId && c.HandoverId == handover.HandoverId);
+        var commitment = await _commitmentRepository.GetByIdAsync(commitmentId, handover.HandoverId);
 
         if (commitment == null) throw new CommitmentNotFoundException(commitmentId);
 
         commitment.Description = request.Description;
         commitment.CommitmentTypeId = request.CommitmentTypeId;
-        commitment.Quantity = request.Quantity;
+        commitment.Title = request.Title;
+        commitment.Timeline = request.Timeline;
+        commitment.TimelineUnit = request.TimelineUnit;
         commitment.UpdatedBy = userIdStr;
 
-        await _context.SaveChangesAsync();
+        await _commitmentRepository.SaveChangesAsync();
 
         return new CommitmentDto
         {
@@ -94,21 +98,22 @@ public class CommitmentService : ICommitmentService
             HandoverId = commitment.HandoverId,
             Description = commitment.Description,
             CommitmentTypeId = commitment.CommitmentTypeId,
-            Quantity = commitment.Quantity
+            Title = commitment.Title,
+            Timeline = commitment.Timeline,
+            TimelineUnit = commitment.TimelineUnit
         };
     }
 
-    public async Task DeleteCommitmentAsync(long engagementId, long commitmentId)
+    public async Task DeleteCommitmentAsync(int engagementId, int commitmentId)
     {
         var handover = await GetHandoverOrThrowAsync(engagementId);
         await EnsureNotSubmittedAsync(handover);
 
-        var commitment = await _context.Commitments
-            .FirstOrDefaultAsync(c => c.CommitmentId == commitmentId && c.HandoverId == handover.HandoverId);
+        var commitment = await _commitmentRepository.GetByIdAsync(commitmentId, handover.HandoverId);
 
         if (commitment == null) throw new CommitmentNotFoundException(commitmentId);
 
-        _context.Commitments.Remove(commitment);
-        await _context.SaveChangesAsync();
+        await _commitmentRepository.RemoveAsync(commitment);
+        await _commitmentRepository.SaveChangesAsync();
     }
 }

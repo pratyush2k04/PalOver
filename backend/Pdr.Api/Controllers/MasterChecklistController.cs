@@ -52,7 +52,7 @@ public class MasterChecklistController(
 
     [HttpGet("versions/{versionId}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<IActionResult> GetVersionById(long versionId)
+    public async Task<IActionResult> GetVersionById(int versionId)
     {
         var result = await checklistService.GetVersionByIdAsync(versionId);
         if (!result.IsSuccess)
@@ -93,7 +93,7 @@ public class MasterChecklistController(
 
     [HttpPut("items/{id}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<IActionResult> UpdateItem(long id, [FromBody] UpdateChecklistItemRequestDto request)
+    public async Task<IActionResult> UpdateItem(int id, [FromBody] UpdateChecklistItemRequestDto request)
     {
         var validationResult = await updateItemValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
@@ -135,7 +135,7 @@ public class MasterChecklistController(
 
     [HttpPut("items/{id}/retire")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<IActionResult> RetireItem(long id)
+    public async Task<IActionResult> RetireItem(int id)
     {
         var result = await checklistService.RetireChecklistItemAsync(id);
         if (!result.IsSuccess)
@@ -150,7 +150,7 @@ public class MasterChecklistController(
 
     [HttpPost("versions/{versionId}/publish")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<IActionResult> PublishVersion(long versionId)
+    public async Task<IActionResult> PublishVersion(int versionId)
     {
         var result = await checklistService.PublishVersionAsync(versionId);
         if (!result.IsSuccess)

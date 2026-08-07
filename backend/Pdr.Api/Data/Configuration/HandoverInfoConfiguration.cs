@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Pdr.Api.Models;
 using Pdr.Api.Models.Handover;
 
 namespace Pdr.Api.Data.Configuration;
@@ -19,7 +20,6 @@ public class HandoverInfoConfiguration : IEntityTypeConfiguration<HandoverInfo>
         builder.Property(h => h.BusinessProblem).HasColumnName("business_problem").HasMaxLength(2000).IsRequired();
         builder.Property(h => h.ClientSentiment).HasColumnName("client_sentiment").IsRequired();
         builder.Property(h => h.DealOrigin).HasColumnName("deal_origin").HasMaxLength(2000);
-        builder.Property(h => h.HasNoCommitments).HasColumnName("has_no_commitments").HasDefaultValue(false);
 
         // BaseAuditableEntity Column Mappings
         builder.Property(h => h.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
@@ -35,6 +35,11 @@ public class HandoverInfoConfiguration : IEntityTypeConfiguration<HandoverInfo>
             .HasForeignKey(c => c.HandoverId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasOne<Engagement>()
+            .WithOne(e => e.HandoverInfo)
+            .HasForeignKey<HandoverInfo>(h => h.EngagementId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         var seedTimestamp = new System.DateTime(2026, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
         builder.HasData(
             new HandoverInfo
@@ -46,7 +51,6 @@ public class HandoverInfoConfiguration : IEntityTypeConfiguration<HandoverInfo>
                 BusinessProblem = "They need a modern core banking platform to support new digital initiatives and mobile apps.",
                 ClientSentiment = "Excited but cautious about delivery timelines due to past vendor failures.",
                 DealOrigin = "Strategic Partner Referral",
-                HasNoCommitments = false,
                 CreatedAt = seedTimestamp,
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",
