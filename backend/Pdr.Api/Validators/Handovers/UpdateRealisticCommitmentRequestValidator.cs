@@ -1,5 +1,6 @@
 using FluentValidation;
 using Pdr.Api.DTOs.Handovers;
+using Pdr.Api.Constants.Handovers;
 
 namespace Pdr.Api.Validators.Handovers;
 
@@ -10,14 +11,14 @@ public class UpdateRealisticCommitmentRequestValidator : AbstractValidator<Updat
     public UpdateRealisticCommitmentRequestValidator()
     {
         RuleFor(x => x.Description)
-            .NotEmpty().WithMessage("Description is required.")
-            .MaximumLength(2000).WithMessage("Description cannot exceed 2000 characters.");
+            .NotEmpty().WithMessage(UpdateRealisticCommitmentRequestConstants.DescriptionRequired)
+            .MaximumLength(2000).WithMessage(UpdateRealisticCommitmentRequestConstants.DescriptionMaxLength);
 
         RuleFor(x => x.Timeline)
-            .GreaterThan(0).WithMessage("Timeline must be greater than 0.");
+            .GreaterThan(0).WithMessage(UpdateRealisticCommitmentRequestConstants.TimelineGreaterThanZero);
 
         RuleFor(x => x.TimelineUnit)
             .Must(unit => ValidTimelineUnits.Contains(unit))
-            .WithMessage("Timeline Unit must be one of: Days, Weeks, Months.");
+            .WithMessage(UpdateRealisticCommitmentRequestConstants.TimelineUnitInvalid);
     }
 }
