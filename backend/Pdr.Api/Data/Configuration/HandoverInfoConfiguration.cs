@@ -20,7 +20,6 @@ public class HandoverInfoConfiguration : IEntityTypeConfiguration<HandoverInfo>
         builder.Property(h => h.BusinessProblem).HasColumnName("business_problem").HasMaxLength(2000).IsRequired();
         builder.Property(h => h.ClientSentiment).HasColumnName("client_sentiment").IsRequired();
         builder.Property(h => h.DealOrigin).HasColumnName("deal_origin").HasMaxLength(2000);
-        // builder.Property(h => h.HasNoCommitments).HasColumnName("has_no_commitments").HasDefaultValue(false);
 
         // BaseAuditableEntity Column Mappings
         builder.Property(h => h.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");

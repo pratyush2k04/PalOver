@@ -25,7 +25,4 @@ public class HandoverInfo : BaseAuditableEntity
 
     [MaxLength(2000)]
     public string? DealOrigin { get; set; }
-
-    [System.ComponentModel.DataAnnotations.Schema.NotMapped]
-    public bool HasNoCommitments { get; set; }
 }

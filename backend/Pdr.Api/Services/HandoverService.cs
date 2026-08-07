@@ -80,7 +80,6 @@ public class HandoverService : IHandoverService
             BusinessProblem = handover.BusinessProblem,
             ClientSentiment = handover.ClientSentiment,
             DealOrigin = handover.DealOrigin,
-            HasNoCommitments = handover.HasNoCommitments,
             Commitments = commitmentDtos
         };
     }
@@ -109,7 +108,6 @@ public class HandoverService : IHandoverService
         handover.BusinessProblem = request.BusinessProblem ?? string.Empty;
         handover.ClientSentiment = request.ClientSentiment ?? string.Empty;
         handover.DealOrigin = request.DealOrigin;
-        handover.HasNoCommitments = request.HasNoCommitments;
 
         await _handoverRepository.SaveChangesAsync();
 
@@ -128,11 +126,6 @@ public class HandoverService : IHandoverService
 
         if (string.IsNullOrWhiteSpace(handover.ClientSentiment))
             throw new HandoverIncompleteException("Client Sentiment is required to submit.");
-
-        var commitments = await _commitmentRepository.GetByHandoverIdAsync(handover.HandoverId);
-
-        if (commitments.Count == 0 && !handover.HasNoCommitments)
-            throw new HandoverIncompleteException("You must either add at least one commitment or explicitly mark 'HasNoCommitments'.");
 
         handover.StatusId = (int)HandoverStatusEnum.Submitted;
         handover.UpdatedBy = userIdStr;
