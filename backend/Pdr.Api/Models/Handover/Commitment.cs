@@ -9,6 +9,10 @@ public class Commitment : BaseAuditableEntity
 
     [Required]
     public int HandoverId { get; set; }
+    
+    [Required]
+    [MaxLength(100)]
+    public string Title { get; set; } = string.Empty;
 
     [Required]
     [MaxLength(2000)]
@@ -17,5 +21,10 @@ public class Commitment : BaseAuditableEntity
     [Required]
     public int CommitmentTypeId { get; set; }
 
-    public string? Quantity { get; set; }
+    [Required]
+    public int Timeline { get; set; }
+
+    [Required]
+    [MaxLength(20)]
+    public string TimelineUnit { get; set; } = string.Empty;
 }

@@ -9,6 +9,8 @@ using Pdr.Api.Models.MasterChecklist;
 using Pdr.Api.Models.Handover;
 using Pdr.Api.Models.EngagementChecklist;
 using Pdr.Api.Models.Documents;
+using Pdr.Api.Models.Cadence;
+//using System.Reflection;
 
 namespace Pdr.Api.Data;
 
@@ -21,6 +23,7 @@ public class AppDbContext : DbContext
     // Handover entities
     public DbSet<HandoverInfo> HandoverInfos => Set<HandoverInfo>();
     public DbSet<Commitment> Commitments => Set<Commitment>();
+    public DbSet<RealisticCommitment> RealisticCommitments => Set<RealisticCommitment>();
     public DbSet<CommitmentType> CommitmentTypes => Set<CommitmentType>();
     public DbSet<HandoverStatus> HandoverStatuses => Set<HandoverStatus>();
     public DbSet<CommercialModel> CommercialModels => Set<CommercialModel>();
@@ -50,7 +53,7 @@ public class AppDbContext : DbContext
     // Documents
     public DbSet<DocumentCategory> DocumentCategories => Set<DocumentCategory>();
     public DbSet<Document> Documents => Set<Document>();
-
+    public DbSet<CommunicationCadence> CommunicationCadences => Set<CommunicationCadence>();
     // People
     public DbSet<Person> People => Set<Person>();
 
@@ -62,6 +65,7 @@ public class AppDbContext : DbContext
     public DbSet<Models.AccessTracker.AccessItemDefinition> AccessItemDefinitions => Set<Models.AccessTracker.AccessItemDefinition>();
     public DbSet<Models.EnvironmentTooling.EnvironmentToolingItem> EnvironmentToolingItems => Set<Models.EnvironmentTooling.EnvironmentToolingItem>();
     public DbSet<Models.EnvironmentTooling.EnvironmentToolingDefinition> EnvironmentToolingDefinitions => Set<Models.EnvironmentTooling.EnvironmentToolingDefinition>();
+    public DbSet<Pdr.Api.Models.ChangeRequest.ChangeRequest> ChangeRequests => Set<Pdr.Api.Models.ChangeRequest.ChangeRequest>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -73,6 +77,7 @@ public class AppDbContext : DbContext
 
         modelBuilder.ApplyConfiguration(new HandoverInfoConfiguration());
         modelBuilder.ApplyConfiguration(new CommitmentConfiguration());
+        modelBuilder.ApplyConfiguration(new RealisticCommitmentConfiguration());
         modelBuilder.ApplyConfiguration(new CommitmentTypeConfiguration());
         modelBuilder.ApplyConfiguration(new HandoverStatusConfiguration());
 
@@ -84,6 +89,7 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new PersonConfiguration());
         modelBuilder.ApplyConfiguration(new KickoffRecordConfiguration());
         modelBuilder.ApplyConfiguration(new KickoffActionItemConfiguration());
+        modelBuilder.ApplyConfiguration(new CommunicationCadenceConfiguration());
 
         // Engagement & Engagement Checklist
         modelBuilder.ApplyConfiguration(new EngagementConfiguration());
@@ -91,10 +97,22 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new EngagementChecklistItemConfiguration());
 
         // Technical Readiness Configurations
+        // modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.AccessTracker.AccessItemConfiguration());
+        // modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.AccessTracker.AccessItemDefinitionConfiguration());
+        // modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.EnvironmentTooling.EnvironmentToolingItemConfiguration());
+        // modelBuilder.ApplyConfiguration(new Pdr.Api.Data.Configuration.EnvironmentTooling.EnvironmentToolingDefinitionConfiguration());
         modelBuilder.ApplyConfiguration(new AccessItemConfiguration());
         modelBuilder.ApplyConfiguration(new AccessItemDefinitionConfiguration());
         modelBuilder.ApplyConfiguration(new EnvironmentToolingItemConfiguration());
         modelBuilder.ApplyConfiguration(new EnvironmentToolingDefinitionConfiguration());
+
+        //change Request
+        modelBuilder.ApplyConfiguration(new ChangeRequestConfiguration());
+
+        // Global Query Filters (Soft Delete)
+        modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
+        modelBuilder.Entity<Role>().HasQueryFilter(r => !r.IsDeleted);
+        modelBuilder.Entity<EngagementAssignment>().HasQueryFilter(ea => !ea.User.IsDeleted);
 
         // ChecklistVersion
         modelBuilder.Entity<MasterChecklistVersion>(entity =>

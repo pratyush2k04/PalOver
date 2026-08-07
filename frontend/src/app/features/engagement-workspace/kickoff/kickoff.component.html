@@ -1,5 +1,7 @@
-<div class="kickoff-tab-content">
+<div class="kickoff-container">
+  <app-governance-process></app-governance-process>
+  <app-change-requests></app-change-requests>
   @if (engagementId(); as id) {
-    <app-kickoff-record-card [engagementId]="id" />
+  <app-kickoff-record-card [engagementId]="id" />
   }
 </div>
