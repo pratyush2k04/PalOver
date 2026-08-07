@@ -1,7 +1,3 @@
----
-trigger: always_on
----
-
 # Angular Frontend Architecture Rules
 
 ## Purpose

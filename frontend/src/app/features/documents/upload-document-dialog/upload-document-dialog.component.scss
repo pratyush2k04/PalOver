@@ -47,13 +47,21 @@
   .btn-close {
     background: transparent;
     border: none;
-    font-size: 1.25rem;
     color: #64748b;
     cursor: pointer;
     padding: 0.25rem;
     line-height: 1;
     border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     transition: color 0.15s, background-color 0.15s;
+
+    ::ng-deep svg,
+    svg {
+      width: 1.125rem;
+      height: 1.125rem;
+    }
 
     &:hover {
       color: #0f172a;
@@ -180,5 +188,34 @@
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+// Multi-file selection list
+.selected-files-list {
+  margin: -0.25rem 0 0.75rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.625rem 0.875rem;
+
+  .selected-files-label {
+    margin: 0 0 0.375rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #64748b;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.125rem;
+    list-style: disc;
+
+    li {
+      font-size: 0.8rem;
+      color: #334155;
+      padding: 0.1rem 0;
+      word-break: break-all;
+    }
   }
 }

@@ -36,7 +36,7 @@ public class CommitmentService : ICommitmentService
     {
         var status = await _handoverRepository.GetStatusByIdAsync(handover.StatusId);
 
-        if (status?.StatusName == SubmittedStatusName)
+        if (status?.StatusName == HandoverStatusNames.Submitted)
         {
             throw new HandoverSubmittedException("This handover has already been submitted and its commitments can no longer be changed.");
         }

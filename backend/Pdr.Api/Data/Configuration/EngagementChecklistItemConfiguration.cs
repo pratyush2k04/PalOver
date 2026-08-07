@@ -23,6 +23,15 @@ public class EngagementChecklistItemConfiguration : IEntityTypeConfiguration<Eng
         builder.Property(e => e.IsApplicable).HasColumnName("is_applicable").HasDefaultValue(true).IsRequired();
         builder.Property(e => e.Status).HasColumnName("status").HasMaxLength(50).IsRequired();
 
+        // Applicability exemption columns
+        builder.Property(e => e.NotApplicableReason).HasColumnName("not_applicable_reason").HasMaxLength(1000);
+        builder.Property(e => e.ExemptionStatus).HasColumnName("exemption_status").HasMaxLength(50).HasDefaultValue("None").IsRequired();
+        builder.Property(e => e.ExemptionRequestedById).HasColumnName("exemption_requested_by_id");
+        builder.Property(e => e.ExemptionRequestedAt).HasColumnName("exemption_requested_at");
+        builder.Property(e => e.ExemptionReviewedById).HasColumnName("exemption_reviewed_by_id");
+        builder.Property(e => e.ExemptionReviewedAt).HasColumnName("exemption_reviewed_at");
+        builder.Property(e => e.ExemptionRejectionReason).HasColumnName("exemption_rejection_reason").HasMaxLength(1000);
+
         // BaseAuditableEntity Column Mappings
         builder.Property(e => e.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
         builder.Property(e => e.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("NOW()");
