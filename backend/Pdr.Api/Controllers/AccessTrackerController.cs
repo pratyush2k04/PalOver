@@ -7,11 +7,13 @@ using Pdr.Api.Exceptions.AccessItemExceptions;
 using Pdr.Api.Models;
 using Pdr.Api.Services.Interfaces;
 
+using Pdr.Api.Constants;
+
 namespace Pdr.Api.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("api/engagements/{engagementId:int}/access-items")]
+[Route(AccessTrackerConstants.Routes.Base)]
 public class AccessTrackerController(IAccessTrackerService accessTrackerService) : ControllerBase
 {
     // GET api/engagements/{engagementId}/access-items
@@ -48,7 +50,7 @@ public class AccessTrackerController(IAccessTrackerService accessTrackerService)
 // Separate controller for item-level operations (by item id, not engagement id)
 [ApiController]
 [Authorize]
-[Route("api/access-items")]
+[Route(AccessTrackerConstants.Routes.ItemsBase)]
 public class AccessItemsController(IAccessTrackerService accessTrackerService) : ControllerBase
 {
     // PATCH api/access-items/{id}/status

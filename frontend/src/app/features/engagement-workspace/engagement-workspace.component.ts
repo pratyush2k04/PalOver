@@ -2,6 +2,7 @@ import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { TECHNICAL_READINESS_ROUTES } from '../../constants/app.constants';
 import { EngagementInfoDto, EngagementService } from '../../services/engagement.service';
 import { ENGAGEMENT_WORKSPACE_CONFIG } from '../../shared/constants/checklist.constants';
 

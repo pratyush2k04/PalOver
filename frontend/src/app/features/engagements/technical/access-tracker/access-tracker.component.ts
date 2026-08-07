@@ -2,14 +2,17 @@ import { Component, inject, input, output, signal, computed, effect, DestroyRef 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TECHNICAL_READINESS_ROLES } from '../../../../constants/app.constants';
 import { TechnicalReadinessService } from '../services/technical-readiness.service';
 import { AuthService } from '../../../../services/auth';
 import { AccessItemDto, AccessItemStatus } from '../models/technical-readiness.model';
 
+import { InlineSVGModule } from 'ng-inline-svg-2';
+
 @Component({
   selector: 'app-access-tracker',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, InlineSVGModule],
   templateUrl: './access-tracker.component.html',
   styleUrl: './access-tracker.component.scss'
 })
@@ -23,17 +26,19 @@ export class AccessTrackerComponent {
 
   accessItems = signal<AccessItemDto[]>([]);
   isLoading = signal<boolean>(true);
-  isTechLead = computed(() => this.authService.hasRole('Tech Lead'));
+  isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
 
   // Add Item Modal state
   isAddModalOpen = signal<boolean>(false);
   newItemName = signal<string>('');
   newItemIsClientSide = signal<boolean>(true);
   newItemTimeZoneNote = signal<string>('');
+  nameError = signal<string>('');
 
   // Block Modal state
   isBlockModalOpen = signal<boolean>(false);
   blockReasonText = signal<string>('');
+  blockReasonError = signal<string>('');
   itemToBlock = signal<AccessItemDto | null>(null);
 
   readonly statusOptions = [
@@ -123,6 +128,7 @@ export class AccessTrackerComponent {
       selectElement.value = this.getStatusNumericValue(item.status).toString();
       this.itemToBlock.set(item);
       this.blockReasonText.set(item.blockReason || '');
+      this.blockReasonError.set('');
       this.isBlockModalOpen.set(true);
       return;
     }
@@ -134,13 +140,21 @@ export class AccessTrackerComponent {
     this.isBlockModalOpen.set(false);
     this.itemToBlock.set(null);
     this.blockReasonText.set('');
+    this.blockReasonError.set('');
   }
 
   submitBlockReason() {
     const item = this.itemToBlock();
     if (!item) return;
 
-    this.updateStatus(item, AccessItemStatus.Blocked, this.blockReasonText().trim());
+    const reason = this.blockReasonText().trim();
+    if (!reason) {
+      this.blockReasonError.set('Reason is required to block an item');
+      return;
+    }
+
+    this.blockReasonError.set('');
+    this.updateStatus(item, AccessItemStatus.Blocked, reason);
     this.closeBlockModal();
   }
 
@@ -207,15 +221,22 @@ export class AccessTrackerComponent {
     this.newItemName.set('');
     this.newItemIsClientSide.set(true);
     this.newItemTimeZoneNote.set('');
+    this.nameError.set('');
     this.isAddModalOpen.set(true);
   }
 
   closeAddModal() {
+    this.nameError.set('');
     this.isAddModalOpen.set(false);
   }
 
   submitAddItem() {
-    if (!this.newItemName().trim()) return;
+    if (!this.newItemName().trim()) {
+      this.nameError.set('This field is required');
+      return;
+    }
+
+    this.nameError.set('');
 
     const requestData = {
       name: this.newItemName().trim(),

@@ -6,11 +6,13 @@ using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
 using Pdr.Api.Services.Interfaces;
 
+using Pdr.Api.Constants;
+
 namespace Pdr.Api.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("api/engagements/{engagementId:int}/environment-tooling")]
+[Route(EnvironmentToolingConstants.Routes.Base)]
 public class EnvironmentToolingController(IEnvironmentToolingService service) : ControllerBase
 {
     // GET api/engagements/{engagementId}/environment-tooling
@@ -37,7 +39,7 @@ public class EnvironmentToolingController(IEnvironmentToolingService service) : 
 // Item-level routes by item ID
 [ApiController]
 [Authorize]
-[Route("api/environment-tooling")]
+[Route(EnvironmentToolingConstants.Routes.ItemsBase)]
 public class EnvironmentToolingItemsController(IEnvironmentToolingService service) : ControllerBase
 {
     // PATCH api/environment-tooling/{id}/status

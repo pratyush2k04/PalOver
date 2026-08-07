@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.DTOs.Home;
 using Pdr.Api.Services.Interfaces;
 
+using Pdr.Api.Constants;
+
 namespace Pdr.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route(HomeConstants.Routes.Base)]
 [Authorize]
 public class HomeController(IHomeService homeService) : ControllerBase
 {
