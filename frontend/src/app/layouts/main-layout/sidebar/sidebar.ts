@@ -47,8 +47,8 @@ export class SidebarComponent {
       items.push({ label: 'Engagements', icon: 'layers', route: APP_ROUTES.ENGAGEMENTS });
     }
 
-    // Role Queue link (route: /my-engagements): hidden for Admin
-    if (!currentUser.isAdmin && currentUser.role !== USER_ROLES.ADMIN) {
+    // Role Queue link (route: /my-engagements): shown for non-Admin roles regardless of isAdmin flag
+    if (currentUser.role !== USER_ROLES.ADMIN) {
       let queueLabel = 'My\nEngagements';
       let icon = 'briefcase';
 

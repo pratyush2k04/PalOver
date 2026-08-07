@@ -74,46 +74,11 @@ export const routes: Routes = [
         component: DashboardComponent,
       },
 
-      // Role dashboards
+      // Role dashboards (Home feature)
       {
-        path: 'engagement-dashboard',
-        canActivate: [workspaceGuard],
-        loadComponent: () =>
-          import('./features/home/project-manager-home/project-manager-home').then(
-            m => m.ProjectManagerHomeComponent
-          ),
-      },
-      {
-        path: 'my-handovers',
-        canActivate: [workspaceGuard],
-        loadComponent: () =>
-          import('./features/home/pre-sales-home/pre-sales-home').then(
-            m => m.PreSalesHomeComponent
-          ),
-      },
-      {
-        path: 'technical-readiness',
-        canActivate: [workspaceGuard],
-        loadComponent: () =>
-          import('./features/home/tech-lead-home/tech-lead-home').then(
-            m => m.TechLeadHomeComponent
-          ),
-      },
-      {
-        path: 'portfolio-dashboard',
-        canActivate: [workspaceGuard],
-        loadComponent: () =>
-          import('./features/home/leadership-home/leadership-home').then(
-            m => m.LeadershipHomeComponent
-          ),
-      },
-      {
-        path: 'user-directory',
-        canActivate: [workspaceGuard],
-        loadComponent: () =>
-          import('./features/home/admin-home/admin-home').then(
-            m => m.AdminHomeComponent
-          ),
+        path: '',
+        loadChildren: () =>
+          import('./features/home/home.routes').then(m => m.HOME_ROUTES),
       },
 
       // Checklist
