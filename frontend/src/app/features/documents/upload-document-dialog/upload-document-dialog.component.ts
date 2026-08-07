@@ -1,4 +1,4 @@
-import { Component, DestroyRef, EventEmitter, Input, OnInit, Output, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, input, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -18,9 +18,9 @@ export class UploadDocumentDialogComponent implements OnInit {
   private documentService = inject(DocumentService);
   private destroyRef = inject(DestroyRef);
 
-  @Input({ required: true }) engagementId!: number;
-  @Output() closed = new EventEmitter<void>();
-  @Output() uploaded = new EventEmitter<void>();
+  engagementId = input.required<number>();
+  closed = output<void>();
+  uploaded = output<void>();
 
   categories = signal<DocumentCategory[]>([]);
   selectedCategoryId = signal<number | null>(null);
@@ -142,7 +142,7 @@ export class UploadDocumentDialogComponent implements OnInit {
     this.isUploading.set(true);
     this.errorMessage.set(null);
 
-    this.documentService.uploadDocuments(finalFiles, this.engagementId, catId, this.selectedVisibility()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.documentService.uploadDocuments(finalFiles, this.engagementId(), catId, this.selectedVisibility()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (results) => {
         this.isUploading.set(false);
         const failed = results.filter((r) => !r.success);

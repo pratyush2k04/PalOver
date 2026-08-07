@@ -1,4 +1,4 @@
-import { Component, DestroyRef, EventEmitter, Input, Output, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InlineSVGModule } from 'ng-inline-svg-2';
@@ -14,24 +14,30 @@ import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from '../../../shared/constants/do
   templateUrl: './custom-visibility-dialog.component.html',
   styleUrl: './custom-visibility-dialog.component.scss'
 })
-export class CustomVisibilityDialogComponent {
+export class CustomVisibilityDialogComponent implements OnInit {
   private documentService = inject(DocumentService);
   private destroyRef = inject(DestroyRef);
 
-  @Input({ required: true }) document!: DocumentItem;
-  @Output() closed = new EventEmitter<void>();
-  @Output() updated = new EventEmitter<DocumentItem>();
+  document = input.required<DocumentItem>();
+  closed = output<void>();
+  updated = output<DocumentItem>();
 
   // Project Management (ID 2) is intentionally excluded — PMs always have access regardless.
   readonly availableRoles = DOCUMENT_CONFIG.AVAILABLE_CUSTOM_VISIBILITY_ROLES;
 
-  selectedRoles = signal<number[]>(
-    this.document?.allowedRoles?.length
-      ? [...this.document.allowedRoles].filter(r => r !== DOCUMENT_CONFIG.ROLE_IDS.PROJECT_MANAGEMENT)
-      : [DOCUMENT_CONFIG.ROLE_IDS.LEADERSHIP]   // sensible non-PM default (Leadership)
-  );
+  selectedRoles = signal<number[]>([]);
   isSubmitting = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
+
+  ngOnInit(): void {
+    const roles = this.document().allowedRoles;
+    if (roles && roles.length > 0) {
+      const nonPmRoles = roles.filter(r => r !== DOCUMENT_CONFIG.ROLE_IDS.PROJECT_MANAGEMENT);
+      this.selectedRoles.set(nonPmRoles.length > 0 ? nonPmRoles : [DOCUMENT_CONFIG.ROLE_IDS.LEADERSHIP]);
+    } else {
+      this.selectedRoles.set([DOCUMENT_CONFIG.ROLE_IDS.LEADERSHIP]);
+    }
+  }
 
   isRoleSelected(roleId: number): boolean {
     return this.selectedRoles().includes(roleId);
@@ -59,7 +65,7 @@ export class CustomVisibilityDialogComponent {
     this.errorMessage.set(null);
 
     this.documentService
-      .updateVisibility(this.document.id, {
+      .updateVisibility(this.document().id, {
         visibility: 'Custom',
         allowedRoles: roles,
         resetToCategoryDefault: false
@@ -84,7 +90,7 @@ export class CustomVisibilityDialogComponent {
     this.errorMessage.set(null);
 
     this.documentService
-      .updateVisibility(this.document.id, {
+      .updateVisibility(this.document().id, {
         resetToCategoryDefault: true
       })
       .pipe(takeUntilDestroyed(this.destroyRef))

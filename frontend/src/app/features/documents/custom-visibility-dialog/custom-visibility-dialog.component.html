@@ -9,11 +9,11 @@
       <div class="doc-info-banner">
         <div class="doc-name-row">
           <span class="file-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
-          <span class="file-name">{{ document.fileName }}</span>
+          <span class="file-name">{{ document().fileName }}</span>
         </div>
         <div class="doc-meta">
-          <span class="meta-item">Category: <strong>{{ document.categoryName || 'Other' }}</strong></span>
-          <span class="meta-item">Category default: <strong>{{ document.categoryDefaultVisibility || 'Team-wide' }}</strong></span>
+          <span class="meta-item">Category: <strong>{{ document().categoryName || 'Other' }}</strong></span>
+          <span class="meta-item">Category default: <strong>{{ document().categoryDefaultVisibility || 'Team-wide' }}</strong></span>
         </div>
       </div>
 
@@ -48,7 +48,7 @@
     </div>
 
     <div class="modal-footer">
-      @if (document.visibility === 'Custom' || (document.allowedRoles && document.allowedRoles.length > 0)) {
+      @if (document().visibility === 'Custom' || (document().allowedRoles && document().allowedRoles!.length > 0)) {
         <button
           type="button"
           class="btn btn-outline-warning btn-remove-override"
