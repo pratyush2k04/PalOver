@@ -1,10 +1,9 @@
 import {
   Component,
   DestroyRef,
-  Input,
-  Output,
-  EventEmitter,
   inject,
+  input,
+  output,
   signal,
   computed
 } from '@angular/core';
@@ -21,11 +20,11 @@ import { DOCUMENT_MESSAGES } from '../../../shared/constants/document.constants'
   styleUrl: './remove-document-dialog.component.scss'
 })
 export class RemoveDocumentDialogComponent {
-  @Input({ required: true }) documentId!: number;
-  @Input({ required: true }) documentName!: string;
+  documentId = input.required<number>();
+  documentName = input.required<string>();
 
-  @Output() closed = new EventEmitter<void>();
-  @Output() removed = new EventEmitter<void>();
+  closed = output<void>();
+  removed = output<void>();
 
   private documentService = inject(DocumentService);
   private destroyRef = inject(DestroyRef);
@@ -59,7 +58,7 @@ export class RemoveDocumentDialogComponent {
     this.isSubmitting.set(true);
     this.errorMessage.set(null);
 
-    this.documentService.deleteDocument(this.documentId, this.trimmedReason()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.documentService.deleteDocument(this.documentId(), this.trimmedReason()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.isSubmitting.set(false);
         this.removed.emit();
