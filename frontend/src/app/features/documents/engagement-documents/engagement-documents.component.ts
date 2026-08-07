@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DocumentService } from '../../../services/document.service';
-import { DocumentItem } from '../../../models/document.model';
+import { DocumentItem, DocumentVisibility } from '../../../models/document.model';
 import { AuthService } from '../../../services/auth';
 import { UploadDocumentDialogComponent } from '../upload-document-dialog/upload-document-dialog.component';
 import { RemoveDocumentDialogComponent } from '../remove-document-dialog/remove-document-dialog.component';
@@ -140,7 +140,7 @@ export class EngagementDocumentsComponent {
     }
   }
 
-  onVisibilityChange(doc: DocumentItem, newVisibility: string): void {
+  onVisibilityChange(doc: DocumentItem, newVisibility: DocumentVisibility): void {
     if (newVisibility === 'Custom') {
       this.openCustomVisibilityModal(doc);
       return;

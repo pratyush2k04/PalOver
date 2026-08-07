@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { DocumentCategory, DocumentItem, DocumentUploadResult, UpdateDocumentVisibilityRequest } from '../models/document.model';
+import { DocumentCategory, DocumentItem, DocumentUploadResult, DocumentVisibility, UpdateDocumentVisibilityRequest } from '../models/document.model';
 
 @Injectable({
   providedIn: 'root'
@@ -17,11 +17,11 @@ export class DocumentService {
     return this.http.get<DocumentCategory[]>('/api/documents/categories');
   }
 
-  uploadDocument(file: File, engagementId: number, categoryId: number, visibility: string): Observable<DocumentUploadResult[]> {
+  uploadDocument(file: File, engagementId: number, categoryId: number, visibility: DocumentVisibility): Observable<DocumentUploadResult[]> {
     return this.uploadDocuments([file], engagementId, categoryId, visibility);
   }
 
-  uploadDocuments(files: File[], engagementId: number, categoryId: number, visibility: string): Observable<DocumentUploadResult[]> {
+  uploadDocuments(files: File[], engagementId: number, categoryId: number, visibility: DocumentVisibility): Observable<DocumentUploadResult[]> {
     const formData = new FormData();
     files.forEach((file, i) => {
       formData.append(`[${i}].File`, file, file.name);
@@ -51,10 +51,10 @@ export class DocumentService {
     return this.http.post<void>(`/api/documents/${id}/remove`, { reason });
   }
 
-  updateVisibility(id: number, request: UpdateDocumentVisibilityRequest | string): Observable<DocumentItem> {
+  updateVisibility(id: number, request: UpdateDocumentVisibilityRequest | DocumentVisibility): Observable<DocumentItem> {
     const body: UpdateDocumentVisibilityRequest =
       typeof request === 'string'
-        ? { visibility: request }
+        ? { visibility: request as DocumentVisibility }
         : request;
     return this.http.patch<DocumentItem>(`/api/documents/${id}/visibility`, body);
   }

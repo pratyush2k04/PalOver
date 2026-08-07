@@ -1,3 +1,5 @@
+export type DocumentVisibility = 'PM-only' | 'Team-wide' | 'Custom';
+
 export interface DocumentItem {
   id: number;
   engagementId: number;
@@ -8,10 +10,10 @@ export interface DocumentItem {
   contentType: string;
   uploadedBy: string;
   uploadedAt: string;
-  visibility: 'PM-only' | 'Team-wide' | 'Custom' | string;
+  visibility: DocumentVisibility;
   allowedRoles?: number[];
   isCustomVisibility?: boolean;
-  categoryDefaultVisibility?: string;
+  categoryDefaultVisibility?: DocumentVisibility;
 }
 
 export interface DocumentCategory {
@@ -41,7 +43,7 @@ export interface RemoveDocumentRequest {
 }
 
 export interface UpdateDocumentVisibilityRequest {
-  visibility?: 'PM-only' | 'Team-wide' | 'Custom' | string;
+  visibility?: DocumentVisibility;
   allowedRoles?: number[];
   resetToCategoryDefault?: boolean;
 }

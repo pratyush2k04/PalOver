@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DocumentService } from '../../../services/document.service';
-import { DocumentCategory } from '../../../models/document.model';
+import { DocumentCategory, DocumentVisibility } from '../../../models/document.model';
 import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from '../../../shared/constants/document.constants';
 
 @Component({
@@ -33,7 +33,7 @@ export class UploadDocumentDialogComponent implements OnInit {
   /** True when only a single file is selected (rename is available) */
   isSingleFile = computed(() => this.selectedFiles().length === 1);
 
-  selectedVisibility = signal<string>(DOCUMENT_CONFIG.VISIBILITY.TEAM_WIDE);
+  selectedVisibility = signal<DocumentVisibility>(DOCUMENT_CONFIG.VISIBILITY.TEAM_WIDE);
   isUploading = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
 
@@ -87,7 +87,7 @@ export class UploadDocumentDialogComponent implements OnInit {
     }
   }
 
-  onVisibilityChange(visibility: string): void {
+  onVisibilityChange(visibility: DocumentVisibility): void {
     this.selectedVisibility.set(visibility);
   }
 
