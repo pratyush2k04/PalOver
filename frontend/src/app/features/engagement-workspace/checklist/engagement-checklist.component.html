@@ -23,29 +23,51 @@
       <div class="checklist-header-left">
         <h1 class="checklist-title">Kickoff Readiness Checklist</h1>
         <span class="badge badge-feature">FTR-022</span>
+        <span class="badge badge-feature">FTR-023</span>
+        <span class="badge badge-story">US-040</span>
       </div>
       <div class="checklist-header-right">
         <span class="checklist-version">
-          Checklist v{{ checklist()!.versionNumber }} &mdash; applied automatically at creation, read-only for now
+          Checklist v{{ checklist()!.versionNumber }}
         </span>
       </div>
     </div>
 
-    <!-- Sprint 1 Info Callout -->
-    <div class="callout callout-info">
-      <div class="callout-icon">🕐</div>
-      <div class="callout-body">
-        <div class="callout-badges">
-          <span class="badge badge-feature">FTR-022</span>
-          <span class="badge badge-story">US-039</span>
+    <!-- Kickoff Readiness Gate Callout -->
+    @if (checklist()!.incompleteMandatoryItems.length > 0) {
+      <div class="callout callout-gate callout-warning">
+        <div class="callout-icon">🚩</div>
+        <div class="callout-body">
+          <div class="callout-badges">
+            <span class="badge badge-gate-feature">FTR-024</span>
+            <span class="badge badge-gate-story">US-042</span>
+          </div>
+          <h2 class="callout-headline">Clear these to go kickoff-ready</h2>
+          <ul class="gate-incomplete-list">
+            @for (gateItem of checklist()!.incompleteMandatoryItems; track gateItem.id) {
+              <li>
+                <span class="gate-item-title">{{ gateItem.title }}</span>
+                <span class="gate-item-status-separator">&mdash;</span>
+                <span class="gate-item-status">{{ gateItem.status }}</span>
+              </li>
+            }
+          </ul>
+          <div class="gate-action">
+            <button type="button" class="btn btn-gate-disabled" disabled>
+              <span class="btn-gate-icon">✓</span> Mark kickoff-ready
+            </button>
+          </div>
         </div>
-        <p class="callout-headline">Read-only in Sprint 1.</p>
-        <p class="callout-text">
-          The master checklist is defined and applied to every new engagement, but marking items
-          applicable, complete or blocked, assigning owners, and the kickoff-ready gate are all Sprint 2.
-        </p>
       </div>
-    </div>
+    } @else {
+      <div class="callout callout-gate callout-success">
+        <div class="callout-icon">🎉</div>
+        <div class="callout-body">
+          <h2 class="callout-headline success-headline">All mandatory items completed!</h2>
+          <p class="callout-text">This engagement has satisfied all mandatory kickoff readiness criteria.</p>
+        </div>
+      </div>
+    }
 
     <!-- Category Cards -->
     @for (category of checklist()!.categories; track category.categoryId) {
@@ -59,23 +81,84 @@
           <thead>
             <tr>
               <th class="col-item">ITEM</th>
-              <th class="col-mandatory">MANDATORY</th>
               <th class="col-status">STATUS</th>
+              <th class="col-actions">ACTIONS</th>
             </tr>
           </thead>
           <tbody>
             @for (item of category.items; track item.id) {
-              <tr class="checklist-row">
-                <td class="cell-item">{{ item.title }}</td>
-                <td class="cell-mandatory">
-                  @if (item.isMandatory) {
-                    <span class="pill pill-mandatory">Mandatory</span>
-                  } @else {
-                    <span class="pill pill-optional">Optional</span>
+              <tr class="checklist-row" [class.row-not-applicable]="!item.isApplicable">
+                <td class="cell-item">
+                  <div class="item-title-wrapper">
+                    <span class="item-title" [class.text-strikethrough]="!item.isApplicable && item.exemptionStatus === 'Approved'">
+                      {{ item.title }}
+                    </span>
+                    @if (item.isMandatory) {
+                      <span class="pill pill-mandatory">Mandatory</span>
+                    } @else {
+                      <span class="pill pill-optional">Optional</span>
+                    }
+                  </div>
+
+                  @if (item.notApplicableReason) {
+                    <div class="item-reason-note">
+                      <span class="reason-label">Reason:</span> {{ item.notApplicableReason }}
+                      @if (item.exemptionRejectionReason) {
+                        <span class="rejection-note">(Rejected: {{ item.exemptionRejectionReason }})</span>
+                      }
+                    </div>
                   }
                 </td>
+
                 <td class="cell-status">
-                  <span class="pill pill-incomplete">{{ item.status }}</span>
+                  @if (!item.isApplicable && item.exemptionStatus === 'Approved') {
+                    <span class="pill pill-na">Not Applicable</span>
+                  } @else if (!item.isApplicable && !item.isMandatory) {
+                    <span class="pill pill-na">Not Applicable</span>
+                  } @else if (item.exemptionStatus === 'Pending') {
+                    <span class="pill pill-pending">Pending Approval</span>
+                  } @else if (item.status === 'Complete') {
+                    <span class="pill pill-complete">Complete</span>
+                  } @else {
+                    <span class="pill pill-incomplete">Incomplete</span>
+                  }
+                </td>
+
+                <td class="cell-actions">
+                  <div class="actions-group">
+                    <!-- Status Toggle (PM & Tech Lead) -->
+                    @if (canToggleStatus() && item.isApplicable) {
+                      @if (item.status === 'Complete') {
+                        <button type="button" class="btn btn-reopen" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
+                          Reopen
+                        </button>
+                      } @else {
+                        <button type="button" class="btn btn-complete" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
+                          Complete
+                        </button>
+                      }
+                    }
+
+                    <!-- Applicability Actions (PM only) -->
+                    @if (canChangeApplicability()) {
+                      @if (item.isApplicable && item.exemptionStatus !== 'Pending') {
+                        <button type="button" class="btn-icon btn-na" [disabled]="isUpdating()" (click)="openMarkNaDialog(item)" title="Mark Not Applicable">
+                          ✕
+                        </button>
+                      } @else if (!item.isApplicable || item.exemptionStatus === 'Pending') {
+                        <button type="button" class="btn btn-restore" [disabled]="isUpdating()" (click)="makeItemApplicable(item)">
+                          Make Applicable
+                        </button>
+                      }
+                    }
+
+                    <!-- Leadership Exemption Review -->
+                    @if (isLeadership() && item.exemptionStatus === 'Pending') {
+                      <button type="button" class="btn btn-review" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
+                        Review Request
+                      </button>
+                    }
+                  </div>
                 </td>
               </tr>
             }

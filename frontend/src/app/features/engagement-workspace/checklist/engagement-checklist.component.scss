@@ -11,18 +11,27 @@ $color-mandatory-bg: #fef2f2;
 $color-mandatory-text: #dc2626;
 $color-optional-bg: #f3f4f6;
 $color-optional-text: #6b7280;
+
 $color-incomplete-bg: #f3f4f6;
 $color-incomplete-text: #6b7280;
 $color-incomplete-border: #d1d5db;
+
+$color-complete-bg: #ecfdf5;
+$color-complete-text: #059669;
+$color-complete-border: #a7f3d0;
+
+$color-na-bg: #f1f5f9;
+$color-na-text: #64748b;
+$color-na-border: #cbd5e1;
+
+$color-pending-bg: #fffbeb;
+$color-pending-text: #d97706;
+$color-pending-border: #fde68a;
 
 $color-feature-badge-bg: #eff6ff;
 $color-feature-badge-text: #1d4ed8;
 $color-story-badge-bg: #f0fdf4;
 $color-story-badge-text: #16a34a;
-
-$color-callout-bg: #eff6ff;
-$color-callout-border: #bfdbfe;
-$color-callout-text: #1e40af;
 
 // Loading & Error states
 .checklist-loading {
@@ -106,7 +115,7 @@ $color-callout-text: #1e40af;
 .checklist-version {
   font-size: 12px;
   color: $color-text-muted;
-  font-style: italic;
+  font-weight: 600;
 }
 
 // Badges
@@ -131,32 +140,51 @@ $color-callout-text: #1e40af;
     color: $color-story-badge-text;
     border: 1px solid #bbf7d0;
   }
+
+  &.badge-gate-feature {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+  }
+
+  &.badge-gate-story {
+    background: #fed7aa;
+    color: #9a3412;
+    border: 1px solid #ffbb7c;
+  }
 }
 
-// Callout
+// Callout Gate Banner (Image 2 style)
 .callout {
   display: flex;
-  gap: 14px;
-  padding: 16px 20px;
-  border-radius: 10px;
-  border: 1px solid $color-callout-border;
-  background: $color-callout-bg;
+  gap: 16px;
+  padding: 20px 24px;
+  border-radius: 12px;
 
-  &.callout-info {
-    border-left: 4px solid #3b82f6;
+  &.callout-warning {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-left: 5px solid #dc2626;
+  }
+
+  &.callout-success {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-left: 5px solid #16a34a;
   }
 }
 
 .callout-icon {
-  font-size: 18px;
+  font-size: 24px;
   flex-shrink: 0;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 .callout-body {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+  flex: 1;
 }
 
 .callout-badges {
@@ -166,17 +194,71 @@ $color-callout-text: #1e40af;
 }
 
 .callout-headline {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
-  color: $color-callout-text;
+  color: #991b1b;
   margin: 0;
+
+  &.success-headline {
+    color: #166534;
+  }
 }
 
 .callout-text {
   font-size: 13px;
-  color: #1e3a5f;
+  color: #166534;
   margin: 0;
-  line-height: 1.5;
+}
+
+.gate-incomplete-list {
+  margin: 4px 0 12px 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  li {
+    font-size: 13px;
+    color: #7f1d1d;
+    line-height: 1.4;
+  }
+
+  .gate-item-title {
+    font-weight: 600;
+  }
+
+  .gate-item-status-separator {
+    margin: 0 6px;
+    color: #f87171;
+  }
+
+  .gate-item-status {
+    color: #dc2626;
+    font-weight: 500;
+  }
+}
+
+.gate-action {
+  margin-top: 4px;
+}
+
+.btn-gate-disabled {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #fcd34d;
+  color: #78350f;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  cursor: not-allowed;
+  opacity: 0.85;
+
+  .btn-gate-icon {
+    font-size: 14px;
+  }
 }
 
 // Category cards
@@ -234,6 +316,11 @@ $color-callout-text: #1e40af;
 
     &:last-child { border-bottom: none; }
     &:hover { background: $color-bg; }
+
+    &.row-not-applicable {
+      background: #fdfdfd;
+      opacity: 0.85;
+    }
   }
 
   td {
@@ -242,9 +329,9 @@ $color-callout-text: #1e40af;
   }
 }
 
-.col-item { width: 60%; }
-.col-mandatory { width: 20%; }
-.col-status { width: 20%; }
+.col-item { width: 55%; }
+.col-status { width: 22%; }
+.col-actions { width: 23%; text-align: right; }
 
 .cell-item {
   font-size: 13px;
@@ -252,9 +339,46 @@ $color-callout-text: #1e40af;
   line-height: 1.4;
 }
 
-.cell-mandatory,
-.cell-status {
+.item-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.item-title {
+  font-weight: 500;
+
+  &.text-strikethrough {
+    text-decoration: line-through;
+    color: $color-text-muted;
+  }
+}
+
+.item-reason-note {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+  font-style: italic;
+
+  .reason-label {
+    font-weight: 600;
+    color: #475569;
+  }
+
+  .rejection-note {
+    color: #dc2626;
+    margin-left: 6px;
+  }
+}
+
+.cell-status,
+.cell-actions {
   font-size: 13px;
+}
+
+.cell-actions {
+  text-align: right;
 }
 
 // Pills
@@ -284,4 +408,114 @@ $color-callout-text: #1e40af;
     color: $color-incomplete-text;
     border: 1px solid $color-incomplete-border;
   }
+
+  &.pill-complete {
+    background: $color-complete-bg;
+    color: $color-complete-text;
+    border: 1px solid $color-complete-border;
+  }
+
+  &.pill-na {
+    background: $color-na-bg;
+    color: $color-na-text;
+    border: 1px solid $color-na-border;
+  }
+
+  &.pill-pending {
+    background: $color-pending-bg;
+    color: $color-pending-text;
+    border: 1px solid $color-pending-border;
+  }
 }
+
+// Actions Group
+.actions-group {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.btn {
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &.btn-complete {
+    background: #ffffff;
+    border-color: #d1d5db;
+    color: #374151;
+
+    &:hover:not(:disabled) {
+      background: #f9fafb;
+      border-color: #9ca3af;
+      color: #111827;
+    }
+  }
+
+  &.btn-reopen {
+    background: #ffffff;
+    border-color: #2563eb;
+    color: #2563eb;
+
+    &:hover:not(:disabled) {
+      background: #eff6ff;
+    }
+  }
+
+  &.btn-restore {
+    background: #ffffff;
+    border-color: #6b7280;
+    color: #374151;
+
+    &:hover:not(:disabled) {
+      background: #f3f4f6;
+    }
+  }
+
+  &.btn-review {
+    background: #f59e0b;
+    color: #ffffff;
+
+    &:hover:not(:disabled) {
+      background: #d97706;
+    }
+  }
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #6b7280;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #dc2626;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
