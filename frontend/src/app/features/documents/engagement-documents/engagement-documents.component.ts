@@ -9,23 +9,25 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DocumentService } from '../../../services/document.service';
-import { DocumentItem, DocumentVisibility } from '../../../models/document.model';
+import { DocumentCategory, DocumentItem, DocumentVisibility } from '../../../models/document.model';
 import { AuthService } from '../../../services/auth';
 import { UploadDocumentDialogComponent } from '../upload-document-dialog/upload-document-dialog.component';
 import { RemoveDocumentDialogComponent } from '../remove-document-dialog/remove-document-dialog.component';
 import { CustomVisibilityDialogComponent } from '../custom-visibility-dialog/custom-visibility-dialog.component';
 
-import { DOCUMENT_MESSAGES } from '../../../shared/constants/document.constants';
+import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from '../../../shared/constants/document.constants';
 
 @Component({
   selector: 'app-engagement-documents',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     InlineSVGModule,
     UploadDocumentDialogComponent,
     RemoveDocumentDialogComponent,
@@ -39,6 +41,8 @@ export class EngagementDocumentsComponent {
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private destroyRef = inject(DestroyRef);
+
+  readonly DOCUMENT_MESSAGES = DOCUMENT_MESSAGES;
 
   private parentParamMap = toSignal(this.route.parent!.paramMap);
 
@@ -55,6 +59,19 @@ export class EngagementDocumentsComponent {
   selectedDocForCustomVisibility = signal<DocumentItem | null>(null);
   downloadingId = signal<number | null>(null);
 
+  searchTerm = signal<string>('');
+  selectedCategoryId = signal<number | 'all'>('all');
+  categories = signal<DocumentCategory[]>([]);
+
+  filteredDocuments = computed(() => {
+    const term = this.searchTerm().trim().toLowerCase();
+    const categoryId = this.selectedCategoryId();
+    return this.documents().filter(doc =>
+      (categoryId === 'all' || doc.categoryId === categoryId) &&
+      (!term || doc.fileName.toLowerCase().includes(term))
+    );
+  });
+
   /** True for PM and Admin — can edit visibility inline */
   canManageVisibility = computed(() =>
     this.authService.hasRole('Project Management') || this.authService.isAdmin()
@@ -69,6 +86,14 @@ export class EngagementDocumentsComponent {
         this.documents.set([]);
         this.isLoading.set(false);
       }
+    });
+    this.loadCategories();
+  }
+
+  private loadCategories(): void {
+    this.documentService.getCategories().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (cats) => this.categories.set(cats),
+      error: () => this.categories.set([...DOCUMENT_CONFIG.DEFAULT_CATEGORIES])
     });
   }
 

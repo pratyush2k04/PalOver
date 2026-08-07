@@ -5,6 +5,7 @@ export const DOCUMENT_MESSAGES = {
   LOAD_FAILED: 'Failed to load documents.',
   DOWNLOAD_FAILED: (fileName: string) => `Failed to download ${fileName}`,
   UPDATE_VISIBILITY_FAILED: 'Failed to update visibility.',
+  NO_SEARCH_RESULTS: 'No documents match your search.',
 
   // Custom Visibility Dialog
   CUSTOM_VISIBILITY_NO_ROLE_SELECTED: 'Please select at least one role to restrict access.',
