@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Pdr.Api.Attributes;
 using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Models;
 using Pdr.Api.Services;
@@ -13,7 +14,7 @@ namespace Pdr.Api.Controllers;
 public class EngagementsController(IEngagementService engagementService) : ControllerBase
 {
     [HttpGet("my-engagements")]
-    [Authorize(Roles = $"{RoleNames.ProjectManagement},{RoleNames.TechLead}")]
+    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead)]
     public async Task<ActionResult<PmEngagementListResponse>> GetMyEngagements([FromQuery] string sortBy = "kickoff")
     {
         var result = await engagementService.GetMyEngagementsAsync(sortBy);
@@ -45,7 +46,7 @@ public class EngagementsController(IEngagementService engagementService) : Contr
     }
 
     [HttpPost("mark-sow-signed")]
-    [Authorize(Roles = RoleNames.PreSales)]
+    [AuthorizeRoles(RoleEnum.PreSales)]
     public async Task<ActionResult<MarkSowSignedResponse>> MarkSowSigned(MarkSowSignedRequest request)
     {
        
@@ -55,7 +56,7 @@ public class EngagementsController(IEngagementService engagementService) : Contr
     }
 
     [HttpGet("{id:int}/owners")]
-    [Authorize(Roles = RoleNames.Leadership)]
+    [AuthorizeRoles(RoleEnum.Leadership)]
     public async Task<ActionResult<EngagementOwnersDto>> GetEngagementOwners(int id)
     {
         var owners = await engagementService.GetEngagementOwnersAsync(id);
@@ -63,7 +64,7 @@ public class EngagementsController(IEngagementService engagementService) : Contr
     }
     //assign
     [HttpPut("{id:int}/project-manager")]
-    [Authorize(Roles = RoleNames.Leadership)]
+    [AuthorizeRoles(RoleEnum.Leadership)]
     public async Task<ActionResult<EngagementOwnersDto>> AssignProjectManager(int id, AssignOwnerRequest request)
     {
         var owners = await engagementService.AssignProjectManagerAsync(id, request.UserId);
@@ -71,7 +72,7 @@ public class EngagementsController(IEngagementService engagementService) : Contr
     }
 
     [HttpPut("{id:int}/tech-lead")]
-    [Authorize(Roles = RoleNames.Leadership)]
+    [AuthorizeRoles(RoleEnum.Leadership)]
     public async Task<ActionResult<EngagementOwnersDto>> AssignTechLead(int id, AssignOwnerRequest request)
     {
         var owners = await engagementService.AssignTechLeadAsync(id, request.UserId);

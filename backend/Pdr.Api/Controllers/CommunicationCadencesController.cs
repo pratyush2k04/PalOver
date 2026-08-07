@@ -2,6 +2,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Pdr.Api.Attributes;
 using Pdr.Api.DTOs.CommunicationCadences;
 using Pdr.Api.Models;
 using Pdr.Api.Services.Interfaces;
@@ -43,7 +44,7 @@ public class CommunicationCadencesController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = RoleNames.ProjectManagement)]
+    [AuthorizeRoles(RoleEnum.ProjectManagement)]
     [EndpointSummary("Create a communication cadence for a stakeholder role (Project Manager only)")]
     [ProducesResponseType(typeof(CommunicationCadenceResponseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

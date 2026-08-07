@@ -199,12 +199,12 @@ public class EngagementService(
     
 
     public async Task<EngagementOwnersDto> AssignProjectManagerAsync(int engagementId, int userId) =>
-        await AssignOwnerAsync(engagementId, userId, RoleEnum.ProjectManagement, RoleNames.ProjectManagement);
+        await AssignOwnerAsync(engagementId, userId, RoleEnum.ProjectManagement);
 
     public async Task<EngagementOwnersDto> AssignTechLeadAsync(int engagementId, int userId) =>
-        await AssignOwnerAsync(engagementId, userId, RoleEnum.TechLead, RoleNames.TechLead);
+        await AssignOwnerAsync(engagementId, userId, RoleEnum.TechLead);
 
-    private async Task<EngagementOwnersDto> AssignOwnerAsync(int engagementId, int userId, RoleEnum requiredRole, string roleName)
+    private async Task<EngagementOwnersDto> AssignOwnerAsync(int engagementId, int userId, RoleEnum requiredRole)
     {
         if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
             throw new EngagementNotFoundException(engagementId);
@@ -213,7 +213,7 @@ public class EngagementService(
             ?? throw new UserNotFoundException(userId);
 
         if (user.RoleId != (int)requiredRole)
-            throw new InvalidOwnerRoleException(userId, roleName);
+            throw new InvalidOwnerRoleException(userId, requiredRole.ToRoleName());
 
         var existingAssignment = await engagementRepository.GetAssignmentByRoleIdAsync(engagementId, (int)requiredRole);
         if (existingAssignment is not null)

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Pdr.Api.Attributes;
 using Pdr.Api.DTOs.EnvironmentTooling;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
@@ -15,7 +16,7 @@ public class EnvironmentToolingController(IEnvironmentToolingService service) : 
     // GET api/engagements/{engagementId}/environment-tooling
     // Tech Lead, Project Management, Leadership — view access
     [HttpGet]
-    [Authorize(Roles = $"{RoleNames.TechLead},{RoleNames.ProjectManagement},{RoleNames.Leadership}")]
+    [AuthorizeRoles(RoleEnum.TechLead, RoleEnum.ProjectManagement, RoleEnum.Leadership)]
     public async Task<IActionResult> GetItems(int engagementId)
     {
         var response = await service.GetItemsByEngagementIdAsync(engagementId);
@@ -25,7 +26,7 @@ public class EnvironmentToolingController(IEnvironmentToolingService service) : 
     // POST api/engagements/{engagementId}/environment-tooling
     // Tech Lead — edit access
     [HttpPost]
-    [Authorize(Roles = RoleNames.TechLead)]
+    [AuthorizeRoles(RoleEnum.TechLead)]
     public async Task<IActionResult> AddCustomItem(int engagementId, [FromBody] AddCustomEnvironmentToolingItemRequest request)
     {
         var item = await service.AddCustomItemAsync(engagementId, request);
@@ -42,7 +43,7 @@ public class EnvironmentToolingItemsController(IEnvironmentToolingService servic
     // PATCH api/environment-tooling/{id}/status
     // Tech Lead — edit access
     [HttpPatch("{id:int}/status")]
-    [Authorize(Roles = RoleNames.TechLead)]
+    [AuthorizeRoles(RoleEnum.TechLead)]
     public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateEnvironmentToolingStatusRequest request)
     {
         var item = await service.UpdateStatusAsync(id, request);
@@ -52,7 +53,7 @@ public class EnvironmentToolingItemsController(IEnvironmentToolingService servic
     // PATCH api/environment-tooling/{id}/owner
     // Tech Lead — edit access
     [HttpPatch("{id:int}/owner")]
-    [Authorize(Roles = RoleNames.TechLead)]
+    [AuthorizeRoles(RoleEnum.TechLead)]
     public async Task<IActionResult> UpdateOwner(int id, [FromBody] UpdateEnvironmentToolingOwnerRequest request)
     {
         var item = await service.UpdateOwnerAsync(id, request);
