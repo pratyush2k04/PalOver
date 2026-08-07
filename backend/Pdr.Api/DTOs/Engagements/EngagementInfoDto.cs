@@ -9,4 +9,5 @@ public record EngagementInfoDto(
     string CommercialModel,
     DateOnly KickoffDate,
     DateOnly? BillingStartDate,
-    string Status);
+    string Status,
+    bool IsKickoffReady);
