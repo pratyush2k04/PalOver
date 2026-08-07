@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Http;
 
+using Pdr.Api.Constants;
+
 namespace Pdr.Api.Exceptions.EnvironmentToolingExceptions;
 
 public class NotApplicableReasonRequiredException()
-    : AppException("NotApplicableReason is required when setting status to NotApplicable.", StatusCodes.Status400BadRequest);
+    : AppException(EnvironmentToolingConstants.Messages.NotApplicableReasonRequired, StatusCodes.Status400BadRequest);

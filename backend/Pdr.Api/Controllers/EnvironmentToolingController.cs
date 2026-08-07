@@ -4,17 +4,19 @@ using Pdr.Api.DTOs.EnvironmentTooling;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Services.Interfaces;
 
+using Pdr.Api.Constants;
+
 namespace Pdr.Api.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("api/engagements/{engagementId:int}/environment-tooling")]
+[Route(EnvironmentToolingConstants.Routes.Base)]
 public class EnvironmentToolingController(IEnvironmentToolingService service) : ControllerBase
 {
     // GET api/engagements/{engagementId}/environment-tooling
     // Tech Lead, Project Management, Leadership — view access
     [HttpGet]
-    [Authorize(Roles = "Tech Lead,Project Management,Leadership")]
+    [Authorize(Roles = EnvironmentToolingConstants.Roles.ViewerRoles)]
     public async Task<IActionResult> GetItems(int engagementId)
     {
         try
@@ -31,7 +33,7 @@ public class EnvironmentToolingController(IEnvironmentToolingService service) : 
     // POST api/engagements/{engagementId}/environment-tooling
     // Tech Lead — edit access
     [HttpPost]
-    [Authorize(Roles = "Tech Lead")]
+    [Authorize(Roles = EnvironmentToolingConstants.Roles.TechLead)]
     public async Task<IActionResult> AddCustomItem(int engagementId, [FromBody] AddCustomEnvironmentToolingItemRequest request)
     {
         try
@@ -49,13 +51,13 @@ public class EnvironmentToolingController(IEnvironmentToolingService service) : 
 // Item-level routes by item ID
 [ApiController]
 [Authorize]
-[Route("api/environment-tooling")]
+[Route(EnvironmentToolingConstants.Routes.ItemsBase)]
 public class EnvironmentToolingItemsController(IEnvironmentToolingService service) : ControllerBase
 {
     // PATCH api/environment-tooling/{id}/status
     // Tech Lead — edit access
     [HttpPatch("{id:int}/status")]
-    [Authorize(Roles = "Tech Lead")]
+    [Authorize(Roles = EnvironmentToolingConstants.Roles.TechLead)]
     public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateEnvironmentToolingStatusRequest request)
     {
         try
@@ -72,7 +74,7 @@ public class EnvironmentToolingItemsController(IEnvironmentToolingService servic
     // PATCH api/environment-tooling/{id}/owner
     // Tech Lead — edit access
     [HttpPatch("{id:int}/owner")]
-    [Authorize(Roles = "Tech Lead")]
+    [Authorize(Roles = EnvironmentToolingConstants.Roles.TechLead)]
     public async Task<IActionResult> UpdateOwner(int id, [FromBody] UpdateEnvironmentToolingOwnerRequest request)
     {
         try
