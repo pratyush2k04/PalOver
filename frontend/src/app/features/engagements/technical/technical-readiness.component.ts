@@ -2,7 +2,8 @@ import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { AccessItemDto } from './models/technical-readiness.model';
+import { TECHNICAL_READINESS_ALERTS } from '../../../constants/app.constants';
+import { AccessItemDto, AccessItemStatus } from './models/technical-readiness.model';
 import { EnvironmentToolingItemDto, EnvironmentToolingStatus } from './models/environment-tooling.model';
 import { AccessTrackerComponent } from './access-tracker/access-tracker.component';
 import { EnvironmentToolingComponent } from './environment-tooling/environment-tooling.component';
@@ -27,31 +28,48 @@ export class TechnicalReadinessComponent {
   accessItems = signal<AccessItemDto[]>([]);
   toolingItems = signal<EnvironmentToolingItemDto[]>([]);
 
+  // Helper check methods for AccessItemStatus using enum
+  private isGranted(status: string | number): boolean {
+    return status === AccessItemStatus[AccessItemStatus.Granted] || +status === AccessItemStatus.Granted;
+  }
+
+  private isInProgress(status: string | number): boolean {
+    return status === AccessItemStatus[AccessItemStatus.InProgress] || +status === AccessItemStatus.InProgress;
+  }
+
+  private isBlocked(status: string | number): boolean {
+    return status === AccessItemStatus[AccessItemStatus.Blocked] || +status === AccessItemStatus.Blocked;
+  }
+
   // Access Metrics (Calculated against InProgress and Granted only)
   accessApplicableItems = computed(() =>
-    this.accessItems().filter(i =>
-      i.status === 'Granted' || i.status === '2' || i.status === 'InProgress' || i.status === '1'
-    )
+    this.accessItems().filter(i => this.isGranted(i.status) || this.isInProgress(i.status))
   );
   accessGrantedCount = computed(() =>
-    this.accessApplicableItems().filter(i => i.status === 'Granted' || i.status === '2').length
+    this.accessApplicableItems().filter(i => this.isGranted(i.status)).length
   );
   accessTotalCount = computed(() => this.accessApplicableItems().length);
 
   // Tooling Metrics (Not Applicable items are excluded from required total)
   toolingApplicableItems = computed(() =>
-    this.toolingItems().filter(i => +i.status !== EnvironmentToolingStatus.NotApplicable && i.status !== ('NotApplicable' as any))
+    this.toolingItems().filter(i =>
+      +i.status !== EnvironmentToolingStatus.NotApplicable &&
+      i.status !== (EnvironmentToolingStatus[EnvironmentToolingStatus.NotApplicable] as any)
+    )
   );
 
   toolingReadyCount = computed(() =>
-    this.toolingApplicableItems().filter(i => +i.status === EnvironmentToolingStatus.Ready || i.status === ('Ready' as any)).length
+    this.toolingApplicableItems().filter(i =>
+      +i.status === EnvironmentToolingStatus.Ready ||
+      i.status === (EnvironmentToolingStatus[EnvironmentToolingStatus.Ready] as any)
+    ).length
   );
 
   toolingTotalCount = computed(() => this.toolingApplicableItems().length);
 
   // Blockers Check
   hasAccessBlockers = computed(() =>
-    this.accessItems().some(i => i.status === 'Blocked' || i.status === '3')
+    this.accessItems().some(i => this.isBlocked(i.status))
   );
 
   hasBlockers = computed(() => this.hasAccessBlockers());
@@ -75,6 +93,7 @@ export class TechnicalReadinessComponent {
   }
 
   shareSummary() {
-    alert('Day-1 Summary shared with team!');
+    alert(TECHNICAL_READINESS_ALERTS.SHARE_SUMMARY);
   }
 }
+

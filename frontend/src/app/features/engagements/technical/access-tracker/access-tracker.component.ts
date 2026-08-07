@@ -2,6 +2,7 @@ import { Component, inject, input, output, signal, computed, effect, DestroyRef 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TECHNICAL_READINESS_ROLES } from '../../../../constants/app.constants';
 import { TechnicalReadinessService } from '../services/technical-readiness.service';
 import { AuthService } from '../../../../services/auth';
 import { AccessItemDto, AccessItemStatus } from '../models/technical-readiness.model';
@@ -23,7 +24,7 @@ export class AccessTrackerComponent {
 
   accessItems = signal<AccessItemDto[]>([]);
   isLoading = signal<boolean>(true);
-  isTechLead = computed(() => this.authService.hasRole('Tech Lead'));
+  isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
 
   // Add Item Modal state
   isAddModalOpen = signal<boolean>(false);

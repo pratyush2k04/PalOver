@@ -2,6 +2,7 @@ import { Component, inject, input, output, signal, computed, effect, DestroyRef 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TECHNICAL_READINESS_ROLES } from '../../../../constants/app.constants';
 import { EnvironmentToolingService } from '../services/environment-tooling.service';
 import { AuthService } from '../../../../services/auth';
 import {
@@ -26,7 +27,7 @@ export class EnvironmentToolingComponent {
 
   items = signal<EnvironmentToolingItemDto[]>([]);
   isLoading = signal<boolean>(true);
-  isTechLead = computed(() => this.authService.hasRole('Tech Lead'));
+  isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
 
   // Add Item Modal
   isAddModalOpen = signal<boolean>(false);
