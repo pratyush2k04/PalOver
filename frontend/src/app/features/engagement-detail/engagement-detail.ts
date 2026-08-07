@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EngagementInfo, EngagementOwners, EngagementService } from '../../services/engagement';
@@ -25,7 +25,7 @@ interface OwnerChange {
 @Component({
   selector: 'app-engagement-detail',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ConfirmDialogComponent],
+  imports: [ReactiveFormsModule, ConfirmDialogComponent],
   templateUrl: './engagement-detail.html',
   styleUrl: './engagement-detail.scss'
 })

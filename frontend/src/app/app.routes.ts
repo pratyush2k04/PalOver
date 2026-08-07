@@ -96,7 +96,7 @@ export const routes: Routes = [
           {
             path: MASTER_CHECKLIST_ROUTES.PUBLISHED,
             loadComponent: () =>
-              import('./features/checklist/published/published-checklist').then(
+              import('./features/master-checklist/published/published-checklist').then(
                 m => m.PublishedChecklistComponent
               ),
           },
@@ -109,28 +109,28 @@ export const routes: Routes = [
         path: MASTER_CHECKLIST_ROUTES.BASE,
         canActivate: [adminGuard],
         loadComponent: () =>
-          import('./features/checklist/master-checklist-shell/master-checklist-shell.component').then(
+          import('./features/master-checklist/master-checklist-shell/master-checklist-shell.component').then(
             m => m.MasterChecklistShellComponent
           ),
         children: [
           {
             path: MASTER_CHECKLIST_ROUTES.DRAFT,
             loadComponent: () =>
-              import('./features/checklist/draft/current-draft').then(
+              import('./features/master-checklist/draft/current-draft').then(
                 m => m.CurrentDraftComponent
               ),
           },
           {
             path: MASTER_CHECKLIST_ROUTES.PUBLISHED,
             loadComponent: () =>
-              import('./features/checklist/published/published-checklist').then(
+              import('./features/master-checklist/published/published-checklist').then(
                 m => m.PublishedChecklistComponent
               ),
           },
           {
             path: MASTER_CHECKLIST_ROUTES.HISTORY,
             loadComponent: () =>
-              import('./features/checklist/history/version-history').then(
+              import('./features/master-checklist/history/version-history').then(
                 m => m.VersionHistoryComponent
               ),
           },

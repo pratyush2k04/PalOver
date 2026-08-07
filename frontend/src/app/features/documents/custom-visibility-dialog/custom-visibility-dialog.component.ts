@@ -1,5 +1,5 @@
 import { Component, DestroyRef, OnInit, inject, input, output, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -10,7 +10,7 @@ import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from '../../../shared/constants/do
 @Component({
   selector: 'app-custom-visibility-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, InlineSVGModule],
+  imports: [FormsModule, InlineSVGModule],
   templateUrl: './custom-visibility-dialog.component.html',
   styleUrl: './custom-visibility-dialog.component.scss'
 })

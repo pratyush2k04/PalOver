@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { UserDirectoryService } from '../../services/user-directory';
 import { ToastService } from '../../services/toast';
@@ -17,7 +17,7 @@ interface PendingRoleChange {
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, FormsModule, ConfirmDialogComponent, LoadingSpinnerComponent],
+  imports: [FormsModule, ConfirmDialogComponent, LoadingSpinnerComponent],
   templateUrl: './users.html',
   styleUrl: './users.scss'
 })

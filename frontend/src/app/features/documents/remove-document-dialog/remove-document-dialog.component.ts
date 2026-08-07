@@ -8,7 +8,7 @@ import {
   computed
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule } from '@angular/common';
+
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DocumentService } from '../../../services/document.service';
 import { DOCUMENT_MESSAGES } from '../../../shared/constants/document.constants';
@@ -16,7 +16,7 @@ import { DOCUMENT_MESSAGES } from '../../../shared/constants/document.constants'
 @Component({
   selector: 'app-remove-document-dialog',
   standalone: true,
-  imports: [CommonModule, InlineSVGModule],
+  imports: [InlineSVGModule],
   templateUrl: './remove-document-dialog.component.html',
   styleUrl: './remove-document-dialog.component.scss'
 })

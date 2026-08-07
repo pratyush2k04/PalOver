@@ -8,7 +8,7 @@ import {
   effect
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule } from '@angular/common';
+
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { InlineSVGModule } from 'ng-inline-svg-2';
@@ -25,12 +25,11 @@ import { DOCUMENT_MESSAGES } from '../../../shared/constants/document.constants'
   selector: 'app-engagement-documents',
   standalone: true,
   imports: [
-    CommonModule,
     InlineSVGModule,
     UploadDocumentDialogComponent,
     RemoveDocumentDialogComponent,
     CustomVisibilityDialogComponent
-  ],
+],
   templateUrl: './engagement-documents.component.html',
   styleUrl: './engagement-documents.component.scss'
 })
