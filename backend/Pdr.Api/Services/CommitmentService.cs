@@ -10,8 +10,6 @@ namespace Pdr.Api.Services;
 
 public class CommitmentService : ICommitmentService
 {
-    private const string SubmittedStatusName = "Submitted";
-
     private readonly AppDbContext _context;
 
     public CommitmentService(AppDbContext context)
@@ -32,10 +30,15 @@ public class CommitmentService : ICommitmentService
 
     private async Task EnsureNotSubmittedAsync(HandoverInfo handover)
     {
+        if (handover.StatusId == (int)HandoverStatusEnum.Submitted)
+        {
+            throw new HandoverSubmittedException("This handover has already been submitted and its commitments can no longer be changed.");
+        }
+
         var status = await _context.HandoverStatuses
             .FirstOrDefaultAsync(s => s.HandoverStatusId == handover.StatusId);
 
-        if (status?.StatusName == SubmittedStatusName)
+        if (status?.StatusName == HandoverStatusNames.Submitted)
         {
             throw new HandoverSubmittedException("This handover has already been submitted and its commitments can no longer be changed.");
         }

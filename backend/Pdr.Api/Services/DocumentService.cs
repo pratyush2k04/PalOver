@@ -3,6 +3,7 @@ using Pdr.Api.DTOs.Documents;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
 using Pdr.Api.Models.Documents;
+using Pdr.Api.Models.Handover;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 using System;
@@ -34,18 +35,18 @@ public class DocumentService(
             return true;
         }
 
-        if (doc.Visibility == "Team-wide")
+        if (doc.Visibility == DocumentVisibilityNames.TeamWide)
         {
             return true;
         }
 
-        if (doc.Visibility == "PM-only" && currentUserService.IsInRole(RoleEnum.Leadership))
+        if (doc.Visibility == DocumentVisibilityNames.PmOnly && currentUserService.IsInRole(RoleEnum.Leadership))
         {
             return true;
         }
 
         var roleId = currentUserService.GetRoleId();
-        if (doc.Visibility == "Custom" && roleId.HasValue && doc.AllowedRoles != null && doc.AllowedRoles.Contains(roleId.Value))
+        if (doc.Visibility == DocumentVisibilityNames.Custom && roleId.HasValue && doc.AllowedRoles != null && doc.AllowedRoles.Contains(roleId.Value))
         {
             return true;
         }
@@ -55,10 +56,10 @@ public class DocumentService(
 
     private static string GetCategoryDefaultVisibility(string? categoryName)
     {
-        return string.Equals(categoryName, "Commercial", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(categoryName, "Proposal", StringComparison.OrdinalIgnoreCase)
-            ? "PM-only"
-            : "Team-wide";
+        return string.Equals(categoryName, DocumentCategoryNames.Commercial, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(categoryName, DocumentCategoryNames.Proposal, StringComparison.OrdinalIgnoreCase)
+            ? DocumentVisibilityNames.PmOnly
+            : DocumentVisibilityNames.TeamWide;
     }
 
     // ── CRUD ────────────────────────────────────────────────────────────────
@@ -156,9 +157,10 @@ public class DocumentService(
             throw new DocumentAccessDeniedException("You do not have permission to remove this document. Only the uploader or a Project Manager can remove it.");
         }
 
-        // Signed SOW Guard (CategoryId = 3 or CategoryName = "Signed SOW")
-        bool isSignedSow = doc.CategoryId == 3 || string.Equals(doc.Category?.CategoryName, "Signed SOW", StringComparison.OrdinalIgnoreCase);
-        if (isSignedSow && doc.Engagement?.HandoverInfo != null && doc.Engagement.HandoverInfo.StatusId == 2)
+        // Signed SOW Guard
+        bool isSignedSow = doc.CategoryId == (int)DocumentCategoryEnum.SignedSow
+            || string.Equals(doc.Category?.CategoryName, DocumentCategoryNames.SignedSow, StringComparison.OrdinalIgnoreCase);
+        if (isSignedSow && doc.Engagement?.HandoverInfo != null && doc.Engagement.HandoverInfo.StatusId == (int)HandoverStatusEnum.Submitted)
         {
             throw new HandoverSubmittedException("The signed SOW cannot be removed because a submitted handover is relying on it.");
         }
@@ -186,7 +188,7 @@ public class DocumentService(
 
         var allowedRoles = dto.AllowedRoles ?? new List<int>();
 
-        if (dto.ResetToCategoryDefault || targetVisibility != "Custom")
+        if (dto.ResetToCategoryDefault || targetVisibility != DocumentVisibilityNames.Custom)
         {
             allowedRoles = new List<int>();
         }

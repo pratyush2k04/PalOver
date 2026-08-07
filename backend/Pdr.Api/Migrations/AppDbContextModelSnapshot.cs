@@ -349,7 +349,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("EngagementId");
+                    b.HasIndex("EngagementId", "IsDeleted");
 
                     b.ToTable("documents", (string)null);
                 });

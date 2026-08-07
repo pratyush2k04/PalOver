@@ -3,6 +3,7 @@ using System.Linq;
 using FluentValidation;
 using Pdr.Api.DTOs.Documents;
 using Pdr.Api.Models;
+using Pdr.Api.Models.Documents;
 
 namespace Pdr.Api.Validators;
 
@@ -15,10 +16,10 @@ public class UpdateDocumentVisibilityDtoValidator : AbstractValidator<UpdateDocu
         {
             RuleFor(x => x.Visibility)
                 .NotEmpty().WithMessage("Visibility is required.")
-                .Must(v => v == "PM-only" || v == "Team-wide" || v == "Custom")
+                .Must(v => v == DocumentVisibilityNames.PmOnly || v == DocumentVisibilityNames.TeamWide || v == DocumentVisibilityNames.Custom)
                 .WithMessage("Visibility must be 'Team-wide', 'PM-only', or 'Custom'.");
 
-            When(x => x.Visibility == "Custom", () =>
+            When(x => x.Visibility == DocumentVisibilityNames.Custom, () =>
             {
                 RuleFor(x => x.AllowedRoles)
                     .NotNull().WithMessage("Allowed roles must be provided when setting custom visibility.")

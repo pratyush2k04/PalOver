@@ -1,5 +1,6 @@
 using FluentValidation;
 using Pdr.Api.DTOs.Documents;
+using Pdr.Api.Models.Documents;
 using System.IO;
 using System.Linq;
 
@@ -33,7 +34,7 @@ public class DocumentUploadDtoValidator : AbstractValidator<DocumentUploadDto>
             .GreaterThan(0).WithMessage("A valid CategoryId is required.");
 
         RuleFor(x => x.Visibility)
-            .Must(v => v == "PM-only" || v == "Team-wide")
+            .Must(v => v == DocumentVisibilityNames.PmOnly || v == DocumentVisibilityNames.TeamWide)
             .WithMessage("Visibility must be either 'PM-only' or 'Team-wide'.");
     }
 }

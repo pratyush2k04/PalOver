@@ -29,7 +29,7 @@ public class HandoverService : IHandoverService
             return new HandoverInfoDto
             {
                 EngagementId = engagementId,
-                Status = "Draft",
+                Status = HandoverStatusNames.Draft,
                 Commitments = new List<CommitmentDto>()
             };
         }
@@ -53,7 +53,7 @@ public class HandoverService : IHandoverService
         {
             HandoverId = handover.HandoverId,
             EngagementId = handover.EngagementId,
-            Status = status?.StatusName ?? "Draft",
+            Status = status?.StatusName ?? HandoverStatusNames.Draft,
             ClientBackground = handover.ClientBackground,
             BusinessProblem = handover.BusinessProblem,
             ClientSentiment = handover.ClientSentiment,
@@ -73,7 +73,7 @@ public class HandoverService : IHandoverService
             handover = new HandoverInfo
             {
                 EngagementId = engagementId,
-                StatusId = 1, // Draft
+                StatusId = (int)HandoverStatusEnum.Draft,
                 CreatedBy = userIdStr,
                 UpdatedBy = userIdStr
             };
@@ -114,7 +114,7 @@ public class HandoverService : IHandoverService
         if (!hasCommitments && !handover.HasNoCommitments)
             throw new HandoverIncompleteException("You must either add at least one commitment or explicitly mark 'HasNoCommitments'.");
 
-        handover.StatusId = 2; // Submitted
+        handover.StatusId = (int)HandoverStatusEnum.Submitted;
         handover.UpdatedBy = userIdStr;
 
         await _context.SaveChangesAsync();

@@ -33,9 +33,9 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
         if (!isAdmin && !isPm)
         {
             query = query.Where(d =>
-                d.Visibility == "Team-wide"
-                || (d.Visibility == "PM-only" && userRoleId == (int)RoleEnum.Leadership)
-                || (d.Visibility == "Custom" && userRoleId.HasValue && d.AllowedRoles.Contains(userRoleId.Value)));
+                d.Visibility == DocumentVisibilityNames.TeamWide
+                || (d.Visibility == DocumentVisibilityNames.PmOnly && userRoleId == (int)RoleEnum.Leadership)
+                || (d.Visibility == DocumentVisibilityNames.Custom && userRoleId.HasValue && d.AllowedRoles.Contains(userRoleId.Value)));
         }
 
         return await query
@@ -46,7 +46,7 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
     public async Task<IEnumerable<DocumentCategory>> GetCategoriesAsync()
     {
         return await context.DocumentCategories
-            .OrderBy(c => c.CategoryName == "Other" ? 1 : 0)
+            .OrderBy(c => c.CategoryName == DocumentCategoryNames.Other ? 1 : 0)
             .ThenBy(c => c.Id)
             .ToListAsync();
     }

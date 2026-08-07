@@ -47,7 +47,7 @@ public class HandoverInfoConfiguration : IEntityTypeConfiguration<HandoverInfo>
             {
                 HandoverId = 1,
                 EngagementId = 1,
-                StatusId = 1, // Draft
+                StatusId = (int)HandoverStatusEnum.Draft,
                 ClientBackground = "FinTech Solutions is a mid-sized financial institution expanding its digital footprint.",
                 BusinessProblem = "They need a modern core banking platform to support new digital initiatives and mobile apps.",
                 ClientSentiment = "Excited but cautious about delivery timelines due to past vendor failures.",
