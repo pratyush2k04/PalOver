@@ -29,6 +29,11 @@ export class AccessTrackerComponent {
   newItemIsClientSide = signal<boolean>(true);
   newItemTimeZoneNote = signal<string>('');
 
+  // Block Modal state
+  isBlockModalOpen = signal<boolean>(false);
+  blockReasonText = signal<string>('');
+  itemToBlock = signal<AccessItemDto | null>(null);
+
   readonly statusOptions = [
     { label: 'In Progress', value: AccessItemStatus.InProgress, key: 'InProgress' },
     { label: 'Granted', value: AccessItemStatus.Granted, key: 'Granted' },
@@ -108,13 +113,46 @@ export class AccessTrackerComponent {
   onStatusChange(item: AccessItemDto, event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     const newStatusNum = parseInt(selectElement.value, 10) as AccessItemStatus;
+
+    if (newStatusNum === AccessItemStatus.Blocked) {
+      // Temporarily revert select dropdown display until block reason confirmed
+      selectElement.value = this.getStatusNumericValue(item.status).toString();
+      this.itemToBlock.set(item);
+      this.blockReasonText.set(item.blockReason || '');
+      this.isBlockModalOpen.set(true);
+      return;
+    }
+
+    this.updateStatus(item, newStatusNum);
+  }
+
+  closeBlockModal() {
+    this.isBlockModalOpen.set(false);
+    this.itemToBlock.set(null);
+    this.blockReasonText.set('');
+  }
+
+  submitBlockReason() {
+    const item = this.itemToBlock();
+    if (!item) return;
+
+    this.updateStatus(item, AccessItemStatus.Blocked, this.blockReasonText().trim());
+    this.closeBlockModal();
+  }
+
+  private updateStatus(item: AccessItemDto, newStatusNum: AccessItemStatus, blockReason?: string) {
     const statusTextMap: Record<number, string> = {
       [AccessItemStatus.InProgress]: 'InProgress',
       [AccessItemStatus.Granted]: 'Granted',
       [AccessItemStatus.Blocked]: 'Blocked'
     };
 
-    this.readinessService.updateAccessItemStatus(item.accessItemId, { status: newStatusNum }).subscribe({
+    const payload = {
+      status: newStatusNum,
+      blockReason: newStatusNum === AccessItemStatus.Blocked ? blockReason : undefined
+    };
+
+    this.readinessService.updateAccessItemStatus(item.accessItemId, payload).subscribe({
       next: (updatedItem) => {
         const updatedList = this.accessItems().map(i =>
           i.accessItemId === updatedItem.accessItemId ? updatedItem : i
@@ -126,7 +164,11 @@ export class AccessTrackerComponent {
         console.warn('API update status failed, updating local state for testing', err);
         const updatedList = this.accessItems().map(i => {
           if (i.accessItemId === item.accessItemId) {
-            return { ...i, status: statusTextMap[newStatusNum] || 'InProgress' };
+            return {
+              ...i,
+              status: statusTextMap[newStatusNum] || 'InProgress',
+              blockReason: newStatusNum === AccessItemStatus.Blocked ? blockReason : undefined
+            };
           }
           return i;
         });

@@ -112,3 +112,29 @@
     </div>
   </div>
 }
+
+<!-- Block Reason Modal -->
+@if (isBlockModalOpen()) {
+  <div class="modal-backdrop">
+    <div class="modal-card">
+      <h4>Reason for Blocking</h4>
+      <p style="margin-bottom: 1rem; color: #666; font-size: 0.9rem;">
+        Please specify why <strong>{{ itemToBlock()?.name }}</strong> is blocked.
+      </p>
+      <div class="form-group">
+        <label for="block-reason">Block Reason</label>
+        <textarea
+          id="block-reason"
+          rows="3"
+          [ngModel]="blockReasonText()"
+          (ngModelChange)="blockReasonText.set($event)"
+          placeholder="e.g., Awaiting client IT admin approval">
+        </textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="app-button app-button--stroked" (click)="closeBlockModal()">Cancel</button>
+        <button class="app-button app-button--flat" (click)="submitBlockReason()">Confirm Block</button>
+      </div>
+    </div>
+  </div>
+}
