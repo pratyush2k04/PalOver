@@ -15,6 +15,7 @@ using Pdr.Api.Services.Interfaces;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
 using Pdr.Api.Validators;
+using Pdr.Api.Filters;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,7 +45,10 @@ builder.Services.AddSwaggerGen(c =>
 
 // Add services to the container.
 
-builder.Services.AddControllers().AddJsonOptions(options =>
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidationFilter>();
+}).AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });

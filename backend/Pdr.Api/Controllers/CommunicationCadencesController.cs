@@ -14,14 +14,10 @@ namespace Pdr.Api.Controllers;
 public class CommunicationCadencesController : ControllerBase
 {
     private readonly ICommunicationCadenceService _cadenceService;
-    private readonly IValidator<CreateCommunicationCadenceRequest> _createValidator;
 
-    public CommunicationCadencesController(
-        ICommunicationCadenceService cadenceService,
-        IValidator<CreateCommunicationCadenceRequest> createValidator)
+    public CommunicationCadencesController(ICommunicationCadenceService cadenceService)
     {
         _cadenceService = cadenceService;
-        _createValidator = createValidator;
     }
 
     [HttpGet]
@@ -58,13 +54,6 @@ public class CommunicationCadencesController : ControllerBase
         int engagementId,
         [FromBody] CreateCommunicationCadenceRequest request)
     {
-        var validationResult = await _createValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid communication cadence request.";
-            return BadRequest(new { message = firstError });
-        }
-
         var result = await _cadenceService.AddCadenceAsync(engagementId, request);
         return CreatedAtAction(nameof(GetCadences), new { engagementId }, result);
     }

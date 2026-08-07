@@ -10,11 +10,7 @@ namespace Pdr.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/[controller]")]
-public class MasterChecklistController(
-    IMasterChecklistService checklistService,
-    IValidator<MasterCreateChecklistItemRequestDto> createItemValidator,
-    IValidator<UpdateChecklistItemRequestDto> updateItemValidator,
-    IValidator<ReorderMasterChecklistItemsRequestDto> reorderItemsValidator) : ControllerBase
+public class MasterChecklistController(IMasterChecklistService checklistService) : ControllerBase
 {
 
     [HttpGet("current-draft")]
@@ -76,13 +72,6 @@ public class MasterChecklistController(
     [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> CreateItem([FromBody] MasterCreateChecklistItemRequestDto request)
     {
-        var validationResult = await createItemValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid checklist item request.";
-            return BadRequest(new { message = firstError });
-        }
-
         var result = await checklistService.CreateChecklistItemAsync(request);
         if (!result.IsSuccess)
         {
@@ -96,13 +85,6 @@ public class MasterChecklistController(
     [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> UpdateItem(int id, [FromBody] UpdateChecklistItemRequestDto request)
     {
-        var validationResult = await updateItemValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid checklist item request.";
-            return BadRequest(new { message = firstError });
-        }
-
         var result = await checklistService.UpdateChecklistItemAsync(id, request);
         if (!result.IsSuccess)
         {
@@ -118,13 +100,6 @@ public class MasterChecklistController(
     [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> ReorderItems([FromBody] ReorderMasterChecklistItemsRequestDto request)
     {
-        var validationResult = await reorderItemsValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid reorder request.";
-            return BadRequest(new { message = firstError });
-        }
-
         var result = await checklistService.ReorderChecklistItemsAsync(request);
         if (!result.IsSuccess)
         {

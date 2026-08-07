@@ -13,9 +13,7 @@ namespace Pdr.Api.Controllers;
 [Route("api/documents")]
 public class DocumentController(
     IDocumentService documentService,
-    IValidator<DocumentUploadDto> uploadValidator,
-    IValidator<RemoveDocumentRequestDto> removeValidator,
-    IValidator<UpdateDocumentVisibilityDto> visibilityValidator) : ControllerBase
+    IValidator<DocumentUploadDto> uploadValidator) : ControllerBase
 {
     [HttpPost("upload")]
     [Consumes("multipart/form-data")]
@@ -111,7 +109,6 @@ public class DocumentController(
     [HttpPost("{id:int}/remove")]
     public async Task<IActionResult> DeleteDocument(int id, [FromBody] RemoveDocumentRequestDto request)
     {
-        await removeValidator.ValidateAndThrowAsync(request);
         await documentService.DeleteDocumentAsync(id, request.Reason);
         return NoContent();
     }
@@ -119,7 +116,6 @@ public class DocumentController(
     [HttpPatch("{id:int}/visibility")]
     public async Task<IActionResult> UpdateVisibility(int id, [FromBody] UpdateDocumentVisibilityDto request)
     {
-        await visibilityValidator.ValidateAndThrowAsync(request);
         var updated = await documentService.UpdateDocumentVisibilityAsync(id, request);
         return Ok(updated);
     }
