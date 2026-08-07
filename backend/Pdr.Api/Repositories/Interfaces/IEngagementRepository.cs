@@ -9,6 +9,7 @@ public interface IEngagementRepository
     //assignment details 
     Task<List<EngagementAssignment>> GetAssignmentsAsync(int engagementId);
     Task<EngagementAssignment?> GetAssignmentByRoleAsync(int engagementId, string roleName);
+    Task<EngagementAssignment?> GetAssignmentByUserAsync(int engagementId, int userId);
     Task RemoveAssignmentAsync(EngagementAssignment assignment);
     Task AddAssignmentAsync(int engagementId, int userId);
 }
