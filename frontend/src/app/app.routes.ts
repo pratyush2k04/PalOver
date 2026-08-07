@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { LoginComponent } from './components/login/login';
-import { MainLayoutComponent } from './components/main-layout/main-layout';
+import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 
 import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';

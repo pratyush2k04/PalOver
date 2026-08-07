@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { SidebarComponent } from '../../shared/sidebar/sidebar';
-import { HeaderComponent } from '../../shared/header/header';
+import { SidebarComponent } from './sidebar/sidebar';
+import { HeaderComponent } from './header/header';
 import { ToastComponent } from '../../shared/toast/toast';
-// import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner';
 
 @Component({
   selector: 'app-main-layout',

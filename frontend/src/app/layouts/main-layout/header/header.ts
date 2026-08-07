@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { AppContextService } from '../../services/app-context';
+import { AppContextService } from '../../../services/app-context';
 
 @Component({
   selector: 'app-header',
