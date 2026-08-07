@@ -63,6 +63,15 @@ public class KickoffReadinessService(
         await engagementRepository.SaveChangesAsync();
     }
 
+    public async Task RevertKickoffReadyAsync(int engagementId)
+    {
+        var engagement = await engagementRepository.GetByIdAsync(engagementId)
+            ?? throw new EngagementNotFoundException(engagementId);
+
+        engagement.IsKickoffReady = false;
+        await engagementRepository.SaveChangesAsync();
+    }
+
     private static ReadinessCheck EvaluateHandoverMandatoryFields(HandoverInfo? handover)
     {
         var passed = 0;

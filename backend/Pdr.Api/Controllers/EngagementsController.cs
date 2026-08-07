@@ -97,4 +97,12 @@ public class EngagementsController(
         await kickoffReadinessService.MarkKickoffReadyAsync(id, isLeadership);
         return NoContent();
     }
+
+    [HttpDelete("{id:int}/kickoff-ready")]
+    [AuthorizeRoles(RoleEnum.Leadership)]
+    public async Task<IActionResult> RevertKickoffReady(int id)
+    {
+        await kickoffReadinessService.RevertKickoffReadyAsync(id);
+        return NoContent();
+    }
 }
