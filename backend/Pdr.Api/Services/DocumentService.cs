@@ -166,7 +166,7 @@ public class DocumentService(
         }
 
         var updatedBy = userEmail ?? userIdStr;
-        return await repository.SoftDeleteAsync(id, reason, updatedBy);
+        return await repository.SoftDeleteAsync(doc, reason, updatedBy);
     }
 
     public async Task<DocumentResponseDto> UpdateDocumentVisibilityAsync(int id, UpdateDocumentVisibilityDto dto)
@@ -196,11 +196,7 @@ public class DocumentService(
         var userEmail = currentUserService.GetEmail();
         var updatedBy = userEmail ?? currentUserService.GetUserId().ToString();
 
-        var updated = await repository.UpdateVisibilityAsync(id, targetVisibility, allowedRoles, updatedBy);
-        if (updated == null)
-        {
-            throw new DocumentNotFoundException(id);
-        }
+        var updated = await repository.UpdateVisibilityAsync(doc, targetVisibility, allowedRoles, updatedBy);
 
         return MapToResponseDto(updated);
     }

@@ -18,15 +18,8 @@ public class EnvironmentToolingController(IEnvironmentToolingService service) : 
     [Authorize(Roles = $"{RoleNames.TechLead},{RoleNames.ProjectManagement},{RoleNames.Leadership}")]
     public async Task<IActionResult> GetItems(int engagementId)
     {
-        try
-        {
-            var response = await service.GetItemsByEngagementIdAsync(engagementId);
-            return Ok(response);
-        }
-        catch (AppException ex)
-        {
-            return StatusCode(ex.StatusCode, new { message = ex.Message });
-        }
+        var response = await service.GetItemsByEngagementIdAsync(engagementId);
+        return Ok(response);
     }
 
     // POST api/engagements/{engagementId}/environment-tooling
@@ -35,15 +28,8 @@ public class EnvironmentToolingController(IEnvironmentToolingService service) : 
     [Authorize(Roles = RoleNames.TechLead)]
     public async Task<IActionResult> AddCustomItem(int engagementId, [FromBody] AddCustomEnvironmentToolingItemRequest request)
     {
-        try
-        {
-            var item = await service.AddCustomItemAsync(engagementId, request);
-            return CreatedAtAction(nameof(GetItems), new { engagementId }, item);
-        }
-        catch (AppException ex)
-        {
-            return StatusCode(ex.StatusCode, new { message = ex.Message });
-        }
+        var item = await service.AddCustomItemAsync(engagementId, request);
+        return CreatedAtAction(nameof(GetItems), new { engagementId }, item);
     }
 }
 
@@ -59,15 +45,8 @@ public class EnvironmentToolingItemsController(IEnvironmentToolingService servic
     [Authorize(Roles = RoleNames.TechLead)]
     public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateEnvironmentToolingStatusRequest request)
     {
-        try
-        {
-            var item = await service.UpdateStatusAsync(id, request);
-            return Ok(item);
-        }
-        catch (AppException ex)
-        {
-            return StatusCode(ex.StatusCode, new { message = ex.Message });
-        }
+        var item = await service.UpdateStatusAsync(id, request);
+        return Ok(item);
     }
 
     // PATCH api/environment-tooling/{id}/owner
@@ -76,14 +55,7 @@ public class EnvironmentToolingItemsController(IEnvironmentToolingService servic
     [Authorize(Roles = RoleNames.TechLead)]
     public async Task<IActionResult> UpdateOwner(int id, [FromBody] UpdateEnvironmentToolingOwnerRequest request)
     {
-        try
-        {
-            var item = await service.UpdateOwnerAsync(id, request);
-            return Ok(item);
-        }
-        catch (AppException ex)
-        {
-            return StatusCode(ex.StatusCode, new { message = ex.Message });
-        }
+        var item = await service.UpdateOwnerAsync(id, request);
+        return Ok(item);
     }
 }

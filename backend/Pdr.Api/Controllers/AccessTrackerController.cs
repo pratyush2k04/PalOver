@@ -19,15 +19,8 @@ public class AccessTrackerController(IAccessTrackerService accessTrackerService)
     [Authorize(Roles = $"{RoleNames.TechLead},{RoleNames.ProjectManagement},{RoleNames.Leadership}")]
     public async Task<IActionResult> GetAccessItems(int engagementId)
     {
-        try
-        {
-            var items = await accessTrackerService.GetAccessItemsAsync(engagementId);
-            return Ok(items);
-        }
-        catch (AppException ex)
-        {
-            return StatusCode(ex.StatusCode, new { message = ex.Message });
-        }
+        var items = await accessTrackerService.GetAccessItemsAsync(engagementId);
+        return Ok(items);
     }
 
     // POST api/engagements/{engagementId}/access-items
@@ -36,15 +29,8 @@ public class AccessTrackerController(IAccessTrackerService accessTrackerService)
     [Authorize(Roles = RoleNames.TechLead)]
     public async Task<IActionResult> AddCustomAccessItem(int engagementId, [FromBody] AddCustomAccessItemRequest request)
     {
-        try
-        {
-            var item = await accessTrackerService.AddCustomAccessItemAsync(engagementId, request);
-            return CreatedAtAction(nameof(GetAccessItems), new { engagementId }, item);
-        }
-        catch (AppException ex)
-        {
-            return StatusCode(ex.StatusCode, new { message = ex.Message });
-        }
+        var item = await accessTrackerService.AddCustomAccessItemAsync(engagementId, request);
+        return CreatedAtAction(nameof(GetAccessItems), new { engagementId }, item);
     }
 
     // POST api/engagements/{engagementId}/access-items/evaluate-risks
@@ -53,15 +39,8 @@ public class AccessTrackerController(IAccessTrackerService accessTrackerService)
     [Authorize(Roles = RoleNames.TechLead)]
     public async Task<IActionResult> EvaluateClientSideRisks(int engagementId)
     {
-        try
-        {
-            await accessTrackerService.EvaluateClientSideRisksAsync(engagementId);
-            return Ok(new { message = "Client-side risk evaluation completed." });
-        }
-        catch (AppException ex)
-        {
-            return StatusCode(ex.StatusCode, new { message = ex.Message });
-        }
+        await accessTrackerService.EvaluateClientSideRisksAsync(engagementId);
+        return Ok(new { message = "Client-side risk evaluation completed." });
     }
 }
 
@@ -77,15 +56,8 @@ public class AccessItemsController(IAccessTrackerService accessTrackerService) :
     [Authorize(Roles = RoleNames.TechLead)]
     public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateAccessItemStatusRequest request)
     {
-        try
-        {
-            var item = await accessTrackerService.UpdateAccessItemStatusAsync(id, request);
-            return Ok(item);
-        }
-        catch (AppException ex)
-        {
-            return StatusCode(ex.StatusCode, new { message = ex.Message });
-        }
+        var item = await accessTrackerService.UpdateAccessItemStatusAsync(id, request);
+        return Ok(item);
     }
 
     // PATCH api/access-items/{id}/owner
@@ -94,14 +66,7 @@ public class AccessItemsController(IAccessTrackerService accessTrackerService) :
     [Authorize(Roles = RoleNames.TechLead)]
     public async Task<IActionResult> UpdateOwner(int id, [FromBody] UpdateAccessItemOwnerRequest request)
     {
-        try
-        {
-            var item = await accessTrackerService.UpdateAccessItemOwnerAsync(id, request);
-            return Ok(item);
-        }
-        catch (AppException ex)
-        {
-            return StatusCode(ex.StatusCode, new { message = ex.Message });
-        }
+        var item = await accessTrackerService.UpdateAccessItemOwnerAsync(id, request);
+        return Ok(item);
     }
 }

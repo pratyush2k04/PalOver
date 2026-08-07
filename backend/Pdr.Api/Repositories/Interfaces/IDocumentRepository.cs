@@ -12,7 +12,7 @@ public interface IDocumentRepository
 
     Task<IEnumerable<DocumentCategory>> GetCategoriesAsync();
 
-    Task<bool> SoftDeleteAsync(int id, string reason, string updatedBy);
+    Task<bool> SoftDeleteAsync(Document document, string reason, string updatedBy);
 
-    Task<Document?> UpdateVisibilityAsync(int id, string visibility, List<int> allowedRoles, string updatedBy);
+    Task<Document> UpdateVisibilityAsync(Document document, string visibility, List<int> allowedRoles, string updatedBy);
 }

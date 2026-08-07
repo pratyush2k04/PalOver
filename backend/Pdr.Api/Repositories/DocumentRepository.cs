@@ -51,32 +51,23 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
             .ToListAsync();
     }
 
-    public async Task<bool> SoftDeleteAsync(int id, string reason, string updatedBy)
+    public async Task<bool> SoftDeleteAsync(Document document, string reason, string updatedBy)
     {
-        var doc = await context.Documents.FindAsync(id);
-        if (doc == null || doc.IsDeleted) return false;
-
-        doc.IsDeleted = true;
-        doc.DeletionReason = reason;
-        doc.UpdatedAt = DateTime.UtcNow;
-        doc.UpdatedBy = updatedBy;
+        document.IsDeleted = true;
+        document.DeletionReason = reason;
+        document.UpdatedAt = DateTime.UtcNow;
+        document.UpdatedBy = updatedBy;
         await context.SaveChangesAsync();
         return true;
     }
 
-    public async Task<Document?> UpdateVisibilityAsync(int id, string visibility, List<int> allowedRoles, string updatedBy)
+    public async Task<Document> UpdateVisibilityAsync(Document document, string visibility, List<int> allowedRoles, string updatedBy)
     {
-        var doc = await context.Documents
-            .Include(d => d.Category)
-            .FirstOrDefaultAsync(d => d.Id == id);
-
-        if (doc == null) return null;
-
-        doc.Visibility = visibility;
-        doc.AllowedRoles = allowedRoles ?? new List<int>();
-        doc.UpdatedAt = DateTime.UtcNow;
-        doc.UpdatedBy = updatedBy;
+        document.Visibility = visibility;
+        document.AllowedRoles = allowedRoles ?? new List<int>();
+        document.UpdatedAt = DateTime.UtcNow;
+        document.UpdatedBy = updatedBy;
         await context.SaveChangesAsync();
-        return doc;
+        return document;
     }
 }
