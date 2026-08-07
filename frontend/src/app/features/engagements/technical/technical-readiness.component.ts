@@ -4,11 +4,12 @@ import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AccessItemDto } from './models/technical-readiness.model';
 import { AccessTrackerComponent } from './access-tracker/access-tracker.component';
+import { EnvironmentToolingComponent } from './environment-tooling/environment-tooling.component';
 
 @Component({
   selector: 'app-technical-readiness',
   standalone: true,
-  imports: [CommonModule, AccessTrackerComponent],
+  imports: [CommonModule, AccessTrackerComponent, EnvironmentToolingComponent],
   templateUrl: './technical-readiness.component.html',
   styleUrl: './technical-readiness.component.scss'
 })

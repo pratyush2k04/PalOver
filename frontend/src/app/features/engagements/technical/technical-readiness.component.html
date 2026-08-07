@@ -27,5 +27,11 @@
         (itemsUpdated)="onAccessItemsUpdated($event)">
       </app-access-tracker>
     </div>
+
+    <div class="readiness-section">
+      <app-environment-tooling
+        [engagementId]="engagementId()!">
+      </app-environment-tooling>
+    </div>
   }
 </div>
