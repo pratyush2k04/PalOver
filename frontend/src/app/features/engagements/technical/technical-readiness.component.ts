@@ -8,10 +8,12 @@ import { EnvironmentToolingItemDto, EnvironmentToolingStatus } from './models/en
 import { AccessTrackerComponent } from './access-tracker/access-tracker.component';
 import { EnvironmentToolingComponent } from './environment-tooling/environment-tooling.component';
 
+import { InlineSVGModule } from 'ng-inline-svg-2';
+
 @Component({
   selector: 'app-technical-readiness',
   standalone: true,
-  imports: [CommonModule, AccessTrackerComponent, EnvironmentToolingComponent],
+  imports: [CommonModule, InlineSVGModule, AccessTrackerComponent, EnvironmentToolingComponent],
   templateUrl: './technical-readiness.component.html',
   styleUrl: './technical-readiness.component.scss'
 })

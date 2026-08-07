@@ -7,10 +7,12 @@ import { TechnicalReadinessService } from '../services/technical-readiness.servi
 import { AuthService } from '../../../../services/auth';
 import { AccessItemDto, AccessItemStatus } from '../models/technical-readiness.model';
 
+import { InlineSVGModule } from 'ng-inline-svg-2';
+
 @Component({
   selector: 'app-access-tracker',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, InlineSVGModule],
   templateUrl: './access-tracker.component.html',
   styleUrl: './access-tracker.component.scss'
 })

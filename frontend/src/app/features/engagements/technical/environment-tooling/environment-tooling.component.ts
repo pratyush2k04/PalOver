@@ -10,10 +10,12 @@ import {
   EnvironmentToolingStatus
 } from '../models/environment-tooling.model';
 
+import { InlineSVGModule } from 'ng-inline-svg-2';
+
 @Component({
   selector: 'app-environment-tooling',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, InlineSVGModule],
   templateUrl: './environment-tooling.component.html',
   styleUrl: './environment-tooling.component.scss'
 })
