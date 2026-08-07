@@ -36,7 +36,7 @@ export class EngagementWorkspaceComponent {
     { label: 'Documents', route: 'documents', enabled: true },
     { label: 'People', route: 'people', enabled: false },
     { label: 'Checklist', route: 'checklist', enabled: true },
-    { label: 'Kickoff', route: 'kickoff', enabled: false },
+    { label: 'Kickoff', route: 'kickoff', enabled: true },
     { label: 'Resourcing', route: 'resourcing', enabled: false },
     { label: 'Technical Readiness', route: 'technical-readiness', enabled: true },
     { label: 'Risks', route: 'risks', enabled: false },
