@@ -1,6 +1,7 @@
 import { Component, DestroyRef, EventEmitter, Input, Output, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { InlineSVGModule } from 'ng-inline-svg-2';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DocumentService } from '../../../services/document.service';
 import { DocumentItem } from '../../../models/document.model';
@@ -9,7 +10,7 @@ import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from '../../../shared/constants/do
 @Component({
   selector: 'app-custom-visibility-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, InlineSVGModule],
   templateUrl: './custom-visibility-dialog.component.html',
   styleUrl: './custom-visibility-dialog.component.scss'
 })
@@ -26,8 +27,8 @@ export class CustomVisibilityDialogComponent {
 
   selectedRoles = signal<number[]>(
     this.document?.allowedRoles?.length
-      ? [...this.document.allowedRoles].filter(r => r !== 2)
-      : [4]   // sensible non-PM default (Leadership ID = 4)
+      ? [...this.document.allowedRoles].filter(r => r !== DOCUMENT_CONFIG.ROLE_IDS.PROJECT_MANAGEMENT)
+      : [DOCUMENT_CONFIG.ROLE_IDS.LEADERSHIP]   // sensible non-PM default (Leadership)
   );
   isSubmitting = signal<boolean>(false);
   errorMessage = signal<string | null>(null);

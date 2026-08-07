@@ -33,7 +33,7 @@ export class UploadDocumentDialogComponent implements OnInit {
   /** True when only a single file is selected (rename is available) */
   isSingleFile = computed(() => this.selectedFiles().length === 1);
 
-  selectedVisibility = signal<string>('Team-wide');
+  selectedVisibility = signal<string>(DOCUMENT_CONFIG.VISIBILITY.TEAM_WIDE);
   isUploading = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
 
@@ -81,10 +81,10 @@ export class UploadDocumentDialogComponent implements OnInit {
     const id = Number(catId);
     this.selectedCategoryId.set(id);
     const cat = this.categories().find(c => c.id === id);
-    if (cat && (cat.categoryName === 'Commercial' || cat.categoryName === 'Proposal')) {
-      this.selectedVisibility.set('PM-only');
+    if (cat && DOCUMENT_CONFIG.PM_ONLY_CATEGORIES.includes(cat.categoryName)) {
+      this.selectedVisibility.set(DOCUMENT_CONFIG.VISIBILITY.PM_ONLY);
     } else {
-      this.selectedVisibility.set('Team-wide');
+      this.selectedVisibility.set(DOCUMENT_CONFIG.VISIBILITY.TEAM_WIDE);
     }
   }
 

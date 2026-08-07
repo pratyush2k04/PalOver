@@ -33,6 +33,18 @@ export const DOCUMENT_CONFIG = {
     { id: 7, categoryName: 'Commercial' },
     { id: 6, categoryName: 'Other' }
   ],
+  VISIBILITY: {
+    TEAM_WIDE: 'Team-wide',
+    PM_ONLY: 'PM-only',
+    CUSTOM: 'Custom'
+  },
+  PM_ONLY_CATEGORIES: ['Commercial', 'Proposal'] as readonly string[],
+  ROLE_IDS: {
+    PRE_SALES: 1,
+    PROJECT_MANAGEMENT: 2,
+    TECH_LEAD: 3,
+    LEADERSHIP: 4
+  },
   AVAILABLE_CUSTOM_VISIBILITY_ROLES: [
     { id: 4, name: 'Leadership', label: 'Leadership' },
     { id: 3, name: 'Tech Lead', label: 'Tech Lead' },
