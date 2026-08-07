@@ -559,6 +559,12 @@ namespace Pdr.Api.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("is_deleted");
 
+                    b.Property<bool>("IsKickoffReady")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_kickoff_ready");
+
                     b.Property<DateOnly>("KickoffDate")
                         .HasColumnType("date")
                         .HasColumnName("kickoff_date");
@@ -600,6 +606,7 @@ namespace Pdr.Api.Migrations
                             EngagementName = "FinTech Core Banking",
                             EngagementTypeId = 1,
                             IsDeleted = false,
+                            IsKickoffReady = false,
                             KickoffDate = new DateOnly(2026, 8, 15),
                             StatusId = 1,
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -616,6 +623,7 @@ namespace Pdr.Api.Migrations
                             EngagementName = "HealthCare Legacy Upgrade",
                             EngagementTypeId = 2,
                             IsDeleted = false,
+                            IsKickoffReady = false,
                             KickoffDate = new DateOnly(2026, 6, 1),
                             StatusId = 2,
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -1869,12 +1877,6 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("engagement_id");
 
-                    b.Property<bool>("HasNoCommitments")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("has_no_commitments");
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -1914,7 +1916,6 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DealOrigin = "Strategic Partner Referral",
                             EngagementId = 1,
-                            HasNoCommitments = false,
                             IsDeleted = false,
                             StatusId = 1,
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)

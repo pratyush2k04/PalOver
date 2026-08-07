@@ -32,6 +32,8 @@ public class Engagement : BaseAuditableEntity
     // Navigation Property
     public EngagementStatus Status { get; set; } = null!;
 
+    public bool IsKickoffReady { get; set; } = false;
+
     public EngagementChecklist.EngagementChecklist? Checklist { get; set; }
 
     public Handover.HandoverInfo? HandoverInfo { get; set; }
