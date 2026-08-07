@@ -173,6 +173,13 @@ export const routes: Routes = [
               ).then(m => m.EngagementChecklistComponent),
           },
           {
+            path: 'kickoff',
+            loadComponent: () =>
+              import(
+                './features/engagement-workspace/kickoff/kickoff.component'
+              ).then(m => m.KickoffComponent),
+          },
+          {
             path: '',
             redirectTo: 'handover',
             pathMatch: 'full',
@@ -208,6 +215,10 @@ export const routes: Routes = [
           {
             path: 'checklist',
             loadComponent: () => import('./features/engagement-workspace/checklist/engagement-checklist.component').then(m => m.EngagementChecklistComponent)
+          },
+          {
+            path: 'kickoff',
+            loadComponent: () => import('./features/engagement-workspace/kickoff/kickoff.component').then(m => m.KickoffComponent)
           },
           { path: '', redirectTo: 'handover', pathMatch: 'full' }
         ]
