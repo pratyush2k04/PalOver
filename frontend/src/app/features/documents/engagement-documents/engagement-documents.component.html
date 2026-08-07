@@ -2,11 +2,7 @@
   <div class="documents-header">
     <h3 class="title">Documents</h3>
     <button type="button" class="btn-upload" (click)="openUploadModal()">
-      <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-        <polyline points="17 8 12 3 7 8"></polyline>
-        <line x1="12" y1="3" x2="12" y2="15"></line>
-      </svg>
+      <span class="upload-icon" [inlineSVG]="'assets/icons/upload.svg'"></span>
       Upload
     </button>
   </div>
@@ -25,10 +21,7 @@
       </div>
     } @else if (documents().length === 0) {
       <div class="empty-state">
-        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-          <polyline points="14 2 14 8 20 8"></polyline>
-        </svg>
+        <span class="empty-icon" [inlineSVG]="'assets/icons/empty-doc.svg'"></span>
         <p class="empty-text">No documents uploaded yet.</p>
       </div>
     } @else {
@@ -49,10 +42,7 @@
               <tr class="document-row">
                 <td class="col-name">
                   <button type="button" class="btn-file-link" (click)="onDownload(doc)" [disabled]="downloadingId() === doc.id">
-                    <svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                      <polyline points="14 2 14 8 20 8"></polyline>
-                    </svg>
+                    <span class="file-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
                     <span class="file-name">{{ doc.fileName }}</span>
                     @if (downloadingId() === doc.id) {
                       <span class="download-spinner"></span>
@@ -90,11 +80,8 @@
                           class="btn-edit-custom"
                           title="Edit allowed roles"
                           (click)="openCustomVisibilityModal(doc)"
+                          [inlineSVG]="'assets/icons/edit.svg'"
                         >
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                          </svg>
                         </button>
                       }
                     </div>
@@ -107,16 +94,10 @@
                       [class.badge-team-wide]="doc.visibility === 'Team-wide'"
                     >
                       @if (doc.visibility === 'Custom') {
-                        <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                        </svg>
+                        <span class="badge-icon" [inlineSVG]="'assets/icons/lock.svg'"></span>
                         Custom visibility
                       } @else if (doc.visibility === 'PM-only') {
-                        <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                        </svg>
+                        <span class="badge-icon" [inlineSVG]="'assets/icons/lock.svg'"></span>
                         PM-only
                       } @else {
                         Team-wide
@@ -130,11 +111,8 @@
                     class="btn-action-icon btn-remove"
                     title="Remove document"
                     (click)="openRemoveModal(doc)"
+                    [inlineSVG]="'assets/icons/trash.svg'"
                   >
-                    <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <polyline points="3 6 5 6 21 6"></polyline>
-                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    </svg>
                   </button>
                 </td>
               </tr>

@@ -8,10 +8,7 @@
     <div class="modal-body">
       <div class="doc-info-banner">
         <div class="doc-name-row">
-          <svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline>
-          </svg>
+          <span class="file-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
           <span class="file-name">{{ document.fileName }}</span>
         </div>
         <div class="doc-meta">
@@ -31,9 +28,7 @@
         <p class="section-hint">Restrict access to specific roles. Project Managers and Admins always have access.</p>
 
         <div class="always-granted-notice">
-          <svg class="shield-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-          </svg>
+          <span class="shield-icon" [inlineSVG]="'assets/icons/shield.svg'"></span>
           <span>Project Management &amp; Admin — always granted</span>
         </div>
 

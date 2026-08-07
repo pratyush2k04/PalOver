@@ -17,9 +17,7 @@ public class HandoverAccessService : IHandoverAccessService
 
     public async Task<bool> CanAccessHandoverAsync(int engagementId, int userId)
     {
-        var assignment = await _context.EngagementAssignments
-            .Include(ea => ea.User)
-            .FirstOrDefaultAsync(ea => ea.EngagementId == engagementId && ea.UserId == userId);
+        var assignment = await _engagementRepository.GetAssignmentByUserAsync(engagementId, userId);
 
 
         if (assignment == null)

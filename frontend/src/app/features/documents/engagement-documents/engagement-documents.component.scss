@@ -42,6 +42,15 @@
     .upload-icon {
       width: 16px;
       height: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      ::ng-deep svg,
+      svg {
+        width: 16px;
+        height: 16px;
+      }
     }
   }
 }
@@ -78,6 +87,15 @@
     width: 36px;
     height: 36px;
     color: #94a3b8;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    ::ng-deep svg,
+    svg {
+      width: 36px;
+      height: 36px;
+    }
   }
 
   .empty-text {
@@ -171,6 +189,15 @@
     height: 18px;
     color: #64748b;
     flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    ::ng-deep svg,
+    svg {
+      width: 18px;
+      height: 18px;
+    }
   }
 
   .file-name {
@@ -220,7 +247,8 @@
   justify-content: center;
   transition: all 0.15s ease;
 
-  .action-icon {
+  ::ng-deep svg,
+  svg {
     width: 16px;
     height: 16px;
   }
@@ -254,6 +282,15 @@
     width: 12px;
     height: 12px;
     flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    ::ng-deep svg,
+    svg {
+      width: 12px;
+      height: 12px;
+    }
   }
 
   &.badge-pm-only {
@@ -293,6 +330,7 @@
   justify-content: center;
   transition: background-color 0.15s;
 
+  ::ng-deep svg,
   svg {
     width: 14px;
     height: 14px;

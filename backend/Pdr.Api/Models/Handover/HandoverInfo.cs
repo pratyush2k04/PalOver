@@ -25,4 +25,6 @@ public class HandoverInfo : BaseAuditableEntity
 
     [MaxLength(2000)]
     public string? DealOrigin { get; set; }
+
+    public bool HasNoCommitments { get; set; }
 }

@@ -195,6 +195,12 @@
   border-radius: 50%;
   transition: all 0.2s ease-in-out;
 
+  ::ng-deep svg,
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
   &:hover {
     color: #dc2626;
     background-color: #fce8e6;

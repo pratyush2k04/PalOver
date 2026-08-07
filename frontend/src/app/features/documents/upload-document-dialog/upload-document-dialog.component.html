@@ -2,7 +2,7 @@
   <div class="modal-dialog" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h3 class="modal-title">Upload document</h3>
-      <button type="button" class="btn-close" (click)="onClose()" aria-label="Close">&times;</button>
+      <button type="button" class="btn-close" (click)="onClose()" aria-label="Close" [inlineSVG]="'assets/icons/close.svg'"></button>
     </div>
 
     <div class="modal-body">

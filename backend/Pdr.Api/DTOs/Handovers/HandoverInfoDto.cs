@@ -11,5 +11,6 @@ public class HandoverInfoDto
     public string BusinessProblem { get; set; } = string.Empty;
     public string ClientSentiment { get; set; } = string.Empty;
     public string? DealOrigin { get; set; }
+    public bool HasNoCommitments { get; set; }
     public List<CommitmentDto> Commitments { get; set; } = new();
 }

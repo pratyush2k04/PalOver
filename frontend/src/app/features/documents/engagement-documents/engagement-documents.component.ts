@@ -11,6 +11,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DocumentService } from '../../../services/document.service';
 import { DocumentItem, DocumentVisibility } from '../../../models/document.model';
 import { AuthService } from '../../../services/auth';
@@ -23,7 +24,13 @@ import { DOCUMENT_MESSAGES } from '../../../shared/constants/document.constants'
 @Component({
   selector: 'app-engagement-documents',
   standalone: true,
-  imports: [CommonModule, UploadDocumentDialogComponent, RemoveDocumentDialogComponent, CustomVisibilityDialogComponent],
+  imports: [
+    CommonModule,
+    InlineSVGModule,
+    UploadDocumentDialogComponent,
+    RemoveDocumentDialogComponent,
+    CustomVisibilityDialogComponent
+  ],
   templateUrl: './engagement-documents.component.html',
   styleUrl: './engagement-documents.component.scss'
 })

@@ -47,13 +47,21 @@
   .btn-close {
     background: transparent;
     border: none;
-    font-size: 1.25rem;
     color: #64748b;
     cursor: pointer;
     padding: 0.25rem;
     line-height: 1;
     border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     transition: color 0.15s, background-color 0.15s;
+
+    ::ng-deep svg,
+    svg {
+      width: 1.125rem;
+      height: 1.125rem;
+    }
 
     &:hover {
       color: #0f172a;

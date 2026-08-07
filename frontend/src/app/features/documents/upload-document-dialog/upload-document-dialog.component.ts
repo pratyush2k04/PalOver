@@ -2,6 +2,7 @@ import { Component, DestroyRef, EventEmitter, Input, OnInit, Output, computed, i
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DocumentService } from '../../../services/document.service';
 import { DocumentCategory, DocumentVisibility } from '../../../models/document.model';
 import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from '../../../shared/constants/document.constants';
@@ -9,7 +10,7 @@ import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from '../../../shared/constants/do
 @Component({
   selector: 'app-upload-document-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, InlineSVGModule],
   templateUrl: './upload-document-dialog.component.html',
   styleUrl: './upload-document-dialog.component.scss'
 })

@@ -6,4 +6,5 @@ public class SaveHandoverDraftRequest
     public string? BusinessProblem { get; set; }
     public string? ClientSentiment { get; set; }
     public string? DealOrigin { get; set; }
+    public bool HasNoCommitments { get; set; }
 }
