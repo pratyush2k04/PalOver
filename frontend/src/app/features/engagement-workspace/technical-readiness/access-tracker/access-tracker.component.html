@@ -60,10 +60,13 @@
                   <select
                     class="status-select"
                     [ngClass]="getStatusBadgeClass(item.status)"
-                    [value]="getStatusNumericValue(item.status)"
                     (change)="onStatusChange(item, $event)">
                     @for (opt of statusOptions; track opt.value) {
-                      <option [value]="opt.value">{{ opt.label }}</option>
+                      <option
+                        [value]="opt.value"
+                        [selected]="opt.value === getStatusNumericValue(item.status)">
+                        {{ opt.label }}
+                      </option>
                     }
                   </select>
                 } @else {
