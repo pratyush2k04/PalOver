@@ -6,6 +6,8 @@ using Pdr.Api.DTOs.MasterChecklist;
 using Pdr.Api.Models;
 using Pdr.Api.Services.Interfaces;
 
+using Pdr.Api.Constants;
+
 namespace Pdr.Api.Controllers;
 
 [ApiController]
@@ -14,14 +16,14 @@ namespace Pdr.Api.Controllers;
 public class MasterChecklistController(IMasterChecklistService checklistService) : ControllerBase
 {
 
-    [HttpGet("current-draft")]
-    [Authorize(Policy = "AdminOnly")]
+    [HttpGet(MasterChecklistConstants.Routes.CurrentDraft)]
+    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     public async Task<IActionResult> GetCurrentDraft()
     {
         var draftVersion = await checklistService.GetCurrentDraftVersionAsync();
         if (draftVersion is null)
         {
-            return NotFound(new { message = "No Draft version currently exists." });
+            return NotFound(new { message = MasterChecklistConstants.Messages.NoDraftVersion });
         }
 
         return Ok(draftVersion);
@@ -34,22 +36,22 @@ public class MasterChecklistController(IMasterChecklistService checklistService)
         var publishedVersion = await checklistService.GetPublishedVersionAsync();
         if (publishedVersion is null)
         {
-            return NotFound(new { message = "No Published version currently exists." });
+            return NotFound(new { message = MasterChecklistConstants.Messages.NoPublishedVersion });
         }
 
         return Ok(publishedVersion);
     }
 
-    [HttpGet("versions")]
-    [Authorize(Policy = "AdminOnly")]
+    [HttpGet(MasterChecklistConstants.Routes.Versions)]
+    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     public async Task<IActionResult> GetVersionHistory()
     {
         var versions = await checklistService.GetVersionHistoryAsync();
         return Ok(versions);
     }
 
-    [HttpGet("versions/{versionId}")]
-    [Authorize(Policy = "AdminOnly")]
+    [HttpGet(MasterChecklistConstants.Routes.Versions + "/{versionId}")]
+    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     public async Task<IActionResult> GetVersionById(int versionId)
     {
         var result = await checklistService.GetVersionByIdAsync(versionId);
@@ -61,16 +63,16 @@ public class MasterChecklistController(IMasterChecklistService checklistService)
         return Ok(result.Data);
     }
 
-    [HttpGet("categories")]
-    [Authorize(Policy = "AdminOnly")]
+    [HttpGet(MasterChecklistConstants.Routes.Categories)]
+    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     public async Task<IActionResult> GetCategories()
     {
         var categories = await checklistService.GetCategoriesAsync();
         return Ok(categories);
     }
 
-    [HttpPost("items")]
-    [Authorize(Policy = "AdminOnly")]
+    [HttpPost(MasterChecklistConstants.Routes.Items)]
+    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     public async Task<IActionResult> CreateItem([FromBody] MasterCreateChecklistItemRequestDto request)
     {
         var result = await checklistService.CreateChecklistItemAsync(request);
@@ -82,8 +84,8 @@ public class MasterChecklistController(IMasterChecklistService checklistService)
         return Ok(result.Data);
     }
 
-    [HttpPut("items/{id}")]
-    [Authorize(Policy = "AdminOnly")]
+    [HttpPut(MasterChecklistConstants.Routes.Items + "/{id}")]
+    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     public async Task<IActionResult> UpdateItem(int id, [FromBody] UpdateChecklistItemRequestDto request)
     {
         var result = await checklistService.UpdateChecklistItemAsync(id, request);
@@ -97,8 +99,8 @@ public class MasterChecklistController(IMasterChecklistService checklistService)
         return Ok(result.Data);
     }
 
-    [HttpPut("items/reorder")]
-    [Authorize(Policy = "AdminOnly")]
+    [HttpPut(MasterChecklistConstants.Routes.Items + "/reorder")]
+    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     public async Task<IActionResult> ReorderItems([FromBody] ReorderMasterChecklistItemsRequestDto request)
     {
         var result = await checklistService.ReorderChecklistItemsAsync(request);
@@ -110,8 +112,8 @@ public class MasterChecklistController(IMasterChecklistService checklistService)
         return Ok(result.Data);
     }
 
-    [HttpPut("items/{id}/retire")]
-    [Authorize(Policy = "AdminOnly")]
+    [HttpPut(MasterChecklistConstants.Routes.Items + "/{id}/retire")]
+    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     public async Task<IActionResult> RetireItem(int id)
     {
         var result = await checklistService.RetireChecklistItemAsync(id);
@@ -125,8 +127,8 @@ public class MasterChecklistController(IMasterChecklistService checklistService)
         return Ok(result.Data);
     }
 
-    [HttpPost("versions/{versionId}/publish")]
-    [Authorize(Policy = "AdminOnly")]
+    [HttpPost(MasterChecklistConstants.Routes.Versions + "/{versionId}/publish")]
+    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     public async Task<IActionResult> PublishVersion(int versionId)
     {
         var result = await checklistService.PublishVersionAsync(versionId);
