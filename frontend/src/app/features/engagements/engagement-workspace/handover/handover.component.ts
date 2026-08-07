@@ -3,14 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { HandoverService } from '../../services/handover.service';
 import {
-  HandoverService,
   HandoverInfoDto,
   SaveHandoverDraftRequest,
   CreateCommitmentRequest,
   UpdateCommitmentRequest,
   CommitmentDto
-} from './handover.service';
+} from '../../models/handover.model';
 
 const MAX_FREE_TEXT_LENGTH = 2000;
 const SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;

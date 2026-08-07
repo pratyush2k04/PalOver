@@ -355,6 +355,20 @@ Never expose internal exception details to clients.
 - Do not introduce a second API response format.
 
 ---
+## Swagger Documentation
+
+Every public API endpoint must include Swagger/OpenAPI documentation.
+
+Document:
+- endpoint summary
+- endpoint description
+- request body
+- path parameters
+- query parameters
+- response types and status codes
+- possible error responses
+
+Swagger documentation should remain up to date whenever an endpoint changes.
 
 # Logging
 
@@ -423,6 +437,52 @@ IEngagementRepository
 - Comments should explain **why**, not obvious code behavior.
 
 ---
+# Constants
+
+Avoid hardcoded values that are reused across the application.
+
+Extract shared constants such as:
+
+- UI strings
+- route segments
+- API route paths
+- endpoint paths
+- claim names
+- role names
+- policy names
+- status values
+- repeated keys
+- configuration keys
+- regex patterns
+## Naming Consistency
+
+When creating new APIs or features, keep naming consistent across the entire stack.
+
+## Angular
+
+Shared application constants belong in:
+
+```text
+shared/constants/app.constants.ts
+```
+
+Do not create multiple constants files for shared application values unless they represent a separate reusable domain.
+
+## .NET
+
+Store reusable constants in dedicated constants classes grouped by responsibility.
+
+Examples:
+
+```text
+Constants/
+├── ClaimConstants.cs
+├── RoleConstants.cs
+├── PolicyConstants.cs
+└── AppConstants.cs
+```
+
+Avoid repeating the same string literal in multiple locations.
 
 # Git & Change Safety
 
@@ -495,3 +555,4 @@ focused change > large refactor
 existing infrastructure > new infrastructure
 
 Consistency with the existing repository is more important than theoretical architectural perfection.
+````

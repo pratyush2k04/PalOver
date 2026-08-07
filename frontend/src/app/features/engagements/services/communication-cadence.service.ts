@@ -6,7 +6,7 @@ import {
   CreateCommunicationCadence,
   EngagementParticipant
 } from '../models/cadence.model';
-import { CADENCE_CONSTANTS } from '../constants/cadence.constants';
+import { CADENCE_CONSTANTS } from '../../../constants/app.constants';
 
 @Injectable({
   providedIn: 'root'

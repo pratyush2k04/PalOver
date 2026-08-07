@@ -3,14 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { CommunicationCadenceService } from '../../../../../services/communication-cadence.service';
-import { AuthService } from '../../../../../services/auth';
+import { CommunicationCadenceService } from '../../../../services/communication-cadence.service';
+import { AuthService } from '../../../../../../services/auth';
 import {
   CommunicationCadence,
   EngagementParticipant,
   CadenceTypeEnum
-} from '../../../../../models/cadence.model';
-import { CADENCE_CONSTANTS } from '../../../../../constants/cadence.constants';
+} from '../../../../models/cadence.model';
+import { CADENCE_CONSTANTS } from '../../../../../../constants/cadence.constants';
 
 @Component({
   selector: 'app-governance-process',

@@ -2,7 +2,8 @@ import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { EngagementInfoDto, EngagementService } from '../../services/engagement.service';
+import { EngagementService } from '../services/engagement.service';
+import { EngagementInfoDto } from '../models/engagement.model';
 
 interface WorkspaceTab {
   label: string;

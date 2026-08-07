@@ -9,9 +9,7 @@ import { workspaceGuard } from './guards/workspace.guard';
 import { workspaceRedirectGuard } from './guards/workspace-redirect.guard';
 // import { engagementAccessGuard } from './core/guards/engagement-access.guard';
 
-// import { DashboardComponent } from './components/dashboard/dashboard';
 
-import { EngagementDetailComponent } from './features/engagement-detail/engagement-detail';
 
 const checklistRoutes: Routes = [
   { path: '', redirectTo: 'published', pathMatch: 'full' },
@@ -112,54 +110,6 @@ export const routes: Routes = [
           import('./features/engagements/my-engagements').then(
             m => m.MyEngagementsComponent
           ),
-      },
-      {
-        path: 'engagements/:id',
-        component: EngagementDetailComponent,
-      },
-      {
-        path: 'engagements/:id/workspace',
-        // canActivate: [engagementAccessGuard],
-        loadComponent: () =>
-          import(
-            './features/engagement-workspace/engagement-workspace.component'
-          ).then(m => m.EngagementWorkspaceComponent),
-
-        children: [
-          {
-            path: 'handover',
-            loadComponent: () =>
-              import(
-                './features/engagement-workspace/handover/handover.component'
-              ).then(m => m.HandoverComponent),
-          },
-          {
-            path: 'documents',
-            loadComponent: () =>
-              import(
-                './features/documents/engagement-documents/engagement-documents.component'
-              ).then(m => m.EngagementDocumentsComponent),
-          },
-          {
-            path: 'checklist',
-            loadComponent: () =>
-              import(
-                './features/engagement-workspace/checklist/engagement-checklist.component'
-              ).then(m => m.EngagementChecklistComponent),
-          },
-          {
-            path: 'kickoff',
-            loadComponent: () =>
-              import(
-                './features/engagement-workspace/kickoff/kickoff.component'
-              ).then(m => m.KickoffComponent),
-          },
-          {
-            path: '',
-            redirectTo: 'handover',
-            pathMatch: 'full',
-          },
-        ],
       },
 
       // Access denied
