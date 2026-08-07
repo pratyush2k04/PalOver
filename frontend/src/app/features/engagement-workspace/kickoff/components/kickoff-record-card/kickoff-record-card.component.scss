@@ -1,0 +1,298 @@
+.kickoff-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+  }
+}
+
+.notes-section {
+  margin-bottom: 1.5rem;
+  width: 100%;
+
+  .outcomes-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 0.875rem 1rem;
+    font-size: 0.95rem;
+    color: #1e293b;
+    resize: vertical;
+    font-family: inherit;
+
+    &[readonly] {
+      background-color: #f8fafc;
+      cursor: default;
+    }
+
+    &::placeholder {
+      color: #94a3b8;
+    }
+
+    &:focus:not([readonly]) {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+    }
+  }
+}
+
+.actions-section {
+  .actions-header {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #1e293b;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin: 0 0 0.875rem 0;
+  }
+
+  .loading-state,
+  .empty-actions {
+    font-size: 0.9rem;
+    color: #64748b;
+    padding: 0.5rem 0;
+    font-style: italic;
+  }
+
+  .action-item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    gap: 1rem;
+
+    .action-details {
+      flex: 1;
+
+      .action-title {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #1e293b;
+      }
+
+      .action-meta {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-top: 0.25rem;
+      }
+    }
+
+    .action-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .status-badge {
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 0.3rem 0.75rem;
+        border-radius: 0.5rem;
+        background: #f1f5f9;
+        color: #475569;
+
+        &.open {
+          background: #eff6ff;
+          color: #1d4ed8;
+          border: 1px solid #bfdbfe;
+        }
+
+        &.inprogress {
+          background: #fefce8;
+          color: #a16207;
+          border: 1px solid #fef08a;
+        }
+
+        &.done {
+          background: #f0fdf4;
+          color: #15803d;
+          border: 1px solid #bbf7d0;
+        }
+      }
+
+      .select-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+
+        .status-select {
+          background-color: #ffffff;
+          border: 1px solid #cbd5e1;
+          border-radius: 0.625rem;
+          padding: 0.45rem 2.2rem 0.45rem 0.85rem;
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: #1e293b;
+          cursor: pointer;
+          outline: none;
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          min-width: 105px;
+          transition: all 0.15s ease;
+
+          &:hover {
+            border-color: #94a3b8;
+            background-color: #f8fafc;
+          }
+
+          &:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+          }
+        }
+
+        .select-arrow {
+          position: absolute;
+          right: 0.75rem;
+          pointer-events: none;
+          width: 0;
+          height: 0;
+          border-left: 4px solid transparent;
+          border-right: 4px solid transparent;
+          border-top: 5px solid #475569;
+        }
+      }
+
+      .btn-delete {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        font-size: 1.25rem;
+        cursor: pointer;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.25rem;
+
+        &:hover {
+          color: #ef4444;
+          background: #fef2f2;
+        }
+      }
+    }
+  }
+
+  .btn-add-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: transparent;
+    border: none;
+    color: #475569;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.5rem 0;
+    margin-top: 0.5rem;
+
+    &:hover {
+      color: #0f172a;
+    }
+  }
+}
+
+.add-action-form {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  margin: 0.75rem 0;
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.875rem;
+
+    .full-width {
+      grid-column: span 2;
+    }
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    .form-control {
+      border: 1px solid #cbd5e1;
+      border-radius: 0.5rem;
+      padding: 0.45rem 0.75rem;
+      font-size: 0.875rem;
+      color: #1e293b;
+      background: #ffffff;
+      box-sizing: border-box;
+
+      &:focus {
+        outline: none;
+        border-color: #6366f1;
+      }
+
+      &.is-invalid {
+        border-color: #ef4444 !important;
+        background-color: #fef2f2 !important;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+      }
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1rem;
+
+    .btn-secondary {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.5rem;
+      padding: 0.45rem 0.875rem;
+      font-size: 0.85rem;
+      color: #475569;
+      cursor: pointer;
+
+      &:hover {
+        background: #f1f5f9;
+      }
+    }
+
+    .btn-primary {
+      background: #1e293b;
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.45rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #ffffff;
+      cursor: pointer;
+
+      &:hover {
+        background: #0f172a;
+      }
+    }
+  }
+}
