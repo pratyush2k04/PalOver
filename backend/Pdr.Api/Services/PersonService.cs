@@ -34,7 +34,6 @@ public class PersonService(IPersonRepository personRepository) : IPersonService
             Name = dto.Name.Trim(),
             Role = dto.Role.Trim(),
             PersonType = dto.PersonType,
-            Email = dto.Email?.Trim(),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             CreatedBy = currentUserId,
@@ -64,7 +63,6 @@ public class PersonService(IPersonRepository personRepository) : IPersonService
         person.Name = dto.Name.Trim();
         person.Role = dto.Role.Trim();
         person.PersonType = dto.PersonType;
-        person.Email = dto.Email?.Trim();
         person.UpdatedAt = DateTime.UtcNow;
         person.UpdatedBy = currentUserId;
 
@@ -101,8 +99,7 @@ public class PersonService(IPersonRepository personRepository) : IPersonService
             EngagementId = person.EngagementId,
             Name = person.Name,
             Role = person.Role,
-            PersonType = person.PersonType,
-            Email = person.Email
+            PersonType = person.PersonType
         };
     }
 }

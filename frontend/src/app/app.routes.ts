@@ -180,6 +180,13 @@ export const routes: Routes = [
               ).then(m => m.KickoffComponent),
           },
           {
+            path: 'people',
+            loadComponent: () =>
+              import(
+                './features/engagement-workspace/people/people.component'
+              ).then(m => m.PeopleComponent),
+          },
+          {
             path: '',
             redirectTo: 'handover',
             pathMatch: 'full',
@@ -219,6 +226,10 @@ export const routes: Routes = [
           {
             path: 'kickoff',
             loadComponent: () => import('./features/engagement-workspace/kickoff/kickoff.component').then(m => m.KickoffComponent)
+          },
+          {
+            path: 'people',
+            loadComponent: () => import('./features/engagement-workspace/people/people.component').then(m => m.PeopleComponent)
           },
           { path: '', redirectTo: 'handover', pathMatch: 'full' }
         ]

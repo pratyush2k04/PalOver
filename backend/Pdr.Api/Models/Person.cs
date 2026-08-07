@@ -13,6 +13,4 @@ public class Person : BaseAuditableEntity
     public string Role { get; set; } = string.Empty;
 
     public PersonType PersonType { get; set; }
-
-    public string? Email { get; set; }
 }

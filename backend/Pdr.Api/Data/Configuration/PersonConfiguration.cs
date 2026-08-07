@@ -24,7 +24,6 @@ public class PersonConfiguration : IEntityTypeConfiguration<Person>
             .HasConversion<string>()
             .HasMaxLength(50)
             .IsRequired();
-        builder.Property(p => p.Email).HasColumnName("email").HasMaxLength(255);
 
         // BaseAuditableEntity Column Mappings
         builder.Property(p => p.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
@@ -51,7 +50,6 @@ public class PersonConfiguration : IEntityTypeConfiguration<Person>
                 Name = "Sarah Jenkins",
                 Role = "Client Executive Sponsor",
                 PersonType = PersonType.Client,
-                Email = "sarah.jenkins@client.com",
                 CreatedAt = SeedTimestamp,
                 UpdatedAt = SeedTimestamp,
                 CreatedBy = "System",
@@ -64,7 +62,6 @@ public class PersonConfiguration : IEntityTypeConfiguration<Person>
                 Name = "Alex Rivera",
                 Role = "Internal Technical Lead",
                 PersonType = PersonType.Internal,
-                Email = "alex.rivera@company.com",
                 CreatedAt = SeedTimestamp,
                 UpdatedAt = SeedTimestamp,
                 CreatedBy = "System",
