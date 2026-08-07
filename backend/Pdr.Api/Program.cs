@@ -92,6 +92,8 @@ builder.Services.AddScoped<ICommunicationCadenceRepository, CommunicationCadence
 builder.Services.AddScoped<ICommunicationCadenceService, CommunicationCadenceService>();
 builder.Services.AddScoped<IEngagementChecklistRepository, EngagementChecklistRepository>();
 builder.Services.AddScoped<IEngagementChecklistService, EngagementChecklistService>();
+builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+builder.Services.AddScoped<IPersonService, PersonService>();
 
 // // Technical Readiness — Access Tracker & Environment Tooling
 // builder.Services.AddScoped<Pdr.Api.Repositories.Interfaces.IAccessTrackerRepository, Pdr.Api.Repositories.AccessTrackerRepository>();

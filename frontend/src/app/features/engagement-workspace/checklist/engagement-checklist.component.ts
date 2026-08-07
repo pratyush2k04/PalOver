@@ -7,6 +7,8 @@ import { EngagementChecklistService } from '../../../services/engagement-checkli
 import { EngagementChecklist, EngagementChecklistItem } from '../../../models/engagement-checklist.model';
 import { ENGAGEMENT_CHECKLIST_MESSAGES } from '../../../shared/constants/checklist.constants';
 import { DialogService } from '../../../shared/dialog/dialog.service';
+import { PersonService } from '../../../services/person.service';
+import { PersonDto } from '../../../models/person.model';
 import {
   MarkNaDialogComponent,
   MarkNaDialogData,
@@ -17,6 +19,11 @@ import {
   ExemptionReviewDialogData,
   ExemptionReviewDialogResult
 } from './dialogs/exemption-review-dialog/exemption-review-dialog.component';
+import {
+  BlockItemDialogComponent,
+  BlockItemDialogData,
+  BlockItemDialogResult
+} from './dialogs/block-item-dialog/block-item-dialog.component';
 
 @Component({
   selector: 'app-engagement-checklist',
@@ -30,6 +37,7 @@ export class EngagementChecklistComponent {
   private checklistService = inject(EngagementChecklistService);
   private authService = inject(AuthService);
   private dialog = inject(DialogService);
+  private personService = inject(PersonService);
 
   private paramMap = toSignal(this.route.parent!.paramMap);
 
@@ -42,6 +50,7 @@ export class EngagementChecklistComponent {
   isLoading = signal<boolean>(true);
   isUpdating = signal<boolean>(false);
   error = signal<string | null>(null);
+  people = signal<PersonDto[]>([]);
 
   // Role permissions
   isProjectManager = computed(() => this.authService.hasRole('Project Management') || this.authService.isAdmin());
@@ -51,12 +60,22 @@ export class EngagementChecklistComponent {
 
   canToggleStatus = computed(() => this.isProjectManager() || this.isTechLead());
   canChangeApplicability = computed(() => this.isProjectManager());
+  canPerformAnyAction = computed(() => this.canToggleStatus() || this.canChangeApplicability() || this.isLeadership());
+
+  notApplicableItems = computed(() => {
+    const cl = this.checklist();
+    if (!cl) return [];
+    return cl.categories.flatMap((cat) =>
+      cat.items.filter((i) => !i.isApplicable).map((i) => ({ ...i, categoryName: cat.categoryName }))
+    );
+  });
 
   constructor() {
     effect(() => {
       const id = this.engagementId();
       if (id) {
         this.loadChecklist(id);
+        this.loadPeople(id);
       }
     });
   }
@@ -73,6 +92,13 @@ export class EngagementChecklistComponent {
         this.error.set(ENGAGEMENT_CHECKLIST_MESSAGES.LOAD_FAILED);
         this.isLoading.set(false);
       }
+    });
+  }
+
+  private loadPeople(engagementId: number): void {
+    this.personService.getPeopleByEngagement(engagementId).subscribe({
+      next: (people) => this.people.set(people),
+      error: () => this.people.set([])
     });
   }
 
@@ -184,6 +210,80 @@ export class EngagementChecklistComponent {
             this.isUpdating.set(false);
           }
         });
+      }
+    });
+  }
+
+  onOwnerChange(item: EngagementChecklistItem, personIdStr: string): void {
+    const engId = this.engagementId();
+    if (!engId || !this.canToggleStatus() || this.isUpdating()) {
+      return;
+    }
+
+    const personId = personIdStr === '' ? null : Number(personIdStr);
+    this.isUpdating.set(true);
+
+    this.checklistService.updateItemOwner(engId, item.id, { personId }).subscribe({
+      next: (updatedChecklist) => {
+        this.checklist.set(updatedChecklist);
+        this.isUpdating.set(false);
+      },
+      error: () => {
+        this.isUpdating.set(false);
+      }
+    });
+  }
+
+  openBlockDialog(item: EngagementChecklistItem): void {
+    const engId = this.engagementId();
+    if (!engId || !this.canToggleStatus() || !item.isApplicable || item.status === 'Blocked' || this.isUpdating()) {
+      return;
+    }
+
+    const dialogRef = this.dialog.open<BlockItemDialogComponent, BlockItemDialogData, BlockItemDialogResult>(
+      BlockItemDialogComponent,
+      {
+        data: {
+          itemTitle: item.title,
+          currentOwnerId: item.ownerId,
+          people: this.people()
+        }
+      }
+    );
+
+    dialogRef.closed$.subscribe((result) => {
+      if (result) {
+        this.isUpdating.set(true);
+        this.checklistService.blockItem(engId, item.id, {
+          reason: result.reason,
+          personId: result.personId
+        }).subscribe({
+          next: (updatedChecklist) => {
+            this.checklist.set(updatedChecklist);
+            this.isUpdating.set(false);
+          },
+          error: () => {
+            this.isUpdating.set(false);
+          }
+        });
+      }
+    });
+  }
+
+  unblockItem(item: EngagementChecklistItem): void {
+    const engId = this.engagementId();
+    if (!engId || !this.canToggleStatus() || item.status !== 'Blocked' || this.isUpdating()) {
+      return;
+    }
+
+    this.isUpdating.set(true);
+    this.checklistService.unblockItem(engId, item.id).subscribe({
+      next: (updatedChecklist) => {
+        this.checklist.set(updatedChecklist);
+        this.isUpdating.set(false);
+      },
+      error: () => {
+        this.isUpdating.set(false);
       }
     });
   }
