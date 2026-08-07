@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AccessItemDto } from './models/technical-readiness.model';
+import { EnvironmentToolingItemDto, EnvironmentToolingStatus } from './models/environment-tooling.model';
 import { AccessTrackerComponent } from './access-tracker/access-tracker.component';
 import { EnvironmentToolingComponent } from './environment-tooling/environment-tooling.component';
 
@@ -24,19 +25,48 @@ export class TechnicalReadinessComponent {
   });
 
   accessItems = signal<AccessItemDto[]>([]);
+  toolingItems = signal<EnvironmentToolingItemDto[]>([]);
 
-  grantedCount = computed(() =>
-    this.accessItems().filter(item => item.status === 'Granted' || item.status === '2').length
+  // Access Metrics
+  accessGrantedCount = computed(() =>
+    this.accessItems().filter(i => i.status === 'Granted' || i.status === '2').length
+  );
+  accessTotalCount = computed(() => this.accessItems().length);
+
+  // Tooling Metrics (Not Applicable items are excluded from required total)
+  toolingApplicableItems = computed(() =>
+    this.toolingItems().filter(i => +i.status !== EnvironmentToolingStatus.NotApplicable && i.status !== ('NotApplicable' as any))
   );
 
-  totalCount = computed(() => this.accessItems().length);
+  toolingReadyCount = computed(() =>
+    this.toolingApplicableItems().filter(i => +i.status === EnvironmentToolingStatus.Ready || i.status === ('Ready' as any)).length
+  );
+
+  toolingTotalCount = computed(() => this.toolingApplicableItems().length);
+
+  // Blockers Check
+  hasAccessBlockers = computed(() =>
+    this.accessItems().some(i => i.status === 'Blocked' || i.status === '3')
+  );
+
+  hasBlockers = computed(() => this.hasAccessBlockers());
+
+  // Total readiness check
+  totalRequired = computed(() => this.accessTotalCount() + this.toolingTotalCount());
+  totalReady = computed(() => this.accessGrantedCount() + this.toolingReadyCount());
 
   isDayOneReady = computed(() =>
-    this.totalCount() > 0 && this.grantedCount() === this.totalCount()
+    !this.hasBlockers() &&
+    this.totalRequired() > 0 &&
+    this.totalReady() === this.totalRequired()
   );
 
   onAccessItemsUpdated(items: AccessItemDto[]) {
     this.accessItems.set(items);
+  }
+
+  onToolingItemsUpdated(items: EnvironmentToolingItemDto[]) {
+    this.toolingItems.set(items);
   }
 
   shareSummary() {
