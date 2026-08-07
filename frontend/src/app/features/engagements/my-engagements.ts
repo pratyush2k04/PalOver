@@ -1,7 +1,11 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { EngagementSortBy, EngagementService, PmEngagementListItem } from '../../services/engagement';
+import { EngagementService } from './services/engagement.service';
+import { EngagementSortBy, PmEngagementListItem } from './models/engagement.model';
+import { AppContextService } from '../../services/app-context';
+import { EngagementsComponent } from './pages/createengagment/engagements';
+import { ENGAGEMENT_MESSAGES, USER_ROLES } from '../../constants/app.constants';
 
 interface MyEngagementRow extends PmEngagementListItem {
   displayReadinessScore: number;
@@ -21,13 +25,16 @@ const SAMPLE_READINESS_SCORES: Record<number, number> = {
 @Component({
   selector: 'app-my-engagements',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EngagementsComponent],
   templateUrl: './my-engagements.html',
   styleUrl: './my-engagements.scss'
 })
 export class MyEngagementsComponent implements OnInit {
   private engagementService = inject(EngagementService);
+  private appContext = inject(AppContextService);
   private router = inject(Router);
+
+  readonly isPreSales = computed(() => this.appContext.user()?.role === USER_ROLES.PRE_SALES);
 
   activeTab = signal<EngagementTab>('active');
   sortBy = signal<SortOption>('kickoff');
@@ -79,7 +86,7 @@ export class MyEngagementsComponent implements OnInit {
       },
       error: () => {
         this.isLoading.set(false);
-        this.errorMessage.set('Failed to load your engagements. Please try again.');
+        this.errorMessage.set(ENGAGEMENT_MESSAGES.LOAD_ENGAGEMENTS_ERROR);
       }
     });
   }

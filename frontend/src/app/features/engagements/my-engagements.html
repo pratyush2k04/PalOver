@@ -1,6 +1,9 @@
 <div class="my-engagements-page">
   <div class="page-header">
     <h2>My Engagements</h2>
+    @if (isPreSales()) {
+      <app-engagements />
+    }
   </div>
 
   <div class="tabs">

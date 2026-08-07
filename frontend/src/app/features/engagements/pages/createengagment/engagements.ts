@@ -8,11 +8,8 @@ import {
   ValidationErrors,
   Validators
 } from '@angular/forms';
-import {
-  CommercialModelOption,
-  EngagementService,
-  EngagementTypeOption
-} from '../../services/engagement';
+import { EngagementService } from '../../services/engagement.service';
+import { CommercialModelOption, EngagementTypeOption } from '../../models/engagement.model';
 
 function billingNotBeforeKickoffValidator(group: AbstractControl): ValidationErrors | null {
   const kickoffDate = group.get('kickoffDate')?.value;

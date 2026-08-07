@@ -42,10 +42,6 @@ export class SidebarComponent {
       items.push({ label: 'Users', icon: 'users', route: APP_ROUTES.USERS });
     }
 
-    // Engagements link: visible ONLY to Pre Sales
-    if (currentUser.role === USER_ROLES.PRE_SALES) {
-      items.push({ label: 'Engagements', icon: 'layers', route: APP_ROUTES.ENGAGEMENTS });
-    }
 
     // Role Queue link (route: /my-engagements): shown for non-Admin roles regardless of isAdmin flag
     if (currentUser.role !== USER_ROLES.ADMIN) {
