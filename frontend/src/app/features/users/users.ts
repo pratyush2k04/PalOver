@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from './services/user.service';
-import { ToastService } from '../../services/toast';
+import { ToastService } from '@shared/toast/toast.service';
 import { UserListItem } from './models/user.model';
 import { Role } from './models/role.model';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';

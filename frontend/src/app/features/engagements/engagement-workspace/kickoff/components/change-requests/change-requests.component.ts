@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ChangeRequestService } from '../../../../services/change-request.service';
-import { AuthService } from '../../../../../../services/auth';
+import { AuthService } from 'src/app/services/auth';
 import { ChangeRequest } from '../../../../models/change-request.model';
 import { CHANGE_REQUEST_CONSTANTS } from '../../../../../../constants/app.constants';
 

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { EngagementService } from './services/engagement.service';
 import { EngagementSortBy, PmEngagementListItem } from './models/engagement.model';
-import { AppContextService } from '../../services/app-context';
+import { AppContextService } from 'src/app/services/app-context';
 import { EngagementsComponent } from './pages/createengagment/engagements';
 import { ENGAGEMENT_MESSAGES, USER_ROLES } from '../../constants/app.constants';
 

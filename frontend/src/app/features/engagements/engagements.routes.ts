@@ -31,7 +31,7 @@ export const ENGAGEMENTS_ROUTES: Routes = [
         path: 'documents',
         loadComponent: () =>
           import(
-            '../documents/engagement-documents/engagement-documents.component'
+            './engagement-workspace/documents/engagement-documents/engagement-documents.component'
           ).then((m) => m.EngagementDocumentsComponent),
       },
       {

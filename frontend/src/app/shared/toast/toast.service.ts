@@ -8,6 +8,9 @@ export interface Toast {
 
 @Injectable({ providedIn: 'root' })
 export class ToastService {
+  success(ROLE_UPDATED_SUCCESS: string) {
+    throw new Error('Method not implemented.');
+  }
   private nextId = 0;
   private timers = new Map<number, ReturnType<typeof setTimeout>>();
 
