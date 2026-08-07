@@ -1,8 +1,9 @@
 import { Component, OnInit, computed, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { UpperCasePipe } from '@angular/common';
 import { LoadingSpinnerComponent } from '../../../shared/loading-spinner/loading-spinner';
-import { MasterChecklistService } from '../../../services/master-checklist.service';
-import { MasterChecklistItem } from '../../../models/checklist.model';
+import { MasterChecklistService } from '../services/master-checklist.service';
+import { MasterChecklistItem } from '../models/checklist.model';
 
 type SortColumn = 'title' | 'categoryName' | 'isMandatory' | 'isRetired';
 type SortDirection = 'asc' | 'desc';
@@ -10,7 +11,7 @@ type SortDirection = 'asc' | 'desc';
 @Component({
   selector: 'app-published-checklist',
   standalone: true,
-  imports: [FormsModule, LoadingSpinnerComponent],
+  imports: [FormsModule, LoadingSpinnerComponent, UpperCasePipe],
   templateUrl: './published-checklist.html',
   styleUrl: './published-checklist.scss',
 })
@@ -38,44 +39,35 @@ export class PublishedChecklistComponent implements OnInit {
     return Array.from(names).sort();
   });
 
-  readonly filteredItems = computed(() => {
+  readonly groupedCategories = computed(() => {
     const items = this.version()?.items ?? [];
-    const category = this.selectedCategory();
+    const selected = this.selectedCategory();
+    
+    // First, filter by the selected category if applicable
+    const filteredItems = selected === 'all' 
+      ? items 
+      : items.filter(item => item.categoryName === selected);
 
-    const filtered = items.filter((item) => category === 'all' || item.categoryName === category);
+    // Then, group the remaining items by category
+    const groupMap = new Map<number, { categoryId: number; categoryName: string; items: MasterChecklistItem[] }>();
 
-    const column = this.sortColumn();
-    const direction = this.sortDirection() === 'asc' ? 1 : -1;
-    return [...filtered].sort((a, b) => {
-      const aValue = a[column];
-      const bValue = b[column];
-      if (aValue === bValue) return 0;
-      return aValue > bValue ? direction : -direction;
-    });
+    for (const item of filteredItems) {
+      if (!groupMap.has(item.categoryId)) {
+        groupMap.set(item.categoryId, {
+          categoryId: item.categoryId,
+          categoryName: item.categoryName,
+          items: []
+        });
+      }
+      groupMap.get(item.categoryId)!.items.push(item);
+    }
+
+    // Return as array sorted by categoryName
+    return Array.from(groupMap.values()).sort((a, b) => a.categoryName.localeCompare(b.categoryName));
   });
-
-  readonly pagedItems = computed(() => {
-    const start = this.pageIndex() * this.pageSize();
-    return this.filteredItems().slice(start, start + this.pageSize());
-  });
-
-  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.filteredItems().length / this.pageSize())));
 
   ngOnInit(): void {
     this.masterChecklistService.getPublished();
-  }
-
-  applyFilters(): void {
-    this.pageIndex.set(0);
-  }
-
-  sortBy(column: SortColumn): void {
-    if (this.sortColumn() === column) {
-      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
-    } else {
-      this.sortColumn.set(column);
-      this.sortDirection.set('asc');
-    }
   }
 
   toggleRow(item: MasterChecklistItem): void {
@@ -84,26 +76,5 @@ export class PublishedChecklistComponent implements OnInit {
 
   isExpanded(item: MasterChecklistItem): boolean {
     return this.expandedRowId() === item.id;
-  }
-
-  onPageSizeChange(size: number): void {
-    this.pageSize.set(size);
-    this.pageIndex.set(0);
-  }
-
-  goToFirstPage(): void {
-    this.pageIndex.set(0);
-  }
-
-  goToPreviousPage(): void {
-    this.pageIndex.set(Math.max(0, this.pageIndex() - 1));
-  }
-
-  goToNextPage(): void {
-    this.pageIndex.set(Math.min(this.totalPages() - 1, this.pageIndex() + 1));
-  }
-
-  goToLastPage(): void {
-    this.pageIndex.set(this.totalPages() - 1);
   }
 }

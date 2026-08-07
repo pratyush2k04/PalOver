@@ -2,8 +2,8 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DialogRef } from '../../../../shared/dialog/dialog-ref';
 import { DIALOG_DATA } from '../../../../shared/dialog/dialog.service';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner';
-import { MasterChecklistService } from '../../../../services/master-checklist.service';
-import { MasterChecklistItem, MasterChecklistVersion } from '../../../../models/checklist.model';
+import { MasterChecklistService } from '../../services/master-checklist.service';
+import { MasterChecklistItem, MasterChecklistVersion } from '../../models/checklist.model';
 
 export interface VersionDetailDialogData {
   versionId: number;
