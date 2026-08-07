@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Pdr.Api.Attributes;
+using Pdr.Api.Models;
 using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Controllers;
@@ -17,7 +19,7 @@ public class RolesController(IRoleRepository roleRepository) : ControllerBase
     }
 
     [HttpGet("{id:int}/users")]
-    [Authorize(Roles = "Leadership")]
+    [AuthorizeRoles(RoleEnum.Leadership)]
     public async Task<IActionResult> GetUsersInRole(int id)
     {
         var users = await roleRepository.GetUsersInRoleAsync(id);

@@ -19,4 +19,12 @@ public class DocumentResponseDto
     public string UploadedBy { get; set; } = string.Empty;
 
     public DateTime UploadedAt { get; set; }
+
+    public string Visibility { get; set; } = "Team-wide";
+
+    public List<int> AllowedRoles { get; set; } = new();
+
+    public bool IsCustomVisibility => Visibility == "Custom";
+
+    public string CategoryDefaultVisibility { get; set; } = "Team-wide";
 }

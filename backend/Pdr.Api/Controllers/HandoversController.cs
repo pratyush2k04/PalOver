@@ -15,16 +15,13 @@ public class HandoversController : ControllerBase
 {
     private readonly IHandoverService _handoverService;
     private readonly IHandoverAccessService _accessService;
-    private readonly IValidator<SaveHandoverDraftRequest> _saveDraftValidator;
 
     public HandoversController(
         IHandoverService handoverService,
-        IHandoverAccessService accessService,
-        IValidator<SaveHandoverDraftRequest> saveDraftValidator)
+        IHandoverAccessService accessService)
     {
         _handoverService = handoverService;
         _accessService = accessService;
-        _saveDraftValidator = saveDraftValidator;
     }
 
     private int GetUserId() => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
@@ -63,13 +60,6 @@ public class HandoversController : ControllerBase
     public async Task<ActionResult<HandoverInfoDto>> SaveDraft(int engagementId, [FromBody] SaveHandoverDraftRequest request)
     {
         await _accessService.CanAccessHandoverAsync(engagementId, GetUserId());
-
-        var validationResult = await _saveDraftValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid handover draft request.";
-            return BadRequest(new { message = firstError });
-        }
 
         var dto = await _handoverService.SaveHandoverDraftAsync(engagementId, request, GetUserIdString());
         return Ok(dto);

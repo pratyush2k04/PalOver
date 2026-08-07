@@ -64,13 +64,6 @@ public class CommitmentsController : ControllerBase
     {
         await CheckAccessAsync(engagementId, "Pre Sales");
 
-        var validationResult = await _createValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid commitment request.";
-            return BadRequest(new { message = firstError });
-        }
-
         var dto = await _commitmentService.AddCommitmentAsync(engagementId, request, GetUserId());
         return CreatedAtAction(nameof(AddCommitment), new { engagementId, commitmentId = dto.CommitmentId }, dto);
     }
@@ -90,13 +83,6 @@ public class CommitmentsController : ControllerBase
     public async Task<ActionResult<CommitmentDto>> UpdateCommitment(int engagementId, int commitmentId, [FromBody] UpdateCommitmentRequest request)
     {
         await CheckAccessAsync(engagementId, "Pre Sales");
-
-        var validationResult = await _updateValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid commitment request.";
-            return BadRequest(new { message = firstError });
-        }
 
         var dto = await _commitmentService.UpdateCommitmentAsync(engagementId, commitmentId, request, GetUserId());
         return Ok(dto);

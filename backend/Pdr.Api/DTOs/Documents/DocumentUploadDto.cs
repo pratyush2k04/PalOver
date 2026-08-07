@@ -9,4 +9,6 @@ public class DocumentUploadDto
     public int EngagementId { get; set; }
 
     public int CategoryId { get; set; }
+
+    public string Visibility { get; set; } = "Team-wide";
 }

@@ -2,6 +2,8 @@ using FluentValidation;
 using Pdr.Api.DTOs.MasterChecklist;
 using Pdr.Api.Repositories.Interfaces;
 
+using Pdr.Api.Constants;
+
 namespace Pdr.Api.Validators;
 
 public class CreateMasterChecklistItemRequestDtoValidator : AbstractValidator<MasterCreateChecklistItemRequestDto>
@@ -9,14 +11,14 @@ public class CreateMasterChecklistItemRequestDtoValidator : AbstractValidator<Ma
     public CreateMasterChecklistItemRequestDtoValidator(IMasterChecklistRepository checklistRepository)
     {
         RuleFor(x => x.Title)
-            .NotEmpty().WithMessage("Title is required.");
+            .NotEmpty().WithMessage(MasterChecklistConstants.Messages.TitleRequired);
 
         RuleFor(x => x.CategoryId)
             .MustAsync(async (categoryId, cancellationToken) =>
                 await checklistRepository.GetCategoryByIdAsync(categoryId) is not null)
-            .WithMessage("Selected category does not exist.");
+            .WithMessage(MasterChecklistConstants.Messages.CategoryNotFound);
 
         RuleFor(x => x.DisplayOrder)
-            .GreaterThanOrEqualTo(1).WithMessage("Display order must be at least 1.");
+            .GreaterThanOrEqualTo(1).WithMessage(MasterChecklistConstants.Messages.DisplayOrderMinimum);
     }
 }

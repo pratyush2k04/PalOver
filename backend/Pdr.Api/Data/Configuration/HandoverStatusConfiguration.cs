@@ -19,8 +19,8 @@ public class HandoverStatusConfiguration : IEntityTypeConfiguration<HandoverStat
         builder.Property(s => s.StatusName).HasColumnName("status_name").HasMaxLength(50).IsRequired();
 
         builder.HasData(
-            new HandoverStatus { HandoverStatusId = 1, StatusName = "Draft" },
-            new HandoverStatus { HandoverStatusId = 2, StatusName = "Submitted" }
+            new HandoverStatus { HandoverStatusId = (int)HandoverStatusEnum.Draft, StatusName = HandoverStatusNames.Draft },
+            new HandoverStatus { HandoverStatusId = (int)HandoverStatusEnum.Submitted, StatusName = HandoverStatusNames.Submitted }
         );
     }
 }

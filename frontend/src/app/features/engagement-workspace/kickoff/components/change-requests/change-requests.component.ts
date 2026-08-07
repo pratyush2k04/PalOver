@@ -7,11 +7,12 @@ import { ChangeRequestService } from '../../../../../services/change-request.ser
 import { AuthService } from '../../../../../services/auth';
 import { ChangeRequest } from '../../../../../models/change-request.model';
 import { CHANGE_REQUEST_CONSTANTS } from '../../../../../constants/app.constants';
+import { InlineSVGModule } from 'ng-inline-svg-2';
 
 @Component({
   selector: 'app-change-requests',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, InlineSVGModule],
   templateUrl: './change-requests.component.html',
   styleUrl: './change-requests.component.scss'
 })

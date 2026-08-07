@@ -1,8 +1,6 @@
 using Pdr.Api.Models.AccessTracker;
 using Pdr.Api.Models.EnvironmentTooling;
 using Pdr.Api.Models.EngagementAssignment;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Pdr.Api.Models;
 
@@ -40,6 +38,9 @@ public class Engagement : BaseAuditableEntity
     public ICollection<EngagementAssignment.EngagementAssignment> EngagementAssignments { get; set; } = new List<EngagementAssignment.EngagementAssignment>();
 
     public ICollection<Person> People { get; set; } = new List<Person>();
+    //Technical Readiness
+    public ICollection<AccessItem> AccessItems { get; set; }
+    = new List<AccessItem>();
 
     // Technical Readiness
     public ICollection<AccessItem> AccessItems { get; set; } = new List<AccessItem>();

@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { TECHNICAL_READINESS_ROUTES } from './constants/app.constants';
 
 import { LoginComponent } from './components/login/login';
 import { MainLayoutComponent } from './components/main-layout/main-layout';
@@ -92,7 +93,7 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'technical-readiness',
+        path: TECHNICAL_READINESS_ROUTES.BASE,
         canActivate: [workspaceGuard],
         loadComponent: () =>
           import('./features/home/tech-lead-home/tech-lead-home').then(
@@ -187,6 +188,13 @@ export const routes: Routes = [
               ).then(m => m.PeopleComponent),
           },
           {
+            path: TECHNICAL_READINESS_ROUTES.BASE,
+            loadComponent: () =>
+              import(
+                './features/engagements/technical/technical-readiness.component'
+              ).then(m => m.TechnicalReadinessComponent),
+          },
+          {
             path: '',
             redirectTo: 'handover',
             pathMatch: 'full',
@@ -211,13 +219,13 @@ export const routes: Routes = [
         //canActivate: [engagementAccessGuard],
         loadComponent: () => import('./features/engagement-workspace/engagement-workspace.component').then(m => m.EngagementWorkspaceComponent),
         children: [
-          { 
-            path: 'handover', 
-            loadComponent: () => import('./features/engagement-workspace/handover/handover.component').then(m => m.HandoverComponent) 
+          {
+            path: 'handover',
+            loadComponent: () => import('./features/engagement-workspace/handover/handover.component').then(m => m.HandoverComponent)
           },
-          { 
-            path: 'documents', 
-            loadComponent: () => import('./features/documents/engagement-documents/engagement-documents.component').then(m => m.EngagementDocumentsComponent) 
+          {
+            path: 'documents',
+            loadComponent: () => import('./features/documents/engagement-documents/engagement-documents.component').then(m => m.EngagementDocumentsComponent)
           },
           {
             path: 'checklist',
@@ -230,6 +238,10 @@ export const routes: Routes = [
           {
             path: 'people',
             loadComponent: () => import('./features/engagement-workspace/people/people.component').then(m => m.PeopleComponent)
+          },
+          {
+            path: TECHNICAL_READINESS_ROUTES.BASE,
+            loadComponent: () => import('./features/engagements/technical/technical-readiness.component').then(m => m.TechnicalReadinessComponent)
           },
           { path: '', redirectTo: 'handover', pathMatch: 'full' }
         ]

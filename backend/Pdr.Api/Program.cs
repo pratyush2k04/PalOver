@@ -15,6 +15,7 @@ using Pdr.Api.Services.Interfaces;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
 using Pdr.Api.Validators;
+using Pdr.Api.Filters;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,7 +49,10 @@ builder.Services.AddSwaggerGen(c =>
 
 // Add services to the container.
 
-builder.Services.AddControllers().AddJsonOptions(options =>
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidationFilter>();
+}).AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
@@ -141,14 +145,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    try
-    {
-        db.Database.Migrate();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"[Warning] EF Migration skipped or encountered existing schema: {ex.Message}");
-    }
+    db.Database.Migrate();
 
     if (!db.EngagementTypes.Any())
     {
