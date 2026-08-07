@@ -11,7 +11,9 @@ namespace Pdr.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class EngagementsController(IEngagementService engagementService) : ControllerBase
+public class EngagementsController(
+    IEngagementService engagementService,
+    IKickoffReadinessService kickoffReadinessService) : ControllerBase
 {
     [HttpGet("my-engagements")]
     [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead)]
@@ -77,5 +79,13 @@ public class EngagementsController(IEngagementService engagementService) : Contr
     {
         var owners = await engagementService.AssignTechLeadAsync(id, request.UserId);
         return Ok(owners);
+    }
+
+    [HttpGet("{id:int}/kickoff-readiness")]
+    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.Leadership)]
+    public async Task<ActionResult<KickoffReadinessDto>> GetKickoffReadiness(int id)
+    {
+        var readiness = await kickoffReadinessService.GetReadinessAsync(id);
+        return Ok(readiness);
     }
 }
