@@ -14,7 +14,7 @@
         } @else {
           <strong>Ready for Day-1</strong>
         }
-        <span> &mdash; access {{ grantedCount() }}/{{ totalCount() }} granted</span>
+        <span> &mdash; access {{ accessGrantedCount() }}/{{ accessTotalCount() }} granted, tooling {{ toolingReadyCount() }}/{{ toolingTotalCount() }} ready</span>
       </div>
     </div>
   </div>
@@ -30,7 +30,8 @@
 
     <div class="readiness-section">
       <app-environment-tooling
-        [engagementId]="engagementId()!">
+        [engagementId]="engagementId()!"
+        (itemsUpdated)="onToolingItemsUpdated($event)">
       </app-environment-tooling>
     </div>
   }
