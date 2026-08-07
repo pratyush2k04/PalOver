@@ -92,9 +92,13 @@
         <input
           id="env-item-name"
           type="text"
+          [class.input-error]="!!nameError()"
           [ngModel]="newItemName()"
-          (ngModelChange)="newItemName.set($event)"
+          (ngModelChange)="newItemName.set($event); nameError.set('')"
           placeholder="e.g., Staging Server provisioned" />
+        @if (nameError()) {
+          <span class="error-text">{{ nameError() }}</span>
+        }
       </div>
       <div class="modal-actions">
         <button class="app-button app-button--stroked" (click)="closeAddModal()">Cancel</button>
@@ -117,10 +121,14 @@
         <textarea
           id="na-reason"
           rows="3"
+          [class.input-error]="!!naReasonError()"
           [ngModel]="naReasonText()"
-          (ngModelChange)="naReasonText.set($event)"
+          (ngModelChange)="naReasonText.set($event); naReasonError.set('')"
           placeholder="e.g., Client manages pipeline independently">
         </textarea>
+        @if (naReasonError()) {
+          <span class="error-text">{{ naReasonError() }}</span>
+        }
       </div>
       <div class="modal-actions">
         <button class="app-button app-button--stroked" (click)="closeNaModal()">Cancel</button>

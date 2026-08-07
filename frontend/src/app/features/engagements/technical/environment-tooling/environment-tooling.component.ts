@@ -32,10 +32,12 @@ export class EnvironmentToolingComponent {
   // Add Item Modal
   isAddModalOpen = signal<boolean>(false);
   newItemName = signal<string>('');
+  nameError = signal<string>('');
 
   // Not Applicable Reason Modal
   isNaModalOpen = signal<boolean>(false);
   naReasonText = signal<string>('');
+  naReasonError = signal<string>('');
   itemForNa = signal<EnvironmentToolingItemDto | null>(null);
 
   readonly statusOptions = [
@@ -111,6 +113,7 @@ export class EnvironmentToolingComponent {
       select.value = item.status.toString();
       this.itemForNa.set(item);
       this.naReasonText.set(item.notApplicableReason || '');
+      this.naReasonError.set('');
       this.isNaModalOpen.set(true);
       return;
     }
@@ -122,13 +125,21 @@ export class EnvironmentToolingComponent {
     this.isNaModalOpen.set(false);
     this.itemForNa.set(null);
     this.naReasonText.set('');
+    this.naReasonError.set('');
   }
 
   submitNaReason() {
     const item = this.itemForNa();
     if (!item) return;
 
-    this.updateStatus(item, EnvironmentToolingStatus.NotApplicable, this.naReasonText().trim());
+    const reason = this.naReasonText().trim();
+    if (!reason) {
+      this.naReasonError.set('Reason is required for Not Applicable status');
+      return;
+    }
+
+    this.naReasonError.set('');
+    this.updateStatus(item, EnvironmentToolingStatus.NotApplicable, reason);
     this.closeNaModal();
   }
 
@@ -196,15 +207,22 @@ export class EnvironmentToolingComponent {
 
   openAddModal() {
     this.newItemName.set('');
+    this.nameError.set('');
     this.isAddModalOpen.set(true);
   }
 
   closeAddModal() {
+    this.nameError.set('');
     this.isAddModalOpen.set(false);
   }
 
   submitAddItem() {
-    if (!this.newItemName().trim()) return;
+    if (!this.newItemName().trim()) {
+      this.nameError.set('This field is required');
+      return;
+    }
+
+    this.nameError.set('');
 
     const requestData = {
       customName: this.newItemName().trim(),

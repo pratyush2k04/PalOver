@@ -31,10 +31,12 @@ export class AccessTrackerComponent {
   newItemName = signal<string>('');
   newItemIsClientSide = signal<boolean>(true);
   newItemTimeZoneNote = signal<string>('');
+  nameError = signal<string>('');
 
   // Block Modal state
   isBlockModalOpen = signal<boolean>(false);
   blockReasonText = signal<string>('');
+  blockReasonError = signal<string>('');
   itemToBlock = signal<AccessItemDto | null>(null);
 
   readonly statusOptions = [
@@ -124,6 +126,7 @@ export class AccessTrackerComponent {
       selectElement.value = this.getStatusNumericValue(item.status).toString();
       this.itemToBlock.set(item);
       this.blockReasonText.set(item.blockReason || '');
+      this.blockReasonError.set('');
       this.isBlockModalOpen.set(true);
       return;
     }
@@ -135,13 +138,21 @@ export class AccessTrackerComponent {
     this.isBlockModalOpen.set(false);
     this.itemToBlock.set(null);
     this.blockReasonText.set('');
+    this.blockReasonError.set('');
   }
 
   submitBlockReason() {
     const item = this.itemToBlock();
     if (!item) return;
 
-    this.updateStatus(item, AccessItemStatus.Blocked, this.blockReasonText().trim());
+    const reason = this.blockReasonText().trim();
+    if (!reason) {
+      this.blockReasonError.set('Reason is required to block an item');
+      return;
+    }
+
+    this.blockReasonError.set('');
+    this.updateStatus(item, AccessItemStatus.Blocked, reason);
     this.closeBlockModal();
   }
 
@@ -208,15 +219,22 @@ export class AccessTrackerComponent {
     this.newItemName.set('');
     this.newItemIsClientSide.set(true);
     this.newItemTimeZoneNote.set('');
+    this.nameError.set('');
     this.isAddModalOpen.set(true);
   }
 
   closeAddModal() {
+    this.nameError.set('');
     this.isAddModalOpen.set(false);
   }
 
   submitAddItem() {
-    if (!this.newItemName().trim()) return;
+    if (!this.newItemName().trim()) {
+      this.nameError.set('This field is required');
+      return;
+    }
+
+    this.nameError.set('');
 
     const requestData = {
       name: this.newItemName().trim(),
