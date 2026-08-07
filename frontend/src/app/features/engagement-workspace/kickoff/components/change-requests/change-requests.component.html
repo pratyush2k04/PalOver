@@ -1,0 +1,236 @@
+<div class="cr-section">
+  <!-- Section Header -->
+  <div class="section-header">
+    <div class="header-title-group">
+      <h2 class="section-title">{{ constants.TITLE }}</h2>
+      
+    </div>
+
+    @if (isProjectManager()) {
+      <button type="button" class="btn-log-cr" (click)="openLogModal()">
+        {{ constants.BTN_LOG_CR }}
+      </button>
+    }
+  </div>
+
+  <!-- Status Filters -->
+  <div class="filter-tabs">
+    <button 
+      type="button" 
+      class="filter-tab" 
+      [class.active]="selectedStatusFilter() === 'All'" 
+      (click)="setFilter('All')">
+      {{ constants.STATUS_ALL }}
+    </button>
+    <button 
+      type="button" 
+      class="filter-tab" 
+      [class.active]="selectedStatusFilter() === 'Under Review'" 
+      (click)="setFilter('Under Review')">
+      {{ constants.STATUS_UNDER_REVIEW }}
+    </button>
+    <button 
+      type="button" 
+      class="filter-tab" 
+      [class.active]="selectedStatusFilter() === 'Approved'" 
+      (click)="setFilter('Approved')">
+      {{ constants.STATUS_APPROVED }}
+    </button>
+    <button 
+      type="button" 
+      class="filter-tab" 
+      [class.active]="selectedStatusFilter() === 'Rejected'" 
+      (click)="setFilter('Rejected')">
+      {{ constants.STATUS_REJECTED }}
+    </button>
+  </div>
+
+  <!-- Table View -->
+  <div class="table-container">
+    @if (filteredChangeRequests().length > 0) {
+      <table class="cr-table">
+        <thead>
+          <tr>
+            <th class="col-desc">{{ constants.TABLE_HEADER_DESCRIPTION }}</th>
+            <th class="col-impact">{{ constants.TABLE_HEADER_IMPACT }}</th>
+            <th class="col-status">{{ constants.TABLE_HEADER_STATUS }}</th>
+            @if (isLeadership()) {
+              <th class="col-actions"></th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (cr of filteredChangeRequests(); track cr.id) {
+            <tr class="cr-row">
+              <td class="cell-desc">{{ cr.description }}</td>
+              <td class="cell-impact">{{ cr.impact }}</td>
+              <td class="cell-status">
+                <div class="status-badge-wrapper">
+                  <span class="status-tag" [ngClass]="{
+                    'status-under-review': cr.status === 'Under Review',
+                    'status-approved': cr.status === 'Approved',
+                    'status-rejected': cr.status === 'Rejected'
+                  }">
+                    {{ cr.status }}
+                  </span>
+
+                  @if (cr.status === 'Rejected' && cr.rejectionReason) {
+                    <button 
+                      type="button" 
+                      class="btn-info-icon" 
+                      (click)="openReasonModal(cr.rejectionReason)"
+                      title="View rejection reason">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                      </svg>
+                    </button>
+                  }
+                </div>
+              </td>
+              @if (isLeadership()) {
+                <td class="cell-actions">
+                  @if (cr.status === 'Under Review') {
+                    <div class="action-buttons">
+                      <button type="button" class="btn-approve" (click)="onApprove(cr)">
+                        {{ constants.BTN_APPROVE }}
+                      </button>
+                      <button type="button" class="btn-reject" (click)="openRejectModal(cr)">
+                        {{ constants.BTN_REJECT }}
+                      </button>
+                    </div>
+                  }
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else {
+      <div class="empty-state">
+        <p class="empty-title">{{ constants.EMPTY_STATE_TITLE }}</p>
+        <p class="empty-subtitle">{{ constants.EMPTY_STATE_SUBTITLE }}</p>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Log Change Request Modal -->
+@if (isLogModalOpen() && isProjectManager()) {
+  <div class="modal-backdrop" (click)="closeLogModal()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ constants.MODAL_LOG_TITLE }}</h3>
+        <button type="button" class="btn-close" (click)="closeLogModal()">✕</button>
+      </div>
+
+      <form [formGroup]="logForm" (ngSubmit)="onSubmitLog()">
+        <div class="modal-body">
+          @if (errorMessage()) {
+            <div class="alert-error">{{ errorMessage() }}</div>
+          }
+
+          <div class="form-group">
+            <label class="form-label" for="description">{{ constants.LABEL_DESCRIPTION }}</label>
+            <textarea
+              id="description"
+              class="form-control textarea-input"
+              rows="3"
+              formControlName="description">
+            </textarea>
+            @if (logForm.get('description')?.invalid && logForm.get('description')?.touched) {
+              <span class="error-text">{{ constants.ERROR_DESCRIPTION_REQUIRED }}</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="impact">{{ constants.LABEL_IMPACT }}</label>
+            <input
+              id="impact"
+              type="text"
+              class="form-control"
+              formControlName="impact"
+            />
+            @if (logForm.get('impact')?.invalid && logForm.get('impact')?.touched) {
+              <span class="error-text">{{ constants.ERROR_IMPACT_REQUIRED }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-cancel" (click)="closeLogModal()">
+            {{ constants.BTN_CANCEL }}
+          </button>
+          <button type="submit" class="btn btn-log" [disabled]="isSubmitting()">
+            {{ constants.BTN_LOG }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Reject Change Request Modal -->
+@if (isRejectModalOpen() && isLeadership()) {
+  <div class="modal-backdrop" (click)="closeRejectModal()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ constants.MODAL_REJECT_TITLE }}</h3>
+        <button type="button" class="btn-close" (click)="closeRejectModal()">✕</button>
+      </div>
+
+      <form [formGroup]="rejectForm" (ngSubmit)="onSubmitReject()">
+        <div class="modal-body">
+          @if (errorMessage()) {
+            <div class="alert-error">{{ errorMessage() }}</div>
+          }
+
+          <div class="form-group">
+            <label class="form-label" for="rejectionReason">{{ constants.LABEL_REASON_REQUIRED }}</label>
+            <textarea
+              id="rejectionReason"
+              class="form-control textarea-input"
+              rows="4"
+              formControlName="rejectionReason">
+            </textarea>
+            @if (rejectForm.get('rejectionReason')?.invalid && rejectForm.get('rejectionReason')?.touched) {
+              <span class="error-text">{{ constants.ERROR_REASON_REQUIRED }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-cancel" (click)="closeRejectModal()">
+            {{ constants.BTN_CANCEL }}
+          </button>
+          <button type="submit" class="btn btn-danger-action" [disabled]="isSubmitting()">
+            {{ constants.BTN_REJECT }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- View Rejection Reason Modal -->
+@if (isReasonModalOpen()) {
+  <div class="modal-backdrop" (click)="closeReasonModal()">
+    <div class="modal-dialog modal-dialog-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ constants.MODAL_REASON_VIEW_TITLE }}</h3>
+        <button type="button" class="btn-close" (click)="closeReasonModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="reason-text">{{ selectedReasonText() }}</p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-cancel" (click)="closeReasonModal()">
+          {{ constants.BTN_CLOSE }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

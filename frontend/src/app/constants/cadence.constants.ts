@@ -1,7 +1,5 @@
 export const CADENCE_CONSTANTS = {
   TITLE: 'Governance & Change-Request Process',
-  BADGE_FTR: 'FTR-028',
-  BADGE_US: 'US-047',
   BTN_ADD_CADENCE: '+ Add cadence',
   EMPTY_STATE: 'No communication cadences recorded yet. Click "+ Add cadence" to set client communication expectations.',
   MODAL_TITLE: 'Add communication cadence',
