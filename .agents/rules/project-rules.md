@@ -53,99 +53,6 @@ Examples:
 - notifications
 - app initialization
 
-Rules:
-
-- `core` must not import from `features`.
-- `core` must not contain feature-specific logic.
-
-## `features`
-
-Contains feature-owned functionality.
-
-Example:
-
-```text
-features/
-└── engagements/
-    ├── pages/
-    ├── components/
-    ├── services/
-    ├── models/
-    └── engagement.routes.ts
-```
-
-- `pages/` = route-level components.
-- `components/` = components used inside that feature.
-- Keep code inside the feature if only that feature uses it.
-- Features may use `core` and `shared`.
-- A feature must not import another feature's implementation.
-- If multiple features genuinely need something, move the reusable part to `shared`.
-
-## `shared`
-
-Reusable UI and reusable domains.
-
-Examples:
-
-```text
-shared/
-├── components/
-├── models/
-├── pipes/
-├── directives/
-├── constants/
-└── themes/
-```
-
-Rules:
-
-- `shared` must not import from `features` or `layout`.
-- Shared components must remain feature-agnostic.
-- Do not move feature-specific code into `shared`.
-
-Theme services and models belong in:
-
-```text
-shared/themes/
-```
-
-because Admin Console and Challenge both use them.
-
-Theme-management UI remains inside:
-
-```text
-features/admin-console/
-```
-
-## `layout`
-
-Application shell only.
-
-Examples:
-
-- MainLayout
-- sidebar
-- header
-
-`layout` may use `core` and `shared`.
-
-Do not put feature business logic in `layout`.
-
-## Dependency Rules
-
-```text
-features → core      ✓
-features → shared    ✓
-
-layout → core        ✓
-layout → shared      ✓
-
-core → features      ✗
-shared → features    ✗
-shared → layout      ✗
-feature → feature    ✗
-```
-
 ---
 
 # Angular Imports
@@ -283,43 +190,6 @@ Shared strings, keys, statuses, and route segments belong in:
 
 ````text
 shared/constants/app.constants.ts
-
-
----
-
-# Angular Routing
-
-Secured application pages must render inside `MainLayoutComponent` so the sidebar and header remain visible.
-
-Use:
-
-```text
-MainLayoutComponent
-└── router-outlet
-    ├── dashboard
-    ├── engagements
-    └── other secured features
-````
-
-Only layout-less pages such as login or error pages should bypass `MainLayoutComponent`.
-
-Use route guards for protected routes.
-
-Use lazy loading where appropriate.
-
-For feature detail screens, prefer nested routes.
-
-Example:
-
-```text
-/engagements
-/engagements/:engagementId
-/engagements/:engagementId/checklist
-/engagements/:engagementId/commitments
-/engagements/:engagementId/access
-```
-
-If tabs represent meaningful navigable sections, use child routes.
 
 ---
 
@@ -585,5 +455,43 @@ Owned by one feature? → features/<feature>
 Reusable across features? → shared
 
 Application shell? → layout
-Do not silently invent important busines
-```
+Do not silently invent important business rules.
+
+If existing code establishes a pattern, follow it.
+
+If a major requirement is genuinely ambiguous and cannot be inferred from the repository, ask before making a major architectural decision.
+
+Before Completing a Task
+
+Verify:
+
+Code follows the existing architecture.
+Only necessary files were changed.
+Existing functionality was reused where possible.
+No duplicate implementation was introduced.
+Angular dependency boundaries are respected.
+API calls remain in services.
+Global loader and HTTP error handling are used.
+Routes use the correct layout.
+Backend controllers remain thin.
+Business logic remains in services.
+Repositories contain only data access.
+DTOs are used.
+EF Core queries are reasonable.
+Async code is properly awaited.
+Validation and exception handling follow existing patterns.
+No secrets or sensitive data are exposed.
+Imports and routes resolve.
+Code compiles.
+Existing contracts are preserved.
+Final Rule
+
+Prefer:
+
+existing pattern > new pattern
+reuse > duplication
+simple > clever
+focused change > large refactor
+existing infrastructure > new infrastructure
+
+Consistency with the existing repository is more important than theoretical architectural perfection.
