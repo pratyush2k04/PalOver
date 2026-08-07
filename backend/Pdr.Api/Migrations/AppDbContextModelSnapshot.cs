@@ -1869,12 +1869,6 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("engagement_id");
 
-                    b.Property<bool>("HasNoCommitments")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("has_no_commitments");
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -1914,7 +1908,6 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DealOrigin = "Strategic Partner Referral",
                             EngagementId = 1,
-                            HasNoCommitments = false,
                             IsDeleted = false,
                             StatusId = 1,
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -3078,11 +3071,6 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("created_by");
 
-                    b.Property<string>("Email")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("email");
-
                     b.Property<int>("EngagementId")
                         .HasColumnType("integer")
                         .HasColumnName("engagement_id");
@@ -3134,7 +3122,6 @@ namespace Pdr.Api.Migrations
                             PersonId = 1,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Email = "sarah.jenkins@client.com",
                             EngagementId = 1,
                             IsDeleted = false,
                             Name = "Sarah Jenkins",
@@ -3147,7 +3134,6 @@ namespace Pdr.Api.Migrations
                             PersonId = 2,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Email = "alex.rivera@company.com",
                             EngagementId = 1,
                             IsDeleted = false,
                             Name = "Alex Rivera",
@@ -3396,6 +3382,7 @@ namespace Pdr.Api.Migrations
 
                     b.Navigation("Engagement");
                 });
+
             modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItemDefinition", b =>
                 {
                     b.Navigation("AccessItems");
@@ -3414,10 +3401,11 @@ namespace Pdr.Api.Migrations
 
                     b.Navigation("EngagementAssignments");
 
-                    b.Navigation("People");
                     b.Navigation("EnvironmentToolingItems");
 
                     b.Navigation("HandoverInfo");
+
+                    b.Navigation("People");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.EngagementChecklist.EngagementChecklist", b =>
