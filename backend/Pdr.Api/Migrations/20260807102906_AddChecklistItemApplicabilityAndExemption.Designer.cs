@@ -13,7 +13,7 @@ using Pdr.Api.Data;
 namespace Pdr.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260807084528_AddChecklistItemApplicabilityAndExemption")]
+    [Migration("20260807102906_AddChecklistItemApplicabilityAndExemption")]
     partial class AddChecklistItemApplicabilityAndExemption
     {
         /// <inheritdoc />

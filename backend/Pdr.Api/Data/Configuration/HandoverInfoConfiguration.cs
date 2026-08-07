@@ -52,6 +52,7 @@ public class HandoverInfoConfiguration : IEntityTypeConfiguration<HandoverInfo>
                 BusinessProblem = "They need a modern core banking platform to support new digital initiatives and mobile apps.",
                 ClientSentiment = "Excited but cautious about delivery timelines due to past vendor failures.",
                 DealOrigin = "Strategic Partner Referral",
+                HasNoCommitments = false,
                 CreatedAt = seedTimestamp,
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",

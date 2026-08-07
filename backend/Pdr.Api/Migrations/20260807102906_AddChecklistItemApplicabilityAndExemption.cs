@@ -11,13 +11,6 @@ namespace Pdr.Api.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<bool>(
-                name: "has_no_commitments",
-                table: "handover_info",
-                type: "boolean",
-                nullable: false,
-                defaultValue: false);
-
             migrationBuilder.AddColumn<string>(
                 name: "exemption_rejection_reason",
                 table: "engagement_checklist_items",
@@ -343,22 +336,11 @@ namespace Pdr.Api.Migrations
                 keyValue: 40,
                 columns: new[] { "exemption_rejection_reason", "exemption_requested_at", "exemption_requested_by_id", "exemption_reviewed_at", "exemption_reviewed_by_id", "not_applicable_reason" },
                 values: new object[] { null, null, null, null, null, null });
-
-            migrationBuilder.UpdateData(
-                table: "handover_info",
-                keyColumn: "handover_id",
-                keyValue: 1,
-                columns: new string[0],
-                values: new object[0]);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "has_no_commitments",
-                table: "handover_info");
-
             migrationBuilder.DropColumn(
                 name: "exemption_rejection_reason",
                 table: "engagement_checklist_items");
