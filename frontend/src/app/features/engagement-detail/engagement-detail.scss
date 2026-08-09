@@ -118,33 +118,6 @@
   color: #6b7280;
 }
 
-.form-group {
-  margin-bottom: 1.25rem;
-
-  label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #333333;
-  }
-
-  select {
-    width: 100%;
-    padding: 0.65rem 0.75rem;
-    font-size: 0.9rem;
-    border: 1px solid #cccccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-
-    &:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-    }
-  }
-}
-
 .modal-actions {
   display: flex;
   justify-content: flex-end;

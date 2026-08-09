@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -10,6 +10,7 @@ import { ToastService } from '../../common/services/toast/toast';
 import { ConfirmDialogComponent } from '../../common/components/confirm-dialog/confirm-dialog';
 import { AlertComponent } from '../../common/components/alert/alert';
 import { ButtonComponent } from '../../common/components/button/button';
+import { SelectComponent, SelectOption } from '../../common/components/form/select/select';
 
 const PROJECT_MANAGEMENT_ROLE_ID = 2;
 const TECH_LEAD_ROLE_ID = 3;
@@ -27,7 +28,7 @@ interface OwnerChange {
 @Component({
   selector: 'app-engagement-detail',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ConfirmDialogComponent, AlertComponent, ButtonComponent],
+  imports: [CommonModule, ReactiveFormsModule, ConfirmDialogComponent, AlertComponent, ButtonComponent, SelectComponent],
   templateUrl: './engagement-detail.html',
   styleUrl: './engagement-detail.scss'
 })
@@ -85,6 +86,16 @@ export class EngagementDetailComponent implements OnInit {
   get assignButtonLabel(): string {
     return this.hasAnyOwnerAssigned ? 'Reassign' : 'Assign';
   }
+
+  readonly projectManagerOptions = computed<SelectOption[]>(() => [
+    { value: null, label: '— Select —' },
+    ...this.projectManagers().map((user) => ({ value: user.id, label: user.fullName }))
+  ]);
+
+  readonly techLeadOptions = computed<SelectOption[]>(() => [
+    { value: null, label: '— Select —' },
+    ...this.techLeads().map((user) => ({ value: user.id, label: user.fullName }))
+  ]);
 
   openAssignModal(): void {
     if (!this.canAssignOwners) return;

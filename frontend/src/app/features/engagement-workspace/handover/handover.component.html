@@ -15,51 +15,49 @@
     <div class="section client-context">
       <h3>Client Context</h3>
 
-      <div class="form-group">
-        <label for="clientBackground">Client Background</label>
-        <textarea id="clientBackground" formControlName="clientBackground" rows="3"
-          maxlength="2000" placeholder="Brief history and overview of the client..."></textarea>
-        <div class="char-counter" [class.char-counter-danger]="clientBackgroundControl.value?.length > maxFreeTextLength - 50">
-          {{ clientBackgroundControl.value?.length || 0 }}/{{ maxFreeTextLength }}
-        </div>
-      </div>
+      <app-textarea
+        id="clientBackground"
+        label="Client Background"
+        placeholder="Brief history and overview of the client..."
+        formControlName="clientBackground"
+        [maxLength]="maxFreeTextLength"
+      />
 
-      <div class="form-group">
-        <label for="businessProblem">Business Problem (Required)</label>
-        <textarea id="businessProblem" formControlName="businessProblem" rows="3"
-          maxlength="2000" placeholder="What core problem are we solving?"></textarea>
-        <div class="char-counter" [class.char-counter-danger]="businessProblemControl.value?.length > maxFreeTextLength - 50">
-          {{ businessProblemControl.value?.length || 0 }}/{{ maxFreeTextLength }}
-        </div>
-        <div class="invalid-feedback" *ngIf="businessProblemControl.invalid && businessProblemControl.touched">
-          Business Problem is required.
-        </div>
-      </div>
+      <app-textarea
+        id="businessProblem"
+        label="Business Problem (Required)"
+        placeholder="What core problem are we solving?"
+        formControlName="businessProblem"
+        [maxLength]="maxFreeTextLength"
+        [errorMessages]="{ required: 'Business Problem is required.' }"
+      />
 
-      <div class="form-group">
-        <label for="clientSentiment">Client Sentiment (Required)</label>
-        <select id="clientSentiment" formControlName="clientSentiment">
-          <option value="">-- Select Sentiment --</option>
-          <option *ngFor="let s of sentimentOptions" [value]="s">{{ s }}</option>
-        </select>
-      </div>
+      <app-select
+        id="clientSentiment"
+        label="Client Sentiment (Required)"
+        formControlName="clientSentiment"
+        [options]="sentimentSelectOptions()"
+        [errorMessages]="{ required: 'Client Sentiment is required.' }"
+      />
 
-      <div class="form-group">
-        <label for="dealOrigin">Deal Origin</label>
-        <input id="dealOrigin" type="text" formControlName="dealOrigin" maxlength="2000"
-          placeholder="e.g. RFP, Direct Sales, Partner...">
-        <div class="char-counter" [class.char-counter-danger]="dealOriginControl.value?.length > maxFreeTextLength - 50">
-          {{ dealOriginControl.value?.length || 0 }}/{{ maxFreeTextLength }}
-        </div>
-      </div>
+      <app-input
+        id="dealOrigin"
+        label="Deal Origin"
+        placeholder="e.g. RFP, Direct Sales, Partner..."
+        formControlName="dealOrigin"
+        [maxLength]="maxFreeTextLength"
+      />
     </div>
 
     <div class="section commitments">
       <h3>Commitments</h3>
 
       <div class="checkbox-group">
-        <input type="checkbox" id="noCommitments" formControlName="hasNoCommitments" (change)="onHasNoCommitmentsChange()">
-        <label for="noCommitments">This engagement has NO commitments.</label>
+        <app-checkbox
+          label="This engagement has NO commitments."
+          formControlName="hasNoCommitments"
+          (changed)="onHasNoCommitmentsChange()"
+        />
       </div>
 
       <div *ngIf="!clientContextForm.get('hasNoCommitments')?.value" class="commitments-list">
@@ -92,15 +90,27 @@
               </ng-container>
               <ng-template #editRow>
                 <td>
-                  <select [(ngModel)]="editCommitment().commitmentTypeId" [ngModelOptions]="{standalone: true}">
-                    <option *ngFor="let t of commitmentTypes" [value]="t.id">{{ t.name }}</option>
-                  </select>
+                  <app-select
+                    id="edit-commitment-type"
+                    [(ngModel)]="editCommitment().commitmentTypeId"
+                    [ngModelOptions]="{standalone: true}"
+                    [options]="commitmentTypeOptions"
+                  />
                 </td>
                 <td>
-                  <input type="text" [(ngModel)]="editCommitment().description" [ngModelOptions]="{standalone: true}" maxlength="2000">
+                  <app-input
+                    id="edit-commitment-description"
+                    [(ngModel)]="editCommitment().description"
+                    [ngModelOptions]="{standalone: true}"
+                    [maxLength]="maxFreeTextLength"
+                  />
                 </td>
                 <td>
-                  <input type="text" [(ngModel)]="editCommitment().quantity" [ngModelOptions]="{standalone: true}">
+                  <app-input
+                    id="edit-commitment-quantity"
+                    [(ngModel)]="editCommitment().quantity"
+                    [ngModelOptions]="{standalone: true}"
+                  />
                 </td>
                 <td class="row-actions">
                   <app-button variant="flat" size="sm" (click)="saveEditCommitment(c.commitmentId)">Save</app-button>
@@ -116,18 +126,32 @@
         <div class="add-commitment-form" [class.add-commitment-form-disabled]="isSubmitted()">
           <h4>Add New Commitment</h4>
           <div class="form-row">
-            <select [(ngModel)]="newCommitment().commitmentTypeId" [ngModelOptions]="{standalone: true}" [disabled]="isSubmitted()">
-              <option *ngFor="let t of commitmentTypes" [value]="t.id">{{ t.name }}</option>
-            </select>
-            <input type="text" [(ngModel)]="newCommitment().description" [ngModelOptions]="{standalone: true}"
-              maxlength="2000" placeholder="Description (Required)" [disabled]="isSubmitted()"
-              [class.is-invalid]="newCommitmentTouched() && !newCommitment().description">
-            <input type="text" [(ngModel)]="newCommitment().quantity" [ngModelOptions]="{standalone: true}"
-              placeholder="Quantity/Details" [disabled]="isSubmitted()">
+            <app-select
+              id="new-commitment-type"
+              [(ngModel)]="newCommitment().commitmentTypeId"
+              [ngModelOptions]="{standalone: true}"
+              [options]="commitmentTypeOptions"
+              [disabled]="isSubmitted()"
+            />
+            <app-input
+              id="new-commitment-description"
+              #newCommitmentDescriptionModel="ngModel"
+              [(ngModel)]="newCommitment().description"
+              [ngModelOptions]="{standalone: true}"
+              [maxLength]="maxFreeTextLength"
+              placeholder="Description (Required)"
+              [disabled]="isSubmitted()"
+              required
+              [errorMessages]="{ required: 'Description is required.' }"
+            />
+            <app-input
+              id="new-commitment-quantity"
+              [(ngModel)]="newCommitment().quantity"
+              [ngModelOptions]="{standalone: true}"
+              placeholder="Quantity/Details"
+              [disabled]="isSubmitted()"
+            />
             <app-button variant="flat" [disabled]="isSubmitted()" (click)="addCommitment()">Add</app-button>
-          </div>
-          <div class="invalid-feedback" *ngIf="newCommitmentTouched() && !newCommitment().description">
-            Description is required.
           </div>
         </div>
       </div>

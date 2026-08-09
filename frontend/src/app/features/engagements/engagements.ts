@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
@@ -15,6 +15,8 @@ import {
 } from '../../services/engagement';
 import { AlertComponent } from '../../common/components/alert/alert';
 import { ButtonComponent } from '../../common/components/button/button';
+import { InputComponent } from '../../common/components/form/input/input';
+import { SelectComponent, SelectOption } from '../../common/components/form/select/select';
 
 function billingNotBeforeKickoffValidator(group: AbstractControl): ValidationErrors | null {
   const kickoffDate = group.get('kickoffDate')?.value;
@@ -30,7 +32,7 @@ function billingNotBeforeKickoffValidator(group: AbstractControl): ValidationErr
 @Component({
   selector: 'app-engagements',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AlertComponent, ButtonComponent],
+  imports: [CommonModule, ReactiveFormsModule, AlertComponent, ButtonComponent, InputComponent, SelectComponent],
   templateUrl: './engagements.html',
   styleUrl: './engagements.scss'
 })
@@ -78,32 +80,20 @@ export class EngagementsComponent implements OnInit {
     });
   }
 
-  get engagementNameControl() {
-    return this.engagementForm.get('engagementName');
-  }
+  readonly engagementTypeOptions = computed<SelectOption[]>(() =>
+    this.engagementTypes().map((type) => ({ value: type.id, label: type.name }))
+  );
 
-  get clientNameControl() {
-    return this.engagementForm.get('clientName');
-  }
+  readonly commercialModelOptions = computed<SelectOption[]>(() =>
+    this.commercialModels().map((model) => ({ value: model.id, label: model.name }))
+  );
 
-  get engagementTypeIdControl() {
-    return this.engagementForm.get('engagementTypeId');
-  }
-
-  get commercialModelIdControl() {
-    return this.engagementForm.get('commercialModelId');
-  }
-
-  get engagementDescriptionControl() {
-    return this.engagementForm.get('engagementDescription');
-  }
-
-  get kickoffDateControl() {
-    return this.engagementForm.get('kickoffDate');
-  }
-
-  get billingStartDateControl() {
-    return this.engagementForm.get('billingStartDate');
+  get billingBeforeKickoffError(): string | null {
+    const control = this.engagementForm.get('billingStartDate');
+    const touched = !!control && (control.touched || control.dirty);
+    return touched && this.engagementForm.errors?.['billingBeforeKickoff']
+      ? 'Billing start cannot be before the kickoff date.'
+      : null;
   }
 
   openModal(): void {

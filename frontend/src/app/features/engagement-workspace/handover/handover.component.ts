@@ -1,6 +1,6 @@
-import { Component, inject, signal, computed, effect } from '@angular/core';
+import { Component, ViewChild, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, NgModel, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -14,6 +14,10 @@ import {
 import { AlertComponent } from '../../../common/components/alert/alert';
 import { EmptyStateComponent } from '../../../common/components/empty-state/empty-state';
 import { ButtonComponent } from '../../../common/components/button/button';
+import { InputComponent } from '../../../common/components/form/input/input';
+import { TextareaComponent } from '../../../common/components/form/textarea/textarea';
+import { SelectComponent, SelectOption } from '../../../common/components/form/select/select';
+import { CheckboxComponent } from '../../../common/components/form/checkbox/checkbox';
 
 const MAX_FREE_TEXT_LENGTH = 2000;
 const SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
@@ -21,7 +25,18 @@ const SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
 @Component({
   selector: 'app-handover',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, AlertComponent, EmptyStateComponent, ButtonComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    AlertComponent,
+    EmptyStateComponent,
+    ButtonComponent,
+    InputComponent,
+    TextareaComponent,
+    SelectComponent,
+    CheckboxComponent
+  ],
   templateUrl: './handover.component.html',
   styleUrl: './handover.component.scss'
 })
@@ -57,7 +72,6 @@ export class HandoverComponent {
   commitments = signal<CommitmentDto[]>([]);
 
   newCommitment = signal<CreateCommitmentRequest>(this.emptyCommitment());
-  newCommitmentTouched = signal(false);
   editingCommitmentId = signal<number | null>(null);
   editCommitment = signal<UpdateCommitmentRequest>(this.emptyCommitment());
   pendingDeleteId = signal<number | null>(null);
@@ -68,23 +82,16 @@ export class HandoverComponent {
     { id: 3, name: 'Training' }
   ];
 
-  get clientBackgroundControl() {
-    return this.clientContextForm.get('clientBackground')!;
-  }
-
-  get businessProblemControl() {
-    return this.clientContextForm.get('businessProblem')!;
-  }
-
-  get clientSentimentControl() {
-    return this.clientContextForm.get('clientSentiment')!;
-  }
-
-  get dealOriginControl() {
-    return this.clientContextForm.get('dealOrigin')!;
-  }
-
   isSubmitted = computed(() => this.handover()?.status === 'Submitted');
+
+  readonly sentimentSelectOptions = computed<SelectOption[]>(() => [
+    { value: '', label: '-- Select Sentiment --' },
+    ...this.sentimentOptions.map((s) => ({ value: s, label: s }))
+  ]);
+
+  readonly commitmentTypeOptions: SelectOption[] = this.commitmentTypes.map((t) => ({ value: t.id, label: t.name }));
+
+  @ViewChild('newCommitmentDescriptionModel') newCommitmentDescriptionModel?: NgModel;
 
   constructor() {
     effect(() => {
@@ -187,9 +194,9 @@ export class HandoverComponent {
     const id = this.engagementId();
     if (!id) return;
 
-    this.newCommitmentTouched.set(true);
     const currentNew = this.newCommitment();
     if (!currentNew.description) {
+      this.newCommitmentDescriptionModel?.control.markAsTouched();
       return;
     }
 

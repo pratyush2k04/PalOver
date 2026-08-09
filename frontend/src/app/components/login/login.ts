@@ -6,11 +6,12 @@ import { AuthService } from '../../services/auth';
 import { AppContextService } from '../../services/app-context';
 import { AlertComponent } from '../../common/components/alert/alert';
 import { ButtonComponent } from '../../common/components/button/button';
+import { InputComponent } from '../../common/components/form/input/input';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AlertComponent, ButtonComponent],
+  imports: [CommonModule, ReactiveFormsModule, AlertComponent, ButtonComponent, InputComponent],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
@@ -34,14 +35,6 @@ export class LoginComponent implements OnInit {
     if (reason === 'session_expired') {
       this.errorMessage.set('Your session timed out. Please sign in again.');
     }
-  }
-
-  get emailControl() {
-    return this.loginForm.get('email');
-  }
-
-  get passwordControl() {
-    return this.loginForm.get('password');
   }
 
   onSubmit(): void {

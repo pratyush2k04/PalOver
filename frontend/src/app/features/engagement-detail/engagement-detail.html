@@ -49,25 +49,21 @@
             <app-alert>{{ errorMessage() }}</app-alert>
           }
 
-          <div class="form-group">
-            <label for="projectManagerId">Project Manager</label>
-            <select id="projectManagerId" formControlName="projectManagerId">
-              <option [ngValue]="null">— Select —</option>
-              @for (user of projectManagers(); track user.id) {
-                <option [ngValue]="user.id">{{ user.fullName }}</option>
-              }
-            </select>
-          </div>
+          <app-select
+            id="projectManagerId"
+            label="Project Manager"
+            formControlName="projectManagerId"
+            [options]="projectManagerOptions()"
+            [errorMessages]="{ required: 'Project Manager is required.' }"
+          />
 
-          <div class="form-group">
-            <label for="techLeadId">Tech / Delivery Lead</label>
-            <select id="techLeadId" formControlName="techLeadId">
-              <option [ngValue]="null">— Select —</option>
-              @for (user of techLeads(); track user.id) {
-                <option [ngValue]="user.id">{{ user.fullName }}</option>
-              }
-            </select>
-          </div>
+          <app-select
+            id="techLeadId"
+            label="Tech / Delivery Lead"
+            formControlName="techLeadId"
+            [options]="techLeadOptions()"
+            [errorMessages]="{ required: 'Tech / Delivery Lead is required.' }"
+          />
 
           <div class="modal-actions">
             <app-button type="button" variant="stroked" (click)="closeAssignModal()">Cancel</app-button>

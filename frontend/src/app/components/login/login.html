@@ -10,41 +10,23 @@
         <app-alert>{{ errorMessage() }}</app-alert>
       }
 
-      <div class="form-group">
-        <label for="email">Work Email</label>
-        <input
-          id="email"
-          type="email"
-          formControlName="email"
-          placeholder="name@company.com"
-          [class.is-invalid]="emailControl?.invalid && (emailControl?.touched || emailControl?.dirty)"
-        />
-        @if (emailControl?.invalid && (emailControl?.touched || emailControl?.dirty)) {
-          <div class="invalid-feedback">
-            @if (emailControl?.errors?.['required']) {
-              Email is required.
-            } @else if (emailControl?.errors?.['email']) {
-              Enter a valid work email address.
-            }
-          </div>
-        }
-      </div>
+      <app-input
+        id="email"
+        type="email"
+        label="Work Email"
+        placeholder="name@company.com"
+        formControlName="email"
+        [errorMessages]="{ required: 'Email is required.', email: 'Enter a valid work email address.' }"
+      />
 
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input
-          id="password"
-          type="password"
-          formControlName="password"
-          placeholder="Enter your password"
-          [class.is-invalid]="passwordControl?.invalid && (passwordControl?.touched || passwordControl?.dirty)"
-        />
-        @if (passwordControl?.invalid && (passwordControl?.touched || passwordControl?.dirty)) {
-          <div class="invalid-feedback">
-            Password is required.
-          </div>
-        }
-      </div>
+      <app-input
+        id="password"
+        type="password"
+        label="Password"
+        placeholder="Enter your password"
+        formControlName="password"
+        [errorMessages]="{ required: 'Password is required.' }"
+      />
 
       <app-button type="submit" variant="flat" [fullWidth]="true" [loading]="isLoading()">
         {{ isLoading() ? 'Signing in...' : 'Sign In' }}
