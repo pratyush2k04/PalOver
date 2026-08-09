@@ -7,21 +7,19 @@ namespace Pdr.Api.Validators.Handovers;
 
 public class SaveHandoverDraftRequestValidator : AbstractValidator<SaveHandoverDraftRequest>
 {
-    private readonly string[] _validSentiments = { "New", "Warm", "Strained" };
-
     public SaveHandoverDraftRequestValidator()
     {
         RuleFor(x => x.ClientBackground)
-            .MaximumLength(2000).WithMessage(SaveHandoverDraftRequestConstants.ClientBackgroundMaxLength);
+            .MaximumLength(SaveHandoverDraftRequestConstants.MaxFieldLength).WithMessage(SaveHandoverDraftRequestConstants.ClientBackgroundMaxLength);
 
         RuleFor(x => x.BusinessProblem)
-            .MaximumLength(2000).WithMessage(SaveHandoverDraftRequestConstants.BusinessProblemMaxLength);
+            .MaximumLength(SaveHandoverDraftRequestConstants.MaxFieldLength).WithMessage(SaveHandoverDraftRequestConstants.BusinessProblemMaxLength);
 
         RuleFor(x => x.ClientSentiment)
-            .Must(s => string.IsNullOrEmpty(s) || _validSentiments.Contains(s))
+            .Must(s => string.IsNullOrEmpty(s) || SaveHandoverDraftRequestConstants.ValidSentiments.Contains(s))
             .WithMessage(SaveHandoverDraftRequestConstants.ClientSentimentInvalid);
 
         RuleFor(x => x.DealOrigin)
-            .MaximumLength(2000).WithMessage(SaveHandoverDraftRequestConstants.DealOriginMaxLength);
+            .MaximumLength(SaveHandoverDraftRequestConstants.MaxFieldLength).WithMessage(SaveHandoverDraftRequestConstants.DealOriginMaxLength);
     }
 }

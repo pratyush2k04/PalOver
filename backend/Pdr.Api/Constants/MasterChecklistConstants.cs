@@ -29,5 +29,6 @@ public static class MasterChecklistConstants
         public const string TitleRequired = "Title is required.";
         public const string CategoryNotFound = "Selected category does not exist.";
         public const string DisplayOrderMinimum = "Display order must be at least 1.";
+        public const string ItemsRequired = "At least one item is required to reorder.";
     }
 }
