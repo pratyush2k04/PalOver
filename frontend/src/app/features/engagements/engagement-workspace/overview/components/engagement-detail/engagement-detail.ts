@@ -2,17 +2,14 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { EngagementService } from '../engagements/services/engagement.service';
-import { EngagementInfo, EngagementOwners, OwnerChange, OwnerKind } from '../engagements/models/engagement.model';
-import { UserDirectoryService } from '../users/services/user.service';
-import { UserListItem } from '../users/models/user.model';
-import { AuthService } from '../../services/auth';
-import { ToastService } from '../../shared/toast/toast.service';
-import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
-
-const PROJECT_MANAGEMENT_ROLE_ID = 2;
-const TECH_LEAD_ROLE_ID = 3;
-const KICKOFF_PENDING_STATUS = 'KickoffPending';
+import { EngagementService } from '../../../../services/engagement.service';
+import { EngagementInfo, EngagementOwners, OwnerChange, OwnerKind } from '../../../../models/engagement.model';
+import { UserDirectoryService } from '@features/users/services/user.service';
+import { UserListItem } from '@features/users/models/user.model';
+import { AuthService } from 'src/app/services/auth';
+import { ToastService } from '@shared/toast/toast.service';
+import { ConfirmDialogComponent } from '@shared/confirm-dialog/confirm-dialog';
+import { ENGAGEMENT_CONSTANTS, ENGAGEMENT_MESSAGES } from '../../../../../../constants/app.constants';
 
 @Component({
   selector: 'app-engagement-detail',
@@ -29,7 +26,7 @@ export class EngagementDetailComponent implements OnInit {
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
 
-  engagementId = Number(this.route.snapshot.paramMap.get('id'));
+  engagementId = Number(this.route.parent?.snapshot.paramMap.get('id') || this.route.snapshot.paramMap.get('id'));
 
   engagement = signal<EngagementInfo | null>(null);
   owners = signal<EngagementOwners | null>(null);
@@ -51,8 +48,10 @@ export class EngagementDetailComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.loadEngagement();
-    this.loadOwners();
+    if (this.engagementId) {
+      this.loadEngagement();
+      this.loadOwners();
+    }
   }
 
   private loadEngagement(): void {
@@ -86,10 +85,10 @@ export class EngagementDetailComponent implements OnInit {
     });
     this.showAssignModal.set(true);
 
-    this.userDirectoryService.getUsersInRole(PROJECT_MANAGEMENT_ROLE_ID).subscribe({
+    this.userDirectoryService.getUsersInRole(ENGAGEMENT_CONSTANTS.PROJECT_MANAGEMENT_ROLE_ID).subscribe({
       next: (users) => this.projectManagers.set(users)
     });
-    this.userDirectoryService.getUsersInRole(TECH_LEAD_ROLE_ID).subscribe({
+    this.userDirectoryService.getUsersInRole(ENGAGEMENT_CONSTANTS.TECH_LEAD_ROLE_ID).subscribe({
       next: (users) => this.techLeads.set(users)
     });
   }
@@ -142,7 +141,7 @@ export class EngagementDetailComponent implements OnInit {
     }
 
     const isReassignment = this.isOwnerAlreadyAssigned(change.kind);
-    const isPostKickoff = this.engagement()?.status !== KICKOFF_PENDING_STATUS;
+    const isPostKickoff = this.engagement()?.status !== ENGAGEMENT_CONSTANTS.KICKOFF_PENDING_STATUS;
 
     if (isReassignment && isPostKickoff) {
       this.currentConfirmation.set(change);
@@ -184,7 +183,7 @@ export class EngagementDetailComponent implements OnInit {
     request$.subscribe({
       next: (owners) => {
         this.owners.set(owners);
-        this.toastService.success(`${change.userName} assigned as ${change.label}.`);
+        this.toastService.success(ENGAGEMENT_MESSAGES.ASSIGNMENT_SUCCESS(change.userName, change.label));
         onSaved?.();
         this.processNextChange();
       },
@@ -198,6 +197,6 @@ export class EngagementDetailComponent implements OnInit {
   }
 
   private extractErrorMessage(err: any): string {
-    return typeof err.error === 'string' ? err.error : err.error?.message ?? 'Failed to save assignment. Please try again.';
+    return typeof err.error === 'string' ? err.error : err.error?.message ?? ENGAGEMENT_MESSAGES.ASSIGNMENT_ERROR;
   }
 }

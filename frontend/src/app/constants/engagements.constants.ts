@@ -15,6 +15,12 @@ export const ENGAGEMENT_API_ENDPOINTS = {
   DOCUMENT_DELETE: (id: number) => `/api/documents/${id}`,
 } as const;
 
+export const ENGAGEMENT_CONSTANTS = {
+  PROJECT_MANAGEMENT_ROLE_ID: 2,
+  TECH_LEAD_ROLE_ID: 3,
+  KICKOFF_PENDING_STATUS: 'KickoffPending',
+} as const;
+
 export const ENGAGEMENT_MESSAGES = {
   LOAD_ENGAGEMENTS_ERROR: 'Failed to load your engagements. Please try again.',
   CREATE_ENGAGEMENT_ERROR: 'Failed to create engagement. Please try again.',
@@ -22,4 +28,6 @@ export const ENGAGEMENT_MESSAGES = {
   LOAD_DOCUMENTS_ERROR: 'Failed to load documents. Please try again.',
   UPLOAD_DOCUMENT_ERROR: 'Failed to upload document. Please try again.',
   DELETE_DOCUMENT_ERROR: 'Failed to delete document. Please try again.',
+  ASSIGNMENT_SUCCESS: (name: string, label: string) => `${name} assigned as ${label}.`,
+  ASSIGNMENT_ERROR: 'Failed to save assignment. Please try again.',
 } as const;

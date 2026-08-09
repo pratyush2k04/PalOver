@@ -33,6 +33,7 @@ export class EngagementWorkspaceComponent {
   isLoading = signal<boolean>(true);
 
   readonly tabs = signal<WorkspaceTab[]>([
+    { label: 'Overview', route: 'overview', enabled: true },
     { label: 'Handover', route: 'handover', enabled: true },
     { label: 'Documents', route: 'documents', enabled: true },
     { label: 'People', route: 'people', enabled: false },

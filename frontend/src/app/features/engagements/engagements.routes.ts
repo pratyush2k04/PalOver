@@ -8,10 +8,8 @@ export const ENGAGEMENTS_ROUTES: Routes = [
   },
   {
     path: ':id',
-    loadComponent: () =>
-      import('../engagement-detail/engagement-detail').then(
-        (m) => m.EngagementDetailComponent
-      ),
+    redirectTo: ':id/workspace/overview',
+    pathMatch: 'full',
   },
   {
     path: ':id/workspace',
@@ -20,6 +18,13 @@ export const ENGAGEMENTS_ROUTES: Routes = [
         './engagement-workspace/engagement-workspace.component'
       ).then((m) => m.EngagementWorkspaceComponent),
     children: [
+      {
+        path: 'overview',
+        loadComponent: () =>
+          import(
+            './engagement-workspace/overview/overview.component'
+          ).then((m) => m.OverviewComponent),
+      },
       {
         path: 'handover',
         loadComponent: () =>
@@ -50,7 +55,7 @@ export const ENGAGEMENTS_ROUTES: Routes = [
       },
       {
         path: '',
-        redirectTo: 'handover',
+        redirectTo: 'overview',
         pathMatch: 'full',
       },
     ],

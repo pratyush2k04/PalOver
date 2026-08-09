@@ -8,35 +8,35 @@ import {
   SaveHandoverDraftRequest,
   UpdateCommitmentRequest
 } from '../models/handover.model';
+import { HANDOVER_API_ENDPOINTS } from '../../../constants/app.constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HandoverService {
   private http = inject(HttpClient);
-  private baseUrl = '/api/engagements';
 
   getHandover(engagementId: number): Observable<HandoverInfoDto> {
-    return this.http.get<HandoverInfoDto>(`${this.baseUrl}/${engagementId}/handover`);
+    return this.http.get<HandoverInfoDto>(HANDOVER_API_ENDPOINTS.HANDOVER(engagementId));
   }
 
   saveDraft(engagementId: number, request: SaveHandoverDraftRequest): Observable<HandoverInfoDto> {
-    return this.http.put<HandoverInfoDto>(`${this.baseUrl}/${engagementId}/handover/draft`, request);
+    return this.http.put<HandoverInfoDto>(HANDOVER_API_ENDPOINTS.HANDOVER_DRAFT(engagementId), request);
   }
 
   submit(engagementId: number): Observable<HandoverInfoDto> {
-    return this.http.post<HandoverInfoDto>(`${this.baseUrl}/${engagementId}/handover/submit`, {});
+    return this.http.post<HandoverInfoDto>(HANDOVER_API_ENDPOINTS.HANDOVER_SUBMIT(engagementId), {});
   }
 
   addCommitment(engagementId: number, request: CreateCommitmentRequest): Observable<CommitmentDto> {
-    return this.http.post<CommitmentDto>(`${this.baseUrl}/${engagementId}/handover/commitments`, request);
+    return this.http.post<CommitmentDto>(HANDOVER_API_ENDPOINTS.HANDOVER_COMMITMENTS(engagementId), request);
   }
 
   updateCommitment(engagementId: number, commitmentId: number, request: UpdateCommitmentRequest): Observable<CommitmentDto> {
-    return this.http.put<CommitmentDto>(`${this.baseUrl}/${engagementId}/handover/commitments/${commitmentId}`, request);
+    return this.http.put<CommitmentDto>(HANDOVER_API_ENDPOINTS.HANDOVER_COMMITMENT_BY_ID(engagementId, commitmentId), request);
   }
 
   deleteCommitment(engagementId: number, commitmentId: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${engagementId}/handover/commitments/${commitmentId}`);
+    return this.http.delete<void>(HANDOVER_API_ENDPOINTS.HANDOVER_COMMITMENT_BY_ID(engagementId, commitmentId));
   }
 }
