@@ -89,3 +89,12 @@ export interface PmEngagementListResponse {
 }
 
 export type EngagementSortBy = 'kickoff' | 'readiness' | 'client';
+
+export type OwnerKind = 'projectManager' | 'techLead';
+
+export interface OwnerChange {
+  kind: OwnerKind;
+  label: string;
+  userId: number;
+  userName: string;
+}

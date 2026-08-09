@@ -2,25 +2,17 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { EngagementInfo, EngagementOwners, EngagementService } from '../../services/engagement';
+import { EngagementService } from '../engagements/services/engagement.service';
+import { EngagementInfo, EngagementOwners, OwnerChange, OwnerKind } from '../engagements/models/engagement.model';
 import { UserDirectoryService } from '../users/services/user.service';
 import { UserListItem } from '../users/models/user.model';
 import { AuthService } from '../../services/auth';
-import { ToastService } from '../../services/toast';
+import { ToastService } from '../../shared/toast/toast.service';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
 
 const PROJECT_MANAGEMENT_ROLE_ID = 2;
 const TECH_LEAD_ROLE_ID = 3;
 const KICKOFF_PENDING_STATUS = 'KickoffPending';
-
-type OwnerKind = 'projectManager' | 'techLead';
-
-interface OwnerChange {
-  kind: OwnerKind;
-  label: string;
-  userId: number;
-  userName: string;
-}
 
 @Component({
   selector: 'app-engagement-detail',
