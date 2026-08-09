@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Pdr.Api.Constants.Handovers;
 using Pdr.Api.DTOs.Handovers;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Handover;
@@ -9,8 +10,6 @@ namespace Pdr.Api.Services;
 
 public class CommitmentService : ICommitmentService
 {
-    private const string SubmittedStatusName = "Submitted";
-
     private readonly IHandoverRepository _handoverRepository;
     private readonly ICommitmentRepository _commitmentRepository;
 
@@ -38,7 +37,7 @@ public class CommitmentService : ICommitmentService
 
         if (status?.StatusName == HandoverStatusNames.Submitted)
         {
-            throw new HandoverSubmittedException("This handover has already been submitted and its commitments can no longer be changed.");
+            throw new HandoverSubmittedException(HandoverValidationConstants.AlreadySubmitted);
         }
     }
 

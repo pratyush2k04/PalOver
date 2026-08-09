@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Pdr.Api.Constants.Handovers;
 using Pdr.Api.DTOs.Handovers;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Handover;
@@ -10,8 +11,6 @@ namespace Pdr.Api.Services;
 
 public class RealisticCommitmentService : IRealisticCommitmentService
 {
-    private const string SubmittedStatusName = "Submitted";
-
     private const long SecondsPerDay = 86400;
     private const long SecondsPerWeek = SecondsPerDay * 7;
     private const long SecondsPerMonth = SecondsPerDay * 30;
@@ -66,9 +65,9 @@ public class RealisticCommitmentService : IRealisticCommitmentService
     {
         var status = await _handoverRepository.GetStatusByIdAsync(handover.StatusId);
 
-        if (status?.StatusName == SubmittedStatusName)
+        if (status?.StatusName == HandoverStatusNames.Submitted)
         {
-            throw new HandoverSubmittedException("This handover has already been submitted and its commitments can no longer be changed.");
+            throw new HandoverSubmittedException(HandoverValidationConstants.AlreadySubmitted);
         }
     }
 
@@ -137,8 +136,7 @@ public class RealisticCommitmentService : IRealisticCommitmentService
 
         if (hadAcknowledgement && gapStillExists && !newAcknowledgementProvided)
         {
-            throw new EstimationGapAcknowledgementRequiredException(
-                "The estimation gap between the promised and realistic timelines still exceeds the threshold. Please provide an updated acknowledgement message.");
+            throw new EstimationGapAcknowledgementRequiredException(HandoverValidationConstants.UpdatedAcknowledgementRequired);
         }
 
         realistic.Description = request.Description;

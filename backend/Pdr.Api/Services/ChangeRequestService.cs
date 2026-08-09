@@ -1,3 +1,4 @@
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.ChangeRequests;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.ChangeRequest;
@@ -118,9 +119,9 @@ public class ChangeRequestService(
     {
         return status switch
         {
-            ChangeRequestStatus.UnderReview => "Under Review",
-            ChangeRequestStatus.Approved => "Approved",
-            ChangeRequestStatus.Rejected => "Rejected",
+            ChangeRequestStatus.UnderReview => ChangeRequestConstants.StatusDisplayNames.UnderReview,
+            ChangeRequestStatus.Approved => ChangeRequestConstants.StatusDisplayNames.Approved,
+            ChangeRequestStatus.Rejected => ChangeRequestConstants.StatusDisplayNames.Rejected,
             _ => status.ToString()
         };
     }

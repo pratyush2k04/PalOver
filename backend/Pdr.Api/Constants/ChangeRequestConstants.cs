@@ -15,4 +15,11 @@ public static class ChangeRequestConstants
         public const string RejectionReasonRequired = "Reason is required when rejecting a change request.";
         public const string RejectionReasonMaxLength = "Rejection reason cannot exceed 2000 characters.";
     }
+
+    public static class StatusDisplayNames
+    {
+        public const string UnderReview = "Under Review";
+        public const string Approved = "Approved";
+        public const string Rejected = "Rejected";
+    }
 }

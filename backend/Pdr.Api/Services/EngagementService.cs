@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Pdr.Api.Constants;
 using Pdr.Api.Data;
 using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Exceptions;
@@ -38,7 +39,7 @@ public class EngagementService(
         var clientName = request.ClientName;
 
         if (request.KickoffDate < DateOnly.FromDateTime(DateTime.UtcNow))
-            warnings.Add("Kickoff date is in the past.");
+            warnings.Add(EngagementValidationConstants.Warnings.KickoffDateInPast);
 
         var existing = await db.Engagements.FirstOrDefaultAsync(e =>
             e.EngagementName == request.EngagementName &&
@@ -51,7 +52,7 @@ public class EngagementService(
             existing.CommercialModelId = request.CommercialModelId;
             existing.KickoffDate = request.KickoffDate;
             existing.BillingStartDate = request.BillingStartDate;
-            warnings.Add("This engagement already exists - updated instead of duplicated.");
+            warnings.Add(EngagementValidationConstants.Warnings.EngagementAlreadyExistsUpdated);
             engagement = existing;
         }
         else

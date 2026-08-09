@@ -1,6 +1,7 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Pdr.Api.Constants;
 using Pdr.Api.Models;
 using Pdr.Api.Services.Interfaces;
 
@@ -14,7 +15,7 @@ public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICur
     {
         var subClaim = User?.FindFirst(JwtRegisteredClaimNames.Sub)
             ?? User?.FindFirst(ClaimTypes.NameIdentifier)
-            ?? throw new InvalidOperationException("No authenticated user found on the current request.");
+            ?? throw new InvalidOperationException(AuthConstants.Messages.UnauthenticatedUser);
 
         return int.Parse(subClaim.Value);
     }
@@ -22,13 +23,13 @@ public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICur
     public string? GetRole()
     {
         return User?.FindFirst(ClaimTypes.Role)?.Value
-            ?? User?.FindFirst("role")?.Value;
+            ?? User?.FindFirst(ClaimConstants.Role)?.Value;
     }
 
     public int? GetRoleId()
     {
-        var roleIdClaim = User?.FindFirst("roleId")?.Value
-            ?? User?.FindFirst("role_id")?.Value;
+        var roleIdClaim = User?.FindFirst(ClaimConstants.RoleId)?.Value
+            ?? User?.FindFirst(ClaimConstants.RoleIdSnake)?.Value;
 
         if (roleIdClaim != null && int.TryParse(roleIdClaim, out var roleId))
         {
@@ -38,14 +39,14 @@ public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICur
         var roleName = GetRole();
         if (roleName != null)
         {
-            return roleName.ToLowerInvariant() switch
-            {
-                "pre sales" => (int)RoleEnum.PreSales,
-                "project management" => (int)RoleEnum.ProjectManagement,
-                "tech lead" => (int)RoleEnum.TechLead,
-                "leadership" => (int)RoleEnum.Leadership,
-                _ => null
-            };
+            if (string.Equals(roleName, RoleConstants.PreSales, StringComparison.OrdinalIgnoreCase))
+                return (int)RoleEnum.PreSales;
+            if (string.Equals(roleName, RoleConstants.ProjectManagement, StringComparison.OrdinalIgnoreCase))
+                return (int)RoleEnum.ProjectManagement;
+            if (string.Equals(roleName, RoleConstants.TechLead, StringComparison.OrdinalIgnoreCase))
+                return (int)RoleEnum.TechLead;
+            if (string.Equals(roleName, RoleConstants.Leadership, StringComparison.OrdinalIgnoreCase))
+                return (int)RoleEnum.Leadership;
         }
 
         return null;
@@ -61,13 +62,13 @@ public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICur
 
     public string? GetEmail()
     {
-        return User?.FindFirst("email")?.Value
+        return User?.FindFirst(ClaimConstants.Email)?.Value
             ?? User?.FindFirst(ClaimTypes.Email)?.Value;
     }
 
     public string? GetFullName()
     {
-        return User?.FindFirst("fullname")?.Value;
+        return User?.FindFirst(ClaimConstants.FullName)?.Value;
     }
 
     public bool IsInRole(string role)
@@ -88,7 +89,7 @@ public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICur
 
     public bool IsAdmin()
     {
-        var isAdminClaim = User?.FindFirst("isAdmin")?.Value;
+        var isAdminClaim = User?.FindFirst(ClaimConstants.IsAdmin)?.Value;
         return string.Equals(isAdminClaim, "true", StringComparison.OrdinalIgnoreCase);
     }
 }

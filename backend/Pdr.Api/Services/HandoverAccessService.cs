@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Pdr.Api.Constants.Handovers;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
 using Pdr.Api.Repositories.Interfaces;
@@ -19,16 +20,15 @@ public class HandoverAccessService : IHandoverAccessService
     {
         var assignment = await _engagementRepository.GetAssignmentByUserAsync(engagementId, userId);
 
-
         if (assignment == null)
         {
-            throw new HandoverAccessDeniedException("You don't have access to Handover.");
+            throw new HandoverAccessDeniedException(HandoverValidationConstants.AccessDenied);
         }
 
         var roleId = assignment.User.RoleId;
         if (roleId != (int)RoleEnum.PreSales && roleId != (int)RoleEnum.ProjectManagement)
         {
-            throw new HandoverAccessDeniedException("You don't have access to Handover.");
+            throw new HandoverAccessDeniedException(HandoverValidationConstants.AccessDenied);
         }
 
         return true;
@@ -40,13 +40,13 @@ public class HandoverAccessService : IHandoverAccessService
 
         if (assignment == null)
         {
-            throw new HandoverAccessDeniedException("You don't have access to Handover.");
+            throw new HandoverAccessDeniedException(HandoverValidationConstants.AccessDenied);
         }
 
         var roleName = assignment.User.Role.Name;
         if (roleName != requiredRole)
         {
-            throw new HandoverAccessDeniedException($"This action requires the '{requiredRole}' role.");
+            throw new HandoverAccessDeniedException(HandoverValidationConstants.ActionRequiresRole(requiredRole));
         }
 
         return true;
