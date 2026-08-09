@@ -15,6 +15,7 @@ using Pdr.Api.Services.Interfaces;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
 using Pdr.Api.Validators;
+using Pdr.Api.Filters;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,11 +41,18 @@ builder.Services.AddSwaggerGen(c =>
             new OpenApiSecuritySchemeReference("Bearer", doc)
         ] = new List<string>()
     });
+
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
 });
 
 // Add services to the container.
 
-builder.Services.AddControllers().AddJsonOptions(options =>
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidationFilter>();
+}).AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
@@ -66,28 +74,43 @@ builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserManagementService, UserManagementService>();
-builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IHandoverAccessService, Pdr.Api.Services.HandoverAccessService>();
-builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IHandoverService, Pdr.Api.Services.HandoverService>();
-builder.Services.AddScoped<Pdr.Api.Services.Interfaces.ICommitmentService, Pdr.Api.Services.CommitmentService>();
+builder.Services.AddScoped<IHandoverAccessService, HandoverAccessService>();
+builder.Services.AddScoped<IHandoverService, HandoverService>();
+builder.Services.AddScoped<ICommitmentService, CommitmentService>();
+builder.Services.AddScoped<IRealisticCommitmentService, RealisticCommitmentService>();
+// Handover repositories
+builder.Services.AddScoped<IHandoverRepository, HandoverRepository>();
+builder.Services.AddScoped<ICommitmentRepository, CommitmentRepository>();
+builder.Services.AddScoped<IRealisticCommitmentRepository, RealisticCommitmentRepository>();
 builder.Services.AddScoped<IMasterChecklistRepository, MasterChecklistRepository>();
 builder.Services.AddScoped<IMasterChecklistService, MasterChecklistService>();
 builder.Services.AddScoped<IHomeService, HomeService>();
 builder.Services.AddScoped<IEngagementRepository, EngagementRepository>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
+builder.Services.AddScoped<ICommunicationCadenceRepository, CommunicationCadenceRepository>();
+builder.Services.AddScoped<ICommunicationCadenceService, CommunicationCadenceService>();
 builder.Services.AddScoped<IEngagementChecklistRepository, EngagementChecklistRepository>();
 builder.Services.AddScoped<IEngagementChecklistService, EngagementChecklistService>();
 
-// Technical Readiness — Access Tracker & Environment Tooling
-builder.Services.AddScoped<Pdr.Api.Repositories.Interfaces.IAccessTrackerRepository, Pdr.Api.Repositories.AccessTrackerRepository>();
-builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IAccessTrackerService, Pdr.Api.Services.AccessTrackerService>();
-builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IRiskService, Pdr.Api.Services.RiskService>();
-builder.Services.AddScoped<Pdr.Api.Repositories.Interfaces.IEnvironmentToolingRepository, Pdr.Api.Repositories.EnvironmentToolingRepository>();
-builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IEnvironmentToolingService, Pdr.Api.Services.EnvironmentToolingService>();
+// // Technical Readiness — Access Tracker & Environment Tooling
+// builder.Services.AddScoped<Pdr.Api.Repositories.Interfaces.IAccessTrackerRepository, Pdr.Api.Repositories.AccessTrackerRepository>();
+// builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IAccessTrackerService, Pdr.Api.Services.AccessTrackerService>();
+// builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IRiskService, Pdr.Api.Services.RiskService>();
+// builder.Services.AddScoped<Pdr.Api.Repositories.Interfaces.IEnvironmentToolingRepository, Pdr.Api.Repositories.EnvironmentToolingRepository>();
+// builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IEnvironmentToolingService, Pdr.Api.Services.EnvironmentToolingService>();
 
+// Change Requests
+builder.Services.AddScoped<Pdr.Api.Repositories.Interfaces.IChangeRequestRepository, Pdr.Api.Repositories.ChangeRequestRepository>();
+builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IChangeRequestService, Pdr.Api.Services.ChangeRequestService>();
 
 // Register FluentValidation Validators
 builder.Services.AddValidatorsFromAssemblyContaining<DocumentUploadDtoValidator>();
+// Technical Readiness — Access Tracker, Environment Tooling
+builder.Services.AddScoped<IAccessTrackerRepository, AccessTrackerRepository>();
+builder.Services.AddScoped<IAccessTrackerService, AccessTrackerService>();
+builder.Services.AddScoped<IEnvironmentToolingRepository, EnvironmentToolingRepository>();
+builder.Services.AddScoped<IEnvironmentToolingService, EnvironmentToolingService>();
 
 // JWT Authentication
 var secretKey = builder.Configuration["JwtSettings:SecretKey"]
@@ -127,14 +150,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    try
-    {
-        db.Database.Migrate();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"[Warning] EF Migration skipped or encountered existing schema: {ex.Message}");
-    }
+    db.Database.Migrate();
 
     if (!db.EngagementTypes.Any())
     {

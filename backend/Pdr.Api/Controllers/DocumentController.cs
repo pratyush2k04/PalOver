@@ -106,15 +106,17 @@ public class DocumentController(
         return Ok(categories);
     }
 
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> DeleteDocument(int id)
+    [HttpPost("{id:int}/remove")]
+    public async Task<IActionResult> DeleteDocument(int id, [FromBody] RemoveDocumentRequestDto request)
     {
-        var deleted = await documentService.DeleteDocumentAsync(id);
-        if (!deleted)
-        {
-            return NotFound(new { message = "Document not found or already deleted." });
-        }
-
+        await documentService.DeleteDocumentAsync(id, request.Reason);
         return NoContent();
+    }
+
+    [HttpPatch("{id:int}/visibility")]
+    public async Task<IActionResult> UpdateVisibility(int id, [FromBody] UpdateDocumentVisibilityDto request)
+    {
+        var updated = await documentService.UpdateDocumentVisibilityAsync(id, request);
+        return Ok(updated);
     }
 }

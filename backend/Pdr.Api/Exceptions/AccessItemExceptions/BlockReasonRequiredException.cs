@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Http;
 
+using Pdr.Api.Constants;
+
 namespace Pdr.Api.Exceptions.AccessItemExceptions;
 
 public class BlockReasonRequiredException()
-    : AppException("A block reason must be provided when setting the status to Blocked.", StatusCodes.Status400BadRequest);
+    : AppException(AccessTrackerConstants.Messages.BlockReasonRequired, StatusCodes.Status400BadRequest);

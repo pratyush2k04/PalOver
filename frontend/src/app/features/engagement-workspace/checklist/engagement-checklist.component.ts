@@ -2,8 +2,21 @@ import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { AuthService } from '../../../services/auth';
 import { EngagementChecklistService } from '../../../services/engagement-checklist.service';
-import { EngagementChecklist } from '../../../models/engagement-checklist.model';
+import { EngagementChecklist, EngagementChecklistItem } from '../../../models/engagement-checklist.model';
+import { ENGAGEMENT_CHECKLIST_MESSAGES } from '../../../shared/constants/checklist.constants';
+import { DialogService } from '../../../common/services/dialog/dialog.service';
+import {
+  MarkNaDialogComponent,
+  MarkNaDialogData,
+  MarkNaDialogResult
+} from './dialogs/mark-na-dialog/mark-na-dialog.component';
+import {
+  ExemptionReviewDialogComponent,
+  ExemptionReviewDialogData,
+  ExemptionReviewDialogResult
+} from './dialogs/exemption-review-dialog/exemption-review-dialog.component';
 
 @Component({
   selector: 'app-engagement-checklist',
@@ -15,6 +28,8 @@ import { EngagementChecklist } from '../../../models/engagement-checklist.model'
 export class EngagementChecklistComponent {
   private route = inject(ActivatedRoute);
   private checklistService = inject(EngagementChecklistService);
+  private authService = inject(AuthService);
+  private dialog = inject(DialogService);
 
   private paramMap = toSignal(this.route.parent!.paramMap);
 
@@ -25,7 +40,17 @@ export class EngagementChecklistComponent {
 
   checklist = signal<EngagementChecklist | null>(null);
   isLoading = signal<boolean>(true);
+  isUpdating = signal<boolean>(false);
   error = signal<string | null>(null);
+
+  // Role permissions
+  isProjectManager = computed(() => this.authService.hasRole('Project Management') || this.authService.isAdmin());
+  isLeadership = computed(() => this.authService.hasRole('Leadership') || this.authService.isAdmin());
+  isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
+  isTechLead = computed(() => this.authService.hasRole('Tech Lead'));
+
+  canToggleStatus = computed(() => this.isProjectManager() || this.isTechLead());
+  canChangeApplicability = computed(() => this.isProjectManager());
 
   constructor() {
     effect(() => {
@@ -45,8 +70,120 @@ export class EngagementChecklistComponent {
         this.isLoading.set(false);
       },
       error: () => {
-        this.error.set('Failed to load the engagement checklist. Please try again.');
+        this.error.set(ENGAGEMENT_CHECKLIST_MESSAGES.LOAD_FAILED);
         this.isLoading.set(false);
+      }
+    });
+  }
+
+  toggleItemStatus(item: EngagementChecklistItem): void {
+    const engId = this.engagementId();
+    if (!engId || !this.canToggleStatus() || !item.isApplicable || this.isUpdating()) {
+      return;
+    }
+
+    const nextStatus = item.status === 'Complete' ? 'Incomplete' : 'Complete';
+    this.isUpdating.set(true);
+
+    this.checklistService.updateItemStatus(engId, item.id, { status: nextStatus }).subscribe({
+      next: (updatedChecklist) => {
+        this.checklist.set(updatedChecklist);
+        this.isUpdating.set(false);
+      },
+      error: () => {
+        this.isUpdating.set(false);
+      }
+    });
+  }
+
+  openMarkNaDialog(item: EngagementChecklistItem): void {
+    const engId = this.engagementId();
+    if (!engId || !this.canChangeApplicability() || this.isUpdating()) {
+      return;
+    }
+
+    const dialogRef = this.dialog.open<MarkNaDialogComponent, MarkNaDialogData, MarkNaDialogResult>(
+      MarkNaDialogComponent,
+      {
+        data: {
+          itemTitle: item.title,
+          isMandatory: item.isMandatory
+        }
+      }
+    );
+
+    dialogRef.closed$.subscribe((result) => {
+      if (result && result.reason) {
+        this.isUpdating.set(true);
+        this.checklistService.updateItemApplicability(engId, item.id, {
+          isApplicable: false,
+          reason: result.reason
+        }).subscribe({
+          next: (updatedChecklist) => {
+            this.checklist.set(updatedChecklist);
+            this.isUpdating.set(false);
+          },
+          error: () => {
+            this.isUpdating.set(false);
+          }
+        });
+      }
+    });
+  }
+
+  makeItemApplicable(item: EngagementChecklistItem): void {
+    const engId = this.engagementId();
+    if (!engId || !this.canChangeApplicability() || this.isUpdating()) {
+      return;
+    }
+
+    this.isUpdating.set(true);
+    this.checklistService.updateItemApplicability(engId, item.id, {
+      isApplicable: true
+    }).subscribe({
+      next: (updatedChecklist) => {
+        this.checklist.set(updatedChecklist);
+        this.isUpdating.set(false);
+      },
+      error: () => {
+        this.isUpdating.set(false);
+      }
+    });
+  }
+
+  openReviewDialog(item: EngagementChecklistItem): void {
+    const engId = this.engagementId();
+    if (!engId || !this.isLeadership() || item.exemptionStatus !== 'Pending' || this.isUpdating()) {
+      return;
+    }
+
+    const dialogRef = this.dialog.open<
+      ExemptionReviewDialogComponent,
+      ExemptionReviewDialogData,
+      ExemptionReviewDialogResult
+    >(ExemptionReviewDialogComponent, {
+      data: {
+        itemTitle: item.title,
+        reason: item.notApplicableReason || '',
+        requestedAt: item.exemptionRequestedAt
+      }
+    });
+
+    dialogRef.closed$.subscribe((result) => {
+      if (result !== undefined) {
+        this.isUpdating.set(true);
+        this.checklistService.reviewExemption(engId, item.id, {
+          approved: result.approved,
+          rejectionReason: result.rejectionReason
+        }).subscribe({
+          next: (updatedChecklist) => {
+            this.checklist.set(updatedChecklist);
+            this.isUpdating.set(false);
+          },
+          error: () => {
+            this.isUpdating.set(false);
+          }
+        });
       }
     });
   }

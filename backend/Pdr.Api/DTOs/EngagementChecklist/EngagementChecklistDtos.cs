@@ -5,7 +5,16 @@ public record EngagementChecklistResponseDto(
     int EngagementId,
     int SourceMasterVersionId,
     int VersionNumber,
+    int PendingExemptionsCount,
+    List<MandatoryIncompleteItemDto> IncompleteMandatoryItems,
     List<EngagementChecklistCategoryGroupDto> Categories
+);
+
+public record MandatoryIncompleteItemDto(
+    int Id,
+    string Title,
+    string Status,
+    string CategoryName
 );
 
 public record EngagementChecklistCategoryGroupDto(
@@ -25,5 +34,26 @@ public record EngagementChecklistItemDto(
     bool IsMandatory,
     int DisplayOrder,
     bool IsApplicable,
+    string Status,
+    string? NotApplicableReason,
+    string ExemptionStatus,
+    int? ExemptionRequestedById,
+    DateTime? ExemptionRequestedAt,
+    int? ExemptionReviewedById,
+    DateTime? ExemptionReviewedAt,
+    string? ExemptionRejectionReason
+);
+
+public record UpdateItemStatusRequestDto(
     string Status
+);
+
+public record UpdateItemApplicabilityRequestDto(
+    bool IsApplicable,
+    string? Reason
+);
+
+public record ReviewExemptionRequestDto(
+    bool Approved,
+    string? RejectionReason
 );

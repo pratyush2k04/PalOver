@@ -1,15 +1,25 @@
 import { Component, ViewChild, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormsModule, NgModel, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  NgModel,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { AuthService } from '../../../services/auth';
 import {
   HandoverService,
   HandoverInfoDto,
   SaveHandoverDraftRequest,
   CreateCommitmentRequest,
   UpdateCommitmentRequest,
-  CommitmentDto
+  CreateRealisticCommitmentRequest,
+  UpdateRealisticCommitmentRequest,
+  CommitmentDto,
 } from './handover.service';
 import { AlertComponent } from '../../../common/components/alert/alert';
 import { EmptyStateComponent } from '../../../common/components/empty-state/empty-state';
@@ -21,6 +31,51 @@ import { CheckboxComponent } from '../../../common/components/form/checkbox/chec
 
 const MAX_FREE_TEXT_LENGTH = 2000;
 const SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
+const TIMELINE_UNITS = ['Days', 'Weeks', 'Months'] as const;
+
+const SECONDS_PER_DAY = 86400;
+const SECONDS_PER_WEEK = SECONDS_PER_DAY * 7;
+const SECONDS_PER_MONTH = SECONDS_PER_DAY * 30;
+const GAP_THRESHOLD_SECONDS = SECONDS_PER_DAY * 3;
+const GAP_THRESHOLD_RATIO = 0.25;
+
+function toSeconds(timeline: number, unit: string): number {
+  switch (unit) {
+    case 'Days':
+      return timeline * SECONDS_PER_DAY;
+    case 'Weeks':
+      return timeline * SECONDS_PER_WEEK;
+    case 'Months':
+      return timeline * SECONDS_PER_MONTH;
+    default:
+      return timeline * SECONDS_PER_DAY;
+  }
+}
+
+function hasEstimationGap(
+  promisedTimeline: number,
+  promisedUnit: string,
+  realisticTimeline: number,
+  realisticUnit: string,
+): boolean {
+  const promisedSeconds = toSeconds(promisedTimeline, promisedUnit);
+  const realisticSeconds = toSeconds(realisticTimeline, realisticUnit);
+  const diff = Math.abs(realisticSeconds - promisedSeconds);
+
+  if (diff > GAP_THRESHOLD_SECONDS) {
+    return true;
+  }
+
+  return promisedSeconds > 0 && diff / promisedSeconds > GAP_THRESHOLD_RATIO;
+}
+
+interface RealisticEditForm {
+  description: string;
+  timeline: number;
+  timelineUnit: string;
+  acknowledgementMessage: string;
+  isPossible: boolean;
+}
 
 @Component({
   selector: 'app-handover',
@@ -35,18 +90,19 @@ const SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
     InputComponent,
     TextareaComponent,
     SelectComponent,
-    CheckboxComponent
+    CheckboxComponent,
   ],
   templateUrl: './handover.component.html',
-  styleUrl: './handover.component.scss'
+  styleUrl: './handover.component.scss',
 })
 export class HandoverComponent {
   private route = inject(ActivatedRoute);
   private handoverService = inject(HandoverService);
+  private authService = inject(AuthService);
   private fb = inject(FormBuilder);
 
   private parentParamMap = toSignal(this.route.parent!.paramMap);
-  
+
   engagementId = computed(() => {
     const idStr = this.parentParamMap()?.get('id');
     return idStr ? +idStr : null;
@@ -58,7 +114,8 @@ export class HandoverComponent {
   message = signal('');
   isError = signal(false);
 
-  readonly sentimentOptions = SENTIMENT_OPTIONS;
+  readonly sentimentOptions: SelectOption[] = SENTIMENT_OPTIONS.map((value) => ({ value, label: value }));
+  readonly timelineUnits = TIMELINE_UNITS;
   readonly maxFreeTextLength = MAX_FREE_TEXT_LENGTH;
 
   clientContextForm: FormGroup = this.fb.group({
@@ -66,7 +123,6 @@ export class HandoverComponent {
     businessProblem: ['', [Validators.required, Validators.maxLength(MAX_FREE_TEXT_LENGTH)]],
     clientSentiment: ['', [Validators.required]],
     dealOrigin: ['', [Validators.maxLength(MAX_FREE_TEXT_LENGTH)]],
-    hasNoCommitments: [false]
   });
 
   commitments = signal<CommitmentDto[]>([]);
@@ -76,22 +132,31 @@ export class HandoverComponent {
   editCommitment = signal<UpdateCommitmentRequest>(this.emptyCommitment());
   pendingDeleteId = signal<number | null>(null);
 
+  editingRealisticCommitmentId = signal<number | null>(null);
+  realisticEditForm = signal<RealisticEditForm>(this.emptyRealisticEditForm());
+  private originalAcknowledgementMessage = signal<string>('');
+
+  editCommitmentErrors = signal<string[]>([]);
+  realisticEditErrors = signal<string[]>([]);
+
   commitmentTypes = [
     { id: 1, name: 'Software' },
     { id: 2, name: 'Services' },
-    { id: 3, name: 'Training' }
+    { id: 3, name: 'Training' },
   ];
 
   isSubmitted = computed(() => this.handover()?.status === 'Submitted');
+  newCommitmentTouched = signal(false);
 
-  readonly sentimentSelectOptions = computed<SelectOption[]>(() => [
-    { value: '', label: '-- Select Sentiment --' },
-    ...this.sentimentOptions.map((s) => ({ value: s, label: s }))
-  ]);
+  isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
+  isProjectManagement = computed(() => this.authService.hasRole('Project Management'));
 
-  readonly commitmentTypeOptions: SelectOption[] = this.commitmentTypes.map((t) => ({ value: t.id, label: t.name }));
-
-  @ViewChild('newCommitmentDescriptionModel') newCommitmentDescriptionModel?: NgModel;
+  acknowledgementWarningVisible = computed(() => {
+    return (
+      this.originalAcknowledgementMessage() !== '' &&
+      this.realisticEditForm().acknowledgementMessage === this.originalAcknowledgementMessage()
+    );
+  });
 
   constructor() {
     effect(() => {
@@ -103,7 +168,17 @@ export class HandoverComponent {
   }
 
   private emptyCommitment(): CreateCommitmentRequest {
-    return { description: '', commitmentTypeId: 1, quantity: '' };
+    return { description: '', commitmentTypeId: 1, title: '', timeline: 1, timelineUnit: 'Weeks' };
+  }
+
+  private emptyRealisticEditForm(): RealisticEditForm {
+    return {
+      description: '',
+      timeline: 1,
+      timelineUnit: 'Weeks',
+      acknowledgementMessage: '',
+      isPossible: true,
+    };
   }
 
   loadHandover(id: number) {
@@ -116,7 +191,6 @@ export class HandoverComponent {
           businessProblem: data.businessProblem || '',
           clientSentiment: data.clientSentiment || '',
           dealOrigin: data.dealOrigin || '',
-          hasNoCommitments: data.hasNoCommitments
         });
         this.commitments.set(data.commitments || []);
         this.isLoading.set(false);
@@ -132,7 +206,7 @@ export class HandoverComponent {
           this.showMessage('Failed to load handover details', true);
           this.isLoading.set(false);
         }
-      }
+      },
     });
   }
 
@@ -147,7 +221,7 @@ export class HandoverComponent {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
-    
+
     this.isSaving.set(true);
     const request: SaveHandoverDraftRequest = this.clientContextForm.getRawValue();
 
@@ -160,7 +234,7 @@ export class HandoverComponent {
       error: (err) => {
         this.showMessage(this.extractErrorMessage(err, 'Failed to save draft'), true);
         this.isSaving.set(false);
-      }
+      },
     });
   }
 
@@ -170,7 +244,7 @@ export class HandoverComponent {
 
     if (!this.isValidForSubmit()) {
       this.clientContextForm.markAllAsTouched();
-      this.showMessage('Please complete all required fields and ensure commitments are added or explicitly marked as none.', true);
+      this.showMessage('Please complete all required fields.', true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
@@ -186,7 +260,7 @@ export class HandoverComponent {
       error: (err) => {
         this.showMessage(this.extractErrorMessage(err, 'Failed to submit handover'), true);
         this.isSaving.set(false);
-      }
+      },
     });
   }
 
@@ -195,35 +269,38 @@ export class HandoverComponent {
     if (!id) return;
 
     const currentNew = this.newCommitment();
-    if (!currentNew.description) {
-      this.newCommitmentDescriptionModel?.control.markAsTouched();
+    if (!currentNew.description || !currentNew.title) {
       return;
     }
 
     this.handoverService.addCommitment(id, currentNew).subscribe({
       next: (data) => {
-        this.commitments.update(c => [...c, data]);
-        this.clientContextForm.patchValue({ hasNoCommitments: false });
+        this.commitments.update((c) => [...c, data]);
         this.newCommitment.set(this.emptyCommitment());
+        this.newCommitmentTouched.set(false);
         this.showMessage('Commitment added successfully', false);
       },
       error: (err) => {
         this.showMessage(this.extractErrorMessage(err, 'Failed to add commitment'), true);
-      }
+      },
     });
   }
 
   startEditCommitment(c: CommitmentDto) {
+    this.editCommitmentErrors.set([]);
     this.editingCommitmentId.set(c.commitmentId);
     this.editCommitment.set({
       description: c.description,
       commitmentTypeId: c.commitmentTypeId,
-      quantity: c.quantity
+      title: c.title,
+      timeline: c.timeline,
+      timelineUnit: c.timelineUnit,
     });
   }
 
   cancelEditCommitment() {
     this.editingCommitmentId.set(null);
+    this.editCommitmentErrors.set([]);
   }
 
   saveEditCommitment(commitmentId: number) {
@@ -231,16 +308,22 @@ export class HandoverComponent {
     if (!id) return;
 
     const currentEdit = this.editCommitment();
-    if (!currentEdit.description) {
-      this.showMessage('Commitment description is required.', true);
+    const errors: string[] = [];
+    if (!currentEdit.title) errors.push('Title is required.');
+    if (!currentEdit.description) errors.push('Description is required.');
+
+    if (errors.length > 0) {
+      this.editCommitmentErrors.set(errors);
       return;
     }
 
+    this.editCommitmentErrors.set([]);
+
     this.handoverService.updateCommitment(id, commitmentId, currentEdit).subscribe({
       next: (data) => {
-        this.commitments.update(commits => {
+        this.commitments.update((commits) => {
           const arr = [...commits];
-          const index = arr.findIndex(c => c.commitmentId === commitmentId);
+          const index = arr.findIndex((c) => c.commitmentId === commitmentId);
           if (index !== -1) arr[index] = data;
           return arr;
         });
@@ -249,7 +332,7 @@ export class HandoverComponent {
       },
       error: (err) => {
         this.showMessage(this.extractErrorMessage(err, 'Failed to update commitment'), true);
-      }
+      },
     });
   }
 
@@ -267,32 +350,144 @@ export class HandoverComponent {
 
     this.handoverService.deleteCommitment(id, commitmentId).subscribe({
       next: () => {
-        this.commitments.update(c => c.filter(item => item.commitmentId !== commitmentId));
+        this.commitments.update((c) => c.filter((item) => item.commitmentId !== commitmentId));
         this.pendingDeleteId.set(null);
         this.showMessage('Commitment deleted', false);
       },
       error: (err) => {
         this.pendingDeleteId.set(null);
         this.showMessage(this.extractErrorMessage(err, 'Failed to delete commitment'), true);
-      }
+      },
     });
   }
 
-  onHasNoCommitmentsChange() {
-    if (this.clientContextForm.get('hasNoCommitments')?.value) {
-      this.commitments.set([]);
+  startEditRealisticCommitment(c: CommitmentDto) {
+    this.realisticEditErrors.set([]);
+    this.editingRealisticCommitmentId.set(c.commitmentId);
+    const existing = c.realisticCommitment;
+    const ackMessage = existing?.acknowledgementMessage || '';
+    this.originalAcknowledgementMessage.set(ackMessage);
+    this.realisticEditForm.set({
+      description: existing?.description || '',
+      timeline: existing?.timeline || c.timeline,
+      timelineUnit: existing?.timelineUnit || c.timelineUnit,
+      acknowledgementMessage: ackMessage,
+      isPossible: existing?.isPossible ?? true,
+    });
+  }
+
+  cancelEditRealisticCommitment() {
+    this.editingRealisticCommitmentId.set(null);
+    this.originalAcknowledgementMessage.set('');
+    this.realisticEditErrors.set([]);
+  }
+
+  commitmentHasGap(c: CommitmentDto): boolean {
+    if (!c.realisticCommitment) return false;
+    return hasEstimationGap(
+      c.timeline,
+      c.timelineUnit,
+      c.realisticCommitment.timeline,
+      c.realisticCommitment.timelineUnit,
+    );
+  }
+
+  editFormHasGap(c: CommitmentDto): boolean {
+    const form = this.realisticEditForm();
+    return hasEstimationGap(c.timeline, c.timelineUnit, form.timeline, form.timelineUnit);
+  }
+
+  saveRealisticCommitment(c: CommitmentDto) {
+    const id = this.engagementId();
+    if (!id) return;
+
+    const form = this.realisticEditForm();
+    const errors: string[] = [];
+    if (!form.description) errors.push('Description is required.');
+
+    if (errors.length > 0) {
+      this.realisticEditErrors.set(errors);
+      return;
     }
+
+    this.realisticEditErrors.set([]);
+
+    const payload = {
+      description: form.description,
+      timeline: form.timeline,
+      timelineUnit: form.timelineUnit,
+      acknowledgementMessage: form.acknowledgementMessage || null,
+      isPossible: form.isPossible,
+    };
+
+    const request$ = c.realisticCommitment
+      ? this.handoverService.updateRealisticCommitment(
+          id,
+          c.commitmentId,
+          payload as UpdateRealisticCommitmentRequest,
+        )
+      : this.handoverService.createRealisticCommitment(
+          id,
+          c.commitmentId,
+          payload as CreateRealisticCommitmentRequest,
+        );
+
+    request$.subscribe({
+      next: (data) => {
+        this.commitments.update((commits) =>
+          commits.map((item) =>
+            item.commitmentId === c.commitmentId ? { ...item, realisticCommitment: data } : item,
+          ),
+        );
+        this.editingRealisticCommitmentId.set(null);
+        this.originalAcknowledgementMessage.set('');
+        this.showMessage('Realistic commitment saved', false);
+      },
+      error: (err) => {
+        this.showMessage(
+          this.extractErrorMessage(err, 'Failed to save realistic commitment'),
+          true,
+        );
+      },
+    });
+  }
+
+  toggleMarkImpossible(c: CommitmentDto) {
+    const id = this.engagementId();
+    if (!id || !c.realisticCommitment) return;
+
+    const payload: UpdateRealisticCommitmentRequest = {
+      description: c.realisticCommitment.description,
+      timeline: c.realisticCommitment.timeline,
+      timelineUnit: c.realisticCommitment.timelineUnit,
+      acknowledgementMessage: c.realisticCommitment.acknowledgementMessage,
+      isPossible: !c.realisticCommitment.isPossible,
+    };
+
+    this.handoverService.updateRealisticCommitment(id, c.commitmentId, payload).subscribe({
+      next: (data) => {
+        this.commitments.update((commits) =>
+          commits.map((item) =>
+            item.commitmentId === c.commitmentId ? { ...item, realisticCommitment: data } : item,
+          ),
+        );
+      },
+      error: (err) => {
+        this.showMessage(this.extractErrorMessage(err, 'Failed to update commitment'), true);
+      },
+    });
+  }
+
+  formatTimeline(timeline: number, unit: string): string {
+    if (!timeline || !unit) return '';
+    return timeline === 1 && unit.endsWith('s')
+      ? `${timeline} ${unit.slice(0, -1)}`
+      : `${timeline} ${unit}`;
   }
 
   private isValidForSubmit(): boolean {
-    const { businessProblem, clientSentiment, hasNoCommitments } = this.clientContextForm.getRawValue();
-    if (!businessProblem || !clientSentiment) {
-      return false;
-    }
-    if (this.commitments().length === 0 && !hasNoCommitments) {
-      return false;
-    }
-    return true;
+    const { businessProblem, clientSentiment } = this.clientContextForm.getRawValue();
+    return !!businessProblem && !!clientSentiment;
   }
 
   private extractErrorMessage(err: unknown, fallback: string): string {
@@ -303,6 +498,8 @@ export class HandoverComponent {
   private showMessage(msg: string, isErr: boolean) {
     this.message.set(msg);
     this.isError.set(isErr);
-    setTimeout(() => { this.message.set(''); }, 5000);
+    setTimeout(() => {
+      this.message.set('');
+    }, 5000);
   }
 }

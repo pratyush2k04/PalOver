@@ -1,14 +1,10 @@
 <div class="documents-container">
   <div class="documents-header">
     <h3 class="title">Documents</h3>
-    <app-button type="button" variant="accent" (click)="openUploadModal()">
-      <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-        <polyline points="17 8 12 3 7 8"></polyline>
-        <line x1="12" y1="3" x2="12" y2="15"></line>
-      </svg>
+    <button type="button" class="btn-upload" (click)="openUploadModal()">
+      <span class="upload-icon" [inlineSVG]="'assets/icons/upload.svg'"></span>
       Upload
-    </app-button>
+    </button>
   </div>
 
   @if (errorMessage()) {
@@ -23,10 +19,7 @@
       </div>
     } @else if (documents().length === 0) {
       <div class="empty-state">
-        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-          <polyline points="14 2 14 8 20 8"></polyline>
-        </svg>
+        <span class="empty-icon" [inlineSVG]="'assets/icons/empty-doc.svg'"></span>
         <p class="empty-text">No documents uploaded yet.</p>
       </div>
     } @else {
@@ -38,6 +31,8 @@
               <th class="col-category">CATEGORY</th>
               <th class="col-uploader">UPLOADER</th>
               <th class="col-date">DATE</th>
+              <th class="col-visibility">VISIBILITY</th>
+              <th class="col-actions">ACTIONS</th>
             </tr>
           </thead>
           <tbody>
@@ -45,10 +40,7 @@
               <tr class="document-row">
                 <td class="col-name">
                   <button type="button" class="btn-file-link" (click)="onDownload(doc)" [disabled]="downloadingId() === doc.id">
-                    <svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                      <polyline points="14 2 14 8 20 8"></polyline>
-                    </svg>
+                    <span class="file-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
                     <span class="file-name">{{ doc.fileName }}</span>
                     @if (downloadingId() === doc.id) {
                       <span class="download-spinner"></span>
@@ -63,6 +55,63 @@
                 </td>
                 <td class="col-date">
                   <span class="upload-date">{{ formatDate(doc.uploadedAt) }}</span>
+                </td>
+                <td class="col-visibility">
+                  @if (canManageVisibility()) {
+                    <!-- PM / Admin: inline editable dropdown & custom edit trigger -->
+                    <div class="visibility-cell-wrapper">
+                      <select
+                        class="visibility-select"
+                        [class.is-pm-only]="doc.visibility === 'PM-only'"
+                        [class.is-custom]="doc.visibility === 'Custom'"
+                        [value]="doc.visibility === 'Custom' ? 'Custom' : doc.visibility"
+                        (change)="onVisibilityChange(doc, $any($event.target).value)"
+                        [attr.aria-label]="'Visibility for ' + doc.fileName"
+                      >
+                        <option value="Team-wide">Team-wide</option>
+                        <option value="PM-only">PM-only</option>
+                        <option value="Custom">Custom visibility</option>
+                      </select>
+                      @if (doc.visibility === 'Custom') {
+                        <button
+                          type="button"
+                          class="btn-edit-custom"
+                          title="Edit allowed roles"
+                          (click)="openCustomVisibilityModal(doc)"
+                          [inlineSVG]="'assets/icons/edit.svg'"
+                        >
+                        </button>
+                      }
+                    </div>
+                  } @else {
+                    <!-- Viewers: read-only badge -->
+                    <span
+                      class="visibility-badge"
+                      [class.badge-custom-visibility]="doc.visibility === 'Custom'"
+                      [class.badge-pm-only]="doc.visibility === 'PM-only'"
+                      [class.badge-team-wide]="doc.visibility === 'Team-wide'"
+                    >
+                      @if (doc.visibility === 'Custom') {
+                        <span class="badge-icon" [inlineSVG]="'assets/icons/lock.svg'"></span>
+                        Custom visibility
+                      } @else if (doc.visibility === 'PM-only') {
+                        <span class="badge-icon" [inlineSVG]="'assets/icons/lock.svg'"></span>
+                        PM-only
+                      } @else {
+                        Team-wide
+                      }
+                    </span>
+                  }
+                </td>
+                <td class="col-actions">
+                  <button
+                    type="button"
+                    class="btn-action-icon btn-remove"
+                    title="Remove document"
+                    (click)="openRemoveModal(doc)"
+                    [inlineSVG]="'assets/icons/trash.svg'"
+                  >
+                  </button>
                 </td>
               </tr>
             }
@@ -79,4 +128,21 @@
     (closed)="closeUploadModal()"
     (uploaded)="onDocumentUploaded()"
   ></app-upload-document-dialog>
+}
+
+@if (selectedDocForRemoval()) {
+  <app-remove-document-dialog
+    [documentId]="selectedDocForRemoval()!.id"
+    [documentName]="selectedDocForRemoval()!.fileName"
+    (closed)="closeRemoveModal()"
+    (removed)="onDocumentRemoved()"
+  ></app-remove-document-dialog>
+}
+
+@if (selectedDocForCustomVisibility()) {
+  <app-custom-visibility-dialog
+    [document]="selectedDocForCustomVisibility()!"
+    (closed)="closeCustomVisibilityModal()"
+    (updated)="onCustomVisibilityUpdated($event)"
+  ></app-custom-visibility-dialog>
 }

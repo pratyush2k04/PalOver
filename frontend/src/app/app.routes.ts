@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { TECHNICAL_READINESS_ROUTES } from './constants/app.constants';
 
 import { LoginComponent } from './components/login/login';
 import { MainLayoutComponent } from './components/main-layout/main-layout';
@@ -92,7 +93,7 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'technical-readiness',
+        path: TECHNICAL_READINESS_ROUTES.BASE,
         canActivate: [workspaceGuard],
         loadComponent: () =>
           import('./features/home/tech-lead-home/tech-lead-home').then(
@@ -173,6 +174,20 @@ export const routes: Routes = [
               ).then(m => m.EngagementChecklistComponent),
           },
           {
+            path: 'kickoff',
+            loadComponent: () =>
+              import(
+                './features/engagement-workspace/kickoff/kickoff.component'
+              ).then(m => m.KickoffComponent),
+          },
+          {
+            path: TECHNICAL_READINESS_ROUTES.BASE,
+            loadComponent: () =>
+              import(
+                './features/engagements/technical/technical-readiness.component'
+              ).then(m => m.TechnicalReadinessComponent),
+          },
+          {
             path: '',
             redirectTo: 'handover',
             pathMatch: 'full',
@@ -208,6 +223,14 @@ export const routes: Routes = [
           {
             path: 'checklist',
             loadComponent: () => import('./features/engagement-workspace/checklist/engagement-checklist.component').then(m => m.EngagementChecklistComponent)
+          },
+          {
+            path: 'kickoff',
+            loadComponent: () => import('./features/engagement-workspace/kickoff/kickoff.component').then(m => m.KickoffComponent)
+          },
+          {
+            path: TECHNICAL_READINESS_ROUTES.BASE,
+            loadComponent: () => import('./features/engagements/technical/technical-readiness.component').then(m => m.TechnicalReadinessComponent)
           },
           { path: '', redirectTo: 'handover', pathMatch: 'full' }
         ]

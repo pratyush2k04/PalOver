@@ -2,8 +2,10 @@ import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { TECHNICAL_READINESS_ROUTES } from '../../constants/app.constants';
 import { filter, map } from 'rxjs';
 import { EngagementInfoDto, EngagementService } from '../../services/engagement.service';
+import { ENGAGEMENT_WORKSPACE_CONFIG } from '../../shared/constants/checklist.constants';
 import { TabItem, TabsComponent } from '../../common/components/tabs/tabs';
 
 @Component({
@@ -28,28 +30,18 @@ export class EngagementWorkspaceComponent {
   engagement = signal<EngagementInfoDto | null>(null);
   isLoading = signal<boolean>(true);
 
-  readonly tabs: TabItem[] = [
-    { id: 'handover', label: 'Handover', route: 'handover' },
-    { id: 'documents', label: 'Documents', route: 'documents' },
-    { id: 'people', label: 'People', route: 'people', enabled: false },
-    { id: 'checklist', label: 'Checklist', route: 'checklist' },
-    { id: 'kickoff', label: 'Kickoff', route: 'kickoff', enabled: false },
-    { id: 'resourcing', label: 'Resourcing', route: 'resourcing', enabled: false },
-    { id: 'technical-readiness', label: 'Technical Readiness', route: 'technical-readiness', enabled: false },
-    { id: 'risks', label: 'Risks', route: 'risks', enabled: false },
-    { id: 'reporting', label: 'Reporting', route: 'reporting', enabled: false }
-  ];
+  readonly tabs = signal<TabItem[]>([...ENGAGEMENT_WORKSPACE_CONFIG.DEFAULT_TABS]);
 
-  private readonly currentUrl = toSignal(
+  readonly currentUrl = toSignal(
     this.router.events.pipe(
-      filter((event) => event instanceof NavigationEnd),
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
       map(() => this.router.url)
     ),
     { initialValue: this.router.url }
   );
 
   readonly activeTabId = computed(
-    () => this.tabs.find((tab) => this.currentUrl().includes(`/${tab.route}`))?.id ?? null
+    () => this.tabs().find((tab) => this.currentUrl().includes(`/${tab.route}`))?.id ?? null
   );
 
   constructor() {
