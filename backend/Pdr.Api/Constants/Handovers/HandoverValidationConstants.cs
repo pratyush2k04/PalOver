@@ -10,4 +10,8 @@ public static class HandoverValidationConstants
     public const string UpdatedAcknowledgementRequired = "The estimation gap between the promised and realistic timelines still exceeds the threshold. Please provide an updated acknowledgement message.";
 
     public static string ActionRequiresRole(string role) => $"This action requires the '{role}' role.";
+    public static string NotFoundForEngagement(int engagementId) => $"No handover draft exists yet for engagement {engagementId}. Save the Client Context section first.";
+    public static string CommitmentNotFound(int id) => $"Commitment with ID {id} was not found.";
+    public static string RealisticCommitmentNotFound(int id) => $"Realistic commitment for commitment ID {id} was not found.";
+    public static string RealisticCommitmentAlreadyExists(int id) => $"Realistic commitment for commitment ID {id} already exists.";
 }

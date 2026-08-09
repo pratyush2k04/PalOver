@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Http;
+using Pdr.Api.Constants;
+
 namespace Pdr.Api.Exceptions;
 
 public class InvalidEngagementTypeException(int engagementTypeId)
-    : AppException($"Engagement type with id {engagementTypeId} does not exist.", StatusCodes.Status400BadRequest);
+    : AppException(EngagementValidationConstants.Messages.InvalidType(engagementTypeId), StatusCodes.Status400BadRequest);

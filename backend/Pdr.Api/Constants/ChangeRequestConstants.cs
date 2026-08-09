@@ -14,6 +14,9 @@ public static class ChangeRequestConstants
         public const string ImpactMaxLength = "Impact estimate cannot exceed 2000 characters.";
         public const string RejectionReasonRequired = "Reason is required when rejecting a change request.";
         public const string RejectionReasonMaxLength = "Rejection reason cannot exceed 2000 characters.";
+        public const string SelfApprovalNotAllowed = "The user who raised the change request cannot approve or reject it.";
+
+        public static string NotFound(int id) => $"Change request with ID {id} was not found.";
     }
 
     public static class StatusDisplayNames

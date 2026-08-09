@@ -20,5 +20,8 @@ public static class AuthConstants
         public const string AccountLockedOut = "Too many attempts. Try again in 15 minutes or ask your Admin to reset your password.";
         public const string SecretKeyMissing = "JwtSettings:SecretKey is not configured.";
         public const string UnauthenticatedUser = "No authenticated user found on the current request.";
+
+        public static string UserNotFound(int id) => $"User with id {id} was not found.";
+        public static string RoleNotFound(int id) => $"Role with id {id} was not found.";
     }
 }

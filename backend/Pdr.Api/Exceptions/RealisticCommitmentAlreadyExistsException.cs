@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
+using Pdr.Api.Constants.Handovers;
 
 namespace Pdr.Api.Exceptions;
 
 public class RealisticCommitmentAlreadyExistsException(int commitmentId)
-    : AppException($"A realistic commitment already exists for commitment {commitmentId}.", StatusCodes.Status409Conflict);
+    : AppException(HandoverValidationConstants.RealisticCommitmentAlreadyExists(commitmentId), StatusCodes.Status400BadRequest);

@@ -1,6 +1,6 @@
 using Pdr.Api.DTOs.EnvironmentTooling;
 using Pdr.Api.Exceptions;
-using Pdr.Api.Exceptions.EnvironmentToolingExceptions;
+
 using Pdr.Api.Models.EnvironmentTooling;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;

@@ -35,5 +35,7 @@ public static class DocumentValidationConstants
         public const string RemoveDenied = "You do not have permission to remove this document. Only the uploader or a Project Manager can remove it.";
         public const string SignedSowRemoveDenied = "The signed SOW cannot be removed because a submitted handover is relying on it.";
         public const string VisibilityChangeDenied = "You do not have permission to change document visibility. Only Project Managers and Admins can do this.";
+
+        public static string NotFound(int id) => $"Document with id {id} was not found or already deleted.";
     }
 }

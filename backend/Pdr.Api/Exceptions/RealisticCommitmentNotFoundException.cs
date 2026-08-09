@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
+using Pdr.Api.Constants.Handovers;
 
 namespace Pdr.Api.Exceptions;
 
 public class RealisticCommitmentNotFoundException(int commitmentId)
-    : AppException($"No realistic commitment exists yet for commitment {commitmentId}.", StatusCodes.Status404NotFound);
+    : AppException(HandoverValidationConstants.RealisticCommitmentNotFound(commitmentId), StatusCodes.Status404NotFound);
