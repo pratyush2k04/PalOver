@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data.Configuration;
 using Pdr.Api.Models;
+using Pdr.Api.Models.Engagements;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Models.MasterChecklist;

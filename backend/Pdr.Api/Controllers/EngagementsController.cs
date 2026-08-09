@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.Attributes;
 using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Models;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Services;
 using Pdr.Api.Services.Interfaces;
 using Pdr.Api.Exceptions;

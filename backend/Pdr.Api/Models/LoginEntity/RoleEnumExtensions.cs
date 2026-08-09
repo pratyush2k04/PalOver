@@ -1,4 +1,4 @@
-namespace Pdr.Api.Models;
+namespace Pdr.Api.Models.LoginEntity;
 
 public static class RoleEnumExtensions
 {

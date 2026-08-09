@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.Attributes;
 using Pdr.Api.DTOs.MasterChecklist;
 using Pdr.Api.Models;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Services.Interfaces;
 
 using Pdr.Api.Constants;

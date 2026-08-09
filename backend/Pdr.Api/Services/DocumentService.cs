@@ -4,6 +4,7 @@ using Pdr.Api.DTOs.Documents;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
 using Pdr.Api.Models.Documents;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.Handover;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;

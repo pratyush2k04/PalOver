@@ -1,3 +1,5 @@
+using Pdr.Api.Models.Engagements;
+
 namespace Pdr.Api.Models.EngagementChecklist;
 
 public class EngagementChecklist : BaseAuditableEntity

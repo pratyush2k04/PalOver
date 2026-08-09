@@ -5,6 +5,7 @@ using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Documents;
 using Pdr.Api.Models;
 using Pdr.Api.Models.Documents;
+using Pdr.Api.Models.LoginEntity;
 
 namespace Pdr.Api.Validators;
 

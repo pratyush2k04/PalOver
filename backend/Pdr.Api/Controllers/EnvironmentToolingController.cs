@@ -4,6 +4,7 @@ using Pdr.Api.Attributes;
 using Pdr.Api.DTOs.EnvironmentTooling;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Services.Interfaces;
 
 using Pdr.Api.Constants;

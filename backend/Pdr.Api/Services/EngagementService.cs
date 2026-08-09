@@ -4,6 +4,8 @@ using Pdr.Api.Data;
 using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
+using Pdr.Api.Models.Engagements;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;

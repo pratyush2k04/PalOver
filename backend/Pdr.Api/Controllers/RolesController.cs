@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.Attributes;
 using Pdr.Api.Models;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Controllers;

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.Attributes;
 using Pdr.Api.DTOs.CommunicationCadences;
 using Pdr.Api.Models;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Controllers;

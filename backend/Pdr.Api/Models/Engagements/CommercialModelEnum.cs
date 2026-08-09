@@ -1,4 +1,4 @@
-namespace Pdr.Api.Models;
+namespace Pdr.Api.Models.Engagements;
 
 public enum CommercialModelEnum
 {

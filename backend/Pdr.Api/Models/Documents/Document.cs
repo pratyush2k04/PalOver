@@ -1,3 +1,5 @@
+using Pdr.Api.Models.Engagements;
+
 namespace Pdr.Api.Models.Documents;
 
 public class Document : BaseAuditableEntity

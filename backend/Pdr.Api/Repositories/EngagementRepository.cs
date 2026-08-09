@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
 using Pdr.Api.Models;
+using Pdr.Api.Models.Engagements;
 using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Repositories.Interfaces;
 

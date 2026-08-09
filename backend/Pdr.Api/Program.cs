@@ -7,6 +7,7 @@ using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Pdr.Api.Data;
 using Pdr.Api.Models;
+using Pdr.Api.Models.Engagements;
 using Pdr.Api.Middleware;
 using Pdr.Api.Repositories;
 using Pdr.Api.Repositories.Interfaces;
