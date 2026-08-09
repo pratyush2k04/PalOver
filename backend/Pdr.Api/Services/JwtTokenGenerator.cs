@@ -25,6 +25,8 @@ public class JwtTokenGenerator(IConfiguration configuration) : IJwtTokenGenerato
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(ClaimTypes.Role, user.Role.Name), // For ASP.NET Core [Authorize(Roles = "...")]
             new Claim("role", user.Role.Name),           // Clean key for Angular frontend
+            new Claim("roleId", user.RoleId.ToString()),
+            new Claim("role_id", user.RoleId.ToString()),
             new Claim("email", user.Email),
             new Claim("fullname", user.FullName),
             new Claim("isAdmin", user.IsAdmin.ToString().ToLower())

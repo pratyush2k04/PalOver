@@ -15,6 +15,13 @@ public class EngagementChecklistRepository(AppDbContext context) : IEngagementCh
             .FirstOrDefaultAsync(c => c.EngagementId == engagementId);
     }
 
+    public async Task<EngagementChecklistItem?> GetItemByIdAsync(int engagementId, int itemId)
+    {
+        return await context.EngagementChecklistItems
+            .Include(i => i.Category)
+            .FirstOrDefaultAsync(i => i.Id == itemId && i.EngagementChecklist.EngagementId == engagementId);
+    }
+
     public async Task AddAsync(EngagementChecklist checklist)
     {
         await context.EngagementChecklists.AddAsync(checklist);

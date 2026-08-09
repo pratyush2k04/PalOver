@@ -32,10 +32,15 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
             .Where(a => a.EngagementId == engagementId)
             .ToListAsync();
 
-    public async Task<EngagementAssignment?> GetAssignmentByRoleAsync(int engagementId, string roleName) =>
+    public async Task<EngagementAssignment?> GetAssignmentByRoleIdAsync(int engagementId, int roleId) =>
         await context.EngagementAssignments
             .Include(a => a.User).ThenInclude(u => u.Role)
-            .FirstOrDefaultAsync(a => a.EngagementId == engagementId && a.User.Role.Name == roleName);
+            .FirstOrDefaultAsync(a => a.EngagementId == engagementId && a.User.RoleId == roleId);
+
+    public async Task<EngagementAssignment?> GetAssignmentByUserAsync(int engagementId, int userId) =>
+        await context.EngagementAssignments
+            .Include(a => a.User).ThenInclude(u => u.Role)
+            .FirstOrDefaultAsync(a => a.EngagementId == engagementId && a.UserId == userId);
 
     public async Task RemoveAssignmentAsync(EngagementAssignment assignment)
     {

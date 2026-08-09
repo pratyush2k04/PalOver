@@ -53,8 +53,7 @@ public class AccessTrackerRepository(AppDbContext context) : IAccessTrackerRepos
         await context.EngagementAssignments
             .AsNoTracking()
             .Include(ea => ea.User)
-            .ThenInclude(u => u.Role)
-            .Where(ea => ea.EngagementId == engagementId && ea.User.Role.Name == "Tech Lead")
+            .Where(ea => ea.EngagementId == engagementId && ea.User.RoleId == (int)RoleEnum.TechLead)
             .Select(ea => (int?)ea.UserId)
             .FirstOrDefaultAsync();
 }

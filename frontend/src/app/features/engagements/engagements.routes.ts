@@ -54,6 +54,13 @@ export const ENGAGEMENTS_ROUTES: Routes = [
           ),
       },
       {
+        path: 'technical-readiness',
+        loadComponent: () =>
+          import('./technical/technical-readiness.component').then(
+            (m) => m.TechnicalReadinessComponent
+          ),
+      },
+      {
         path: '',
         redirectTo: 'overview',
         pathMatch: 'full',

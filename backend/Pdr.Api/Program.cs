@@ -15,6 +15,7 @@ using Pdr.Api.Services.Interfaces;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
 using Pdr.Api.Validators;
+using Pdr.Api.Filters;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,11 +41,18 @@ builder.Services.AddSwaggerGen(c =>
             new OpenApiSecuritySchemeReference("Bearer", doc)
         ] = new List<string>()
     });
+
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
 });
 
 // Add services to the container.
 
-builder.Services.AddControllers().AddJsonOptions(options =>
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidationFilter>();
+}).AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
@@ -69,6 +77,11 @@ builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 builder.Services.AddScoped<IHandoverAccessService, HandoverAccessService>();
 builder.Services.AddScoped<IHandoverService, HandoverService>();
 builder.Services.AddScoped<ICommitmentService, CommitmentService>();
+builder.Services.AddScoped<IRealisticCommitmentService, RealisticCommitmentService>();
+// Handover repositories
+builder.Services.AddScoped<IHandoverRepository, HandoverRepository>();
+builder.Services.AddScoped<ICommitmentRepository, CommitmentRepository>();
+builder.Services.AddScoped<IRealisticCommitmentRepository, RealisticCommitmentRepository>();
 builder.Services.AddScoped<IMasterChecklistRepository, MasterChecklistRepository>();
 builder.Services.AddScoped<IMasterChecklistService, MasterChecklistService>();
 builder.Services.AddScoped<IHomeService, HomeService>();
@@ -137,14 +150,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    try
-    {
-        db.Database.Migrate();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"[Warning] EF Migration skipped or encountered existing schema: {ex.Message}");
-    }
+    db.Database.Migrate();
 
     if (!db.EngagementTypes.Any())
     {

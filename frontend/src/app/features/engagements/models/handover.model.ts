@@ -1,9 +1,38 @@
+export interface RealisticCommitmentDto {
+  id: number;
+  commitmentId: number;
+  description: string;
+  timeline: number;
+  timelineUnit: string;
+  acknowledgementMessage?: string;
+  isPossible: boolean;
+}
+
+export interface CreateRealisticCommitmentRequest {
+  description: string;
+  timeline: number;
+  timelineUnit: string;
+  acknowledgementMessage?: string | null;
+  isPossible: boolean;
+}
+
+export interface UpdateRealisticCommitmentRequest {
+  description: string;
+  timeline: number;
+  timelineUnit: string;
+  acknowledgementMessage?: string | null;
+  isPossible: boolean;
+}
+
 export interface CommitmentDto {
   commitmentId: number;
   handoverId: number;
+  title: string;
   description: string;
   commitmentTypeId: number;
-  quantity?: string;
+  timeline: number;
+  timelineUnit: string;
+  realisticCommitment?: RealisticCommitmentDto;
 }
 
 export interface HandoverInfoDto {
@@ -14,7 +43,6 @@ export interface HandoverInfoDto {
   businessProblem: string;
   clientSentiment: string;
   dealOrigin?: string;
-  hasNoCommitments: boolean;
   commitments: CommitmentDto[];
 }
 
@@ -23,17 +51,20 @@ export interface SaveHandoverDraftRequest {
   businessProblem?: string;
   clientSentiment?: string;
   dealOrigin?: string;
-  hasNoCommitments: boolean;
 }
 
 export interface CreateCommitmentRequest {
+  title: string;
   description: string;
   commitmentTypeId: number;
-  quantity?: string;
+  timeline: number;
+  timelineUnit: string;
 }
 
 export interface UpdateCommitmentRequest {
+  title: string;
   description: string;
   commitmentTypeId: number;
-  quantity?: string;
+  timeline: number;
+  timelineUnit: string;
 }

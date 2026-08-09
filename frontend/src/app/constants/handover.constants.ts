@@ -5,6 +5,8 @@ export const HANDOVER_API_ENDPOINTS = {
   HANDOVER_COMMITMENTS: (id: number) => `/api/engagements/${id}/handover/commitments`,
   HANDOVER_COMMITMENT_BY_ID: (engagementId: number, commitmentId: number) =>
     `/api/engagements/${engagementId}/handover/commitments/${commitmentId}`,
+  HANDOVER_REALISTIC_COMMITMENT: (engagementId: number, commitmentId: number) =>
+    `/api/engagements/${engagementId}/handover/commitments/${commitmentId}/realistic`,
 } as const;
 
 export const HANDOVER_MESSAGES = {

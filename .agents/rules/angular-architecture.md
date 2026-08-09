@@ -1,7 +1,10 @@
+<<<<<<< HEAD
 ---
 trigger: always_on
 ---
 
+=======
+>>>>>>> dev
 # Angular Frontend Architecture Rules
 
 ## Purpose

@@ -2,7 +2,9 @@ import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { EngagementService } from '../services/engagement.service';
+import { TECHNICAL_READINESS_ROUTES } from 'src/app/constants/technical-readiness.constants';
+import {  EngagementService } from '../services/engagement.service';
+import { ENGAGEMENT_WORKSPACE_CONFIG } from 'src/app/constants/engagements.constants';
 import { EngagementInfoDto } from '../models/engagement.model';
 
 interface WorkspaceTab {
@@ -32,18 +34,7 @@ export class EngagementWorkspaceComponent {
   engagement = signal<EngagementInfoDto | null>(null);
   isLoading = signal<boolean>(true);
 
-  readonly tabs = signal<WorkspaceTab[]>([
-    { label: 'Overview', route: 'overview', enabled: true },
-    { label: 'Handover', route: 'handover', enabled: true },
-    { label: 'Documents', route: 'documents', enabled: true },
-    { label: 'People', route: 'people', enabled: false },
-    { label: 'Checklist', route: 'checklist', enabled: true },
-    { label: 'Kickoff', route: 'kickoff', enabled: true },
-    { label: 'Resourcing', route: 'resourcing', enabled: false },
-    { label: 'Technical Readiness', route: 'technical-readiness', enabled: false },
-    { label: 'Risks', route: 'risks', enabled: false },
-    { label: 'Reporting', route: 'reporting', enabled: false }
-  ]);
+  readonly tabs = signal<WorkspaceTab[]>([...ENGAGEMENT_WORKSPACE_CONFIG.DEFAULT_TABS]);
 
   activeTabIndex = signal<number>(0);
 

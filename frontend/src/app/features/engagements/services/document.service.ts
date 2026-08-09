@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { DocumentCategory, DocumentItem, DocumentUploadResult } from '../models/document.model';
-import { ENGAGEMENT_API_ENDPOINTS } from '../../../constants/app.constants';
+import { DocumentCategory, DocumentItem, DocumentUploadResult, DocumentVisibility, UpdateDocumentVisibilityRequest } from '../models/document.model';
+import { DOCUMENT_API_ENDPOINTS } from 'src/app/constants/document.constants';
 
 @Injectable({
   providedIn: 'root'
@@ -11,24 +11,30 @@ export class DocumentService {
   private http = inject(HttpClient);
 
   getEngagementDocuments(engagementId: number): Observable<DocumentItem[]> {
-    return this.http.get<DocumentItem[]>(ENGAGEMENT_API_ENDPOINTS.ENGAGEMENT_DOCUMENTS(engagementId));
+    return this.http.get<DocumentItem[]>(DOCUMENT_API_ENDPOINTS.BY_ENGAGEMENT(engagementId));
   }
 
   getCategories(): Observable<DocumentCategory[]> {
-    return this.http.get<DocumentCategory[]>(ENGAGEMENT_API_ENDPOINTS.DOCUMENT_CATEGORIES);
+    return this.http.get<DocumentCategory[]>(DOCUMENT_API_ENDPOINTS.CATEGORIES);
   }
 
-  uploadDocument(file: File, engagementId: number, categoryId: number): Observable<DocumentUploadResult[]> {
-    const formData = new FormData();
-    formData.append('[0].File', file, file.name);
-    formData.append('[0].EngagementId', engagementId.toString());
-    formData.append('[0].CategoryId', categoryId.toString());
+  uploadDocument(file: File, engagementId: number, categoryId: number, visibility: DocumentVisibility): Observable<DocumentUploadResult[]> {
+    return this.uploadDocuments([file], engagementId, categoryId, visibility);
+  }
 
-    return this.http.post<DocumentUploadResult[]>(ENGAGEMENT_API_ENDPOINTS.DOCUMENT_UPLOAD, formData);
+  uploadDocuments(files: File[], engagementId: number, categoryId: number, visibility: DocumentVisibility): Observable<DocumentUploadResult[]> {
+    const formData = new FormData();
+    files.forEach((file, i) => {
+      formData.append(`[${i}].File`, file, file.name);
+      formData.append(`[${i}].EngagementId`, engagementId.toString());
+      formData.append(`[${i}].CategoryId`, categoryId.toString());
+      formData.append(`[${i}].Visibility`, visibility);
+    });
+    return this.http.post<DocumentUploadResult[]>(DOCUMENT_API_ENDPOINTS.UPLOAD, formData);
   }
 
   downloadDocument(id: number, fileName: string): Observable<void> {
-    return this.http.get(ENGAGEMENT_API_ENDPOINTS.DOCUMENT_DOWNLOAD(id), { responseType: 'blob' }).pipe(
+    return this.http.get(DOCUMENT_API_ENDPOINTS.DOWNLOAD(id), { responseType: 'blob' }).pipe(
       map((blob: Blob) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -42,7 +48,15 @@ export class DocumentService {
     );
   }
 
-  deleteDocument(id: number): Observable<void> {
-    return this.http.delete<void>(ENGAGEMENT_API_ENDPOINTS.DOCUMENT_DELETE(id));
+  deleteDocument(id: number, reason: string): Observable<void> {
+    return this.http.post<void>(DOCUMENT_API_ENDPOINTS.REMOVE(id), { reason });
+  }
+
+  updateVisibility(id: number, request: UpdateDocumentVisibilityRequest | DocumentVisibility): Observable<DocumentItem> {
+    const body: UpdateDocumentVisibilityRequest =
+      typeof request === 'string'
+        ? { visibility: request as DocumentVisibility }
+        : request;
+    return this.http.patch<DocumentItem>(DOCUMENT_API_ENDPOINTS.VISIBILITY(id), body);
   }
 }

@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { TECHNICAL_READINESS_ROUTES } from './constants/app.constants';
 
 import { LoginComponent } from './components/login/login';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';

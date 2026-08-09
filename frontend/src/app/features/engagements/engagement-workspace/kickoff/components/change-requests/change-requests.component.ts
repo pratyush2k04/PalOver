@@ -3,15 +3,16 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ChangeRequestService } from '../../../../services/change-request.service';
+import { ChangeRequestService } from '@features/engagements/services/change-request.service';
 import { AuthService } from 'src/app/services/auth';
-import { ChangeRequest } from '../../../../models/change-request.model';
-import { CHANGE_REQUEST_CONSTANTS } from '../../../../../../constants/app.constants';
+import { ChangeRequest } from '@features/engagements/models/change-request.model';
+import { CHANGE_REQUEST_CONSTANTS } from 'src/app/constants/change-request.constants';
+import { InlineSVGModule } from 'ng-inline-svg-2';
 
 @Component({
   selector: 'app-change-requests',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, InlineSVGModule],
   templateUrl: './change-requests.component.html',
   styleUrl: './change-requests.component.scss'
 })

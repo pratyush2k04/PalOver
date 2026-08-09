@@ -4,9 +4,12 @@ import { Observable } from 'rxjs';
 import {
   CommitmentDto,
   CreateCommitmentRequest,
+  CreateRealisticCommitmentRequest,
   HandoverInfoDto,
+  RealisticCommitmentDto,
   SaveHandoverDraftRequest,
-  UpdateCommitmentRequest
+  UpdateCommitmentRequest,
+  UpdateRealisticCommitmentRequest
 } from '../models/handover.model';
 import { HANDOVER_API_ENDPOINTS } from '../../../constants/app.constants';
 
@@ -38,5 +41,27 @@ export class HandoverService {
 
   deleteCommitment(engagementId: number, commitmentId: number): Observable<void> {
     return this.http.delete<void>(HANDOVER_API_ENDPOINTS.HANDOVER_COMMITMENT_BY_ID(engagementId, commitmentId));
+  }
+
+  createRealisticCommitment(
+    engagementId: number,
+    commitmentId: number,
+    request: CreateRealisticCommitmentRequest
+  ): Observable<RealisticCommitmentDto> {
+    return this.http.post<RealisticCommitmentDto>(
+      HANDOVER_API_ENDPOINTS.HANDOVER_REALISTIC_COMMITMENT(engagementId, commitmentId),
+      request
+    );
+  }
+
+  updateRealisticCommitment(
+    engagementId: number,
+    commitmentId: number,
+    request: UpdateRealisticCommitmentRequest
+  ): Observable<RealisticCommitmentDto> {
+    return this.http.put<RealisticCommitmentDto>(
+      HANDOVER_API_ENDPOINTS.HANDOVER_REALISTIC_COMMITMENT(engagementId, commitmentId),
+      request
+    );
   }
 }

@@ -43,6 +43,20 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
                .HasMaxLength(100)
                .IsRequired();
 
+        builder.Property(d => d.DeletionReason)
+               .HasColumnName("deletion_reason")
+               .HasMaxLength(500);
+
+        builder.Property(d => d.Visibility)
+               .HasColumnName("visibility")
+               .HasMaxLength(50)
+               .IsRequired()
+               .HasDefaultValue("Team-wide");
+
+        builder.Property(d => d.AllowedRoles)
+               .HasColumnName("allowed_roles")
+               .HasDefaultValueSql("'{}'");
+
         // BaseAuditableEntity Column Mappings
         builder.Property(d => d.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
         builder.Property(d => d.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("NOW()");
@@ -52,6 +66,9 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
 
         // Global Query Filter for Soft Delete
         builder.HasQueryFilter(d => !d.IsDeleted);
+
+        builder.HasIndex(d => new { d.EngagementId, d.IsDeleted });
+
 
         builder.HasOne(d => d.Category)
                .WithMany(c => c.Documents)

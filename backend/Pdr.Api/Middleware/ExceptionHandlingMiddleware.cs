@@ -11,6 +11,13 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
         {
             await next(context);
         }
+        catch (FluentValidation.ValidationException ex)
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            var firstError = ex.Errors.FirstOrDefault()?.ErrorMessage ?? "Validation failed.";
+            await context.Response.WriteAsJsonAsync(new { message = firstError });
+        }
         catch (AppException ex)
         {
             context.Response.ContentType = "application/json";

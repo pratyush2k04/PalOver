@@ -1,28 +1,40 @@
-import { Component, EventEmitter, Input, OnInit, Output, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, input, output, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DocumentService } from '../../../services/document.service';
-import { DocumentCategory } from '../../../models/document.model';
+import { DocumentCategory, DocumentVisibility } from '../../../models/document.model';
+import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from 'src/app/constants/document.constants';
 
 @Component({
   selector: 'app-upload-document-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, InlineSVGModule],
   templateUrl: './upload-document-dialog.component.html',
   styleUrl: './upload-document-dialog.component.scss'
 })
 export class UploadDocumentDialogComponent implements OnInit {
   private documentService = inject(DocumentService);
+  private destroyRef = inject(DestroyRef);
 
-  @Input({ required: true }) engagementId!: number;
-  @Output() closed = new EventEmitter<void>();
-  @Output() uploaded = new EventEmitter<void>();
+  engagementId = input.required<number>();
+  closed = output<void>();
+  uploaded = output<void>();
 
   categories = signal<DocumentCategory[]>([]);
   selectedCategoryId = signal<number | null>(null);
-  selectedFile = signal<File | null>(null);
+
+  /** All files selected by the user */
+  selectedFiles = signal<File[]>([]);
+
+  /** Rename field — only relevant when exactly one file is selected */
   simulatedFileName = signal<string>('');
-  selectedVisibility = signal<string>('Team-wide');
+
+  /** True when only a single file is selected (rename is available) */
+  isSingleFile = computed(() => this.selectedFiles().length === 1);
+
+  selectedVisibility = signal<DocumentVisibility>(DOCUMENT_CONFIG.VISIBILITY.TEAM_WIDE);
   isUploading = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
 
@@ -31,7 +43,7 @@ export class UploadDocumentDialogComponent implements OnInit {
   }
 
   loadCategories(): void {
-    this.documentService.getCategories().subscribe({
+    this.documentService.getCategories().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (cats) => {
         this.categories.set(cats);
         if (cats.length > 0) {
@@ -39,27 +51,26 @@ export class UploadDocumentDialogComponent implements OnInit {
         }
       },
       error: () => {
-        // Fallback default categories if server returns error or empty
-        const defaults: DocumentCategory[] = [
-          { id: 1, categoryName: 'Signed SOW' },
-          { id: 2, categoryName: 'Proposal' },
-          { id: 3, categoryName: 'Design or Approach' },
-          { id: 4, categoryName: 'Email Thread' },
-          { id: 5, categoryName: 'Other' }
-        ];
+        const defaults: DocumentCategory[] = [...DOCUMENT_CONFIG.DEFAULT_CATEGORIES];
         this.categories.set(defaults);
-        this.selectedCategoryId.set(defaults[4].id);
+        this.selectedCategoryId.set(defaults[0].id);
       }
     });
   }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      this.selectedFile.set(file);
-      this.simulatedFileName.set(file.name);
-      this.errorMessage.set(null);
+    if (!input.files || input.files.length === 0) return;
+
+    const files = Array.from(input.files);
+    this.selectedFiles.set(files);
+    this.errorMessage.set(null);
+
+    // Pre-fill rename field only for single file selection
+    if (files.length === 1) {
+      this.simulatedFileName.set(files[0].name);
+    } else {
+      this.simulatedFileName.set('');
     }
   }
 
@@ -68,10 +79,16 @@ export class UploadDocumentDialogComponent implements OnInit {
   }
 
   onCategoryChange(catId: string): void {
-    this.selectedCategoryId.set(Number(catId));
+    const id = Number(catId);
+    this.selectedCategoryId.set(id);
+    if (DOCUMENT_CONFIG.PM_ONLY_CATEGORY_IDS.includes(id)) {
+      this.selectedVisibility.set(DOCUMENT_CONFIG.VISIBILITY.PM_ONLY);
+    } else {
+      this.selectedVisibility.set(DOCUMENT_CONFIG.VISIBILITY.TEAM_WIDE);
+    }
   }
 
-  onVisibilityChange(visibility: string): void {
+  onVisibilityChange(visibility: DocumentVisibility): void {
     this.selectedVisibility.set(visibility);
   }
 
@@ -80,46 +97,58 @@ export class UploadDocumentDialogComponent implements OnInit {
   }
 
   onSubmit(): void {
-    const file = this.selectedFile();
+    const files = this.selectedFiles();
     const catId = this.selectedCategoryId();
 
-    if (!file) {
-      this.errorMessage.set('Please select a file to upload.');
+    if (files.length === 0) {
+      this.errorMessage.set(DOCUMENT_MESSAGES.UPLOAD_NO_FILES_SELECTED);
       return;
     }
 
     if (!catId) {
-      this.errorMessage.set('Please select a category.');
+      this.errorMessage.set(DOCUMENT_MESSAGES.UPLOAD_NO_CATEGORY_SELECTED);
       return;
     }
 
-    // Rename file if user edited the simulated file name
-    const finalName = this.simulatedFileName().trim() || file.name;
-    const finalFile = new File([file], finalName, { type: file.type });
+    // Resolve final files — apply rename only for single-file uploads
+    const finalFiles: File[] = files.map((file) => {
+      if (files.length === 1) {
+        // Preserve original extension if user omitted it when renaming
+        const originalExt = file.name.includes('.')
+          ? file.name.substring(file.name.lastIndexOf('.')).toLowerCase()
+          : '';
+        const typedName = this.simulatedFileName().trim() || file.name;
+        const finalName = typedName.includes('.') ? typedName : typedName + originalExt;
+        return new File([file], finalName, { type: file.type });
+      }
+      return file;
+    });
 
-    // Client-side pre-validation for allowed extension & size
-    const allowedExtensions = ['.pdf', '.docx', '.xlsx', '.pptx', '.png', '.jpg', '.jpeg', '.msg', '.eml'];
-    const ext = finalName.includes('.') ? finalName.substring(finalName.lastIndexOf('.')).toLowerCase() : '';
-    if (!ext || !allowedExtensions.includes(ext)) {
-      this.errorMessage.set('That file type is not supported.');
-      return;
-    }
-
-    const maxFileSizeBytes = 50 * 1024 * 1024; // 50MB
-    if (finalFile.size > maxFileSizeBytes) {
-      this.errorMessage.set('Files must be 50 MB or smaller.');
-      return;
+    // Client-side validation: extension + size for every file
+    for (const f of finalFiles) {
+      const ext = f.name.includes('.')
+        ? f.name.substring(f.name.lastIndexOf('.')).toLowerCase()
+        : '';
+      if (!ext || !DOCUMENT_CONFIG.ALLOWED_EXTENSIONS.includes(ext)) {
+        this.errorMessage.set(DOCUMENT_MESSAGES.UPLOAD_UNSUPPORTED_FILE_TYPE(f.name));
+        return;
+      }
+      if (f.size > DOCUMENT_CONFIG.MAX_FILE_SIZE_BYTES) {
+        this.errorMessage.set(DOCUMENT_MESSAGES.UPLOAD_FILE_EXCEEDS_SIZE_LIMIT(f.name));
+        return;
+      }
     }
 
     this.isUploading.set(true);
     this.errorMessage.set(null);
 
-    this.documentService.uploadDocument(finalFile, this.engagementId, catId).subscribe({
+    this.documentService.uploadDocuments(finalFiles, this.engagementId(), catId, this.selectedVisibility()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (results) => {
         this.isUploading.set(false);
-        const failed = results.find((r) => !r.success);
-        if (failed && failed.errors && failed.errors.length > 0) {
-          this.errorMessage.set(failed.errors.join(', '));
+        const failed = results.filter((r) => !r.success);
+        if (failed.length > 0) {
+          const msgs = failed.flatMap((r) => r.errors ?? [r.fileName ?? 'Unknown file']);
+          this.errorMessage.set(msgs.join(', '));
         } else {
           this.uploaded.emit();
           this.closed.emit();
@@ -134,13 +163,12 @@ export class UploadDocumentDialogComponent implements OnInit {
 
   private extractErrorMessage(err: any): string {
     if (err?.name === 'TypeError' || err?.status === 0 || (typeof err?.message === 'string' && err.message.toLowerCase().includes('fetch'))) {
-      return 'File exceeds server upload size limit or network connection failed.';
+      return DOCUMENT_MESSAGES.UPLOAD_NETWORK_OR_SERVER_LIMIT_ERROR;
     }
-
     const body = err?.error;
     if (Array.isArray(body)) {
-      return body.flatMap((r: any) => r.errors || []).join(', ') || 'Failed to upload document.';
+      return body.flatMap((r: any) => r.errors || []).join(', ') || DOCUMENT_MESSAGES.UPLOAD_FAILED;
     }
-    return body?.message || (typeof body === 'string' ? body : 'Failed to upload document.');
+    return body?.message || (typeof body === 'string' ? body : DOCUMENT_MESSAGES.UPLOAD_FAILED);
   }
 }

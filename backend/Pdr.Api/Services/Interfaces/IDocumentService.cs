@@ -13,5 +13,7 @@ public interface IDocumentService
 
     Task<IEnumerable<DocumentCategoryDto>> GetCategoriesAsync();
 
-    Task<bool> DeleteDocumentAsync(int id);
+    Task<bool> DeleteDocumentAsync(int id, string reason);
+
+    Task<DocumentResponseDto> UpdateDocumentVisibilityAsync(int id, UpdateDocumentVisibilityDto dto);
 }

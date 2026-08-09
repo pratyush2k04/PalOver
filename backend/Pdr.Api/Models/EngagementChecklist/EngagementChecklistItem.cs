@@ -15,6 +15,15 @@ public class EngagementChecklistItem : BaseAuditableEntity
     public bool IsApplicable { get; set; } = true;
     public string Status { get; set; } = "Incomplete";
 
+    // Applicability exemption fields
+    public string? NotApplicableReason { get; set; }
+    public string ExemptionStatus { get; set; } = "None"; // "None" | "Pending" | "Approved" | "Rejected"
+    public int? ExemptionRequestedById { get; set; }
+    public DateTime? ExemptionRequestedAt { get; set; }
+    public int? ExemptionReviewedById { get; set; }
+    public DateTime? ExemptionReviewedAt { get; set; }
+    public string? ExemptionRejectionReason { get; set; }
+
     // Navigation properties
     [System.Text.Json.Serialization.JsonIgnore]
     public EngagementChecklist EngagementChecklist { get; set; } = null!;
