@@ -202,32 +202,16 @@ shared/constants/app.constants.ts
 - Fix typing problems instead of bypassing TypeScript.
 
 ---
-
 # Angular Styling
 
-- Use SCSS.
-- Do not use Angular Material unless explicitly requested.
-- Reuse existing design tokens, CSS variables, and shared styles.
-- Avoid inline styles.
-- Prefer responsive layouts.
-- Use `rem` instead of `px` for spacing, sizing, typography, margins, padding, gaps, and border radius.
-- `px` is acceptable for thin borders such as `1px` or when technically required.
-- Use HEX colors instead of RGB/RGBA.
-- Prefer existing CSS variables/design tokens over hardcoded colors.
-
-Example:
-
-```scss
-.card {
-  padding: 1.5rem;
-  font-size: 1rem;
-  color: #1a1a1a;
-  border: 1px solid #e5e5e5;
-}
-```
-
----
-
+- Use SCSS
+- Reuse existing design tokens, CSS variables, mixins, and shared styles before creating new ones.
+- Use tokens for reusable colors, spacing, typography, breakpoints, and sizing; use semantic names instead of raw values.
+- Use SCSS mixins for repeated styling patterns; avoid duplicating the same styles across files.
+- Keep shared tokens and mixins in the project's shared styling/theme location.
+- Avoid inline styles and prefer responsive layouts.
+- Use `rem` for spacing, sizing, typography, margins, padding, gaps, and border radius
+- Use HEX colors or existing CSS variables/tokens; avoid RGB/RGBA 
 # Angular Testing
 
 Do not generate `.spec.ts` files or frontend unit tests unless explicitly requested.
@@ -555,4 +539,3 @@ focused change > large refactor
 existing infrastructure > new infrastructure
 
 Consistency with the existing repository is more important than theoretical architectural perfection.
-````
