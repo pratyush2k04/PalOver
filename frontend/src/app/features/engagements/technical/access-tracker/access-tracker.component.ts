@@ -4,9 +4,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { catchError, of } from 'rxjs';
 import { TECHNICAL_READINESS_ROLES } from '../../../../constants/app.constants';
-import { TechnicalReadinessService } from '../services/technical-readiness.service';
-import { AuthService } from '../../../../services/auth';
-import { AccessItemDto, AccessItemStatus } from '../models/technical-readiness.model';
+import { TechnicalReadinessService } from '../../services/technical-readiness.service';
+import { AuthService } from 'src/app/services/auth';
+import { AccessItemDto, AccessItemStatus } from '../../models/technical-readiness.model';
 import { KickoffReadinessDto, KickoffReadinessService } from '../../../../services/kickoff-readiness.service';
 import { FlaggedItemsBannerComponent, FlaggedItem } from '../../../../shared/flagged-items-banner/flagged-items-banner.component';
 
