@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { PersonService } from '../../../services/person.service';
-import { PersonDto, PersonType } from '../../../models/person.model';
-import { LoaderService } from '../../../core/loading/loader.service';
-import { ToastService } from '../../../services/toast';
-import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog';
+import { PersonService } from '../../../../services/person.service';
+import { PersonDto, PersonType } from '../../../../models/person.model';
+import { LoaderService } from '../../../../core/loading/loader.service';
+import { ToastService } from '../../../../shared/toast/toast.service';
+import { ConfirmDialogComponent } from '../../../../shared/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-people',
@@ -41,6 +41,22 @@ export class PeopleComponent {
   formPersonType = signal<number>(PersonType.Internal);
 
   PersonTypeEnum = PersonType;
+
+  isFormDirty = computed(() => {
+    const edit = this.editingPerson();
+    if (!edit) {
+      return true;
+    }
+    const numType = Number(edit.personType);
+    const originalType = numType === 2 || edit.personType === 'Client' || edit.personType === PersonType.Client
+      ? PersonType.Client
+      : PersonType.Internal;
+    return (
+      this.formName().trim() !== edit.name ||
+      this.formRole().trim() !== edit.role ||
+      this.formPersonType() !== originalType
+    );
+  });
 
   constructor() {
     effect(() => {

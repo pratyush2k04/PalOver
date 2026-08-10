@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use '../../../../../styles/tokens' as *;
 
 .handover-container {
@@ -324,7 +325,7 @@ select {
 }
 
 .rejected-placeholder {
-  color: mix($color-danger, $color-text, 70%);
+  color: color.mix($color-danger, $color-text, 70%);
   font-size: 1.1rem;
   font-weight: 600;
   text-align: center;

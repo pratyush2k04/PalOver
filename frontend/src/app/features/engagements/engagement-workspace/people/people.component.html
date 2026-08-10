@@ -130,7 +130,7 @@
 
         <div class="modal-footer">
           <button type="button" class="btn-cancel" (click)="closeFormModal()">Cancel</button>
-          <button type="submit" class="btn-save" [disabled]="isSubmitting() || !formName().trim() || !formRole().trim()">
+          <button type="submit" class="btn-save" [disabled]="isSubmitting() || !formName().trim() || !formRole().trim() || !isFormDirty()">
             {{ isSubmitting() ? 'Saving...' : (editingPerson() ? 'Update' : 'Add') }}
           </button>
         </div>

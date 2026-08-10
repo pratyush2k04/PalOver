@@ -85,7 +85,6 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new DocumentConfiguration());
         modelBuilder.ApplyConfiguration(new PersonConfiguration());
         modelBuilder.ApplyConfiguration(new CommunicationCadenceConfiguration());
-        modelBuilder.ApplyConfiguration(new PersonConfiguration());
 
         // Engagement & Engagement Checklist
         modelBuilder.ApplyConfiguration(new EngagementConfiguration());
