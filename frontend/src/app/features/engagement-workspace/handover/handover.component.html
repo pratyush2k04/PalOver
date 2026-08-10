@@ -143,9 +143,9 @@
                   {{ c.realisticCommitment.isPossible ? 'Mark Impossible' : 'Marked Impossible' }}
                 </button>
 
-                <button *ngIf="commitmentHasGap(c) && !c.realisticCommitment.acknowledgementMessage && isProjectManagement() && !isSubmitted()"
+                <button *ngIf="commitmentNeedsAcknowledgement(c) && !c.realisticCommitment.acknowledgementMessage && isProjectManagement() && !isSubmitted()"
                   class="btn-warning" (click)="startEditRealisticCommitment(c)">
-                  Acknowledge Estimation Gap
+                  Acknowledge Timeline Mismatch
                 </button>
               </ng-container>
               <ng-template #noRealisticYet>
@@ -167,13 +167,10 @@
                 </select>
               </div>
 
-              <div *ngIf="editFormHasGap(c)" class="form-group">
-                <label>Acknowledge Estimation Gap</label>
+              <div class="form-group">
+                <label>Acknowledgement Message{{ editFormNeedsAcknowledgement(c) ? ' (Required)' : '' }}</label>
                 <input type="text" [(ngModel)]="realisticEditForm().acknowledgementMessage" [ngModelOptions]="{standalone: true}"
                   maxlength="2000" placeholder="Why does the realistic estimate differ?">
-                <div class="warning-text" *ngIf="acknowledgementWarningVisible()">
-                  You've changed your realistic estimates. Consider revisiting your acknowledgement message.
-                </div>
               </div>
 
               <ul class="inline-errors" *ngIf="realisticEditErrors().length > 0">

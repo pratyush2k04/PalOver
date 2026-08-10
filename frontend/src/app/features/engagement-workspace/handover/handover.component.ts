@@ -19,31 +19,8 @@ const MAX_FREE_TEXT_LENGTH = 2000;
 const SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
 const TIMELINE_UNITS = ['Days', 'Weeks', 'Months'] as const;
 
-const SECONDS_PER_DAY = 86400;
-const SECONDS_PER_WEEK = SECONDS_PER_DAY * 7;
-const SECONDS_PER_MONTH = SECONDS_PER_DAY * 30;
-const GAP_THRESHOLD_SECONDS = SECONDS_PER_DAY * 3;
-const GAP_THRESHOLD_RATIO = 0.25;
-
-function toSeconds(timeline: number, unit: string): number {
-  switch (unit) {
-    case 'Days': return timeline * SECONDS_PER_DAY;
-    case 'Weeks': return timeline * SECONDS_PER_WEEK;
-    case 'Months': return timeline * SECONDS_PER_MONTH;
-    default: return timeline * SECONDS_PER_DAY;
-  }
-}
-
-function hasEstimationGap(promisedTimeline: number, promisedUnit: string, realisticTimeline: number, realisticUnit: string): boolean {
-  const promisedSeconds = toSeconds(promisedTimeline, promisedUnit);
-  const realisticSeconds = toSeconds(realisticTimeline, realisticUnit);
-  const diff = Math.abs(realisticSeconds - promisedSeconds);
-
-  if (diff > GAP_THRESHOLD_SECONDS) {
-    return true;
-  }
-
-  return promisedSeconds > 0 && diff / promisedSeconds > GAP_THRESHOLD_RATIO;
+function timelinesMatch(timeline1: number, unit1: string, timeline2: number, unit2: string): boolean {
+  return timeline1 === timeline2 && unit1 === unit2;
 }
 
 interface RealisticEditForm {
@@ -101,7 +78,6 @@ export class HandoverComponent {
 
   editingRealisticCommitmentId = signal<number | null>(null);
   realisticEditForm = signal<RealisticEditForm>(this.emptyRealisticEditForm());
-  private originalAcknowledgementMessage = signal<string>('');
 
   editCommitmentErrors = signal<string[]>([]);
   realisticEditErrors = signal<string[]>([]);
@@ -132,11 +108,6 @@ export class HandoverComponent {
 
   isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
   isProjectManagement = computed(() => this.authService.hasRole('Project Management'));
-
-  acknowledgementWarningVisible = computed(() => {
-    return this.originalAcknowledgementMessage() !== '' &&
-      this.realisticEditForm().acknowledgementMessage === this.originalAcknowledgementMessage();
-  });
 
   constructor() {
     effect(() => {
@@ -341,7 +312,6 @@ export class HandoverComponent {
     this.editingRealisticCommitmentId.set(c.commitmentId);
     const existing = c.realisticCommitment;
     const ackMessage = existing?.acknowledgementMessage || '';
-    this.originalAcknowledgementMessage.set(ackMessage);
     this.realisticEditForm.set({
       description: existing?.description || '',
       timeline: existing?.timeline || c.timeline,
@@ -353,18 +323,17 @@ export class HandoverComponent {
 
   cancelEditRealisticCommitment() {
     this.editingRealisticCommitmentId.set(null);
-    this.originalAcknowledgementMessage.set('');
     this.realisticEditErrors.set([]);
   }
 
-  commitmentHasGap(c: CommitmentDto): boolean {
+  commitmentNeedsAcknowledgement(c: CommitmentDto): boolean {
     if (!c.realisticCommitment) return false;
-    return hasEstimationGap(c.timeline, c.timelineUnit, c.realisticCommitment.timeline, c.realisticCommitment.timelineUnit);
+    return !timelinesMatch(c.timeline, c.timelineUnit, c.realisticCommitment.timeline, c.realisticCommitment.timelineUnit);
   }
 
-  editFormHasGap(c: CommitmentDto): boolean {
+  editFormNeedsAcknowledgement(c: CommitmentDto): boolean {
     const form = this.realisticEditForm();
-    return hasEstimationGap(c.timeline, c.timelineUnit, form.timeline, form.timelineUnit);
+    return !timelinesMatch(c.timeline, c.timelineUnit, form.timeline, form.timelineUnit);
   }
 
   saveRealisticCommitment(c: CommitmentDto) {
@@ -374,6 +343,9 @@ export class HandoverComponent {
     const form = this.realisticEditForm();
     const errors: string[] = [];
     if (!form.description) errors.push('Description is required.');
+    if (this.editFormNeedsAcknowledgement(c) && !form.acknowledgementMessage) {
+      errors.push('An acknowledgement message is required when the realistic timeline differs from the promised timeline.');
+    }
 
     if (errors.length > 0) {
       this.realisticEditErrors.set(errors);
@@ -400,7 +372,6 @@ export class HandoverComponent {
           item.commitmentId === c.commitmentId ? { ...item, realisticCommitment: data } : item
         ));
         this.editingRealisticCommitmentId.set(null);
-        this.originalAcknowledgementMessage.set('');
         this.showMessage('Realistic commitment saved', false);
       },
       error: (err) => {
