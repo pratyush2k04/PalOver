@@ -659,6 +659,16 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
+                            UserId = 3,
+                            EngagementId = 1
+                        },
+                        new
+                        {
+                            UserId = 4,
+                            EngagementId = 1
+                        },
+                        new
+                        {
                             UserId = 2,
                             EngagementId = 2
                         },
