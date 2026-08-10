@@ -27,18 +27,26 @@ public class KickoffReadinessService(
             .GetByCommitmentIdsAsync(commitments.Select(c => c.CommitmentId).ToList());
         var accessItems = await accessTrackerRepository.GetAccessItemsByEngagementIdAsync(engagementId);
 
-        var checks = new List<ReadinessCheck>
-        {
-            EvaluateHandoverMandatoryFields(handover),
-            EvaluateCommitments(commitments, realisticByCommitmentId),
-            EvaluateAccessItems(accessItems),
-        };
+        var handoverCheck = EvaluateHandoverMandatoryFields(handover);
+        var commitmentsCheck = EvaluateCommitments(commitments, realisticByCommitmentId);
+        var accessItemsCheck = EvaluateAccessItems(accessItems);
+
+        var checks = new List<ReadinessCheck> { handoverCheck, commitmentsCheck, accessItemsCheck };
 
         var totalApplicable = checks.Sum(c => c.Applicable);
         var totalPassed = checks.Sum(c => c.Passed);
         var score = totalApplicable == 0 ? 100 : (int)Math.Round(totalPassed * 100.0 / totalApplicable);
 
-        return new KickoffReadinessDto(score, totalApplicable, totalPassed);
+        return new KickoffReadinessDto(
+            score,
+            totalApplicable,
+            totalPassed,
+            handoverCheck.Applicable,
+            handoverCheck.Passed,
+            commitmentsCheck.Applicable,
+            commitmentsCheck.Passed,
+            accessItemsCheck.Applicable,
+            accessItemsCheck.Passed);
     }
 
     public async Task<bool> IsFullyReadyAsync(int engagementId)
