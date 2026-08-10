@@ -95,7 +95,7 @@ public class KickoffReadinessService(
     {
         var failingIds = commitments
             .Where(c => !realisticByCommitmentId.TryGetValue(c.CommitmentId, out var realistic) ||
-                        string.IsNullOrWhiteSpace(realistic.AcknowledgementMessage))
+                        !CommitmentIsAcknowledged(c, realistic))
             .Select(c => c.CommitmentId)
             .ToList();
 
@@ -104,6 +104,10 @@ public class KickoffReadinessService(
             Passed: commitments.Count - failingIds.Count,
             FailingIds: failingIds);
     }
+
+    private static bool CommitmentIsAcknowledged(Commitment commitment, RealisticCommitment realistic) =>
+        RealisticCommitmentService.TimelinesMatch(commitment.Timeline, commitment.TimelineUnit, realistic.Timeline, realistic.TimelineUnit) ||
+        !string.IsNullOrWhiteSpace(realistic.AcknowledgementMessage);
 
     private static ReadinessCheck EvaluateAccessItems(List<AccessItem> accessItems)
     {
