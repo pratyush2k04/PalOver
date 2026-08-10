@@ -4,7 +4,7 @@ import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@ang
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TECHNICAL_READINESS_ROUTES } from 'src/app/constants/technical-readiness.constants';
 import {  EngagementService } from '../services/engagement.service';
-import { KickoffReadinessDto, KickoffReadinessService } from '../../services/kickoff-readiness.service';
+import { KickoffReadinessDto, KickoffReadinessService } from 'src/app/services/kickoff-readiness.service';
 import { ENGAGEMENT_WORKSPACE_CONFIG } from 'src/app/constants/engagements.constants';
 import { EngagementInfoDto } from '../models/engagement.model';
 
