@@ -14,6 +14,27 @@
     </div>
   </div>
 
+  <!-- Flagged Items Summary -->
+  @if (kickoffReadiness()) {
+    @if (blockedItems().length > 0 || kickoffReadiness()!.commitmentsApplicable > kickoffReadiness()!.commitmentsPassed || kickoffReadiness()!.handoverFieldsApplicable > kickoffReadiness()!.handoverFieldsPassed) {
+      <div class="flagged-items-banner">
+        @if (blockedItems().length > 0) {
+          <p>&#9888; {{ blockedItems().length }} access item(s) blocked</p>
+        }
+        @if (kickoffReadiness()!.commitmentsApplicable > kickoffReadiness()!.commitmentsPassed) {
+          <p>&#9888; {{ kickoffReadiness()!.commitmentsApplicable - kickoffReadiness()!.commitmentsPassed }} commitment(s) missing acknowledgement</p>
+        }
+        @if (kickoffReadiness()!.handoverFieldsApplicable > kickoffReadiness()!.handoverFieldsPassed) {
+          <p>&#9888; {{ kickoffReadiness()!.handoverFieldsApplicable - kickoffReadiness()!.handoverFieldsPassed }} mandatory handover field(s) incomplete</p>
+        }
+      </div>
+    } @else {
+      <div class="flagged-items-banner flagged-items-banner-clear">
+        <p>All kickoff-readiness checks passed.</p>
+      </div>
+    }
+  }
+
   <!-- Loading state -->
   @if (isLoading()) {
     <div class="loading-container">
