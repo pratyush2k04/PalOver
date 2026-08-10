@@ -8,13 +8,14 @@ import { TechnicalReadinessService } from '../services/technical-readiness.servi
 import { AuthService } from '../../../../services/auth';
 import { AccessItemDto, AccessItemStatus } from '../models/technical-readiness.model';
 import { KickoffReadinessDto, KickoffReadinessService } from '../../../../services/kickoff-readiness.service';
+import { FlaggedItemsBannerComponent, FlaggedItem } from '../../../../shared/flagged-items-banner/flagged-items-banner.component';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
 
 @Component({
   selector: 'app-access-tracker',
   standalone: true,
-  imports: [CommonModule, FormsModule, InlineSVGModule],
+  imports: [CommonModule, FormsModule, InlineSVGModule, FlaggedItemsBannerComponent],
   templateUrl: './access-tracker.component.html',
   styleUrl: './access-tracker.component.scss'
 })
@@ -33,6 +34,9 @@ export class AccessTrackerComponent {
 
   kickoffReadiness = signal<KickoffReadinessDto | null>(null);
   blockedItems = computed(() => this.accessItems().filter(i => i.status === 'Blocked'));
+  accessTrackerFlaggedItems = computed<FlaggedItem[]>(() => [
+    { label: 'access item(s) blocked', count: this.blockedItems().length }
+  ]);
 
   // Add Item Modal state
   isAddModalOpen = signal<boolean>(false);
