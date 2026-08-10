@@ -76,16 +76,140 @@
           <thead>
             <tr>
               <th class="col-item">ITEM</th>
+              <th class="col-owner">OWNER</th>
               <th class="col-status">STATUS</th>
-              <th class="col-actions">ACTIONS</th>
+              @if (canPerformAnyAction()) {
+                <th class="col-actions">ACTIONS</th>
+              }
             </tr>
           </thead>
           <tbody>
             @for (item of category.items; track item.id) {
-              <tr class="checklist-row" [class.row-not-applicable]="!item.isApplicable">
+              @if (item.isApplicable) {
+                <tr class="checklist-row" [class.row-blocked]="item.status === 'Blocked'">
+                  <td class="cell-item">
+                    <div class="item-title-wrapper">
+                      <span class="item-title">
+                        {{ item.title }}
+                      </span>
+                      @if (item.isMandatory) {
+                        <span class="pill pill-mandatory">Mandatory</span>
+                      } @else {
+                        <span class="pill pill-optional">Optional</span>
+                      }
+                    </div>
+
+                    @if (item.blockReason) {
+                      <div class="item-reason-note">
+                        <span class="reason-label">Blocked:</span> {{ item.blockReason }}
+                      </div>
+                    }
+                  </td>
+
+                  <td class="cell-owner">
+                    @if (canToggleStatus()) {
+                      <select
+                        class="owner-select"
+                        [value]="item.ownerId ?? ''"
+                        [disabled]="isUpdating()"
+                        (change)="onOwnerChange(item, $any($event.target).value)">
+                        <option value="">Unassigned</option>
+                        @for (person of people(); track person.personId) {
+                          <option [value]="person.personId">{{ person.name }}</option>
+                        }
+                      </select>
+                    } @else {
+                      {{ item.ownerName || 'Unassigned' }}
+                    }
+                  </td>
+
+                  <td class="cell-status">
+                    @if (item.exemptionStatus === 'Pending') {
+                      <span class="pill pill-pending">Pending Approval</span>
+                    } @else if (item.status === 'Blocked') {
+                      <span class="pill pill-blocked">Blocked</span>
+                    } @else if (item.status === 'Complete') {
+                      <span class="pill pill-complete">Complete</span>
+                    } @else {
+                      <span class="pill pill-incomplete">Incomplete</span>
+                    }
+                  </td>
+
+                  @if (canPerformAnyAction()) {
+                    <td class="cell-actions">
+                      <div class="actions-group">
+                        <!-- Status Toggle / Unblock (PM & Tech Lead) -->
+                        @if (canToggleStatus()) {
+                          @if (item.status === 'Blocked') {
+                            <button type="button" class="btn btn-unblock" [disabled]="isUpdating()" (click)="unblockItem(item)">
+                              Unblock
+                            </button>
+                          } @else if (item.status === 'Complete') {
+                            <button type="button" class="btn btn-reopen" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
+                              Reopen
+                            </button>
+                          } @else {
+                            <button type="button" class="btn btn-complete" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
+                              Complete
+                            </button>
+                          }
+
+                          @if (item.status !== 'Blocked') {
+                            <button type="button" class="btn-icon btn-block" [disabled]="isUpdating()" (click)="openBlockDialog(item)" title="Flag as Blocked">
+                              🚩
+                            </button>
+                          }
+                        }
+
+                        <!-- Applicability Actions (PM only) -->
+                        @if (canChangeApplicability() && item.exemptionStatus !== 'Pending') {
+                          <button type="button" class="btn-icon btn-na" [disabled]="isUpdating()" (click)="openMarkNaDialog(item)" title="Mark Not Applicable">
+                            ✕
+                          </button>
+                        }
+
+                        <!-- Leadership Exemption Review -->
+                        @if (isLeadership() && item.exemptionStatus === 'Pending') {
+                          <button type="button" class="btn btn-review" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
+                            Review Request
+                          </button>
+                        }
+                      </div>
+                    </td>
+                  }
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <!-- Consolidated Not Applicable Items Section -->
+    @if (notApplicableItems().length > 0) {
+      <div class="category-card not-applicable-section">
+        <div class="category-header">
+          <span class="category-name">NOT APPLICABLE ITEMS</span>
+          <span class="category-count">{{ notApplicableItems().length }} item{{ notApplicableItems().length !== 1 ? 's' : '' }}</span>
+        </div>
+
+        <table class="checklist-table">
+          <thead>
+            <tr>
+              <th class="col-item">ITEM</th>
+              <th class="col-category">CATEGORY</th>
+              <th class="col-reason">REASON</th>
+              @if (canChangeApplicability() || isLeadership()) {
+                <th class="col-actions">ACTIONS</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of notApplicableItems(); track item.id) {
+              <tr class="checklist-row row-not-applicable">
                 <td class="cell-item">
                   <div class="item-title-wrapper">
-                    <span class="item-title" [class.text-strikethrough]="!item.isApplicable && item.exemptionStatus === 'Approved'">
+                    <span class="item-title" [class.text-strikethrough]="item.exemptionStatus === 'Approved'">
                       {{ item.title }}
                     </span>
                     @if (item.isMandatory) {
@@ -94,67 +218,36 @@
                       <span class="pill pill-optional">Optional</span>
                     }
                   </div>
+                </td>
 
+                <td class="cell-category">{{ item.categoryName }}</td>
+
+                <td class="cell-reason">
                   @if (item.notApplicableReason) {
-                    <div class="item-reason-note">
-                      <span class="reason-label">Reason:</span> {{ item.notApplicableReason }}
-                      @if (item.exemptionRejectionReason) {
-                        <span class="rejection-note">(Rejected: {{ item.exemptionRejectionReason }})</span>
-                      }
-                    </div>
-                  }
-                </td>
-
-                <td class="cell-status">
-                  @if (!item.isApplicable && item.exemptionStatus === 'Approved') {
-                    <span class="pill pill-na">Not Applicable</span>
-                  } @else if (!item.isApplicable && !item.isMandatory) {
-                    <span class="pill pill-na">Not Applicable</span>
-                  } @else if (item.exemptionStatus === 'Pending') {
-                    <span class="pill pill-pending">Pending Approval</span>
-                  } @else if (item.status === 'Complete') {
-                    <span class="pill pill-complete">Complete</span>
-                  } @else {
-                    <span class="pill pill-incomplete">Incomplete</span>
-                  }
-                </td>
-
-                <td class="cell-actions">
-                  <div class="actions-group">
-                    <!-- Status Toggle (PM & Tech Lead) -->
-                    @if (canToggleStatus() && item.isApplicable) {
-                      @if (item.status === 'Complete') {
-                        <button type="button" class="btn btn-reopen" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
-                          Reopen
-                        </button>
-                      } @else {
-                        <button type="button" class="btn btn-complete" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
-                          Complete
-                        </button>
-                      }
+                    <span class="reason-label">Reason:</span> {{ item.notApplicableReason }}
+                    @if (item.exemptionRejectionReason) {
+                      <span class="rejection-note">(Rejected: {{ item.exemptionRejectionReason }})</span>
                     }
+                  }
+                </td>
 
-                    <!-- Applicability Actions (PM only) -->
-                    @if (canChangeApplicability()) {
-                      @if (item.isApplicable && item.exemptionStatus !== 'Pending') {
-                        <button type="button" class="btn-icon btn-na" [disabled]="isUpdating()" (click)="openMarkNaDialog(item)" title="Mark Not Applicable">
-                          ✕
-                        </button>
-                      } @else if (!item.isApplicable || item.exemptionStatus === 'Pending') {
+                @if (canChangeApplicability() || isLeadership()) {
+                  <td class="cell-actions">
+                    <div class="actions-group">
+                      @if (canChangeApplicability()) {
                         <button type="button" class="btn btn-restore" [disabled]="isUpdating()" (click)="makeItemApplicable(item)">
                           Make Applicable
                         </button>
                       }
-                    }
 
-                    <!-- Leadership Exemption Review -->
-                    @if (isLeadership() && item.exemptionStatus === 'Pending') {
-                      <button type="button" class="btn btn-review" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
-                        Review Request
-                      </button>
-                    }
-                  </div>
-                </td>
+                      @if (isLeadership() && item.exemptionStatus === 'Pending') {
+                        <button type="button" class="btn btn-review" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
+                          Review Request
+                        </button>
+                      }
+                    </div>
+                  </td>
+                }
               </tr>
             }
           </tbody>
