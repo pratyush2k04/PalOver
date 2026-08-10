@@ -2,8 +2,13 @@
 
   <div class="header">
     <h2>Pre-Sales to Delivery Handover</h2>
-    <div class="status-badge" [ngClass]="{'submitted': isSubmitted(), 'draft': !isSubmitted()}">
-      Status: {{ handover()?.status || 'Not Started' }}
+    <div class="header-status-group">
+      <div class="status-report" [ngClass]="{'submitted': isSubmitted(), 'draft': !isSubmitted()}">
+        <span class="status-report-dot"></span>
+        <span class="status-report-text">{{ handover()?.status || 'Not Started' }}</span>
+      </div>
+      <button *ngIf="isPreSales()" class="btn-secondary" (click)="saveDraft()" [disabled]="isSaving() || isSubmitted()">Save Draft</button>
+      <button class="btn-success" (click)="submitHandover()" [disabled]="isSaving() || isSubmitted()">Submit Handover</button>
     </div>
   </div>
 
@@ -11,7 +16,7 @@
     {{ message() }}
   </div>
 
-  <form [formGroup]="clientContextForm">
+  <form [formGroup]="clientContextForm" *ngIf="isPreSales()">
     <div class="section client-context">
       <h3>Client Context</h3>
 
@@ -53,6 +58,45 @@
         </div>
       </div>
     </div>
+  </form>
+
+  <div class="section client-context client-context-readonly" *ngIf="!isPreSales()">
+    <h3>Client Context</h3>
+
+    <div class="readonly-field">
+      <span class="readonly-label">Client Background</span>
+      <p class="readonly-value" [class.readonly-value-empty]="!handover()?.clientBackground">
+        {{ handover()?.clientBackground || 'Not provided' }}
+      </p>
+    </div>
+
+    <div class="readonly-field">
+      <span class="readonly-label">Business Problem</span>
+      <p class="readonly-value" [class.readonly-value-empty]="!handover()?.businessProblem">
+        {{ handover()?.businessProblem || 'Not provided' }}
+      </p>
+    </div>
+
+    <div class="readonly-field">
+      <span class="readonly-label">Client Sentiment</span>
+      <span class="sentiment-badge" *ngIf="handover()?.clientSentiment; else noSentiment"
+        [ngClass]="'sentiment-' + (handover()?.clientSentiment || '').toLowerCase()">
+        {{ handover()?.clientSentiment }}
+      </span>
+      <ng-template #noSentiment>
+        <p class="readonly-value readonly-value-empty">Not provided</p>
+      </ng-template>
+    </div>
+
+    <div class="readonly-field">
+      <span class="readonly-label">Deal Origin</span>
+      <p class="readonly-value" [class.readonly-value-empty]="!handover()?.dealOrigin">
+        {{ handover()?.dealOrigin || 'Not provided' }}
+      </p>
+    </div>
+  </div>
+
+  <form [formGroup]="clientContextForm">
 
     <div class="section commitments">
       <h3>Commitments</h3>
@@ -215,11 +259,6 @@
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="actions">
-      <button class="btn-secondary" (click)="saveDraft()" [disabled]="isSaving() || isSubmitted()">Save Draft</button>
-      <button class="btn-success" (click)="submitHandover()" [disabled]="isSaving() || isSubmitted()">Submit Handover</button>
     </div>
   </form>
 

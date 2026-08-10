@@ -1,7 +1,7 @@
 import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../../services/auth';
 import {
@@ -39,7 +39,11 @@ interface RealisticEditForm {
   styleUrl: './handover.component.scss'
 })
 export class HandoverComponent {
+  private static readonly KICKOFF_NOT_READY_MESSAGE =
+    'Engagement is not kickoff-ready. All mandatory items must be complete before submitting the handover.';
+
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private handoverService = inject(HandoverService);
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
@@ -203,8 +207,15 @@ export class HandoverComponent {
         this.isSaving.set(false);
       },
       error: (err) => {
-        this.showMessage(this.extractErrorMessage(err, 'Failed to submit handover'), true);
+        const errorMessage = this.extractErrorMessage(err, 'Failed to submit handover');
+        this.showMessage(errorMessage, true);
         this.isSaving.set(false);
+
+        if (errorMessage === HandoverComponent.KICKOFF_NOT_READY_MESSAGE) {
+          setTimeout(() => {
+            this.router.navigate(['../kickoff'], { relativeTo: this.route });
+          }, 1500);
+        }
       }
     });
   }
