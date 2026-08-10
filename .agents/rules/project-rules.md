@@ -202,32 +202,16 @@ shared/constants/app.constants.ts
 - Fix typing problems instead of bypassing TypeScript.
 
 ---
-
 # Angular Styling
 
-- Use SCSS.
-- Do not use Angular Material unless explicitly requested.
-- Reuse existing design tokens, CSS variables, and shared styles.
-- Avoid inline styles.
-- Prefer responsive layouts.
-- Use `rem` instead of `px` for spacing, sizing, typography, margins, padding, gaps, and border radius.
-- `px` is acceptable for thin borders such as `1px` or when technically required.
-- Use HEX colors instead of RGB/RGBA.
-- Prefer existing CSS variables/design tokens over hardcoded colors.
-
-Example:
-
-```scss
-.card {
-  padding: 1.5rem;
-  font-size: 1rem;
-  color: #1a1a1a;
-  border: 1px solid #e5e5e5;
-}
-```
-
----
-
+- Use SCSS
+- Reuse existing design tokens, CSS variables, mixins, and shared styles before creating new ones.
+- Use tokens for reusable colors, spacing, typography, breakpoints, and sizing; use semantic names instead of raw values.
+- Use SCSS mixins for repeated styling patterns; avoid duplicating the same styles across files.
+- Keep shared tokens and mixins in the project's shared styling/theme location.
+- Avoid inline styles and prefer responsive layouts.
+- Use `rem` for spacing, sizing, typography, margins, padding, gaps, and border radius
+- Use HEX colors or existing CSS variables/tokens; avoid RGB/RGBA 
 # Angular Testing
 
 Do not generate `.spec.ts` files or frontend unit tests unless explicitly requested.
@@ -355,6 +339,20 @@ Never expose internal exception details to clients.
 - Do not introduce a second API response format.
 
 ---
+## Swagger Documentation
+
+Every public API endpoint must include Swagger/OpenAPI documentation.
+
+Document:
+- endpoint summary
+- endpoint description
+- request body
+- path parameters
+- query parameters
+- response types and status codes
+- possible error responses
+
+Swagger documentation should remain up to date whenever an endpoint changes.
 
 # Logging
 
@@ -423,6 +421,52 @@ IEngagementRepository
 - Comments should explain **why**, not obvious code behavior.
 
 ---
+# Constants
+
+Avoid hardcoded values that are reused across the application.
+
+Extract shared constants such as:
+
+- UI strings
+- route segments
+- API route paths
+- endpoint paths
+- claim names
+- role names
+- policy names
+- status values
+- repeated keys
+- configuration keys
+- regex patterns
+## Naming Consistency
+
+When creating new APIs or features, keep naming consistent across the entire stack.
+
+## Angular
+
+Shared application constants belong in:
+
+```text
+shared/constants/app.constants.ts
+```
+
+Do not create multiple constants files for shared application values unless they represent a separate reusable domain.
+
+## .NET
+
+Store reusable constants in dedicated constants classes grouped by responsibility.
+
+Examples:
+
+```text
+Constants/
+├── ClaimConstants.cs
+├── RoleConstants.cs
+├── PolicyConstants.cs
+└── AppConstants.cs
+```
+
+Avoid repeating the same string literal in multiple locations.
 
 # Git & Change Safety
 

@@ -17,10 +17,5 @@ public class PersonDtoValidator : AbstractValidator<PersonDto>
 
         RuleFor(x => x.PersonType)
             .IsInEnum().WithMessage("PersonType must be a valid type (Internal or Client).");
-
-        RuleFor(x => x.Email)
-            .EmailAddress().WithMessage("Email format is invalid.")
-            .MaximumLength(255).WithMessage("Email must not exceed 255 characters.")
-            .When(x => !string.IsNullOrWhiteSpace(x.Email));
     }
 }

@@ -1,0 +1,35 @@
+<div class="workspace-container">
+  <div class="workspace-header">
+    <div class="header-info">
+      <h1>Master Checklist</h1>
+      <p>Manage the central checklist template for all engagements.</p>
+    </div>
+  </div>
+
+  <div class="workspace-tabs" role="tablist" (keydown)="onTabKeydown($event)">
+    @for (tab of tabs(); track tab.label; let i = $index) {
+      @if (tab.enabled) {
+        <a [routerLink]="tab.route"
+           routerLinkActive="active"
+           class="tab-item"
+           role="tab"
+           [attr.aria-selected]="i === activeTabIndex()"
+           [tabindex]="i === activeTabIndex() ? 0 : -1">
+          {{ tab.label }}
+        </a>
+      } @else {
+        <span class="tab-item tab-item-disabled"
+              role="tab"
+              aria-disabled="true"
+              [attr.aria-selected]="false"
+              tabindex="-1">
+          {{ tab.label }}
+        </span>
+      }
+    }
+  </div>
+
+  <div class="workspace-content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

@@ -1,8 +1,8 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { catchError, map, of } from 'rxjs';
-import { AuthService } from '../../services/auth';
-import { HandoverService } from '../../features/engagement-workspace/handover/handover.service';
+import { AuthService } from 'src/app/services/auth';
+import { HandoverService } from '../../features/engagements/services/handover.service';
 
 export const engagementAccessGuard: CanActivateFn = (route) => {
   const authService = inject(AuthService);

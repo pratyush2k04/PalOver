@@ -32,6 +32,12 @@ public class EngagementChecklistItemConfiguration : IEntityTypeConfiguration<Eng
         builder.Property(e => e.ExemptionReviewedAt).HasColumnName("exemption_reviewed_at");
         builder.Property(e => e.ExemptionRejectionReason).HasColumnName("exemption_rejection_reason").HasMaxLength(1000);
 
+        // Owner assignment
+        builder.Property(e => e.OwnerId).HasColumnName("owner_id");
+
+        // Blocking
+        builder.Property(e => e.BlockReason).HasColumnName("block_reason").HasMaxLength(1000);
+
         // BaseAuditableEntity Column Mappings
         builder.Property(e => e.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
         builder.Property(e => e.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("NOW()");
@@ -46,6 +52,12 @@ public class EngagementChecklistItemConfiguration : IEntityTypeConfiguration<Eng
         builder.HasOne(e => e.Category)
                .WithMany()
                .HasForeignKey(e => e.CategoryId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+        // FK to Person (owner — no cascade, a deleted person shouldn't take checklist items with it)
+        builder.HasOne(e => e.Owner)
+               .WithMany()
+               .HasForeignKey(e => e.OwnerId)
                .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasData(GetSeedItems());

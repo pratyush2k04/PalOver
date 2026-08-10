@@ -130,7 +130,8 @@ public class EngagementService(
                 e.CommercialModel.Name,
                 e.KickoffDate,
                 e.BillingStartDate,
-                e.Status.StatusName))
+                e.Status.StatusName,
+                e.IsKickoffReady))
             .FirstOrDefaultAsync();
     
 

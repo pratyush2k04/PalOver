@@ -13,15 +13,18 @@ public class HandoverService : IHandoverService
     private readonly IHandoverRepository _handoverRepository;
     private readonly ICommitmentRepository _commitmentRepository;
     private readonly IRealisticCommitmentRepository _realisticCommitmentRepository;
+    private readonly IKickoffReadinessService _kickoffReadinessService;
 
     public HandoverService(
         IHandoverRepository handoverRepository,
         ICommitmentRepository commitmentRepository,
-        IRealisticCommitmentRepository realisticCommitmentRepository)
+        IRealisticCommitmentRepository realisticCommitmentRepository,
+        IKickoffReadinessService kickoffReadinessService)
     {
         _handoverRepository = handoverRepository;
         _commitmentRepository = commitmentRepository;
         _realisticCommitmentRepository = realisticCommitmentRepository;
+        _kickoffReadinessService = kickoffReadinessService;
     }
 
     public async Task<HandoverInfoDto> GetHandoverAsync(int engagementId)
@@ -121,11 +124,8 @@ public class HandoverService : IHandoverService
         if (handover == null)
             throw new HandoverIncompleteException("Cannot submit a handover that does not exist.");
 
-        if (string.IsNullOrWhiteSpace(handover.BusinessProblem))
-            throw new HandoverIncompleteException("Business Problem is required to submit.");
-
-        if (string.IsNullOrWhiteSpace(handover.ClientSentiment))
-            throw new HandoverIncompleteException("Client Sentiment is required to submit.");
+        if (!await _kickoffReadinessService.IsFullyReadyAsync(engagementId))
+            throw new HandoverIncompleteException("Engagement is not kickoff-ready. All mandatory items must be complete before submitting the handover.");
 
         handover.StatusId = (int)HandoverStatusEnum.Submitted;
         handover.UpdatedBy = userIdStr;

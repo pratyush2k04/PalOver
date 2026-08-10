@@ -559,6 +559,12 @@ namespace Pdr.Api.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("is_deleted");
 
+                    b.Property<bool>("IsKickoffReady")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_kickoff_ready");
+
                     b.Property<DateOnly>("KickoffDate")
                         .HasColumnType("date")
                         .HasColumnName("kickoff_date");
@@ -600,6 +606,7 @@ namespace Pdr.Api.Migrations
                             EngagementName = "FinTech Core Banking",
                             EngagementTypeId = 1,
                             IsDeleted = false,
+                            IsKickoffReady = false,
                             KickoffDate = new DateOnly(2026, 8, 15),
                             StatusId = 1,
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -616,6 +623,7 @@ namespace Pdr.Api.Migrations
                             EngagementName = "HealthCare Legacy Upgrade",
                             EngagementTypeId = 2,
                             IsDeleted = false,
+                            IsKickoffReady = false,
                             KickoffDate = new DateOnly(2026, 6, 1),
                             StatusId = 2,
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -647,6 +655,16 @@ namespace Pdr.Api.Migrations
                         new
                         {
                             UserId = 2,
+                            EngagementId = 1
+                        },
+                        new
+                        {
+                            UserId = 3,
+                            EngagementId = 1
+                        },
+                        new
+                        {
+                            UserId = 4,
                             EngagementId = 1
                         },
                         new
@@ -753,6 +771,11 @@ namespace Pdr.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("BlockReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("block_reason");
+
                     b.Property<int>("CategoryId")
                         .HasColumnType("integer")
                         .HasColumnName("category_id");
@@ -833,6 +856,10 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("character varying(1000)")
                         .HasColumnName("not_applicable_reason");
 
+                    b.Property<int?>("OwnerId")
+                        .HasColumnType("integer")
+                        .HasColumnName("owner_id");
+
                     b.Property<int?>("SourceMasterItemId")
                         .HasColumnType("integer")
                         .HasColumnName("source_master_item_id");
@@ -865,6 +892,8 @@ namespace Pdr.Api.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("EngagementChecklistId");
+
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("engagement_checklist_items", (string)null);
 
@@ -3215,11 +3244,6 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("created_by");
 
-                    b.Property<string>("Email")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("email");
-
                     b.Property<int>("EngagementId")
                         .HasColumnType("integer")
                         .HasColumnName("engagement_id");
@@ -3271,7 +3295,6 @@ namespace Pdr.Api.Migrations
                             PersonId = 1,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Email = "sarah.jenkins@client.com",
                             EngagementId = 1,
                             IsDeleted = false,
                             Name = "Sarah Jenkins",
@@ -3284,7 +3307,6 @@ namespace Pdr.Api.Migrations
                             PersonId = 2,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Email = "alex.rivera@company.com",
                             EngagementId = 1,
                             IsDeleted = false,
                             Name = "Alex Rivera",
@@ -3424,9 +3446,16 @@ namespace Pdr.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Pdr.Api.Models.Person", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Category");
 
                     b.Navigation("EngagementChecklist");
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem", b =>

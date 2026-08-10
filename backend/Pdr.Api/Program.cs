@@ -78,6 +78,7 @@ builder.Services.AddScoped<IHandoverAccessService, HandoverAccessService>();
 builder.Services.AddScoped<IHandoverService, HandoverService>();
 builder.Services.AddScoped<ICommitmentService, CommitmentService>();
 builder.Services.AddScoped<IRealisticCommitmentService, RealisticCommitmentService>();
+builder.Services.AddScoped<IKickoffReadinessService, KickoffReadinessService>();
 // Handover repositories
 builder.Services.AddScoped<IHandoverRepository, HandoverRepository>();
 builder.Services.AddScoped<ICommitmentRepository, CommitmentRepository>();
@@ -96,13 +97,8 @@ builder.Services.AddScoped<ICommunicationCadenceRepository, CommunicationCadence
 builder.Services.AddScoped<ICommunicationCadenceService, CommunicationCadenceService>();
 builder.Services.AddScoped<IEngagementChecklistRepository, EngagementChecklistRepository>();
 builder.Services.AddScoped<IEngagementChecklistService, EngagementChecklistService>();
-
-// // Technical Readiness — Access Tracker & Environment Tooling
-// builder.Services.AddScoped<Pdr.Api.Repositories.Interfaces.IAccessTrackerRepository, Pdr.Api.Repositories.AccessTrackerRepository>();
-// builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IAccessTrackerService, Pdr.Api.Services.AccessTrackerService>();
-// builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IRiskService, Pdr.Api.Services.RiskService>();
-// builder.Services.AddScoped<Pdr.Api.Repositories.Interfaces.IEnvironmentToolingRepository, Pdr.Api.Repositories.EnvironmentToolingRepository>();
-// builder.Services.AddScoped<Pdr.Api.Services.Interfaces.IEnvironmentToolingService, Pdr.Api.Services.EnvironmentToolingService>();
+builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+builder.Services.AddScoped<IPersonService, PersonService>();
 
 // Change Requests
 builder.Services.AddScoped<Pdr.Api.Repositories.Interfaces.IChangeRequestRepository, Pdr.Api.Repositories.ChangeRequestRepository>();

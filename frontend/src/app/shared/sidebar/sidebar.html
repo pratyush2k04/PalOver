@@ -12,7 +12,7 @@
         <span class="label">{{ ws.title }}</span>
       </a>
     }
-    @for (item of navItems; track item.label) {
+    @for (item of navItems(); track item.label) {
       <a class="nav-item" [routerLink]="item.route" routerLinkActive="active">
         <div class="icon-wrapper">
           <span class="icon">{{ iconGlyph(item.icon) }}</span>
