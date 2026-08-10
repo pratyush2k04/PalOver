@@ -36,7 +36,7 @@ public class EngagementChecklistController(IEngagementChecklistService engagemen
     }
 
     /// <summary>
-    /// Updates the completion status of a checklist item (Project Management & Tech Lead).
+    /// Updates the completion status of a checklist item (Project Management &amp; Tech Lead).
     /// </summary>
     /// <param name="engagementId">The engagement ID.</param>
     /// <param name="itemId">The checklist item ID.</param>

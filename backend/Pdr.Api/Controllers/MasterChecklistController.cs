@@ -11,7 +11,7 @@ using Pdr.Api.Services.Interfaces;
 namespace Pdr.Api.Controllers;
 
 /// <summary>
-/// Manages master checklist versions, categories, and items (Admin & System Viewers).
+/// Manages master checklist versions, categories, and items (Admin &amp; System Viewers).
 /// </summary>
 [ApiController]
 [Authorize]
