@@ -2,7 +2,9 @@ import { Component, inject, computed } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AppContextService } from '../../../services/app-context';
 import { AuthService } from '../../../services/auth';
-import { APP_ROUTES, USER_ROLES } from '../../../constants/app.constants';
+import { APP_ROUTES, USER_ROLES, MASTER_CHECKLIST_ROUTES } from '../../../constants/app.constants';
+
+import { InlineSVGModule } from 'ng-inline-svg-2';
 
 export interface NavItem {
   label: string;
@@ -14,7 +16,7 @@ export interface NavItem {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, InlineSVGModule],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss'
 })
@@ -37,9 +39,10 @@ export class SidebarComponent {
       { label: 'Home', icon: 'home', route: homeRoute }
     ];
 
-    // Users link: visible ONLY to Admin
+    // Users and Master Checklist links: visible ONLY to Admin
     if (currentUser.isAdmin || currentUser.role === USER_ROLES.ADMIN) {
       items.push({ label: 'Users', icon: 'users', route: APP_ROUTES.USERS });
+      items.push({ label: 'Master Checklist', icon: 'checklist', route: '/' + MASTER_CHECKLIST_ROUTES.BASE });
     }
 
 
