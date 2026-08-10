@@ -15,6 +15,10 @@ frontend/dist/
 frontend/.angular/
 npm-debug.log*
 
+# ---- Secrets (local dev only) ----
+.env
+!.env.example
+
 # ---- OS / editor ----
 .DS_Store
 Thumbs.db
