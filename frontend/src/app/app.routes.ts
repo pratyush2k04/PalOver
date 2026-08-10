@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { TECHNICAL_READINESS_ROUTES } from './constants/app.constants';
+import { TECHNICAL_READINESS_ROUTES, MASTER_CHECKLIST_ROUTES } from './constants/app.constants';
 
 import { LoginComponent } from './components/login/login';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
@@ -12,35 +12,7 @@ import { workspaceRedirectGuard } from './guards/workspace-redirect.guard';
 
 
 
-const checklistRoutes: Routes = [
-  { path: '', redirectTo: 'published', pathMatch: 'full' },
 
-  {
-    path: 'published',
-    loadComponent: () =>
-      import('./features/checklist/published/published-checklist').then(
-        m => m.PublishedChecklistComponent
-      ),
-  },
-
-  {
-    path: 'draft',
-    canActivate: [adminGuard],
-    loadComponent: () =>
-      import('./features/checklist/draft/current-draft').then(
-        m => m.CurrentDraftComponent
-      ),
-  },
-
-  {
-    path: 'history',
-    canActivate: [adminGuard],
-    loadComponent: () =>
-      import('./features/checklist/history/version-history').then(
-        m => m.VersionHistoryComponent
-      ),
-  },
-];
 
 export const routes: Routes = [
   // Public
@@ -77,15 +49,53 @@ export const routes: Routes = [
           import('./features/home/home.routes').then(m => m.HOME_ROUTES),
       },
 
-      // Checklist
+      // Public/Non-admin Checklist (Read-only)
       {
-        path: 'checklist',
-        children: checklistRoutes,
+        path: MASTER_CHECKLIST_ROUTES.PUBLIC_BASE,
+        children: [
+          {
+            path: MASTER_CHECKLIST_ROUTES.PUBLISHED,
+            loadComponent: () =>
+              import('./features/master-checklist/published/published-checklist').then(
+                m => m.PublishedChecklistComponent
+              ),
+          },
+          { path: '', redirectTo: MASTER_CHECKLIST_ROUTES.PUBLISHED, pathMatch: 'full' }
+        ],
       },
 
+      // Admin Master Checklist (Tabbed Shell)
       {
-        path: 'master-checklist',
-        children: checklistRoutes,
+        path: MASTER_CHECKLIST_ROUTES.BASE,
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./features/master-checklist/master-checklist-shell/master-checklist-shell.component').then(
+            m => m.MasterChecklistShellComponent
+          ),
+        children: [
+          {
+            path: MASTER_CHECKLIST_ROUTES.DRAFT,
+            loadComponent: () =>
+              import('./features/master-checklist/draft/current-draft').then(
+                m => m.CurrentDraftComponent
+              ),
+          },
+          {
+            path: MASTER_CHECKLIST_ROUTES.PUBLISHED,
+            loadComponent: () =>
+              import('./features/master-checklist/published/published-checklist').then(
+                m => m.PublishedChecklistComponent
+              ),
+          },
+          {
+            path: MASTER_CHECKLIST_ROUTES.HISTORY,
+            loadComponent: () =>
+              import('./features/master-checklist/history/version-history').then(
+                m => m.VersionHistoryComponent
+              ),
+          },
+          { path: '', redirectTo: MASTER_CHECKLIST_ROUTES.DRAFT, pathMatch: 'full' },
+        ],
       },
 
       // Admin
