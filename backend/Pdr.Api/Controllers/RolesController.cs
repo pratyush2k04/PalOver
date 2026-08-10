@@ -19,7 +19,7 @@ public class RolesController(IRoleRepository roleRepository) : ControllerBase
     }
 
     [HttpGet("{id:int}/users")]
-    [AuthorizeRoles(RoleEnum.Leadership)]
+    [Authorize]
     public async Task<IActionResult> GetUsersInRole(int id)
     {
         var users = await roleRepository.GetUsersInRoleAsync(id);
