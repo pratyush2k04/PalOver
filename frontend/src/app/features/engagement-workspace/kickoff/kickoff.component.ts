@@ -39,10 +39,13 @@ export class KickoffComponent {
   engagementName = signal('');
   isLoading = signal(true);
   isSaving = signal(false);
+  loadFailed = signal(false);
   message = signal('');
   isError = signal(false);
 
   isLeadership = computed(() => this.authService.hasRole('Leadership'));
+  canMarkReady = computed(() =>
+    this.authService.hasRole('ProjectManagement') || this.authService.hasRole('TechLead') || this.isLeadership());
 
   constructor() {
     effect(() => {
@@ -59,12 +62,16 @@ export class KickoffComponent {
 
   private loadReadiness(id: number) {
     this.isLoading.set(true);
+    this.loadFailed.set(false);
     this.kickoffReadinessService.getReadiness(id).subscribe({
       next: (data) => {
         this.readiness.set(data);
         this.isLoading.set(false);
       },
       error: (err) => {
+        console.error('Failed to load kickoff readiness', err);
+        this.readiness.set(null);
+        this.loadFailed.set(true);
         this.showMessage(this.extractErrorMessage(err, 'Failed to load kickoff readiness'), true);
         this.isLoading.set(false);
       }

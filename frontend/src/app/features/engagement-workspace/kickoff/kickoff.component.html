@@ -10,25 +10,31 @@
     </div>
 
     <ng-container *ngIf="!isLoading(); else loadingState">
-      <p class="score-line">Score: {{ readiness()?.score ?? '—' }}%</p>
-      <ul class="readiness-breakdown">
-        <li>Handover fields: {{ readiness()?.handoverFieldsPassed ?? 0 }}/{{ readiness()?.handoverFieldsApplicable ?? 0 }}</li>
-        <li>Commitments acknowledged: {{ readiness()?.commitmentsPassed ?? 0 }}/{{ readiness()?.commitmentsApplicable ?? 0 }}</li>
-        <li>Access items unblocked: {{ readiness()?.accessItemsPassed ?? 0 }}/{{ readiness()?.accessItemsApplicable ?? 0 }}</li>
-      </ul>
+      <ng-container *ngIf="readiness(); else failedState">
+        <p class="score-line">Score: {{ readiness()!.score }}%</p>
+        <ul class="readiness-breakdown">
+          <li>Handover fields: {{ readiness()!.handoverFieldsPassed }}/{{ readiness()!.handoverFieldsApplicable }}</li>
+          <li>Commitments acknowledged: {{ readiness()!.commitmentsPassed }}/{{ readiness()!.commitmentsApplicable }}</li>
+          <li>Access items unblocked: {{ readiness()!.accessItemsPassed }}/{{ readiness()!.accessItemsApplicable }}</li>
+        </ul>
 
-      <button *ngIf="!isLeadership()" class="btn-primary" [disabled]="isSaving() || readiness()?.score !== 100"
-        (click)="markReady()">
-        Mark kickoff-ready
-      </button>
+        <button *ngIf="canMarkReady() && !isLeadership()" class="btn-primary" [disabled]="isSaving() || readiness()!.score !== 100"
+          (click)="markReady()">
+          Mark kickoff-ready
+        </button>
 
-      <button *ngIf="isLeadership()" class="btn-warning" [disabled]="isSaving()" (click)="openOverrideDialog()">
-        Override to be kickoff ready
-      </button>
+        <button *ngIf="isLeadership()" class="btn-warning" [disabled]="isSaving()" (click)="openOverrideDialog()">
+          Override to be kickoff ready
+        </button>
+      </ng-container>
     </ng-container>
 
     <ng-template #loadingState>
       <p>Loading kickoff readiness...</p>
+    </ng-template>
+
+    <ng-template #failedState>
+      <p class="score-line">Unable to load kickoff readiness. Please try again.</p>
     </ng-template>
   </div>
 </div>

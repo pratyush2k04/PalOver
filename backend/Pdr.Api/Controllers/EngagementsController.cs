@@ -82,7 +82,7 @@ public class EngagementsController(
     }
 
     [HttpGet("{id:int}/kickoff-readiness")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.Leadership)]
+    [AuthorizeRoles(RoleEnum.PreSales, RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.Leadership)]
     public async Task<ActionResult<KickoffReadinessDto>> GetKickoffReadiness(int id)
     {
         var readiness = await kickoffReadinessService.GetReadinessAsync(id);
