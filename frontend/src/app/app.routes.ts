@@ -106,6 +106,14 @@ export const routes: Routes = [
             m => m.USERS_ROUTES
           ),
       },
+      {
+        path: 'engagement-allocation',
+        canActivate: [adminGuard],
+        loadChildren: () =>
+          import('./features/engagement-allocation/engagement-allocation.routes').then(
+            m => m.ENGAGEMENT_ALLOCATION_ROUTES
+          ),
+      },
 
       // Engagements
       {

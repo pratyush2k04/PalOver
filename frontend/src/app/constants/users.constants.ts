@@ -8,6 +8,7 @@ export const APP_ROUTES = {
   TECHNICAL_READINESS: '/technical-readiness',
   PORTFOLIO_DASHBOARD: '/portfolio-dashboard',
   USER_DIRECTORY: '/user-directory',
+  ENGAGEMENT_ALLOCATION: '/engagement-allocation',
   ACCESS_DENIED: '/access-denied',
 } as const;
 
