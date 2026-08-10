@@ -26,6 +26,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IAccessTrackerRepository, AccessTrackerRepository>();
         services.AddScoped<IEnvironmentToolingRepository, EnvironmentToolingRepository>();
         services.AddScoped<IChangeRequestRepository, ChangeRequestRepository>();
+        services.AddScoped<IPersonRepository, PersonRepository>();
 
         // Services
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
@@ -45,6 +46,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IAccessTrackerService, AccessTrackerService>();
         services.AddScoped<IEnvironmentToolingService, EnvironmentToolingService>();
         services.AddScoped<IChangeRequestService, ChangeRequestService>();
+        services.AddScoped<IPersonService, PersonService>();
 
         return services;
     }

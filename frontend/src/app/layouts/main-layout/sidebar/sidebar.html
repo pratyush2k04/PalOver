@@ -48,6 +48,9 @@
                   <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
                 </svg>
               }
+              @case ('checklist') {
+                <span [inlineSVG]="'assets/icons/checklist.svg'"></span>
+              }
             }
           </div>
           <span class="label">{{ item.label }}</span>

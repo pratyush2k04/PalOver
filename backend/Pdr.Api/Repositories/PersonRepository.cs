@@ -1,0 +1,52 @@
+using Microsoft.EntityFrameworkCore;
+using Pdr.Api.Data;
+using Pdr.Api.Models;
+using Pdr.Api.Repositories.Interfaces;
+using Pdr.Api.Models.Engagements;
+
+namespace Pdr.Api.Repositories;
+
+public class PersonRepository(AppDbContext context) : IPersonRepository
+{
+    public async Task<bool> EngagementExistsAsync(int engagementId)
+    {
+        return await context.Set<Engagement>().AnyAsync(e => e.EngagementId == engagementId);
+    }
+
+    public async Task<IEnumerable<Person>> GetByEngagementIdAsync(int engagementId)
+    {
+        return await context.People
+            .Where(p => p.EngagementId == engagementId)
+            .OrderBy(p => p.Name)
+            .ToListAsync();
+    }
+
+    public async Task<Person?> GetByIdAsync(int personId)
+    {
+        return await context.People
+            .FirstOrDefaultAsync(p => p.PersonId == personId);
+    }
+
+    public async Task AddAsync(Person person)
+    {
+        await context.People.AddAsync(person);
+    }
+
+    public void Update(Person person)
+    {
+        context.People.Update(person);
+    }
+
+    public void Delete(Person person)
+    {
+        // Soft delete
+        person.IsDeleted = true;
+        person.UpdatedAt = DateTime.UtcNow;
+        context.People.Update(person);
+    }
+
+    public async Task<bool> SaveChangesAsync()
+    {
+        return await context.SaveChangesAsync() > 0;
+    }
+}

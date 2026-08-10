@@ -1,3 +1,4 @@
+using Pdr.Api.Models;
 using Pdr.Api.Models.MasterChecklist;
 
 namespace Pdr.Api.Models.EngagementChecklist;
@@ -13,7 +14,7 @@ public class EngagementChecklistItem : BaseAuditableEntity
     public bool IsMandatory { get; set; } = true;
     public int DisplayOrder { get; set; }
     public bool IsApplicable { get; set; } = true;
-    public string Status { get; set; } = "Incomplete";
+    public string Status { get; set; } = "Incomplete"; // "Incomplete" | "Complete" | "Blocked"
 
     // Applicability exemption fields
     public string? NotApplicableReason { get; set; }
@@ -23,6 +24,13 @@ public class EngagementChecklistItem : BaseAuditableEntity
     public int? ExemptionReviewedById { get; set; }
     public DateTime? ExemptionReviewedAt { get; set; }
     public string? ExemptionRejectionReason { get; set; }
+
+    // Owner assignment
+    public int? OwnerId { get; set; }
+    public Person? Owner { get; set; }
+
+    // Blocking
+    public string? BlockReason { get; set; }
 
     // Navigation properties
     [System.Text.Json.Serialization.JsonIgnore]

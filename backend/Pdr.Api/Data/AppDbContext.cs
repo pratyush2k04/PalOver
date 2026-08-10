@@ -59,11 +59,14 @@ public class AppDbContext : DbContext
     public DbSet<Models.EnvironmentTooling.EnvironmentToolingDefinition> EnvironmentToolingDefinitions => Set<Models.EnvironmentTooling.EnvironmentToolingDefinition>();
     public DbSet<Pdr.Api.Models.ChangeRequest.ChangeRequest> ChangeRequests => Set<Pdr.Api.Models.ChangeRequest.ChangeRequest>();
 
+    // People Directory
+    public DbSet<Person> People => Set<Person>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // Apply all EntityTypeConfiguration classes from assembly
+        // Apply all EntityTypeConfiguration classes from assembly (all 27 configurations in Data/Configuration)
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
 

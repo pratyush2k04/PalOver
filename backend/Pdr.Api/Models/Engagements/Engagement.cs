@@ -37,8 +37,11 @@ public class Engagement : BaseAuditableEntity
 
     public ICollection<EngagementAssignment.EngagementAssignment> EngagementAssignments { get; set; } = new List<EngagementAssignment.EngagementAssignment>();
 
-    // Technical Readiness
-    public ICollection<AccessItem> AccessItems { get; set; } = new List<AccessItem>();
+    public ICollection<Person> People { get; set; } = new List<Person>();
+
+    //Technical Readiness
+    public ICollection<AccessItem> AccessItems { get; set; }
+    = new List<AccessItem>();
 
     public ICollection<EnvironmentToolingItem> EnvironmentToolingItems { get; set; } = new List<EnvironmentToolingItem>();
 }

@@ -107,4 +107,34 @@ public class EngagementChecklistController(IEngagementChecklistService engagemen
         var result = await engagementChecklistService.ReviewExemptionAsync(engagementId, itemId, dto);
         return Ok(result);
     }
+
+    [HttpPatch("items/{itemId:int}/owner")]
+    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead)]
+    public async Task<ActionResult<EngagementChecklistResponseDto>> UpdateItemOwner(
+        int engagementId,
+        int itemId,
+        [FromBody] UpdateItemOwnerRequestDto dto)
+    {
+        var result = await engagementChecklistService.UpdateItemOwnerAsync(engagementId, itemId, dto);
+        return Ok(result);
+    }
+
+    [HttpPost("items/{itemId:int}/block")]
+    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead)]
+    public async Task<ActionResult<EngagementChecklistResponseDto>> BlockItem(
+        int engagementId,
+        int itemId,
+        [FromBody] BlockChecklistItemRequestDto dto)
+    {
+        var result = await engagementChecklistService.BlockItemAsync(engagementId, itemId, dto);
+        return Ok(result);
+    }
+
+    [HttpPost("items/{itemId:int}/unblock")]
+    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead)]
+    public async Task<ActionResult<EngagementChecklistResponseDto>> UnblockItem(int engagementId, int itemId)
+    {
+        var result = await engagementChecklistService.UnblockItemAsync(engagementId, itemId);
+        return Ok(result);
+    }
 }

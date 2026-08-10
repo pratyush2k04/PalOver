@@ -21,5 +21,6 @@ public static class EngagementValidationConstants
         public static string InvalidType(int id) => $"Engagement type with id {id} does not exist.";
         public static string InvalidCommercialModel(int id) => $"Commercial model with id {id} does not exist.";
         public static string InvalidOwnerRole(int userId, string roleName) => $"User {userId} does not have the required role '{roleName}'.";
+        public static string PersonNotFound(int personId, int engagementId) => $"Person with ID {personId} for Engagement {engagementId} was not found.";
     }
 }

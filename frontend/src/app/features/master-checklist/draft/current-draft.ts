@@ -2,8 +2,8 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DialogService } from '../../../shared/dialog/dialog.service';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { LoadingSpinnerComponent } from '../../../shared/loading-spinner/loading-spinner';
-import { MasterChecklistService } from '../../../services/master-checklist.service';
-import { MasterChecklistItem, MasterChecklistItemOrder } from '../../../models/checklist.model';
+import { MasterChecklistService } from '../services/master-checklist.service';
+import { MasterChecklistItem, MasterChecklistItemOrder } from '../models/master-checklist.model';
 import { ItemFormDialogComponent, ItemFormDialogData, ItemFormDialogResult } from '../dialogs/item-form/item-form-dialog';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../dialogs/confirm/confirm-dialog';
 
