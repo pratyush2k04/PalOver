@@ -9,6 +9,7 @@ namespace Pdr.Api.Services;
 public class EngagementChecklistService(
     IEngagementChecklistRepository checklistRepository,
     IMasterChecklistRepository masterChecklistRepository,
+    IPersonRepository personRepository,
     ICurrentUserService currentUserService) : IEngagementChecklistService
 {
     public async Task<EngagementChecklistResponseDto?> GetByEngagementIdAsync(int engagementId)
@@ -80,6 +81,11 @@ public class EngagementChecklistService(
             throw new CannotUpdateNonApplicableItemException(itemId);
         }
 
+        if (item.Status == "Blocked")
+        {
+            throw new CannotUpdateBlockedItemException(itemId);
+        }
+
         var currentUserId = currentUserService.GetUserId();
         item.Status = normalizedStatus;
         item.UpdatedAt = DateTime.UtcNow;
@@ -103,6 +109,8 @@ public class EngagementChecklistService(
         if (dto.IsApplicable)
         {
             item.IsApplicable = true;
+            item.Status = "Incomplete"; // AC4: restoring an item always returns it as Incomplete
+            item.BlockReason = null;
             item.NotApplicableReason = null;
             item.ExemptionStatus = "None";
             item.ExemptionRequestedById = null;
@@ -119,6 +127,13 @@ public class EngagementChecklistService(
             }
 
             var trimmedReason = dto.Reason.Trim();
+
+            // A Not Applicable item shouldn't carry a stale Blocked state
+            if (item.Status == "Blocked")
+            {
+                item.Status = "Incomplete";
+                item.BlockReason = null;
+            }
 
             if (!item.IsMandatory)
             {
@@ -186,6 +201,99 @@ public class EngagementChecklistService(
         return MapToDto(updated);
     }
 
+    public async Task<EngagementChecklistResponseDto> UpdateItemOwnerAsync(int engagementId, int itemId, UpdateItemOwnerRequestDto dto)
+    {
+        var item = await checklistRepository.GetItemByIdAsync(engagementId, itemId)
+            ?? throw new EngagementChecklistItemNotFoundException(itemId);
+
+        if (!item.IsApplicable)
+        {
+            throw new CannotUpdateNonApplicableItemException(itemId);
+        }
+
+        if (dto.PersonId is not null)
+        {
+            await EnsurePersonBelongsToEngagementAsync(engagementId, dto.PersonId.Value);
+        }
+
+        var currentUserId = currentUserService.GetUserId();
+        item.OwnerId = dto.PersonId;
+        item.UpdatedAt = DateTime.UtcNow;
+        item.UpdatedBy = currentUserId.ToString();
+
+        await checklistRepository.SaveChangesAsync();
+
+        var updated = await checklistRepository.GetByEngagementIdAsync(engagementId)
+            ?? throw new InvalidOperationException("Failed to retrieve updated checklist.");
+
+        return MapToDto(updated);
+    }
+
+    public async Task<EngagementChecklistResponseDto> BlockItemAsync(int engagementId, int itemId, BlockChecklistItemRequestDto dto)
+    {
+        var item = await checklistRepository.GetItemByIdAsync(engagementId, itemId)
+            ?? throw new EngagementChecklistItemNotFoundException(itemId);
+
+        if (!item.IsApplicable)
+        {
+            throw new CannotUpdateNonApplicableItemException(itemId);
+        }
+
+        if (string.IsNullOrWhiteSpace(dto.Reason))
+        {
+            throw new ChecklistBlockReasonRequiredException();
+        }
+
+        await EnsurePersonBelongsToEngagementAsync(engagementId, dto.PersonId);
+
+        var currentUserId = currentUserService.GetUserId();
+        item.Status = "Blocked";
+        item.BlockReason = dto.Reason.Trim();
+        item.OwnerId = dto.PersonId; // owner is confirmed/assigned as part of flagging Blocked
+        item.UpdatedAt = DateTime.UtcNow;
+        item.UpdatedBy = currentUserId.ToString();
+
+        await checklistRepository.SaveChangesAsync();
+
+        var updated = await checklistRepository.GetByEngagementIdAsync(engagementId)
+            ?? throw new InvalidOperationException("Failed to retrieve updated checklist.");
+
+        return MapToDto(updated);
+    }
+
+    public async Task<EngagementChecklistResponseDto> UnblockItemAsync(int engagementId, int itemId)
+    {
+        var item = await checklistRepository.GetItemByIdAsync(engagementId, itemId)
+            ?? throw new EngagementChecklistItemNotFoundException(itemId);
+
+        if (item.Status != "Blocked")
+        {
+            throw new ItemNotBlockedException(itemId);
+        }
+
+        var currentUserId = currentUserService.GetUserId();
+        item.Status = "Incomplete";
+        item.BlockReason = null;
+        item.UpdatedAt = DateTime.UtcNow;
+        item.UpdatedBy = currentUserId.ToString();
+
+        await checklistRepository.SaveChangesAsync();
+
+        var updated = await checklistRepository.GetByEngagementIdAsync(engagementId)
+            ?? throw new InvalidOperationException("Failed to retrieve updated checklist.");
+
+        return MapToDto(updated);
+    }
+
+    private async Task EnsurePersonBelongsToEngagementAsync(int engagementId, int personId)
+    {
+        var people = await personRepository.GetByEngagementIdAsync(engagementId);
+        if (!people.Any(p => p.PersonId == personId))
+        {
+            throw new PersonNotFoundException(personId, engagementId);
+        }
+    }
+
     private static EngagementChecklistResponseDto MapToDto(EngagementChecklist checklist)
     {
         var incompleteMandatoryItems = checklist.Items
@@ -225,7 +333,10 @@ public class EngagementChecklistService(
                      i.ExemptionRequestedAt,
                      i.ExemptionReviewedById,
                      i.ExemptionReviewedAt,
-                     i.ExemptionRejectionReason))
+                     i.ExemptionRejectionReason,
+                     i.OwnerId,
+                     i.Owner != null ? i.Owner.Name : null,
+                     i.BlockReason))
                  .ToList()))
             .ToList();
 
