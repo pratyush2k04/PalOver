@@ -1,73 +1,123 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.Attributes;
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.AccessTracker;
-using Pdr.Api.Exceptions;
-
-using Pdr.Api.Models;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Services.Interfaces;
 
-using Pdr.Api.Constants;
-
 namespace Pdr.Api.Controllers;
 
+/// <summary>
+/// Manages access items and risk evaluation for engagement technical readiness.
+/// </summary>
 [ApiController]
 [Authorize]
 [Route(AccessTrackerConstants.Routes.Base)]
+[Produces("application/json")]
 public class AccessTrackerController(IAccessTrackerService accessTrackerService) : ControllerBase
 {
-    // GET api/engagements/{engagementId}/access-items
-    // Tech Lead, Project Management, Leadership — view access
+    /// <summary>
+    /// Retrieves all access items for an engagement.
+    /// </summary>
+    /// <param name="engagementId">The ID of the engagement.</param>
+    /// <returns>A list of access items.</returns>
     [HttpGet]
     [AuthorizeRoles(RoleEnum.TechLead, RoleEnum.ProjectManagement, RoleEnum.Leadership)]
+    [EndpointSummary("Get all access items for an engagement")]
+    [ProducesResponseType(typeof(List<AccessItemDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAccessItems(int engagementId)
     {
         var items = await accessTrackerService.GetAccessItemsAsync(engagementId);
         return Ok(items);
     }
 
-    // POST api/engagements/{engagementId}/access-items
-    // Tech Lead — edit access
+    /// <summary>
+    /// Adds a custom access item to an engagement (Tech Lead only).
+    /// </summary>
+    /// <param name="engagementId">The ID of the engagement.</param>
+    /// <param name="request">The custom access item request payload.</param>
+    /// <returns>The created access item.</returns>
     [HttpPost]
     [AuthorizeRoles(RoleEnum.TechLead)]
+    [EndpointSummary("Add custom access item (Tech Lead only)")]
+    [ProducesResponseType(typeof(AccessItemDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AddCustomAccessItem(int engagementId, [FromBody] AddCustomAccessItemRequest request)
     {
         var item = await accessTrackerService.AddCustomAccessItemAsync(engagementId, request);
         return CreatedAtAction(nameof(GetAccessItems), new { engagementId }, item);
     }
 
-    // POST api/engagements/{engagementId}/access-items/evaluate-risks
-    // Test endpoint for User Story 3 — triggers the 2-day billing risk rule manually
-    [HttpPost("evaluate-risks")]
+    /// <summary>
+    /// Manually triggers client-side risk evaluation rules for an engagement (Tech Lead only).
+    /// </summary>
+    /// <param name="engagementId">The ID of the engagement.</param>
+    /// <returns>Confirmation message on completing risk evaluation.</returns>
+    [HttpPost(AccessTrackerConstants.Routes.EvaluateRisks)]
     [AuthorizeRoles(RoleEnum.TechLead)]
+    [EndpointSummary("Evaluate client-side risks (Tech Lead only)")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> EvaluateClientSideRisks(int engagementId)
     {
         await accessTrackerService.EvaluateClientSideRisksAsync(engagementId);
-        return Ok(new { message = "Client-side risk evaluation completed." });
+        return Ok(new { message = AccessTrackerConstants.Messages.RiskEvaluationCompleted });
     }
 }
 
-// Separate controller for item-level operations (by item id, not engagement id)
+/// <summary>
+/// Handles item-level operations for individual access items.
+/// </summary>
 [ApiController]
 [Authorize]
 [Route(AccessTrackerConstants.Routes.ItemsBase)]
+[Produces("application/json")]
 public class AccessItemsController(IAccessTrackerService accessTrackerService) : ControllerBase
 {
-    // PATCH api/access-items/{id}/status
-    // Tech Lead — edit access
+    /// <summary>
+    /// Updates the status of an access item (Tech Lead only).
+    /// </summary>
+    /// <param name="id">The access item ID.</param>
+    /// <param name="request">The status update payload.</param>
+    /// <returns>The updated access item.</returns>
     [HttpPatch("{id:int}/status")]
     [AuthorizeRoles(RoleEnum.TechLead)]
+    [EndpointSummary("Update access item status (Tech Lead only)")]
+    [ProducesResponseType(typeof(AccessItemDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateAccessItemStatusRequest request)
     {
         var item = await accessTrackerService.UpdateAccessItemStatusAsync(id, request);
         return Ok(item);
     }
 
-    // PATCH api/access-items/{id}/owner
-    // Tech Lead — edit access
+    /// <summary>
+    /// Updates the assigned owner of an access item (Tech Lead only).
+    /// </summary>
+    /// <param name="id">The access item ID.</param>
+    /// <param name="request">The owner update payload.</param>
+    /// <returns>The updated access item.</returns>
     [HttpPatch("{id:int}/owner")]
     [AuthorizeRoles(RoleEnum.TechLead)]
+    [EndpointSummary("Update access item owner (Tech Lead only)")]
+    [ProducesResponseType(typeof(AccessItemDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateOwner(int id, [FromBody] UpdateAccessItemOwnerRequest request)
     {
         var item = await accessTrackerService.UpdateAccessItemOwnerAsync(id, request);
