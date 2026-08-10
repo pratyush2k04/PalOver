@@ -22,9 +22,6 @@
     <div class="checklist-header">
       <div class="checklist-header-left">
         <h1 class="checklist-title">Kickoff Readiness Checklist</h1>
-        <span class="badge badge-feature">FTR-022</span>
-        <span class="badge badge-feature">FTR-023</span>
-        <span class="badge badge-story">US-040</span>
       </div>
       <div class="checklist-header-right">
         <span class="checklist-version">
@@ -38,10 +35,6 @@
       <div class="callout callout-gate callout-warning">
         <div class="callout-icon">🚩</div>
         <div class="callout-body">
-          <div class="callout-badges">
-            <span class="badge badge-gate-feature">FTR-024</span>
-            <span class="badge badge-gate-story">US-042</span>
-          </div>
           <h2 class="callout-headline">Clear these to go kickoff-ready</h2>
           <ul class="gate-incomplete-list">
             @for (gateItem of checklist()!.incompleteMandatoryItems; track gateItem.id) {
