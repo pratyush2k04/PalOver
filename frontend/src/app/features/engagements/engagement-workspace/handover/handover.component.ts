@@ -6,8 +6,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { HandoverService } from '../../services/handover.service';
 import { catchError, of } from 'rxjs';
 import { AuthService } from 'src/app/services/auth';
-import { KickoffReadinessDto, KickoffReadinessService } from '../../../services/kickoff-readiness.service';
-import { FlaggedItemsBannerComponent, FlaggedItem } from '../../../shared/flagged-items-banner/flagged-items-banner.component';
+import { KickoffReadinessDto, KickoffReadinessService } from '../../../../services/kickoff-readiness.service';
+import { FlaggedItemsBannerComponent, FlaggedItem } from '../../../../shared/flagged-items-banner/flagged-items-banner.component';
 import {
   HandoverInfoDto,
   SaveHandoverDraftRequest,

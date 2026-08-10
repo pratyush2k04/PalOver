@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DialogRef } from '../../../../../shared/dialog/dialog-ref';
-import { DIALOG_DATA } from '../../../../../shared/dialog/dialog.service';
+import { DialogRef } from '../../../../../../shared/dialog/dialog-ref';
+import { DIALOG_DATA } from '../../../../../../shared/dialog/dialog.service';
 
 export interface OverrideKickoffReadyDialogData {
   engagementName: string;

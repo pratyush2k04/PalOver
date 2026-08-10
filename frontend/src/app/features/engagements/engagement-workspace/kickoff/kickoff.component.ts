@@ -4,10 +4,10 @@ import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { GovernanceProcessComponent } from './components/governance-process/governance-process.component';
 import { ChangeRequestsComponent } from './components/change-requests/change-requests.component';
-import { AuthService } from '../../../services/auth';
-import { DialogService } from '../../../shared/dialog/dialog.service';
-import { EngagementService } from '../../../services/engagement.service';
-import { KickoffReadinessDto, KickoffReadinessService } from '../../../services/kickoff-readiness.service';
+import { AuthService } from '../../../../services/auth';
+import { DialogService } from '../../../../shared/dialog/dialog.service';
+import { EngagementService } from '../../services/engagement.service';
+import { KickoffReadinessDto, KickoffReadinessService } from '../../../../services/kickoff-readiness.service';
 import {
   OverrideKickoffReadyDialogComponent,
   OverrideKickoffReadyDialogData,
