@@ -24,6 +24,9 @@ export interface EngagementChecklistItem {
   exemptionReviewedById: number | null;
   exemptionReviewedAt: string | null;
   exemptionRejectionReason: string | null;
+  ownerId: number | null;
+  ownerName: string | null;
+  blockReason: string | null;
 }
 
 export interface EngagementChecklistCategoryGroup {
@@ -54,4 +57,13 @@ export interface UpdateItemApplicabilityRequest {
 export interface ReviewExemptionRequest {
   approved: boolean;
   rejectionReason?: string;
+}
+
+export interface UpdateItemOwnerRequest {
+  personId: number | null;
+}
+
+export interface BlockChecklistItemRequest {
+  reason: string;
+  personId: number;
 }

@@ -7,7 +7,9 @@ import {
   EngagementChecklist,
   UpdateItemStatusRequest,
   UpdateItemApplicabilityRequest,
-  ReviewExemptionRequest
+  ReviewExemptionRequest,
+  UpdateItemOwnerRequest,
+  BlockChecklistItemRequest
 } from '../models/engagement-checklist.model';
 
 @Injectable({ providedIn: 'root' })
@@ -50,6 +52,35 @@ export class EngagementChecklistService {
     return this.http.post<EngagementChecklist>(
       `/api/engagements/${engagementId}/workspace/checklist/items/${itemId}/exemption/review`,
       request
+    );
+  }
+
+  updateItemOwner(
+    engagementId: number,
+    itemId: number,
+    request: UpdateItemOwnerRequest
+  ): Observable<EngagementChecklist> {
+    return this.http.patch<EngagementChecklist>(
+      `/api/engagements/${engagementId}/workspace/checklist/items/${itemId}/owner`,
+      request
+    );
+  }
+
+  blockItem(
+    engagementId: number,
+    itemId: number,
+    request: BlockChecklistItemRequest
+  ): Observable<EngagementChecklist> {
+    return this.http.post<EngagementChecklist>(
+      `/api/engagements/${engagementId}/workspace/checklist/items/${itemId}/block`,
+      request
+    );
+  }
+
+  unblockItem(engagementId: number, itemId: number): Observable<EngagementChecklist> {
+    return this.http.post<EngagementChecklist>(
+      `/api/engagements/${engagementId}/workspace/checklist/items/${itemId}/unblock`,
+      {}
     );
   }
 }

@@ -16,3 +16,12 @@ public class CannotUpdateNonApplicableItemException(int itemId)
 
 public class ExemptionNotPendingException(int itemId)
     : AppException($"Checklist item {itemId} does not have a pending exemption request.", StatusCodes.Status400BadRequest);
+
+public class ChecklistBlockReasonRequiredException()
+    : AppException("A reason is required when flagging a checklist item as Blocked.", StatusCodes.Status400BadRequest);
+
+public class CannotUpdateBlockedItemException(int itemId)
+    : AppException($"Checklist item {itemId} is Blocked; unblock it before changing its status.", StatusCodes.Status422UnprocessableEntity);
+
+public class ItemNotBlockedException(int itemId)
+    : AppException($"Checklist item {itemId} is not currently Blocked.", StatusCodes.Status400BadRequest);
