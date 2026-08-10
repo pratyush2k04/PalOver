@@ -4,4 +4,5 @@ public record EngagementOwnersDto(
     int? ProjectManagerId,
     string? ProjectManagerName,
     int? TechLeadId,
-    string? TechLeadName);
+    string? TechLeadName,
+    List<LeadershipUserDto>? LeadershipUsers = null);

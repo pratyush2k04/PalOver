@@ -39,6 +39,13 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
             .Where(a => a.EngagementId == engagementId)
             .ToListAsync();
 
+    public async Task<List<EngagementAssignment>> GetLeadershipAssignmentsAsync(int engagementId) =>
+        await context.EngagementAssignments
+            .AsNoTracking()
+            .Include(a => a.User).ThenInclude(u => u.Role)
+            .Where(a => a.EngagementId == engagementId && a.User.RoleId == (int)RoleEnum.Leadership)
+            .ToListAsync();
+
     public async Task<EngagementAssignment?> GetAssignmentByRoleIdAsync(int engagementId, int roleId) =>
         await context.EngagementAssignments
             .Include(a => a.User).ThenInclude(u => u.Role)
