@@ -3,7 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { catchError, of } from 'rxjs';
 import { AuthService } from '../../../services/auth';
+import { KickoffReadinessDto, KickoffReadinessService } from '../../../services/kickoff-readiness.service';
+import { FlaggedItemsBannerComponent, FlaggedItem } from '../../../shared/flagged-items-banner/flagged-items-banner.component';
 import {
   HandoverService,
   HandoverInfoDto,
@@ -34,7 +37,7 @@ interface RealisticEditForm {
 @Component({
   selector: 'app-handover',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, FlaggedItemsBannerComponent],
   templateUrl: './handover.component.html',
   styleUrl: './handover.component.scss'
 })
@@ -45,6 +48,7 @@ export class HandoverComponent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private handoverService = inject(HandoverService);
+  private kickoffReadinessService = inject(KickoffReadinessService);
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
 
@@ -60,6 +64,16 @@ export class HandoverComponent {
   isSaving = signal(false);
   message = signal('');
   isError = signal(false);
+
+  kickoffReadiness = signal<KickoffReadinessDto | null>(null);
+  handoverFlaggedItems = computed<FlaggedItem[]>(() => {
+    const r = this.kickoffReadiness();
+    if (!r) return [];
+    return [
+      { label: 'mandatory handover field(s) incomplete', count: r.handoverFieldsApplicable - r.handoverFieldsPassed },
+      { label: 'commitment(s) missing acknowledgement', count: r.commitmentsApplicable - r.commitmentsPassed }
+    ];
+  });
 
   readonly sentimentOptions = SENTIMENT_OPTIONS;
   readonly timelineUnits = TIMELINE_UNITS;
@@ -118,8 +132,15 @@ export class HandoverComponent {
       const id = this.engagementId();
       if (id) {
         this.loadHandover(id);
+        this.loadKickoffReadiness(id);
       }
     });
+  }
+
+  private loadKickoffReadiness(id: number) {
+    this.kickoffReadinessService.getReadiness(id).pipe(
+      catchError(() => of(null))
+    ).subscribe(data => this.kickoffReadiness.set(data));
   }
 
   private emptyCommitment(): CreateCommitmentRequest {

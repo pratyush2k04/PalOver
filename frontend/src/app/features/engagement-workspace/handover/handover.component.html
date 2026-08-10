@@ -16,6 +16,8 @@
     {{ message() }}
   </div>
 
+  <app-flagged-items-banner *ngIf="kickoffReadiness()" [items]="handoverFlaggedItems()"></app-flagged-items-banner>
+
   <form [formGroup]="clientContextForm" *ngIf="isPreSales()">
     <div class="section client-context">
       <h3>Client Context</h3>
