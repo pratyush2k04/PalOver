@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { TECHNICAL_READINESS_ROUTES, MASTER_CHECKLIST_ROUTES } from './constants/app.constants';
 
 import { LoginComponent } from './components/login/login';
-import { MainLayoutComponent } from './components/main-layout/main-layout';
+import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 
 import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';
@@ -10,12 +10,7 @@ import { workspaceGuard } from './guards/workspace.guard';
 import { workspaceRedirectGuard } from './guards/workspace-redirect.guard';
 // import { engagementAccessGuard } from './core/guards/engagement-access.guard';
 
-import { DashboardComponent } from './components/dashboard/dashboard';
 
-import { EngagementsComponent } from './features/engagements/engagements';
-import { EngagementDetailComponent } from './features/engagement-detail/engagement-detail';
-import { UsersComponent } from './features/users/users';
-import { MyEngagementsComponent } from './features/my-engagements/my-engagements';
 
 
 
@@ -41,52 +36,17 @@ export const routes: Routes = [
         children: [],
       },
 
-      // Dashboard
-      {
-        path: 'dashboard',
-        component: DashboardComponent,
-      },
+      // // Dashboard
+      // {
+      //   path: 'dashboard',
+      //   component: DashboardComponent,
+      // },
 
-      // Role dashboards
+      // Role dashboards (Home feature)
       {
-        path: 'engagement-dashboard',
-        canActivate: [workspaceGuard],
-        loadComponent: () =>
-          import('./features/home/project-manager-home/project-manager-home').then(
-            m => m.ProjectManagerHomeComponent
-          ),
-      },
-      {
-        path: 'my-handovers',
-        canActivate: [workspaceGuard],
-        loadComponent: () =>
-          import('./features/home/pre-sales-home/pre-sales-home').then(
-            m => m.PreSalesHomeComponent
-          ),
-      },
-      {
-        path: TECHNICAL_READINESS_ROUTES.BASE,
-        canActivate: [workspaceGuard],
-        loadComponent: () =>
-          import('./features/home/tech-lead-home/tech-lead-home').then(
-            m => m.TechLeadHomeComponent
-          ),
-      },
-      {
-        path: 'portfolio-dashboard',
-        canActivate: [workspaceGuard],
-        loadComponent: () =>
-          import('./features/home/leadership-home/leadership-home').then(
-            m => m.LeadershipHomeComponent
-          ),
-      },
-      {
-        path: 'user-directory',
-        canActivate: [workspaceGuard],
-        loadComponent: () =>
-          import('./features/home/admin-home/admin-home').then(
-            m => m.AdminHomeComponent
-          ),
+        path: '',
+        loadChildren: () =>
+          import('./features/home/home.routes').then(m => m.HOME_ROUTES),
       },
 
       // Public/Non-admin Checklist (Read-only)
@@ -141,111 +101,36 @@ export const routes: Routes = [
       // Admin
       {
         path: 'admin/users',
-        component: UsersComponent,
+        loadChildren: () =>
+          import('./features/users/users.routes').then(
+            m => m.USERS_ROUTES
+          ),
       },
 
       // Engagements
       {
         path: 'engagements',
-        component: EngagementsComponent,
+        loadChildren: () =>
+          import('./features/engagements/engagements.routes').then(
+            m => m.ENGAGEMENTS_ROUTES
+          ),
       },
       {
-        path: 'engagements/:id',
-        component: EngagementDetailComponent,
-      },
-      {
-        path: 'engagements/:id/workspace',
-        // canActivate: [engagementAccessGuard],
+        path: 'my-engagements',
         loadComponent: () =>
-          import(
-            './features/engagement-workspace/engagement-workspace.component'
-          ).then(m => m.EngagementWorkspaceComponent),
-
-        children: [
-          {
-            path: 'handover',
-            loadComponent: () =>
-              import(
-                './features/engagement-workspace/handover/handover.component'
-              ).then(m => m.HandoverComponent),
-          },
-          {
-            path: 'documents',
-            loadComponent: () =>
-              import(
-                './features/documents/engagement-documents/engagement-documents.component'
-              ).then(m => m.EngagementDocumentsComponent),
-          },
-          {
-            path: 'checklist',
-            loadComponent: () =>
-              import(
-                './features/engagement-workspace/checklist/engagement-checklist.component'
-              ).then(m => m.EngagementChecklistComponent),
-          },
-          {
-            path: 'kickoff',
-            loadComponent: () =>
-              import(
-                './features/engagement-workspace/kickoff/kickoff.component'
-              ).then(m => m.KickoffComponent),
-          },
-          {
-            path: TECHNICAL_READINESS_ROUTES.BASE,
-            loadComponent: () =>
-              import(
-                './features/engagements/technical/technical-readiness.component'
-              ).then(m => m.TechnicalReadinessComponent),
-          },
-          {
-            path: '',
-            redirectTo: 'handover',
-            pathMatch: 'full',
-          },
-        ],
+          import('./features/engagements/my-engagements').then(
+            m => m.MyEngagementsComponent
+          ),
       },
 
       // Access denied
       {
         path: 'access-denied',
         loadComponent: () =>
-          import('./features/access-denied/access-denied').then(
+          import('./shared/access-denied/access-denied').then(
             m => m.AccessDeniedComponent
           ),
       },
-      { path: '', redirectTo: 'admin/users', pathMatch: 'full' },
-      { path: 'admin/users', component: UsersComponent },//change made for users
-      { path: 'engagements', component: EngagementsComponent },
-      { path: 'engagements/:id', component: EngagementDetailComponent },//change made for leader to assign pm-tl
-      {
-        path: 'engagements/:id/workspace',
-        //canActivate: [engagementAccessGuard],
-        loadComponent: () => import('./features/engagement-workspace/engagement-workspace.component').then(m => m.EngagementWorkspaceComponent),
-        children: [
-          { 
-            path: 'handover', 
-            loadComponent: () => import('./features/engagement-workspace/handover/handover.component').then(m => m.HandoverComponent) 
-          },
-          { 
-            path: 'documents', 
-            loadComponent: () => import('./features/documents/engagement-documents/engagement-documents.component').then(m => m.EngagementDocumentsComponent) 
-          },
-          {
-            path: 'checklist',
-            loadComponent: () => import('./features/engagement-workspace/checklist/engagement-checklist.component').then(m => m.EngagementChecklistComponent)
-          },
-          {
-            path: 'kickoff',
-            loadComponent: () => import('./features/engagement-workspace/kickoff/kickoff.component').then(m => m.KickoffComponent)
-          },
-          {
-            path: TECHNICAL_READINESS_ROUTES.BASE,
-            loadComponent: () => import('./features/engagements/technical/technical-readiness.component').then(m => m.TechnicalReadinessComponent)
-          },
-          { path: '', redirectTo: 'handover', pathMatch: 'full' }
-        ]
-      },
-      { path: 'my-engagements', component: MyEngagementsComponent },
     ],
   },
 
