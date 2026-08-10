@@ -31,6 +31,8 @@ public class Engagement : BaseAuditableEntity
     // Navigation Properties
     public EngagementStatus Status { get; set; } = null!;
 
+    public bool IsKickoffReady { get; set; } = false;
+
     public EngagementChecklist.EngagementChecklist? Checklist { get; set; }
 
     public Handover.HandoverInfo? HandoverInfo { get; set; }
@@ -38,6 +40,7 @@ public class Engagement : BaseAuditableEntity
     public ICollection<EngagementAssignment.EngagementAssignment> EngagementAssignments { get; set; } = new List<EngagementAssignment.EngagementAssignment>();
 
     public ICollection<Person> People { get; set; } = new List<Person>();
+    
     // Technical Readiness
     public ICollection<AccessItem> AccessItems { get; set; } = new List<AccessItem>();
 

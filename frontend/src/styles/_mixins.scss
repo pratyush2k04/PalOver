@@ -1,0 +1,191 @@
+@import './tokens';
+
+// ==========================================
+// Reusable SCSS Mixins
+// ==========================================
+
+// Layout Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-column($gap: 0) {
+  display: flex;
+  flex-direction: column;
+  @if $gap != 0 {
+    gap: $gap;
+  }
+}
+
+// Surface / Card Mixin
+@mixin card-surface($padding: $spacing-6, $radius: $radius-xl) {
+  background: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius;
+  padding: $padding;
+  box-shadow: $shadow-card;
+}
+
+// Button Base & Variant Mixins
+@mixin button-base {
+  font-family: inherit;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  padding: 0.65rem 1.25rem;
+  border-radius: $radius-md;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background-color $transition-base, border-color $transition-base, box-shadow $transition-base;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-primary {
+  @include button-base;
+  color: #ffffff;
+  background-color: $color-primary;
+
+  &:hover:not(:disabled) {
+    background-color: $color-primary-hover;
+  }
+}
+
+@mixin button-accent {
+  @include button-base;
+  color: #ffffff;
+  background-color: $color-accent-amber;
+
+  &:hover:not(:disabled) {
+    background-color: $color-accent-amber-hover;
+  }
+
+  &:disabled {
+    background-color: $color-accent-amber-disabled;
+  }
+}
+
+@mixin button-secondary {
+  @include button-base;
+  color: $color-text-muted;
+  background-color: #f3f4f6;
+  border-color: transparent;
+
+  &:hover:not(:disabled) {
+    background-color: #e5e7eb;
+  }
+}
+
+@mixin button-stroked {
+  @include button-base;
+  color: $color-text-muted;
+  background-color: $color-surface;
+  border-color: $color-border-input;
+
+  &:hover:not(:disabled) {
+    background-color: $color-bg;
+  }
+}
+
+// Form Control Mixin
+@mixin form-input-base {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  font-size: $font-size-sm;
+  color: $color-text;
+  background-color: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: border-color $transition-base, box-shadow $transition-base;
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px $color-primary-focus-ring;
+  }
+
+  &.is-invalid {
+    border-color: $color-danger;
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+    }
+  }
+}
+
+// Modal / Dialog Overlay Mixins
+@mixin modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+@mixin modal-card($max-width: 460px) {
+  width: 100%;
+  max-width: $max-width;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.75rem;
+  background: $color-surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-modal;
+}
+
+// Status Badge Mixin
+@mixin status-badge($bg, $color) {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color;
+  background-color: $bg;
+  border-radius: $radius-full;
+}
+
+// Text Truncate Mixins
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin text-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// Responsive Breakpoints
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == 'sm' {
+    @media (min-width: 640px) { @content; }
+  } @else if $breakpoint == 'md' {
+    @media (min-width: 768px) { @content; }
+  } @else if $breakpoint == 'lg' {
+    @media (min-width: 1024px) { @content; }
+  } @else if $breakpoint == 'xl' {
+    @media (min-width: 1280px) { @content; }
+  }
+}

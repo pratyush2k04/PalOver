@@ -61,7 +61,7 @@ public class AppDbContext : DbContext
     public DbSet<Models.EnvironmentTooling.EnvironmentToolingDefinition> EnvironmentToolingDefinitions => Set<Models.EnvironmentTooling.EnvironmentToolingDefinition>();
     public DbSet<Pdr.Api.Models.ChangeRequest.ChangeRequest> ChangeRequests => Set<Pdr.Api.Models.ChangeRequest.ChangeRequest>();
 
-    // People
+    // People Directory
     public DbSet<Person> People => Set<Person>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -85,6 +85,7 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new DocumentConfiguration());
         modelBuilder.ApplyConfiguration(new PersonConfiguration());
         modelBuilder.ApplyConfiguration(new CommunicationCadenceConfiguration());
+        modelBuilder.ApplyConfiguration(new PersonConfiguration());
 
         // Engagement & Engagement Checklist
         modelBuilder.ApplyConfiguration(new EngagementConfiguration());

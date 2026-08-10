@@ -41,7 +41,10 @@ public record EngagementChecklistItemDto(
     DateTime? ExemptionRequestedAt,
     int? ExemptionReviewedById,
     DateTime? ExemptionReviewedAt,
-    string? ExemptionRejectionReason
+    string? ExemptionRejectionReason,
+    int? OwnerId,
+    string? OwnerName,
+    string? BlockReason
 );
 
 public record UpdateItemStatusRequestDto(
@@ -56,4 +59,13 @@ public record UpdateItemApplicabilityRequestDto(
 public record ReviewExemptionRequestDto(
     bool Approved,
     string? RejectionReason
+);
+
+public record UpdateItemOwnerRequestDto(
+    int? PersonId
+);
+
+public record BlockChecklistItemRequestDto(
+    string Reason,
+    int PersonId
 );
