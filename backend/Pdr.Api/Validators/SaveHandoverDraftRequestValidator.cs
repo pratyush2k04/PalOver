@@ -1,9 +1,9 @@
 using FluentValidation;
 using Pdr.Api.DTOs.Handovers;
 using System.Linq;
-using Pdr.Api.Constants.Handovers;
+using Pdr.Api.Constants;
 
-namespace Pdr.Api.Validators.Handovers;
+namespace Pdr.Api.Validators;
 
 public class SaveHandoverDraftRequestValidator : AbstractValidator<SaveHandoverDraftRequest>
 {

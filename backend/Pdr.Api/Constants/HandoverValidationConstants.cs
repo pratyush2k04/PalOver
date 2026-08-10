@@ -1,4 +1,4 @@
-namespace Pdr.Api.Constants.Handovers;
+namespace Pdr.Api.Constants;
 
 public static class HandoverValidationConstants
 {

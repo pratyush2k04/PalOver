@@ -1,9 +1,9 @@
 using FluentValidation;
 using Pdr.Api.DTOs.Handovers;
-using Pdr.Api.Constants.Handovers;
+using Pdr.Api.Constants;
 using System.Linq;
 
-namespace Pdr.Api.Validators.Handovers;
+namespace Pdr.Api.Validators;
 
 public class UpdateCommitmentRequestValidator : AbstractValidator<UpdateCommitmentRequest>
 {

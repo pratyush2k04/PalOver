@@ -1,6 +1,6 @@
-namespace Pdr.Api.Constants.Handovers;
+namespace Pdr.Api.Constants;
 
-public static class UpdateRealisticCommitmentRequestConstants
+public static class CreateRealisticCommitmentRequestConstants
 {
     public const int MaxDescriptionLength = 2000;
     public static readonly string[] ValidTimelineUnits = { "Days", "Weeks", "Months" };

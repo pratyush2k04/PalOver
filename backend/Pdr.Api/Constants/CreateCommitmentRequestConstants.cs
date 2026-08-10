@@ -1,6 +1,6 @@
-namespace Pdr.Api.Constants.Handovers;
+namespace Pdr.Api.Constants;
 
-public static class UpdateCommitmentRequestConstants
+public static class CreateCommitmentRequestConstants
 {
     public const int MaxDescriptionLength = 2000;
     public const int MaxTitleLength = 100;
