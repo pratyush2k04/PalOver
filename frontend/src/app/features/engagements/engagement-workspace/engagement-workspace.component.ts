@@ -27,7 +27,7 @@ export class EngagementWorkspaceComponent {
   private kickoffReadinessService = inject(KickoffReadinessService);
 
   private paramMap = toSignal(this.route.paramMap);
-  
+
   engagementId = computed(() => {
     const idStr = this.paramMap()?.get('id');
     return idStr ? +idStr : null;

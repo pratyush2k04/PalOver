@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -9,16 +9,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Pdr.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class AddPersonEntity : Migration
+    public partial class AddPersonEntityAndSeeding : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Pre-existing drift: the model already dropped this column in an earlier commit
-            // without a matching migration, and the physical DB was already missing it too.
-            // Use IF EXISTS so this unrelated cleanup doesn't fail the People table creation below.
-            migrationBuilder.Sql("ALTER TABLE handover_info DROP COLUMN IF EXISTS has_no_commitments;");
-
             migrationBuilder.CreateTable(
                 name: "people",
                 columns: table => new
@@ -66,8 +61,6 @@ namespace Pdr.Api.Migrations
         {
             migrationBuilder.DropTable(
                 name: "people");
-
-            migrationBuilder.Sql("ALTER TABLE handover_info ADD COLUMN IF NOT EXISTS has_no_commitments boolean NOT NULL DEFAULT false;");
         }
     }
 }

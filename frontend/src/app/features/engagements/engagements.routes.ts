@@ -40,6 +40,13 @@ export const ENGAGEMENTS_ROUTES: Routes = [
           ).then((m) => m.EngagementDocumentsComponent),
       },
       {
+        path: 'people',
+        loadComponent: () =>
+          import('./engagement-workspace/people/people.component').then(
+            (m) => m.PeopleComponent
+          ),
+      },
+      {
         path: 'checklist',
         loadComponent: () =>
           import(
