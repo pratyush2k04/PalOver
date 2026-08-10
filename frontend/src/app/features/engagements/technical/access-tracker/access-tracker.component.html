@@ -7,12 +7,17 @@
     <div class="action-group">
       @if (isTechLead()) {
         <button class="app-button app-button--flat" (click)="openAddModal()">
-          <span inlineSVG="assets/svgs/plus.svg"></span>
+          <span [inlineSVG]="'assets/icons/plus.svg'"></span>
           Add item
         </button>
       }
     </div>
   </div>
+
+  <!-- Flagged Items Summary -->
+  @if (kickoffReadiness()) {
+    <app-flagged-items-banner [items]="accessTrackerFlaggedItems()"></app-flagged-items-banner>
+  }
 
   <!-- Loading state -->
   @if (isLoading()) {

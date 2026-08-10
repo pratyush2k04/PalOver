@@ -24,7 +24,14 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
 
         return await query.ToListAsync();
     }
-        //for assigning 
+
+    public async Task<Engagement?> GetByIdAsync(int engagementId) =>
+        await context.Engagements.FirstOrDefaultAsync(e => e.EngagementId == engagementId);
+
+    public async Task SaveChangesAsync() =>
+        await context.SaveChangesAsync();
+
+        //for assigning
     public async Task<List<EngagementAssignment>> GetAssignmentsAsync(int engagementId) =>
         await context.EngagementAssignments
             .AsNoTracking()

@@ -3,7 +3,7 @@
   <div class="readiness-banner" [ngClass]="{ 'ready': isDayOneReady() }">
     <div class="banner-content">
       <div class="banner-icon">
-        <span inlineSVG="assets/svgs/clock.svg"></span>
+        <span [inlineSVG]="'assets/icons/clock.svg'"></span>
       </div>
       <div class="banner-text">
         @if (!isDayOneReady()) {

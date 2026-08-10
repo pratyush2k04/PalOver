@@ -559,6 +559,12 @@ namespace Pdr.Api.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("is_deleted");
 
+                    b.Property<bool>("IsKickoffReady")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_kickoff_ready");
+
                     b.Property<DateOnly>("KickoffDate")
                         .HasColumnType("date")
                         .HasColumnName("kickoff_date");
@@ -600,6 +606,7 @@ namespace Pdr.Api.Migrations
                             EngagementName = "FinTech Core Banking",
                             EngagementTypeId = 1,
                             IsDeleted = false,
+                            IsKickoffReady = false,
                             KickoffDate = new DateOnly(2026, 8, 15),
                             StatusId = 1,
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -616,6 +623,7 @@ namespace Pdr.Api.Migrations
                             EngagementName = "HealthCare Legacy Upgrade",
                             EngagementTypeId = 2,
                             IsDeleted = false,
+                            IsKickoffReady = false,
                             KickoffDate = new DateOnly(2026, 6, 1),
                             StatusId = 2,
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -647,6 +655,16 @@ namespace Pdr.Api.Migrations
                         new
                         {
                             UserId = 2,
+                            EngagementId = 1
+                        },
+                        new
+                        {
+                            UserId = 3,
+                            EngagementId = 1
+                        },
+                        new
+                        {
+                            UserId = 4,
                             EngagementId = 1
                         },
                         new

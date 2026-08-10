@@ -78,6 +78,7 @@ builder.Services.AddScoped<IHandoverAccessService, HandoverAccessService>();
 builder.Services.AddScoped<IHandoverService, HandoverService>();
 builder.Services.AddScoped<ICommitmentService, CommitmentService>();
 builder.Services.AddScoped<IRealisticCommitmentService, RealisticCommitmentService>();
+builder.Services.AddScoped<IKickoffReadinessService, KickoffReadinessService>();
 // Handover repositories
 builder.Services.AddScoped<IHandoverRepository, HandoverRepository>();
 builder.Services.AddScoped<ICommitmentRepository, CommitmentRepository>();
