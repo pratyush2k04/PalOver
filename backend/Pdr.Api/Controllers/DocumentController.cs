@@ -19,7 +19,8 @@ namespace Pdr.Api.Controllers;
 [Produces("application/json")]
 public class DocumentController(
     IDocumentService documentService,
-    IValidator<DocumentUploadDto> uploadValidator) : ControllerBase
+    IValidator<DocumentUploadDto> uploadValidator,
+    IValidator<UploadDocumentVersionDto> uploadVersionValidator) : ControllerBase
 {
     /// <summary>
     /// Uploads one or more documents for an engagement.
@@ -182,5 +183,72 @@ public class DocumentController(
     {
         var updated = await documentService.UpdateDocumentVisibilityAsync(id, request);
         return Ok(updated);
+    }
+
+    /// <summary>
+    /// Uploads a new version of an existing document, superseding the current one.
+    /// </summary>
+    /// <param name="id">The document ID.</param>
+    /// <param name="dto">The new file and optional change note.</param>
+    /// <returns>The updated document with its new current version.</returns>
+    [HttpPost("{id:int}/versions")]
+    [Consumes("multipart/form-data")]
+    [RequestSizeLimit(50 * 1024 * 1024)]
+    [RequestFormLimits(MultipartBodyLengthLimit = 50 * 1024 * 1024)]
+    [EndpointSummary("Upload a new document version")]
+    [ProducesResponseType(typeof(DocumentResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UploadNewVersion(int id, [FromForm] UploadDocumentVersionDto dto)
+    {
+        var validationResult = await uploadVersionValidator.ValidateAsync(dto);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(new { errors = validationResult.Errors.Select(e => e.ErrorMessage) });
+        }
+
+        var updated = await documentService.UploadNewVersionAsync(id, dto);
+        return Ok(updated);
+    }
+
+    /// <summary>
+    /// Retrieves the version history for a document, newest first.
+    /// </summary>
+    /// <param name="id">The document ID.</param>
+    /// <returns>All versions of the document.</returns>
+    [HttpGet("{id:int}/versions")]
+    [EndpointSummary("Get document version history")]
+    [ProducesResponseType(typeof(List<DocumentVersionResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetVersionHistory(int id)
+    {
+        var versions = await documentService.GetVersionHistoryAsync(id);
+        return Ok(versions);
+    }
+
+    /// <summary>
+    /// Downloads a specific historical version of a document.
+    /// </summary>
+    /// <param name="id">The document ID.</param>
+    /// <param name="versionId">The version ID to download.</param>
+    /// <returns>The requested version's file stream.</returns>
+    [HttpGet("{id:int}/versions/{versionId:int}/download")]
+    [EndpointSummary("Download a specific document version")]
+    [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DownloadVersion(int id, int versionId)
+    {
+        var result = await documentService.DownloadVersionAsync(id, versionId);
+        if (result == null)
+        {
+            return NotFound(new { message = DocumentValidationConstants.Messages.FileNotFound });
+        }
+
+        return File(result.Value.FileStream, result.Value.ContentType, result.Value.FileName);
     }
 }

@@ -27,4 +27,6 @@ public class DocumentResponseDto
     public bool IsCustomVisibility => Visibility == "Custom";
 
     public string CategoryDefaultVisibility { get; set; } = "Team-wide";
+
+    public int CurrentVersionNumber { get; set; }
 }

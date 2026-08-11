@@ -16,4 +16,10 @@ public interface IDocumentService
     Task<bool> DeleteDocumentAsync(int id, string reason);
 
     Task<DocumentResponseDto> UpdateDocumentVisibilityAsync(int id, UpdateDocumentVisibilityDto dto);
+
+    Task<DocumentResponseDto> UploadNewVersionAsync(int documentId, UploadDocumentVersionDto dto);
+
+    Task<IEnumerable<DocumentVersionResponseDto>> GetVersionHistoryAsync(int documentId);
+
+    Task<(Stream FileStream, string ContentType, string FileName)?> DownloadVersionAsync(int documentId, int versionId);
 }

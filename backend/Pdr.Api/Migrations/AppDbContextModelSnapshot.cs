@@ -315,43 +315,6 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.CommercialModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("commercial_models", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Time and Material"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Fixed"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Capped T&M"
-                        });
-                });
-
             modelBuilder.Entity("Pdr.Api.Models.Documents.Document", b =>
                 {
                     b.Property<int>("Id")
@@ -503,6 +466,85 @@ namespace Pdr.Api.Migrations
                             Id = 7,
                             CategoryName = "Commercial"
                         });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Documents.DocumentVersion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeNote")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("change_note");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("content_type");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<int>("DocumentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("document_id");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("file_path");
+
+                    b.Property<long>("FileSizeBytes")
+                        .HasColumnType("bigint")
+                        .HasColumnName("file_size_bytes");
+
+                    b.Property<bool>("IsCurrent")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_current");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.Property<int>("VersionNumber")
+                        .HasColumnType("integer")
+                        .HasColumnName("version_number");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DocumentId", "IsCurrent");
+
+                    b.ToTable("document_versions", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
@@ -1540,7 +1582,44 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.EngagementStatus", b =>
+            modelBuilder.Entity("Pdr.Api.Models.Engagements.CommercialModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("commercial_models", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Time and Material"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Fixed"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Capped T&M"
+                        });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Engagements.EngagementStatus", b =>
                 {
                     b.Property<int>("StatusId")
                         .ValueGeneratedOnAdd()
@@ -1577,7 +1656,7 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.EngagementType", b =>
+            modelBuilder.Entity("Pdr.Api.Models.Engagements.EngagementType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3231,21 +3310,32 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Engagement");
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.Documents.DocumentVersion", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Documents.Document", "Document")
+                        .WithMany("Versions")
+                        .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Document");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
                 {
-                    b.HasOne("Pdr.Api.Models.CommercialModel", "CommercialModel")
+                    b.HasOne("Pdr.Api.Models.Engagements.CommercialModel", "CommercialModel")
                         .WithMany()
                         .HasForeignKey("CommercialModelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Pdr.Api.Models.EngagementType", "EngagementType")
+                    b.HasOne("Pdr.Api.Models.Engagements.EngagementType", "EngagementType")
                         .WithMany()
                         .HasForeignKey("EngagementTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Pdr.Api.Models.EngagementStatus", "Status")
+                    b.HasOne("Pdr.Api.Models.Engagements.EngagementStatus", "Status")
                         .WithMany("Engagements")
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -3424,6 +3514,11 @@ namespace Pdr.Api.Migrations
                     b.Navigation("AccessItems");
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.Documents.Document", b =>
+                {
+                    b.Navigation("Versions");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Documents.DocumentCategory", b =>
                 {
                     b.Navigation("Documents");
@@ -3449,7 +3544,7 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.EngagementStatus", b =>
+            modelBuilder.Entity("Pdr.Api.Models.Engagements.EngagementStatus", b =>
                 {
                     b.Navigation("Engagements");
                 });

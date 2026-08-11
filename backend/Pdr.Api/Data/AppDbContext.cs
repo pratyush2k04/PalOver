@@ -50,6 +50,7 @@ public class AppDbContext : DbContext
     // Documents
     public DbSet<DocumentCategory> DocumentCategories => Set<DocumentCategory>();
     public DbSet<Document> Documents => Set<Document>();
+    public DbSet<DocumentVersion> DocumentVersions => Set<DocumentVersion>();
     public DbSet<CommunicationCadence> CommunicationCadences => Set<CommunicationCadence>();
 
     // Technical Readiness (Access Tracker, Environment & Tooling)
