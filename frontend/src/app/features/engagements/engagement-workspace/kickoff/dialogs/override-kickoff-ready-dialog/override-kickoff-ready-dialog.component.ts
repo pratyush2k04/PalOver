@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
+import { ButtonComponent } from '@common/components/button/button';
 
 export interface OverrideKickoffReadyDialogData {
   engagementName: string;
@@ -16,7 +17,7 @@ export interface OverrideKickoffReadyDialogResult {
 @Component({
   selector: 'app-override-kickoff-ready-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent],
   templateUrl: './override-kickoff-ready-dialog.component.html',
   styleUrl: './override-kickoff-ready-dialog.component.scss'
 })

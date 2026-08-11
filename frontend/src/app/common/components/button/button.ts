@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
 
-export type ButtonVariant = 'flat' | 'stroked' | 'accent' | 'danger' | 'icon';
+export type ButtonVariant = 'flat' | 'stroked' | 'accent' | 'danger' | 'icon' | 'success' | 'warning';
 export type ButtonSize = 'default' | 'sm';
 
 @Component({

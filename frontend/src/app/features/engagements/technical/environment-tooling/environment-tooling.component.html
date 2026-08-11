@@ -6,10 +6,10 @@
     </div>
     <div class="action-group">
       @if (isTechLead()) {
-        <button class="app-button app-button--flat" (click)="openAddModal()">
+        <app-button variant="flat" (click)="openAddModal()">
           <span [inlineSVG]="'assets/icons/plus.svg'"></span>
           Add item
-        </button>
+        </app-button>
       }
     </div>
   </div>
@@ -98,8 +98,8 @@
         }
       </div>
       <div class="modal-actions">
-        <button class="app-button app-button--stroked" (click)="closeAddModal()">Cancel</button>
-        <button class="app-button app-button--flat" (click)="submitAddItem()">Save</button>
+        <app-button variant="stroked" (click)="closeAddModal()">Cancel</app-button>
+        <app-button variant="flat" (click)="submitAddItem()">Save</app-button>
       </div>
     </div>
   </div>
@@ -128,8 +128,8 @@
         }
       </div>
       <div class="modal-actions">
-        <button class="app-button app-button--stroked" (click)="closeNaModal()">Cancel</button>
-        <button class="app-button app-button--flat" (click)="submitNaReason()">Confirm N/A</button>
+        <app-button variant="stroked" (click)="closeNaModal()">Cancel</app-button>
+        <app-button variant="flat" (click)="submitNaReason()">Confirm N/A</app-button>
       </div>
     </div>
   </div>

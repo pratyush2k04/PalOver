@@ -251,17 +251,6 @@ select {
   font-weight: 600;
 }
 
-.btn-icon {
-  background: transparent;
-  padding: 0.2rem 0.4rem;
-  font-size: 1rem;
-  color: $color-text-fainter;
-
-  &:hover {
-    color: $color-primary;
-  }
-}
-
 .timeline-info {
   font-size: 0.8125rem;
   color: $color-text-fainter;
@@ -334,20 +323,6 @@ select {
     background: $color-danger-bg;
     color: $color-danger-text;
     border-color: $color-danger-border;
-  }
-}
-
-.btn-warning {
-  background: $color-warning-bg;
-  color: $color-warning-text;
-  border: 1px solid $color-warning;
-  font-size: 0.8125rem;
-  padding: 0.4rem 0.75rem;
-  align-self: flex-start;
-
-  &:hover {
-    background: $color-warning;
-    color: $color-surface;
   }
 }
 
@@ -444,34 +419,6 @@ button {
     opacity: 0.6;
     cursor: not-allowed;
   }
-}
-
-.btn-primary,
-.btn-primary-sm {
-  background: $color-primary;
-  color: $color-surface;
-
-  &:hover:not(:disabled) {
-    background-color: $color-primary-hover;
-  }
-}
-
-.btn-secondary-sm {
-  background: $color-text-fainter;
-  color: $color-surface;
-}
-
-.btn-danger-sm {
-  background: transparent;
-  color: $color-danger;
-  border: 1px solid $color-danger-border;
-}
-
-.btn-primary-sm,
-.btn-secondary-sm,
-.btn-danger-sm {
-  padding: 0.4rem 0.75rem;
-  font-size: 0.8125rem;
 }
 
 .inline-errors {

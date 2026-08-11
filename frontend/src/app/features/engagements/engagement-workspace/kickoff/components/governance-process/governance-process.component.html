@@ -4,9 +4,9 @@
       <h2 class="section-title">{{ constants.TITLE }}</h2>
     </div>
     @if (isProjectManager()) {
-      <button type="button" class="btn-add-cadence" (click)="openAddCadenceModal()">
+      <app-button type="button" variant="stroked" (click)="openAddCadenceModal()">
         <span class="plus-icon"></span> {{ constants.BTN_ADD_CADENCE }}
-      </button>
+      </app-button>
     }
   </div>
 
@@ -37,7 +37,7 @@
     <div class="modal-dialog" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h3 class="modal-title">{{ constants.MODAL_TITLE }}</h3>
-        <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close">&times;</button>
+        <app-button type="button" variant="icon" ariaLabel="Close" (click)="closeModal()">&times;</app-button>
       </div>
 
       <form [formGroup]="cadenceForm" (ngSubmit)="onSubmitCadence()">
@@ -100,10 +100,10 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-cancel" (click)="closeModal()">{{ constants.BTN_CANCEL }}</button>
-          <button type="submit" class="btn btn-submit" [disabled]="isSubmitting()">
+          <app-button type="button" variant="stroked" (click)="closeModal()">{{ constants.BTN_CANCEL }}</app-button>
+          <app-button type="submit" variant="accent" [disabled]="isSubmitting()">
             {{ isSubmitting() ? constants.BTN_ADDING : constants.BTN_ADD }}
-          </button>
+          </app-button>
         </div>
       </form>
     </div>

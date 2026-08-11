@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { PersonDto } from 'src/app/models/person.model';
+import { ButtonComponent } from '@common/components/button/button';
 
 export interface BlockItemDialogData {
   itemTitle: string;
@@ -19,7 +20,7 @@ export interface BlockItemDialogResult {
 @Component({
   selector: 'app-block-item-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent],
   templateUrl: './block-item-dialog.component.html',
   styleUrl: './block-item-dialog.component.scss'
 })

@@ -12,11 +12,12 @@ import { FlaggedItemsBannerComponent, FlaggedItem } from '../../../../shared/fla
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
+import { ButtonComponent } from '@common/components/button/button';
 
 @Component({
   selector: 'app-access-tracker',
   standalone: true,
-  imports: [CommonModule, FormsModule, InlineSVGModule, FlaggedItemsBannerComponent, StatusBadgeComponent],
+  imports: [CommonModule, FormsModule, InlineSVGModule, FlaggedItemsBannerComponent, StatusBadgeComponent, ButtonComponent],
   templateUrl: './access-tracker.component.html',
   styleUrl: './access-tracker.component.scss'
 })

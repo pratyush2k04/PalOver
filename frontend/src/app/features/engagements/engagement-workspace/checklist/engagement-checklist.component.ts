@@ -9,6 +9,7 @@ import { ENGAGEMENT_CHECKLIST_MESSAGES } from 'src/app/constants/engagements.con
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
+import { ButtonComponent } from '@common/components/button/button';
 import { PersonService } from 'src/app/services/person.service';
 import { PersonDto } from 'src/app/models/person.model';
 import {
@@ -30,7 +31,7 @@ import {
 @Component({
   selector: 'app-engagement-checklist',
   standalone: true,
-  imports: [CommonModule, LoadingSpinnerComponent, StatusBadgeComponent],
+  imports: [CommonModule, LoadingSpinnerComponent, StatusBadgeComponent, ButtonComponent],
   templateUrl: './engagement-checklist.component.html',
   styleUrl: './engagement-checklist.component.scss'
 })

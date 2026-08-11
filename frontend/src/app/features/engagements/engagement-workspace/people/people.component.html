@@ -5,13 +5,13 @@
       <h2 class="people-directory__title">People Directory</h2>
     </div>
     <div class="people-directory__actions">
-      <button 
-        type="button" 
-        class="btn-add-person" 
+      <app-button
+        type="button"
+        variant="accent"
         (click)="onAddPerson()">
         <span class="btn-icon">+</span>
         <span>Add person</span>
-      </button>
+      </app-button>
     </div>
   </div>
 
@@ -39,20 +39,24 @@
               <td class="col-org">{{ getOrgLabel(person.personType) }}</td>
               <td class="col-actions">
                 <div class="action-buttons">
-                  <button 
-                    type="button" 
-                    class="action-btn edit-btn" 
-                    title="Edit person" 
+                  <app-button
+                    type="button"
+                    variant="icon"
+                    class="edit-btn"
+                    ariaLabel="Edit person"
+                    title="Edit person"
                     (click)="onEditPerson(person)">
-                    <span [inlineSVG]="'assets/icons/edit.svg'"></span>
-                  </button>
-                  <button 
-                    type="button" 
-                    class="action-btn delete-btn" 
-                    title="Delete person" 
+                    <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                  </app-button>
+                  <app-button
+                    type="button"
+                    variant="icon"
+                    class="delete-btn"
+                    ariaLabel="Delete person"
+                    title="Delete person"
                     (click)="onDeletePerson(person)">
-                    <span [inlineSVG]="'assets/icons/trash.svg'"></span>
-                  </button>
+                    <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
+                  </app-button>
                 </div>
               </td>
             </tr>
@@ -75,7 +79,7 @@
     <div class="modal-card" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h3>{{ editingPerson() ? 'Edit Person' : 'Add Person' }}</h3>
-        <button type="button" class="close-btn" (click)="closeFormModal()">&times;</button>
+        <app-button type="button" variant="icon" ariaLabel="Close" (click)="closeFormModal()">&times;</app-button>
       </div>
 
       <form (ngSubmit)="onSavePerson()">
@@ -123,10 +127,15 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn-cancel" (click)="closeFormModal()">Cancel</button>
-          <button type="submit" class="btn-save" [disabled]="isSubmitting() || !formName().trim() || !formRole().trim() || !isFormDirty()">
+          <app-button type="button" variant="stroked" (click)="closeFormModal()">Cancel</app-button>
+          <app-button
+            type="submit"
+            variant="flat"
+            [disabled]="isSubmitting() || !formName().trim() || !formRole().trim() || !isFormDirty()"
+            [loading]="isSubmitting()"
+          >
             {{ isSubmitting() ? 'Saving...' : (editingPerson() ? 'Update' : 'Add') }}
-          </button>
+          </app-button>
         </div>
       </form>
     </div>

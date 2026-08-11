@@ -134,14 +134,14 @@
                   }
                 </td>
                 <td class="actions-col">
-                  <button
+                  <app-button
                     type="button"
-                    class="btn-assign"
+                    variant="flat"
                     (click)="openAssignModal(eng)"
                   >
-                    <span [inlineSVG]="'assets/icons/user-plus.svg'"></span>
+                    <span class="assign-icon" [inlineSVG]="'assets/icons/user-plus.svg'"></span>
                     Assign Leadership
-                  </button>
+                  </app-button>
                 </td>
               </tr>
             }
@@ -160,7 +160,7 @@
             <h2>Assign Leadership Contacts</h2>
             <p class="eng-sub">{{ selectedEngagement()?.engagementName }} ({{ selectedEngagement()?.clientName }})</p>
           </div>
-          <button type="button" class="close-btn" (click)="closeModal()">&times;</button>
+          <app-button type="button" variant="icon" ariaLabel="Close" (click)="closeModal()">&times;</app-button>
         </div>
 
         <div class="modal-body">
@@ -221,8 +221,8 @@
         </div>
 
         <div class="modal-actions">
-          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
-          <button type="button" class="btn-done" (click)="closeModal()">Done</button>
+          <app-button type="button" variant="stroked" (click)="closeModal()">Cancel</app-button>
+          <app-button type="button" variant="flat" (click)="closeModal()">Done</app-button>
         </div>
       </div>
     </div>

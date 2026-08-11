@@ -1,7 +1,7 @@
 <div class="dialog-container">
   <div class="dialog-header">
     <h2>Flag as Blocked</h2>
-    <button type="button" class="close-btn" (click)="onCancel()" aria-label="Close dialog">&times;</button>
+    <app-button type="button" variant="icon" ariaLabel="Close dialog" (click)="onCancel()">&times;</app-button>
   </div>
 
   <div class="dialog-body">
@@ -60,8 +60,8 @@
       </div>
 
       <div class="dialog-actions">
-        <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
-        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Flag as Blocked</button>
+        <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+        <app-button type="submit" variant="flat" [disabled]="form.invalid">Flag as Blocked</app-button>
       </div>
     </form>
   </div>

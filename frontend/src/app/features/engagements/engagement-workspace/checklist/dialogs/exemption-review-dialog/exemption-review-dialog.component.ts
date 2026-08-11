@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
+import { ButtonComponent } from '@common/components/button/button';
 
 export interface ExemptionReviewDialogData {
   itemTitle: string;
@@ -18,7 +19,7 @@ export interface ExemptionReviewDialogResult {
 @Component({
   selector: 'app-exemption-review-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent],
   templateUrl: './exemption-review-dialog.component.html',
   styleUrl: './exemption-review-dialog.component.scss',
 })

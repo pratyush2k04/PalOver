@@ -2,7 +2,9 @@
   <div class="modal-card" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h3 class="modal-title">Custom Document Visibility</h3>
-      <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close" [inlineSVG]="'assets/icons/close.svg'"></button>
+      <app-button type="button" variant="icon" ariaLabel="Close" (click)="onCancel()">
+        <span class="close-icon" [inlineSVG]="'assets/icons/close.svg'"></span>
+      </app-button>
     </div>
 
     <div class="modal-body">
@@ -47,20 +49,20 @@
 
     <div class="modal-footer">
       @if (document().visibility === 'Custom' || (document().allowedRoles && document().allowedRoles!.length > 0)) {
-        <button
+        <app-button
           type="button"
-          class="btn btn-outline-warning btn-remove-override"
+          variant="warning"
           (click)="onRemoveOverride()"
           [disabled]="isSubmitting()"
         >
           Remove Override
-        </button>
+        </app-button>
       }
 
       <div class="footer-actions">
-        <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="isSubmitting()">
+        <app-button type="button" variant="stroked" (click)="onCancel()" [disabled]="isSubmitting()">
           Cancel
-        </button>
+        </app-button>
         <app-button
           type="button"
           variant="accent"

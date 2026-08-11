@@ -10,11 +10,12 @@ import { CHANGE_REQUEST_CONSTANTS } from 'src/app/constants/change-request.const
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { AlertComponent } from '@common/components/alert/alert';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
+import { ButtonComponent } from '@common/components/button/button';
 
 @Component({
   selector: 'app-change-requests',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, InlineSVGModule, AlertComponent, StatusBadgeComponent],
+  imports: [CommonModule, ReactiveFormsModule, InlineSVGModule, AlertComponent, StatusBadgeComponent, ButtonComponent],
   templateUrl: './change-requests.component.html',
   styleUrl: './change-requests.component.scss'
 })

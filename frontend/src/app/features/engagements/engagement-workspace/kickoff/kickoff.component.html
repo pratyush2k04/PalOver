@@ -18,14 +18,14 @@
           <li>Access items unblocked: {{ readiness()!.accessItemsPassed }}/{{ readiness()!.accessItemsApplicable }}</li>
         </ul>
 
-        <button *ngIf="canMarkReady() && !isLeadership()" class="btn-primary" [disabled]="isSaving() || readiness()!.score !== 100"
+        <app-button *ngIf="canMarkReady() && !isLeadership()" variant="flat" [disabled]="isSaving() || readiness()!.score !== 100"
           (click)="markReady()">
           Mark kickoff-ready
-        </button>
+        </app-button>
 
-        <button *ngIf="isLeadership()" class="btn-warning" [disabled]="isSaving()" (click)="openOverrideDialog()">
+        <app-button *ngIf="isLeadership()" variant="warning" [disabled]="isSaving()" (click)="openOverrideDialog()">
           Override to be kickoff ready
-        </button>
+        </app-button>
       </ng-container>
     </ng-container>
 

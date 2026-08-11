@@ -1,7 +1,7 @@
 <div class="dialog-container">
   <div class="dialog-header">
     <h2>Review Exemption Request</h2>
-    <button type="button" class="close-btn" (click)="onCancel()" aria-label="Close dialog">&times;</button>
+    <app-button type="button" variant="icon" ariaLabel="Close dialog" (click)="onCancel()">&times;</app-button>
   </div>
 
   <div class="dialog-body">
@@ -16,9 +16,9 @@
 
     @if (!isRejectMode()) {
       <div class="dialog-actions">
-        <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
-        <button type="button" class="btn btn-danger" (click)="onShowRejectMode()">Reject Exemption</button>
-        <button type="button" class="btn btn-success" (click)="onApprove()">Approve Exemption</button>
+        <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+        <app-button type="button" variant="danger" (click)="onShowRejectMode()">Reject Exemption</app-button>
+        <app-button type="button" variant="success" (click)="onApprove()">Approve Exemption</app-button>
       </div>
     } @else {
       <form [formGroup]="form" (ngSubmit)="onConfirmReject()">
@@ -33,8 +33,8 @@
         </div>
 
         <div class="dialog-actions">
-          <button type="button" class="btn btn-secondary" (click)="isRejectMode.set(false)">Back</button>
-          <button type="submit" class="btn btn-danger">Confirm Rejection</button>
+          <app-button type="button" variant="stroked" (click)="isRejectMode.set(false)">Back</app-button>
+          <app-button type="submit" variant="danger">Confirm Rejection</app-button>
         </div>
       </form>
     }

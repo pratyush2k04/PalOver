@@ -7,9 +7,9 @@
     </div>
 
     @if (isProjectManager()) {
-      <button type="button" class="btn-log-cr" (click)="openLogModal()">
+      <app-button type="button" variant="stroked" (click)="openLogModal()">
         {{ constants.BTN_LOG_CR }}
-      </button>
+      </app-button>
     }
   </div>
 
@@ -71,13 +71,15 @@
                   </app-status-badge>
 
                   @if (cr.status === 'Rejected' && cr.rejectionReason) {
-                    <button 
-                      type="button" 
-                      class="btn-info-icon" 
+                    <app-button
+                      type="button"
+                      variant="icon"
                       (click)="openReasonModal(cr.rejectionReason)"
+                      ariaLabel="View rejection reason"
                       title="View rejection reason"
-                      [inlineSVG]="'assets/icons/info.svg'">
-                    </button>
+                    >
+                      <span class="info-icon" [inlineSVG]="'assets/icons/info.svg'"></span>
+                    </app-button>
                   }
                 </div>
               </td>
@@ -85,12 +87,12 @@
                 <td class="cell-actions">
                   @if (cr.status === 'Under Review') {
                     <div class="action-buttons">
-                      <button type="button" class="btn-approve" (click)="onApprove(cr)">
+                      <app-button type="button" variant="stroked" (click)="onApprove(cr)">
                         {{ constants.BTN_APPROVE }}
-                      </button>
-                      <button type="button" class="btn-reject" (click)="openRejectModal(cr)">
+                      </app-button>
+                      <app-button type="button" variant="danger" (click)="openRejectModal(cr)">
                         {{ constants.BTN_REJECT }}
-                      </button>
+                      </app-button>
                     </div>
                   }
                 </td>
@@ -114,7 +116,7 @@
     <div class="modal-dialog" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h3 class="modal-title">{{ constants.MODAL_LOG_TITLE }}</h3>
-        <button type="button" class="btn-close" (click)="closeLogModal()">✕</button>
+        <app-button type="button" variant="icon" ariaLabel="Close" (click)="closeLogModal()">✕</app-button>
       </div>
 
       <form [formGroup]="logForm" (ngSubmit)="onSubmitLog()">
@@ -151,12 +153,12 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-cancel" (click)="closeLogModal()">
+          <app-button type="button" variant="stroked" (click)="closeLogModal()">
             {{ constants.BTN_CANCEL }}
-          </button>
-          <button type="submit" class="btn btn-log" [disabled]="isSubmitting()">
+          </app-button>
+          <app-button type="submit" variant="accent" [disabled]="isSubmitting()">
             {{ constants.BTN_LOG }}
-          </button>
+          </app-button>
         </div>
       </form>
     </div>
@@ -169,7 +171,7 @@
     <div class="modal-dialog" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h3 class="modal-title">{{ constants.MODAL_REJECT_TITLE }}</h3>
-        <button type="button" class="btn-close" (click)="closeRejectModal()">✕</button>
+        <app-button type="button" variant="icon" ariaLabel="Close" (click)="closeRejectModal()">✕</app-button>
       </div>
 
       <form [formGroup]="rejectForm" (ngSubmit)="onSubmitReject()">
@@ -193,12 +195,12 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-cancel" (click)="closeRejectModal()">
+          <app-button type="button" variant="stroked" (click)="closeRejectModal()">
             {{ constants.BTN_CANCEL }}
-          </button>
-          <button type="submit" class="btn btn-danger-action" [disabled]="isSubmitting()">
+          </app-button>
+          <app-button type="submit" variant="danger" [disabled]="isSubmitting()">
             {{ constants.BTN_REJECT }}
-          </button>
+          </app-button>
         </div>
       </form>
     </div>
@@ -211,7 +213,7 @@
     <div class="modal-dialog modal-dialog-sm" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h3 class="modal-title">{{ constants.MODAL_REASON_VIEW_TITLE }}</h3>
-        <button type="button" class="btn-close" (click)="closeReasonModal()">✕</button>
+        <app-button type="button" variant="icon" ariaLabel="Close" (click)="closeReasonModal()">✕</app-button>
       </div>
 
       <div class="modal-body">
@@ -219,9 +221,9 @@
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-cancel" (click)="closeReasonModal()">
+        <app-button type="button" variant="stroked" (click)="closeReasonModal()">
           {{ constants.BTN_CLOSE }}
-        </button>
+        </app-button>
       </div>
     </div>
   </div>

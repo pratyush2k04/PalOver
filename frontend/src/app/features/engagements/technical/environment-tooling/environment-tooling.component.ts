@@ -12,11 +12,12 @@ import {
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
+import { ButtonComponent } from '@common/components/button/button';
 
 @Component({
   selector: 'app-environment-tooling',
   standalone: true,
-  imports: [CommonModule, FormsModule, InlineSVGModule, StatusBadgeComponent],
+  imports: [CommonModule, FormsModule, InlineSVGModule, StatusBadgeComponent, ButtonComponent],
   templateUrl: './environment-tooling.component.html',
   styleUrl: './environment-tooling.component.scss'
 })

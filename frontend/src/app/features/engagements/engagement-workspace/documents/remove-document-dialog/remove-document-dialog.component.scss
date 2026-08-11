@@ -39,28 +39,15 @@
     color: #0f172a;
   }
 
-  .btn-close {
-    background: none;
-    border: none;
-    color: #64748b;
-    cursor: pointer;
-    padding: 0.25rem;
-    line-height: 1;
-    border-radius: 6px;
+  .close-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.15s ease;
 
     ::ng-deep svg,
     svg {
       width: 1.125rem;
       height: 1.125rem;
-    }
-
-    &:hover {
-      color: #0f172a;
-      background: #f1f5f9;
     }
   }
 }

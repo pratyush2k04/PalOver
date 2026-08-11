@@ -50,27 +50,6 @@
     .action-group {
       display: flex;
       gap: 0.5rem;
-
-      button {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-        padding: 0.4rem 0.75rem;
-        border-radius: 6px;
-        cursor: pointer;
-
-        &.app-button--flat {
-          background-color: #2563eb;
-          color: #ffffff;
-          border: none;
-
-          &:hover {
-            background-color: #1d4ed8;
-          }
-        }
-      }
     }
   }
 
@@ -242,13 +221,6 @@
       justify-content: flex-end;
       gap: 0.5rem;
       margin-top: 1.25rem;
-
-      button {
-        padding: 0.4rem 0.85rem;
-        font-size: 0.875rem;
-        border-radius: 6px;
-        cursor: pointer;
-      }
     }
   }
 }

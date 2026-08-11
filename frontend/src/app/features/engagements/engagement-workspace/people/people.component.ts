@@ -9,11 +9,12 @@ import { PersonDto, PersonType } from '../../../../models/person.model';
 import { LoaderService } from '../../../../core/loading/loader.service';
 import { ToastService } from '@common/services/toast/toast';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
+import { ButtonComponent } from '@common/components/button/button';
 
 @Component({
   selector: 'app-people',
   standalone: true,
-  imports: [CommonModule, FormsModule, ConfirmDialogComponent, InlineSVGModule],
+  imports: [CommonModule, FormsModule, ConfirmDialogComponent, InlineSVGModule, ButtonComponent],
   templateUrl: './people.component.html',
   styleUrl: './people.component.scss'
 })

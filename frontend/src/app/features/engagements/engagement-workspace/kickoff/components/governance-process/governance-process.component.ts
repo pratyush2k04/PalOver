@@ -13,11 +13,12 @@ import {
 import { CADENCE_CONSTANTS } from '../../../../../../constants/cadence.constants';
 import { AlertComponent } from '@common/components/alert/alert';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
+import { ButtonComponent } from '@common/components/button/button';
 
 @Component({
   selector: 'app-governance-process',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AlertComponent, EmptyStateComponent],
+  imports: [CommonModule, ReactiveFormsModule, AlertComponent, EmptyStateComponent, ButtonComponent],
   templateUrl: './governance-process.component.html',
   styleUrl: './governance-process.component.scss'
 })

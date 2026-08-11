@@ -6,10 +6,10 @@
     </div>
     <div class="action-group">
       @if (isTechLead()) {
-        <button class="app-button app-button--flat" (click)="openAddModal()">
+        <app-button variant="flat" (click)="openAddModal()">
           <span [inlineSVG]="'assets/icons/plus.svg'"></span>
           Add item
-        </button>
+        </app-button>
       }
     </div>
   </div>
@@ -123,8 +123,8 @@
         <input id="tz-note" type="text" [ngModel]="newItemTimeZoneNote()" (ngModelChange)="newItemTimeZoneNote.set($event)" placeholder="e.g., Client is IST" />
       </div>
       <div class="modal-actions">
-        <button class="app-button app-button--stroked" (click)="closeAddModal()">Cancel</button>
-        <button class="app-button app-button--flat" (click)="submitAddItem()">Save</button>
+        <app-button variant="stroked" (click)="closeAddModal()">Cancel</app-button>
+        <app-button variant="flat" (click)="submitAddItem()">Save</app-button>
       </div>
     </div>
   </div>
@@ -153,8 +153,8 @@
         }
       </div>
       <div class="modal-actions">
-        <button class="app-button app-button--stroked" (click)="closeBlockModal()">Cancel</button>
-        <button class="app-button app-button--flat" (click)="submitBlockReason()">Confirm Block</button>
+        <app-button variant="stroked" (click)="closeBlockModal()">Cancel</app-button>
+        <app-button variant="flat" (click)="submitBlockReason()">Confirm Block</app-button>
       </div>
     </div>
   </div>

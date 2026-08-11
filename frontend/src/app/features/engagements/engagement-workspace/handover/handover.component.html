@@ -110,14 +110,14 @@
           <div class="commitment-square promised-square">
             <div class="square-header">
               <span class="square-label">Promised</span>
-              <button
+              <app-button
                 *ngIf="isPreSales() && !isSubmitted() && editingCommitmentId() !== c.commitmentId"
-                class="btn-icon"
+                variant="icon"
                 (click)="startEditCommitment(c)"
-                aria-label="Edit promised commitment"
+                ariaLabel="Edit promised commitment"
               >
                 &#9998;
-              </button>
+              </app-button>
             </div>
 
             <ng-container
@@ -173,10 +173,10 @@
                 <li *ngFor="let err of editCommitmentErrors()">{{ err }}</li>
               </ul>
               <div class="row-actions">
-                <button class="btn-primary-sm" (click)="saveEditCommitment(c.commitmentId)">
+                <app-button variant="flat" size="sm" (click)="saveEditCommitment(c.commitmentId)">
                   Save
-                </button>
-                <button class="btn-secondary-sm" (click)="cancelEditCommitment()">Cancel</button>
+                </app-button>
+                <app-button variant="stroked" size="sm" (click)="cancelEditCommitment()">Cancel</app-button>
               </div>
             </ng-template>
 
@@ -186,15 +186,15 @@
             >
               <ng-container *ngIf="pendingDeleteId() === c.commitmentId; else deleteButton">
                 <span class="confirm-inline">Remove this commitment?</span>
-                <button class="btn-danger-sm" (click)="confirmDeleteCommitment(c.commitmentId)">
+                <app-button variant="danger" size="sm" (click)="confirmDeleteCommitment(c.commitmentId)">
                   Yes
-                </button>
-                <button class="btn-secondary-sm" (click)="cancelDeleteCommitment()">Cancel</button>
+                </app-button>
+                <app-button variant="stroked" size="sm" (click)="cancelDeleteCommitment()">Cancel</app-button>
               </ng-container>
               <ng-template #deleteButton>
-                <button class="btn-danger-sm" (click)="requestDeleteCommitment(c.commitmentId)">
+                <app-button variant="danger" size="sm" (click)="requestDeleteCommitment(c.commitmentId)">
                   Delete
-                </button>
+                </app-button>
               </ng-template>
             </div>
           </div>
@@ -202,19 +202,19 @@
           <div class="commitment-square realistic-square">
             <div class="square-header">
               <span class="square-label">Realistic</span>
-              <button
+              <app-button
                 *ngIf="
                   isProjectManagement() &&
                   !isSubmitted() &&
                   c.realisticCommitment &&
                   editingRealisticCommitmentId() !== c.commitmentId
                 "
-                class="btn-icon"
+                variant="icon"
                 (click)="startEditRealisticCommitment(c)"
-                aria-label="Edit realistic commitment"
+                ariaLabel="Edit realistic commitment"
               >
                 &#9998;
-              </button>
+              </app-button>
             </div>
 
             <ng-container
@@ -253,18 +253,19 @@
                   {{ c.realisticCommitment.isPossible ? 'Mark Impossible' : 'Marked Impossible' }}
                 </button>
 
-                <button
+                <app-button
                   *ngIf="
                     commitmentNeedsAcknowledgement(c) &&
                     !c.realisticCommitment.acknowledgementMessage &&
                     isProjectManagement() &&
                     !isSubmitted()
                   "
-                  class="btn-warning"
+                  variant="warning"
+                  size="sm"
                   (click)="startEditRealisticCommitment(c)"
                 >
                   Acknowledge Timeline Mismatch
-                </button>
+                </app-button>
               </ng-container>
               <ng-template #noRealisticYet>
                 <button
@@ -315,10 +316,10 @@
                 <li *ngFor="let err of realisticEditErrors()">{{ err }}</li>
               </ul>
               <div class="row-actions">
-                <button class="btn-primary-sm" (click)="saveRealisticCommitment(c)">Save</button>
-                <button class="btn-secondary-sm" (click)="cancelEditRealisticCommitment()">
+                <app-button variant="flat" size="sm" (click)="saveRealisticCommitment(c)">Save</app-button>
+                <app-button variant="stroked" size="sm" (click)="cancelEditRealisticCommitment()">
                   Cancel
-                </button>
+                </app-button>
               </div>
             </ng-template>
           </div>
@@ -380,7 +381,7 @@
             Title and Description are required.
           </div>
           <div class="row-actions add-form-actions">
-            <button class="btn-primary" (click)="addCommitment()">Add Commitment</button>
+            <app-button variant="flat" (click)="addCommitment()">Add Commitment</app-button>
           </div>
         </div>
       </div>

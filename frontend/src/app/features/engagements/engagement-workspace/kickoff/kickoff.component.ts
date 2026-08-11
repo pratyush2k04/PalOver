@@ -13,11 +13,12 @@ import {
   OverrideKickoffReadyDialogData,
   OverrideKickoffReadyDialogResult
 } from './dialogs/override-kickoff-ready-dialog/override-kickoff-ready-dialog.component';
+import { ButtonComponent } from '@common/components/button/button';
 
 @Component({
   selector: 'app-kickoff',
   standalone: true,
-  imports: [CommonModule, GovernanceProcessComponent, ChangeRequestsComponent],
+  imports: [CommonModule, GovernanceProcessComponent, ChangeRequestsComponent, ButtonComponent],
   templateUrl: './kickoff.component.html',
   styleUrl: './kickoff.component.scss'
 })
