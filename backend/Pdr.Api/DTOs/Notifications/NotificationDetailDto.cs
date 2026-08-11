@@ -9,4 +9,5 @@ public record NotificationDetailDto(
     NotificationPriority Priority,
     string Status,
     DateTime ScheduledFor,
-    DateTime? ReadAt);
+    DateTime? ReadAt,
+    string? Link);

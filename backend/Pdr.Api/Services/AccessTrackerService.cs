@@ -120,7 +120,8 @@ public class AccessTrackerService(
                 item.EngagementId,
                 RoleEnum.TechLead,
                 JsonSerializer.Serialize(new { AccessItemId = item.AccessItemId, TriggerUserId = currentUserService.GetUserId() }),
-                DateTime.UtcNow);
+                DateTime.UtcNow,
+                $"/engagements/{item.EngagementId}/workspace/technical-readiness");
         }
 
         return MapToDto(item);

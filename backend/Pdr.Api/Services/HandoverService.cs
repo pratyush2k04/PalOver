@@ -148,7 +148,8 @@ public class HandoverService : IHandoverService
             engagementId,
             RoleEnum.ProjectManagement,
             JsonSerializer.Serialize(new { HandoverId = handover.HandoverId, TriggerUserId = int.Parse(userIdStr), EngagementId = engagementId }),
-            DateTime.UtcNow);
+            DateTime.UtcNow,
+            $"/engagements/{engagementId}/workspace/handover");
 
         return await GetHandoverAsync(engagementId);
     }

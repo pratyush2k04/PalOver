@@ -88,7 +88,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("AccessItems", (string)null);
+                    b.ToTable("AccessItems");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItemDefinition", b =>
@@ -117,7 +117,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("AccessItemDefinitionId");
 
-                    b.ToTable("AccessItemDefinitions", (string)null);
+                    b.ToTable("AccessItemDefinitions");
 
                     b.HasData(
                         new
@@ -1635,7 +1635,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("EnvironmentToolingDefinitionId");
 
-                    b.ToTable("EnvironmentToolingDefinitions", (string)null);
+                    b.ToTable("EnvironmentToolingDefinitions");
 
                     b.HasData(
                         new
@@ -1723,7 +1723,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("EnvironmentToolingItems", (string)null);
+                    b.ToTable("EnvironmentToolingItems");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Handover.Commitment", b =>
@@ -3114,6 +3114,10 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("is_deleted");
+
+                    b.Property<string>("Link")
+                        .HasColumnType("text")
+                        .HasColumnName("link");
 
                     b.Property<int>("Priority")
                         .HasColumnType("integer")

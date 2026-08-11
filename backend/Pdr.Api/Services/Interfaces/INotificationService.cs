@@ -12,6 +12,7 @@ public interface INotificationService
         RoleEnum receiverRole,
         string data,
         DateTime scheduledFor,
+        string? link = null,
         CancellationToken cancellationToken = default);
 
     Task<PagedResult<NotificationSummaryDto>> GetForUserAsync(int userId, int? engagementId, int page, int pageSize);

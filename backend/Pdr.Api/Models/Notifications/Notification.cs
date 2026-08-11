@@ -26,4 +26,6 @@ public class Notification : BaseAuditableEntity
     public string? Body { get; set; }
 
     public string? Data { get; set; }
+
+    public string? Link { get; set; }
 }

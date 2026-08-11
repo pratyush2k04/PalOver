@@ -28,6 +28,7 @@ public class NotificationService(
         RoleEnum receiverRole,
         string data,
         DateTime scheduledFor,
+        string? link = null,
         CancellationToken cancellationToken = default)
     {
         var assignment = await engagementRepository.GetAssignmentByRoleIdAsync(engagementId, (int)receiverRole);
@@ -54,7 +55,8 @@ public class NotificationService(
             ReceiverUserId = assignment.UserId,
             Priority = template.DefaultPriority,
             ScheduledFor = scheduledFor,
-            Data = data
+            Data = data,
+            Link = link
         });
     }
 
@@ -72,7 +74,8 @@ public class NotificationService(
                 Truncate(body, BodyPreviewLength),
                 notification.Priority,
                 ComputeStatus(notification),
-                notification.ScheduledFor));
+                notification.ScheduledFor,
+                notification.Link));
         }
 
         return new PagedResult<NotificationSummaryDto>
@@ -101,7 +104,8 @@ public class NotificationService(
             notification.Priority,
             ComputeStatus(notification),
             notification.ScheduledFor,
-            notification.ReadAt);
+            notification.ReadAt,
+            notification.Link);
     }
 
     public async Task MarkAsReadAsync(int id, int userId)

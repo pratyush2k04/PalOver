@@ -8,4 +8,5 @@ public record NotificationSummaryDto(
     string BodyPreview,
     NotificationPriority Priority,
     string Status,
-    DateTime ScheduledFor);
+    DateTime ScheduledFor,
+    string? Link);
