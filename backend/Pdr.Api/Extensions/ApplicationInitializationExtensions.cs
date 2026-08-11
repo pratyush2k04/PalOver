@@ -50,15 +50,9 @@ public static class ApplicationInitializationExtensions
             bool changesMade = false;
             foreach (var engagement in engagements)
             {
-                // Purge legacy test items for AccessItems if they don't match standard definitions
-                bool hasLegacyAccess = engagement.AccessItems.Any(a => !accessDefs.Any(d => d.Name == a.Name));
-                if ((!engagement.AccessItems.Any() || hasLegacyAccess) && accessDefs.Any())
+                // Only seed AccessItems if an engagement has no access items at all
+                if (!engagement.AccessItems.Any() && accessDefs.Any())
                 {
-                    if (hasLegacyAccess)
-                    {
-                        db.AccessItems.RemoveRange(engagement.AccessItems);
-                    }
-
                     foreach (var def in accessDefs)
                     {
                         db.AccessItems.Add(new Models.AccessTracker.AccessItem
@@ -74,15 +68,9 @@ public static class ApplicationInitializationExtensions
                     changesMade = true;
                 }
 
-                // Purge legacy test items for EnvironmentToolingItems if they don't match standard definitions
-                bool hasLegacyTooling = engagement.EnvironmentToolingItems.Any(t => !toolingDefs.Any(d => d.Name == t.Name));
-                if ((!engagement.EnvironmentToolingItems.Any() || hasLegacyTooling) && toolingDefs.Any())
+                // Only seed EnvironmentToolingItems if an engagement has no environment tooling items at all
+                if (!engagement.EnvironmentToolingItems.Any() && toolingDefs.Any())
                 {
-                    if (hasLegacyTooling)
-                    {
-                        db.EnvironmentToolingItems.RemoveRange(engagement.EnvironmentToolingItems);
-                    }
-
                     foreach (var def in toolingDefs)
                     {
                         db.EnvironmentToolingItems.Add(new Models.EnvironmentTooling.EnvironmentToolingItem

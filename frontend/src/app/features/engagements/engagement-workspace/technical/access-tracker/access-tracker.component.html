@@ -50,6 +50,8 @@
                 <div class="cell-content">
                   @if (item.isClientSide) {
                     <app-status-badge tone="warning">Client-side</app-status-badge>
+                  } @else {
+                    <app-status-badge tone="neutral">Internal</app-status-badge>
                   }
                   @if (item.isOverdueWithClient) {
                     <app-status-badge tone="warning">Overdue</app-status-badge>
