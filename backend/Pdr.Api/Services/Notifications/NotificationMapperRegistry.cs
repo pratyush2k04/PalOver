@@ -10,6 +10,7 @@ public static class NotificationMapperRegistry
     {
         services.AddScoped<INotificationTemplateMapper, AccessItemBlockedMapper>();
         services.AddScoped<INotificationTemplateMapper, PMAllocatedMapper>();
+        services.AddScoped<INotificationTemplateMapper, HandoverSubmittedMapper>();
 
         // Add new mappers here when adding new notification types.
 
