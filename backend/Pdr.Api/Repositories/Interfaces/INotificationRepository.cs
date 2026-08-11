@@ -10,5 +10,5 @@ public interface INotificationRepository
     Task SetReadAtAsync(int id, DateTime readAt);
     Task SetAllReadAsync(int userId, DateTime readAt);
     Task<int> GetUnreadCountAsync(int userId);
-    Task BulkDeleteAsync(int userId, IEnumerable<int> ids);
+    Task BulkDeleteAsync(IEnumerable<int> ids);
 }

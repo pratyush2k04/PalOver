@@ -123,8 +123,15 @@ public class NotificationService(
     public async Task<int> GetUnreadCountAsync(int userId) =>
         await repository.GetUnreadCountAsync(userId);
 
-    public async Task DeleteAsync(int userId, IEnumerable<int> ids) =>
-        await repository.BulkDeleteAsync(userId, ids);
+    public async Task DeleteAsync(int adminUserId, IEnumerable<int> ids)
+    {
+        var idList = ids.ToList();
+        await repository.BulkDeleteAsync(idList);
+
+        logger.LogInformation(
+            "Admin {AdminUserId} deleted notifications {NotificationIds}",
+            adminUserId, idList);
+    }
 
     private async Task<(string Title, string Body)> ResolveContentAsync(Notification notification)
     {

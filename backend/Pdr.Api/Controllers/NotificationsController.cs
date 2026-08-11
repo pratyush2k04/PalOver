@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Common;
 using Pdr.Api.DTOs.Notifications;
 using Pdr.Api.Services.Interfaces;
@@ -68,10 +69,12 @@ public class NotificationsController(
     }
 
     /// <summary>
-    /// Deletes a batch of the current user's notifications. Ids belonging to other users are ignored.
+    /// Deletes a batch of notifications by id, regardless of who received them. Admin only.
     /// </summary>
     [HttpDelete]
+    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> BulkDelete([FromBody] BulkDeleteNotificationsRequest request)
     {
         await notificationService.DeleteAsync(currentUserService.GetUserId(), request.Ids);

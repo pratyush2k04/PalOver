@@ -62,10 +62,10 @@ public class NotificationRepository(AppDbContext context) : INotificationReposit
             .AsNoTracking()
             .CountAsync(n => n.ReceiverUserId == userId && n.ReadAt == null && n.ScheduledFor <= DateTime.UtcNow);
 
-    public async Task BulkDeleteAsync(int userId, IEnumerable<int> ids)
+    public async Task BulkDeleteAsync(IEnumerable<int> ids)
     {
         await context.Notifications
-            .Where(n => n.ReceiverUserId == userId && ids.Contains(n.Id))
+            .Where(n => ids.Contains(n.Id))
             .ExecuteDeleteAsync();
     }
 }
