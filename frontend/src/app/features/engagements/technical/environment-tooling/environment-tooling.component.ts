@@ -13,11 +13,13 @@ import {
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
+import { InputComponent } from '@common/components/form/input/input';
+import { TextareaComponent } from '@common/components/form/textarea/textarea';
 
 @Component({
   selector: 'app-environment-tooling',
   standalone: true,
-  imports: [CommonModule, FormsModule, InlineSVGModule, StatusBadgeComponent, ButtonComponent],
+  imports: [CommonModule, FormsModule, InlineSVGModule, StatusBadgeComponent, ButtonComponent, InputComponent, TextareaComponent],
   templateUrl: './environment-tooling.component.html',
   styleUrl: './environment-tooling.component.scss'
 })

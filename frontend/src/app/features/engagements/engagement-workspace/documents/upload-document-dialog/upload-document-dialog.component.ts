@@ -8,11 +8,21 @@ import { DocumentCategory, DocumentVisibility } from '../../../models/document.m
 import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from 'src/app/constants/document.constants';
 import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
+import { InputComponent } from '@common/components/form/input/input';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 
 @Component({
   selector: 'app-upload-document-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, InlineSVGModule, AlertComponent, ButtonComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    InlineSVGModule,
+    AlertComponent,
+    ButtonComponent,
+    InputComponent,
+    SelectComponent
+  ],
   templateUrl: './upload-document-dialog.component.html',
   styleUrl: './upload-document-dialog.component.scss'
 })
@@ -39,6 +49,15 @@ export class UploadDocumentDialogComponent implements OnInit {
   selectedVisibility = signal<DocumentVisibility>(DOCUMENT_CONFIG.VISIBILITY.TEAM_WIDE);
   isUploading = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
+
+  readonly categoryOptions = computed<SelectOption[]>(() =>
+    this.categories().map((cat) => ({ value: cat.id, label: cat.categoryName }))
+  );
+
+  readonly visibilityOptions: SelectOption[] = [
+    { value: DOCUMENT_CONFIG.VISIBILITY.TEAM_WIDE, label: 'Team-wide' },
+    { value: DOCUMENT_CONFIG.VISIBILITY.PM_ONLY, label: 'PM-only (restricted)' }
+  ];
 
   ngOnInit(): void {
     this.loadCategories();

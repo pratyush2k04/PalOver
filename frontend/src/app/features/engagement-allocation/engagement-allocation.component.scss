@@ -428,56 +428,6 @@
 
       .search-input-container {
         position: relative;
-
-        .search-employee-input {
-          width: 100%;
-          border: none;
-          outline: none;
-          font-size: 0.925rem;
-          color: #1e293b;
-          background: transparent;
-
-          &::placeholder {
-            color: #94a3b8;
-          }
-        }
-
-        /* Floating Dropdown List (exact UI from uploaded image) */
-        .floating-dropdown {
-          position: absolute;
-          top: calc(100% + 8px);
-          left: -0.75rem;
-          right: -0.75rem;
-          background: #ffffff;
-          border: 1px solid #cbd5e1;
-          border-radius: 10px;
-          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12);
-          max-height: 220px;
-          overflow-y: auto;
-          z-index: 1000;
-          padding: 0.35rem 0;
-
-          .dropdown-empty {
-            padding: 0.75rem 1rem;
-            font-size: 0.875rem;
-            color: #94a3b8;
-            text-align: center;
-          }
-
-          .dropdown-item {
-            padding: 0.65rem 1rem;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #1e293b;
-            cursor: pointer;
-            transition: background 0.15s ease;
-
-            &:hover {
-              background: #edf4ff;
-              color: #1d4ed8;
-            }
-          }
-        }
       }
     }
 

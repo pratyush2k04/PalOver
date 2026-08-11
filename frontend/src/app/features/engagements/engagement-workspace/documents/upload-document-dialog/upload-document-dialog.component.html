@@ -37,43 +37,34 @@
       <!-- Rename field — only for single-file uploads -->
       @if (isSingleFile()) {
         <div class="form-group">
-          <label for="file-name">File name (simulated)</label>
-          <input
+          <app-input
             id="file-name"
-            type="text"
-            class="form-control"
-            [value]="simulatedFileName()"
-            (input)="onSimulatedNameChange($any($event.target).value)"
+            label="File name (simulated)"
+            [ngModel]="simulatedFileName()"
+            (ngModelChange)="onSimulatedNameChange($event)"
             placeholder="e.g. Document.pdf"
           />
         </div>
       }
 
       <div class="form-group">
-        <label for="doc-category">Category</label>
-        <select
+        <app-select
           id="doc-category"
-          class="form-control"
-          [value]="selectedCategoryId() || ''"
-          (change)="onCategoryChange($any($event.target).value)"
-        >
-          @for (cat of categories(); track cat.id) {
-            <option [value]="cat.id">{{ cat.categoryName }}</option>
-          }
-        </select>
+          label="Category"
+          [ngModel]="selectedCategoryId()"
+          (ngModelChange)="onCategoryChange($event)"
+          [options]="categoryOptions()"
+        />
       </div>
 
       <div class="form-group">
-        <label for="doc-visibility">Visibility</label>
-        <select
+        <app-select
           id="doc-visibility"
-          class="form-control"
-          [value]="selectedVisibility()"
-          (change)="onVisibilityChange($any($event.target).value)"
-        >
-          <option value="Team-wide">Team-wide</option>
-          <option value="PM-only">PM-only (restricted)</option>
-        </select>
+          label="Visibility"
+          [ngModel]="selectedVisibility()"
+          (ngModelChange)="onVisibilityChange($event)"
+          [options]="visibilityOptions"
+        />
       </div>
 
       <p class="format-note">

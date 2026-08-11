@@ -5,6 +5,8 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
+import { SelectOption } from '@common/components/form/select/select';
+import { MultiSelectListComponent } from '@common/components/multi-select-list/multi-select-list';
 import { DocumentService } from '../../../services/document.service';
 import { DocumentItem } from '../../../models/document.model';
 import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from 'src/app/constants/document.constants';
@@ -12,7 +14,7 @@ import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from 'src/app/constants/document.c
 @Component({
   selector: 'app-custom-visibility-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, InlineSVGModule, AlertComponent, ButtonComponent],
+  imports: [CommonModule, FormsModule, InlineSVGModule, AlertComponent, ButtonComponent, MultiSelectListComponent],
   templateUrl: './custom-visibility-dialog.component.html',
   styleUrl: './custom-visibility-dialog.component.scss'
 })
@@ -26,6 +28,11 @@ export class CustomVisibilityDialogComponent implements OnInit {
 
   // Project Management (ID 2) is intentionally excluded — PMs always have access regardless.
   readonly availableRoles = DOCUMENT_CONFIG.AVAILABLE_CUSTOM_VISIBILITY_ROLES;
+
+  readonly roleOptions: SelectOption[] = this.availableRoles.map((role) => ({
+    value: role.id,
+    label: role.label
+  }));
 
   selectedRoles = signal<number[]>([]);
   isSubmitting = signal<boolean>(false);
@@ -41,19 +48,8 @@ export class CustomVisibilityDialogComponent implements OnInit {
     }
   }
 
-  isRoleSelected(roleId: number): boolean {
-    return this.selectedRoles().includes(roleId);
-  }
-
-  toggleRole(roleId: number, event: Event): void {
-    const checked = (event.target as HTMLInputElement).checked;
-    this.selectedRoles.update((roles) => {
-      if (checked) {
-        return roles.includes(roleId) ? roles : [...roles, roleId];
-      } else {
-        return roles.filter((r) => r !== roleId);
-      }
-    });
+  onRoleSelectionChange(values: unknown[]): void {
+    this.selectedRoles.set(values as number[]);
   }
 
   onSave(): void {

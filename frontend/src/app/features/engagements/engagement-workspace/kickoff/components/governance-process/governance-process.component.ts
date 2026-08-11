@@ -14,11 +14,23 @@ import { CADENCE_CONSTANTS } from '../../../../../../constants/cadence.constants
 import { AlertComponent } from '@common/components/alert/alert';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { ButtonComponent } from '@common/components/button/button';
+import { InputComponent } from '@common/components/form/input/input';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
+import { MultiSelectListComponent } from '@common/components/multi-select-list/multi-select-list';
 
 @Component({
   selector: 'app-governance-process',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AlertComponent, EmptyStateComponent, ButtonComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    AlertComponent,
+    EmptyStateComponent,
+    ButtonComponent,
+    InputComponent,
+    SelectComponent,
+    MultiSelectListComponent
+  ],
   templateUrl: './governance-process.component.html',
   styleUrl: './governance-process.component.scss'
 })
@@ -43,6 +55,21 @@ export class GovernanceProcessComponent {
   cadences = signal<CommunicationCadence[]>([]);
   assignedParticipants = signal<EngagementParticipant[]>([]);
   selectedParticipantUserIds = signal<number[]>([]);
+
+  readonly cadenceOptions: SelectOption[] = [
+    { value: CadenceTypeEnum.Daily, label: 'Daily' },
+    { value: CadenceTypeEnum.Weekly, label: 'Weekly' },
+    { value: CadenceTypeEnum.Fortnightly, label: 'Fortnightly' },
+    { value: CadenceTypeEnum.Monthly, label: 'Monthly' },
+    { value: CadenceTypeEnum.Quarterly, label: 'Quarterly' }
+  ];
+
+  readonly participantOptions = computed<SelectOption[]>(() =>
+    this.assignedParticipants().map((participant) => ({
+      value: participant.userId,
+      label: participant.fullName
+    }))
+  );
 
   isModalOpen = signal<boolean>(false);
   isSubmitting = signal<boolean>(false);
@@ -98,20 +125,8 @@ export class GovernanceProcessComponent {
     this.errorMessage.set(null);
   }
 
-  isParticipantSelected(userId: number): boolean {
-    return this.selectedParticipantUserIds().includes(userId);
-  }
-
-  toggleParticipant(userId: number, event: Event): void {
-    const checked = (event.target as HTMLInputElement).checked;
-    const current = this.selectedParticipantUserIds();
-    if (checked) {
-      if (!current.includes(userId)) {
-        this.selectedParticipantUserIds.set([...current, userId]);
-      }
-    } else {
-      this.selectedParticipantUserIds.set(current.filter(id => id !== userId));
-    }
+  onParticipantSelectionChange(values: unknown[]): void {
+    this.selectedParticipantUserIds.set(values as number[]);
   }
 
   onSubmitCadence(): void {

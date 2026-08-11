@@ -126,29 +126,22 @@
           }
 
           <div class="form-group">
-            <label class="form-label" for="description">{{ constants.LABEL_DESCRIPTION }}</label>
-            <textarea
+            <app-textarea
               id="description"
-              class="form-control textarea-input"
-              rows="3"
-              formControlName="description">
-            </textarea>
-            @if (logForm.get('description')?.invalid && logForm.get('description')?.touched) {
-              <span class="error-text">{{ constants.ERROR_DESCRIPTION_REQUIRED }}</span>
-            }
+              [label]="constants.LABEL_DESCRIPTION"
+              formControlName="description"
+              [rows]="3"
+              [errorMessages]="{ required: constants.ERROR_DESCRIPTION_REQUIRED }"
+            />
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="impact">{{ constants.LABEL_IMPACT }}</label>
-            <input
+            <app-input
               id="impact"
-              type="text"
-              class="form-control"
+              [label]="constants.LABEL_IMPACT"
               formControlName="impact"
+              [errorMessages]="{ required: constants.ERROR_IMPACT_REQUIRED }"
             />
-            @if (logForm.get('impact')?.invalid && logForm.get('impact')?.touched) {
-              <span class="error-text">{{ constants.ERROR_IMPACT_REQUIRED }}</span>
-            }
           </div>
         </div>
 
@@ -181,16 +174,13 @@
           }
 
           <div class="form-group">
-            <label class="form-label" for="rejectionReason">{{ constants.LABEL_REASON_REQUIRED }}</label>
-            <textarea
+            <app-textarea
               id="rejectionReason"
-              class="form-control textarea-input"
-              rows="4"
-              formControlName="rejectionReason">
-            </textarea>
-            @if (rejectForm.get('rejectionReason')?.invalid && rejectForm.get('rejectionReason')?.touched) {
-              <span class="error-text">{{ constants.ERROR_REASON_REQUIRED }}</span>
-            }
+              [label]="constants.LABEL_REASON_REQUIRED"
+              formControlName="rejectionReason"
+              [rows]="4"
+              [errorMessages]="{ required: constants.ERROR_REASON_REQUIRED }"
+            />
           </div>
         </div>
 

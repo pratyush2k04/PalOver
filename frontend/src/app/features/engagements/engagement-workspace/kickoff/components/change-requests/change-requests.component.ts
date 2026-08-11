@@ -11,11 +11,22 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
 import { AlertComponent } from '@common/components/alert/alert';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
+import { InputComponent } from '@common/components/form/input/input';
+import { TextareaComponent } from '@common/components/form/textarea/textarea';
 
 @Component({
   selector: 'app-change-requests',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, InlineSVGModule, AlertComponent, StatusBadgeComponent, ButtonComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    InlineSVGModule,
+    AlertComponent,
+    StatusBadgeComponent,
+    ButtonComponent,
+    InputComponent,
+    TextareaComponent
+  ],
   templateUrl: './change-requests.component.html',
   styleUrl: './change-requests.component.scss'
 })

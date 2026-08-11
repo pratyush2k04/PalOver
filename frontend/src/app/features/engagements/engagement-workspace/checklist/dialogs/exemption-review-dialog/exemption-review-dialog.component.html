@@ -23,13 +23,13 @@
     } @else {
       <form [formGroup]="form" (ngSubmit)="onConfirmReject()">
         <div class="form-group">
-          <label for="rejection-reason">Rejection Feedback (Optional)</label>
-          <textarea
+          <app-textarea
             id="rejection-reason"
+            label="Rejection Feedback (Optional)"
             formControlName="rejectionReason"
-            rows="3"
-            placeholder="Optionally provide feedback explaining why the exemption request was rejected...">
-          </textarea>
+            [rows]="3"
+            placeholder="Optionally provide feedback explaining why the exemption request was rejected..."
+          />
         </div>
 
         <div class="dialog-actions">

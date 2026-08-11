@@ -187,33 +187,14 @@
 
             <!-- Employee Search Input -->
             <div class="search-input-container">
-              <input
-                type="text"
-                class="search-employee-input"
+              <app-autocomplete
                 placeholder="Search Employee"
-                [ngModel]="modalSearchTerm()"
-                (ngModelChange)="modalSearchTerm.set($event)"
-                (focus)="onSearchFocus()"
-                (blur)="onSearchBlur()"
+                [searchTerm]="modalSearchTerm()"
+                [options]="autocompleteOptions()"
+                emptyMessage="No matching Leadership users available"
+                (searchTermChange)="modalSearchTerm.set($event)"
+                (optionSelected)="onAutocompleteOptionSelected($event)"
               />
-
-              <!-- Floating Dropdown Menu (Matches Screenshot UI) -->
-              @if (isDropdownOpen()) {
-                <div class="floating-dropdown">
-                  @if (filteredAvailableUsers().length === 0) {
-                    <div class="dropdown-empty">No matching Leadership users available</div>
-                  } @else {
-                    @for (user of filteredAvailableUsers(); track user.id) {
-                      <div
-                        class="dropdown-item"
-                        (mousedown)="selectUserFromDropdown(user)"
-                      >
-                        {{ user.id }}-{{ user.fullName }}
-                      </div>
-                    }
-                  }
-                </div>
-              }
             </div>
           </div>
 

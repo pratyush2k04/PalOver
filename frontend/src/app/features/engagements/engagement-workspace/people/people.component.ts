@@ -10,11 +10,21 @@ import { LoaderService } from '../../../../core/loading/loader.service';
 import { ToastService } from '@common/services/toast/toast';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { ButtonComponent } from '@common/components/button/button';
+import { InputComponent } from '@common/components/form/input/input';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 
 @Component({
   selector: 'app-people',
   standalone: true,
-  imports: [CommonModule, FormsModule, ConfirmDialogComponent, InlineSVGModule, ButtonComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ConfirmDialogComponent,
+    InlineSVGModule,
+    ButtonComponent,
+    InputComponent,
+    SelectComponent
+  ],
   templateUrl: './people.component.html',
   styleUrl: './people.component.scss'
 })
@@ -43,6 +53,11 @@ export class PeopleComponent {
   formPersonType = signal<number>(PersonType.Internal);
 
   PersonTypeEnum = PersonType;
+
+  readonly personTypeOptions: SelectOption[] = [
+    { value: PersonType.Internal, label: 'Internal' },
+    { value: PersonType.Client, label: 'Client' }
+  ];
 
   isFormDirty = computed(() => {
     const edit = this.editingPerson();

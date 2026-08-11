@@ -32,18 +32,12 @@
           <span>Project Management &amp; Admin — always granted</span>
         </div>
 
-        <div class="roles-grid">
-          @for (role of availableRoles; track role.id) {
-            <label class="role-checkbox-card" [class.is-selected]="isRoleSelected(role.id)">
-              <input
-                type="checkbox"
-                [checked]="isRoleSelected(role.id)"
-                (change)="toggleRole(role.id, $event)"
-              />
-              <span class="role-name">{{ role.label }}</span>
-            </label>
-          }
-        </div>
+        <app-multi-select-list
+          [options]="roleOptions"
+          [selectedValues]="selectedRoles()"
+          variant="cards"
+          (selectedValuesChange)="onRoleSelectionChange($event)"
+        />
       </div>
     </div>
 

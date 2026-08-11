@@ -8,11 +8,20 @@ import { ToastService } from '@common/services/toast/toast';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
+import { AutocompleteComponent, AutocompleteOption } from '@common/components/autocomplete/autocomplete';
 
 @Component({
   selector: 'app-engagement-allocation',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, InlineSVGModule, StatusBadgeComponent, ButtonComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    LoadingSpinnerComponent,
+    InlineSVGModule,
+    StatusBadgeComponent,
+    ButtonComponent,
+    AutocompleteComponent
+  ],
   templateUrl: './engagement-allocation.component.html',
   styleUrl: './engagement-allocation.component.scss'
 })
@@ -31,7 +40,6 @@ export class EngagementAllocationComponent implements OnInit {
   readonly selectedEngagement = signal<EngagementAllocationItem | null>(null);
   readonly modalLeadershipUsers = signal<LeadershipUserItem[]>([]);
   readonly modalSearchTerm = signal<string>('');
-  readonly isDropdownOpen = signal<boolean>(false);
   readonly isSaving = signal<boolean>(false);
 
   // Metrics
@@ -78,6 +86,10 @@ export class EngagementAllocationComponent implements OnInit {
       return isNotAlreadyAssigned && matchesTerm;
     });
   });
+
+  readonly autocompleteOptions = computed<AutocompleteOption[]>(() =>
+    this.filteredAvailableUsers().map(u => ({ id: u.id, label: `${u.id}-${u.fullName}` }))
+  );
 
   ngOnInit(): void {
     this.loadData();
@@ -144,7 +156,6 @@ export class EngagementAllocationComponent implements OnInit {
     this.selectedEngagement.set(engagement);
     this.modalLeadershipUsers.set([...(engagement.leadershipUsers || [])]);
     this.modalSearchTerm.set('');
-    this.isDropdownOpen.set(false);
     this.isModalOpen.set(true);
   }
 
@@ -153,18 +164,13 @@ export class EngagementAllocationComponent implements OnInit {
     this.selectedEngagement.set(null);
     this.modalLeadershipUsers.set([]);
     this.modalSearchTerm.set('');
-    this.isDropdownOpen.set(false);
   }
 
-  onSearchFocus(): void {
-    this.isDropdownOpen.set(true);
-  }
-
-  onSearchBlur(): void {
-    // Delay hiding dropdown so click events on dropdown items can register
-    setTimeout(() => {
-      this.isDropdownOpen.set(false);
-    }, 200);
+  onAutocompleteOptionSelected(option: AutocompleteOption): void {
+    const user = this.availableLeadershipUsers().find(u => u.id === option.id);
+    if (user) {
+      this.selectUserFromDropdown(user);
+    }
   }
 
   selectUserFromDropdown(user: LeadershipUserItem): void {

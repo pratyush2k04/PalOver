@@ -145,59 +145,6 @@
   color: #334155;
 }
 
-.form-control,
-.form-select {
-  width: 100%;
-  padding: 0.625rem 0.875rem;
-  font-size: 0.9375rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 0.5rem;
-  background-color: #ffffff;
-  color: #0f172a;
-  outline: none;
-  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-
-  &:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  }
-}
-
-.participants-multi-select {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  max-height: 10rem;
-  overflow-y: auto;
-  border: 1px solid #cbd5e1;
-  border-radius: 0.5rem;
-  padding: 0.75rem;
-  background-color: #fafafa;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: #334155;
-  cursor: pointer;
-  user-select: none;
-
-  input[type="checkbox"] {
-    width: 1rem;
-    height: 1rem;
-    accent-color: #f59e0b;
-    cursor: pointer;
-  }
-}
-
-.no-participants-note {
-  font-size: 0.875rem;
-  color: #64748b;
-  font-style: italic;
-}
-
 .error-text {
   font-size: 0.75rem;
   color: #ef4444;

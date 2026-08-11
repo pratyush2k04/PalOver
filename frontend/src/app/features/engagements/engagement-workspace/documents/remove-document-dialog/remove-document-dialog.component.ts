@@ -9,16 +9,18 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
+import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { DocumentService } from '../../../services/document.service';
 import { DOCUMENT_MESSAGES } from 'src/app/constants/document.constants';
 
 @Component({
   selector: 'app-remove-document-dialog',
   standalone: true,
-  imports: [CommonModule, InlineSVGModule, AlertComponent, ButtonComponent],
+  imports: [CommonModule, FormsModule, InlineSVGModule, AlertComponent, ButtonComponent, TextareaComponent],
   templateUrl: './remove-document-dialog.component.html',
   styleUrl: './remove-document-dialog.component.scss'
 })
@@ -40,6 +42,10 @@ export class RemoveDocumentDialogComponent {
   isValidReason = computed(() => {
     const len = this.trimmedReason().length;
     return len >= 10 && len <= 500;
+  });
+  minLengthError = computed(() => {
+    const len = this.trimmedReason().length;
+    return len > 0 && len < 10 ? 'Reason must be at least 10 characters long.' : null;
   });
 
   onReasonChange(value: string): void {

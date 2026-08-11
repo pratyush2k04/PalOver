@@ -85,17 +85,14 @@
     <div class="modal-card">
       <h4>Add New Tooling Item</h4>
       <div class="form-group">
-        <label for="env-item-name">Item Name</label>
-        <input
+        <app-input
           id="env-item-name"
-          type="text"
-          [class.input-error]="!!nameError()"
+          label="Item Name"
           [ngModel]="newItemName()"
           (ngModelChange)="newItemName.set($event); nameError.set('')"
-          placeholder="e.g., Staging Server provisioned" />
-        @if (nameError()) {
-          <span class="error-text">{{ nameError() }}</span>
-        }
+          placeholder="e.g., Staging Server provisioned"
+          [extraError]="nameError() || null"
+        />
       </div>
       <div class="modal-actions">
         <app-button variant="stroked" (click)="closeAddModal()">Cancel</app-button>
@@ -114,18 +111,15 @@
         Please specify why <strong>{{ itemForNa()?.name }}</strong> is Not Applicable.
       </p>
       <div class="form-group">
-        <label for="na-reason">Reason</label>
-        <textarea
+        <app-textarea
           id="na-reason"
-          rows="3"
-          [class.input-error]="!!naReasonError()"
+          label="Reason"
+          [rows]="3"
           [ngModel]="naReasonText()"
           (ngModelChange)="naReasonText.set($event); naReasonError.set('')"
-          placeholder="e.g., Client manages pipeline independently">
-        </textarea>
-        @if (naReasonError()) {
-          <span class="error-text">{{ naReasonError() }}</span>
-        }
+          placeholder="e.g., Client manages pipeline independently"
+          [extraError]="naReasonError() || null"
+        />
       </div>
       <div class="modal-actions">
         <app-button variant="stroked" (click)="closeNaModal()">Cancel</app-button>

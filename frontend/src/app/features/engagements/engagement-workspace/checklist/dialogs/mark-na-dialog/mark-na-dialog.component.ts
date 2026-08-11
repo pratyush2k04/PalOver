@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
+import { TextareaComponent } from '@common/components/form/textarea/textarea';
 
 export interface MarkNaDialogData {
   itemTitle: string;
@@ -17,7 +18,7 @@ export interface MarkNaDialogResult {
 @Component({
   selector: 'app-mark-na-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, TextareaComponent],
   templateUrl: './mark-na-dialog.component.html',
   styleUrl: './mark-na-dialog.component.scss',
 })
