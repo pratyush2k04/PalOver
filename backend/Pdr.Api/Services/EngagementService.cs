@@ -133,8 +133,25 @@ public class EngagementService(
                 e.CommercialModel.Name,
                 e.KickoffDate,
                 e.BillingStartDate,
-                e.Status.StatusName))
+                e.Status.StatusName,
+                e.IsKickoffReady))
             .FirstOrDefaultAsync();
+
+    public async Task<IEnumerable<EngagementInfoDto>> GetAllEngagementsAsync() =>
+        await db.Engagements
+            .OrderBy(e => e.EngagementName)
+            .Select(e => new EngagementInfoDto(
+                e.EngagementId,
+                e.EngagementName,
+                e.ClientName,
+                e.EngagementDescription,
+                e.EngagementType.Name,
+                e.CommercialModel.Name,
+                e.KickoffDate,
+                e.BillingStartDate,
+                e.Status.StatusName,
+                e.IsKickoffReady))
+            .ToListAsync();
     
 
     public async Task<bool> EditEngagementAsync(int id, EditEngagementRequest request)
@@ -309,11 +326,76 @@ public class EngagementService(
     {
         var pm = assignments.FirstOrDefault(a => a.User.RoleId == (int)RoleEnum.ProjectManagement);
         var techLead = assignments.FirstOrDefault(a => a.User.RoleId == (int)RoleEnum.TechLead);
+        var leadership = assignments
+            .Where(a => a.User.RoleId == (int)RoleEnum.Leadership)
+            .Select(a => new LeadershipUserDto(a.UserId, a.User.FullName, a.User.Email))
+            .ToList();
 
         return new EngagementOwnersDto(
             pm?.UserId,
             pm?.User.FullName,
             techLead?.UserId,
-            techLead?.User.FullName);
+            techLead?.User.FullName,
+            leadership);
+    }
+
+    public async Task<List<LeadershipUserDto>> GetLeadershipUsersAsync(int engagementId)
+    {
+        if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
+            throw new EngagementNotFoundException(engagementId);
+
+        var leadershipAssignments = await engagementRepository.GetLeadershipAssignmentsAsync(engagementId);
+        return leadershipAssignments
+            .Select(a => new LeadershipUserDto(a.UserId, a.User.FullName, a.User.Email))
+            .ToList();
+    }
+
+    public async Task<List<LeadershipUserDto>> AssignLeadershipUserAsync(int engagementId, int userId)
+    {
+        if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
+            throw new EngagementNotFoundException(engagementId);
+
+        var user = await db.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == userId)
+            ?? throw new UserNotFoundException(userId);
+
+        if (user.RoleId != (int)RoleEnum.Leadership)
+            throw new InvalidOwnerRoleException(userId, RoleEnum.Leadership.ToRoleName());
+
+        var existingAssignment = await engagementRepository.GetAssignmentByUserAsync(engagementId, userId);
+        if (existingAssignment is not null)
+            throw new LeadershipUserAlreadyAssignedException();
+
+        await engagementRepository.AddAssignmentAsync(engagementId, userId);
+        return await GetLeadershipUsersAsync(engagementId);
+    }
+
+    public async Task<List<LeadershipUserDto>> AssignLeadershipUsersAsync(int engagementId, List<int> userIds)
+    {
+        if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
+            throw new EngagementNotFoundException(engagementId);
+
+        foreach (var userId in userIds.Distinct())
+        {
+            await AssignLeadershipUserAsync(engagementId, userId);
+        }
+
+        return await GetLeadershipUsersAsync(engagementId);
+    }
+
+    public async Task<List<LeadershipUserDto>> RemoveLeadershipUserAsync(int engagementId, int userId)
+    {
+        if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
+            throw new EngagementNotFoundException(engagementId);
+
+        var leadershipAssignments = await engagementRepository.GetLeadershipAssignmentsAsync(engagementId);
+        var assignmentToRemove = leadershipAssignments.FirstOrDefault(a => a.UserId == userId);
+        if (assignmentToRemove is null)
+            throw new UserNotFoundException(userId);
+
+        if (leadershipAssignments.Count <= 1)
+            throw new LastLeadershipUserRequiredException();
+
+        await engagementRepository.RemoveAssignmentAsync(assignmentToRemove);
+        return await GetLeadershipUsersAsync(engagementId);
     }
 }

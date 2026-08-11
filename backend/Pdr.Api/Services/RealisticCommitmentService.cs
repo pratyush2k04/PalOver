@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Handovers;
@@ -11,11 +10,7 @@ namespace Pdr.Api.Services;
 
 public class RealisticCommitmentService : IRealisticCommitmentService
 {
-    private const long SecondsPerDay = 86400;
-    private const long SecondsPerWeek = SecondsPerDay * 7;
-    private const long SecondsPerMonth = SecondsPerDay * 30;
-    private const long GapThresholdSeconds = SecondsPerDay * 3;
-    private const decimal GapThresholdRatio = 0.25m;
+    private const string SubmittedStatusName = "Submitted";
 
     private readonly IHandoverRepository _handoverRepository;
     private readonly ICommitmentRepository _commitmentRepository;
@@ -31,25 +26,8 @@ public class RealisticCommitmentService : IRealisticCommitmentService
         _realisticCommitmentRepository = realisticCommitmentRepository;
     }
 
-    private static long ToSeconds(int timeline, string unit) => unit switch
-    {
-        "Days" => timeline * SecondsPerDay,
-        "Weeks" => timeline * SecondsPerWeek,
-        "Months" => timeline * SecondsPerMonth,
-        _ => timeline * SecondsPerDay
-    };
-
-    private static bool HasEstimationGap(int promisedTimeline, string promisedUnit, int realisticTimeline, string realisticUnit)
-    {
-        var promisedSeconds = ToSeconds(promisedTimeline, promisedUnit);
-        var realisticSeconds = ToSeconds(realisticTimeline, realisticUnit);
-        var diff = Math.Abs(realisticSeconds - promisedSeconds);
-
-        if (diff > GapThresholdSeconds)
-            return true;
-
-        return (decimal)diff / promisedSeconds > GapThresholdRatio;
-    }
+    public static bool TimelinesMatch(int timeline1, string unit1, int timeline2, string unit2) =>
+        timeline1 == timeline2 && unit1 == unit2;
 
     private async Task<HandoverInfo> GetHandoverOrThrowAsync(int engagementId)
     {
@@ -94,6 +72,15 @@ public class RealisticCommitmentService : IRealisticCommitmentService
         if (existing != null)
             throw new RealisticCommitmentAlreadyExistsException(commitmentId);
 
+        var timelinesMatch = TimelinesMatch(commitment.Timeline, commitment.TimelineUnit, request.Timeline, request.TimelineUnit);
+        var acknowledgementProvided = !string.IsNullOrWhiteSpace(request.AcknowledgementMessage);
+
+        if (!timelinesMatch && !acknowledgementProvided)
+        {
+            throw new AcknowledgementRequiredException(
+                "The realistic timeline differs from the promised timeline. Please provide an acknowledgement message.");
+        }
+
         var realistic = new RealisticCommitment
         {
             CommitmentId = commitment.CommitmentId,
@@ -130,13 +117,14 @@ public class RealisticCommitmentService : IRealisticCommitmentService
         if (realistic == null)
             throw new RealisticCommitmentNotFoundException(commitmentId);
 
-        var hadAcknowledgement = !string.IsNullOrWhiteSpace(realistic.AcknowledgementMessage);
-        var gapStillExists = HasEstimationGap(commitment.Timeline, commitment.TimelineUnit, request.Timeline, request.TimelineUnit);
-        var newAcknowledgementProvided = !string.IsNullOrWhiteSpace(request.AcknowledgementMessage);
+        var timelinesMatch = TimelinesMatch(commitment.Timeline, commitment.TimelineUnit, request.Timeline, request.TimelineUnit);
+        var acknowledgementProvided = !string.IsNullOrWhiteSpace(request.AcknowledgementMessage);
 
-        if (hadAcknowledgement && gapStillExists && !newAcknowledgementProvided)
+        if (!timelinesMatch && !acknowledgementProvided)
         {
-            throw new EstimationGapAcknowledgementRequiredException(HandoverValidationConstants.UpdatedAcknowledgementRequired);
+           
+            throw new AcknowledgementRequiredException(
+                "The realistic timeline differs from the promised timeline. Please provide an acknowledgement message.");
         }
 
         realistic.Description = request.Description;

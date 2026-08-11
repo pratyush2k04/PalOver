@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using Pdr.Api.Models.AccessTracker;
 using Pdr.Api.Models.EnvironmentTooling;
+using Pdr.Api.Models.Engagements;
 
-namespace Pdr.Api.Models.Engagements;
+
+namespace Pdr.Api.Models;
 
 public class Engagement : BaseAuditableEntity
 {   
@@ -12,7 +14,7 @@ public class Engagement : BaseAuditableEntity
 
     public string ClientName { get; set; } = string.Empty;
 
-    public string? EngagementDescription { get; set; }
+    public string? EngagementDescription { get; set; } // allowed to be null
 
     public int EngagementTypeId { get; set; }
 
@@ -28,8 +30,10 @@ public class Engagement : BaseAuditableEntity
 
     public int StatusId { get; set; }
 
-    // Navigation Property
+    // Navigation Properties
     public EngagementStatus Status { get; set; } = null!;
+
+    public bool IsKickoffReady { get; set; } = false;
 
     public EngagementChecklist.EngagementChecklist? Checklist { get; set; }
 
@@ -38,10 +42,9 @@ public class Engagement : BaseAuditableEntity
     public ICollection<EngagementAssignment.EngagementAssignment> EngagementAssignments { get; set; } = new List<EngagementAssignment.EngagementAssignment>();
 
     public ICollection<Person> People { get; set; } = new List<Person>();
-
-    //Technical Readiness
-    public ICollection<AccessItem> AccessItems { get; set; }
-    = new List<AccessItem>();
+    
+    // Technical Readiness
+    public ICollection<AccessItem> AccessItems { get; set; } = new List<AccessItem>();
 
     public ICollection<EnvironmentToolingItem> EnvironmentToolingItems { get; set; } = new List<EnvironmentToolingItem>();
 }

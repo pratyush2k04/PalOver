@@ -66,7 +66,7 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Apply all EntityTypeConfiguration classes from assembly (all 27 configurations in Data/Configuration)
+        // Apply all EntityTypeConfiguration classes from assembly (all configurations in Data/Configuration)
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
 

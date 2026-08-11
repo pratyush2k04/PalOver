@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DialogRef } from '../../../../../shared/dialog/dialog-ref';
-import { DIALOG_DATA } from '../../../../../shared/dialog/dialog.service';
-import { PersonDto } from '../../../../../models/person.model';
+import { DialogRef } from 'src/app/shared/dialog/dialog-ref';
+import { DIALOG_DATA } from 'src/app/shared/dialog/dialog.service';
+import { PersonDto } from 'src/app/models/person.model';
 
 export interface BlockItemDialogData {
   itemTitle: string;

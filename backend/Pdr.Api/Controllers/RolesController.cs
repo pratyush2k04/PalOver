@@ -38,7 +38,7 @@ public class RolesController(IRoleRepository roleRepository) : ControllerBase
     /// <param name="id">The role ID.</param>
     /// <returns>A list of users assigned to the specified role.</returns>
     [HttpGet("{id:int}/users")]
-    [AuthorizeRoles(RoleEnum.Leadership)]
+    [Authorize]
     [EndpointSummary("Get all users assigned to a role (Leadership only)")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

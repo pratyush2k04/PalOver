@@ -32,11 +32,6 @@ $color-blocked-bg: #fef2f2;
 $color-blocked-text: #b91c1c;
 $color-blocked-border: #fca5a5;
 
-$color-feature-badge-bg: #eff6ff;
-$color-feature-badge-text: #1d4ed8;
-$color-story-badge-bg: #f0fdf4;
-$color-story-badge-text: #16a34a;
-
 // Loading & Error states
 .checklist-loading {
   display: flex;
@@ -122,42 +117,6 @@ $color-story-badge-text: #16a34a;
   font-weight: 600;
 }
 
-// Badges
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-
-  &.badge-feature {
-    background: $color-feature-badge-bg;
-    color: $color-feature-badge-text;
-    border: 1px solid #bfdbfe;
-  }
-
-  &.badge-story {
-    background: $color-story-badge-bg;
-    color: $color-story-badge-text;
-    border: 1px solid #bbf7d0;
-  }
-
-  &.badge-gate-feature {
-    background: #fef3c7;
-    color: #92400e;
-    border: 1px solid #fde68a;
-  }
-
-  &.badge-gate-story {
-    background: #fed7aa;
-    color: #9a3412;
-    border: 1px solid #ffbb7c;
-  }
-}
-
 // Callout Gate Banner (Image 2 style)
 .callout {
   display: flex;
@@ -189,12 +148,6 @@ $color-story-badge-text: #16a34a;
   flex-direction: column;
   gap: 8px;
   flex: 1;
-}
-
-.callout-badges {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
 }
 
 .callout-headline {

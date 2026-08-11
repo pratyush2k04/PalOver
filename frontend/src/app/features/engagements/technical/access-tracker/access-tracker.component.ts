@@ -2,17 +2,20 @@ import { Component, inject, input, output, signal, computed, effect, DestroyRef 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { catchError, of } from 'rxjs';
 import { TECHNICAL_READINESS_ROLES } from '../../../../constants/app.constants';
 import { TechnicalReadinessService } from '../../services/technical-readiness.service';
 import { AuthService } from 'src/app/services/auth';
 import { AccessItemDto, AccessItemStatus } from '../../models/technical-readiness.model';
+import { KickoffReadinessDto, KickoffReadinessService } from '../../../../services/kickoff-readiness.service';
+import { FlaggedItemsBannerComponent, FlaggedItem } from '../../../../shared/flagged-items-banner/flagged-items-banner.component';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
 
 @Component({
   selector: 'app-access-tracker',
   standalone: true,
-  imports: [CommonModule, FormsModule, InlineSVGModule],
+  imports: [CommonModule, FormsModule, InlineSVGModule, FlaggedItemsBannerComponent],
   templateUrl: './access-tracker.component.html',
   styleUrl: './access-tracker.component.scss'
 })
@@ -21,12 +24,19 @@ export class AccessTrackerComponent {
   itemsUpdated = output<AccessItemDto[]>();
 
   private readinessService = inject(TechnicalReadinessService);
+  private kickoffReadinessService = inject(KickoffReadinessService);
   private authService = inject(AuthService);
   private destroyRef = inject(DestroyRef);
 
   accessItems = signal<AccessItemDto[]>([]);
   isLoading = signal<boolean>(true);
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+
+  kickoffReadiness = signal<KickoffReadinessDto | null>(null);
+  blockedItems = computed(() => this.accessItems().filter(i => i.status === 'Blocked'));
+  accessTrackerFlaggedItems = computed<FlaggedItem[]>(() => [
+    { label: 'access item(s) blocked', count: this.blockedItems().length }
+  ]);
 
   // Add Item Modal state
   isAddModalOpen = signal<boolean>(false);
@@ -52,8 +62,16 @@ export class AccessTrackerComponent {
       const id = this.engagementId();
       if (id) {
         this.loadItems(id);
+        this.loadKickoffReadiness(id);
       }
     });
+  }
+
+  private loadKickoffReadiness(id: number) {
+    this.kickoffReadinessService.getReadiness(id).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      catchError(() => of(null))
+    ).subscribe(data => this.kickoffReadiness.set(data));
   }
 
   loadItems(id: number) {

@@ -14,15 +14,18 @@ public class HandoverService : IHandoverService
     private readonly IHandoverRepository _handoverRepository;
     private readonly ICommitmentRepository _commitmentRepository;
     private readonly IRealisticCommitmentRepository _realisticCommitmentRepository;
+    private readonly IKickoffReadinessService _kickoffReadinessService;
 
     public HandoverService(
         IHandoverRepository handoverRepository,
         ICommitmentRepository commitmentRepository,
-        IRealisticCommitmentRepository realisticCommitmentRepository)
+        IRealisticCommitmentRepository realisticCommitmentRepository,
+        IKickoffReadinessService kickoffReadinessService)
     {
         _handoverRepository = handoverRepository;
         _commitmentRepository = commitmentRepository;
         _realisticCommitmentRepository = realisticCommitmentRepository;
+        _kickoffReadinessService = kickoffReadinessService;
     }
 
     public async Task<HandoverInfoDto> GetHandoverAsync(int engagementId)
@@ -127,6 +130,8 @@ public class HandoverService : IHandoverService
 
         if (string.IsNullOrWhiteSpace(handover.ClientSentiment))
             throw new HandoverIncompleteException(HandoverValidationConstants.ClientSentimentRequiredSubmit);
+        if (!await _kickoffReadinessService.IsFullyReadyAsync(engagementId))
+            throw new HandoverIncompleteException("Engagement is not kickoff-ready. All mandatory items must be complete before submitting the handover.");
 
         handover.StatusId = (int)HandoverStatusEnum.Submitted;
         handover.UpdatedBy = userIdStr;

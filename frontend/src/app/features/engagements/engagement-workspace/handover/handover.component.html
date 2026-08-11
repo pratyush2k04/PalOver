@@ -2,8 +2,13 @@
 
   <div class="header">
     <h2>Pre-Sales to Delivery Handover</h2>
-    <div class="status-badge" [ngClass]="{'submitted': isSubmitted(), 'draft': !isSubmitted()}">
-      Status: {{ handover()?.status || 'Not Started' }}
+    <div class="header-status-group">
+      <div class="status-report" [ngClass]="{'submitted': isSubmitted(), 'draft': !isSubmitted()}">
+        <span class="status-report-dot"></span>
+        <span class="status-report-text">{{ handover()?.status || 'Not Started' }}</span>
+      </div>
+      <button *ngIf="isPreSales()" class="btn-secondary" (click)="saveDraft()" [disabled]="isSaving() || isSubmitted()">Save Draft</button>
+      <button class="btn-success" (click)="submitHandover()" [disabled]="isSaving() || isSubmitted()">Submit Handover</button>
     </div>
   </div>
 
@@ -11,7 +16,9 @@
     {{ message() }}
   </div>
 
-  <form [formGroup]="clientContextForm">
+  <app-flagged-items-banner *ngIf="kickoffReadiness()" [items]="handoverFlaggedItems()"></app-flagged-items-banner>
+
+  <form [formGroup]="clientContextForm" *ngIf="isPreSales()">
     <div class="section client-context">
       <h3>Client Context</h3>
 
@@ -53,6 +60,45 @@
         </div>
       </div>
     </div>
+  </form>
+
+  <div class="section client-context client-context-readonly" *ngIf="!isPreSales()">
+    <h3>Client Context</h3>
+
+    <div class="readonly-field">
+      <span class="readonly-label">Client Background</span>
+      <p class="readonly-value" [class.readonly-value-empty]="!handover()?.clientBackground">
+        {{ handover()?.clientBackground || 'Not provided' }}
+      </p>
+    </div>
+
+    <div class="readonly-field">
+      <span class="readonly-label">Business Problem</span>
+      <p class="readonly-value" [class.readonly-value-empty]="!handover()?.businessProblem">
+        {{ handover()?.businessProblem || 'Not provided' }}
+      </p>
+    </div>
+
+    <div class="readonly-field">
+      <span class="readonly-label">Client Sentiment</span>
+      <span class="sentiment-badge" *ngIf="handover()?.clientSentiment; else noSentiment"
+        [ngClass]="'sentiment-' + (handover()?.clientSentiment || '').toLowerCase()">
+        {{ handover()?.clientSentiment }}
+      </span>
+      <ng-template #noSentiment>
+        <p class="readonly-value readonly-value-empty">Not provided</p>
+      </ng-template>
+    </div>
+
+    <div class="readonly-field">
+      <span class="readonly-label">Deal Origin</span>
+      <p class="readonly-value" [class.readonly-value-empty]="!handover()?.dealOrigin">
+        {{ handover()?.dealOrigin || 'Not provided' }}
+      </p>
+    </div>
+  </div>
+
+  <form [formGroup]="clientContextForm">
 
     <div class="section commitments">
       <h3>Commitments</h3>
@@ -143,9 +189,9 @@
                   {{ c.realisticCommitment.isPossible ? 'Mark Impossible' : 'Marked Impossible' }}
                 </button>
 
-                <button *ngIf="commitmentHasGap(c) && !c.realisticCommitment.acknowledgementMessage && isProjectManagement() && !isSubmitted()"
+                <button *ngIf="commitmentNeedsAcknowledgement(c) && !c.realisticCommitment.acknowledgementMessage && isProjectManagement() && !isSubmitted()"
                   class="btn-warning" (click)="startEditRealisticCommitment(c)">
-                  Acknowledge Estimation Gap
+                  Acknowledge Timeline Mismatch
                 </button>
               </ng-container>
               <ng-template #noRealisticYet>
@@ -167,13 +213,10 @@
                 </select>
               </div>
 
-              <div *ngIf="editFormHasGap(c)" class="form-group">
-                <label>Acknowledge Estimation Gap</label>
+              <div class="form-group">
+                <label>Acknowledgement Message{{ editFormNeedsAcknowledgement(c) ? ' (Required)' : '' }}</label>
                 <input type="text" [(ngModel)]="realisticEditForm().acknowledgementMessage" [ngModelOptions]="{standalone: true}"
                   maxlength="2000" placeholder="Why does the realistic estimate differ?">
-                <div class="warning-text" *ngIf="acknowledgementWarningVisible()">
-                  You've changed your realistic estimates. Consider revisiting your acknowledgement message.
-                </div>
               </div>
 
               <ul class="inline-errors" *ngIf="realisticEditErrors().length > 0">
@@ -218,11 +261,6 @@
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="actions">
-      <button class="btn-secondary" (click)="saveDraft()" [disabled]="isSaving() || isSubmitted()">Save Draft</button>
-      <button class="btn-success" (click)="submitHandover()" [disabled]="isSaving() || isSubmitted()">Submit Handover</button>
     </div>
   </form>
 

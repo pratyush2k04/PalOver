@@ -13,6 +13,21 @@
     </div>
   }
 
+  <div class="documents-filters">
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Search by file name"
+      [(ngModel)]="searchTerm"
+    />
+    <select class="category-select" [(ngModel)]="selectedCategoryId">
+      <option [ngValue]="'all'">All categories</option>
+      @for (cat of categories(); track cat.id) {
+        <option [ngValue]="cat.id">{{ cat.categoryName }}</option>
+      }
+    </select>
+  </div>
+
   <div class="table-card">
     @if (isLoading()) {
       <div class="loading-state">
@@ -23,6 +38,11 @@
       <div class="empty-state">
         <span class="empty-icon" [inlineSVG]="'assets/icons/empty-doc.svg'"></span>
         <p class="empty-text">No documents uploaded yet.</p>
+      </div>
+    } @else if (filteredDocuments().length === 0) {
+      <div class="empty-state">
+        <span class="empty-icon" [inlineSVG]="'assets/icons/empty-doc.svg'"></span>
+        <p class="empty-text">{{ DOCUMENT_MESSAGES.NO_SEARCH_RESULTS }}</p>
       </div>
     } @else {
       <div class="table-responsive">
@@ -38,7 +58,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (doc of documents(); track doc.id) {
+            @for (doc of filteredDocuments(); track doc.id) {
               <tr class="document-row">
                 <td class="col-name">
                   <button type="button" class="btn-file-link" (click)="onDownload(doc)" [disabled]="downloadingId() === doc.id">

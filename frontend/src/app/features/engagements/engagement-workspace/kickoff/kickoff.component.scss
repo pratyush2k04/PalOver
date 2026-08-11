@@ -1,6 +1,95 @@
+@use '../../../../../styles/tokens' as *;
+
 .kickoff-container {
   padding: 1.5rem 0;
   display: flex;
   flex-direction: column;
   gap: 2rem;
+}
+
+.kickoff-ready-section {
+  background: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-sm;
+  padding: 1.5rem;
+
+  h3 {
+    margin: 0 0 1rem 0;
+  }
+}
+
+.score-line {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem 0;
+}
+
+.readiness-breakdown {
+  list-style-type: none;
+  padding: 0;
+  margin: 0 0 1.25rem 0;
+  font-size: 0.875rem;
+  color: $color-text-muted;
+
+  li {
+    margin-bottom: 0.25rem;
+  }
+}
+
+.alert {
+  padding: 0.75rem 1rem;
+  border-radius: $radius-sm;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.alert-success {
+  background: $color-bg;
+  color: $color-text-muted;
+  border: 1px solid $color-border-soft;
+}
+
+.alert-error {
+  background: $color-danger-bg;
+  color: $color-danger-text;
+  border: 1px solid $color-danger-border;
+}
+
+button {
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color $transition-base, opacity $transition-base;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px $color-primary-focus-ring;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.btn-primary {
+  background: $color-primary;
+  color: $color-surface;
+
+  &:hover:not(:disabled) {
+    background-color: $color-primary-hover;
+  }
+}
+
+.btn-warning {
+  background: $color-warning-bg;
+  color: $color-warning-text;
+  border: 1px solid $color-warning;
+
+  &:hover:not(:disabled) {
+    background: $color-warning;
+    color: $color-surface;
+  }
 }

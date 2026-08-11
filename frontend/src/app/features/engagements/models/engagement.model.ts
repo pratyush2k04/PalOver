@@ -54,6 +54,7 @@ export interface EngagementInfo {
   kickoffDate: string;
   billingStartDate?: string;
   status: string;
+  isKickoffReady: boolean;
 }
 
 export interface EngagementInfoDto {
@@ -65,6 +66,7 @@ export interface EngagementInfoDto {
   kickoffDate: string;
   billingStartDate?: string;
   status: string;
+  isKickoffReady: boolean;
 }
 
 export interface EngagementOwners {

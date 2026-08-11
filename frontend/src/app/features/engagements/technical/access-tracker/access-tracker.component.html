@@ -14,6 +14,11 @@
     </div>
   </div>
 
+  <!-- Flagged Items Summary -->
+  @if (kickoffReadiness()) {
+    <app-flagged-items-banner [items]="accessTrackerFlaggedItems()"></app-flagged-items-banner>
+  }
+
   <!-- Loading state -->
   @if (isLoading()) {
     <div class="loading-container">

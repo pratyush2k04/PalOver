@@ -33,6 +33,16 @@
   font-style: italic;
 }
 
+.kickoff-ready-badge {
+  margin-left: 0.5rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  background-color: #dcfce7;
+  color: #15803d;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
 .workspace-tabs {
   display: flex;
   border-bottom: 1px solid $color-border-soft;

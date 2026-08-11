@@ -7,7 +7,10 @@
     <div class="header-metrics">
       <p><strong>Kickoff Date:</strong> {{ engagement()!.kickoffDate }}</p>
       <p><strong>Billing Date:</strong> {{ engagement()!.billingStartDate || '—' }}</p>
-      <p><strong>Readiness Score:</strong> {{ 50 }}</p>
+      <p>
+        <strong>Readiness Score:</strong> {{ readiness()?.score ?? '—' }}
+        <span class="kickoff-ready-badge" *ngIf="engagement()!.isKickoffReady">Kickoff-ready</span>
+      </p>
     </div>
   </div>
 

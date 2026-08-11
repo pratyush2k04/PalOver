@@ -25,6 +25,7 @@ public class EngagementConfiguration : IEntityTypeConfiguration<Engagement>
         builder.Property(e => e.KickoffDate).HasColumnName("kickoff_date").IsRequired();
         builder.Property(e => e.BillingStartDate).HasColumnName("billing_start_date");
         builder.Property(e => e.StatusId).HasColumnName("status_id");
+        builder.Property(e => e.IsKickoffReady).HasColumnName("is_kickoff_ready").HasDefaultValue(false);
 
         // BaseAuditableEntity Column Mappings
         builder.Property(e => e.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
@@ -65,6 +66,7 @@ public class EngagementConfiguration : IEntityTypeConfiguration<Engagement>
                 CommercialModelId = 1, // Time and Material
                 KickoffDate = new DateOnly(2026, 8, 15),
                 StatusId = 1, // KickoffPending
+                IsKickoffReady = false,
                 CreatedAt = SeedTimestamp,
                 UpdatedAt = SeedTimestamp,
                 CreatedBy = "System",
@@ -81,6 +83,7 @@ public class EngagementConfiguration : IEntityTypeConfiguration<Engagement>
                 KickoffDate = new DateOnly(2026, 6, 1),
                 BillingStartDate = new DateOnly(2026, 7, 1),
                 StatusId = 2, // Active
+                IsKickoffReady = false,
                 CreatedAt = SeedTimestamp,
                 UpdatedAt = SeedTimestamp,
                 CreatedBy = "System",

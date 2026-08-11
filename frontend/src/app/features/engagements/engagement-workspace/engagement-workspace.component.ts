@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@ang
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TECHNICAL_READINESS_ROUTES } from 'src/app/constants/technical-readiness.constants';
 import {  EngagementService } from '../services/engagement.service';
+import { KickoffReadinessDto, KickoffReadinessService } from 'src/app/services/kickoff-readiness.service';
 import { ENGAGEMENT_WORKSPACE_CONFIG } from 'src/app/constants/engagements.constants';
 import { EngagementInfoDto } from '../models/engagement.model';
 
@@ -23,15 +24,17 @@ interface WorkspaceTab {
 export class EngagementWorkspaceComponent {
   private route = inject(ActivatedRoute);
   private engagementService = inject(EngagementService);
+  private kickoffReadinessService = inject(KickoffReadinessService);
 
   private paramMap = toSignal(this.route.paramMap);
-  
+
   engagementId = computed(() => {
     const idStr = this.paramMap()?.get('id');
     return idStr ? +idStr : null;
   });
 
   engagement = signal<EngagementInfoDto | null>(null);
+  readiness = signal<KickoffReadinessDto | null>(null);
   isLoading = signal<boolean>(true);
 
   readonly tabs = signal<WorkspaceTab[]>([...ENGAGEMENT_WORKSPACE_CONFIG.DEFAULT_TABS]);
@@ -62,6 +65,11 @@ export class EngagementWorkspaceComponent {
         this.engagement.set(null);
         this.isLoading.set(false);
       }
+    });
+
+    this.kickoffReadinessService.getReadiness(id).subscribe({
+      next: (data) => this.readiness.set(data),
+      error: () => this.readiness.set(null)
     });
   }
 
