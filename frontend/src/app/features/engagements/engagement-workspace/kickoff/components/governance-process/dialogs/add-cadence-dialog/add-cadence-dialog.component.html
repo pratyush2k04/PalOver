@@ -1,0 +1,56 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h3>{{ constants.MODAL_TITLE }}</h3>
+    <app-button type="button" variant="icon" ariaLabel="Close" (click)="onCancel()">&times;</app-button>
+  </div>
+
+  <form [formGroup]="cadenceForm" (ngSubmit)="onSubmit()">
+    <div class="dialog-body">
+      <!-- Stakeholder Role -->
+      <div class="form-group">
+        <app-input
+          id="stakeholderRole"
+          [label]="constants.LABEL_STAKEHOLDER_ROLE"
+          formControlName="stakeholderRole"
+          [placeholder]="constants.PLACEHOLDER_STAKEHOLDER_ROLE"
+          [errorMessages]="{ required: constants.ERROR_ROLE_REQUIRED }"
+        />
+      </div>
+
+      <!-- Cadence Dropdown -->
+      <div class="form-group">
+        <app-select
+          id="cadenceSelect"
+          [label]="constants.LABEL_CADENCE"
+          formControlName="cadence"
+          [options]="cadenceOptions"
+        />
+      </div>
+
+      <!-- Participants Multi-Select -->
+      <div class="form-group">
+        <label class="form-label">{{ constants.LABEL_PARTICIPANTS }}</label>
+        <app-multi-select-list
+          [options]="participantOptions"
+          [selectedValues]="selectedParticipantUserIds()"
+          [emptyMessage]="constants.NO_PARTICIPANTS_NOTE"
+          (selectedValuesChange)="onParticipantSelectionChange($event)"
+        />
+        @if (cadenceForm.get('participantUserIds')?.touched && selectedParticipantUserIds().length === 0) {
+          <div class="error-text">{{ constants.ERROR_PARTICIPANT_REQUIRED }}</div>
+        }
+      </div>
+
+      @if (errorMessage()) {
+        <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+      }
+    </div>
+
+    <div class="dialog-footer">
+      <app-button type="button" variant="stroked" (click)="onCancel()">{{ constants.BTN_CANCEL }}</app-button>
+      <app-button type="submit" variant="accent" [disabled]="isSubmitting()">
+        {{ isSubmitting() ? constants.BTN_ADDING : constants.BTN_ADD }}
+      </app-button>
+    </div>
+  </form>
+</div>

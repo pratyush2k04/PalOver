@@ -103,6 +103,7 @@ export class HandoverComponent {
 
   readonly sentimentOptions: SelectOption[] = SENTIMENT_OPTIONS.map((value) => ({ value, label: value }));
   readonly timelineUnits = TIMELINE_UNITS;
+  readonly timelineUnitOptions: SelectOption[] = TIMELINE_UNITS.map((value) => ({ value, label: value }));
   readonly maxFreeTextLength = MAX_FREE_TEXT_LENGTH;
 
   getSentimentTone(sentiment: string | null | undefined): StatusBadgeTone {
@@ -141,6 +142,11 @@ export class HandoverComponent {
     { id: 2, name: 'Services' },
     { id: 3, name: 'Training' },
   ];
+
+  readonly commitmentTypeOptions: SelectOption[] = this.commitmentTypes.map((t) => ({
+    value: t.id,
+    label: t.name
+  }));
 
   isSubmitted = computed(() => this.handover()?.status === 'Submitted');
   newCommitmentTouched = signal(false);

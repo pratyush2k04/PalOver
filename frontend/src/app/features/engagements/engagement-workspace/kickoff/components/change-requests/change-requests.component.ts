@@ -1,6 +1,5 @@
 import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ChangeRequestService } from '@features/engagements/services/change-request.service';
@@ -8,14 +7,22 @@ import { AuthService } from 'src/app/services/auth';
 import { ChangeRequest } from '@features/engagements/models/change-request.model';
 import { CHANGE_REQUEST_CONSTANTS } from 'src/app/constants/change-request.constants';
 import { InlineSVGModule } from 'ng-inline-svg-2';
-import { AlertComponent } from '@common/components/alert/alert';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
+import { DialogService } from '@common/services/dialog/dialog.service';
+import { LogCrDialogComponent, LogCrDialogData } from './dialogs/log-cr-dialog/log-cr-dialog.component';
+import { RejectCrDialogComponent, RejectCrDialogData } from './dialogs/reject-cr-dialog/reject-cr-dialog.component';
+import { ViewReasonDialogComponent, ViewReasonDialogData } from './dialogs/view-reason-dialog/view-reason-dialog.component';
 
 @Component({
   selector: 'app-change-requests',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, InlineSVGModule, AlertComponent, StatusBadgeComponent, ButtonComponent],
+  imports: [
+    CommonModule,
+    InlineSVGModule,
+    StatusBadgeComponent,
+    ButtonComponent
+  ],
   templateUrl: './change-requests.component.html',
   styleUrl: './change-requests.component.scss'
 })
@@ -23,7 +30,7 @@ export class ChangeRequestsComponent {
   private route = inject(ActivatedRoute);
   private changeRequestService = inject(ChangeRequestService);
   private authService = inject(AuthService);
-  private fb = inject(FormBuilder);
+  private dialog = inject(DialogService);
 
   readonly constants = CHANGE_REQUEST_CONSTANTS;
 
@@ -46,27 +53,6 @@ export class ChangeRequestsComponent {
     const list = this.changeRequests();
     if (filter === 'All') return list;
     return list.filter(item => item.status === filter);
-  });
-
-  // Modal States
-  isLogModalOpen = signal<boolean>(false);
-  isRejectModalOpen = signal<boolean>(false);
-  isReasonModalOpen = signal<boolean>(false);
-
-  selectedCrForReject = signal<ChangeRequest | null>(null);
-  selectedReasonText = signal<string | null>(null);
-
-  isSubmitting = signal<boolean>(false);
-  errorMessage = signal<string | null>(null);
-
-  // Forms
-  logForm: FormGroup = this.fb.group({
-    description: ['', [Validators.required, Validators.maxLength(2000)]],
-    impact: ['', [Validators.required, Validators.maxLength(2000)]]
-  });
-
-  rejectForm: FormGroup = this.fb.group({
-    rejectionReason: ['', [Validators.required, Validators.maxLength(2000)]]
   });
 
   constructor() {
@@ -102,49 +88,17 @@ export class ChangeRequestsComponent {
 
   // --- Log Change Request ---
   openLogModal(): void {
-    if (!this.isProjectManager()) return;
-
-    this.errorMessage.set(null);
-    this.logForm.reset({
-      description: '',
-      impact: ''
-    });
-    this.isLogModalOpen.set(true);
-  }
-
-  closeLogModal(): void {
-    this.isLogModalOpen.set(false);
-    this.errorMessage.set(null);
-  }
-
-  onSubmitLog(): void {
-    if (this.logForm.invalid) {
-      this.logForm.markAllAsTouched();
-      return;
-    }
-
     const id = this.engagementId();
     if (!id || !this.isProjectManager()) return;
 
-    this.isSubmitting.set(true);
-    this.errorMessage.set(null);
+    const dialogRef = this.dialog.open<LogCrDialogComponent, LogCrDialogData, ChangeRequest>(
+      LogCrDialogComponent,
+      { data: { engagementId: id } }
+    );
 
-    const payload = {
-      description: this.logForm.value.description,
-      impact: this.logForm.value.impact
-    };
-
-    this.changeRequestService.createChangeRequest(id, payload).subscribe({
-      next: (newCr) => {
-        this.isSubmitting.set(false);
-        this.changeRequests.update(list => [newCr, ...list]);
-        this.closeLogModal();
-      },
-      error: (err) => {
-        this.isSubmitting.set(false);
-        const backendMessage = err?.error?.message || err?.error || this.constants.ERROR_GENERIC;
-        this.errorMessage.set(backendMessage);
-      }
+    dialogRef.closed$.subscribe((newCr) => {
+      if (!newCr) return;
+      this.changeRequests.update(list => [newCr, ...list]);
     });
   }
 
@@ -168,59 +122,25 @@ export class ChangeRequestsComponent {
   openRejectModal(cr: ChangeRequest): void {
     if (!this.isLeadership() || cr.status !== 'Under Review') return;
 
-    this.selectedCrForReject.set(cr);
-    this.errorMessage.set(null);
-    this.rejectForm.reset({ rejectionReason: '' });
-    this.isRejectModalOpen.set(true);
-  }
+    const dialogRef = this.dialog.open<RejectCrDialogComponent, RejectCrDialogData, ChangeRequest>(
+      RejectCrDialogComponent,
+      { data: { cr } }
+    );
 
-  closeRejectModal(): void {
-    this.isRejectModalOpen.set(false);
-    this.selectedCrForReject.set(null);
-    this.errorMessage.set(null);
-  }
-
-  onSubmitReject(): void {
-    if (this.rejectForm.invalid) {
-      this.rejectForm.markAllAsTouched();
-      return;
-    }
-
-    const cr = this.selectedCrForReject();
-    if (!cr || !this.isLeadership()) return;
-
-    this.isSubmitting.set(true);
-    this.errorMessage.set(null);
-
-    const payload = {
-      rejectionReason: this.rejectForm.value.rejectionReason
-    };
-
-    this.changeRequestService.rejectChangeRequest(cr.id, payload).subscribe({
-      next: (updatedCr) => {
-        this.isSubmitting.set(false);
-        this.changeRequests.update(list =>
-          list.map(item => item.id === updatedCr.id ? updatedCr : item)
-        );
-        this.closeRejectModal();
-      },
-      error: (err) => {
-        this.isSubmitting.set(false);
-        const backendMessage = err?.error?.message || err?.error || this.constants.ERROR_GENERIC;
-        this.errorMessage.set(backendMessage);
-      }
+    dialogRef.closed$.subscribe((updatedCr) => {
+      if (!updatedCr) return;
+      this.changeRequests.update(list =>
+        list.map(item => item.id === updatedCr.id ? updatedCr : item)
+      );
     });
   }
 
   // --- View Rejection Reason ---
   openReasonModal(reason?: string): void {
     if (!reason) return;
-    this.selectedReasonText.set(reason);
-    this.isReasonModalOpen.set(true);
-  }
-
-  closeReasonModal(): void {
-    this.isReasonModalOpen.set(false);
-    this.selectedReasonText.set(null);
+    this.dialog.open<ViewReasonDialogComponent, ViewReasonDialogData, void>(
+      ViewReasonDialogComponent,
+      { data: { reason } }
+    );
   }
 }

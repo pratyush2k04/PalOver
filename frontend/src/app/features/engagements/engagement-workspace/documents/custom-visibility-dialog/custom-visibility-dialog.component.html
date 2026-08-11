@@ -1,5 +1,4 @@
-<div class="modal-overlay" (click)="onCancel()">
-  <div class="modal-card" (click)="$event.stopPropagation()">
+<div class="dialog-container">
     <div class="modal-header">
       <h3 class="modal-title">Custom Document Visibility</h3>
       <app-button type="button" variant="icon" ariaLabel="Close" (click)="onCancel()">
@@ -11,11 +10,11 @@
       <div class="doc-info-banner">
         <div class="doc-name-row">
           <span class="file-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
-          <span class="file-name">{{ document().fileName }}</span>
+          <span class="file-name">{{ data.document.fileName }}</span>
         </div>
         <div class="doc-meta">
-          <span class="meta-item">Category: <strong>{{ document().categoryName || 'Other' }}</strong></span>
-          <span class="meta-item">Category default: <strong>{{ document().categoryDefaultVisibility || 'Team-wide' }}</strong></span>
+          <span class="meta-item">Category: <strong>{{ data.document.categoryName || 'Other' }}</strong></span>
+          <span class="meta-item">Category default: <strong>{{ data.document.categoryDefaultVisibility || 'Team-wide' }}</strong></span>
         </div>
       </div>
 
@@ -32,23 +31,17 @@
           <span>Project Management &amp; Admin — always granted</span>
         </div>
 
-        <div class="roles-grid">
-          @for (role of availableRoles; track role.id) {
-            <label class="role-checkbox-card" [class.is-selected]="isRoleSelected(role.id)">
-              <input
-                type="checkbox"
-                [checked]="isRoleSelected(role.id)"
-                (change)="toggleRole(role.id, $event)"
-              />
-              <span class="role-name">{{ role.label }}</span>
-            </label>
-          }
-        </div>
+        <app-multi-select-list
+          [options]="roleOptions"
+          [selectedValues]="selectedRoles()"
+          variant="cards"
+          (selectedValuesChange)="onRoleSelectionChange($event)"
+        />
       </div>
     </div>
 
     <div class="modal-footer">
-      @if (document().visibility === 'Custom' || (document().allowedRoles && document().allowedRoles!.length > 0)) {
+      @if (data.document.visibility === 'Custom' || (data.document.allowedRoles && data.document.allowedRoles!.length > 0)) {
         <app-button
           type="button"
           variant="warning"
@@ -74,5 +67,4 @@
         </app-button>
       </div>
     </div>
-  </div>
 </div>

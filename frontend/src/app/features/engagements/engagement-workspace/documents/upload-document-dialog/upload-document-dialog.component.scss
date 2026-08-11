@@ -1,34 +1,9 @@
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(2px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1050;
-  padding: 1rem;
-}
-
-.modal-dialog {
+.dialog-container {
   background: #ffffff;
   border-radius: 12px;
   width: 100%;
   max-width: 440px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
   overflow: hidden;
-  animation: modal-fade-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes modal-fade-in {
-  from {
-    opacity: 0;
-    transform: scale(0.97) translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
 }
 
 .modal-header {
@@ -60,16 +35,16 @@
     margin-bottom: 0.375rem;
   }
 
-  .form-control,
   .file-input {
     width: 100%;
     padding: 0.55rem 0.75rem;
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     color: #1e293b;
     background-color: #ffffff;
     border: 1px solid #cbd5e1;
     border-radius: 8px;
     box-sizing: border-box;
+    cursor: pointer;
     transition: border-color 0.15s, box-shadow 0.15s;
 
     &:focus {
@@ -77,11 +52,6 @@
       border-color: #f59e0b;
       box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
     }
-  }
-
-  .file-input {
-    cursor: pointer;
-    font-size: 0.8125rem;
   }
 }
 

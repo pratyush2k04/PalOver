@@ -1,0 +1,31 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h3>Reason for Not Applicable</h3>
+    <app-button type="button" variant="icon" ariaLabel="Close" (click)="onCancel()">&times;</app-button>
+  </div>
+
+  <form (ngSubmit)="onSubmit()">
+    <div class="dialog-body">
+      <p class="dialog-hint">
+        Please specify why <strong>{{ data.itemName }}</strong> is Not Applicable.
+      </p>
+      <div class="form-group">
+        <app-textarea
+          id="na-reason"
+          label="Reason"
+          [rows]="3"
+          [ngModel]="reason()"
+          (ngModelChange)="onReasonChange($event)"
+          name="reason"
+          placeholder="e.g., Client manages pipeline independently"
+          [extraError]="reasonError() || null"
+        />
+      </div>
+    </div>
+
+    <div class="dialog-footer">
+      <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+      <app-button type="submit" variant="flat">Confirm N/A</app-button>
+    </div>
+  </form>
+</div>
