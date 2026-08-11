@@ -181,6 +181,16 @@ public class MasterChecklistService(IMasterChecklistRepository checklistReposito
             return ChecklistResultDto<MasterChecklistVersionResponseDto>.Failure(MasterChecklistConstants.Messages.OnlyDraftPublishable);
         }
 
+        if (!draftVersion.Items.Any(i => !i.IsRetired))
+        {
+            return ChecklistResultDto<MasterChecklistVersionResponseDto>.Failure(MasterChecklistConstants.Messages.CannotPublishEmptyDraft);
+        }
+
+        if (draftVersion.Items.Any(i => !i.IsRetired && i.IsMandatory && string.IsNullOrWhiteSpace(i.Title)))
+        {
+            return ChecklistResultDto<MasterChecklistVersionResponseDto>.Failure(MasterChecklistConstants.Messages.CannotPublishMandatoryWithoutTitle);
+        }
+
         var publishedStatus = await checklistRepository.GetStatusByNameAsync(MasterChecklistConstants.StatusNames.Published);
         var draftStatus = await checklistRepository.GetStatusByNameAsync(MasterChecklistConstants.StatusNames.Draft);
         if (publishedStatus is null || draftStatus is null)
@@ -224,6 +234,7 @@ public class MasterChecklistService(IMasterChecklistRepository checklistReposito
             VersionNumber = version.VersionNumber,
             StatusId = version.StatusId,
             StatusName = version.Status.StatusName,
+            UpdatedAt = version.UpdatedAt,
             Items = version.Items.OrderBy(i => i.DisplayOrder).Select(MapItem).ToList()
         };
     }
