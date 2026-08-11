@@ -16,7 +16,8 @@ public class EngagementService(
     AppDbContext db,
     IEngagementRepository engagementRepository,
     ICurrentUserService currentUserService,
-    IEngagementChecklistService engagementChecklistService) : IEngagementService
+    IEngagementChecklistService engagementChecklistService,
+    INotificationService notificationService) : IEngagementService
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
 
@@ -243,6 +244,16 @@ public class EngagementService(
         }
 
         await engagementRepository.AddAssignmentAsync(engagementId, userId);
+
+        if (requiredRole == RoleEnum.ProjectManagement)
+        {
+            await notificationService.CreateFromTemplateAsync(
+                "PMAllocated",
+                engagementId,
+                RoleEnum.PreSales,
+                System.Text.Json.JsonSerializer.Serialize(new { AssignedUserId = userId, EngagementId = engagementId }),
+                DateTime.UtcNow);
+        }
 
         if (requiredRole == RoleEnum.TechLead)
         {
