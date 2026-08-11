@@ -73,69 +73,6 @@
   </div>
 </div>
 
-<!-- Add / Edit Modal -->
-@if (isFormModalOpen()) {
-  <div class="modal-backdrop" (click)="closeFormModal()">
-    <div class="modal-card" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>{{ editingPerson() ? 'Edit Person' : 'Add Person' }}</h3>
-        <app-button type="button" variant="icon" ariaLabel="Close" (click)="closeFormModal()">&times;</app-button>
-      </div>
-
-      <form (ngSubmit)="onSavePerson()">
-        <div class="modal-body">
-          <div class="form-group">
-            <app-input
-              id="personName"
-              label="Name"
-              placeholder="e.g. John Doe"
-              [ngModel]="formName()"
-              (ngModelChange)="formName.set($event)"
-              name="name"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <app-input
-              id="personRole"
-              label="Role"
-              placeholder="e.g. Tech Lead / Sponsor"
-              [ngModel]="formRole()"
-              (ngModelChange)="formRole.set($event)"
-              name="role"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <app-select
-              id="personType"
-              label="Organization"
-              [ngModel]="formPersonType()"
-              (ngModelChange)="formPersonType.set($event)"
-              name="personType"
-              [options]="personTypeOptions"
-            />
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <app-button type="button" variant="stroked" (click)="closeFormModal()">Cancel</app-button>
-          <app-button
-            type="submit"
-            variant="flat"
-            [disabled]="isSubmitting() || !formName().trim() || !formRole().trim() || !isFormDirty()"
-            [loading]="isSubmitting()"
-          >
-            {{ isSubmitting() ? 'Saving...' : (editingPerson() ? 'Update' : 'Add') }}
-          </app-button>
-        </div>
-      </form>
-    </div>
-  </div>
-}
-
 <!-- Delete Confirmation Dialog -->
 @if (personToDelete(); as person) {
   <app-confirm-dialog

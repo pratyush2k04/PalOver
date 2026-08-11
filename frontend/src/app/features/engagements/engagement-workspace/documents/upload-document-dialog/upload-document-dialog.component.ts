@@ -1,8 +1,10 @@
-import { Component, DestroyRef, OnInit, computed, inject, input, output, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { DialogRef } from '@common/services/dialog/dialog-ref';
+import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { DocumentService } from '../../../services/document.service';
 import { DocumentCategory, DocumentVisibility } from '../../../models/document.model';
 import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from 'src/app/constants/document.constants';
@@ -10,6 +12,10 @@ import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
+
+export interface UploadDocumentDialogData {
+  engagementId: number;
+}
 
 @Component({
   selector: 'app-upload-document-dialog',
@@ -29,10 +35,8 @@ import { SelectComponent, SelectOption } from '@common/components/form/select/se
 export class UploadDocumentDialogComponent implements OnInit {
   private documentService = inject(DocumentService);
   private destroyRef = inject(DestroyRef);
-
-  engagementId = input.required<number>();
-  closed = output<void>();
-  uploaded = output<void>();
+  private dialogRef = inject<DialogRef<boolean>>(DialogRef);
+  private data = inject<UploadDocumentDialogData>(DIALOG_DATA);
 
   categories = signal<DocumentCategory[]>([]);
   selectedCategoryId = signal<number | null>(null);
@@ -114,7 +118,7 @@ export class UploadDocumentDialogComponent implements OnInit {
   }
 
   onClose(): void {
-    this.closed.emit();
+    this.dialogRef.close();
   }
 
   onSubmit(): void {
@@ -163,7 +167,7 @@ export class UploadDocumentDialogComponent implements OnInit {
     this.isUploading.set(true);
     this.errorMessage.set(null);
 
-    this.documentService.uploadDocuments(finalFiles, this.engagementId(), catId, this.selectedVisibility()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.documentService.uploadDocuments(finalFiles, this.data.engagementId, catId, this.selectedVisibility()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (results) => {
         this.isUploading.set(false);
         const failed = results.filter((r) => !r.success);
@@ -171,8 +175,7 @@ export class UploadDocumentDialogComponent implements OnInit {
           const msgs = failed.flatMap((r) => r.errors ?? [r.fileName ?? 'Unknown file']);
           this.errorMessage.set(msgs.join(', '));
         } else {
-          this.uploaded.emit();
-          this.closed.emit();
+          this.dialogRef.close(true);
         }
       },
       error: (err) => {
