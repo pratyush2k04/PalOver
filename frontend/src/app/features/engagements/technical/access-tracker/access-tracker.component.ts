@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { catchError, of } from 'rxjs';
-import { TECHNICAL_READINESS_ROLES } from '../../../../shared/constants/app.constants';
+import { TECHNICAL_READINESS_ROLES } from '@shared/constants/app.constants';
 import { TechnicalReadinessService } from '../../services/technical-readiness.service';
 import { AuthService } from 'src/app/services/auth';
 import { AccessItemDto, AccessItemStatus } from '../../models/technical-readiness.model';

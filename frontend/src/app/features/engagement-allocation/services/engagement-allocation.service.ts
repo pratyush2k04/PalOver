@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { EngagementAllocationItem, LeadershipUserItem } from '../models/engagement-allocation.model';
-import { ENGAGEMENT_API_ENDPOINTS } from '../../../shared/constants/app.constants';
+import { ENGAGEMENT_API_ENDPOINTS } from '@shared/constants/app.constants';
 
 @Injectable({
   providedIn: 'root'

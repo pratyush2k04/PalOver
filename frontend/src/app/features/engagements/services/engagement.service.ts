@@ -13,7 +13,7 @@ import {
   PmEngagementListResponse,
   EngagementSortBy
 } from '../models/engagement.model';
-import { ENGAGEMENT_API_ENDPOINTS } from '../../../shared/constants/app.constants';
+import { ENGAGEMENT_API_ENDPOINTS } from '@shared/constants/app.constants';
 
 @Injectable({
   providedIn: 'root'

@@ -2,7 +2,7 @@ import { Component, inject, computed } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AppContextService } from '../../../services/app-context';
 import { AuthService } from '../../../services/auth';
-import { APP_ROUTES, USER_ROLES, MASTER_CHECKLIST_ROUTES}from '../../../shared/constants/app.constants';
+import { APP_ROUTES, USER_ROLES, MASTER_CHECKLIST_ROUTES } from '@shared/constants/app.constants';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
 
