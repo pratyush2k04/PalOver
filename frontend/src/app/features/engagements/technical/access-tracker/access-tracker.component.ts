@@ -13,11 +13,28 @@ import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
+import { DialogService } from '@common/services/dialog/dialog.service';
+import {
+  AddAccessItemDialogComponent,
+  AddAccessItemDialogResult
+} from './dialogs/add-access-item-dialog/add-access-item-dialog.component';
+import {
+  BlockAccessItemDialogComponent,
+  BlockAccessItemDialogData,
+  BlockAccessItemDialogResult
+} from './dialogs/block-access-item-dialog/block-access-item-dialog.component';
 
 @Component({
   selector: 'app-access-tracker',
   standalone: true,
-  imports: [CommonModule, FormsModule, InlineSVGModule, FlaggedItemsBannerComponent, StatusBadgeComponent, ButtonComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    InlineSVGModule,
+    FlaggedItemsBannerComponent,
+    StatusBadgeComponent,
+    ButtonComponent
+  ],
   templateUrl: './access-tracker.component.html',
   styleUrl: './access-tracker.component.scss'
 })
@@ -29,6 +46,7 @@ export class AccessTrackerComponent {
   private kickoffReadinessService = inject(KickoffReadinessService);
   private authService = inject(AuthService);
   private destroyRef = inject(DestroyRef);
+  private dialog = inject(DialogService);
 
   accessItems = signal<AccessItemDto[]>([]);
   isLoading = signal<boolean>(true);
@@ -39,19 +57,6 @@ export class AccessTrackerComponent {
   accessTrackerFlaggedItems = computed<FlaggedItem[]>(() => [
     { label: 'access item(s) blocked', count: this.blockedItems().length }
   ]);
-
-  // Add Item Modal state
-  isAddModalOpen = signal<boolean>(false);
-  newItemName = signal<string>('');
-  newItemIsClientSide = signal<boolean>(true);
-  newItemTimeZoneNote = signal<string>('');
-  nameError = signal<string>('');
-
-  // Block Modal state
-  isBlockModalOpen = signal<boolean>(false);
-  blockReasonText = signal<string>('');
-  blockReasonError = signal<string>('');
-  itemToBlock = signal<AccessItemDto | null>(null);
 
   readonly statusOptions = [
     { label: 'In Progress', value: AccessItemStatus.InProgress, key: 'InProgress' },
@@ -146,36 +151,23 @@ export class AccessTrackerComponent {
     if (newStatusNum === AccessItemStatus.Blocked) {
       // Temporarily revert select dropdown display until block reason confirmed
       selectElement.value = this.getStatusNumericValue(item.status).toString();
-      this.itemToBlock.set(item);
-      this.blockReasonText.set(item.blockReason || '');
-      this.blockReasonError.set('');
-      this.isBlockModalOpen.set(true);
+      this.openBlockDialog(item);
       return;
     }
 
     this.updateStatus(item, newStatusNum);
   }
 
-  closeBlockModal() {
-    this.isBlockModalOpen.set(false);
-    this.itemToBlock.set(null);
-    this.blockReasonText.set('');
-    this.blockReasonError.set('');
-  }
+  private openBlockDialog(item: AccessItemDto): void {
+    const dialogRef = this.dialog.open<BlockAccessItemDialogComponent, BlockAccessItemDialogData, BlockAccessItemDialogResult>(
+      BlockAccessItemDialogComponent,
+      { data: { itemName: item.name, currentReason: item.blockReason } }
+    );
 
-  submitBlockReason() {
-    const item = this.itemToBlock();
-    if (!item) return;
-
-    const reason = this.blockReasonText().trim();
-    if (!reason) {
-      this.blockReasonError.set('Reason is required to block an item');
-      return;
-    }
-
-    this.blockReasonError.set('');
-    this.updateStatus(item, AccessItemStatus.Blocked, reason);
-    this.closeBlockModal();
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+      this.updateStatus(item, AccessItemStatus.Blocked, result.reason);
+    });
   }
 
   private updateStatus(item: AccessItemDto, newStatusNum: AccessItemStatus, blockReason?: string) {
@@ -250,31 +242,22 @@ export class AccessTrackerComponent {
     return AccessItemStatus.InProgress;
   }
 
-  openAddModal() {
-    this.newItemName.set('');
-    this.newItemIsClientSide.set(true);
-    this.newItemTimeZoneNote.set('');
-    this.nameError.set('');
-    this.isAddModalOpen.set(true);
+  openAddModal(): void {
+    const dialogRef = this.dialog.open<AddAccessItemDialogComponent, undefined, AddAccessItemDialogResult>(
+      AddAccessItemDialogComponent
+    );
+
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+      this.submitAddItem(result);
+    });
   }
 
-  closeAddModal() {
-    this.nameError.set('');
-    this.isAddModalOpen.set(false);
-  }
-
-  submitAddItem() {
-    if (!this.newItemName().trim()) {
-      this.nameError.set('This field is required');
-      return;
-    }
-
-    this.nameError.set('');
-
+  private submitAddItem(result: AddAccessItemDialogResult) {
     const requestData = {
-      name: this.newItemName().trim(),
-      isClientSide: this.newItemIsClientSide(),
-      timeZoneNote: this.newItemTimeZoneNote().trim() || undefined,
+      name: result.name,
+      isClientSide: result.isClientSide,
+      timeZoneNote: result.timeZoneNote,
       ownerId: 1 // Default to Rahul Verma (ID 1)
     };
 
@@ -285,7 +268,6 @@ export class AccessTrackerComponent {
         const updatedList = [...this.accessItems(), newItem];
         this.accessItems.set(updatedList);
         this.itemsUpdated.emit(updatedList);
-        this.closeAddModal();
       },
       error: (err) => {
         console.warn('API add item failed, adding item locally for testing', err);
@@ -303,7 +285,6 @@ export class AccessTrackerComponent {
         const updatedList = [...this.accessItems(), localNewItem];
         this.accessItems.set(updatedList);
         this.itemsUpdated.emit(updatedList);
-        this.closeAddModal();
       }
     });
   }

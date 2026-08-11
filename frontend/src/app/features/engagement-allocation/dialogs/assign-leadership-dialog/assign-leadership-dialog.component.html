@@ -1,0 +1,52 @@
+<div class="dialog-container">
+  <div class="modal-header">
+    <div class="title-group">
+      <h2>Assign Leadership Contacts</h2>
+      <p class="eng-sub">{{ engagement.engagementName }} ({{ engagement.clientName }})</p>
+    </div>
+    <app-button type="button" variant="icon" ariaLabel="Close" (click)="onClose()">&times;</app-button>
+  </div>
+
+  <div class="modal-body">
+    <label class="input-label">Assigned Leadership Users</label>
+
+    <!-- Search & Multi-select Chips Container -->
+    <div class="tag-input-wrapper">
+      <!-- Selected User Tag Chips -->
+      <div class="chips-container">
+        @for (user of modalLeadershipUsers(); track user.id) {
+          <span class="tag-chip">
+            <span class="chip-text">{{ user.id }}-{{ user.fullName }}</span>
+            <button
+              type="button"
+              class="chip-remove"
+              title="Remove User"
+              (click)="removeTagChip(user)"
+            >
+              &times;
+            </button>
+          </span>
+        }
+      </div>
+
+      <!-- Employee Search Input -->
+      <div class="search-input-container">
+        <app-autocomplete
+          placeholder="Search Employee"
+          [searchTerm]="modalSearchTerm()"
+          [options]="autocompleteOptions()"
+          emptyMessage="No matching Leadership users available"
+          (searchTermChange)="modalSearchTerm.set($event)"
+          (optionSelected)="onAutocompleteOptionSelected($event)"
+        />
+      </div>
+    </div>
+
+    <p class="field-hint">Select a Leadership user from the dropdown to assign. At least one Leadership user must remain assigned at all times.</p>
+  </div>
+
+  <div class="modal-actions">
+    <app-button type="button" variant="stroked" (click)="onClose()">Cancel</app-button>
+    <app-button type="button" variant="flat" (click)="onClose()">Done</app-button>
+  </div>
+</div>

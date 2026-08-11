@@ -132,28 +132,3 @@
     }
   </div>
 </div>
-
-@if (showUploadModal()) {
-  <app-upload-document-dialog
-    [engagementId]="engagementId()!"
-    (closed)="closeUploadModal()"
-    (uploaded)="onDocumentUploaded()"
-  ></app-upload-document-dialog>
-}
-
-@if (selectedDocForRemoval()) {
-  <app-remove-document-dialog
-    [documentId]="selectedDocForRemoval()!.id"
-    [documentName]="selectedDocForRemoval()!.fileName"
-    (closed)="closeRemoveModal()"
-    (removed)="onDocumentRemoved()"
-  ></app-remove-document-dialog>
-}
-
-@if (selectedDocForCustomVisibility()) {
-  <app-custom-visibility-dialog
-    [document]="selectedDocForCustomVisibility()!"
-    (closed)="closeCustomVisibilityModal()"
-    (updated)="onCustomVisibilityUpdated($event)"
-  ></app-custom-visibility-dialog>
-}

@@ -13,6 +13,16 @@ import {
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
+import { DialogService } from '@common/services/dialog/dialog.service';
+import {
+  AddEnvironmentItemDialogComponent,
+  AddEnvironmentItemDialogResult
+} from './dialogs/add-environment-item-dialog/add-environment-item-dialog.component';
+import {
+  NotApplicableReasonDialogComponent,
+  NotApplicableReasonDialogData,
+  NotApplicableReasonDialogResult
+} from './dialogs/not-applicable-reason-dialog/not-applicable-reason-dialog.component';
 
 @Component({
   selector: 'app-environment-tooling',
@@ -28,21 +38,11 @@ export class EnvironmentToolingComponent {
   private service = inject(EnvironmentToolingService);
   private authService = inject(AuthService);
   private destroyRef = inject(DestroyRef);
+  private dialog = inject(DialogService);
 
   items = signal<EnvironmentToolingItemDto[]>([]);
   isLoading = signal<boolean>(true);
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
-
-  // Add Item Modal
-  isAddModalOpen = signal<boolean>(false);
-  newItemName = signal<string>('');
-  nameError = signal<string>('');
-
-  // Not Applicable Reason Modal
-  isNaModalOpen = signal<boolean>(false);
-  naReasonText = signal<string>('');
-  naReasonError = signal<string>('');
-  itemForNa = signal<EnvironmentToolingItemDto | null>(null);
 
   readonly statusOptions = [
     { label: 'Ready', value: EnvironmentToolingStatus.Ready },
@@ -115,36 +115,23 @@ export class EnvironmentToolingComponent {
 
     if (newStatus === EnvironmentToolingStatus.NotApplicable) {
       select.value = item.status.toString();
-      this.itemForNa.set(item);
-      this.naReasonText.set(item.notApplicableReason || '');
-      this.naReasonError.set('');
-      this.isNaModalOpen.set(true);
+      this.openNaDialog(item);
       return;
     }
 
     this.updateStatus(item, newStatus);
   }
 
-  closeNaModal() {
-    this.isNaModalOpen.set(false);
-    this.itemForNa.set(null);
-    this.naReasonText.set('');
-    this.naReasonError.set('');
-  }
+  private openNaDialog(item: EnvironmentToolingItemDto): void {
+    const dialogRef = this.dialog.open<NotApplicableReasonDialogComponent, NotApplicableReasonDialogData, NotApplicableReasonDialogResult>(
+      NotApplicableReasonDialogComponent,
+      { data: { itemName: item.name, currentReason: item.notApplicableReason } }
+    );
 
-  submitNaReason() {
-    const item = this.itemForNa();
-    if (!item) return;
-
-    const reason = this.naReasonText().trim();
-    if (!reason) {
-      this.naReasonError.set('Reason is required for Not Applicable status');
-      return;
-    }
-
-    this.naReasonError.set('');
-    this.updateStatus(item, EnvironmentToolingStatus.NotApplicable, reason);
-    this.closeNaModal();
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+      this.updateStatus(item, EnvironmentToolingStatus.NotApplicable, result.reason);
+    });
   }
 
   private updateStatus(item: EnvironmentToolingItemDto, newStatus: EnvironmentToolingStatus, naReason?: string) {
@@ -209,27 +196,20 @@ export class EnvironmentToolingComponent {
     }
   }
 
-  openAddModal() {
-    this.newItemName.set('');
-    this.nameError.set('');
-    this.isAddModalOpen.set(true);
+  openAddModal(): void {
+    const dialogRef = this.dialog.open<AddEnvironmentItemDialogComponent, undefined, AddEnvironmentItemDialogResult>(
+      AddEnvironmentItemDialogComponent
+    );
+
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+      this.submitAddItem(result);
+    });
   }
 
-  closeAddModal() {
-    this.nameError.set('');
-    this.isAddModalOpen.set(false);
-  }
-
-  submitAddItem() {
-    if (!this.newItemName().trim()) {
-      this.nameError.set('This field is required');
-      return;
-    }
-
-    this.nameError.set('');
-
+  private submitAddItem(result: AddEnvironmentItemDialogResult) {
     const requestData = {
-      customName: this.newItemName().trim(),
+      customName: result.name,
       ownerId: 1 // Default to Rahul Verma (ID 1)
     };
 
@@ -240,7 +220,6 @@ export class EnvironmentToolingComponent {
         const updatedList = [...this.items(), newItem];
         this.items.set(updatedList);
         this.itemsUpdated.emit(updatedList);
-        this.closeAddModal();
       },
       error: (err) => {
         console.warn('API add environment item failed, adding local item for testing', err);
@@ -256,7 +235,6 @@ export class EnvironmentToolingComponent {
         const updatedList = [...this.items(), localNewItem];
         this.items.set(updatedList);
         this.itemsUpdated.emit(updatedList);
-        this.closeAddModal();
       }
     });
   }

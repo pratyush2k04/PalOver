@@ -141,18 +141,20 @@
               <p class="description">{{ c.description }}</p>
             </ng-container>
             <ng-template #editPromisedTemplate>
-              <input
+              <app-input
+                [id]="'edit-promised-title-' + c.commitmentId"
                 type="text"
                 [(ngModel)]="editCommitment().title"
                 [ngModelOptions]="{ standalone: true }"
-                maxlength="100"
+                [maxLength]="100"
                 placeholder="Title"
               />
-              <input
+              <app-input
+                [id]="'edit-promised-desc-' + c.commitmentId"
                 type="text"
                 [(ngModel)]="editCommitment().description"
                 [ngModelOptions]="{ standalone: true }"
-                maxlength="2000"
+                [maxLength]="2000"
                 placeholder="Description"
               />
               <div class="form-row">
@@ -162,12 +164,12 @@
                   [(ngModel)]="editCommitment().timeline"
                   [ngModelOptions]="{ standalone: true }"
                 />
-                <select
+                <app-select
+                  [id]="'edit-promised-unit-' + c.commitmentId"
                   [(ngModel)]="editCommitment().timelineUnit"
                   [ngModelOptions]="{ standalone: true }"
-                >
-                  <option *ngFor="let u of timelineUnits" [value]="u">{{ u }}</option>
-                </select>
+                  [options]="timelineUnitOptions"
+                />
               </div>
               <ul class="inline-errors" *ngIf="editCommitmentErrors().length > 0">
                 <li *ngFor="let err of editCommitmentErrors()">{{ err }}</li>
@@ -280,13 +282,14 @@
             </ng-container>
 
             <ng-template #editRealisticTemplate>
-              <textarea
+              <app-textarea
+                [id]="'edit-realistic-desc-' + c.commitmentId"
                 [(ngModel)]="realisticEditForm().description"
                 [ngModelOptions]="{ standalone: true }"
-                maxlength="2000"
+                [maxLength]="2000"
                 placeholder="Realistic description"
-                rows="2"
-              ></textarea>
+                [rows]="2"
+              />
               <div class="form-row">
                 <input
                   type="number"
@@ -294,18 +297,23 @@
                   [(ngModel)]="realisticEditForm().timeline"
                   [ngModelOptions]="{ standalone: true }"
                 />
-                <select
+                <app-select
+                  [id]="'edit-realistic-unit-' + c.commitmentId"
                   [(ngModel)]="realisticEditForm().timelineUnit"
                   [ngModelOptions]="{ standalone: true }"
-                >
-                  <option *ngFor="let u of timelineUnits" [value]="u">{{ u }}</option>
-                </select>
+                  [options]="timelineUnitOptions"
+                />
               </div>
 
               <div class="form-group">
-                <label>Acknowledgement Message{{ editFormNeedsAcknowledgement(c) ? ' (Required)' : '' }}</label>
-                <input type="text" [(ngModel)]="realisticEditForm().acknowledgementMessage" [ngModelOptions]="{standalone: true}"
-                  maxlength="2000" placeholder="Why does the realistic estimate differ?">
+                <app-input
+                  [id]="'edit-realistic-ack-' + c.commitmentId"
+                  [label]="'Acknowledgement Message' + (editFormNeedsAcknowledgement(c) ? ' (Required)' : '')"
+                  [(ngModel)]="realisticEditForm().acknowledgementMessage"
+                  [ngModelOptions]="{ standalone: true }"
+                  [maxLength]="2000"
+                  placeholder="Why does the realistic estimate differ?"
+                />
                 <div class="warning-text" *ngIf="acknowledgementWarningVisible()">
                   You've changed your realistic estimates. Consider revisiting your acknowledgement
                   message.
@@ -339,13 +347,13 @@
               [class.is-invalid]="newCommitmentTouched() && !newCommitment().title"
               style="flex: 2"
             />
-            <select
+            <app-select
+              id="new-commitment-type"
               [(ngModel)]="newCommitment().commitmentTypeId"
               [ngModelOptions]="{ standalone: true }"
+              [options]="commitmentTypeOptions"
               style="flex: 1"
-            >
-              <option *ngFor="let t of commitmentTypes" [value]="t.id">{{ t.name }}</option>
-            </select>
+            />
           </div>
           <div class="form-row">
             <textarea
@@ -365,12 +373,12 @@
               [ngModelOptions]="{ standalone: true }"
               placeholder="Timeline"
             />
-            <select
+            <app-select
+              id="new-commitment-unit"
               [(ngModel)]="newCommitment().timelineUnit"
               [ngModelOptions]="{ standalone: true }"
-            >
-              <option *ngFor="let u of timelineUnits" [value]="u">{{ u }}</option>
-            </select>
+              [options]="timelineUnitOptions"
+            />
           </div>
           <div
             class="invalid-feedback"

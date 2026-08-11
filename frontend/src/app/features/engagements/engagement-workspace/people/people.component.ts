@@ -10,11 +10,23 @@ import { LoaderService } from '../../../../core/loading/loader.service';
 import { ToastService } from '@common/services/toast/toast';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { ButtonComponent } from '@common/components/button/button';
+import { DialogService } from '@common/services/dialog/dialog.service';
+import {
+  PersonFormDialogComponent,
+  PersonFormDialogData,
+  PersonFormDialogResult
+} from './dialogs/person-form-dialog/person-form-dialog.component';
 
 @Component({
   selector: 'app-people',
   standalone: true,
-  imports: [CommonModule, FormsModule, ConfirmDialogComponent, InlineSVGModule, ButtonComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ConfirmDialogComponent,
+    InlineSVGModule,
+    ButtonComponent
+  ],
   templateUrl: './people.component.html',
   styleUrl: './people.component.scss'
 })
@@ -22,6 +34,7 @@ export class PeopleComponent {
   private route = inject(ActivatedRoute);
   private personService = inject(PersonService);
   private toastService = inject(ToastService);
+  private dialog = inject(DialogService);
   public loaderService = inject(LoaderService);
 
   private paramMap = toSignal(this.route.parent?.paramMap ?? this.route.paramMap);
@@ -32,33 +45,8 @@ export class PeopleComponent {
   });
 
   people = signal<PersonDto[]>([]);
-  isFormModalOpen = signal(false);
-  isSubmitting = signal(false);
   isDeleting = signal(false);
-  editingPerson = signal<PersonDto | null>(null);
   personToDelete = signal<PersonDto | null>(null);
-
-  formName = signal('');
-  formRole = signal('');
-  formPersonType = signal<number>(PersonType.Internal);
-
-  PersonTypeEnum = PersonType;
-
-  isFormDirty = computed(() => {
-    const edit = this.editingPerson();
-    if (!edit) {
-      return true;
-    }
-    const numType = Number(edit.personType);
-    const originalType = numType === 2 || edit.personType === 'Client' || edit.personType === PersonType.Client
-      ? PersonType.Client
-      : PersonType.Internal;
-    return (
-      this.formName().trim() !== edit.name ||
-      this.formRole().trim() !== edit.role ||
-      this.formPersonType() !== originalType
-    );
-  });
 
   constructor() {
     effect(() => {
@@ -95,74 +83,48 @@ export class PeopleComponent {
   }
 
   onAddPerson(): void {
-    this.editingPerson.set(null);
-    this.formName.set('');
-    this.formRole.set('');
-    this.formPersonType.set(PersonType.Internal);
-    this.isFormModalOpen.set(true);
+    this.openPersonFormDialog(null);
   }
 
   onEditPerson(person: PersonDto): void {
-    this.editingPerson.set(person);
-    this.formName.set(person.name);
-    this.formRole.set(person.role);
-    const numType = Number(person.personType);
-    const pType = numType === 2 || person.personType === 'Client' || person.personType === PersonType.Client 
-      ? PersonType.Client 
-      : PersonType.Internal;
-    this.formPersonType.set(pType);
-    this.isFormModalOpen.set(true);
+    this.openPersonFormDialog(person);
   }
 
-  closeFormModal(): void {
-    this.isFormModalOpen.set(false);
-    this.editingPerson.set(null);
-  }
-
-  onSavePerson(): void {
-    const name = this.formName().trim();
-    const role = this.formRole().trim();
+  private openPersonFormDialog(person: PersonDto | null): void {
     const engagementId = this.engagementId();
+    if (!engagementId) return;
 
-    if (!name || !role || !engagementId) {
-      return;
-    }
+    const dialogRef = this.dialog.open<PersonFormDialogComponent, PersonFormDialogData, PersonFormDialogResult>(
+      PersonFormDialogComponent,
+      { data: { person } }
+    );
 
-    const payload: Partial<PersonDto> = {
-      engagementId,
-      name,
-      role,
-      personType: Number(this.formPersonType())
-    };
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
 
-    this.isSubmitting.set(true);
-    const edit = this.editingPerson();
+      const payload: Partial<PersonDto> = {
+        engagementId,
+        name: result.name,
+        role: result.role,
+        personType: result.personType
+      };
 
-    if (edit) {
-      this.personService.updatePerson(engagementId, edit.personId, { ...payload, personId: edit.personId }).subscribe({
-        next: () => {
-          this.toastService.success('Contact updated successfully');
-          this.isSubmitting.set(false);
-          this.closeFormModal();
-          this.loadPeople(engagementId);
-        },
-        error: () => {
-          this.isSubmitting.set(false);
-        }
-      });
-    } else {
-      this.personService.createPerson(engagementId, payload).subscribe({
-        next: () => {
-          this.toastService.success('Contact added successfully');
-          this.isSubmitting.set(false);
-          this.closeFormModal();
-          this.loadPeople(engagementId);
-        },
-        error: () => {
-          this.isSubmitting.set(false);
-        }
-      });
-    }
+      if (person) {
+        this.personService.updatePerson(engagementId, person.personId, { ...payload, personId: person.personId }).subscribe({
+          next: () => {
+            this.toastService.success('Contact updated successfully');
+            this.loadPeople(engagementId);
+          }
+        });
+      } else {
+        this.personService.createPerson(engagementId, payload).subscribe({
+          next: () => {
+            this.toastService.success('Contact added successfully');
+            this.loadPeople(engagementId);
+          }
+        });
+      }
+    });
   }
 
   onDeletePerson(person: PersonDto): void {
