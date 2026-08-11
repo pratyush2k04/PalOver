@@ -1,0 +1,27 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h3>Add New Tooling Item</h3>
+    <app-button type="button" variant="icon" ariaLabel="Close" (click)="onCancel()">&times;</app-button>
+  </div>
+
+  <form (ngSubmit)="onSubmit()">
+    <div class="dialog-body">
+      <div class="form-group">
+        <app-input
+          id="env-item-name"
+          label="Item Name"
+          [ngModel]="name()"
+          (ngModelChange)="onNameChange($event)"
+          name="itemName"
+          placeholder="e.g., Staging Server provisioned"
+          [extraError]="nameError() || null"
+        />
+      </div>
+    </div>
+
+    <div class="dialog-footer">
+      <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+      <app-button type="submit" variant="flat">Save</app-button>
+    </div>
+  </form>
+</div>

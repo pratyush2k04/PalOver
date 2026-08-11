@@ -1,0 +1,42 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h3>{{ constants.MODAL_LOG_TITLE }}</h3>
+    <app-button type="button" variant="icon" ariaLabel="Close" (click)="onCancel()">&times;</app-button>
+  </div>
+
+  <form [formGroup]="logForm" (ngSubmit)="onSubmit()">
+    <div class="dialog-body">
+      @if (errorMessage()) {
+        <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+      }
+
+      <div class="form-group">
+        <app-textarea
+          id="description"
+          [label]="constants.LABEL_DESCRIPTION"
+          formControlName="description"
+          [rows]="3"
+          [errorMessages]="{ required: constants.ERROR_DESCRIPTION_REQUIRED }"
+        />
+      </div>
+
+      <div class="form-group">
+        <app-input
+          id="impact"
+          [label]="constants.LABEL_IMPACT"
+          formControlName="impact"
+          [errorMessages]="{ required: constants.ERROR_IMPACT_REQUIRED }"
+        />
+      </div>
+    </div>
+
+    <div class="dialog-footer">
+      <app-button type="button" variant="stroked" (click)="onCancel()">
+        {{ constants.BTN_CANCEL }}
+      </app-button>
+      <app-button type="submit" variant="accent" [disabled]="isSubmitting()">
+        {{ constants.BTN_LOG }}
+      </app-button>
+    </div>
+  </form>
+</div>

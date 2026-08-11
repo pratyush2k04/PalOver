@@ -69,34 +69,6 @@
 
 .form-group {
   margin-bottom: 1.5rem;
-
-  label {
-    display: block;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 0.5rem;
-  }
-
-  textarea {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 0.75rem 0.875rem;
-    font-size: 0.875rem;
-    line-height: 1.5;
-    color: #111827;
-    background: #ffffff;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    resize: vertical;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-
-    &:focus {
-      outline: none;
-      border-color: #dc2626;
-      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-    }
-  }
 }
 
 .dialog-actions {

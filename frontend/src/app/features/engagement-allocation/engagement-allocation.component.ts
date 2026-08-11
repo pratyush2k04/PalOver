@@ -8,31 +8,36 @@ import { ToastService } from '@common/services/toast/toast';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
+import { DialogService } from '@common/services/dialog/dialog.service';
+import {
+  AssignLeadershipDialogComponent,
+  AssignLeadershipDialogData
+} from './dialogs/assign-leadership-dialog/assign-leadership-dialog.component';
 
 @Component({
   selector: 'app-engagement-allocation',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, InlineSVGModule, StatusBadgeComponent, ButtonComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    LoadingSpinnerComponent,
+    InlineSVGModule,
+    StatusBadgeComponent,
+    ButtonComponent
+  ],
   templateUrl: './engagement-allocation.component.html',
   styleUrl: './engagement-allocation.component.scss'
 })
 export class EngagementAllocationComponent implements OnInit {
   private allocationService = inject(EngagementAllocationService);
   private toastService = inject(ToastService);
+  private dialog = inject(DialogService);
 
   readonly engagements = signal<EngagementAllocationItem[]>([]);
   readonly availableLeadershipUsers = signal<LeadershipUserItem[]>([]);
   readonly loading = signal<boolean>(true);
   readonly searchQuery = signal<string>('');
   readonly filterMode = signal<'all' | 'needing'>('all');
-
-  // Modal State
-  readonly isModalOpen = signal<boolean>(false);
-  readonly selectedEngagement = signal<EngagementAllocationItem | null>(null);
-  readonly modalLeadershipUsers = signal<LeadershipUserItem[]>([]);
-  readonly modalSearchTerm = signal<string>('');
-  readonly isDropdownOpen = signal<boolean>(false);
-  readonly isSaving = signal<boolean>(false);
 
   // Metrics
   readonly totalCount = computed(() => this.engagements().length);
@@ -59,23 +64,6 @@ export class EngagementAllocationComponent implements OnInit {
       const matchesFilter = mode === 'all' || (mode === 'needing' && !hasLeadership);
 
       return matchesSearch && matchesFilter;
-    });
-  });
-
-  // Filtered Available Users for Dropdown in Modal
-  readonly filteredAvailableUsers = computed(() => {
-    const term = this.modalSearchTerm().toLowerCase().trim();
-    const assignedIds = new Set(this.modalLeadershipUsers().map(u => u.id));
-
-    return this.availableLeadershipUsers().filter(u => {
-      const isNotAlreadyAssigned = !assignedIds.has(u.id);
-      const matchesTerm =
-        !term ||
-        u.fullName.toLowerCase().includes(term) ||
-        u.id.toString().includes(term) ||
-        u.email.toLowerCase().includes(term);
-
-      return isNotAlreadyAssigned && matchesTerm;
     });
   });
 
@@ -141,81 +129,14 @@ export class EngagementAllocationComponent implements OnInit {
   }
 
   openAssignModal(engagement: EngagementAllocationItem): void {
-    this.selectedEngagement.set(engagement);
-    this.modalLeadershipUsers.set([...(engagement.leadershipUsers || [])]);
-    this.modalSearchTerm.set('');
-    this.isDropdownOpen.set(false);
-    this.isModalOpen.set(true);
-  }
+    const dialogRef = this.dialog.open<AssignLeadershipDialogComponent, AssignLeadershipDialogData, LeadershipUserItem[]>(
+      AssignLeadershipDialogComponent,
+      { data: { engagement, availableLeadershipUsers: this.availableLeadershipUsers() } }
+    );
 
-  closeModal(): void {
-    this.isModalOpen.set(false);
-    this.selectedEngagement.set(null);
-    this.modalLeadershipUsers.set([]);
-    this.modalSearchTerm.set('');
-    this.isDropdownOpen.set(false);
-  }
-
-  onSearchFocus(): void {
-    this.isDropdownOpen.set(true);
-  }
-
-  onSearchBlur(): void {
-    // Delay hiding dropdown so click events on dropdown items can register
-    setTimeout(() => {
-      this.isDropdownOpen.set(false);
-    }, 200);
-  }
-
-  selectUserFromDropdown(user: LeadershipUserItem): void {
-    const eng = this.selectedEngagement();
-    if (!eng) return;
-
-    // Check if already in list
-    if (this.modalLeadershipUsers().some(u => u.id === user.id)) {
-      this.toastService.error('This user is already assigned to this engagement');
-      return;
-    }
-
-    this.isSaving.set(true);
-    this.allocationService.assignLeadershipUser(eng.engagementId, user.id).subscribe({
-      next: (updatedUsers) => {
-        this.modalLeadershipUsers.set(updatedUsers);
-        this.updateEngagementInList(eng.engagementId, updatedUsers);
-        this.toastService.success(`Assigned ${user.fullName} to ${eng.engagementName}`);
-        this.modalSearchTerm.set('');
-        this.isSaving.set(false);
-      },
-      error: (err) => {
-        const errorMsg = err.error?.message || 'Failed to assign Leadership user.';
-        this.toastService.error(errorMsg);
-        this.isSaving.set(false);
-      }
-    });
-  }
-
-  removeTagChip(user: LeadershipUserItem): void {
-    const eng = this.selectedEngagement();
-    if (!eng) return;
-
-    if (this.modalLeadershipUsers().length <= 1) {
-      this.toastService.error('At least one Leadership contact is required for this engagement.');
-      return;
-    }
-
-    this.isSaving.set(true);
-    this.allocationService.removeLeadershipUser(eng.engagementId, user.id).subscribe({
-      next: (updatedUsers) => {
-        this.modalLeadershipUsers.set(updatedUsers);
-        this.updateEngagementInList(eng.engagementId, updatedUsers);
-        this.toastService.success(`Removed ${user.fullName} from ${eng.engagementName}`);
-        this.isSaving.set(false);
-      },
-      error: (err) => {
-        const errorMsg = err.error?.message || 'Failed to remove Leadership user.';
-        this.toastService.error(errorMsg);
-        this.isSaving.set(false);
-      }
+    dialogRef.closed$.subscribe((updatedUsers) => {
+      if (!updatedUsers) return;
+      this.updateEngagementInList(engagement.engagementId, updatedUsers);
     });
   }
 

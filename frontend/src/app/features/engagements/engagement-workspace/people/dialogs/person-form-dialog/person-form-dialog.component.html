@@ -1,0 +1,56 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h3>{{ isEditing ? 'Edit Person' : 'Add Person' }}</h3>
+    <app-button type="button" variant="icon" ariaLabel="Close" (click)="onCancel()">&times;</app-button>
+  </div>
+
+  <form (ngSubmit)="onSubmit()">
+    <div class="dialog-body">
+      <div class="form-group">
+        <app-input
+          id="personName"
+          label="Name"
+          placeholder="e.g. John Doe"
+          [ngModel]="formName()"
+          (ngModelChange)="formName.set($event)"
+          name="name"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <app-input
+          id="personRole"
+          label="Role"
+          placeholder="e.g. Tech Lead / Sponsor"
+          [ngModel]="formRole()"
+          (ngModelChange)="formRole.set($event)"
+          name="role"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <app-select
+          id="personType"
+          label="Organization"
+          [ngModel]="formPersonType()"
+          (ngModelChange)="formPersonType.set($event)"
+          name="personType"
+          [options]="personTypeOptions"
+        />
+      </div>
+    </div>
+
+    <div class="dialog-footer">
+      <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+      <app-button
+        type="submit"
+        variant="flat"
+        [disabled]="!formName().trim() || !formRole().trim() || !isFormDirty()"
+      >
+        {{ isEditing ? 'Update' : 'Add' }}
+      </app-button>
+    </div>
+  </form>
+</div>
