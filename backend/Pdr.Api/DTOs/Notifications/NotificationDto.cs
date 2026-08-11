@@ -2,11 +2,12 @@ using Pdr.Api.Models.Notifications;
 
 namespace Pdr.Api.DTOs.Notifications;
 
-public record NotificationSummaryDto(
+public record NotificationDto(
     int Id,
     string Title,
-    string BodyPreview,
+    string Body,
     NotificationPriority Priority,
     string Status,
     DateTime ScheduledFor,
+    DateTime? ReadAt,
     string? Link);

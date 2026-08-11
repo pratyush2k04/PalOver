@@ -22,8 +22,8 @@ public class NotificationsController(
     /// Retrieves a page of the current user's notifications, optionally filtered by engagement.
     /// </summary>
     [HttpGet]
-    [ProducesResponseType(typeof(PagedResult<NotificationSummaryDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<PagedResult<NotificationSummaryDto>>> GetNotifications(
+    [ProducesResponseType(typeof(PagedResult<NotificationDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedResult<NotificationDto>>> GetNotifications(
         [FromQuery] int? engagementId,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20)
@@ -36,10 +36,10 @@ public class NotificationsController(
     /// Retrieves the full resolved detail for a single notification owned by the current user.
     /// </summary>
     [HttpGet("{id:int}")]
-    [ProducesResponseType(typeof(NotificationDetailDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(NotificationDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<NotificationDetailDto>> GetNotification(int id)
+    public async Task<ActionResult<NotificationDto>> GetNotification(int id)
     {
         var result = await notificationService.GetByIdAsync(id, currentUserService.GetUserId());
         return Ok(result);

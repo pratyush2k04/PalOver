@@ -20,8 +20,6 @@ public class NotificationService(
     TemplateRenderer renderer,
     ILogger<NotificationService> logger) : INotificationService
 {
-    private const int BodyPreviewLength = 120;
-
     public async Task CreateFromTemplateAsync(
         string templateKey,
         int engagementId,
@@ -60,25 +58,46 @@ public class NotificationService(
         });
     }
 
-    public async Task<PagedResult<NotificationSummaryDto>> GetForUserAsync(int userId, int? engagementId, int page, int pageSize)
+    public async Task CreateFromTemplateAsync(
+        string templateKey,
+        int receiverUserId,
+        string data,
+        DateTime scheduledFor,
+        CancellationToken cancellationToken = default)
+    {
+        var template = await db.NotificationTemplates.FirstOrDefaultAsync(t => t.Key == templateKey, cancellationToken)
+            ?? throw new NotificationTemplateNotFoundException(templateKey);
+
+        await repository.AddAsync(new Notification
+        {
+            TemplateId = template.Id,
+            ReceiverUserId = receiverUserId,
+            Priority = template.DefaultPriority,
+            ScheduledFor = scheduledFor,
+            Data = data
+        });
+    }
+
+    public async Task<PagedResult<NotificationDto>> GetForUserAsync(int userId, int? engagementId, int page, int pageSize)
     {
         var (notifications, totalCount) = await repository.GetForUserAsync(userId, engagementId, page, pageSize);
 
-        var items = new List<NotificationSummaryDto>();
+        var items = new List<NotificationDto>();
         foreach (var notification in notifications)
         {
             var (title, body) = await ResolveContentAsync(notification);
-            items.Add(new NotificationSummaryDto(
+            items.Add(new NotificationDto(
                 notification.Id,
                 title,
-                Truncate(body, BodyPreviewLength),
+                body,
                 notification.Priority,
                 ComputeStatus(notification),
                 notification.ScheduledFor,
+                notification.ReadAt,
                 notification.Link));
         }
 
-        return new PagedResult<NotificationSummaryDto>
+        return new PagedResult<NotificationDto>
         {
             Items = items,
             TotalCount = totalCount,
@@ -87,7 +106,7 @@ public class NotificationService(
         };
     }
 
-    public async Task<NotificationDetailDto> GetByIdAsync(int id, int userId)
+    public async Task<NotificationDto> GetByIdAsync(int id, int userId)
     {
         var notification = await repository.GetByIdAsync(id)
             ?? throw new NotificationNotFoundException(id);
@@ -97,7 +116,7 @@ public class NotificationService(
 
         var (title, body) = await ResolveContentAsync(notification);
 
-        return new NotificationDetailDto(
+        return new NotificationDto(
             notification.Id,
             title,
             body,
@@ -153,6 +172,4 @@ public class NotificationService(
         return notification.ScheduledFor <= DateTime.UtcNow ? "Sent" : "Pending";
     }
 
-    private static string Truncate(string value, int maxLength) =>
-        value.Length <= maxLength ? value : value[..maxLength] + "…";
 }

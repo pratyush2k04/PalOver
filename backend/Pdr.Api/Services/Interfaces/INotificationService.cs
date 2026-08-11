@@ -15,8 +15,15 @@ public interface INotificationService
         string? link = null,
         CancellationToken cancellationToken = default);
 
-    Task<PagedResult<NotificationSummaryDto>> GetForUserAsync(int userId, int? engagementId, int page, int pageSize);
-    Task<NotificationDetailDto> GetByIdAsync(int id, int userId);
+    Task CreateFromTemplateAsync(
+        string templateKey,
+        int receiverUserId,
+        string data,
+        DateTime scheduledFor,
+        CancellationToken cancellationToken = default);
+
+    Task<PagedResult<NotificationDto>> GetForUserAsync(int userId, int? engagementId, int page, int pageSize);
+    Task<NotificationDto> GetByIdAsync(int id, int userId);
     Task MarkAsReadAsync(int id, int userId);
     Task MarkAllAsReadAsync(int userId);
     Task<int> GetUnreadCountAsync(int userId);
