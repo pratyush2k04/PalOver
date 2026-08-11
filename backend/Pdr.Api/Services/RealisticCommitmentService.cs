@@ -10,8 +10,6 @@ namespace Pdr.Api.Services;
 
 public class RealisticCommitmentService : IRealisticCommitmentService
 {
-    private const string SubmittedStatusName = "Submitted";
-
     private readonly IHandoverRepository _handoverRepository;
     private readonly ICommitmentRepository _commitmentRepository;
     private readonly IRealisticCommitmentRepository _realisticCommitmentRepository;
@@ -77,8 +75,7 @@ public class RealisticCommitmentService : IRealisticCommitmentService
 
         if (!timelinesMatch && !acknowledgementProvided)
         {
-            throw new AcknowledgementRequiredException(
-                "The realistic timeline differs from the promised timeline. Please provide an acknowledgement message.");
+            throw new AcknowledgementRequiredException(HandoverValidationConstants.RealisticTimelineDiffersAcknowledgementRequired);
         }
 
         var realistic = new RealisticCommitment
@@ -122,9 +119,7 @@ public class RealisticCommitmentService : IRealisticCommitmentService
 
         if (!timelinesMatch && !acknowledgementProvided)
         {
-           
-            throw new AcknowledgementRequiredException(
-                "The realistic timeline differs from the promised timeline. Please provide an acknowledgement message.");
+            throw new AcknowledgementRequiredException(HandoverValidationConstants.RealisticTimelineDiffersAcknowledgementRequired);
         }
 
         realistic.Description = request.Description;

@@ -131,7 +131,7 @@ public class HandoverService : IHandoverService
         if (string.IsNullOrWhiteSpace(handover.ClientSentiment))
             throw new HandoverIncompleteException(HandoverValidationConstants.ClientSentimentRequiredSubmit);
         if (!await _kickoffReadinessService.IsFullyReadyAsync(engagementId))
-            throw new HandoverIncompleteException("Engagement is not kickoff-ready. All mandatory items must be complete before submitting the handover.");
+            throw new HandoverIncompleteException(HandoverValidationConstants.NotKickoffReadySubmit);
 
         handover.StatusId = (int)HandoverStatusEnum.Submitted;
         handover.UpdatedBy = userIdStr;
