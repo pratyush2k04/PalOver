@@ -4,9 +4,9 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
 import { AppContextService } from '../../services/app-context';
-import { AlertComponent } from '../../common/components/alert/alert';
-import { ButtonComponent } from '../../common/components/button/button';
-import { InputComponent } from '../../common/components/form/input/input';
+import { AlertComponent } from '@common/components/alert/alert';
+import { ButtonComponent } from '@common/components/button/button';
+import { InputComponent } from '@common/components/form/input/input';
 
 @Component({
   selector: 'app-login',

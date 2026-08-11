@@ -8,7 +8,7 @@ import { TechnicalReadinessService } from '../../services/technical-readiness.se
 import { AuthService } from 'src/app/services/auth';
 import { AccessItemDto, AccessItemStatus } from '../../models/technical-readiness.model';
 import { KickoffReadinessDto, KickoffReadinessService } from '../../../../services/kickoff-readiness.service';
-import { FlaggedItemsBannerComponent, FlaggedItem } from '../../../../shared/flagged-items-banner/flagged-items-banner.component';
+import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';

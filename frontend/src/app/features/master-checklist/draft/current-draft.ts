@@ -1,10 +1,10 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { DialogService } from '../../../common/services/dialog/dialog.service';
-import { ToastService } from '../../../common/services/toast/toast';
-import { LoadingSpinnerComponent } from '../../../common/components/loading-spinner/loading-spinner';
-import { ConfirmDialogComponent } from '../../../common/components/confirm-dialog/confirm-dialog';
-import { StatusBadgeComponent } from '../../../common/components/status-badge/status-badge';
-import { ButtonComponent } from '../../../common/components/button/button';
+import { DialogService } from '@common/services/dialog/dialog.service';
+import { ToastService } from '@common/services/toast/toast';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
+import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
+import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
+import { ButtonComponent } from '@common/components/button/button';
 import { MasterChecklistService } from '../services/master-checklist.service';
 import { MasterChecklistItem, MasterChecklistItemOrder } from '../models/master-checklist.model';
 import { ItemFormDialogComponent, ItemFormDialogData, ItemFormDialogResult } from '../dialogs/item-form/item-form-dialog';

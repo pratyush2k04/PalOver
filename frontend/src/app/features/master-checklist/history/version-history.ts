@@ -1,9 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { DialogService } from '../../../common/services/dialog/dialog.service';
-import { LoadingSpinnerComponent } from '../../../common/components/loading-spinner/loading-spinner';
-import { StatusBadgeComponent, StatusBadgeTone } from '../../../common/components/status-badge/status-badge';
-import { ButtonComponent } from '../../../common/components/button/button';
+import { DialogService } from '@common/services/dialog/dialog.service';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
+import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
+import { ButtonComponent } from '@common/components/button/button';
 import { MasterChecklistService } from '../services/master-checklist.service';
 import { MasterChecklistVersionSummary } from '../models/master-checklist.model';
 import {

@@ -1,9 +1,9 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { DialogRef } from '../../../../common/services/dialog/dialog-ref';
-import { DIALOG_DATA } from '../../../../common/services/dialog/dialog.service';
-import { LoadingSpinnerComponent } from '../../../../common/components/loading-spinner/loading-spinner';
-import { StatusBadgeComponent } from '../../../../common/components/status-badge/status-badge';
-import { ButtonComponent } from '../../../../common/components/button/button';
+import { DialogRef } from '@common/services/dialog/dialog-ref';
+import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
+import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
+import { ButtonComponent } from '@common/components/button/button';
 import { MasterChecklistService } from '../../services/master-checklist.service';
 import { MasterChecklistItem, MasterChecklistVersion } from '../../models/master-checklist.model';
 

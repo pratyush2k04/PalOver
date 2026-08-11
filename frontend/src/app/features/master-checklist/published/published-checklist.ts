@@ -1,8 +1,8 @@
 import { Component, OnInit, computed, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UpperCasePipe } from '@angular/common';
-import { LoadingSpinnerComponent } from '../../../common/components/loading-spinner/loading-spinner';
-import { StatusBadgeComponent } from '../../../common/components/status-badge/status-badge';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
+import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { MasterChecklistService } from '../services/master-checklist.service';
 import { MasterChecklistItem } from '../models/master-checklist.model';
 

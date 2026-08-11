@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { EmptyStateComponent } from '../../common/components/empty-state/empty-state';
+import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-workspace-card',

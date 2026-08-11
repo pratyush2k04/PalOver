@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { AppContextService } from '../../../services/app-context';
-import { BannerComponent } from '../../../common/components/banner/banner';
-import { BadgeComponent } from '../../../common/components/badge/badge';
-import { WorkspaceCardComponent } from '../../../shared/workspace-card/workspace-card';
+import { BannerComponent } from '@common/components/banner/banner';
+import { BadgeComponent } from '@common/components/badge/badge';
+import { WorkspaceCardComponent } from '@shared/workspace-card/workspace-card';
 
 @Component({
   selector: 'app-pre-sales-home',

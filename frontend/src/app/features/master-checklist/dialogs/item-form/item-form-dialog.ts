@@ -1,13 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DialogRef } from '../../../../common/services/dialog/dialog-ref';
-import { DIALOG_DATA } from '../../../../common/services/dialog/dialog.service';
+import { DialogRef } from '@common/services/dialog/dialog-ref';
+import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { MasterChecklistCategory, MasterChecklistItem } from '../../models/master-checklist.model';
-import { ButtonComponent } from '../../../../common/components/button/button';
-import { InputComponent } from '../../../../common/components/form/input/input';
-import { TextareaComponent } from '../../../../common/components/form/textarea/textarea';
-import { SelectComponent, SelectOption } from '../../../../common/components/form/select/select';
-import { CheckboxComponent } from '../../../../common/components/form/checkbox/checkbox';
+import { ButtonComponent } from '@common/components/button/button';
+import { InputComponent } from '@common/components/form/input/input';
+import { TextareaComponent } from '@common/components/form/textarea/textarea';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
+import { CheckboxComponent } from '@common/components/form/checkbox/checkbox';
 
 export interface ItemFormDialogData {
   mode: 'create' | 'edit';
