@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
+using Pdr.Api.Constants;
 
 namespace Pdr.Api.Exceptions;
 
 public class CommitmentNotFoundException(int commitmentId)
-    : AppException($"Commitment with id {commitmentId} was not found.", StatusCodes.Status404NotFound);
+    : AppException(HandoverValidationConstants.CommitmentNotFound(commitmentId), StatusCodes.Status404NotFound);

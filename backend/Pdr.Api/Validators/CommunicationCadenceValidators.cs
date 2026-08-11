@@ -10,7 +10,7 @@ public class CreateCommunicationCadenceRequestValidator : AbstractValidator<Crea
     {
         RuleFor(x => x.StakeholderRole)
             .NotEmpty().WithMessage(CommunicationCadenceValidationConstants.StakeholderRoleRequired)
-            .MaximumLength(200).WithMessage(CommunicationCadenceValidationConstants.StakeholderRoleMaxLength);
+            .MaximumLength(CommunicationCadenceValidationConstants.MaxStakeholderRoleLength).WithMessage(CommunicationCadenceValidationConstants.StakeholderRoleMaxLength);
 
         RuleFor(x => x.Cadence)
             .IsInEnum().WithMessage(CommunicationCadenceValidationConstants.CadenceInvalidEnum);

@@ -1,0 +1,64 @@
+:host {
+  display: block;
+}
+
+.app-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+
+  label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #666666;
+  }
+}
+
+textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 14px;
+  color: #1a1a1a;
+  background-color: #ffffff;
+  border: 1px solid #d0d5dd;
+  border-radius: 6px;
+  padding: 8px 12px;
+  outline: none;
+  resize: vertical;
+  box-sizing: border-box;
+
+  &:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+  }
+
+  &.is-invalid {
+    border-color: #dc2626;
+
+    &:focus {
+      box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.15);
+    }
+  }
+
+  &:disabled {
+    background-color: #f4f6f9;
+    cursor: not-allowed;
+  }
+}
+
+.char-counter {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #8b95a3;
+  text-align: right;
+
+  &--danger {
+    color: #dc2626;
+  }
+}
+
+.app-field__error {
+  color: #dc2626;
+  font-size: 12px;
+}

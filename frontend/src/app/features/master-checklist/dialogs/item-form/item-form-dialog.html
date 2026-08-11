@@ -1,0 +1,29 @@
+<h2 class="app-dialog__title">{{ isEdit ? 'Edit Item' : 'Add Item' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSave()">
+  <div class="app-dialog__content item-form-dialog__content">
+    <app-input
+      id="item-title"
+      label="Title"
+      formControlName="title"
+      [errorMessages]="{ required: 'Title is required.' }"
+    />
+
+    <app-textarea id="item-description" label="Description" formControlName="description" />
+
+    <app-select
+      id="item-category"
+      label="Category"
+      formControlName="categoryId"
+      [options]="categoryOptions"
+      [errorMessages]="{ required: 'Category is required.' }"
+    />
+
+    <app-checkbox label="Mandatory item" formControlName="isMandatory" class="item-form-dialog__checkbox" />
+  </div>
+
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+    <app-button type="submit" variant="flat">{{ isEdit ? 'Save Changes' : 'Add Item' }}</app-button>
+  </div>
+</form>

@@ -1,0 +1,144 @@
+.dialog-container {
+  background-color: #ffffff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 520px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .modal-title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #0f172a;
+  }
+
+  .close-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    ::ng-deep svg,
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.doc-info-banner {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+
+  .doc-name-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .file-icon {
+      width: 1.25rem;
+      height: 1.25rem;
+      color: #3b82f6;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      ::ng-deep svg,
+      svg {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+    }
+
+    .file-name {
+      font-weight: 600;
+      color: #1e293b;
+      word-break: break-all;
+    }
+  }
+
+  .doc-meta {
+    margin-top: 0.5rem;
+    display: flex;
+    gap: 1.25rem;
+    font-size: 0.8125rem;
+    color: #64748b;
+  }
+}
+
+.section-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #475569;
+  margin-bottom: 0.25rem;
+}
+
+.section-hint {
+  font-size: 0.8125rem;
+  color: #64748b;
+  margin: 0 0 0.75rem 0;
+}
+
+.always-granted-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #166534;
+
+  .shield-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: #16a34a;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    ::ng-deep svg,
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+}
+
+.modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  .footer-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-left: auto;
+  }
+}

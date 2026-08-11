@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using Pdr.Api.Constants;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Services.Interfaces;
 
@@ -11,11 +12,11 @@ public class JwtTokenGenerator(IConfiguration configuration) : IJwtTokenGenerato
 {
     public string GenerateToken(User user)
     {
-        var secretKey = configuration["JwtSettings:SecretKey"] 
-            ?? throw new InvalidOperationException("JwtSettings:SecretKey is not configured.");
-        var issuer = configuration["JwtSettings:Issuer"];
-        var audience = configuration["JwtSettings:Audience"];
-        var expiryMinutes = int.TryParse(configuration["JwtSettings:ExpiryMinutes"], out var mins) ? mins : 30;
+        var secretKey = configuration[AuthConstants.ConfigKeys.SecretKey] 
+            ?? throw new InvalidOperationException(AuthConstants.Messages.SecretKeyMissing);
+        var issuer = configuration[AuthConstants.ConfigKeys.Issuer];
+        var audience = configuration[AuthConstants.ConfigKeys.Audience];
+        var expiryMinutes = int.TryParse(configuration[AuthConstants.ConfigKeys.ExpiryMinutes], out var mins) ? mins : AuthConstants.DefaultExpiryMinutes;
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -24,12 +25,12 @@ public class JwtTokenGenerator(IConfiguration configuration) : IJwtTokenGenerato
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(ClaimTypes.Role, user.Role.Name), // For ASP.NET Core [Authorize(Roles = "...")]
-            new Claim("role", user.Role.Name),           // Clean key for Angular frontend
-            new Claim("roleId", user.RoleId.ToString()),
-            new Claim("role_id", user.RoleId.ToString()),
-            new Claim("email", user.Email),
-            new Claim("fullname", user.FullName),
-            new Claim("isAdmin", user.IsAdmin.ToString().ToLower())
+            new Claim(ClaimConstants.Role, user.Role.Name),           // Clean key for Angular frontend
+            new Claim(ClaimConstants.RoleId, user.RoleId.ToString()),
+            new Claim(ClaimConstants.RoleIdSnake, user.RoleId.ToString()),
+            new Claim(ClaimConstants.Email, user.Email),
+            new Claim(ClaimConstants.FullName, user.FullName),
+            new Claim(ClaimConstants.IsAdmin, user.IsAdmin.ToString().ToLower())
         };
 
         var tokenDescriptor = new SecurityTokenDescriptor

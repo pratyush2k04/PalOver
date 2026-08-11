@@ -1,0 +1,89 @@
+.governance-section {
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.375rem;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+
+}
+
+.plus-icon {
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.cadence-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.cadence-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-bottom: 1px solid #f1f5f9;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.role-name {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #334155;
+}
+
+.cadence-details {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #475569;
+}
+
+.cadence-freq {
+  font-weight: 500;
+  color: #334155;
+}
+
+.dot-separator {
+  color: #94a3b8;
+}
+
+.participants-text {
+  color: #64748b;
+}
+

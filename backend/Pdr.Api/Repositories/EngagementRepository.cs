@@ -1,14 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
 using Pdr.Api.Models;
+using Pdr.Api.Models.Engagements;
 using Pdr.Api.Models.EngagementAssignment;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Repositories;
 
 public class EngagementRepository(AppDbContext context) : IEngagementRepository
 {
-    public async Task<List<Engagement>> GetEngagementsForPmAsync(int userId, string sortBy)
+    public async Task<List<Engagement>> GetEngagementsForUserAsync(int userId, string sortBy)
     {
         var query = context.Engagements
             .AsNoTracking()
@@ -24,12 +26,26 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
 
         return await query.ToListAsync();
     }
-        //for assigning 
+
+    public async Task<Engagement?> GetByIdAsync(int engagementId) =>
+        await context.Engagements.FirstOrDefaultAsync(e => e.EngagementId == engagementId);
+
+    public async Task SaveChangesAsync() =>
+        await context.SaveChangesAsync();
+
+        //for assigning
     public async Task<List<EngagementAssignment>> GetAssignmentsAsync(int engagementId) =>
         await context.EngagementAssignments
             .AsNoTracking()
             .Include(a => a.User).ThenInclude(u => u.Role)
             .Where(a => a.EngagementId == engagementId)
+            .ToListAsync();
+
+    public async Task<List<EngagementAssignment>> GetLeadershipAssignmentsAsync(int engagementId) =>
+        await context.EngagementAssignments
+            .AsNoTracking()
+            .Include(a => a.User).ThenInclude(u => u.Role)
+            .Where(a => a.EngagementId == engagementId && a.User.RoleId == (int)RoleEnum.Leadership)
             .ToListAsync();
 
     public async Task<EngagementAssignment?> GetAssignmentByRoleIdAsync(int engagementId, int roleId) =>

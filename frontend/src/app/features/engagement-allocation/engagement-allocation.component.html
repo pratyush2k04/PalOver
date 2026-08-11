@@ -1,0 +1,153 @@
+<div class="allocation-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="header-titles">
+      <h1>Engagement Allocation</h1>
+      <p class="subtitle">Assign and manage Leadership contacts for all active engagements across the organization.</p>
+    </div>
+  </header>
+
+  <!-- Summary Metric Cards -->
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-icon total">
+        <span [inlineSVG]="'assets/icons/users.svg'"></span>
+      </div>
+      <div class="metric-content">
+        <span class="metric-value">{{ totalCount() }}</span>
+        <span class="metric-label">Total Engagements</span>
+      </div>
+    </div>
+
+    <div class="metric-card warning" [class.active]="filterMode() === 'needing'" (click)="setFilterMode('needing')">
+      <div class="metric-icon warning">
+        <span [inlineSVG]="'assets/icons/alert-circle.svg'"></span>
+      </div>
+      <div class="metric-content">
+        <span class="metric-value">{{ needingCount() }}</span>
+        <span class="metric-label">Needing Leadership Contact</span>
+      </div>
+    </div>
+
+    <div class="metric-card success" [class.active]="filterMode() === 'all'" (click)="setFilterMode('all')">
+      <div class="metric-icon success">
+        <span [inlineSVG]="'assets/icons/check-circle.svg'"></span>
+      </div>
+      <div class="metric-content">
+        <span class="metric-value">{{ allocatedCount() }}</span>
+        <span class="metric-label">Allocated Engagements</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search & Filter Controls -->
+  <div class="controls-bar">
+    <div class="search-box">
+      <span class="search-icon" [inlineSVG]="'assets/icons/search.svg'"></span>
+      <input
+        type="text"
+        placeholder="Search by engagement or client name..."
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+      />
+    </div>
+
+    <div class="filter-tabs">
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="filterMode() === 'all'"
+        (click)="setFilterMode('all')"
+      >
+        All Engagements
+      </button>
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="filterMode() === 'needing'"
+        (click)="setFilterMode('needing')"
+      >
+        Needing Allocation ({{ needingCount() }})
+      </button>
+    </div>
+  </div>
+
+  <!-- Content Section -->
+  @if (loading()) {
+    <div class="loading-container">
+      <app-loading-spinner></app-loading-spinner>
+      <p>Loading engagements...</p>
+    </div>
+  } @else {
+    @if (filteredEngagements().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <h3>No engagements found</h3>
+        <p>No engagements match your current search or filter criteria.</p>
+      </div>
+    } @else {
+      <div class="table-card">
+        <table class="engagements-table">
+          <thead>
+            <tr>
+              <th>Engagement & Client</th>
+              <th>Type / Model</th>
+              <th>Status</th>
+              <th>Assigned Leadership Contacts</th>
+              <th class="actions-col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (eng of filteredEngagements(); track eng.engagementId) {
+              <tr>
+                <td class="engagement-name-cell">
+                  <div class="eng-title">{{ eng.engagementName }}</div>
+                  <div class="client-name">{{ eng.clientName }}</div>
+                </td>
+                <td>
+                  <app-status-badge tone="neutral">{{ eng.engagementType }}</app-status-badge>
+                  <div class="model-sub">{{ eng.commercialModel }}</div>
+                </td>
+                <td>
+                  <app-status-badge [tone]="eng.isKickoffReady ? 'success' : 'warning'">
+                    {{ eng.status }}
+                  </app-status-badge>
+                </td>
+                <td>
+                  @if (eng.isLoadingLeadership) {
+                    <span class="loading-text">Loading contacts...</span>
+                  } @else {
+                    @if (eng.leadershipUsers && eng.leadershipUsers.length > 0) {
+                      <div class="contacts-chips">
+                        @for (user of eng.leadershipUsers; track user.id) {
+                          <span class="leadership-chip">
+                            <span [inlineSVG]="'assets/icons/user.svg'"></span>
+                            {{ user.fullName }}
+                          </span>
+                        }
+                      </div>
+                    } @else {
+                      <app-status-badge tone="warning">
+                        ⚠️ Missing Leadership Contact
+                      </app-status-badge>
+                    }
+                  }
+                </td>
+                <td class="actions-col">
+                  <app-button
+                    type="button"
+                    variant="flat"
+                    (click)="openAssignModal(eng)"
+                  >
+                    <span class="assign-icon" [inlineSVG]="'assets/icons/user-plus.svg'"></span>
+                    Assign Leadership
+                  </app-button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>

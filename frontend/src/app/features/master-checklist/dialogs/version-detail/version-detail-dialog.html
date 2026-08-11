@@ -1,0 +1,46 @@
+<h2 class="app-dialog__title">
+  Version Details
+  @if (version(); as v) {
+    <span class="version-detail-dialog__badge">{{ v.statusName }} &middot; v{{ v.versionNumber }}</span>
+  }
+</h2>
+
+<div class="app-dialog__content version-detail-dialog__content">
+  @if (loading()) {
+    <app-loading-spinner label="Loading version details..." />
+  } @else if (error()) {
+    <div class="version-detail-dialog__state version-detail-dialog__state--error">{{ error() }}</div>
+  } @else {
+    @for (group of categoryGroups(); track group.categoryName) {
+      <div class="version-detail-dialog__group">
+        <h3 class="version-detail-dialog__group-title">{{ group.categoryName }}</h3>
+        <ul class="version-detail-dialog__item-list">
+          @for (item of group.items; track item.id) {
+            <li class="version-detail-dialog__item">
+              <span class="version-detail-dialog__item-title">
+                {{ item.title }}
+                @if (item.isMandatory) {
+                  <app-status-badge tone="info">Mandatory</app-status-badge>
+                }
+                @if (item.isRetired) {
+                  <app-status-badge tone="danger">Retired</app-status-badge>
+                }
+              </span>
+              @if (item.description) {
+                <span class="version-detail-dialog__item-description">{{ item.description }}</span>
+              }
+            </li>
+          }
+        </ul>
+      </div>
+    }
+
+    @if (categoryGroups().length === 0) {
+      <div class="version-detail-dialog__empty">This version has no items.</div>
+    }
+  }
+</div>
+
+<div class="app-dialog__actions">
+  <app-button type="button" variant="flat" (click)="onClose()">Close</app-button>
+</div>

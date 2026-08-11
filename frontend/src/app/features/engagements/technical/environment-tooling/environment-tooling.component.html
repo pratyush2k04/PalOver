@@ -6,10 +6,10 @@
     </div>
     <div class="action-group">
       @if (isTechLead()) {
-        <button class="app-button app-button--flat" (click)="openAddModal()">
-          <span inlineSVG="assets/svgs/plus.svg"></span>
+        <app-button variant="flat" (click)="openAddModal()">
+          <span [inlineSVG]="'assets/icons/plus.svg'"></span>
           Add item
-        </button>
+        </app-button>
       }
     </div>
   </div>
@@ -43,9 +43,9 @@
                 {{ item.ownerFullName || 'Unassigned' }}
               </td>
               <td class="status-cell">
-                <span class="badge" [ngClass]="getStatusBadgeClass(item.status)">
+                <app-status-badge [tone]="getStatusTone(item.status)">
                   {{ getStatusLabel(item.status) }}
-                </span>
+                </app-status-badge>
                 @if (item.notApplicableReason) {
                   <span class="na-reason-text">({{ item.notApplicableReason }})</span>
                 }
@@ -78,59 +78,3 @@
     </div>
   }
 </div>
-
-<!-- Add Custom Item Modal -->
-@if (isAddModalOpen()) {
-  <div class="modal-backdrop">
-    <div class="modal-card">
-      <h4>Add New Tooling Item</h4>
-      <div class="form-group">
-        <label for="env-item-name">Item Name</label>
-        <input
-          id="env-item-name"
-          type="text"
-          [class.input-error]="!!nameError()"
-          [ngModel]="newItemName()"
-          (ngModelChange)="newItemName.set($event); nameError.set('')"
-          placeholder="e.g., Staging Server provisioned" />
-        @if (nameError()) {
-          <span class="error-text">{{ nameError() }}</span>
-        }
-      </div>
-      <div class="modal-actions">
-        <button class="app-button app-button--stroked" (click)="closeAddModal()">Cancel</button>
-        <button class="app-button app-button--flat" (click)="submitAddItem()">Save</button>
-      </div>
-    </div>
-  </div>
-}
-
-<!-- Not Applicable Reason Modal -->
-@if (isNaModalOpen()) {
-  <div class="modal-backdrop">
-    <div class="modal-card">
-      <h4>Reason for Not Applicable</h4>
-      <p style="margin-bottom: 1rem; color: #666; font-size: 0.9rem;">
-        Please specify why <strong>{{ itemForNa()?.name }}</strong> is Not Applicable.
-      </p>
-      <div class="form-group">
-        <label for="na-reason">Reason</label>
-        <textarea
-          id="na-reason"
-          rows="3"
-          [class.input-error]="!!naReasonError()"
-          [ngModel]="naReasonText()"
-          (ngModelChange)="naReasonText.set($event); naReasonError.set('')"
-          placeholder="e.g., Client manages pipeline independently">
-        </textarea>
-        @if (naReasonError()) {
-          <span class="error-text">{{ naReasonError() }}</span>
-        }
-      </div>
-      <div class="modal-actions">
-        <button class="app-button app-button--stroked" (click)="closeNaModal()">Cancel</button>
-        <button class="app-button app-button--flat" (click)="submitNaReason()">Confirm N/A</button>
-      </div>
-    </div>
-  </div>
-}

@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Hosting;
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Documents;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
 using Pdr.Api.Models.Documents;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.Handover;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
@@ -17,10 +19,9 @@ namespace Pdr.Api.Services;
 public class DocumentService(
     IDocumentRepository repository,
     IWebHostEnvironment environment,
-    ICurrentUserService currentUserService) : IDocumentService
+    ICurrentUserService currentUserService,
+    IUserRepository userRepository) : IDocumentService
 {
-    private const string UploadsFolder = "Uploads/Documents";
-
     // ── Helper methods ──────────────────────────────────────────────────────
 
     /// <summary>Only PM and Admin can change a document's visibility.</summary>
@@ -66,7 +67,7 @@ public class DocumentService(
 
     public async Task<DocumentResponseDto> UploadDocumentAsync(DocumentUploadDto dto)
     {
-        var engagementFolder = Path.Combine(environment.ContentRootPath, UploadsFolder, dto.EngagementId.ToString());
+        var engagementFolder = Path.Combine(environment.ContentRootPath, DocumentValidationConstants.UploadsFolder, dto.EngagementId.ToString());
         if (!Directory.Exists(engagementFolder))
         {
             Directory.CreateDirectory(engagementFolder);
@@ -88,7 +89,7 @@ public class DocumentService(
             FilePath = filePath,
             FileSizeBytes = dto.File.Length,
             ContentType = string.IsNullOrWhiteSpace(dto.File.ContentType)
-                ? "application/octet-stream"
+                ? DocumentValidationConstants.DefaultContentType
                 : dto.File.ContentType,
             Visibility = dto.Visibility
         };
@@ -96,7 +97,8 @@ public class DocumentService(
         var saved = await repository.AddAsync(document);
         var reloaded = await repository.GetByIdAsync(saved.Id) ?? saved;
 
-        return MapToResponseDto(reloaded);
+        var uploaderNames = await GetUploaderNamesAsync([reloaded.CreatedBy]);
+        return MapToResponseDto(reloaded, uploaderNames);
     }
 
     public async Task<IEnumerable<DocumentResponseDto>> GetDocumentsByEngagementAsync(int engagementId)
@@ -104,8 +106,10 @@ public class DocumentService(
         var userRoleId = currentUserService.GetRoleId();
         var isAdmin = currentUserService.IsAdmin();
         var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
-        var docs = await repository.GetByEngagementIdAsync(engagementId, userRoleId, isAdmin, isPm);
-        return docs.Select(MapToResponseDto);
+        var docs = (await repository.GetByEngagementIdAsync(engagementId, userRoleId, isAdmin, isPm)).ToList();
+
+        var uploaderNames = await GetUploaderNamesAsync(docs.Select(d => d.CreatedBy));
+        return docs.Select(d => MapToResponseDto(d, uploaderNames));
     }
 
     public async Task<(Stream FileStream, string ContentType, string FileName)?> DownloadDocumentAsync(int id)
@@ -118,7 +122,7 @@ public class DocumentService(
 
         if (!CanAccessDocument(doc))
         {
-            throw new DocumentAccessDeniedException("You do not have permission to download this document.");
+            throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.DownloadDenied);
         }
 
         var stream = new FileStream(doc.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -154,7 +158,7 @@ public class DocumentService(
 
         if (!isUploader && !isPm && !isAdmin)
         {
-            throw new DocumentAccessDeniedException("You do not have permission to remove this document. Only the uploader or a Project Manager can remove it.");
+            throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.RemoveDenied);
         }
 
         // Signed SOW Guard
@@ -162,7 +166,7 @@ public class DocumentService(
             || string.Equals(doc.Category?.CategoryName, DocumentCategoryNames.SignedSow, StringComparison.OrdinalIgnoreCase);
         if (isSignedSow && doc.Engagement?.HandoverInfo != null && doc.Engagement.HandoverInfo.StatusId == (int)HandoverStatusEnum.Submitted)
         {
-            throw new HandoverSubmittedException("The signed SOW cannot be removed because a submitted handover is relying on it.");
+            throw new HandoverSubmittedException(DocumentValidationConstants.Messages.SignedSowRemoveDenied);
         }
 
         var updatedBy = userEmail ?? userIdStr;
@@ -173,7 +177,7 @@ public class DocumentService(
     {
         if (!CanManageDocumentVisibility())
         {
-            throw new DocumentAccessDeniedException("You do not have permission to change document visibility. Only Project Managers and Admins can do this.");
+            throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.VisibilityChangeDenied);
         }
 
         var doc = await repository.GetByIdAsync(id);
@@ -198,12 +202,44 @@ public class DocumentService(
 
         var updated = await repository.UpdateVisibilityAsync(doc, targetVisibility, allowedRoles, updatedBy);
 
-        return MapToResponseDto(updated);
+        var uploaderNames = await GetUploaderNamesAsync([updated.CreatedBy]);
+        return MapToResponseDto(updated, uploaderNames);
     }
 
     // ── Mapping ─────────────────────────────────────────────────────────────
 
-    private static DocumentResponseDto MapToResponseDto(Document doc)
+    /// <summary>
+    /// Batch-resolves uploader IDs (stored as strings in the generic CreatedBy audit column)
+    /// to full names in a single query, avoiding one user lookup per document.
+    /// </summary>
+    private async Task<Dictionary<int, string>> GetUploaderNamesAsync(IEnumerable<string?> createdByValues)
+    {
+        var userIds = createdByValues
+            .Where(cb => int.TryParse(cb, out _))
+            .Select(cb => int.Parse(cb!))
+            .Distinct()
+            .ToList();
+
+        if (userIds.Count == 0)
+        {
+            return new Dictionary<int, string>();
+        }
+
+        var users = await userRepository.GetByIdsAsync(userIds);
+        return users.ToDictionary(u => u.Id, u => u.FullName);
+    }
+
+    private static string ResolveUploaderDisplayName(string? createdBy, IReadOnlyDictionary<int, string> uploaderNames)
+    {
+        if (createdBy != null && int.TryParse(createdBy, out var id) && uploaderNames.TryGetValue(id, out var fullName))
+        {
+            return fullName;
+        }
+
+        return createdBy ?? string.Empty;
+    }
+
+    private static DocumentResponseDto MapToResponseDto(Document doc, IReadOnlyDictionary<int, string> uploaderNames)
     {
         var categoryDefault = GetCategoryDefaultVisibility(doc.Category?.CategoryName);
         return new DocumentResponseDto
@@ -215,7 +251,7 @@ public class DocumentService(
             FileName = doc.FileName,
             FileSizeBytes = doc.FileSizeBytes,
             ContentType = doc.ContentType,
-            UploadedBy = doc.CreatedBy ?? string.Empty,
+            UploadedBy = ResolveUploaderDisplayName(doc.CreatedBy, uploaderNames),
             UploadedAt = doc.CreatedAt,
             Visibility = doc.Visibility,
             AllowedRoles = doc.AllowedRoles ?? new List<int>(),

@@ -87,6 +87,21 @@ Controllers should only coordinate requests and responses.
 * Keep components small and cohesive.
 * Prefer smart/container components only when necessary.
 
+## The `common/` UI Kit (`frontend/src/app/common/`)
+
+`common/` holds business-logic-independent, presentation-only building blocks — treat it as an internal UI-kit that could be extracted into its own library. It is separate from `shared/`, which holds app-specific-but-cross-feature chrome (e.g. header, sidebar, workspace-card) that carries real domain coupling (auth, routing, business copy).
+
+**Before writing any new UI in a feature, list the current contents of `common/components/`, `common/services/`, `common/directives/`, and `common/pipes/` and check whether something already covers the need.** Do not rely on memory or on any list of names in this file — `common/` grows over time, so treat any such list (including the examples below) as illustrative and out of date by construction, never as the full inventory. Always verify against the actual folder contents before deciding something doesn't exist yet.
+
+As of when this was written, `common/components/` included things like buttons, badges, alerts, avatars, spinners, empty-states, pagination, tabs, toasts, a confirm-dialog, and a set of form controls (input/textarea/select/checkbox) sharing a CVA base class; `common/services/` included a dialog-opening service and a toast service. Confirm what's actually there — this list is a hint about the *kind* of thing that belongs in `common/`, not a catalog to check against.
+
+**Rules:**
+
+* Do not hand-roll a native `<button>`, spinner, status pill/badge, alert box, empty-state message, or modal shell inside a feature component when an equivalent already exists in `common/` — use the shared component instead (e.g. `<app-button variant="...">`, `<app-status-badge tone="...">`, `<app-loading-spinner>`, `<app-alert variant="...">`, `<app-empty-state message="...">`, `DialogService.open(...)`).
+* If a genuinely new, reusable, business-logic-free UI element is needed (and no `common/` component fits), create it under `common/components/<name>/` with selector `app-<name>`, following the existing components' shape (signal `input()`s, a small typed variant/tone union where applicable, `standalone: true`). Do not add business/domain logic to anything in `common/`.
+* Only build a one-off custom implementation in a feature folder when the requirement is genuinely feature-specific (e.g. a field needs a text input alongside Cancel/Confirm, which `app-confirm-dialog` doesn't support) — and even then, prefer composing `common/` primitives (e.g. `app-button`, `app-alert`) inside the custom markup rather than re-styling raw HTML.
+* Import everything from `common/` (and `shared/`) via the TypeScript path aliases — `@common/components/...`, `@common/services/...`, `@shared/...` — never via relative `../../../` paths.
+
 ## Templates
 
 Use modern Angular control flow:
@@ -435,6 +450,7 @@ Verify that:
 
 * Code compiles.
 * No duplicate logic exists.
+* (Frontend) No new UI duplicates an existing `common/` component (button, badge, alert, spinner, empty-state, dialog, etc.) — reused where possible, imported via `@common/*`/`@shared/*` aliases, not relative paths.
 * Naming conventions are followed.
 * DTOs are used where appropriate.
 * Validation is implemented.

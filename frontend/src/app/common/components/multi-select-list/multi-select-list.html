@@ -1,0 +1,16 @@
+@if (options().length === 0 && emptyMessage()) {
+  <p class="multi-select-empty">{{ emptyMessage() }}</p>
+} @else {
+  <div class="multi-select-list" [class.multi-select-list--cards]="variant() === 'cards'">
+    @for (option of options(); track option.value) {
+      <label class="multi-select-item" [class.is-selected]="isSelected(option.value)">
+        <input
+          type="checkbox"
+          [checked]="isSelected(option.value)"
+          (change)="toggle(option.value, $any($event.target).checked)"
+        />
+        <span class="multi-select-item__label">{{ option.label }}</span>
+      </label>
+    }
+  </div>
+}

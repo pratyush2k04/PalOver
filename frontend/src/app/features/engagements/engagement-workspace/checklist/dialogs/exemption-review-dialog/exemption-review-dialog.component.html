@@ -1,0 +1,42 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2>Review Exemption Request</h2>
+    <app-button type="button" variant="icon" ariaLabel="Close dialog" (click)="onCancel()">&times;</app-button>
+  </div>
+
+  <div class="dialog-body">
+    <div class="item-title-preview">
+      <strong>Item:</strong> {{ data.itemTitle }}
+    </div>
+
+    <div class="reason-card">
+      <div class="reason-label">Project Manager's Justification:</div>
+      <p class="reason-text">{{ data.reason }}</p>
+    </div>
+
+    @if (!isRejectMode()) {
+      <div class="dialog-actions">
+        <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+        <app-button type="button" variant="danger" (click)="onShowRejectMode()">Reject Exemption</app-button>
+        <app-button type="button" variant="success" (click)="onApprove()">Approve Exemption</app-button>
+      </div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="onConfirmReject()">
+        <div class="form-group">
+          <app-textarea
+            id="rejection-reason"
+            label="Rejection Feedback (Optional)"
+            formControlName="rejectionReason"
+            [rows]="3"
+            placeholder="Optionally provide feedback explaining why the exemption request was rejected..."
+          />
+        </div>
+
+        <div class="dialog-actions">
+          <app-button type="button" variant="stroked" (click)="isRejectMode.set(false)">Back</app-button>
+          <app-button type="submit" variant="danger">Confirm Rejection</app-button>
+        </div>
+      </form>
+    }
+  </div>
+</div>

@@ -1,12 +1,16 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UserDirectoryService } from '../../services/user-directory';
-import { ToastService } from '../../services/toast';
-import { UserListItem } from '../../models/user.model';
-import { Role } from '../../models/role.model';
-import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
-import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner';
+import { UserService } from './services/user.service';
+import { ToastService } from '@common/services/toast/toast';
+import { UserListItem } from './models/user.model';
+import { Role } from './models/role.model';
+import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
+import { USER_MESSAGES } from '../../constants/app.constants';
+import { AlertComponent } from '@common/components/alert/alert';
+import { AvatarComponent } from '@common/components/avatar/avatar';
+import { PaginatorComponent } from '@common/components/paginator/paginator';
 
 interface PendingRoleChange {
   user: UserListItem;
@@ -17,12 +21,12 @@ interface PendingRoleChange {
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, FormsModule, ConfirmDialogComponent, LoadingSpinnerComponent],
+  imports: [CommonModule, FormsModule, ConfirmDialogComponent, LoadingSpinnerComponent, AlertComponent, AvatarComponent, PaginatorComponent],
   templateUrl: './users.html',
   styleUrl: './users.scss'
 })
 export class UsersComponent implements OnInit {
-  private userDirectoryService = inject(UserDirectoryService);
+  private userService = inject(UserService);
   private toastService = inject(ToastService);
 
   users = signal<UserListItem[]>([]);
@@ -59,14 +63,14 @@ export class UsersComponent implements OnInit {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    this.userDirectoryService.getUsers(this.searchTerm, this.page(), this.pageSize).subscribe({
+    this.userService.getUsers(this.searchTerm, this.page(), this.pageSize).subscribe({
       next: (result) => {
         this.users.set(result.items);
         this.totalCount.set(result.totalCount);
         this.isLoading.set(false);
       },
       error: () => {
-        this.errorMessage.set('Unable to load users. Please try again.');
+        this.errorMessage.set(USER_MESSAGES.LOAD_USERS_ERROR);
         this.isLoading.set(false);
       }
     });
@@ -84,30 +88,13 @@ export class UsersComponent implements OnInit {
     this.loadUsers();
   }
 
-  previousPage(): void {
-    this.goToPage(this.page() - 1);
-  }
-
-  nextPage(): void {
-    this.goToPage(this.page() + 1);
-  }
-
   loadRoles(): void {
-    this.userDirectoryService.getRoles().subscribe({
+    this.userService.getRoles().subscribe({
       next: (roles) => this.roles.set(roles),
       error: () => {
-        this.errorMessage.set('Unable to load roles. Please try again.');
+        this.errorMessage.set(USER_MESSAGES.LOAD_ROLES_ERROR);
       }
     });
-  }
-
-  initials(fullName: string): string {
-    return fullName
-      .split(' ')
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase())
-      .join('');
   }
 
   onRoleSelected(user: UserListItem, newRoleIdRaw: string): void {
@@ -132,17 +119,17 @@ export class UsersComponent implements OnInit {
 
     this.isSavingRoleChange.set(true);
 
-    this.userDirectoryService.changeUserRole(pending.user.id, pending.newRoleId).subscribe({
+    this.userService.changeUserRole(pending.user.id, pending.newRoleId).subscribe({
       next: (updatedUser) => {
         this.users.update((list) =>
           list.map((u) => (u.id === updatedUser.id ? updatedUser : u))
         );
         this.isSavingRoleChange.set(false);
         this.pendingChange.set(null);
-        this.toastService.success('Role updated');
+        this.toastService.success(USER_MESSAGES.ROLE_UPDATED_SUCCESS);
       },
       error: () => {
-        this.errorMessage.set('Unable to update the role. Please try again.');
+        this.errorMessage.set(USER_MESSAGES.UPDATE_ROLE_ERROR);
         this.isSavingRoleChange.set(false);
         this.pendingChange.set(null);
       }

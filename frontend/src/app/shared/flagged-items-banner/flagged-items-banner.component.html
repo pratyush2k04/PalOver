@@ -1,0 +1,11 @@
+<ng-container *ngIf="flaggedItems().length > 0; else allClear">
+  <div class="flagged-items-banner">
+    <p *ngFor="let item of flaggedItems()">&#9888; {{ item.count }} {{ item.label }}</p>
+  </div>
+</ng-container>
+
+<ng-template #allClear>
+  <div class="flagged-items-banner flagged-items-banner-clear">
+    <p>{{ allClearMessage() }}</p>
+  </div>
+</ng-template>

@@ -23,5 +23,5 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 *.swp
-#agents 
-.agents/
+
+Uploads/Documents/*

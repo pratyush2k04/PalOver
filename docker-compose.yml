@@ -13,4 +13,4 @@ services:
       # Docker Desktop (Windows/Mac) already resolves this; needed explicitly on Linux.
       - "host.docker.internal:host-gateway"
     ports:
-      - "8080:8080"
+      - "80:80"

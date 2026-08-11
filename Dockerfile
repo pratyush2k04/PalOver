@@ -26,6 +26,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 COPY --from=build-api /app/publish ./
 # Kestrel listens on 8080 inside the container
-ENV ASPNETCORE_HTTP_PORTS=8080
-EXPOSE 8080
+ENV ASPNETCORE_HTTP_PORTS=80
+EXPOSE 80
 ENTRYPOINT ["dotnet", "Pdr.Api.dll"]

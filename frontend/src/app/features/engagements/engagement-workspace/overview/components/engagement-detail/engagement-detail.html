@@ -1,0 +1,90 @@
+<div class="engagement-detail-page">
+  @if (engagement(); as info) {
+    <div class="page-header">
+      <h2>{{ info.engagementName }}</h2>
+    </div>
+
+    <div class="team-card">
+      <div class="team-card-header">
+        <h3>Team</h3>
+        @if (canAssignOwners) {
+          <app-button type="button" variant="stroked" (click)="openAssignModal()">
+            {{ assignButtonLabel }}
+          </app-button>
+        }
+      </div>
+
+      <div class="team-row">
+        <span class="team-role">Project Manager</span>
+        @if (owners()?.projectManagerName; as name) {
+          <span class="team-owner">{{ name }}</span>
+        } @else {
+          <span class="team-owner unassigned">Unassigned</span>
+        }
+      </div>
+
+      <div class="team-row">
+        <span class="team-role">Tech / Delivery Lead</span>
+        @if (owners()?.techLeadName; as name) {
+          <span class="team-owner">{{ name }}</span>
+        } @else {
+          <span class="team-owner unassigned">Unassigned</span>
+        }
+      </div>
+    </div>
+  }
+
+  @if (showAssignModal()) {
+    <div class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Assign Project Manager and Tech Lead</h3>
+          <app-button type="button" variant="icon" ariaLabel="Close" (click)="closeAssignModal()">&times;</app-button>
+        </div>
+
+        <p class="modal-subtitle">Routine start-of-engagement assignment — Leadership only.</p>
+
+        <form [formGroup]="assignForm" (ngSubmit)="onSubmitAssignment()" novalidate>
+          @if (errorMessage()) {
+            <app-alert>{{ errorMessage() }}</app-alert>
+          }
+
+          <app-select
+            id="projectManagerId"
+            label="Project Manager"
+            formControlName="projectManagerId"
+            [options]="projectManagerOptions()"
+            [errorMessages]="{ required: 'Project Manager is required.' }"
+          />
+
+          <app-select
+            id="techLeadId"
+            label="Tech / Delivery Lead"
+            formControlName="techLeadId"
+            [options]="techLeadOptions()"
+            [errorMessages]="{ required: 'Tech / Delivery Lead is required.' }"
+          />
+
+          <div class="modal-actions">
+            <app-button type="button" variant="stroked" (click)="closeAssignModal()">Cancel</app-button>
+            <app-button type="submit" variant="accent" [loading]="isSubmitting()">
+              {{ isSubmitting() ? 'Saving...' : 'Save assignment' }}
+            </app-button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  @if (currentConfirmation(); as change) {
+    <app-confirm-dialog
+      title="Reassign mid-engagement?"
+      confirmLabel="Reassign"
+      [isBusy]="isSavingConfirmation()"
+      (confirmed)="confirmPendingChange()"
+      (cancelled)="cancelPendingChange()"
+    >
+      {{ change.userName }} will take over open items.
+    </app-confirm-dialog>
+  }
+</div>

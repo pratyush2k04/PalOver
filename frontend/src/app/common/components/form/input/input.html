@@ -1,0 +1,24 @@
+<div class="app-field" [class.app-field--invalid]="showError">
+  @if (label()) {
+    <label [for]="id()">{{ label() }}</label>
+  }
+  <input
+    [id]="id()"
+    [type]="type()"
+    [placeholder]="placeholder()"
+    [attr.maxlength]="maxLength()"
+    [value]="value"
+    [disabled]="disabled"
+    [class.is-invalid]="showError"
+    (input)="onInput($any($event.target).value)"
+    (blur)="markTouched()"
+  />
+  @if (showCounter()) {
+    <div class="char-counter" [class.char-counter--danger]="counterDanger()">
+      {{ value.length }}/{{ maxLength() }}
+    </div>
+  }
+  @if (showError) {
+    <span class="app-field__error">{{ errorMessage }}</span>
+  }
+</div>

@@ -1,0 +1,51 @@
+@use '../../../../styles/tokens' as *;
+
+.workspace-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  font-family: $font-family-base;
+}
+
+.workspace-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background-color: $color-surface;
+  border-bottom: 1px solid $color-border-soft;
+}
+
+.header-info h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  color: $color-text;
+}
+
+.header-info p,
+.header-metrics p {
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
+  color: $color-text-muted;
+}
+
+.placeholder {
+  color: $color-text-fainter;
+  font-style: italic;
+}
+
+.kickoff-ready-badge {
+  margin-left: 0.5rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  background-color: #dcfce7;
+  color: #15803d;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.workspace-content {
+  flex-grow: 1;
+  padding: 1.5rem;
+  background-color: $color-bg;
+  overflow-y: auto;
+}

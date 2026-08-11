@@ -1,0 +1,68 @@
+<aside class="sidebar">
+  <div class="logo">
+    <span class="logo-badge" title="Project Delivery Readiness">
+      <span [inlineSVG]="'assets/icons/check.svg'"></span>
+    </span>
+  </div>
+
+  <nav class="nav-items">
+    @for (item of navItems(); track item.label) {
+      @if (item.route) {
+        <a class="nav-item"
+           [routerLink]="item.route"
+           routerLinkActive="active">
+          <div class="icon-wrapper">
+            @switch (item.icon) {
+              @case ('home') {
+                <span [inlineSVG]="'assets/icons/home.svg'"></span>
+              }
+              @case ('users') {
+                <span [inlineSVG]="'assets/icons/users.svg'"></span>
+              }
+              @case ('user-check') {
+                <span [inlineSVG]="'assets/icons/user-check.svg'"></span>
+              }
+              @case ('layers') {
+                <span [inlineSVG]="'assets/icons/layers.svg'"></span>
+              }
+              @case ('briefcase') {
+                <span [inlineSVG]="'assets/icons/briefcase.svg'"></span>
+              }
+              @case ('clipboard') {
+                <span [inlineSVG]="'assets/icons/clipboard.svg'"></span>
+              }
+              @case ('checklist') {
+                <span [inlineSVG]="'assets/icons/checklist.svg'"></span>
+              }
+            }
+          </div>
+          <span class="label">{{ item.label }}</span>
+        </a>
+      } @else {
+        <div class="nav-item">
+          <div class="icon-wrapper">
+            @switch (item.icon) {
+              @case ('bell') {
+                <span [inlineSVG]="'assets/icons/bell.svg'"></span>
+              }
+              @case ('user') {
+                <span [inlineSVG]="'assets/icons/user.svg'"></span>
+              }
+            }
+            @if (item.badge === 'dot') {
+              <span class="badge-dot"></span>
+            }
+          </div>
+          <span class="label">{{ item.label }}</span>
+        </div>
+      }
+    }
+  </nav>
+
+  <div class="sign-out" (click)="onSignOut()" title="Sign Out">
+    <div class="icon-wrapper">
+      <span [inlineSVG]="'assets/icons/log-out.svg'"></span>
+    </div>
+    <span class="label">Sign Out</span>
+  </div>
+</aside>

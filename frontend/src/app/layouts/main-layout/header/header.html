@@ -1,0 +1,32 @@
+<header class="header">
+  <div class="search-box">
+    <span class="search-icon">
+      <span [inlineSVG]="'assets/icons/search.svg'"></span>
+    </span>
+    <input type="text" placeholder="Search engagements, documents, people, checklist items..." />
+  </div>
+
+  @if (user(); as currentUser) {
+    <div class="header-actions">
+      @if (workspace()?.welcomeMessage; as welcomeMsg) {
+        <div class="welcome-message">{{ welcomeMsg }}</div>
+      }
+
+      <button class="notification-button" type="button" title="Notifications">
+        <span [inlineSVG]="'assets/icons/bell.svg'"></span>
+        <span class="notification-badge">3</span>
+      </button>
+
+      <div class="user-info">
+        <app-avatar [name]="currentUser.fullName" />
+        <div class="user-text">
+          <span class="user-name">{{ currentUser.fullName }}</span>
+          <span class="user-role">{{ currentUser.role }}</span>
+        </div>
+        <span class="chevron">
+          <span [inlineSVG]="'assets/icons/chevron-down.svg'"></span>
+        </span>
+      </div>
+    </div>
+  }
+</header>

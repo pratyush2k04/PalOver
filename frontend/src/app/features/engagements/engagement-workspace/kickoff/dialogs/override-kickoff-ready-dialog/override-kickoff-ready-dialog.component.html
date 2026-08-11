@@ -1,0 +1,45 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2>Override to be Kickoff Ready</h2>
+    <app-button type="button" variant="icon" ariaLabel="Close dialog" (click)="onCancel()">&times;</app-button>
+  </div>
+
+  <div class="dialog-body">
+    <p class="item-title-preview">
+      <strong>Engagement:</strong> {{ data.engagementName }}
+    </p>
+
+    <div class="alert alert-warning">
+      <span class="alert-icon">⚠️</span>
+      <div class="alert-content">
+        <strong>Current readiness score: {{ data.score }}%</strong>
+        <p>Mandatory items may still be incomplete. As Leadership, you can override the gate and mark this engagement kickoff-ready anyway.</p>
+      </div>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <app-textarea
+          id="override-reason"
+          label="Reason for override"
+          formControlName="reason"
+          [rows]="4"
+          [maxLength]="500"
+          placeholder="Enter a brief justification for overriding the kickoff-readiness gate..."
+          [errorMessages]="{
+            required: 'A reason is required.',
+            minlength: 'Reason must be at least 5 characters long.',
+            maxlength: 'Reason cannot exceed 500 characters.'
+          }"
+        />
+      </div>
+
+      <div class="dialog-actions">
+        <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+        <app-button type="submit" variant="flat" [disabled]="form.invalid">
+          Confirm Override
+        </app-button>
+      </div>
+    </form>
+  </div>
+</div>

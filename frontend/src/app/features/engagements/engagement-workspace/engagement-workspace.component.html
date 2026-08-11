@@ -1,0 +1,26 @@
+<div class="workspace-container">
+  <div class="workspace-header" *ngIf="!isLoading() && engagement()">
+    <div class="header-info">
+      <h1>{{ engagement()!.engagementName }}</h1>
+      <p><strong>Type:</strong> {{ engagement()!.engagementType }}</p>
+    </div>
+    <div class="header-metrics">
+      <p><strong>Kickoff Date:</strong> {{ engagement()!.kickoffDate }}</p>
+      <p><strong>Billing Date:</strong> {{ engagement()!.billingStartDate || '—' }}</p>
+      <p>
+        <strong>Readiness Score:</strong> {{ readiness()?.score ?? '—' }}
+        <span class="kickoff-ready-badge" *ngIf="engagement()!.isKickoffReady">Kickoff-ready</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="workspace-header" *ngIf="isLoading()">
+    <p>Loading engagement details...</p>
+  </div>
+
+  <app-tabs [tabs]="tabs()" [activeId]="activeTabId()" />
+
+  <div class="workspace-content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

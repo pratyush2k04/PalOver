@@ -1,0 +1,134 @@
+<div class="documents-container">
+  <div class="documents-header">
+    <h3 class="title">Documents</h3>
+    <app-button type="button" variant="accent" (click)="openUploadModal()">
+      <span class="upload-icon" [inlineSVG]="'assets/icons/upload.svg'"></span>
+      Upload
+    </app-button>
+  </div>
+
+  @if (errorMessage()) {
+    <app-alert>{{ errorMessage() }}</app-alert>
+  }
+
+  <div class="documents-filters">
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Search by file name"
+      [(ngModel)]="searchTerm"
+    />
+    <select class="category-select" [(ngModel)]="selectedCategoryId">
+      <option [ngValue]="'all'">All categories</option>
+      @for (cat of categories(); track cat.id) {
+        <option [ngValue]="cat.id">{{ cat.categoryName }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="table-card">
+    @if (isLoading()) {
+      <app-loading-spinner label="Loading documents..." />
+    } @else if (documents().length === 0) {
+      <app-empty-state message="No documents uploaded yet." />
+    } @else if (filteredDocuments().length === 0) {
+      <app-empty-state [message]="DOCUMENT_MESSAGES.NO_SEARCH_RESULTS" />
+    } @else {
+      <div class="table-responsive">
+        <table class="documents-table">
+          <thead>
+            <tr>
+              <th class="col-name">NAME</th>
+              <th class="col-category">CATEGORY</th>
+              <th class="col-uploader">UPLOADER</th>
+              <th class="col-date">DATE</th>
+              <th class="col-visibility">VISIBILITY</th>
+              <th class="col-actions">ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (doc of filteredDocuments(); track doc.id) {
+              <tr class="document-row">
+                <td class="col-name">
+                  <button type="button" class="btn-file-link" (click)="onDownload(doc)" [disabled]="downloadingId() === doc.id">
+                    <span class="file-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
+                    <span class="file-name">{{ doc.fileName }}</span>
+                    @if (downloadingId() === doc.id) {
+                      <app-loading-spinner size="sm" [inline]="true" label="" />
+                    }
+                  </button>
+                </td>
+                <td class="col-category">
+                  <span class="category-label">{{ doc.categoryName || 'Other' }}</span>
+                </td>
+                <td class="col-uploader">
+                  <span class="uploader-name">{{ doc.uploadedBy || 'N/A' }}</span>
+                </td>
+                <td class="col-date">
+                  <span class="upload-date">{{ formatDate(doc.uploadedAt) }}</span>
+                </td>
+                <td class="col-visibility">
+                  @if (canManageVisibility()) {
+                    <!-- PM / Admin: inline editable dropdown & custom edit trigger -->
+                    <div class="visibility-cell-wrapper">
+                      <select
+                        class="visibility-select"
+                        [class.is-pm-only]="doc.visibility === 'PM-only'"
+                        [class.is-custom]="doc.visibility === 'Custom'"
+                        [value]="doc.visibility === 'Custom' ? 'Custom' : doc.visibility"
+                        (change)="onVisibilityChange(doc, $any($event.target).value)"
+                        [attr.aria-label]="'Visibility for ' + doc.fileName"
+                      >
+                        <option value="Team-wide">Team-wide</option>
+                        <option value="PM-only">PM-only</option>
+                        <option value="Custom">Custom visibility</option>
+                      </select>
+                      @if (doc.visibility === 'Custom') {
+                        <app-button
+                          type="button"
+                          variant="icon"
+                          ariaLabel="Edit allowed roles"
+                          title="Edit allowed roles"
+                          (click)="openCustomVisibilityModal(doc)"
+                        >
+                          <span class="edit-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                        </app-button>
+                      }
+                    </div>
+                  } @else {
+                    <!-- Viewers: read-only badge -->
+                    @if (doc.visibility === 'Custom') {
+                      <app-status-badge tone="info">
+                        <span class="badge-icon" [inlineSVG]="'assets/icons/lock.svg'"></span>
+                        Custom visibility
+                      </app-status-badge>
+                    } @else if (doc.visibility === 'PM-only') {
+                      <app-status-badge tone="warning">
+                        <span class="badge-icon" [inlineSVG]="'assets/icons/lock.svg'"></span>
+                        PM-only
+                      </app-status-badge>
+                    } @else {
+                      <app-status-badge tone="neutral">Team-wide</app-status-badge>
+                    }
+                  }
+                </td>
+                <td class="col-actions">
+                  <app-button
+                    type="button"
+                    variant="icon"
+                    class="btn-remove"
+                    ariaLabel="Remove document"
+                    title="Remove document"
+                    (click)="openRemoveModal(doc)"
+                  >
+                    <span class="remove-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
+                  </app-button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

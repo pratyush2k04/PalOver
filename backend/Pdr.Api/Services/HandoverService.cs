@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Handovers;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Handover;
@@ -13,15 +14,18 @@ public class HandoverService : IHandoverService
     private readonly IHandoverRepository _handoverRepository;
     private readonly ICommitmentRepository _commitmentRepository;
     private readonly IRealisticCommitmentRepository _realisticCommitmentRepository;
+    private readonly IKickoffReadinessService _kickoffReadinessService;
 
     public HandoverService(
         IHandoverRepository handoverRepository,
         ICommitmentRepository commitmentRepository,
-        IRealisticCommitmentRepository realisticCommitmentRepository)
+        IRealisticCommitmentRepository realisticCommitmentRepository,
+        IKickoffReadinessService kickoffReadinessService)
     {
         _handoverRepository = handoverRepository;
         _commitmentRepository = commitmentRepository;
         _realisticCommitmentRepository = realisticCommitmentRepository;
+        _kickoffReadinessService = kickoffReadinessService;
     }
 
     public async Task<HandoverInfoDto> GetHandoverAsync(int engagementId)
@@ -119,13 +123,15 @@ public class HandoverService : IHandoverService
         var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
 
         if (handover == null)
-            throw new HandoverIncompleteException("Cannot submit a handover that does not exist.");
+            throw new HandoverIncompleteException(HandoverValidationConstants.NotFoundForSubmit);
 
         if (string.IsNullOrWhiteSpace(handover.BusinessProblem))
-            throw new HandoverIncompleteException("Business Problem is required to submit.");
+            throw new HandoverIncompleteException(HandoverValidationConstants.BusinessProblemRequiredSubmit);
 
         if (string.IsNullOrWhiteSpace(handover.ClientSentiment))
-            throw new HandoverIncompleteException("Client Sentiment is required to submit.");
+            throw new HandoverIncompleteException(HandoverValidationConstants.ClientSentimentRequiredSubmit);
+        if (!await _kickoffReadinessService.IsFullyReadyAsync(engagementId))
+            throw new HandoverIncompleteException(HandoverValidationConstants.NotKickoffReadySubmit);
 
         handover.StatusId = (int)HandoverStatusEnum.Submitted;
         handover.UpdatedBy = userIdStr;

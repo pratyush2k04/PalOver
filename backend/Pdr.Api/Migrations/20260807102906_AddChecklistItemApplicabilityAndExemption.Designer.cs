@@ -1872,12 +1872,6 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("engagement_id");
 
-                    b.Property<bool>("HasNoCommitments")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("has_no_commitments");
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -1917,7 +1911,6 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DealOrigin = "Strategic Partner Referral",
                             EngagementId = 1,
-                            HasNoCommitments = false,
                             IsDeleted = false,
                             StatusId = 1,
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)

@@ -1,4 +1,5 @@
 using Pdr.Api.Models;
+using Pdr.Api.Models.LoginEntity;
 
 namespace Pdr.Api.Services.Interfaces;
 

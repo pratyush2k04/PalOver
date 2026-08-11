@@ -1,4 +1,5 @@
 using FluentValidation;
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Documents;
 using Pdr.Api.Models.Documents;
 using System.IO;
@@ -8,33 +9,30 @@ namespace Pdr.Api.Validators;
 
 public class DocumentUploadDtoValidator : AbstractValidator<DocumentUploadDto>
 {
-    private const long MaxFileSizeBytes = 50 * 1024 * 1024; // 50MB
-    private readonly string[] _allowedExtensions = { ".pdf", ".docx", ".xlsx", ".pptx", ".png", ".jpg", ".msg", ".eml" };
-
     public DocumentUploadDtoValidator()
     {
         RuleFor(x => x.File)
             .Cascade(CascadeMode.Stop)
 
-            .NotNull().WithMessage("File is required.")
+            .NotNull().WithMessage(DocumentValidationConstants.Messages.FileRequired)
 
             .Must(f => f.Length > 0)
-            .WithMessage("File cannot be empty.")
+            .WithMessage(DocumentValidationConstants.Messages.FileCannotBeEmpty)
 
-            .Must(f => f.Length <= MaxFileSizeBytes)
-            .WithMessage($"Files must be 50 MB or smaller.")
+            .Must(f => f.Length <= DocumentValidationConstants.MaxFileSizeBytes)
+            .WithMessage(DocumentValidationConstants.Messages.FileTooLarge)
 
-            .Must(f => _allowedExtensions.Contains(Path.GetExtension(f.FileName).ToLowerInvariant()))
-            .WithMessage("That file type is not supported.");
+            .Must(f => DocumentValidationConstants.AllowedExtensions.Contains(Path.GetExtension(f.FileName).ToLowerInvariant()))
+            .WithMessage(DocumentValidationConstants.Messages.FileTypeNotSupported);
 
         RuleFor(x => x.EngagementId)
-            .GreaterThan(0).WithMessage("EngagementId must be greater than 0.");
+            .GreaterThan(0).WithMessage(DocumentValidationConstants.Messages.EngagementIdRequired);
 
         RuleFor(x => x.CategoryId)
-            .GreaterThan(0).WithMessage("A valid CategoryId is required.");
+            .GreaterThan(0).WithMessage(DocumentValidationConstants.Messages.CategoryIdRequired);
 
         RuleFor(x => x.Visibility)
             .Must(v => v == DocumentVisibilityNames.PmOnly || v == DocumentVisibilityNames.TeamWide)
-            .WithMessage("Visibility must be either 'PM-only' or 'Team-wide'.");
+            .WithMessage(DocumentValidationConstants.Messages.VisibilityInvalid);
     }
 }
