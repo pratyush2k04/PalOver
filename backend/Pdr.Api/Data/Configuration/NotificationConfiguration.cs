@@ -9,7 +9,8 @@ public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
 {
     public void Configure(EntityTypeBuilder<Notification> builder)
     {
-        builder.ToTable("notifications");
+        builder.ToTable("notifications", t =>
+            t.HasCheckConstraint("ck_notifications_read_at_after_scheduled", "read_at IS NULL OR read_at >= scheduled_for"));
 
         builder.HasKey(n => n.Id);
         builder.Property(n => n.Id).HasColumnName("id");

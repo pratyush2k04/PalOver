@@ -51,6 +51,7 @@ public class NotificationsController(
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> MarkAsRead(int id)
     {
         await notificationService.MarkAsReadAsync(id, currentUserService.GetUserId());

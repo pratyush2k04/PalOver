@@ -114,6 +114,9 @@ public class NotificationService(
         if (notification.ReceiverUserId != userId)
             throw new NotificationAccessDeniedException(id);
 
+        if (notification.ScheduledFor > DateTime.UtcNow)
+            throw new NotificationNotYetScheduledException(id);
+
         await repository.SetReadAtAsync(id, DateTime.UtcNow);
     }
 

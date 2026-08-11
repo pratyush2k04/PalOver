@@ -3161,7 +3161,10 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("ReceiverUserId", "ReadAt");
 
-                    b.ToTable("notifications", (string)null);
+                    b.ToTable("notifications", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_notifications_read_at_after_scheduled", "read_at IS NULL OR read_at >= scheduled_for");
+                        });
 
                     b.HasData(
                         new
