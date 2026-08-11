@@ -37,6 +37,15 @@ namespace Pdr.Api.Data.Configuration
                 .WithMany(x => x.AccessItems)
                 .HasForeignKey(x => x.AccessItemDefinitionId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasData(
+                new AccessItem { AccessItemId = 1, EngagementId = 1, AccessItemDefinitionId = 1, Name = "VPN Access", IsClientSide = false, OwnerId = 1, Status = AccessItemStatus.InProgress },
+                new AccessItem { AccessItemId = 2, EngagementId = 1, AccessItemDefinitionId = 2, Name = "Jira", IsClientSide = true, OwnerId = 1, Status = AccessItemStatus.InProgress },
+                new AccessItem { AccessItemId = 3, EngagementId = 1, AccessItemDefinitionId = 3, Name = "SandBox", IsClientSide = true, OwnerId = 1, Status = AccessItemStatus.InProgress },
+                new AccessItem { AccessItemId = 4, EngagementId = 2, AccessItemDefinitionId = 1, Name = "VPN Access", IsClientSide = false, OwnerId = 1, Status = AccessItemStatus.Granted, GrantedDate = new DateOnly(2026, 6, 2) },
+                new AccessItem { AccessItemId = 5, EngagementId = 2, AccessItemDefinitionId = 2, Name = "Jira", IsClientSide = true, OwnerId = 1, Status = AccessItemStatus.Granted, GrantedDate = new DateOnly(2026, 6, 2) },
+                new AccessItem { AccessItemId = 6, EngagementId = 2, AccessItemDefinitionId = 3, Name = "SandBox", IsClientSide = true, OwnerId = 1, Status = AccessItemStatus.InProgress }
+            );
         }
     }
 }

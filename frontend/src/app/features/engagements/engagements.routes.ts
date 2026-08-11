@@ -63,7 +63,7 @@ export const ENGAGEMENTS_ROUTES: Routes = [
       {
         path: 'technical-readiness',
         loadComponent: () =>
-          import('./technical/technical-readiness.component').then(
+          import('./engagement-workspace/technical/technical-readiness.component').then(
             (m) => m.TechnicalReadinessComponent
           ),
       },
