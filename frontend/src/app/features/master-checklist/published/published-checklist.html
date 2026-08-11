@@ -37,60 +37,62 @@
             <span class="category-count">{{ category.items.length }} item{{ category.items.length !== 1 ? 's' : '' }}</span>
           </div>
 
-          <table class="checklist-table">
-            <thead>
-              <tr>
-                <th class="col-item">ITEM</th>
-                <th class="col-status">STATUS</th>
-                <th class="col-actions" aria-label="expand"></th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (item of category.items; track item.id) {
-                <tr class="checklist-row" (click)="toggleRow(item)">
-                  <td class="cell-item">
-                    <div class="item-title-wrapper">
-                      <span class="item-title">{{ item.title }}</span>
-                      @if (item.isMandatory) {
-                        <app-status-badge tone="info">Mandatory</app-status-badge>
-                      } @else {
-                        <app-status-badge tone="neutral">Optional</app-status-badge>
-                      }
-                    </div>
-                  </td>
-
-                  <td class="cell-status">
-                    @if (item.isRetired) {
-                      <app-status-badge tone="danger">Retired</app-status-badge>
-                    } @else {
-                      <app-status-badge tone="success">Active</app-status-badge>
-                    }
-                  </td>
-
-                  <td class="cell-actions" style="text-align: right">
-                    <button
-                      type="button"
-                      class="btn-icon"
-                      (click)="$event.stopPropagation(); toggleRow(item)"
-                      [attr.aria-label]="isExpanded(item) ? 'Collapse row' : 'Expand row'"
-                    >
-                      {{ isExpanded(item) ? '▲' : '▼' }}
-                    </button>
-                  </td>
+          <div class="table-responsive">
+            <table class="checklist-table">
+              <thead>
+                <tr>
+                  <th class="col-item">ITEM</th>
+                  <th class="col-status">STATUS</th>
+                  <th class="col-actions" aria-label="expand"></th>
                 </tr>
-                @if (isExpanded(item)) {
-                  <tr class="checklist-detail-row">
-                    <td colspan="3">
-                      <div class="description-card">
-                        <h4>Description</h4>
-                        <p>{{ item.description || 'No description provided.' }}</p>
+              </thead>
+              <tbody>
+                @for (item of category.items; track item.id) {
+                  <tr class="checklist-row" (click)="toggleRow(item)">
+                    <td class="cell-item">
+                      <div class="item-title-wrapper">
+                        <span class="item-title">{{ item.title }}</span>
+                        @if (item.isMandatory) {
+                          <app-status-badge tone="info">Mandatory</app-status-badge>
+                        } @else {
+                          <app-status-badge tone="neutral">Optional</app-status-badge>
+                        }
                       </div>
                     </td>
+
+                    <td class="cell-status">
+                      @if (item.isRetired) {
+                        <app-status-badge tone="danger">Retired</app-status-badge>
+                      } @else {
+                        <app-status-badge tone="success">Active</app-status-badge>
+                      }
+                    </td>
+
+                    <td class="cell-actions" style="text-align: right">
+                      <button
+                        type="button"
+                        class="btn-icon"
+                        (click)="$event.stopPropagation(); toggleRow(item)"
+                        [attr.aria-label]="isExpanded(item) ? 'Collapse row' : 'Expand row'"
+                      >
+                        {{ isExpanded(item) ? '▲' : '▼' }}
+                      </button>
+                    </td>
                   </tr>
+                  @if (isExpanded(item)) {
+                    <tr class="checklist-detail-row">
+                      <td colspan="3">
+                        <div class="description-card">
+                          <h4>Description</h4>
+                          <p>{{ item.description || 'No description provided.' }}</p>
+                        </div>
+                      </td>
+                    </tr>
+                  }
                 }
-              }
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          </div>
         </div>
       }
 
