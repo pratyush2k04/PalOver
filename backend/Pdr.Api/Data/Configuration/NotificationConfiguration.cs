@@ -44,5 +44,27 @@ public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
             .WithMany()
             .HasForeignKey(n => n.ReceiverUserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        var seedTimestamp = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        builder.HasData(
+            new Notification
+            {
+                Id = 1,
+                TemplateId = 2, // PMAllocated
+                ReceiverUserId = 1, // Rahul Verma — PreSales on Engagement 1
+                Priority = NotificationPriority.Medium, // matches PMAllocated template's DefaultPriority
+                ReadAt = null,
+                ScheduledFor = seedTimestamp,
+                Title = null,
+                Body = null,
+                Data = "{\"AssignedUserId\":2,\"EngagementId\":1}", // Asha Rao (User 2) is the seeded PM on Engagement 1
+                Link = "/engagements/1/workspace/overview",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            }
+        );
     }
 }

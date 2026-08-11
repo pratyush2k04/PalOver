@@ -3162,6 +3162,22 @@ namespace Pdr.Api.Migrations
                     b.HasIndex("ReceiverUserId", "ReadAt");
 
                     b.ToTable("notifications", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            Data = "{\"AssignedUserId\":2,\"EngagementId\":1}",
+                            IsDeleted = false,
+                            Link = "/engagements/1/workspace/overview",
+                            Priority = 2,
+                            ReceiverUserId = 1,
+                            ScheduledFor = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            TemplateId = 2,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Notifications.NotificationTemplate", b =>
