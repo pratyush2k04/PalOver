@@ -5,7 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { CommunicationCadenceService } from '../../../../services/communication-cadence.service';
 import { AuthService } from '../../../../../../services/auth';
 import { CommunicationCadence, EngagementParticipant } from '../../../../models/cadence.model';
-import { CADENCE_CONSTANTS } from '../../../../../../constants/cadence.constants';
+import { CADENCE_CONSTANTS } from '@shared/constants/cadence.constants';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { ButtonComponent } from '@common/components/button/button';
 import { DialogService } from '@common/services/dialog/dialog.service';

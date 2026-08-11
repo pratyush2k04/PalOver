@@ -1,7 +1,7 @@
 <h2 class="app-dialog__title">
   Version Details
   @if (version(); as v) {
-    <span class="version-detail-dialog__badge">{{ v.statusName }} &middot; v{{ v.versionNumber }}</span>
+    <app-badge [text]="v.statusName + ' · v' + v.versionNumber" />
   }
 </h2>
 
@@ -9,7 +9,7 @@
   @if (loading()) {
     <app-loading-spinner label="Loading version details..." />
   } @else if (error()) {
-    <div class="version-detail-dialog__state version-detail-dialog__state--error">{{ error() }}</div>
+    <app-alert variant="danger">{{ error() }}</app-alert>
   } @else {
     @for (group of categoryGroups(); track group.categoryName) {
       <div class="version-detail-dialog__group">
@@ -36,7 +36,7 @@
     }
 
     @if (categoryGroups().length === 0) {
-      <div class="version-detail-dialog__empty">This version has no items.</div>
+      <app-empty-state message="This version has no items." />
     }
   }
 </div>

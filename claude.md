@@ -36,6 +36,11 @@ EF Core
     ↓
 PostgreSQL
 ```
+## Dependency Injection
+
+- Use constructor injection.
+- Never use the Service Locator pattern.
+- Use Scoped lifetime by default unless another lifetime is required.
 
 Business logic must reside in the Service layer.
 

@@ -4,6 +4,9 @@ import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
+import { AlertComponent } from '@common/components/alert/alert';
+import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
+import { BadgeComponent } from '@common/components/badge/badge';
 import { MasterChecklistService } from '../../services/master-checklist.service';
 import { MasterChecklistItem, MasterChecklistVersion } from '../../models/master-checklist.model';
 
@@ -19,7 +22,7 @@ interface CategoryGroup {
 @Component({
   selector: 'app-version-detail-dialog',
   standalone: true,
-  imports: [LoadingSpinnerComponent, StatusBadgeComponent, ButtonComponent],
+  imports: [LoadingSpinnerComponent, StatusBadgeComponent, ButtonComponent, AlertComponent, EmptyStateComponent, BadgeComponent],
   templateUrl: './version-detail-dialog.html',
   styleUrl: './version-detail-dialog.scss',
 })

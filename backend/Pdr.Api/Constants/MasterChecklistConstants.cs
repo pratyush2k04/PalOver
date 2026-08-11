@@ -56,6 +56,9 @@ public static class MasterChecklistConstants
         public const string DisplayOrderMinimum = "Display order must be at least 1.";
         public const string ItemsRequired = "At least one item is required to reorder.";
 
+        public const string CannotPublishEmptyDraft = "A version cannot be published with zero active items.";
+        public const string CannotPublishMandatoryWithoutTitle = "A version cannot be published with a mandatory item lacking a title.";
+
         public const string VersionNotFound = "Checklist version not found.";
         public const string ItemNotFound = "Checklist item not found.";
         public const string NoDraftToAddItems = "No Draft version exists to add items to.";

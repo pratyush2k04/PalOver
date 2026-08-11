@@ -1,16 +1,21 @@
+@use '../../../../../styles/mixins' as *;
+
 :host {
   display: block;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: $font-family-base;
+  width: 100%;
+  max-width: 32rem; // 512px
 }
 
 .item-form-dialog {
   &__content {
     display: flex;
     flex-direction: column;
-    min-width: 360px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   &__checkbox {
-    margin: 4px 0 12px;
+    margin: $spacing-1 0 $spacing-3;
   }
 }

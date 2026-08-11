@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
-import { TECHNICAL_READINESS_ROUTES, MASTER_CHECKLIST_ROUTES } from './constants/app.constants';
+import { TECHNICAL_READINESS_ROUTES, MASTER_CHECKLIST_ROUTES } from '@shared/constants/app.constants';
 
 import { LoginComponent } from './components/login/login';
-import { MainLayoutComponent } from './layouts/main-layout/main-layout';
+import { MainLayoutComponent } from '@layouts/main-layout/main-layout';
 
 import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';

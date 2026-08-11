@@ -7,7 +7,7 @@ import { UserListItem } from './models/user.model';
 import { Role } from './models/role.model';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
-import { USER_MESSAGES } from '../../constants/app.constants';
+import { USER_MESSAGES } from '@shared/constants/app.constants';
 import { AlertComponent } from '@common/components/alert/alert';
 import { AvatarComponent } from '@common/components/avatar/avatar';
 import { PaginatorComponent } from '@common/components/paginator/paginator';

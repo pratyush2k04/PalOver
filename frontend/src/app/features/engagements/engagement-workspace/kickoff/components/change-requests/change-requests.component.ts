@@ -5,7 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ChangeRequestService } from '@features/engagements/services/change-request.service';
 import { AuthService } from 'src/app/services/auth';
 import { ChangeRequest } from '@features/engagements/models/change-request.model';
-import { CHANGE_REQUEST_CONSTANTS } from 'src/app/constants/change-request.constants';
+import { CHANGE_REQUEST_CONSTANTS } from '@shared/constants/change-request.constants';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';

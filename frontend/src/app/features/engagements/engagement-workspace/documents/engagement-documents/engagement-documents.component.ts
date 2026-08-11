@@ -21,7 +21,7 @@ import { UploadDocumentDialogComponent, UploadDocumentDialogData } from '../uplo
 import { RemoveDocumentDialogComponent, RemoveDocumentDialogData } from '../remove-document-dialog/remove-document-dialog.component';
 import { CustomVisibilityDialogComponent, CustomVisibilityDialogData } from '../custom-visibility-dialog/custom-visibility-dialog.component';
 
-import { DOCUMENT_CONFIG, DOCUMENT_MESSAGES } from 'src/app/constants/document.constants';
+import { DOCUMENT_CONFIG, DOCUMENT_MESSAGES } from '@shared/constants/document.constants';
 import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';

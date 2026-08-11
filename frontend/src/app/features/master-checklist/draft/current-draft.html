@@ -3,7 +3,7 @@
     <div>
       <h1>Current Draft</h1>
       @if (draft(); as d) {
-        <span class="current-draft__version-badge">{{ d.statusName }} &middot; v{{ d.versionNumber }}</span>
+        <app-badge [text]="d.statusName + ' · v' + d.versionNumber" />
       }
     </div>
 
@@ -23,11 +23,9 @@
   @if (loading()) {
     <app-loading-spinner label="Loading current draft..." />
   } @else if (error()) {
-    <div class="current-draft__state current-draft__state--error">{{ error() }}</div>
+    <app-alert variant="danger">{{ error() }}</app-alert>
   } @else if (notFound()) {
-    <div class="current-draft__state">
-      No draft version exists yet. Contact an administrator to create one.
-    </div>
+    <app-empty-state message="No draft version exists yet. Contact an administrator to create one." />
   } @else {
     <div class="current-draft__list-wrapper">
       <div class="current-draft__list-header">
