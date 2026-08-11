@@ -11,11 +11,13 @@ import {
   CadenceTypeEnum
 } from '../../../../models/cadence.model';
 import { CADENCE_CONSTANTS } from '../../../../../../constants/cadence.constants';
+import { AlertComponent } from '@common/components/alert/alert';
+import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-governance-process',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, AlertComponent, EmptyStateComponent],
   templateUrl: './governance-process.component.html',
   styleUrl: './governance-process.component.scss'
 })

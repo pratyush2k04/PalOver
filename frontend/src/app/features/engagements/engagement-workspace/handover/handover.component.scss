@@ -111,31 +111,6 @@
   }
 }
 
-.sentiment-badge {
-  display: inline-flex;
-  align-self: flex-start;
-  padding: 0.3rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-
-  &.sentiment-warm {
-    background: $color-primary-focus-ring;
-    color: $color-primary;
-  }
-
-  &.sentiment-new {
-    background: $color-bg;
-    color: $color-text-muted;
-    border: 1px solid $color-border-soft;
-  }
-
-  &.sentiment-strained {
-    background: $color-danger-bg;
-    color: $color-danger-text;
-  }
-}
-
 textarea,
 input[type='text'],
 input[type='number'],
@@ -197,14 +172,6 @@ select {
   background: $color-bg;
   border-radius: $radius-sm;
   margin-bottom: 1.5rem;
-}
-
-.empty-state-prominent {
-  padding: 2.5rem 1rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  font-style: normal;
-  color: $color-text-muted;
 }
 
 .commitment-cards {

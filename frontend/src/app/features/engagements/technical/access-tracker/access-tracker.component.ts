@@ -11,11 +11,12 @@ import { KickoffReadinessDto, KickoffReadinessService } from '../../../../servic
 import { FlaggedItemsBannerComponent, FlaggedItem } from '../../../../shared/flagged-items-banner/flagged-items-banner.component';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 
 @Component({
   selector: 'app-access-tracker',
   standalone: true,
-  imports: [CommonModule, FormsModule, InlineSVGModule, FlaggedItemsBannerComponent],
+  imports: [CommonModule, FormsModule, InlineSVGModule, FlaggedItemsBannerComponent, StatusBadgeComponent],
   templateUrl: './access-tracker.component.html',
   styleUrl: './access-tracker.component.scss'
 })
@@ -226,6 +227,19 @@ export class AccessTrackerComponent {
         return 'badge-blocked';
       default:
         return 'badge-inprogress';
+    }
+  }
+
+  getStatusTone(status: string): StatusBadgeTone {
+    switch (status) {
+      case 'Granted':
+      case '2':
+        return 'success';
+      case 'Blocked':
+      case '3':
+        return 'danger';
+      default:
+        return 'info';
     }
   }
 

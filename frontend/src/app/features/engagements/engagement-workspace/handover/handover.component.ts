@@ -29,6 +29,8 @@ import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
+import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
+import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 
 const MAX_FREE_TEXT_LENGTH = 2000;
 const SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
@@ -59,6 +61,8 @@ interface RealisticEditForm {
     InputComponent,
     TextareaComponent,
     SelectComponent,
+    StatusBadgeComponent,
+    EmptyStateComponent,
   ],
   templateUrl: './handover.component.html',
   styleUrl: './handover.component.scss',
@@ -100,6 +104,17 @@ export class HandoverComponent {
   readonly sentimentOptions: SelectOption[] = SENTIMENT_OPTIONS.map((value) => ({ value, label: value }));
   readonly timelineUnits = TIMELINE_UNITS;
   readonly maxFreeTextLength = MAX_FREE_TEXT_LENGTH;
+
+  getSentimentTone(sentiment: string | null | undefined): StatusBadgeTone {
+    switch (sentiment) {
+      case 'Warm':
+        return 'info';
+      case 'Strained':
+        return 'danger';
+      default:
+        return 'neutral';
+    }
+  }
 
   clientContextForm: FormGroup = this.fb.group({
     clientBackground: ['', [Validators.maxLength(MAX_FREE_TEXT_LENGTH)]],

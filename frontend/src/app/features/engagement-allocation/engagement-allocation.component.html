@@ -105,13 +105,13 @@
                   <div class="client-name">{{ eng.clientName }}</div>
                 </td>
                 <td>
-                  <span class="type-badge">{{ eng.engagementType }}</span>
+                  <app-status-badge tone="neutral">{{ eng.engagementType }}</app-status-badge>
                   <div class="model-sub">{{ eng.commercialModel }}</div>
                 </td>
                 <td>
-                  <span class="status-pill" [class.ready]="eng.isKickoffReady">
+                  <app-status-badge [tone]="eng.isKickoffReady ? 'success' : 'warning'">
                     {{ eng.status }}
-                  </span>
+                  </app-status-badge>
                 </td>
                 <td>
                   @if (eng.isLoadingLeadership) {
@@ -127,9 +127,9 @@
                         }
                       </div>
                     } @else {
-                      <span class="missing-badge">
+                      <app-status-badge tone="warning">
                         ⚠️ Missing Leadership Contact
-                      </span>
+                      </app-status-badge>
                     }
                   }
                 </td>

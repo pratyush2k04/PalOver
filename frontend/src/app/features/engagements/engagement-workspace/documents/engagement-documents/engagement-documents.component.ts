@@ -23,6 +23,9 @@ import { CustomVisibilityDialogComponent } from '../custom-visibility-dialog/cus
 import { DOCUMENT_CONFIG, DOCUMENT_MESSAGES } from 'src/app/constants/document.constants';
 import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
+import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
+import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 
 @Component({
   selector: 'app-engagement-documents',
@@ -33,8 +36,13 @@ import { ButtonComponent } from '@common/components/button/button';
     InlineSVGModule,
     UploadDocumentDialogComponent,
     RemoveDocumentDialogComponent,
-    CustomVisibilityDialogComponent
-  , AlertComponent, ButtonComponent],
+    CustomVisibilityDialogComponent,
+    AlertComponent,
+    ButtonComponent,
+    LoadingSpinnerComponent,
+    EmptyStateComponent,
+    StatusBadgeComponent
+  ],
   templateUrl: './engagement-documents.component.html',
   styleUrl: './engagement-documents.component.scss'
 })

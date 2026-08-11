@@ -1,9 +1,6 @@
 <!-- Loading State -->
 @if (isLoading()) {
-  <div class="checklist-loading">
-    <div class="spinner"></div>
-    <p>Loading checklist...</p>
-  </div>
+  <app-loading-spinner label="Loading checklist..." />
 }
 
 <!-- Error State -->
@@ -86,9 +83,9 @@
                         {{ item.title }}
                       </span>
                       @if (item.isMandatory) {
-                        <span class="pill pill-mandatory">Mandatory</span>
+                        <app-status-badge tone="danger">Mandatory</app-status-badge>
                       } @else {
-                        <span class="pill pill-optional">Optional</span>
+                        <app-status-badge tone="neutral">Optional</app-status-badge>
                       }
                     </div>
 
@@ -118,13 +115,13 @@
 
                   <td class="cell-status">
                     @if (item.exemptionStatus === 'Pending') {
-                      <span class="pill pill-pending">Pending Approval</span>
+                      <app-status-badge tone="warning">Pending Approval</app-status-badge>
                     } @else if (item.status === 'Blocked') {
-                      <span class="pill pill-blocked">Blocked</span>
+                      <app-status-badge tone="danger">Blocked</app-status-badge>
                     } @else if (item.status === 'Complete') {
-                      <span class="pill pill-complete">Complete</span>
+                      <app-status-badge tone="success">Complete</app-status-badge>
                     } @else {
-                      <span class="pill pill-incomplete">Incomplete</span>
+                      <app-status-badge tone="neutral">Incomplete</app-status-badge>
                     }
                   </td>
 
@@ -206,9 +203,9 @@
                       {{ item.title }}
                     </span>
                     @if (item.isMandatory) {
-                      <span class="pill pill-mandatory">Mandatory</span>
+                      <app-status-badge tone="danger">Mandatory</app-status-badge>
                     } @else {
-                      <span class="pill pill-optional">Optional</span>
+                      <app-status-badge tone="neutral">Optional</app-status-badge>
                     }
                   </div>
                 </td>

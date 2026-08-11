@@ -11,11 +11,12 @@ import {
 } from '../../models/environment-tooling.model';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 
 @Component({
   selector: 'app-environment-tooling',
   standalone: true,
-  imports: [CommonModule, FormsModule, InlineSVGModule],
+  imports: [CommonModule, FormsModule, InlineSVGModule, StatusBadgeComponent],
   templateUrl: './environment-tooling.component.html',
   styleUrl: './environment-tooling.component.scss'
 })
@@ -179,17 +180,17 @@ export class EnvironmentToolingComponent {
     });
   }
 
-  getStatusBadgeClass(status: EnvironmentToolingStatus | number | string): string {
+  getStatusTone(status: EnvironmentToolingStatus | number | string): StatusBadgeTone {
     const val = typeof status === 'string' ? parseInt(status, 10) : status;
     switch (val) {
       case EnvironmentToolingStatus.Ready:
       case 2:
-        return 'badge-ready';
+        return 'success';
       case EnvironmentToolingStatus.NotApplicable:
       case 3:
-        return 'badge-na';
+        return 'neutral';
       default:
-        return 'badge-inprogress';
+        return 'info';
     }
   }
 

@@ -43,9 +43,9 @@
                 {{ item.ownerFullName || 'Unassigned' }}
               </td>
               <td class="status-cell">
-                <span class="badge" [ngClass]="getStatusBadgeClass(item.status)">
+                <app-status-badge [tone]="getStatusTone(item.status)">
                   {{ getStatusLabel(item.status) }}
-                </span>
+                </app-status-badge>
                 @if (item.notApplicableReason) {
                   <span class="na-reason-text">({{ item.notApplicableReason }})</span>
                 }

@@ -10,13 +10,15 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { AlertComponent } from '@common/components/alert/alert';
+import { ButtonComponent } from '@common/components/button/button';
 import { DocumentService } from '../../../services/document.service';
 import { DOCUMENT_MESSAGES } from 'src/app/constants/document.constants';
 
 @Component({
   selector: 'app-remove-document-dialog',
   standalone: true,
-  imports: [CommonModule, InlineSVGModule],
+  imports: [CommonModule, InlineSVGModule, AlertComponent, ButtonComponent],
   templateUrl: './remove-document-dialog.component.html',
   styleUrl: './remove-document-dialog.component.scss'
 })

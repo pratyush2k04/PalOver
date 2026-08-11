@@ -12,9 +12,7 @@
       </div>
 
       @if (errorMessage()) {
-        <div class="alert alert-danger">
-          {{ errorMessage() }}
-        </div>
+        <app-alert variant="danger">{{ errorMessage() }}</app-alert>
       }
 
       <div class="form-group">
@@ -42,20 +40,18 @@
     </div>
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-cancel" (click)="onClose()" [disabled]="isSubmitting()">
+      <app-button type="button" variant="stroked" (click)="onClose()" [disabled]="isSubmitting()">
         Cancel
-      </button>
-      <button 
-        type="button" 
-        class="btn btn-danger" 
-        (click)="onSubmit()" 
-        [disabled]="!isValidReason() || isSubmitting()"
+      </app-button>
+      <app-button
+        type="button"
+        variant="danger"
+        (click)="onSubmit()"
+        [disabled]="!isValidReason()"
+        [loading]="isSubmitting()"
       >
-        @if (isSubmitting()) {
-          <span class="spinner"></span>
-        }
         Remove Document
-      </button>
+      </app-button>
     </div>
   </div>
 </div>

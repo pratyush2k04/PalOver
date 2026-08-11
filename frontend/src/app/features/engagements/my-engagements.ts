@@ -10,6 +10,7 @@ import { AlertComponent } from '@common/components/alert/alert';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { TabItem, TabsComponent } from '@common/components/tabs/tabs';
 import { ButtonComponent } from '@common/components/button/button';
+import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 
 interface MyEngagementRow extends PmEngagementListItem {
   displayReadinessScore: number;
@@ -29,7 +30,7 @@ const SAMPLE_READINESS_SCORES: Record<number, number> = {
 @Component({
   selector: 'app-my-engagements',
   standalone: true,
-  imports: [CommonModule, EngagementsComponent, AlertComponent, EmptyStateComponent, TabsComponent, ButtonComponent],
+  imports: [CommonModule, EngagementsComponent, AlertComponent, EmptyStateComponent, TabsComponent, ButtonComponent, StatusBadgeComponent],
   templateUrl: './my-engagements.html',
   styleUrl: './my-engagements.scss'
 })

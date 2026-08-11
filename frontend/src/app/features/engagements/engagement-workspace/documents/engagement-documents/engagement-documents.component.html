@@ -28,20 +28,11 @@
 
   <div class="table-card">
     @if (isLoading()) {
-      <div class="loading-state">
-        <div class="spinner"></div>
-        <span>Loading documents...</span>
-      </div>
+      <app-loading-spinner label="Loading documents..." />
     } @else if (documents().length === 0) {
-      <div class="empty-state">
-        <span class="empty-icon" [inlineSVG]="'assets/icons/empty-doc.svg'"></span>
-        <p class="empty-text">No documents uploaded yet.</p>
-      </div>
+      <app-empty-state message="No documents uploaded yet." />
     } @else if (filteredDocuments().length === 0) {
-      <div class="empty-state">
-        <span class="empty-icon" [inlineSVG]="'assets/icons/empty-doc.svg'"></span>
-        <p class="empty-text">{{ DOCUMENT_MESSAGES.NO_SEARCH_RESULTS }}</p>
-      </div>
+      <app-empty-state [message]="DOCUMENT_MESSAGES.NO_SEARCH_RESULTS" />
     } @else {
       <div class="table-responsive">
         <table class="documents-table">
@@ -63,7 +54,7 @@
                     <span class="file-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
                     <span class="file-name">{{ doc.fileName }}</span>
                     @if (downloadingId() === doc.id) {
-                      <span class="download-spinner"></span>
+                      <app-loading-spinner size="sm" [inline]="true" label="" />
                     }
                   </button>
                 </td>
@@ -105,22 +96,19 @@
                     </div>
                   } @else {
                     <!-- Viewers: read-only badge -->
-                    <span
-                      class="visibility-badge"
-                      [class.badge-custom-visibility]="doc.visibility === 'Custom'"
-                      [class.badge-pm-only]="doc.visibility === 'PM-only'"
-                      [class.badge-team-wide]="doc.visibility === 'Team-wide'"
-                    >
-                      @if (doc.visibility === 'Custom') {
+                    @if (doc.visibility === 'Custom') {
+                      <app-status-badge tone="info">
                         <span class="badge-icon" [inlineSVG]="'assets/icons/lock.svg'"></span>
                         Custom visibility
-                      } @else if (doc.visibility === 'PM-only') {
+                      </app-status-badge>
+                    } @else if (doc.visibility === 'PM-only') {
+                      <app-status-badge tone="warning">
                         <span class="badge-icon" [inlineSVG]="'assets/icons/lock.svg'"></span>
                         PM-only
-                      } @else {
-                        Team-wide
-                      }
-                    </span>
+                      </app-status-badge>
+                    } @else {
+                      <app-status-badge tone="neutral">Team-wide</app-status-badge>
+                    }
                   }
                 </td>
                 <td class="col-actions">

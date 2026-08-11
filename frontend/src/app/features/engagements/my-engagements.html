@@ -35,7 +35,7 @@
               <div class="engagement-title-line">
                 <span class="client-name">{{ engagement.clientName }}</span>
                 @if (engagement.isOverdue) {
-                  <span class="badge-overdue">Overdue</span>
+                  <app-status-badge tone="danger">Overdue</app-status-badge>
                 }
               </div>
               <div class="engagement-meta">
@@ -86,7 +86,7 @@
               <div class="engagement-title-line">
                 <span class="client-name">{{ engagement.clientName }}</span>
                 @if (engagement.isOverdue) {
-                  <span class="badge-overdue">Overdue</span>
+                  <app-status-badge tone="danger">Overdue</app-status-badge>
                 }
               </div>
               <div class="engagement-meta">

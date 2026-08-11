@@ -66,13 +66,9 @@
               <td class="cell-impact">{{ cr.impact }}</td>
               <td class="cell-status">
                 <div class="status-badge-wrapper">
-                  <span class="status-tag" [ngClass]="{
-                    'status-under-review': cr.status === 'Under Review',
-                    'status-approved': cr.status === 'Approved',
-                    'status-rejected': cr.status === 'Rejected'
-                  }">
+                  <app-status-badge [tone]="getStatusTone(cr.status)">
                     {{ cr.status }}
-                  </span>
+                  </app-status-badge>
 
                   @if (cr.status === 'Rejected' && cr.rejectionReason) {
                     <button 
@@ -124,7 +120,7 @@
       <form [formGroup]="logForm" (ngSubmit)="onSubmitLog()">
         <div class="modal-body">
           @if (errorMessage()) {
-            <div class="alert-error">{{ errorMessage() }}</div>
+            <app-alert variant="danger">{{ errorMessage() }}</app-alert>
           }
 
           <div class="form-group">
@@ -179,7 +175,7 @@
       <form [formGroup]="rejectForm" (ngSubmit)="onSubmitReject()">
         <div class="modal-body">
           @if (errorMessage()) {
-            <div class="alert-error">{{ errorMessage() }}</div>
+            <app-alert variant="danger">{{ errorMessage() }}</app-alert>
           }
 
           <div class="form-group">

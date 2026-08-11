@@ -75,10 +75,10 @@
 
     <div class="readonly-field">
       <span class="readonly-label">Client Sentiment</span>
-      <span class="sentiment-badge" *ngIf="handover()?.clientSentiment; else noSentiment"
-        [ngClass]="'sentiment-' + (handover()?.clientSentiment || '').toLowerCase()">
+      <app-status-badge *ngIf="handover()?.clientSentiment; else noSentiment"
+        [tone]="getSentimentTone(handover()?.clientSentiment)">
         {{ handover()?.clientSentiment }}
-      </span>
+      </app-status-badge>
       <ng-template #noSentiment>
         <p class="readonly-value readonly-value-empty">Not provided</p>
       </ng-template>
@@ -97,9 +97,7 @@
     <div class="section commitments">
       <h3>Commitments</h3>
 
-      <div *ngIf="commitments().length === 0" class="empty-state empty-state-prominent">
-        No Commitments
-      </div>
+      <app-empty-state *ngIf="commitments().length === 0" message="No Commitments" />
 
       <div class="commitment-cards" *ngIf="commitments().length > 0">
         <div

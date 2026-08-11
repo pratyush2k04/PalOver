@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AlertComponent } from '@common/components/alert/alert';
+import { ButtonComponent } from '@common/components/button/button';
 import { DocumentService } from '../../../services/document.service';
 import { DocumentItem } from '../../../models/document.model';
 import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from 'src/app/constants/document.constants';
@@ -10,7 +12,7 @@ import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from 'src/app/constants/document.c
 @Component({
   selector: 'app-custom-visibility-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, InlineSVGModule],
+  imports: [CommonModule, FormsModule, InlineSVGModule, AlertComponent, ButtonComponent],
   templateUrl: './custom-visibility-dialog.component.html',
   styleUrl: './custom-visibility-dialog.component.scss'
 })

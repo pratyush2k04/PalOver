@@ -13,9 +13,7 @@
   <!-- Cadences List -->
   <div class="cadence-list">
     @if (cadences().length === 0) {
-      <div class="empty-cadence">
-        <p>{{ constants.EMPTY_STATE }}</p>
-      </div>
+      <app-empty-state [message]="constants.EMPTY_STATE" />
     } @else {
       @for (cadence of cadences(); track cadence.id) {
         <div class="cadence-item">
@@ -97,9 +95,7 @@
           </div>
 
           @if (errorMessage()) {
-            <div class="alert alert-error">
-              {{ errorMessage() }}
-            </div>
+            <app-alert variant="danger">{{ errorMessage() }}</app-alert>
           }
         </div>
 

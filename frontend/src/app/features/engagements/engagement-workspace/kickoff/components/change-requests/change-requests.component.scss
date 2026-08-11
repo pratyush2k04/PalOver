@@ -159,30 +159,6 @@
   gap: 0.5rem;
 }
 
-.status-tag {
-  display: inline-block;
-  padding: 0.375rem 0.875rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  border-radius: 9999px;
-  line-height: 1.2;
-}
-
-.status-under-review {
-  background-color: #ebf3ff;
-  color: #3b82f6;
-}
-
-.status-approved {
-  background-color: #e6f4ea;
-  color: #16a34a;
-}
-
-.status-rejected {
-  background-color: #fce8e6;
-  color: #dc2626;
-}
-
 .btn-info-icon {
   background: transparent;
   border: none;
@@ -375,15 +351,6 @@
   font-size: 0.75rem;
   color: #ef4444;
   margin-top: 0.25rem;
-}
-
-.alert-error {
-  padding: 0.75rem 1rem;
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 0.375rem;
-  color: #b91c1c;
-  font-size: 0.875rem;
 }
 
 .reason-text {

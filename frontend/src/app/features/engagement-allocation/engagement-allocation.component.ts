@@ -6,11 +6,12 @@ import { EngagementAllocationService } from './services/engagement-allocation.se
 import { EngagementAllocationItem, LeadershipUserItem } from './models/engagement-allocation.model';
 import { ToastService } from '@common/services/toast/toast';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
+import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 
 @Component({
   selector: 'app-engagement-allocation',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, InlineSVGModule],
+  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, InlineSVGModule, StatusBadgeComponent],
   templateUrl: './engagement-allocation.component.html',
   styleUrl: './engagement-allocation.component.scss'
 })

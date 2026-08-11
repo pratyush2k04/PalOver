@@ -18,9 +18,7 @@
       </div>
 
       @if (errorMessage()) {
-        <div class="alert alert-danger">
-          {{ errorMessage() }}
-        </div>
+        <app-alert variant="danger">{{ errorMessage() }}</app-alert>
       }
 
       <div class="form-group">
@@ -63,19 +61,15 @@
         <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="isSubmitting()">
           Cancel
         </button>
-        <button
+        <app-button
           type="button"
-          class="btn btn-primary"
+          variant="accent"
           (click)="onSave()"
-          [disabled]="isSubmitting() || selectedRoles().length === 0"
+          [disabled]="selectedRoles().length === 0"
+          [loading]="isSubmitting()"
         >
-          @if (isSubmitting()) {
-            <span class="spinner"></span>
-            <span>Saving...</span>
-          } @else {
-            <span>Apply Restriction</span>
-          }
-        </button>
+          {{ isSubmitting() ? 'Saving...' : 'Apply Restriction' }}
+        </app-button>
       </div>
     </div>
   </div>

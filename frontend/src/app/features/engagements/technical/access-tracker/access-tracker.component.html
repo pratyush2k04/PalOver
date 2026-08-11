@@ -48,10 +48,10 @@
               </td>
               <td class="client-side-cell">
                 @if (item.isClientSide) {
-                  <span class="badge badge-clientside">Client-side</span>
+                  <app-status-badge tone="warning">Client-side</app-status-badge>
                 }
                 @if (item.isOverdueWithClient) {
-                  <span class="badge badge-overdue">Overdue</span>
+                  <app-status-badge tone="warning">Overdue</app-status-badge>
                 }
                 @if (item.timeZoneNote) {
                   <span class="note-text">{{ item.timeZoneNote }}</span>
@@ -75,9 +75,9 @@
                     }
                   </select>
                 } @else {
-                  <span class="badge" [ngClass]="getStatusBadgeClass(item.status)">
+                  <app-status-badge [tone]="getStatusTone(item.status)">
                     {{ item.status }}
-                  </span>
+                  </app-status-badge>
                 }
               </td>
             </tr>
