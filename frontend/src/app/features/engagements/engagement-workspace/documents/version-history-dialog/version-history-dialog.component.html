@@ -1,0 +1,52 @@
+<div class="dialog-container">
+  <div class="modal-header">
+    <h3 class="modal-title">Version history — {{ data.fileName }}</h3>
+    <app-button type="button" variant="icon" ariaLabel="Close" (click)="onClose()">
+      <span class="close-icon" [inlineSVG]="'assets/icons/close.svg'"></span>
+    </app-button>
+  </div>
+
+  <div class="modal-body">
+    @if (errorMessage()) {
+      <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+    }
+
+    @if (isLoading()) {
+      <app-loading-spinner label="Loading versions..." />
+    } @else {
+      <ul class="version-list">
+        @for (version of versions(); track version.id) {
+          <li class="version-row">
+            <button
+              type="button"
+              class="version-row-btn"
+              (click)="onDownload(version)"
+              [disabled]="downloadingId() === version.id"
+            >
+              <div class="version-row-header">
+                <span class="version-number">v{{ version.versionNumber }}</span>
+                @if (version.isCurrent) {
+                  <app-status-badge tone="success">Current</app-status-badge>
+                }
+                @if (downloadingId() === version.id) {
+                  <app-loading-spinner size="sm" [inline]="true" label="" />
+                }
+              </div>
+              <div class="version-row-detail">
+                <span class="version-uploader">{{ version.uploadedBy }}</span>
+                <span class="version-date">{{ formatDate(version.uploadedAt) }}</span>
+              </div>
+              <p class="version-note">{{ version.changeNote || '—' }}</p>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+
+  <div class="modal-footer">
+    <app-button type="button" variant="stroked" (click)="onClose()">
+      Close
+    </app-button>
+  </div>
+</div>
