@@ -27,6 +27,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEnvironmentToolingRepository, EnvironmentToolingRepository>();
         services.AddScoped<IChangeRequestRepository, ChangeRequestRepository>();
         services.AddScoped<IPersonRepository, PersonRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
 
         // Services
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
