@@ -87,61 +87,18 @@ export class AccessTrackerComponent {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (items) => {
-        const finalItems = items && items.length > 0 ? items : this.getDummyItems();
+        const finalItems = items ?? [];
         this.accessItems.set(finalItems);
         this.itemsUpdated.emit(finalItems);
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.warn('Failed to load access items from API, falling back to seed items', err);
-        const dummyItems = this.getDummyItems();
-        this.accessItems.set(dummyItems);
-        this.itemsUpdated.emit(dummyItems);
+        console.error('Failed to load access items from API', err);
+        this.accessItems.set([]);
+        this.itemsUpdated.emit([]);
         this.isLoading.set(false);
       }
     });
-  }
-
-  private getDummyItems(): AccessItemDto[] {
-    return [
-      {
-        accessItemId: 101,
-        name: 'Client VPN access',
-        isClientSide: true,
-        ownerId: 1,
-        ownerFullName: 'Ananth Vishwanatha',
-        status: 'InProgress',
-        timeZoneNote: 'Client is IST, no overlap issue',
-        expectedTurnaroundDays: 5,
-        daysUntilBillingDate: 6,
-        isOverdueWithClient: false
-      },
-      {
-        accessItemId: 102,
-        name: 'Client Git repository',
-        isClientSide: true,
-        ownerId: 2,
-        ownerFullName: 'Rahul Verma',
-        status: 'Granted',
-        timeZoneNote: 'Granted on Day-2',
-        expectedTurnaroundDays: 3,
-        daysUntilBillingDate: 6,
-        isOverdueWithClient: false
-      },
-      {
-        accessItemId: 103,
-        name: 'Client Jira / tracker access',
-        isClientSide: true,
-        ownerId: 3,
-        ownerFullName: 'Asha Rao',
-        status: 'Blocked',
-        timeZoneNote: 'Awaiting client admin approval',
-        expectedTurnaroundDays: 7,
-        daysUntilBillingDate: 2,
-        isOverdueWithClient: true,
-        blockReason: 'Client IT portal down'
-      }
-    ];
   }
 
   onStatusChange(item: AccessItemDto, event: Event) {

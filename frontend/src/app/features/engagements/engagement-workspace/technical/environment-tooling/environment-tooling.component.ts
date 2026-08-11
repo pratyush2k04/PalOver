@@ -65,48 +65,18 @@ export class EnvironmentToolingComponent {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (res) => {
-        const list = res && res.items && res.items.length > 0 ? res.items : this.getDummyItems();
+        const list = res?.items ?? [];
         this.items.set(list);
         this.itemsUpdated.emit(list);
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.warn('API load environment tooling failed, falling back to dummy items', err);
-        const dummy = this.getDummyItems();
-        this.items.set(dummy);
-        this.itemsUpdated.emit(dummy);
+        console.error('API load environment tooling failed', err);
+        this.items.set([]);
+        this.itemsUpdated.emit([]);
         this.isLoading.set(false);
       }
     });
-  }
-
-  private getDummyItems(): EnvironmentToolingItemDto[] {
-    return [
-      {
-        environmentToolingItemId: 201,
-        name: 'Dev environment provisioned',
-        engagementId: this.engagementId(),
-        ownerId: 1,
-        ownerFullName: 'Ananth Vishwanatha',
-        status: EnvironmentToolingStatus.Ready
-      },
-      {
-        environmentToolingItemId: 202,
-        name: 'CI/CD pipeline access',
-        engagementId: this.engagementId(),
-        ownerId: 1,
-        ownerFullName: 'Ananth Vishwanatha',
-        status: EnvironmentToolingStatus.NotReady
-      },
-      {
-        environmentToolingItemId: 203,
-        name: 'Shared repository created',
-        engagementId: this.engagementId(),
-        ownerId: 1,
-        ownerFullName: 'Ananth Vishwanatha',
-        status: EnvironmentToolingStatus.Ready
-      }
-    ];
   }
 
   onStatusChange(item: EnvironmentToolingItemDto, event: Event) {

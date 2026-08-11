@@ -88,7 +88,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("AccessItems");
+                    b.ToTable("AccessItems", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItemDefinition", b =>
@@ -117,7 +117,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("AccessItemDefinitionId");
 
-                    b.ToTable("AccessItemDefinitions");
+                    b.ToTable("AccessItemDefinitions", (string)null);
 
                     b.HasData(
                         new
@@ -771,11 +771,6 @@ namespace Pdr.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("BlockReason")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("block_reason");
-
                     b.Property<int>("CategoryId")
                         .HasColumnType("integer")
                         .HasColumnName("category_id");
@@ -856,10 +851,6 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("character varying(1000)")
                         .HasColumnName("not_applicable_reason");
 
-                    b.Property<int?>("OwnerId")
-                        .HasColumnType("integer")
-                        .HasColumnName("owner_id");
-
                     b.Property<int?>("SourceMasterItemId")
                         .HasColumnType("integer")
                         .HasColumnName("source_master_item_id");
@@ -892,8 +883,6 @@ namespace Pdr.Api.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("EngagementChecklistId");
-
-                    b.HasIndex("OwnerId");
 
                     b.ToTable("engagement_checklist_items", (string)null);
 
@@ -1635,7 +1624,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("EnvironmentToolingDefinitionId");
 
-                    b.ToTable("EnvironmentToolingDefinitions");
+                    b.ToTable("EnvironmentToolingDefinitions", (string)null);
 
                     b.HasData(
                         new
@@ -1723,7 +1712,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("EnvironmentToolingItems");
+                    b.ToTable("EnvironmentToolingItems", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Handover.Commitment", b =>
@@ -3080,98 +3069,6 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.Person", b =>
-                {
-                    b.Property<int>("PersonId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("person_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("PersonId"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("created_by");
-
-                    b.Property<int>("EngagementId")
-                        .HasColumnType("integer")
-                        .HasColumnName("engagement_id");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
-
-                    b.Property<string>("PersonType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("person_type");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("role");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("updated_by");
-
-                    b.HasKey("PersonId");
-
-                    b.HasIndex("EngagementId");
-
-                    b.ToTable("people", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            PersonId = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
-                            EngagementId = 1,
-                            IsDeleted = false,
-                            Name = "Sarah Jenkins",
-                            PersonType = "Client",
-                            Role = "Client Executive Sponsor",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            PersonId = 2,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
-                            EngagementId = 1,
-                            IsDeleted = false,
-                            Name = "Alex Rivera",
-                            PersonType = "Internal",
-                            Role = "Internal Technical Lead",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        });
-                });
-
             modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItem", b =>
                 {
                     b.HasOne("Pdr.Api.Models.AccessTracker.AccessItemDefinition", "AccessItemDefinition")
@@ -3302,16 +3199,9 @@ namespace Pdr.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Pdr.Api.Models.Person", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.Navigation("Category");
 
                     b.Navigation("EngagementChecklist");
-
-                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem", b =>
@@ -3408,17 +3298,6 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Status");
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.Person", b =>
-                {
-                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
-                        .WithMany("People")
-                        .HasForeignKey("EngagementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Engagement");
-                });
-
             modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItemDefinition", b =>
                 {
                     b.Navigation("AccessItems");
@@ -3440,8 +3319,6 @@ namespace Pdr.Api.Migrations
                     b.Navigation("EnvironmentToolingItems");
 
                     b.Navigation("HandoverInfo");
-
-                    b.Navigation("People");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.EngagementChecklist.EngagementChecklist", b =>
