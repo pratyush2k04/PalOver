@@ -1,72 +1,68 @@
+@import 'src/styles/tokens';
+@import 'src/styles/mixins';
+
 :host {
   display: block;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: $font-family-base;
 }
 
 .version-history {
-  padding: 24px;
+  padding: $spacing-4;
 
-  h1 {
-    color: #1a1a1a;
-    font-size: 20px;
-    font-weight: 600;
-    margin: 0 0 16px;
+  @include respond-to('sm') {
+    padding: $spacing-6;
   }
 
-  &__state {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: #666666;
-    font-size: 14px;
-    padding: 24px 0;
-
-    &--error {
-      color: #991b1b;
-    }
+  h1 {
+    color: $color-text;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    margin: 0 0 $spacing-4;
   }
 
   &__table-wrapper {
-    background-color: #ffffff;
-    border: 1px solid #e5e9ef;
-    border-radius: 8px;
+    background-color: $color-surface;
+    border: 1px solid $color-border-soft;
+    border-radius: $radius-lg;
+    overflow: hidden;
+    box-shadow: $shadow-sm;
+  }
+
+  .table-responsive {
+    width: 100%;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   &__table {
     width: 100%;
     border-collapse: collapse;
     font-family: inherit;
+    min-width: 32rem;
 
     th,
     td {
       text-align: left;
-      padding: 12px 16px;
-      font-size: 13px;
+      padding: $spacing-3 $spacing-4;
+      font-size: $font-size-sm;
     }
 
     th {
-      color: #1a1a1a;
-      font-weight: 600;
-      border-bottom: 1px solid #e5e9ef;
+      color: $color-text;
+      font-weight: $font-weight-semibold;
+      border-bottom: 1px solid $color-border-soft;
       white-space: nowrap;
+      background-color: $color-surface;
     }
 
     td {
-      color: #333333;
-      border-bottom: 1px solid #f0f2f5;
+      color: $color-text-muted;
+      border-bottom: 1px solid $color-border-soft;
     }
 
     tbody tr:last-child td {
       border-bottom: none;
     }
-  }
-
-  &__empty {
-    color: #8b95a3;
-    font-size: 13px;
-    text-align: center;
-    padding: 24px 0;
   }
 }
 

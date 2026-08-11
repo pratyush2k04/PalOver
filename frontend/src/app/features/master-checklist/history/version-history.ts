@@ -4,6 +4,8 @@ import { DialogService } from '@common/services/dialog/dialog.service';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
+import { AlertComponent } from '@common/components/alert/alert';
+import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { MasterChecklistService } from '../services/master-checklist.service';
 import { MasterChecklistVersionSummary } from '../models/master-checklist.model';
 import {
@@ -14,7 +16,7 @@ import {
 @Component({
   selector: 'app-version-history',
   standalone: true,
-  imports: [DatePipe, LoadingSpinnerComponent, StatusBadgeComponent, ButtonComponent],
+  imports: [DatePipe, LoadingSpinnerComponent, StatusBadgeComponent, ButtonComponent, AlertComponent, EmptyStateComponent],
   templateUrl: './version-history.html',
   styleUrl: './version-history.scss',
 })
