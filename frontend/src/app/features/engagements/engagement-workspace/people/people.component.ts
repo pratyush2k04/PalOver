@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { InlineSVGModule } from 'ng-inline-svg-2';
 import { PersonService } from '../../../../services/person.service';
 import { PersonDto, PersonType } from '../../../../models/person.model';
 import { LoaderService } from '../../../../core/loading/loader.service';
@@ -12,7 +13,7 @@ import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confir
 @Component({
   selector: 'app-people',
   standalone: true,
-  imports: [CommonModule, FormsModule, ConfirmDialogComponent],
+  imports: [CommonModule, FormsModule, ConfirmDialogComponent, InlineSVGModule],
   templateUrl: './people.component.html',
   styleUrl: './people.component.scss'
 })

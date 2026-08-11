@@ -11,12 +11,7 @@
   <div class="metrics-grid">
     <div class="metric-card">
       <div class="metric-icon total">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-          <circle cx="9" cy="7" r="4"/>
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-        </svg>
+        <span [inlineSVG]="'assets/icons/users.svg'"></span>
       </div>
       <div class="metric-content">
         <span class="metric-value">{{ totalCount() }}</span>
@@ -26,11 +21,7 @@
 
     <div class="metric-card warning" [class.active]="filterMode() === 'needing'" (click)="setFilterMode('needing')">
       <div class="metric-icon warning">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="12" y1="8" x2="12" y2="12"/>
-          <line x1="12" y1="16" x2="12.01" y2="16"/>
-        </svg>
+        <span [inlineSVG]="'assets/icons/alert-circle.svg'"></span>
       </div>
       <div class="metric-content">
         <span class="metric-value">{{ needingCount() }}</span>
@@ -40,10 +31,7 @@
 
     <div class="metric-card success" [class.active]="filterMode() === 'all'" (click)="setFilterMode('all')">
       <div class="metric-icon success">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-          <polyline points="22 4 12 14.01 9 11.01"/>
-        </svg>
+        <span [inlineSVG]="'assets/icons/check-circle.svg'"></span>
       </div>
       <div class="metric-content">
         <span class="metric-value">{{ allocatedCount() }}</span>
@@ -55,10 +43,7 @@
   <!-- Search & Filter Controls -->
   <div class="controls-bar">
     <div class="search-box">
-      <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8"/>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
+      <span class="search-icon" [inlineSVG]="'assets/icons/search.svg'"></span>
       <input
         type="text"
         placeholder="Search by engagement or client name..."
@@ -136,10 +121,7 @@
                       <div class="contacts-chips">
                         @for (user of eng.leadershipUsers; track user.id) {
                           <span class="leadership-chip">
-                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-                              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                              <circle cx="12" cy="7" r="4"/>
-                            </svg>
+                            <span [inlineSVG]="'assets/icons/user.svg'"></span>
                             {{ user.fullName }}
                           </span>
                         }
@@ -157,12 +139,7 @@
                     class="btn-assign"
                     (click)="openAssignModal(eng)"
                   >
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                      <circle cx="9" cy="7" r="4"/>
-                      <line x1="19" y1="8" x2="19" y2="14"/>
-                      <line x1="16" y1="11" x2="22" y2="11"/>
-                    </svg>
+                    <span [inlineSVG]="'assets/icons/user-plus.svg'"></span>
                     Assign Leadership
                   </button>
                 </td>

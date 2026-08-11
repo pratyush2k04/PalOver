@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { InlineSVGModule } from 'ng-inline-svg-2';
 import { EngagementAllocationService } from './services/engagement-allocation.service';
 import { EngagementAllocationItem, LeadershipUserItem } from './models/engagement-allocation.model';
 import { ToastService } from '@common/services/toast/toast';
@@ -9,7 +10,7 @@ import { LoadingSpinnerComponent } from '@common/components/loading-spinner/load
 @Component({
   selector: 'app-engagement-allocation',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSpinnerComponent],
+  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, InlineSVGModule],
   templateUrl: './engagement-allocation.component.html',
   styleUrl: './engagement-allocation.component.scss'
 })
