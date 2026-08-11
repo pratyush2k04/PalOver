@@ -4,10 +4,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { catchError, of } from 'rxjs';
 import { TECHNICAL_READINESS_ROLES } from '@shared/constants/app.constants';
-import { TechnicalReadinessService } from '../../services/technical-readiness.service';
+import { TechnicalReadinessService } from '@features/engagements/services/technical-readiness.service';
 import { AuthService } from 'src/app/services/auth';
-import { AccessItemDto, AccessItemStatus } from '../../models/technical-readiness.model';
-import { KickoffReadinessDto, KickoffReadinessService } from '../../../../services/kickoff-readiness.service';
+import { AccessItemDto, AccessItemStatus } from '@features/engagements/models/technical-readiness.model';
+import { KickoffReadinessDto, KickoffReadinessService } from 'src/app/services/kickoff-readiness.service';
 import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';

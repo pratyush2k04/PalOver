@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TECHNICAL_READINESS_ALERTS } from '@shared/constants/app.constants';
-import { AccessItemDto, AccessItemStatus } from '../models/technical-readiness.model';
-import { EnvironmentToolingItemDto, EnvironmentToolingStatus } from '../models/environment-tooling.model';
+import { AccessItemDto, AccessItemStatus } from '@features/engagements/models/technical-readiness.model';
+import { EnvironmentToolingItemDto, EnvironmentToolingStatus } from '@features/engagements/models/environment-tooling.model';
 import { AccessTrackerComponent } from './access-tracker/access-tracker.component';
 import { EnvironmentToolingComponent } from './environment-tooling/environment-tooling.component';
 

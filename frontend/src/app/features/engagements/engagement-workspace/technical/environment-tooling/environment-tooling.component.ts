@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TECHNICAL_READINESS_ROLES } from '@shared/constants/app.constants';
-import { EnvironmentToolingService } from '../../services/environment-tooling.service';
+import { EnvironmentToolingService } from '@features/engagements/services/environment-tooling.service';
 import { AuthService } from 'src/app/services/auth';
 import {
   EnvironmentToolingItemDto,
   EnvironmentToolingStatus
-} from '../../models/environment-tooling.model';
+} from '@features/engagements/models/environment-tooling.model';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
