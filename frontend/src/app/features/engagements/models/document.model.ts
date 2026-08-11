@@ -14,6 +14,16 @@ export interface DocumentItem {
   allowedRoles?: number[];
   isCustomVisibility?: boolean;
   categoryDefaultVisibility?: DocumentVisibility;
+  currentVersionNumber: number;
+}
+
+export interface DocumentVersion {
+  id: number;
+  versionNumber: number;
+  isCurrent: boolean;
+  uploadedBy: string;
+  uploadedAt: string;
+  changeNote: string | null;
 }
 
 export interface DocumentCategory {
