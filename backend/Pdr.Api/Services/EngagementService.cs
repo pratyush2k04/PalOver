@@ -189,7 +189,7 @@ public class EngagementService(
     public async Task<PmEngagementListResponse> GetMyEngagementsAsync(string sortBy)
     {
         var userId = currentUserService.GetUserId();
-        var engagements = await engagementRepository.GetEngagementsForPmAsync(userId, sortBy);
+        var engagements = await engagementRepository.GetEngagementsForUserAsync(userId, sortBy);
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
         var items = engagements

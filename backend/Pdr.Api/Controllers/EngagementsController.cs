@@ -20,16 +20,15 @@ public class EngagementsController(
     IKickoffReadinessService kickoffReadinessService) : ControllerBase
 {
     /// <summary>
-    /// Retrieves engagements assigned to the logged-in Project Manager or Tech Lead.
+    /// Retrieves engagements assigned to the logged-in user.
     /// </summary>
     /// <param name="sortBy">Sort field ("kickoff", "created", etc.).</param>
     /// <returns>A list of assigned engagements.</returns>
     [HttpGet("my-engagements")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead)]
+    [Authorize]
     [EndpointSummary("Get my assigned engagements")]
     [ProducesResponseType(typeof(PmEngagementListResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<PmEngagementListResponse>> GetMyEngagements([FromQuery] string sortBy = "kickoff")
     {
         var result = await engagementService.GetMyEngagementsAsync(sortBy);

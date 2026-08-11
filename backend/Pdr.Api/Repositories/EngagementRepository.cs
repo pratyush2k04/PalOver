@@ -10,7 +10,7 @@ namespace Pdr.Api.Repositories;
 
 public class EngagementRepository(AppDbContext context) : IEngagementRepository
 {
-    public async Task<List<Engagement>> GetEngagementsForPmAsync(int userId, string sortBy)
+    public async Task<List<Engagement>> GetEngagementsForUserAsync(int userId, string sortBy)
     {
         var query = context.Engagements
             .AsNoTracking()
