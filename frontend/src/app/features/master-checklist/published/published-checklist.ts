@@ -6,6 +6,7 @@ import { StatusBadgeComponent } from '@common/components/status-badge/status-bad
 import { AlertComponent } from '@common/components/alert/alert';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { BadgeComponent } from '@common/components/badge/badge';
+import { ButtonComponent } from '@common/components/button/button';
 import { MasterChecklistService } from '../services/master-checklist.service';
 import { MasterChecklistItem } from '../models/master-checklist.model';
 
@@ -19,6 +20,7 @@ import { MasterChecklistItem } from '../models/master-checklist.model';
     AlertComponent,
     EmptyStateComponent,
     BadgeComponent,
+    ButtonComponent,
     UpperCasePipe,
     DatePipe
   ],

@@ -69,14 +69,14 @@
                     </td>
 
                     <td class="cell-actions" style="text-align: right">
-                      <button
+                      <app-button
                         type="button"
-                        class="btn-icon"
+                        variant="icon"
                         (click)="$event.stopPropagation(); toggleRow(item)"
-                        [attr.aria-label]="isExpanded(item) ? 'Collapse row' : 'Expand row'"
+                        [ariaLabel]="isExpanded(item) ? 'Collapse row' : 'Expand row'"
                       >
                         {{ isExpanded(item) ? '▲' : '▼' }}
-                      </button>
+                      </app-button>
                     </td>
                   </tr>
                   @if (isExpanded(item)) {
