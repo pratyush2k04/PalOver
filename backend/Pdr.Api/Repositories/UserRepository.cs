@@ -21,6 +21,14 @@ public class UserRepository(AppDbContext context) : IUserRepository
             .FirstOrDefaultAsync(u => u.Id == id);
     }
 
+    public async Task<List<User>> GetByIdsAsync(IEnumerable<int> ids)
+    {
+        return await context.Users
+            .AsNoTracking()
+            .Where(u => ids.Contains(u.Id))
+            .ToListAsync();
+    }
+
     public async Task<(List<User> Users, int TotalCount)> SearchAsync(string? search, int page, int pageSize)
     {
         var query = context.Users.Include(u => u.Role).AsQueryable();

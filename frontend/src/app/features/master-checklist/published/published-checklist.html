@@ -1,0 +1,110 @@
+<div class="published-checklist">
+  <div class="published-checklist__header">
+    <h1>Published Checklist</h1>
+    @if (version(); as v) {
+      <span class="published-checklist__version-badge">
+        {{ v.statusName }} &middot; v{{ v.versionNumber }}
+      </span>
+    }
+  </div>
+
+  <div class="published-checklist__toolbar">
+    <div class="published-checklist__field published-checklist__category">
+      <label for="category-select">Category</label>
+      <select
+        id="category-select"
+        [ngModel]="selectedCategory()"
+        (ngModelChange)="selectedCategory.set($event)"
+      >
+        <option value="all">All Categories</option>
+        @for (category of categories(); track category) {
+          <option [value]="category">{{ category }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <app-loading-spinner label="Loading published checklist..." />
+  } @else if (notFound()) {
+    <div class="published-checklist__state">
+      No checklist has been published yet. Check back once an admin publishes a version.
+    </div>
+  } @else if (error()) {
+    <div class="published-checklist__state published-checklist__state--error">
+      {{ error() }}
+    </div>
+  } @else {
+    <div class="checklist-container">
+      @for (category of groupedCategories(); track category.categoryId) {
+        <div class="category-card">
+          <div class="category-header">
+            <span class="category-name">{{ category.categoryName | uppercase }}</span>
+            <span class="category-count">{{ category.items.length }} item{{ category.items.length !== 1 ? 's' : '' }}</span>
+          </div>
+
+          <table class="checklist-table">
+            <thead>
+              <tr>
+                <th class="col-item">ITEM</th>
+                <th class="col-status">STATUS</th>
+                <th class="col-actions" aria-label="expand"></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of category.items; track item.id) {
+                <tr class="checklist-row" (click)="toggleRow(item)">
+                  <td class="cell-item">
+                    <div class="item-title-wrapper">
+                      <span class="item-title">{{ item.title }}</span>
+                      @if (item.isMandatory) {
+                        <app-status-badge tone="info">Mandatory</app-status-badge>
+                      } @else {
+                        <app-status-badge tone="neutral">Optional</app-status-badge>
+                      }
+                    </div>
+                  </td>
+
+                  <td class="cell-status">
+                    @if (item.isRetired) {
+                      <app-status-badge tone="danger">Retired</app-status-badge>
+                    } @else {
+                      <app-status-badge tone="success">Active</app-status-badge>
+                    }
+                  </td>
+
+                  <td class="cell-actions" style="text-align: right">
+                    <button
+                      type="button"
+                      class="btn-icon"
+                      (click)="$event.stopPropagation(); toggleRow(item)"
+                      [attr.aria-label]="isExpanded(item) ? 'Collapse row' : 'Expand row'"
+                    >
+                      {{ isExpanded(item) ? '▲' : '▼' }}
+                    </button>
+                  </td>
+                </tr>
+                @if (isExpanded(item)) {
+                  <tr class="checklist-detail-row">
+                    <td colspan="3">
+                      <div class="description-card">
+                        <h4>Description</h4>
+                        <p>{{ item.description || 'No description provided.' }}</p>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      @if (groupedCategories().length === 0) {
+        <div class="published-checklist__state">
+          No items found for the selected category.
+        </div>
+      }
+    </div>
+  }
+</div>

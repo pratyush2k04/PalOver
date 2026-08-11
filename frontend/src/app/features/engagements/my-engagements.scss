@@ -1,0 +1,122 @@
+.my-engagements-page {
+  padding: 2rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #1a1a1a;
+  }
+}
+
+.tabs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.sort-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  padding-bottom: 0.5rem;
+
+  label {
+    font-size: 0.8125rem;
+    color: #6b7280;
+  }
+
+  select {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.85rem;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+  }
+}
+
+.engagement-list {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.engagement-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  &:hover {
+    background-color: #f9fafb;
+  }
+}
+
+.engagement-title-line {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.client-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.badge-overdue {
+  padding: 0.15rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #dc2626;
+  background: #fef2f2;
+  border-radius: 999px;
+}
+
+.engagement-meta {
+  margin-top: 0.25rem;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.engagement-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.readiness-ring {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg circle {
+    transition: stroke-dashoffset 0.3s ease;
+  }
+}
+
+.readiness-value {
+  position: absolute;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
