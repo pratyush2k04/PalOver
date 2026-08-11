@@ -7,9 +7,11 @@ public interface IDocumentService
 {
     Task<DocumentResponseDto> UploadDocumentAsync(DocumentUploadDto dto);
 
+    Task<List<DocumentUploadResultDto>> UploadDocumentsAsync(List<DocumentUploadDto> dtos);
+
     Task<IEnumerable<DocumentResponseDto>> GetDocumentsByEngagementAsync(int engagementId);
 
-    Task<(Stream FileStream, string ContentType, string FileName)?> DownloadDocumentAsync(int id);
+    Task<(Stream FileStream, string ContentType, string FileName)> DownloadDocumentAsync(int id);
 
     Task<IEnumerable<DocumentCategoryDto>> GetCategoriesAsync();
 
@@ -21,5 +23,5 @@ public interface IDocumentService
 
     Task<IEnumerable<DocumentVersionResponseDto>> GetVersionHistoryAsync(int documentId);
 
-    Task<(Stream FileStream, string ContentType, string FileName)?> DownloadVersionAsync(int documentId, int versionId);
+    Task<(Stream FileStream, string ContentType, string FileName)> DownloadVersionAsync(int documentId, int versionId);
 }
