@@ -11,7 +11,7 @@ import {
   UpdateCommitmentRequest,
   UpdateRealisticCommitmentRequest
 } from '../models/handover.model';
-import { HANDOVER_API_ENDPOINTS } from '../../../constants/app.constants';
+import { HANDOVER_API_ENDPOINTS } from '../../../shared/constants/app.constants';
 
 @Injectable({
   providedIn: 'root'

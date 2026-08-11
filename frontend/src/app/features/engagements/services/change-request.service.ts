@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ChangeRequest, CreateChangeRequest, RejectChangeRequest } from '../models/change-request.model';
-import { CHANGE_REQUEST_CONSTANTS } from '../../../constants/app.constants';
+import { CHANGE_REQUEST_CONSTANTS } from '../../../shared/constants/app.constants';
 
 @Injectable({
   providedIn: 'root'

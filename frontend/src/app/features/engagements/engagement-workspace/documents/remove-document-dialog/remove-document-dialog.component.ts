@@ -15,7 +15,7 @@ import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { DocumentService } from '../../../services/document.service';
-import { DOCUMENT_MESSAGES } from 'src/app/constants/document.constants';
+import { DOCUMENT_MESSAGES } from '@shared/constants/document.constants';
 
 export interface RemoveDocumentDialogData {
   documentId: number;

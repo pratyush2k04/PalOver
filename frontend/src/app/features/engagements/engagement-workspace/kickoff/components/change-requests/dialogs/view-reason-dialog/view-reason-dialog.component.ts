@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
-import { CHANGE_REQUEST_CONSTANTS } from 'src/app/constants/change-request.constants';
+import { CHANGE_REQUEST_CONSTANTS } from '@shared/constants/change-request.constants';
 
 export interface ViewReasonDialogData {
   reason: string;

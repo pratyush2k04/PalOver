@@ -2,7 +2,7 @@ import { Component, inject, input, output, signal, computed, effect, DestroyRef 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TECHNICAL_READINESS_ROLES } from '../../../../constants/app.constants';
+import { TECHNICAL_READINESS_ROLES } from '../../../../shared/constants/app.constants';
 import { EnvironmentToolingService } from '../../services/environment-tooling.service';
 import { AuthService } from 'src/app/services/auth';
 import {

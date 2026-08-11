@@ -8,7 +8,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { ChangeRequestService } from '@features/engagements/services/change-request.service';
 import { ChangeRequest } from '@features/engagements/models/change-request.model';
-import { CHANGE_REQUEST_CONSTANTS } from 'src/app/constants/change-request.constants';
+import { CHANGE_REQUEST_CONSTANTS } from '@shared/constants/change-request.constants';
 
 export interface RejectCrDialogData {
   cr: ChangeRequest;

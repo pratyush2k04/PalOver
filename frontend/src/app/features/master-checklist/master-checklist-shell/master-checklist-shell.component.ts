@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { MASTER_CHECKLIST_ROUTES } from '../../../constants/app.constants';
+import { MASTER_CHECKLIST_ROUTES } from '../../../shared/constants/app.constants';
 
 interface WorkspaceTab {
   label: string;

@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { workspaceGuard } from '../../guards/workspace.guard';
-import { HOME_ROUTES_CONFIG } from '../../constants/app.constants';
+import { HOME_ROUTES_CONFIG } from '../../shared/constants/app.constants';
 
 export const HOME_ROUTES: Routes = [
   {

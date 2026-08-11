@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { DocumentCategory, DocumentItem, DocumentUploadResult, DocumentVisibility, UpdateDocumentVisibilityRequest } from '../models/document.model';
-import { DOCUMENT_API_ENDPOINTS } from 'src/app/constants/document.constants';
+import { DOCUMENT_API_ENDPOINTS } from '@shared/constants/document.constants';
 
 @Injectable({
   providedIn: 'root'

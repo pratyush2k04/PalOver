@@ -5,7 +5,7 @@ import { EngagementService } from './services/engagement.service';
 import { EngagementSortBy, PmEngagementListItem } from './models/engagement.model';
 import { AppContextService } from 'src/app/services/app-context';
 import { EngagementsComponent } from './pages/createengagment/engagements';
-import { ENGAGEMENT_MESSAGES, USER_ROLES } from '../../constants/app.constants';
+import { ENGAGEMENT_MESSAGES, USER_ROLES } from '../../shared/constants/app.constants';
 import { AlertComponent } from '@common/components/alert/alert';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { TabItem, TabsComponent } from '@common/components/tabs/tabs';

@@ -2,11 +2,11 @@ import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TECHNICAL_READINESS_ROUTES } from 'src/app/constants/technical-readiness.constants';
+import { TECHNICAL_READINESS_ROUTES } from '@shared/constants/technical-readiness.constants';
 import { filter, map } from 'rxjs';
 import { EngagementService } from '../services/engagement.service';
 import { KickoffReadinessDto, KickoffReadinessService } from 'src/app/services/kickoff-readiness.service';
-import { ENGAGEMENT_WORKSPACE_CONFIG } from 'src/app/constants/engagements.constants';
+import { ENGAGEMENT_WORKSPACE_CONFIG } from '@shared/constants/engagements.constants';
 import { EngagementInfoDto } from '../models/engagement.model';
 import { TabItem, TabsComponent } from '@common/components/tabs/tabs';
 

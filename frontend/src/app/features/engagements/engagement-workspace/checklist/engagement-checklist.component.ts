@@ -5,7 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from 'src/app/services/auth';
 import { EngagementChecklistService } from '@features/engagements/services/engagement-checklist.service';
 import { EngagementChecklist, EngagementChecklistItem } from '../../models/engagement-checklist.model';
-import { ENGAGEMENT_CHECKLIST_MESSAGES } from 'src/app/constants/engagements.constants';
+import { ENGAGEMENT_CHECKLIST_MESSAGES } from '@shared/constants/engagements.constants';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
