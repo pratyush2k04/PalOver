@@ -1,15 +1,27 @@
 import { Component, OnInit, computed, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { UpperCasePipe } from '@angular/common';
+import { DatePipe, UpperCasePipe } from '@angular/common';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
+import { AlertComponent } from '@common/components/alert/alert';
+import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
+import { BadgeComponent } from '@common/components/badge/badge';
 import { MasterChecklistService } from '../services/master-checklist.service';
 import { MasterChecklistItem } from '../models/master-checklist.model';
 
 @Component({
   selector: 'app-published-checklist',
   standalone: true,
-  imports: [FormsModule, LoadingSpinnerComponent, StatusBadgeComponent, UpperCasePipe],
+  imports: [
+    FormsModule,
+    LoadingSpinnerComponent,
+    StatusBadgeComponent,
+    AlertComponent,
+    EmptyStateComponent,
+    BadgeComponent,
+    UpperCasePipe,
+    DatePipe
+  ],
   templateUrl: './published-checklist.html',
   styleUrl: './published-checklist.scss',
 })

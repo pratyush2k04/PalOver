@@ -2,9 +2,7 @@
   <div class="published-checklist__header">
     <h1>Published Checklist</h1>
     @if (version(); as v) {
-      <span class="published-checklist__version-badge">
-        {{ v.statusName }} &middot; v{{ v.versionNumber }}
-      </span>
+      <app-badge [text]="'Active: v' + v.versionNumber + ', published ' + (v.updatedAt | date:'mediumDate')" />
     }
   </div>
 
@@ -27,13 +25,9 @@
   @if (loading()) {
     <app-loading-spinner label="Loading published checklist..." />
   } @else if (notFound()) {
-    <div class="published-checklist__state">
-      No checklist has been published yet. Check back once an admin publishes a version.
-    </div>
+    <app-empty-state message="No checklist has been published yet. Check back once an admin publishes a version." />
   } @else if (error()) {
-    <div class="published-checklist__state published-checklist__state--error">
-      {{ error() }}
-    </div>
+    <app-alert variant="danger">{{ error() }}</app-alert>
   } @else {
     <div class="checklist-container">
       @for (category of groupedCategories(); track category.categoryId) {

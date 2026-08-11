@@ -15,6 +15,7 @@ export interface MasterChecklistVersion {
   versionNumber: number;
   statusId: number;
   statusName: string;
+  updatedAt: string;
   items: MasterChecklistItem[];
 }
 
