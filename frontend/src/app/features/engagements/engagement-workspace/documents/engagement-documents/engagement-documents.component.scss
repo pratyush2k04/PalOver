@@ -214,9 +214,11 @@
 
 .col-actions {
   text-align: right;
+  white-space: nowrap;
 }
 
-.remove-icon {
+.remove-icon,
+.upload-version-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -231,6 +233,36 @@
 .btn-remove:hover {
   color: #ef4444;
   background-color: #fef2f2;
+}
+
+.btn-upload-version:hover {
+  color: #ea8a00;
+  background-color: #fef3e2;
+}
+
+// ── Version column ──────────────────────────────────────────────────────────
+
+.col-version {
+  white-space: nowrap;
+}
+
+.version-number {
+  font-weight: 600;
+  color: #334155;
+}
+
+.btn-version-history {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 0.5rem;
+  color: #ea8a00;
+  font-size: 0.8rem;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 // ── Visibility column ───────────────────────────────────────────────────────

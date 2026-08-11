@@ -40,9 +40,10 @@
             <tr>
               <th class="col-name">NAME</th>
               <th class="col-category">CATEGORY</th>
+              <th class="col-visibility">VISIBILITY</th>
+              <th class="col-version">VERSION</th>
               <th class="col-uploader">UPLOADER</th>
               <th class="col-date">DATE</th>
-              <th class="col-visibility">VISIBILITY</th>
               <th class="col-actions">ACTIONS</th>
             </tr>
           </thead>
@@ -60,12 +61,6 @@
                 </td>
                 <td class="col-category">
                   <span class="category-label">{{ doc.categoryName || 'Other' }}</span>
-                </td>
-                <td class="col-uploader">
-                  <span class="uploader-name">{{ doc.uploadedBy || 'N/A' }}</span>
-                </td>
-                <td class="col-date">
-                  <span class="upload-date">{{ formatDate(doc.uploadedAt) }}</span>
                 </td>
                 <td class="col-visibility">
                   @if (canManageVisibility()) {
@@ -112,7 +107,31 @@
                     }
                   }
                 </td>
+                <td class="col-version">
+                  <span class="version-number">v{{ doc.currentVersionNumber }}</span>
+                  @if (doc.currentVersionNumber > 1) {
+                    <button type="button" class="btn-version-history" (click)="openVersionHistoryModal(doc)">
+                      history
+                    </button>
+                  }
+                </td>
+                <td class="col-uploader">
+                  <span class="uploader-name">{{ doc.uploadedBy || 'N/A' }}</span>
+                </td>
+                <td class="col-date">
+                  <span class="upload-date">{{ formatDate(doc.uploadedAt) }}</span>
+                </td>
                 <td class="col-actions">
+                  <app-button
+                    type="button"
+                    variant="icon"
+                    class="btn-upload-version"
+                    ariaLabel="Upload new version"
+                    title="Upload new version"
+                    (click)="triggerVersionUpload(doc)"
+                  >
+                    <span class="upload-version-icon" [inlineSVG]="'assets/icons/upload.svg'"></span>
+                  </app-button>
                   <app-button
                     type="button"
                     variant="icon"
@@ -131,4 +150,12 @@
       </div>
     }
   </div>
+
+  <input
+    #versionFileInput
+    type="file"
+    accept=".pdf,.docx,.xlsx,.pptx,.png,.jpg,.jpeg,.msg,.eml"
+    hidden
+    (change)="onVersionFileSelected($event)"
+  />
 </div>

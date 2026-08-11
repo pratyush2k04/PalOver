@@ -2,6 +2,8 @@ import {
   Component,
   DestroyRef,
   OnInit,
+  ViewChild,
+  ElementRef,
   inject,
   signal,
   computed,
@@ -20,6 +22,8 @@ import { DialogService } from '@common/services/dialog/dialog.service';
 import { UploadDocumentDialogComponent, UploadDocumentDialogData } from '../upload-document-dialog/upload-document-dialog.component';
 import { RemoveDocumentDialogComponent, RemoveDocumentDialogData } from '../remove-document-dialog/remove-document-dialog.component';
 import { CustomVisibilityDialogComponent, CustomVisibilityDialogData } from '../custom-visibility-dialog/custom-visibility-dialog.component';
+import { UploadVersionDialogComponent, UploadVersionDialogData } from '../upload-version-dialog/upload-version-dialog.component';
+import { VersionHistoryDialogComponent, VersionHistoryDialogData } from '../version-history-dialog/version-history-dialog.component';
 
 import { DOCUMENT_CONFIG, DOCUMENT_MESSAGES } from '@shared/constants/document.constants';
 import { AlertComponent } from '@common/components/alert/alert';
@@ -50,6 +54,9 @@ export class EngagementDocumentsComponent {
   private authService = inject(AuthService);
   private destroyRef = inject(DestroyRef);
   private dialog = inject(DialogService);
+
+  @ViewChild('versionFileInput') versionFileInput!: ElementRef<HTMLInputElement>;
+  private pendingVersionDocId: number | null = null;
 
   readonly DOCUMENT_MESSAGES = DOCUMENT_MESSAGES;
 
@@ -201,6 +208,41 @@ export class EngagementDocumentsComponent {
         this.errorMessage.set(msg);
       }
     });
+  }
+
+  triggerVersionUpload(doc: DocumentItem): void {
+    this.pendingVersionDocId = doc.id;
+    this.versionFileInput.nativeElement.click();
+  }
+
+  onVersionFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const documentId = this.pendingVersionDocId;
+    this.pendingVersionDocId = null;
+
+    if (!input.files || input.files.length === 0 || !documentId) {
+      input.value = '';
+      return;
+    }
+
+    const file = input.files[0];
+    input.value = '';
+
+    const dialogRef = this.dialog.open<UploadVersionDialogComponent, UploadVersionDialogData, boolean>(
+      UploadVersionDialogComponent,
+      { data: { documentId, file } }
+    );
+
+    dialogRef.closed$.subscribe((uploaded) => {
+      if (uploaded) this.loadDocuments();
+    });
+  }
+
+  openVersionHistoryModal(doc: DocumentItem): void {
+    this.dialog.open<VersionHistoryDialogComponent, VersionHistoryDialogData, void>(
+      VersionHistoryDialogComponent,
+      { data: { documentId: doc.id, fileName: doc.fileName } }
+    );
   }
 
   formatDate(dateStr: string): string {
