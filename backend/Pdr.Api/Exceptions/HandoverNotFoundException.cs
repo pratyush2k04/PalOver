@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
+using Pdr.Api.Constants;
 
 namespace Pdr.Api.Exceptions;
 
 public class HandoverNotFoundException(int engagementId)
-    : AppException($"No handover draft exists yet for engagement {engagementId}. Save the Client Context section first.", StatusCodes.Status404NotFound);
+    : AppException(HandoverValidationConstants.NotFoundForEngagement(engagementId), StatusCodes.Status404NotFound);

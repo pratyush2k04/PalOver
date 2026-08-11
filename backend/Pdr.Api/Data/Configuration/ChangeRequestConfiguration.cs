@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Pdr.Api.Models;
+using Pdr.Api.Models.Engagements;
 using Pdr.Api.Models.ChangeRequest;
 using Pdr.Api.Models.LoginEntity;
 

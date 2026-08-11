@@ -1,3 +1,4 @@
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Auth;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
@@ -6,9 +7,6 @@ namespace Pdr.Api.Services;
 
 public class AuthService(IUserRepository userRepository, IJwtTokenGenerator jwtTokenGenerator) : IAuthService
 {
-    private const int MaxFailedAttempts = 5;
-    private const int LockoutDurationMinutes = 15;
-
     public async Task<AuthResultDto> LoginAsync(LoginRequestDto request)
     {
         var user = await userRepository.GetByEmailAsync(request.Email);
@@ -18,7 +16,7 @@ public class AuthService(IUserRepository userRepository, IJwtTokenGenerator jwtT
             return new AuthResultDto
             {
                 IsSuccess = false,
-                ErrorMessage = "Your email or password is incorrect."
+                ErrorMessage = AuthConstants.Messages.InvalidCredentials
             };
         }
 
@@ -29,7 +27,7 @@ public class AuthService(IUserRepository userRepository, IJwtTokenGenerator jwtT
             {
                 IsSuccess = false,
                 IsLockedOut = true,
-                ErrorMessage = "Too many attempts. Try again in 15 minutes or ask your Admin to reset your password."
+                ErrorMessage = AuthConstants.Messages.AccountLockedOut
             };
         }
 
@@ -38,16 +36,16 @@ public class AuthService(IUserRepository userRepository, IJwtTokenGenerator jwtT
         {
             user.FailedAttemptCount++;
 
-            if (user.FailedAttemptCount >= MaxFailedAttempts)
+            if (user.FailedAttemptCount >= AuthConstants.MaxFailedAttempts)
             {
-                user.LockoutEnd = DateTimeOffset.UtcNow.AddMinutes(LockoutDurationMinutes);
+                user.LockoutEnd = DateTimeOffset.UtcNow.AddMinutes(AuthConstants.LockoutDurationMinutes);
                 await userRepository.UpdateAsync(user);
 
                 return new AuthResultDto
                 {
                     IsSuccess = false,
                     IsLockedOut = true,
-                    ErrorMessage = "Too many attempts. Try again in 15 minutes or ask your Admin to reset your password."
+                    ErrorMessage = AuthConstants.Messages.AccountLockedOut
                 };
             }
 
@@ -56,7 +54,7 @@ public class AuthService(IUserRepository userRepository, IJwtTokenGenerator jwtT
             return new AuthResultDto
             {
                 IsSuccess = false,
-                ErrorMessage = "Your email or password is incorrect."
+                ErrorMessage = AuthConstants.Messages.InvalidCredentials
             };
         }
 

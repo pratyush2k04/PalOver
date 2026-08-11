@@ -1,14 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
 using Pdr.Api.Models;
+using Pdr.Api.Models.Engagements;
 using Pdr.Api.Models.EngagementAssignment;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Repositories;
 
 public class EngagementRepository(AppDbContext context) : IEngagementRepository
 {
-    public async Task<List<Engagement>> GetEngagementsForPmAsync(int userId, string sortBy)
+    public async Task<List<Engagement>> GetEngagementsForUserAsync(int userId, string sortBy)
     {
         var query = context.Engagements
             .AsNoTracking()

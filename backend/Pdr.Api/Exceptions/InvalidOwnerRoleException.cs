@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
+using Pdr.Api.Constants;
 
 namespace Pdr.Api.Exceptions;
 
-public class InvalidOwnerRoleException(int userId, string requiredRole)
-    : AppException($"User with id {userId} does not hold the {requiredRole} role.", StatusCodes.Status400BadRequest);
+public class InvalidOwnerRoleException(int userId, string roleName)
+    : AppException(EngagementValidationConstants.Messages.InvalidOwnerRole(userId, roleName), StatusCodes.Status400BadRequest);

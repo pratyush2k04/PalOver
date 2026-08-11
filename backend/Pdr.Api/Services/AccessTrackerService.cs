@@ -1,6 +1,6 @@
 using Pdr.Api.DTOs.AccessTracker;
 using Pdr.Api.Exceptions;
-using Pdr.Api.Exceptions.AccessItemExceptions;
+
 using Pdr.Api.Models.AccessTracker;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;

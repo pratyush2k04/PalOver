@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
+using Pdr.Api.Constants;
 
 namespace Pdr.Api.Exceptions;
 
 public class UserNotFoundException(int userId)
-    : AppException($"User with id {userId} was not found.", StatusCodes.Status404NotFound);
+    : AppException(AuthConstants.Messages.UserNotFound(userId), StatusCodes.Status404NotFound);
