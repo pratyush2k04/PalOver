@@ -3,6 +3,7 @@ using Pdr.Api.Repositories;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services;
 using Pdr.Api.Services.Interfaces;
+using Pdr.Api.Services.Notifications;
 
 namespace Pdr.Api.Extensions;
 
@@ -49,6 +50,9 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEnvironmentToolingService, EnvironmentToolingService>();
         services.AddScoped<IChangeRequestService, ChangeRequestService>();
         services.AddScoped<IPersonService, PersonService>();
+        services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<TemplateMapperResolver>();
+        services.AddSingleton<TemplateRenderer>();
 
         return services;
     }
