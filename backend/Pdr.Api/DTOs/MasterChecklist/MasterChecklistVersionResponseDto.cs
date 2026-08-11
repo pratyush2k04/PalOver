@@ -10,5 +10,7 @@ public class MasterChecklistVersionResponseDto
 
     public required string StatusName { get; set; }
 
+    public DateTime UpdatedAt { get; set; }
+
     public required List<MasterChecklistItemResponseDto> Items { get; set; }
 }

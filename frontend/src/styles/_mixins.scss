@@ -1,4 +1,5 @@
-@import './tokens';
+@forward './tokens';
+@use './tokens' as *;
 
 // ==========================================
 // Reusable SCSS Mixins
