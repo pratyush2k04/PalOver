@@ -17,7 +17,7 @@ public class NotificationRepository(AppDbContext context) : INotificationReposit
         var query = context.Notifications
             .AsNoTracking()
             .Include(n => n.Template)
-            .Where(n => n.ReceiverUserId == userId);
+            .Where(n => n.ReceiverUserId == userId && n.ScheduledFor <= DateTime.UtcNow);
 
         if (engagementId.HasValue)
         {
@@ -53,7 +53,7 @@ public class NotificationRepository(AppDbContext context) : INotificationReposit
     public async Task SetAllReadAsync(int userId, DateTime readAt)
     {
         await context.Notifications
-            .Where(n => n.ReceiverUserId == userId && n.ReadAt == null)
+            .Where(n => n.ReceiverUserId == userId && n.ReadAt == null && n.ScheduledFor <= readAt)
             .ExecuteUpdateAsync(setters => setters.SetProperty(n => n.ReadAt, readAt));
     }
 
