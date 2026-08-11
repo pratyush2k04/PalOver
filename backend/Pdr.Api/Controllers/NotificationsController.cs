@@ -33,19 +33,6 @@ public class NotificationsController(
     }
 
     /// <summary>
-    /// Retrieves the full resolved detail for a single notification owned by the current user.
-    /// </summary>
-    [HttpGet("{id:int}")]
-    [ProducesResponseType(typeof(NotificationDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<NotificationDto>> GetNotification(int id)
-    {
-        var result = await notificationService.GetByIdAsync(id, currentUserService.GetUserId());
-        return Ok(result);
-    }
-
-    /// <summary>
     /// Returns the count of unread, active notifications for the current user.
     /// </summary>
     [HttpGet("unread-count")]

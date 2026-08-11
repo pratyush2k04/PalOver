@@ -106,27 +106,6 @@ public class NotificationService(
         };
     }
 
-    public async Task<NotificationDto> GetByIdAsync(int id, int userId)
-    {
-        var notification = await repository.GetByIdAsync(id)
-            ?? throw new NotificationNotFoundException(id);
-
-        if (notification.ReceiverUserId != userId)
-            throw new NotificationAccessDeniedException(id);
-
-        var (title, body) = await ResolveContentAsync(notification);
-
-        return new NotificationDto(
-            notification.Id,
-            title,
-            body,
-            notification.Priority,
-            ComputeStatus(notification),
-            notification.ScheduledFor,
-            notification.ReadAt,
-            notification.Link);
-    }
-
     public async Task MarkAsReadAsync(int id, int userId)
     {
         var notification = await repository.GetByIdAsync(id)

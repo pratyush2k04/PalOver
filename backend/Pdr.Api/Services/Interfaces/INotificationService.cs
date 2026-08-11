@@ -23,7 +23,6 @@ public interface INotificationService
         CancellationToken cancellationToken = default);
 
     Task<PagedResult<NotificationDto>> GetForUserAsync(int userId, int? engagementId, int page, int pageSize);
-    Task<NotificationDto> GetByIdAsync(int id, int userId);
     Task MarkAsReadAsync(int id, int userId);
     Task MarkAllAsReadAsync(int userId);
     Task<int> GetUnreadCountAsync(int userId);
