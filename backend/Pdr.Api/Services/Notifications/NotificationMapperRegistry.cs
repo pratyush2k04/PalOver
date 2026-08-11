@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Pdr.Api.Services.Notifications.Mappers;
 
 namespace Pdr.Api.Services.Notifications;
 
@@ -7,8 +8,9 @@ public static class NotificationMapperRegistry
 {
     public static IServiceCollection AddNotificationMappers(this IServiceCollection services)
     {
-        // Add new mappers here when adding new notification types, e.g.:
-        // services.AddScoped<INotificationTemplateMapper, AccessItemBlockedMapper>();
+        services.AddScoped<INotificationTemplateMapper, AccessItemBlockedMapper>();
+
+        // Add new mappers here when adding new notification types.
 
         return services;
     }
