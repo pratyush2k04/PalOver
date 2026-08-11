@@ -5,6 +5,9 @@ import { LoadingSpinnerComponent } from '@common/components/loading-spinner/load
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
+import { AlertComponent } from '@common/components/alert/alert';
+import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
+import { BadgeComponent } from '@common/components/badge/badge';
 import { MasterChecklistService } from '../services/master-checklist.service';
 import { MasterChecklistItem, MasterChecklistItemOrder } from '../models/master-checklist.model';
 import { ItemFormDialogComponent, ItemFormDialogData, ItemFormDialogResult } from '../dialogs/item-form/item-form-dialog';
@@ -12,7 +15,15 @@ import { ItemFormDialogComponent, ItemFormDialogData, ItemFormDialogResult } fro
 @Component({
   selector: 'app-current-draft',
   standalone: true,
-  imports: [LoadingSpinnerComponent, ConfirmDialogComponent, StatusBadgeComponent, ButtonComponent],
+  imports: [
+    LoadingSpinnerComponent,
+    ConfirmDialogComponent,
+    StatusBadgeComponent,
+    ButtonComponent,
+    AlertComponent,
+    EmptyStateComponent,
+    BadgeComponent
+  ],
   templateUrl: './current-draft.html',
   styleUrl: './current-draft.scss',
 })

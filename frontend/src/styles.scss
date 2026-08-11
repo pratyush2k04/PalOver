@@ -11,8 +11,11 @@ body {
   font-family: Roboto, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 /* You can add global styles to this file, and also import other style files */
-*{
-    margin: 0;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
 }
 
 body.app-dialog-open {
@@ -33,8 +36,8 @@ body.app-dialog-open {
 
 .app-dialog-panel {
   background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
   max-width: calc(100vw - 48px);
   max-height: calc(100vh - 48px);
   overflow-y: auto;
@@ -67,6 +70,9 @@ body.app-dialog-open {
   color: #1a1a1a;
   margin: 0;
   padding: 20px 24px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .app-dialog__content {
