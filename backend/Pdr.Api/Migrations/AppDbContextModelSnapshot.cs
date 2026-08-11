@@ -3177,6 +3177,77 @@ namespace Pdr.Api.Migrations
                             ScheduledFor = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             TemplateId = 2,
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Body = "This is a MOCK DB ENTRY notification seeded for manual testing. Use PUT /api/Notifications/2/read to mark it read, then confirm GET /api/Notifications/unread-count decreases by one.",
+                            CreatedAt = new DateTime(2026, 8, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            IsDeleted = false,
+                            Link = "/engagements/1/workspace/overview",
+                            Priority = 2,
+                            ReceiverUserId = 1,
+                            ScheduledFor = new DateTime(2026, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Title = "MOCK DB ENTRY notification — mark as read test",
+                            UpdatedAt = new DateTime(2026, 8, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Body = "This is a MOCK DB ENTRY notification seeded for manual testing. Use GET /api/Notifications?engagementId=1 to confirm this entry is included in the filtered results.",
+                            CreatedAt = new DateTime(2026, 8, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            Data = "{\"EngagementId\":1}",
+                            IsDeleted = false,
+                            Link = "/engagements/1/workspace/handover",
+                            Priority = 3,
+                            ReceiverUserId = 1,
+                            ScheduledFor = new DateTime(2026, 8, 6, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Title = "MOCK DB ENTRY notification — Engagement 1 filter test",
+                            UpdatedAt = new DateTime(2026, 8, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Body = "This is a MOCK DB ENTRY notification seeded for manual testing. Use GET /api/Notifications?engagementId=2 to confirm this entry is included, and GET /api/Notifications?engagementId=1 to confirm it's excluded. Link is intentionally null to test handling of notifications with no redirect target.",
+                            CreatedAt = new DateTime(2026, 8, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            Data = "{\"EngagementId\":2}",
+                            IsDeleted = false,
+                            Priority = 1,
+                            ReceiverUserId = 1,
+                            ScheduledFor = new DateTime(2026, 8, 7, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Title = "MOCK DB ENTRY notification — Engagement 2, no link",
+                            UpdatedAt = new DateTime(2026, 8, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Body = "This is a MOCK DB ENTRY notification seeded for manual testing. ScheduledFor is in the future, so it should show Status: Pending and must be EXCLUDED from GET /api/Notifications/unread-count even though it is unread. Note: PUT /api/Notifications/read-all will still mark it read, since that endpoint doesn't check ScheduledFor.",
+                            CreatedAt = new DateTime(2026, 8, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            IsDeleted = false,
+                            Link = "/engagements/2/workspace/overview",
+                            Priority = 2,
+                            ReceiverUserId = 1,
+                            ScheduledFor = new DateTime(2026, 9, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Title = "MOCK DB ENTRY notification — Pending (future scheduled)",
+                            UpdatedAt = new DateTime(2026, 8, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Body = "This is a MOCK DB ENTRY notification seeded for manual testing. It is already marked read and is intended as the target for DELETE /api/Notifications — send { \"ids\": [6] } to remove it and confirm it no longer appears in GET /api/Notifications.",
+                            CreatedAt = new DateTime(2026, 8, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            IsDeleted = false,
+                            Priority = 1,
+                            ReadAt = new DateTime(2026, 8, 4, 0, 0, 0, 0, DateTimeKind.Utc),
+                            ReceiverUserId = 1,
+                            ScheduledFor = new DateTime(2026, 8, 3, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Title = "MOCK DB ENTRY notification — already read, safe to delete",
+                            UpdatedAt = new DateTime(2026, 8, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
