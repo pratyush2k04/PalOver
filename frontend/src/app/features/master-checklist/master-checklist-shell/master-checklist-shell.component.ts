@@ -2,7 +2,7 @@ import { Component, inject, signal, computed } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
-import { MASTER_CHECKLIST_ROUTES } from '../../../constants/app.constants';
+import { MASTER_CHECKLIST_ROUTES } from '@shared/constants/app.constants';
 import { TabItem, TabsComponent } from '@common/components/tabs/tabs';
 
 @Component({

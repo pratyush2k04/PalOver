@@ -11,7 +11,7 @@ import { SelectOption } from '@common/components/form/select/select';
 import { MultiSelectListComponent } from '@common/components/multi-select-list/multi-select-list';
 import { DocumentService } from '../../../services/document.service';
 import { DocumentItem } from '../../../models/document.model';
-import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from 'src/app/constants/document.constants';
+import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from '@shared/constants/document.constants';
 
 export interface CustomVisibilityDialogData {
   document: DocumentItem;

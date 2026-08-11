@@ -1,4 +1,4 @@
-import { DocumentCategoryId } from '../features/engagements/models/document.model';
+import { DocumentCategoryId } from '../../features/engagements/models/document.model';
 
 export const DOCUMENT_API_ENDPOINTS = {
   BY_ENGAGEMENT: (engagementId: number) => `/api/documents/engagement/${engagementId}`,

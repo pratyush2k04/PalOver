@@ -10,7 +10,7 @@ import { SelectComponent, SelectOption } from '@common/components/form/select/se
 import { MultiSelectListComponent } from '@common/components/multi-select-list/multi-select-list';
 import { CommunicationCadenceService } from '../../../../../../services/communication-cadence.service';
 import { CommunicationCadence, EngagementParticipant, CadenceTypeEnum } from '../../../../../../models/cadence.model';
-import { CADENCE_CONSTANTS } from '../../../../../../../../constants/cadence.constants';
+import { CADENCE_CONSTANTS } from '@shared/constants/cadence.constants';
 
 export interface AddCadenceDialogData {
   engagementId: number;
