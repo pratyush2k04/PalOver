@@ -4,10 +4,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { catchError, of } from 'rxjs';
 import { TECHNICAL_READINESS_ROLES } from '@shared/constants/app.constants';
-import { TechnicalReadinessService } from '../../services/technical-readiness.service';
+import { TechnicalReadinessService } from '@features/engagements/services/technical-readiness.service';
 import { AuthService } from 'src/app/services/auth';
-import { AccessItemDto, AccessItemStatus } from '../../models/technical-readiness.model';
-import { KickoffReadinessDto, KickoffReadinessService } from '../../../../services/kickoff-readiness.service';
+import { AccessItemDto, AccessItemStatus } from '@features/engagements/models/technical-readiness.model';
+import { KickoffReadinessDto, KickoffReadinessService } from 'src/app/services/kickoff-readiness.service';
 import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
@@ -87,61 +87,18 @@ export class AccessTrackerComponent {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (items) => {
-        const finalItems = items && items.length > 0 ? items : this.getDummyItems();
+        const finalItems = items ?? [];
         this.accessItems.set(finalItems);
         this.itemsUpdated.emit(finalItems);
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.warn('Failed to load access items from API, falling back to seed items', err);
-        const dummyItems = this.getDummyItems();
-        this.accessItems.set(dummyItems);
-        this.itemsUpdated.emit(dummyItems);
+        console.error('Failed to load access items from API', err);
+        this.accessItems.set([]);
+        this.itemsUpdated.emit([]);
         this.isLoading.set(false);
       }
     });
-  }
-
-  private getDummyItems(): AccessItemDto[] {
-    return [
-      {
-        accessItemId: 101,
-        name: 'Client VPN access',
-        isClientSide: true,
-        ownerId: 1,
-        ownerFullName: 'Ananth Vishwanatha',
-        status: 'InProgress',
-        timeZoneNote: 'Client is IST, no overlap issue',
-        expectedTurnaroundDays: 5,
-        daysUntilBillingDate: 6,
-        isOverdueWithClient: false
-      },
-      {
-        accessItemId: 102,
-        name: 'Client Git repository',
-        isClientSide: true,
-        ownerId: 2,
-        ownerFullName: 'Rahul Verma',
-        status: 'Granted',
-        timeZoneNote: 'Granted on Day-2',
-        expectedTurnaroundDays: 3,
-        daysUntilBillingDate: 6,
-        isOverdueWithClient: false
-      },
-      {
-        accessItemId: 103,
-        name: 'Client Jira / tracker access',
-        isClientSide: true,
-        ownerId: 3,
-        ownerFullName: 'Asha Rao',
-        status: 'Blocked',
-        timeZoneNote: 'Awaiting client admin approval',
-        expectedTurnaroundDays: 7,
-        daysUntilBillingDate: 2,
-        isOverdueWithClient: true,
-        blockReason: 'Client IT portal down'
-      }
-    ];
   }
 
   onStatusChange(item: AccessItemDto, event: Event) {

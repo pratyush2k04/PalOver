@@ -47,15 +47,19 @@
                 {{ item.ownerFullName || 'Unassigned' }}
               </td>
               <td class="client-side-cell">
-                @if (item.isClientSide) {
-                  <app-status-badge tone="warning">Client-side</app-status-badge>
-                }
-                @if (item.isOverdueWithClient) {
-                  <app-status-badge tone="warning">Overdue</app-status-badge>
-                }
-                @if (item.timeZoneNote) {
-                  <span class="note-text">{{ item.timeZoneNote }}</span>
-                }
+                <div class="cell-content">
+                  @if (item.isClientSide) {
+                    <app-status-badge tone="warning">Client-side</app-status-badge>
+                  } @else {
+                    <app-status-badge tone="neutral">Internal</app-status-badge>
+                  }
+                  @if (item.isOverdueWithClient) {
+                    <app-status-badge tone="warning">Overdue</app-status-badge>
+                  }
+                  @if (item.timeZoneNote) {
+                    <span class="note-text">{{ item.timeZoneNote }}</span>
+                  }
+                </div>
               </td>
               <td class="days-cell">
                 {{ item.daysUntilBillingDate ?? '—' }}
