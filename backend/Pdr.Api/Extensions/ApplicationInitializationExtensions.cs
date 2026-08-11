@@ -50,8 +50,15 @@ public static class ApplicationInitializationExtensions
             bool changesMade = false;
             foreach (var engagement in engagements)
             {
-                if (!engagement.AccessItems.Any() && accessDefs.Any())
+                // Purge legacy test items for AccessItems if they don't match standard definitions
+                bool hasLegacyAccess = engagement.AccessItems.Any(a => !accessDefs.Any(d => d.Name == a.Name));
+                if ((!engagement.AccessItems.Any() || hasLegacyAccess) && accessDefs.Any())
                 {
+                    if (hasLegacyAccess)
+                    {
+                        db.AccessItems.RemoveRange(engagement.AccessItems);
+                    }
+
                     foreach (var def in accessDefs)
                     {
                         db.AccessItems.Add(new Models.AccessTracker.AccessItem
@@ -67,8 +74,15 @@ public static class ApplicationInitializationExtensions
                     changesMade = true;
                 }
 
-                if (!engagement.EnvironmentToolingItems.Any() && toolingDefs.Any())
+                // Purge legacy test items for EnvironmentToolingItems if they don't match standard definitions
+                bool hasLegacyTooling = engagement.EnvironmentToolingItems.Any(t => !toolingDefs.Any(d => d.Name == t.Name));
+                if ((!engagement.EnvironmentToolingItems.Any() || hasLegacyTooling) && toolingDefs.Any())
                 {
+                    if (hasLegacyTooling)
+                    {
+                        db.EnvironmentToolingItems.RemoveRange(engagement.EnvironmentToolingItems);
+                    }
+
                     foreach (var def in toolingDefs)
                     {
                         db.EnvironmentToolingItems.Add(new Models.EnvironmentTooling.EnvironmentToolingItem
