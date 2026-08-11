@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Hosting;
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Documents;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
 using Pdr.Api.Models.Documents;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.Handover;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
@@ -20,8 +22,6 @@ public class DocumentService(
     ICurrentUserService currentUserService,
     IUserRepository userRepository) : IDocumentService
 {
-    private const string UploadsFolder = "Uploads/Documents";
-
     // ── Helper methods ──────────────────────────────────────────────────────
 
     /// <summary>Only PM and Admin can change a document's visibility.</summary>
@@ -67,7 +67,7 @@ public class DocumentService(
 
     public async Task<DocumentResponseDto> UploadDocumentAsync(DocumentUploadDto dto)
     {
-        var engagementFolder = Path.Combine(environment.ContentRootPath, UploadsFolder, dto.EngagementId.ToString());
+        var engagementFolder = Path.Combine(environment.ContentRootPath, DocumentValidationConstants.UploadsFolder, dto.EngagementId.ToString());
         if (!Directory.Exists(engagementFolder))
         {
             Directory.CreateDirectory(engagementFolder);
@@ -89,7 +89,7 @@ public class DocumentService(
             FilePath = filePath,
             FileSizeBytes = dto.File.Length,
             ContentType = string.IsNullOrWhiteSpace(dto.File.ContentType)
-                ? "application/octet-stream"
+                ? DocumentValidationConstants.DefaultContentType
                 : dto.File.ContentType,
             Visibility = dto.Visibility
         };
@@ -122,7 +122,7 @@ public class DocumentService(
 
         if (!CanAccessDocument(doc))
         {
-            throw new DocumentAccessDeniedException("You do not have permission to download this document.");
+            throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.DownloadDenied);
         }
 
         var stream = new FileStream(doc.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -158,7 +158,7 @@ public class DocumentService(
 
         if (!isUploader && !isPm && !isAdmin)
         {
-            throw new DocumentAccessDeniedException("You do not have permission to remove this document. Only the uploader or a Project Manager can remove it.");
+            throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.RemoveDenied);
         }
 
         // Signed SOW Guard
@@ -166,7 +166,7 @@ public class DocumentService(
             || string.Equals(doc.Category?.CategoryName, DocumentCategoryNames.SignedSow, StringComparison.OrdinalIgnoreCase);
         if (isSignedSow && doc.Engagement?.HandoverInfo != null && doc.Engagement.HandoverInfo.StatusId == (int)HandoverStatusEnum.Submitted)
         {
-            throw new HandoverSubmittedException("The signed SOW cannot be removed because a submitted handover is relying on it.");
+            throw new HandoverSubmittedException(DocumentValidationConstants.Messages.SignedSowRemoveDenied);
         }
 
         var updatedBy = userEmail ?? userIdStr;
@@ -177,7 +177,7 @@ public class DocumentService(
     {
         if (!CanManageDocumentVisibility())
         {
-            throw new DocumentAccessDeniedException("You do not have permission to change document visibility. Only Project Managers and Admins can do this.");
+            throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.VisibilityChangeDenied);
         }
 
         var doc = await repository.GetByIdAsync(id);

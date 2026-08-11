@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Pdr.Api.Constants;
 using Pdr.Api.Data;
 using Pdr.Api.DTOs.Home;
 using Pdr.Api.Exceptions;
@@ -41,49 +42,49 @@ public class HomeService(AppDbContext db) : IHomeService
 
     private static string ResolveRoute(User user)
     {
-        if (user.IsAdmin) return "/user-directory";
+        if (user.IsAdmin) return HomeConstants.FrontendRoutes.UserDirectory;
 
         return (RoleEnum)user.RoleId switch
         {
-            RoleEnum.ProjectManagement => "/engagement-dashboard",
-            RoleEnum.PreSales => "/my-handovers",
-            RoleEnum.TechLead => "/technical-readiness",
-            RoleEnum.Leadership => "/portfolio-dashboard",
+            RoleEnum.ProjectManagement => HomeConstants.FrontendRoutes.EngagementDashboard,
+            RoleEnum.PreSales => HomeConstants.FrontendRoutes.MyHandovers,
+            RoleEnum.TechLead => HomeConstants.FrontendRoutes.TechnicalReadiness,
+            RoleEnum.Leadership => HomeConstants.FrontendRoutes.PortfolioDashboard,
             _ => throw new RoleNotFoundException(user.RoleId),
         };
     }
 
     private static string ResolveTitle(User user)
     {
-        if (user.IsAdmin) return "User Directory";
+        if (user.IsAdmin) return HomeConstants.Titles.UserDirectory;
 
         return (RoleEnum)user.RoleId switch
         {
-            RoleEnum.ProjectManagement => "My Engagements",
-            RoleEnum.PreSales => "My Handovers",
-            RoleEnum.TechLead => "Technical Readiness",
-            RoleEnum.Leadership => "Portfolio Dashboard",
+            RoleEnum.ProjectManagement => HomeConstants.Titles.MyEngagements,
+            RoleEnum.PreSales => HomeConstants.Titles.MyHandovers,
+            RoleEnum.TechLead => HomeConstants.Titles.TechnicalReadiness,
+            RoleEnum.Leadership => HomeConstants.Titles.PortfolioDashboard,
             _ => throw new RoleNotFoundException(user.RoleId),
         };
     }
 
     private static string ResolveEmptyState(User user)
     {
-        if (user.IsAdmin) return "No users found.";
+        if (user.IsAdmin) return HomeConstants.EmptyStates.UserDirectory;
 
         return (RoleEnum)user.RoleId switch
         {
-            RoleEnum.ProjectManagement => "You have no engagements yet.",
-            RoleEnum.PreSales => "You have no handovers yet.",
-            RoleEnum.TechLead => "You have no technical readiness tasks yet.",
-            RoleEnum.Leadership => "No portfolio items available.",
+            RoleEnum.ProjectManagement => HomeConstants.EmptyStates.MyEngagements,
+            RoleEnum.PreSales => HomeConstants.EmptyStates.MyHandovers,
+            RoleEnum.TechLead => HomeConstants.EmptyStates.TechnicalReadiness,
+            RoleEnum.Leadership => HomeConstants.EmptyStates.PortfolioDashboard,
             _ => throw new RoleNotFoundException(user.RoleId),
         };
     }
 
     private static string BuildWelcomeMessage(User user)
     {
-        var roleLabel = user.IsAdmin ? "Admin" : user.Role.Name;
+        var roleLabel = user.IsAdmin ? RoleConstants.Admin : user.Role.Name;
         return $"Welcome, {user.FullName} - {roleLabel}";
     }
 }

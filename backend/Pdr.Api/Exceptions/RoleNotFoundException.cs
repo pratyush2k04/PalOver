@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
+using Pdr.Api.Constants;
 
 namespace Pdr.Api.Exceptions;
 
 public class RoleNotFoundException(int roleId)
-    : AppException($"Role with id {roleId} was not found.", StatusCodes.Status400BadRequest);
+    : AppException(AuthConstants.Messages.RoleNotFound(roleId), StatusCodes.Status400BadRequest);

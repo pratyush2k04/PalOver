@@ -1,10 +1,16 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Pdr.Api.Attributes;
 using Pdr.Api.DTOs.ChangeRequests;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Controllers;
 
+/// <summary>
+/// Manages change requests for an engagement.
+/// </summary>
 [ApiController]
 [Authorize]
 [Route("api/engagements/{engagementId:int}/change-requests")]
@@ -19,7 +25,9 @@ public class ChangeRequestsController(IChangeRequestService changeRequestService
     /// <param name="status">Optional status filter ("Under Review", "Approved", "Rejected").</param>
     /// <returns>A list of change requests including rejection reasons for rejected items.</returns>
     [HttpGet]
+    [EndpointSummary("Get change requests for an engagement")]
     [ProducesResponseType(typeof(List<ChangeRequestDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<List<ChangeRequestDto>>> GetChangeRequests(
         int engagementId, 
@@ -36,9 +44,12 @@ public class ChangeRequestsController(IChangeRequestService changeRequestService
     /// <param name="request">The description and impact estimate for the change request.</param>
     /// <returns>The created change request details.</returns>
     [HttpPost]
-    [Authorize(Roles = "Project Management")]
+    [AuthorizeRoles(RoleEnum.ProjectManagement)]
+    [EndpointSummary("Create a change request (Project Manager only)")]
     [ProducesResponseType(typeof(ChangeRequestDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ChangeRequestDto>> CreateChangeRequest(
         int engagementId, 
@@ -49,6 +60,9 @@ public class ChangeRequestsController(IChangeRequestService changeRequestService
     }
 }
 
+/// <summary>
+/// Handles approval and rejection operations for individual change requests.
+/// </summary>
 [ApiController]
 [Authorize]
 [Route("api/change-requests")]
@@ -61,9 +75,11 @@ public class ChangeRequestItemController(IChangeRequestService changeRequestServ
     /// <param name="id">The change request ID.</param>
     /// <returns>The updated change request in Approved status.</returns>
     [HttpPut("{id:int}/approve")]
-    [Authorize(Roles = "Leadership")]
+    [AuthorizeRoles(RoleEnum.Leadership)]
+    [EndpointSummary("Approve a change request (Leadership only)")]
     [ProducesResponseType(typeof(ChangeRequestDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ChangeRequestDto>> ApproveChangeRequest(int id)
@@ -79,9 +95,11 @@ public class ChangeRequestItemController(IChangeRequestService changeRequestServ
     /// <param name="request">The rejection payload containing the reason.</param>
     /// <returns>The updated change request in Rejected status with the recorded rejection reason.</returns>
     [HttpPut("{id:int}/reject")]
-    [Authorize(Roles = "Leadership")]
+    [AuthorizeRoles(RoleEnum.Leadership)]
+    [EndpointSummary("Reject a change request (Leadership only)")]
     [ProducesResponseType(typeof(ChangeRequestDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ChangeRequestDto>> RejectChangeRequest(

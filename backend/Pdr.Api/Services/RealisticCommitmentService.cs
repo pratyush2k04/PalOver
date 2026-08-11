@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Handovers;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Handover;
@@ -9,8 +10,6 @@ namespace Pdr.Api.Services;
 
 public class RealisticCommitmentService : IRealisticCommitmentService
 {
-    private const string SubmittedStatusName = "Submitted";
-
     private readonly IHandoverRepository _handoverRepository;
     private readonly ICommitmentRepository _commitmentRepository;
     private readonly IRealisticCommitmentRepository _realisticCommitmentRepository;
@@ -42,9 +41,9 @@ public class RealisticCommitmentService : IRealisticCommitmentService
     {
         var status = await _handoverRepository.GetStatusByIdAsync(handover.StatusId);
 
-        if (status?.StatusName == SubmittedStatusName)
+        if (status?.StatusName == HandoverStatusNames.Submitted)
         {
-            throw new HandoverSubmittedException("This handover has already been submitted and its commitments can no longer be changed.");
+            throw new HandoverSubmittedException(HandoverValidationConstants.AlreadySubmitted);
         }
     }
 
@@ -76,8 +75,7 @@ public class RealisticCommitmentService : IRealisticCommitmentService
 
         if (!timelinesMatch && !acknowledgementProvided)
         {
-            throw new AcknowledgementRequiredException(
-                "The realistic timeline differs from the promised timeline. Please provide an acknowledgement message.");
+            throw new AcknowledgementRequiredException(HandoverValidationConstants.RealisticTimelineDiffersAcknowledgementRequired);
         }
 
         var realistic = new RealisticCommitment
@@ -121,8 +119,7 @@ public class RealisticCommitmentService : IRealisticCommitmentService
 
         if (!timelinesMatch && !acknowledgementProvided)
         {
-            throw new AcknowledgementRequiredException(
-                "The realistic timeline differs from the promised timeline. Please provide an acknowledgement message.");
+            throw new AcknowledgementRequiredException(HandoverValidationConstants.RealisticTimelineDiffersAcknowledgementRequired);
         }
 
         realistic.Description = request.Description;
