@@ -52,10 +52,31 @@ export class NotificationsDropdownComponent implements OnInit {
   }
 
   onNotificationClick(notification: Notification): void {
+    if (!notification.readAt) {
+      this.notificationService.markAsRead(notification.id).subscribe(() => {
+        this.markLocallyRead([notification.id]);
+        this.unreadCount.update(count => Math.max(0, count - 1));
+      });
+    }
+
     this.isOpen.set(false);
     if (notification.link) {
       this.router.navigateByUrl(notification.link);
     }
+  }
+
+  markAllAsRead(): void {
+    this.notificationService.markAllAsRead().subscribe(() => {
+      this.markLocallyRead(this.notifications().map(n => n.id));
+      this.unreadCount.set(0);
+    });
+  }
+
+  private markLocallyRead(ids: number[]): void {
+    const idSet = new Set(ids);
+    this.notifications.update(items =>
+      items.map(item => (idSet.has(item.id) ? { ...item, readAt: new Date().toISOString(), status: 'Read' } : item))
+    );
   }
 
   private loadPage(page: number): void {

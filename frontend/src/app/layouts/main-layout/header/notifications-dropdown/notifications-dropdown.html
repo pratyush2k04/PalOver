@@ -10,6 +10,9 @@
     <div class="dropdown-panel">
       <div class="dropdown-header">
         <span class="dropdown-title">Notifications</span>
+        @if (unreadCount() > 0) {
+          <app-button variant="stroked" size="sm" (click)="markAllAsRead()">Mark all as read</app-button>
+        }
       </div>
 
       <div class="dropdown-list">
