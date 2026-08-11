@@ -1,5 +1,4 @@
-@import 'src/styles/tokens';
-@import 'src/styles/mixins';
+@use '../../../../styles/mixins' as *;
 
 :host {
   display: block;

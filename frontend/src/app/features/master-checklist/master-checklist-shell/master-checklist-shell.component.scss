@@ -1,5 +1,4 @@
-@import 'src/styles/tokens';
-@import 'src/styles/mixins';
+@use '../../../../styles/mixins' as *;
 
 .workspace-container {
   display: flex;
@@ -31,47 +30,6 @@
   margin: $spacing-1 0;
   font-size: $font-size-sm;
   color: $color-text-muted;
-}
-
-.workspace-tabs {
-  display: flex;
-  border-bottom: 1px solid $color-border-soft;
-  background-color: $color-surface;
-  overflow-x: auto;
-  white-space: nowrap;
-  -webkit-overflow-scrolling: touch;
-}
-
-.tab-item {
-  padding: $spacing-3 $spacing-6;
-  text-decoration: none;
-  color: $color-text-muted;
-  font-size: $font-size-sm;
-  cursor: pointer;
-  border-bottom: 3px solid transparent;
-  transition: background-color $transition-base, color $transition-base;
-  flex-shrink: 0;
-
-  &:hover:not(.tab-item-disabled) {
-    background-color: $color-bg;
-  }
-
-  &:focus-visible {
-    outline: none;
-    box-shadow: inset 0 0 0 3px $color-primary-focus-ring;
-  }
-
-  &.active {
-    color: $color-primary;
-    border-bottom-color: $color-primary;
-    font-weight: $font-weight-semibold;
-  }
-
-  &.tab-item-disabled {
-    color: $color-text-fainter;
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
 }
 
 .workspace-content {
