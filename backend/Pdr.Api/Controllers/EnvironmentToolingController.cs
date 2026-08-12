@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.Attributes;
-using Pdr.Api.Constants;
 using Pdr.Api.DTOs.EnvironmentTooling;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Services.Interfaces;
@@ -14,7 +13,7 @@ namespace Pdr.Api.Controllers;
 /// </summary>
 [ApiController]
 [Authorize]
-[Route(EnvironmentToolingConstants.Routes.Base)]
+[Route("api/engagements/{engagementId:int}/environment-tooling")]
 [Produces("application/json")]
 public class EnvironmentToolingController(IEnvironmentToolingService service) : ControllerBase
 {
@@ -62,7 +61,7 @@ public class EnvironmentToolingController(IEnvironmentToolingService service) : 
 /// </summary>
 [ApiController]
 [Authorize]
-[Route(EnvironmentToolingConstants.Routes.ItemsBase)]
+[Route("api/environment-tooling")]
 [Produces("application/json")]
 public class EnvironmentToolingItemsController(IEnvironmentToolingService service) : ControllerBase
 {
