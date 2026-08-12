@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 using Pdr.Api.Constants;
+=======
+using System.Text.Json;
+>>>>>>> dev
 using Pdr.Api.DTOs.AccessTracker;
 using Pdr.Api.Exceptions;
 
 using Pdr.Api.Models.AccessTracker;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
@@ -10,7 +15,12 @@ namespace Pdr.Api.Services;
 
 public class AccessTrackerService(
     IAccessTrackerRepository repository,
+<<<<<<< HEAD
     IRiskService riskService) : IAccessTrackerService
+=======
+    INotificationService notificationService,
+    ICurrentUserService currentUserService) : IAccessTrackerService
+>>>>>>> dev
 {
     // -------------------------------------------------------------------------
     // State machine: defines which transitions are allowed
@@ -121,6 +131,13 @@ public class AccessTrackerService(
                 RiskConstants.SourceTypes.AccessTracker,
                 item.AccessItemId,
                 item.Name);
+            await notificationService.CreateFromTemplateAsync(
+                "AccessItemBlocked",
+                item.EngagementId,
+                RoleEnum.TechLead,
+                JsonSerializer.Serialize(new { AccessItemId = item.AccessItemId, TriggerUserId = currentUserService.GetUserId() }),
+                DateTime.UtcNow,
+                $"/engagements/{item.EngagementId}/workspace/technical-readiness");
         }
 
         return MapToDto(item);

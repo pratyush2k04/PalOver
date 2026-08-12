@@ -14,7 +14,7 @@ namespace Pdr.Api.Controllers;
 /// </summary>
 [ApiController]
 [Authorize]
-[Route(AccessTrackerConstants.Routes.Base)]
+[Route("api/engagements/{engagementId:int}/access-items")]
 [Produces("application/json")]
 public class AccessTrackerController(IAccessTrackerService accessTrackerService) : ControllerBase
 {
@@ -61,7 +61,7 @@ public class AccessTrackerController(IAccessTrackerService accessTrackerService)
     /// </summary>
     /// <param name="engagementId">The ID of the engagement.</param>
     /// <returns>Confirmation message on completing risk evaluation.</returns>
-    [HttpPost(AccessTrackerConstants.Routes.EvaluateRisks)]
+    [HttpPost("evaluate-risks")]
     [AuthorizeRoles(RoleEnum.TechLead)]
     [EndpointSummary("Evaluate client-side risks (Tech Lead only)")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -80,7 +80,7 @@ public class AccessTrackerController(IAccessTrackerService accessTrackerService)
 /// </summary>
 [ApiController]
 [Authorize]
-[Route(AccessTrackerConstants.Routes.ItemsBase)]
+[Route("api/access-items")]
 [Produces("application/json")]
 public class AccessItemsController(IAccessTrackerService accessTrackerService) : ControllerBase
 {
