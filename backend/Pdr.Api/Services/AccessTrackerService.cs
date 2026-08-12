@@ -1,3 +1,4 @@
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.AccessTracker;
 using Pdr.Api.Exceptions;
 
@@ -7,7 +8,9 @@ using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class AccessTrackerService(IAccessTrackerRepository repository) : IAccessTrackerService
+public class AccessTrackerService(
+    IAccessTrackerRepository repository,
+    IRiskService riskService) : IAccessTrackerService
 {
     // -------------------------------------------------------------------------
     // State machine: defines which transitions are allowed
@@ -107,6 +110,19 @@ public class AccessTrackerService(IAccessTrackerRepository repository) : IAccess
         }
 
         await repository.SaveChangesAsync();
+
+        if (request.Status == AccessItemStatus.Blocked)
+        {
+            await riskService.AutoCreateRiskFromBlockerAsync(
+                item.EngagementId,
+                item.Name,
+                request.BlockReason!,
+                item.OwnerId,
+                RiskConstants.SourceTypes.AccessTracker,
+                item.AccessItemId,
+                item.Name);
+        }
+
         return MapToDto(item);
     }
 

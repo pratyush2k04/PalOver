@@ -1,3 +1,4 @@
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.EnvironmentTooling;
 using Pdr.Api.Exceptions;
 
@@ -7,7 +8,9 @@ using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class EnvironmentToolingService(IEnvironmentToolingRepository repository) : IEnvironmentToolingService
+public class EnvironmentToolingService(
+    IEnvironmentToolingRepository repository,
+    IRiskService riskService) : IEnvironmentToolingService
 {
     public async Task<EnvironmentToolingReadinessResponse> GetItemsByEngagementIdAsync(int engagementId)
     {
@@ -86,6 +89,18 @@ public class EnvironmentToolingService(IEnvironmentToolingRepository repository)
         item.BlockReason = request.BlockReason;
         item.Status = request.Status;
         await repository.SaveChangesAsync();
+
+        if (request.Status == EnvironmentToolingStatus.Blocked)
+        {
+            await riskService.AutoCreateRiskFromBlockerAsync(
+                item.EngagementId,
+                item.Name,
+                request.BlockReason ?? "Blocked environment/tooling item",
+                item.OwnerId,
+                RiskConstants.SourceTypes.EnvironmentTooling,
+                item.Id,
+                item.Name);
+        }
 
         return MapToDto(item);
     }
