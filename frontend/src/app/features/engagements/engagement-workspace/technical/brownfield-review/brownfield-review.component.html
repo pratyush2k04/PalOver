@@ -55,7 +55,7 @@
               </td>
               <td>
                 @if (item.documentName) {
-                  <span class="doc-link">📄 {{ item.documentName }}</span>
+                  <span class="doc-link">🗂️ {{ item.documentName }}</span>
                 } @else {
                   <span class="no-doc">None</span>
                 }
@@ -97,7 +97,7 @@
                     variant="icon"
                     ariaLabel="Delete finding"
                     (click)="onDeleteFinding(item.brownfieldFindingId)">
-                    🗑️
+                    ❌
                   </app-button>
                 </td>
               }
