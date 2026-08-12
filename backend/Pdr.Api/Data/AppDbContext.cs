@@ -62,6 +62,8 @@ public class AppDbContext : DbContext
     // People Directory
     public DbSet<Person> People => Set<Person>();
 
+    public DbSet<ClientContactTransition> ClientContactTransitions => Set<ClientContactTransition>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

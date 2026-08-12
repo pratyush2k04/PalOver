@@ -27,6 +27,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEnvironmentToolingRepository, EnvironmentToolingRepository>();
         services.AddScoped<IChangeRequestRepository, ChangeRequestRepository>();
         services.AddScoped<IPersonRepository, PersonRepository>();
+        services.AddScoped<IClientContactTransitionRepository, ClientContactTransitionRepository>();
 
         // Services
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
@@ -48,6 +49,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEnvironmentToolingService, EnvironmentToolingService>();
         services.AddScoped<IChangeRequestService, ChangeRequestService>();
         services.AddScoped<IPersonService, PersonService>();
+        services.AddScoped<IClientContactTransitionService, ClientContactTransitionService>();
 
         return services;
     }
