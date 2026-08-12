@@ -63,6 +63,10 @@ public class AppDbContext : DbContext
     // People Directory
     public DbSet<Person> People => Set<Person>();
 
+    // Notifications
+    public DbSet<Models.Notifications.Notification> Notifications => Set<Models.Notifications.Notification>();
+    public DbSet<Models.Notifications.NotificationTemplate> NotificationTemplates => Set<Models.Notifications.NotificationTemplate>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

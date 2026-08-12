@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Handovers;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Handover;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
@@ -15,17 +17,20 @@ public class HandoverService : IHandoverService
     private readonly ICommitmentRepository _commitmentRepository;
     private readonly IRealisticCommitmentRepository _realisticCommitmentRepository;
     private readonly IKickoffReadinessService _kickoffReadinessService;
+    private readonly INotificationService _notificationService;
 
     public HandoverService(
         IHandoverRepository handoverRepository,
         ICommitmentRepository commitmentRepository,
         IRealisticCommitmentRepository realisticCommitmentRepository,
-        IKickoffReadinessService kickoffReadinessService)
+        IKickoffReadinessService kickoffReadinessService,
+        INotificationService notificationService)
     {
         _handoverRepository = handoverRepository;
         _commitmentRepository = commitmentRepository;
         _realisticCommitmentRepository = realisticCommitmentRepository;
         _kickoffReadinessService = kickoffReadinessService;
+        _notificationService = notificationService;
     }
 
     public async Task<HandoverInfoDto> GetHandoverAsync(int engagementId)
@@ -137,6 +142,14 @@ public class HandoverService : IHandoverService
         handover.UpdatedBy = userIdStr;
 
         await _handoverRepository.SaveChangesAsync();
+
+        await _notificationService.CreateFromTemplateAsync(
+            "HandoverSubmitted",
+            engagementId,
+            RoleEnum.ProjectManagement,
+            JsonSerializer.Serialize(new { HandoverId = handover.HandoverId, TriggerUserId = int.Parse(userIdStr), EngagementId = engagementId }),
+            DateTime.UtcNow,
+            $"/engagements/{engagementId}/workspace/handover");
 
         return await GetHandoverAsync(engagementId);
     }
