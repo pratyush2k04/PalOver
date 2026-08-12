@@ -13,8 +13,8 @@ using Pdr.Api.Data;
 namespace Pdr.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260807173523_AddPersonEntityAndSeeding")]
-    partial class AddPersonEntityAndSeeding
+    [Migration("20260807173523_AddKickoffFeatureModels")]
+    partial class AddKickoffFeatureModels
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
