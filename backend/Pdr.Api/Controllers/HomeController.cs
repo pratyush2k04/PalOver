@@ -2,7 +2,6 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Home;
 using Pdr.Api.Services.Interfaces;
 
@@ -12,7 +11,7 @@ namespace Pdr.Api.Controllers;
 /// Provides personalized home dashboard metrics and active engagements.
 /// </summary>
 [ApiController]
-[Route(HomeConstants.Routes.Base)]
+[Route("api/[controller]")]
 [Authorize]
 [Produces("application/json")]
 public class HomeController(IHomeService homeService) : ControllerBase

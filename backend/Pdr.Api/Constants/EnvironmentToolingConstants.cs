@@ -2,12 +2,6 @@ namespace Pdr.Api.Constants;
 
 public static class EnvironmentToolingConstants
 {
-    public static class Routes
-    {
-        public const string Base = "api/engagements/{engagementId:int}/environment-tooling";
-        public const string ItemsBase = "api/environment-tooling";
-    }
-
     public static class Roles
     {
         public const string TechLead = "Tech Lead";
