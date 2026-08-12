@@ -13,7 +13,6 @@ public class BrownfieldFindingDto
     public bool IsDecisionNeeded => Severity == BrownfieldSeverity.High && ClientDecision == null;
     public int? DocumentId { get; set; }
     public string? DocumentName { get; set; }
-    public bool IsDeleted { get; set; }
     public DateTime CreatedAt { get; set; }
     public string? CreatedBy { get; set; }
 }
