@@ -85,38 +85,6 @@ export class EngagementsComponent implements OnInit {
     this.commercialModels().map((model) => ({ value: model.id, label: model.name }))
   );
 
-  get engagementNameControl(): AbstractControl | null {
-    return this.engagementForm.get('engagementName');
-  }
-
-  get clientNameControl(): AbstractControl | null {
-    return this.engagementForm.get('clientName');
-  }
-
-  get engagementTypeIdControl(): AbstractControl | null {
-    return this.engagementForm.get('engagementTypeId');
-  }
-
-  get commercialModelIdControl(): AbstractControl | null {
-    return this.engagementForm.get('commercialModelId');
-  }
-
-  get kickoffDateControl(): AbstractControl | null {
-    return this.engagementForm.get('kickoffDate');
-  }
-
-  get billingStartDateControl(): AbstractControl | null {
-    return this.engagementForm.get('billingStartDate');
-  }
-
-  get billingBeforeKickoffError(): string | null {
-    const control = this.engagementForm.get('billingStartDate');
-    const touched = !!control && (control.touched || control.dirty);
-    return touched && this.engagementForm.errors?.['billingBeforeKickoff']
-      ? 'Billing start cannot be before the kickoff date.'
-      : null;
-  }
-
   openModal(): void {
     this.errorMessage.set(null);
     this.warnings.set([]);

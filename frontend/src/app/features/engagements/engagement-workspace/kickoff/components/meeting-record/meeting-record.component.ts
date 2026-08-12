@@ -5,16 +5,18 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { KickoffService } from '../../../../../../services/kickoff.service';
 import { KickoffActionItem, KickoffActionItemStatus } from '../../../../../../models/kickoff.model';
+import { AuthService } from '../../../../../../services/auth';
 import { KICKOFF_MESSAGES } from '@shared/constants/kickoff.constants';
 import { ButtonComponent } from '@common/components/button/button';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
+import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { AddActionDialogComponent, AddActionDialogResult } from '../../dialogs/add-action-dialog/add-action-dialog.component';
 
 @Component({
   selector: 'app-meeting-record',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, SelectComponent],
+  imports: [CommonModule, FormsModule, ButtonComponent, SelectComponent, StatusBadgeComponent],
   templateUrl: './meeting-record.component.html',
   styleUrl: './meeting-record.component.scss'
 })
@@ -22,8 +24,11 @@ export class MeetingRecordComponent {
   private route = inject(ActivatedRoute);
   private kickoffService = inject(KickoffService);
   private dialog = inject(DialogService);
+  private authService = inject(AuthService);
 
   readonly messages = KICKOFF_MESSAGES;
+
+  isProjectManager = computed(() => this.authService.hasRole('Project Management'));
 
   readonly statusOptions: SelectOption[] = [
     { value: 'Open', label: 'Open' },
@@ -85,7 +90,7 @@ export class MeetingRecordComponent {
 
   onStatusChange(item: KickoffActionItem, status: unknown): void {
     const id = this.engagementId();
-    if (!id || !item.kickoffActionItemId) return;
+    if (!id || !item.kickoffActionItemId || !this.isProjectManager()) return;
 
     this.kickoffService.updateActionItemStatus(id, item.kickoffActionItemId, status as KickoffActionItemStatus).subscribe({
       next: (updated) => {
@@ -100,7 +105,7 @@ export class MeetingRecordComponent {
 
   openAddActionDialog(): void {
     const id = this.engagementId();
-    if (!id) return;
+    if (!id || !this.isProjectManager()) return;
 
     const dialogRef = this.dialog.open<AddActionDialogComponent, unknown, AddActionDialogResult>(AddActionDialogComponent);
 

@@ -14,6 +14,7 @@
     [ngModel]="outcomes()"
     (ngModelChange)="outcomes.set($event)"
     (blur)="saveOutcomes()"
+    [disabled]="!isProjectManager()"
   ></textarea>
 
   <h4 class="actions-heading">ACTIONS</h4>
@@ -25,15 +26,21 @@
           <p class="action-title">{{ item.title }}</p>
           <p class="action-meta">{{ item.ownerName }} &middot; due {{ item.dueDate | date: 'd MMM y' }}</p>
         </div>
-        <app-select
-          id="action-status-{{ item.kickoffActionItemId }}"
-          [options]="statusOptions"
-          [ngModel]="item.status"
-          (ngModelChange)="onStatusChange(item, $event)"
-        />
+        @if (isProjectManager()) {
+          <app-select
+            id="action-status-{{ item.kickoffActionItemId }}"
+            [options]="statusOptions"
+            [ngModel]="item.status"
+            (ngModelChange)="onStatusChange(item, $event)"
+          />
+        } @else {
+          <app-status-badge tone="neutral">{{ item.status }}</app-status-badge>
+        }
       </li>
     }
   </ul>
 
-  <app-button type="button" variant="stroked" (click)="openAddActionDialog()">+ Add action</app-button>
+  @if (isProjectManager()) {
+    <app-button type="button" variant="stroked" (click)="openAddActionDialog()">+ Add action</app-button>
+  }
 </div>

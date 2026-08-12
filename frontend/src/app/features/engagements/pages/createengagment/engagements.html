@@ -5,11 +5,11 @@
   </div>
 
   @if (warnings().length > 0) {
-  <div class="alert alert-warning" role="alert">
+  <app-alert variant="warning">
     @for (warning of warnings(); track warning) {
     <div>{{ warning }}</div>
     }
-  </div>
+  </app-alert>
   }
 
   @if (showModal()) {
@@ -22,82 +22,70 @@
 
       <form [formGroup]="engagementForm" (ngSubmit)="onSubmit()" novalidate>
         @if (errorMessage()) {
-        <div class="alert alert-danger" role="alert">
-          {{ errorMessage() }}
-        </div>
+        <app-alert variant="danger">{{ errorMessage() }}</app-alert>
         }
 
         <div class="form-group">
-          <label for="engagementName">Engagement name</label>
-          <input id="engagementName" type="text" formControlName="engagementName"
-            [class.is-invalid]="engagementNameControl?.invalid && (engagementNameControl?.touched || engagementNameControl?.dirty)" />
-          @if (engagementNameControl?.invalid && (engagementNameControl?.touched || engagementNameControl?.dirty)) {
-          <div class="invalid-feedback">Engagement name is required.</div>
-          }
+          <app-input
+            id="engagementName"
+            label="Engagement name"
+            formControlName="engagementName"
+            [errorMessages]="{ required: 'Engagement name is required.' }"
+          />
         </div>
 
         <div class="form-group">
-          <label for="clientName">Client name</label>
-          <input id="clientName" type="text" formControlName="clientName"
-            [class.is-invalid]="clientNameControl?.invalid && (clientNameControl?.touched || clientNameControl?.dirty)" />
-          @if (clientNameControl?.invalid && (clientNameControl?.touched || clientNameControl?.dirty)) {
-          <div class="invalid-feedback">Client name is required.</div>
-          }
+          <app-input
+            id="clientName"
+            label="Client name"
+            formControlName="clientName"
+            [errorMessages]="{ required: 'Client name is required.' }"
+          />
         </div>
 
         <div class="form-group">
-          <label for="engagementDescription">Engagement description (optional)</label>
-          <input id="engagementDescription" type="text" formControlName="engagementDescription" />
+          <app-input id="engagementDescription" label="Engagement description (optional)" formControlName="engagementDescription" />
         </div>
 
         <div class="form-group">
-          <label for="engagementTypeId">Nature</label>
-          <select id="engagementTypeId" formControlName="engagementTypeId"
-            [class.is-invalid]="engagementTypeIdControl?.invalid && (engagementTypeIdControl?.touched || engagementTypeIdControl?.dirty)">
-            @for (type of engagementTypes(); track type.id) {
-            <option [ngValue]="type.id">{{ type.name }}</option>
-            }
-          </select>
-          @if (engagementTypeIdControl?.invalid && (engagementTypeIdControl?.touched || engagementTypeIdControl?.dirty))
-          {
-          <div class="invalid-feedback">Nature is required.</div>
-          }
+          <app-select
+            id="engagementTypeId"
+            label="Nature"
+            formControlName="engagementTypeId"
+            [options]="engagementTypeOptions()"
+            [errorMessages]="{ required: 'Nature is required.' }"
+          />
         </div>
 
         <div class="form-group">
-          <label for="commercialModelId">Commercial model</label>
-          <select id="commercialModelId" formControlName="commercialModelId"
-            [class.is-invalid]="commercialModelIdControl?.invalid && (commercialModelIdControl?.touched || commercialModelIdControl?.dirty)">
-            @for (model of commercialModels(); track model.id) {
-            <option [ngValue]="model.id">{{ model.name }}</option>
-            }
-          </select>
-          @if (commercialModelIdControl?.invalid && (commercialModelIdControl?.touched ||
-          commercialModelIdControl?.dirty)) {
-          <div class="invalid-feedback">Commercial model is required.</div>
-          }
+          <app-select
+            id="commercialModelId"
+            label="Commercial model"
+            formControlName="commercialModelId"
+            [options]="commercialModelOptions()"
+            [errorMessages]="{ required: 'Commercial model is required.' }"
+          />
         </div>
 
         <div class="form-group">
-          <label for="kickoffDate">Target kickoff date</label>
-          <input id="kickoffDate" type="date" formControlName="kickoffDate"
-            [class.is-invalid]="kickoffDateControl?.invalid && (kickoffDateControl?.touched || kickoffDateControl?.dirty)" />
-          @if (kickoffDateControl?.invalid && (kickoffDateControl?.touched || kickoffDateControl?.dirty)) {
-          <div class="invalid-feedback">Target kickoff date is required.</div>
-          }
+          <app-input
+            id="kickoffDate"
+            type="date"
+            label="Target kickoff date"
+            formControlName="kickoffDate"
+            [errorMessages]="{ required: 'Target kickoff date is required.' }"
+          />
         </div>
 
         <div class="form-group">
-          <label for="billingStartDate">Billing start date</label>
-          <input id="billingStartDate" type="date" formControlName="billingStartDate"
-            [class.is-invalid]="(billingStartDateControl?.invalid || engagementForm.errors?.['billingBeforeKickoff']) && (billingStartDateControl?.touched || billingStartDateControl?.dirty)" />
-          @if (billingStartDateControl?.invalid && (billingStartDateControl?.touched || billingStartDateControl?.dirty))
-          {
-          <div class="invalid-feedback">Billing start date is required.</div>
-          } @else if (engagementForm.errors?.['billingBeforeKickoff'] && (billingStartDateControl?.touched ||
-          billingStartDateControl?.dirty)) {
-          <div class="invalid-feedback">Billing start cannot be before the kickoff date.</div>
-          }
+          <app-input
+            id="billingStartDate"
+            type="date"
+            label="Billing start date"
+            formControlName="billingStartDate"
+            [errorMessages]="{ required: 'Billing start date is required.' }"
+            [extraError]="engagementForm.errors?.['billingBeforeKickoff'] ? 'Billing start cannot be before the kickoff date.' : null"
+          />
         </div>
 
         <div class="modal-actions">
