@@ -13,8 +13,8 @@ using Pdr.Api.Data;
 namespace Pdr.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260811124657_SeedAccessAndToolingItemsForEngagements")]
-    partial class SeedAccessAndToolingItemsForEngagements
+    [Migration("20260812045247_SeedingForAccessItemsAndEnvironmentTooling")]
+    partial class SeedingForAccessItemsAndEnvironmentTooling
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -98,46 +98,46 @@ namespace Pdr.Api.Migrations
                         {
                             AccessItemId = 1,
                             AccessItemDefinitionId = 1,
-                            CreatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 637, DateTimeKind.Utc).AddTicks(1447),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
                             IsClientSide = false,
                             IsDeleted = false,
                             Name = "VPN Access",
                             OwnerId = 1,
                             Status = 1,
-                            UpdatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 637, DateTimeKind.Utc).AddTicks(1452)
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             AccessItemId = 2,
                             AccessItemDefinitionId = 2,
-                            CreatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 637, DateTimeKind.Utc).AddTicks(4504),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
                             IsClientSide = true,
                             IsDeleted = false,
                             Name = "Jira",
                             OwnerId = 1,
                             Status = 1,
-                            UpdatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 637, DateTimeKind.Utc).AddTicks(4504)
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             AccessItemId = 3,
                             AccessItemDefinitionId = 3,
-                            CreatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 637, DateTimeKind.Utc).AddTicks(4510),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
                             IsClientSide = true,
                             IsDeleted = false,
                             Name = "SandBox",
                             OwnerId = 1,
                             Status = 1,
-                            UpdatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 637, DateTimeKind.Utc).AddTicks(4511)
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             AccessItemId = 4,
                             AccessItemDefinitionId = 1,
-                            CreatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 637, DateTimeKind.Utc).AddTicks(4514),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
                             GrantedDate = new DateOnly(2026, 6, 2),
                             IsClientSide = false,
@@ -145,13 +145,13 @@ namespace Pdr.Api.Migrations
                             Name = "VPN Access",
                             OwnerId = 1,
                             Status = 2,
-                            UpdatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 637, DateTimeKind.Utc).AddTicks(4514)
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             AccessItemId = 5,
                             AccessItemDefinitionId = 2,
-                            CreatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 637, DateTimeKind.Utc).AddTicks(5687),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
                             GrantedDate = new DateOnly(2026, 6, 2),
                             IsClientSide = true,
@@ -159,20 +159,20 @@ namespace Pdr.Api.Migrations
                             Name = "Jira",
                             OwnerId = 1,
                             Status = 2,
-                            UpdatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 637, DateTimeKind.Utc).AddTicks(5687)
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             AccessItemId = 6,
                             AccessItemDefinitionId = 3,
-                            CreatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 637, DateTimeKind.Utc).AddTicks(5702),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
                             IsClientSide = true,
                             IsDeleted = false,
                             Name = "SandBox",
                             OwnerId = 1,
                             Status = 1,
-                            UpdatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 637, DateTimeKind.Utc).AddTicks(5702)
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -1814,212 +1814,73 @@ namespace Pdr.Api.Migrations
                         new
                         {
                             EnvironmentToolingItemId = 1,
-                            CreatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 744, DateTimeKind.Utc).AddTicks(9274),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
                             EnvironmentToolingDefinitionId = 1,
                             IsDeleted = false,
                             Name = "CI/CD",
                             OwnerId = 1,
                             Status = 1,
-                            UpdatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 744, DateTimeKind.Utc).AddTicks(9282)
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             EnvironmentToolingItemId = 2,
-                            CreatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 745, DateTimeKind.Utc).AddTicks(1398),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
                             EnvironmentToolingDefinitionId = 2,
                             IsDeleted = false,
                             Name = "Dev",
                             OwnerId = 1,
                             Status = 1,
-                            UpdatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 745, DateTimeKind.Utc).AddTicks(1399)
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             EnvironmentToolingItemId = 3,
-                            CreatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 745, DateTimeKind.Utc).AddTicks(1403),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
                             EnvironmentToolingDefinitionId = 3,
                             IsDeleted = false,
                             Name = "UAT Environment",
                             OwnerId = 1,
                             Status = 1,
-                            UpdatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 745, DateTimeKind.Utc).AddTicks(1403)
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             EnvironmentToolingItemId = 4,
-                            CreatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 745, DateTimeKind.Utc).AddTicks(1406),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
                             EnvironmentToolingDefinitionId = 1,
                             IsDeleted = false,
                             Name = "CI/CD",
                             OwnerId = 1,
                             Status = 2,
-                            UpdatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 745, DateTimeKind.Utc).AddTicks(1406)
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             EnvironmentToolingItemId = 5,
-                            CreatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 745, DateTimeKind.Utc).AddTicks(1408),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
                             EnvironmentToolingDefinitionId = 2,
                             IsDeleted = false,
                             Name = "Dev",
                             OwnerId = 1,
                             Status = 2,
-                            UpdatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 745, DateTimeKind.Utc).AddTicks(1408)
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             EnvironmentToolingItemId = 6,
-                            CreatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 745, DateTimeKind.Utc).AddTicks(1410),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
                             EnvironmentToolingDefinitionId = 3,
                             IsDeleted = false,
                             Name = "UAT Environment",
                             OwnerId = 1,
                             Status = 1,
-                            UpdatedAt = new DateTime(2026, 8, 11, 12, 46, 54, 745, DateTimeKind.Utc).AddTicks(1411)
-                        });
-                });
-
-            modelBuilder.Entity("Pdr.Api.Models.Handover.ClientContactInfo", b =>
-                {
-                    b.Property<int>("ClientContactInfoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("client_contact_info_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("ClientContactInfoId"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("created_by");
-
-                    b.Property<int>("EngagementId")
-                        .HasColumnType("integer")
-                        .HasColumnName("engagement_id");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("role");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("updated_by");
-
-                    b.HasKey("ClientContactInfoId");
-
-                    b.HasIndex("EngagementId");
-
-                    b.ToTable("client_contact_infos", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            ClientContactInfoId = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
-                            EngagementId = 1,
-                            IsDeleted = false,
-                            Name = "Sarah Jenkins",
-                            Role = "Client Executive Sponsor",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            ClientContactInfoId = 2,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
-                            EngagementId = 1,
-                            IsDeleted = false,
-                            Name = "David Miller",
-                            Role = "VP of Engineering",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            ClientContactInfoId = 3,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
-                            EngagementId = 1,
-                            IsDeleted = false,
-                            Name = "Emma Watson",
-                            Role = "Product Owner",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            ClientContactInfoId = 4,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
-                            EngagementId = 1,
-                            IsDeleted = false,
-                            Name = "Michael Brown",
-                            Role = "Security Lead",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            ClientContactInfoId = 5,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
-                            EngagementId = 2,
-                            IsDeleted = false,
-                            Name = "Robert Chen",
-                            Role = "VP of Technology",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            ClientContactInfoId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
-                            EngagementId = 2,
-                            IsDeleted = false,
-                            Name = "Laura Davis",
-                            Role = "Chief Information Officer",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            ClientContactInfoId = 7,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
-                            EngagementId = 2,
-                            IsDeleted = false,
-                            Name = "James Wilson",
-                            Role = "Director of Operations",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
@@ -3636,17 +3497,6 @@ namespace Pdr.Api.Migrations
                     b.Navigation("EnvironmentToolingDefinition");
 
                     b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("Pdr.Api.Models.Handover.ClientContactInfo", b =>
-                {
-                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
-                        .WithMany()
-                        .HasForeignKey("EngagementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Engagement");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Handover.Commitment", b =>
