@@ -87,13 +87,15 @@ public class DocumentService(
             ? DocumentValidationConstants.DefaultContentType
             : dto.File.ContentType;
 
+        var fileSizeKb = (int)Math.Ceiling(dto.File.Length / 1024.0);
+
         var document = new Document
         {
             EngagementId = dto.EngagementId,
             CategoryId = dto.CategoryId,
             FileName = dto.File.FileName,
             FilePath = filePath,
-            FileSizeBytes = dto.File.Length,
+            FileSizeKB = fileSizeKb,
             ContentType = contentType,
             Visibility = dto.Visibility
         };
@@ -103,7 +105,7 @@ public class DocumentService(
             DocumentId = document.Id,
             VersionNumber = 1,
             FilePath = filePath,
-            FileSizeBytes = dto.File.Length,
+            FileSizeKB = fileSizeKb,
             ContentType = contentType,
             IsCurrent = true
         });
@@ -311,7 +313,7 @@ public class DocumentService(
             DocumentId = doc.Id,
             VersionNumber = nextVersionNumber,
             FilePath = filePath,
-            FileSizeBytes = dto.File.Length,
+            FileSizeKB = (int)Math.Ceiling(dto.File.Length / 1024.0),
             ContentType = string.IsNullOrWhiteSpace(dto.File.ContentType)
                 ? DocumentValidationConstants.DefaultContentType
                 : dto.File.ContentType,
@@ -419,7 +421,7 @@ public class DocumentService(
             CategoryId = doc.CategoryId,
             CategoryName = doc.Category?.CategoryName ?? string.Empty,
             FileName = doc.FileName,
-            FileSizeBytes = doc.FileSizeBytes,
+            FileSizeKB = doc.FileSizeKB,
             ContentType = doc.ContentType,
             UploadedBy = ResolveUploaderDisplayName(doc.CreatedBy, uploaderNames),
             UploadedAt = doc.CreatedAt,

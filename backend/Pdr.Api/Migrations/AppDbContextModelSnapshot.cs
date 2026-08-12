@@ -455,9 +455,9 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("file_path");
 
-                    b.Property<long>("FileSizeBytes")
-                        .HasColumnType("bigint")
-                        .HasColumnName("file_size_bytes");
+                    b.Property<int>("FileSizeKB")
+                        .HasColumnType("integer")
+                        .HasColumnName("file_size_kb");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -591,9 +591,9 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("file_path");
 
-                    b.Property<long>("FileSizeBytes")
-                        .HasColumnType("bigint")
-                        .HasColumnName("file_size_bytes");
+                    b.Property<int>("FileSizeKB")
+                        .HasColumnType("integer")
+                        .HasColumnName("file_size_kb");
 
                     b.Property<bool>("IsCurrent")
                         .ValueGeneratedOnAdd()

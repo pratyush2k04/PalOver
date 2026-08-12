@@ -98,7 +98,7 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
 
         document.Versions.Add(newVersion);
         document.FilePath = newVersion.FilePath;
-        document.FileSizeBytes = newVersion.FileSizeBytes;
+        document.FileSizeKB = newVersion.FileSizeKB;
         document.ContentType = newVersion.ContentType;
 
         await context.SaveChangesAsync();

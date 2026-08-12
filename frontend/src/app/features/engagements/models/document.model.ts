@@ -6,7 +6,7 @@ export interface DocumentItem {
   categoryId: number;
   categoryName: string;
   fileName: string;
-  fileSizeBytes: number;
+  fileSizeKb: number;
   contentType: string;
   uploadedBy: string;
   uploadedAt: string;

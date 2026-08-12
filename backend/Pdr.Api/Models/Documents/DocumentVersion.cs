@@ -10,7 +10,7 @@ public class DocumentVersion : BaseAuditableEntity
 
     public required string FilePath { get; set; }
 
-    public long FileSizeBytes { get; set; }
+    public int FileSizeKB { get; set; }
 
     public required string ContentType { get; set; }
 

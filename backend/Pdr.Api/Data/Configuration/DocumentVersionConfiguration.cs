@@ -29,8 +29,8 @@ public class DocumentVersionConfiguration : IEntityTypeConfiguration<DocumentVer
                .HasMaxLength(500)
                .IsRequired();
 
-        builder.Property(v => v.FileSizeBytes)
-               .HasColumnName("file_size_bytes")
+        builder.Property(v => v.FileSizeKB)
+               .HasColumnName("file_size_kb")
                .IsRequired();
 
         builder.Property(v => v.ContentType)
