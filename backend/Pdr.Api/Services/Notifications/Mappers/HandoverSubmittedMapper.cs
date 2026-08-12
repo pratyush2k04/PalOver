@@ -8,7 +8,7 @@ public class HandoverSubmittedMapper(IEngagementRepository engagementRepository,
 {
     public string TemplateKey => "HandoverSubmitted";
 
-    private record HandoverSubmittedData(int HandoverId, int TriggerUserId, int EngagementId);
+    public record HandoverSubmittedData(int HandoverId, int TriggerUserId, int EngagementId);
 
     public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
     {

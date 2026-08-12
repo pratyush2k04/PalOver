@@ -9,6 +9,7 @@ using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
+using Pdr.Api.Services.Notifications.Mappers;
 
 namespace Pdr.Api.Services;
 
@@ -251,7 +252,7 @@ public class EngagementService(
                 "PMAllocated",
                 engagementId,
                 RoleEnum.PreSales,
-                System.Text.Json.JsonSerializer.Serialize(new { AssignedUserId = userId, EngagementId = engagementId }),
+                System.Text.Json.JsonSerializer.Serialize(new PMAllocatedMapper.PMAllocatedData(AssignedUserId: userId, EngagementId: engagementId)),
                 DateTime.UtcNow);
         }
 

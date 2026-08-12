@@ -6,6 +6,7 @@ using Pdr.Api.Models.AccessTracker;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
+using Pdr.Api.Services.Notifications.Mappers;
 
 namespace Pdr.Api.Services;
 
@@ -119,7 +120,7 @@ public class AccessTrackerService(
                 "AccessItemBlocked",
                 item.EngagementId,
                 RoleEnum.TechLead,
-                JsonSerializer.Serialize(new { AccessItemId = item.AccessItemId, TriggerUserId = currentUserService.GetUserId() }),
+                JsonSerializer.Serialize(new AccessItemBlockedMapper.AccessItemBlockedData(AccessItemId: item.AccessItemId, TriggerUserId: currentUserService.GetUserId())),
                 DateTime.UtcNow);
         }
 

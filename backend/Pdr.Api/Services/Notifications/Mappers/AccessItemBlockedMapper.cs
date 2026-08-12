@@ -8,7 +8,7 @@ public class AccessItemBlockedMapper(IAccessTrackerRepository accessTrackerRepos
 {
     public string TemplateKey => "AccessItemBlocked";
 
-    private record AccessItemBlockedData(int AccessItemId, int TriggerUserId);
+    public record AccessItemBlockedData(int AccessItemId, int TriggerUserId);
 
     public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
     {
