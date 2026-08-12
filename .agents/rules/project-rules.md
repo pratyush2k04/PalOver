@@ -262,7 +262,7 @@ Constants/
 
 Avoid repeating the same string literal in multiple locations.
 
-- Put reusable strings, keys, statuses, routes, messages, and other repeated values in constants.
+- Put reusable strings, keys, statuses, messages, and other repeated values in constants.
 - Before adding a string literal, check whether an equivalent constant already exists.
 - When modifying or creating services, validators, exceptions, or controllers, check for repeated/hardcoded strings and extract reusable values into the appropriate constants class.
 - Do not duplicate the same string literal across multiple files.
