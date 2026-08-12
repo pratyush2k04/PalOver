@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pdr.Api.Models.Engagements;
+using Pdr.Api.Models;
 using Pdr.Api.Models.Risks;
 
 namespace Pdr.Api.Data.Configuration;
@@ -20,14 +20,12 @@ public class RiskConfiguration : IEntityTypeConfiguration<Risk>
 
         builder.Property(r => r.Impact)
             .HasColumnName("impact")
-            .HasConversion<string>()
-            .HasMaxLength(50)
+            .HasConversion<int>()
             .IsRequired();
 
         builder.Property(r => r.Likelihood)
             .HasColumnName("likelihood")
-            .HasConversion<string>()
-            .HasMaxLength(50)
+            .HasConversion<int>()
             .IsRequired();
 
         builder.Property(r => r.OwnerId).HasColumnName("owner_id").IsRequired(false);

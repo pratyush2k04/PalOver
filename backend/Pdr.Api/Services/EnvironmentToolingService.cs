@@ -90,15 +90,15 @@ public class EnvironmentToolingService(
         item.Status = request.Status;
         await repository.SaveChangesAsync();
 
-        if (request.Status == EnvironmentToolingStatus.Blocked)
+        if (!string.IsNullOrWhiteSpace(request.BlockReason))
         {
             await riskService.AutoCreateRiskFromBlockerAsync(
                 item.EngagementId,
                 item.Name,
-                request.BlockReason ?? "Blocked environment/tooling item",
+                request.BlockReason,
                 item.OwnerId,
                 RiskConstants.SourceTypes.EnvironmentTooling,
-                item.Id,
+                item.EnvironmentToolingItemId,
                 item.Name);
         }
 

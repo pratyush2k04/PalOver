@@ -59,12 +59,13 @@ public class AppDbContext : DbContext
     public DbSet<Models.EnvironmentTooling.EnvironmentToolingItem> EnvironmentToolingItems => Set<Models.EnvironmentTooling.EnvironmentToolingItem>();
     public DbSet<Models.EnvironmentTooling.EnvironmentToolingDefinition> EnvironmentToolingDefinitions => Set<Models.EnvironmentTooling.EnvironmentToolingDefinition>();
     public DbSet<Pdr.Api.Models.ChangeRequest.ChangeRequest> ChangeRequests => Set<Pdr.Api.Models.ChangeRequest.ChangeRequest>();
+    public DbSet<Risk> Risks => Set<Risk>();
+   
 
     // People Directory
     public DbSet<Person> People => Set<Person>();
 
-    // Risks
-    public DbSet<Risk> Risks => Set<Risk>();
+    
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
