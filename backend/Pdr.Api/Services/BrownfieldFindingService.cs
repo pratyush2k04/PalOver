@@ -96,7 +96,6 @@ public class BrownfieldFindingService(IBrownfieldFindingRepository repository) :
             ClientDecision = finding.ClientDecision,
             DocumentId = finding.DocumentId,
             DocumentName = finding.Document?.FileName,
-            IsDeleted = finding.IsDeleted,
             CreatedAt = finding.CreatedAt,
             CreatedBy = finding.CreatedBy
         };

@@ -19,7 +19,6 @@ export interface BrownfieldFindingDto {
   isDecisionNeeded: boolean;
   documentId?: number;
   documentName?: string;
-  isDeleted: boolean;
   createdAt: string;
   createdBy?: string;
 }
