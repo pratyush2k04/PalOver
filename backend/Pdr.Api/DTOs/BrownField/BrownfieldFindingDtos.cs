@@ -1,6 +1,6 @@
-using Pdr.Api.Models.TechnicalReadiness;
+using Pdr.Api.Models.BrownField;
 
-namespace Pdr.Api.DTOs.TechnicalReadiness;
+namespace Pdr.Api.DTOs.BrownField;
 
 public class BrownfieldFindingDto
 {

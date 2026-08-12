@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 using Pdr.Api.Models.Documents;
 using Pdr.Api.Models.Engagements;
 
-namespace Pdr.Api.Models.TechnicalReadiness;
+namespace Pdr.Api.Models.BrownField;
 
 public enum BrownfieldSeverity
 {

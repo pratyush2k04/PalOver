@@ -25,6 +25,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEngagementChecklistRepository, EngagementChecklistRepository>();
         services.AddScoped<IAccessTrackerRepository, AccessTrackerRepository>();
         services.AddScoped<IEnvironmentToolingRepository, EnvironmentToolingRepository>();
+        services.AddScoped<IBrownfieldFindingRepository, BrownfieldFindingRepository>();
         services.AddScoped<IChangeRequestRepository, ChangeRequestRepository>();
         services.AddScoped<IPersonRepository, PersonRepository>();
 
