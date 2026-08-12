@@ -1,8 +1,5 @@
-<<<<<<< HEAD
 using Pdr.Api.Constants;
-=======
 using System.Text.Json;
->>>>>>> dev
 using Pdr.Api.DTOs.AccessTracker;
 using Pdr.Api.Exceptions;
 
@@ -15,12 +12,9 @@ namespace Pdr.Api.Services;
 
 public class AccessTrackerService(
     IAccessTrackerRepository repository,
-<<<<<<< HEAD
-    IRiskService riskService) : IAccessTrackerService
-=======
+    IRiskService riskService,
     INotificationService notificationService,
     ICurrentUserService currentUserService) : IAccessTrackerService
->>>>>>> dev
 {
     // -------------------------------------------------------------------------
     // State machine: defines which transitions are allowed

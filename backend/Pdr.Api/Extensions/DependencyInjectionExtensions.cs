@@ -28,11 +28,8 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEnvironmentToolingRepository, EnvironmentToolingRepository>();
         services.AddScoped<IChangeRequestRepository, ChangeRequestRepository>();
         services.AddScoped<IPersonRepository, PersonRepository>();
-<<<<<<< HEAD
         services.AddScoped<IRiskRepository, RiskRepository>();
-=======
         services.AddScoped<INotificationRepository, NotificationRepository>();
->>>>>>> dev
 
         // Services
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
