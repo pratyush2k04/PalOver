@@ -2,12 +2,14 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
+import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
-import { BrownfieldSeverity } from '../../../../models/brownfield-review.model';
-import { DocumentService } from '../../../../services/document.service';
+import { BrownfieldSeverity } from '@features/engagements/models/brownfield-review.model';
+import { DocumentService } from '@features/engagements/services/document.service';
+import { DocumentItem } from '@features/engagements/models/document.model';
 
 export interface AddFindingDialogData {
   engagementId: number;
@@ -28,7 +30,8 @@ export interface AddFindingDialogResult {
   styleUrl: './add-finding-dialog.component.scss'
 })
 export class AddFindingDialogComponent implements OnInit {
-  private dialogRef = inject<DialogRef<AddFindingDialogResult, AddFindingDialogData>>(DialogRef);
+  private dialogRef = inject<DialogRef<AddFindingDialogResult>>(DialogRef);
+  readonly data = inject<AddFindingDialogData>(DIALOG_DATA, { optional: true });
   private documentService = inject(DocumentService);
 
   title = signal('');
@@ -46,10 +49,10 @@ export class AddFindingDialogComponent implements OnInit {
   documentOptions = signal<SelectOption[]>([]);
 
   ngOnInit(): void {
-    const engagementId = this.dialogRef.data?.engagementId;
+    const engagementId = this.data?.engagementId;
     if (engagementId) {
       this.documentService.getEngagementDocuments(engagementId).subscribe({
-        next: (docs) => {
+        next: (docs: DocumentItem[]) => {
           const options: SelectOption[] = docs.map(d => ({ value: d.id, label: d.fileName }));
           this.documentOptions.set([{ value: null, label: 'None (No document)' }, ...options]);
         },
