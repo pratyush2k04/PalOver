@@ -21,7 +21,8 @@ public class PMAllocatedMapper(IEngagementRepository engagementRepository, IUser
         return new Dictionary<string, object?>
         {
             ["PMName"] = pm?.FullName,
-            ["EngagementName"] = engagement?.EngagementName
+            ["EngagementName"] = engagement?.EngagementName,
+            ["EngagementId"] = payload.EngagementId
         };
     }
 }

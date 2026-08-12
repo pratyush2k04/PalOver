@@ -22,7 +22,8 @@ public class AccessItemBlockedMapper(IAccessTrackerRepository accessTrackerRepos
         {
             ["ItemName"] = accessItem?.Name,
             ["TriggerUserName"] = triggerUser?.FullName,
-            ["BlockReason"] = accessItem?.BlockReason
+            ["BlockReason"] = accessItem?.BlockReason,
+            ["EngagementId"] = accessItem?.EngagementId
         };
     }
 }

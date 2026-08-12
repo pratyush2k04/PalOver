@@ -21,7 +21,8 @@ public class HandoverSubmittedMapper(IEngagementRepository engagementRepository,
         return new Dictionary<string, object?>
         {
             ["EngagementName"] = engagement?.EngagementName,
-            ["TriggerUserName"] = triggerUser?.FullName
+            ["TriggerUserName"] = triggerUser?.FullName,
+            ["EngagementId"] = payload.EngagementId
         };
     }
 }
