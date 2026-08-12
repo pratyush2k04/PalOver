@@ -2,12 +2,15 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from './services/user.service';
-import { ToastService } from '@shared/toast/toast.service';
+import { ToastService } from '@common/services/toast/toast';
 import { UserListItem } from './models/user.model';
 import { Role } from './models/role.model';
-import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
-import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner';
-import { USER_MESSAGES } from '../../constants/app.constants';
+import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
+import { USER_MESSAGES } from '@shared/constants/app.constants';
+import { AlertComponent } from '@common/components/alert/alert';
+import { AvatarComponent } from '@common/components/avatar/avatar';
+import { PaginatorComponent } from '@common/components/paginator/paginator';
 
 interface PendingRoleChange {
   user: UserListItem;
@@ -18,7 +21,7 @@ interface PendingRoleChange {
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, FormsModule, ConfirmDialogComponent, LoadingSpinnerComponent],
+  imports: [CommonModule, FormsModule, ConfirmDialogComponent, LoadingSpinnerComponent, AlertComponent, AvatarComponent, PaginatorComponent],
   templateUrl: './users.html',
   styleUrl: './users.scss'
 })
@@ -85,14 +88,6 @@ export class UsersComponent implements OnInit {
     this.loadUsers();
   }
 
-  previousPage(): void {
-    this.goToPage(this.page() - 1);
-  }
-
-  nextPage(): void {
-    this.goToPage(this.page() + 1);
-  }
-
   loadRoles(): void {
     this.userService.getRoles().subscribe({
       next: (roles) => this.roles.set(roles),
@@ -100,15 +95,6 @@ export class UsersComponent implements OnInit {
         this.errorMessage.set(USER_MESSAGES.LOAD_ROLES_ERROR);
       }
     });
-  }
-
-  initials(fullName: string): string {
-    return fullName
-      .split(' ')
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase())
-      .join('');
   }
 
   onRoleSelected(user: UserListItem, newRoleIdRaw: string): void {

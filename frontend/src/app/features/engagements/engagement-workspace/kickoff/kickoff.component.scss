@@ -74,22 +74,3 @@ button {
   }
 }
 
-.btn-primary {
-  background: $color-primary;
-  color: $color-surface;
-
-  &:hover:not(:disabled) {
-    background-color: $color-primary-hover;
-  }
-}
-
-.btn-warning {
-  background: $color-warning-bg;
-  color: $color-warning-text;
-  border: 1px solid $color-warning;
-
-  &:hover:not(:disabled) {
-    background: $color-warning;
-    color: $color-surface;
-  }
-}

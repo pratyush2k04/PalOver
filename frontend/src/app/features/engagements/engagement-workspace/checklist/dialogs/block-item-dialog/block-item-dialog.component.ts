@@ -1,9 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DialogRef } from 'src/app/shared/dialog/dialog-ref';
-import { DIALOG_DATA } from 'src/app/shared/dialog/dialog.service';
+import { DialogRef } from '@common/services/dialog/dialog-ref';
+import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { PersonDto } from 'src/app/models/person.model';
+import { ButtonComponent } from '@common/components/button/button';
+import { TextareaComponent } from '@common/components/form/textarea/textarea';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 
 export interface BlockItemDialogData {
   itemTitle: string;
@@ -19,7 +22,7 @@ export interface BlockItemDialogResult {
 @Component({
   selector: 'app-block-item-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, TextareaComponent, SelectComponent],
   templateUrl: './block-item-dialog.component.html',
   styleUrl: './block-item-dialog.component.scss'
 })
@@ -44,6 +47,11 @@ export class BlockItemDialogComponent {
   get reasonLength(): number {
     return this.reasonControl.value?.length || 0;
   }
+
+  readonly ownerOptions: SelectOption[] = this.data.people.map((person) => ({
+    value: person.personId,
+    label: person.name
+  }));
 
   onCancel(): void {
     this.dialogRef.close();

@@ -1,28 +1,25 @@
 import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TECHNICAL_READINESS_ROUTES } from 'src/app/constants/technical-readiness.constants';
-import {  EngagementService } from '../services/engagement.service';
+import { TECHNICAL_READINESS_ROUTES } from '@shared/constants/technical-readiness.constants';
+import { filter, map } from 'rxjs';
+import { EngagementService } from '../services/engagement.service';
 import { KickoffReadinessDto, KickoffReadinessService } from 'src/app/services/kickoff-readiness.service';
-import { ENGAGEMENT_WORKSPACE_CONFIG } from 'src/app/constants/engagements.constants';
+import { ENGAGEMENT_WORKSPACE_CONFIG } from '@shared/constants/engagements.constants';
 import { EngagementInfoDto } from '../models/engagement.model';
-
-interface WorkspaceTab {
-  label: string;
-  route: string;
-  enabled: boolean;
-}
+import { TabItem, TabsComponent } from '@common/components/tabs/tabs';
 
 @Component({
   selector: 'app-engagement-workspace',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterOutlet, TabsComponent],
   templateUrl: './engagement-workspace.component.html',
   styleUrl: './engagement-workspace.component.scss'
 })
 export class EngagementWorkspaceComponent {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private engagementService = inject(EngagementService);
   private kickoffReadinessService = inject(KickoffReadinessService);
 
@@ -37,9 +34,21 @@ export class EngagementWorkspaceComponent {
   readiness = signal<KickoffReadinessDto | null>(null);
   isLoading = signal<boolean>(true);
 
-  readonly tabs = signal<WorkspaceTab[]>([...ENGAGEMENT_WORKSPACE_CONFIG.DEFAULT_TABS]);
+  readonly tabs = signal<TabItem[]>(
+    ENGAGEMENT_WORKSPACE_CONFIG.DEFAULT_TABS.map((tab) => ({ id: tab.route, ...tab }))
+  );
 
-  activeTabIndex = signal<number>(0);
+  readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      map(() => this.router.url)
+    ),
+    { initialValue: this.router.url }
+  );
+
+  readonly activeTabId = computed(
+    () => this.tabs().find((tab) => this.currentUrl().includes(`/${tab.route}`))?.id ?? null
+  );
 
   constructor() {
     effect(() => {
@@ -71,35 +80,5 @@ export class EngagementWorkspaceComponent {
       next: (data) => this.readiness.set(data),
       error: () => this.readiness.set(null)
     });
-  }
-
-  onTabKeydown(event: KeyboardEvent) {
-    const enabledIndexes = this.tabs()
-      .map((tab, index) => ({ tab, index }))
-      .filter(({ tab }) => tab.enabled)
-      .map(({ index }) => index);
-
-    if (enabledIndexes.length === 0) {
-      return;
-    }
-
-    const currentPos = enabledIndexes.indexOf(this.activeTabIndex());
-
-    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
-      event.preventDefault();
-      const nextPos = (currentPos + 1) % enabledIndexes.length;
-      this.focusTab(enabledIndexes[nextPos]);
-    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
-      event.preventDefault();
-      const prevPos = (currentPos - 1 + enabledIndexes.length) % enabledIndexes.length;
-      this.focusTab(enabledIndexes[prevPos]);
-    }
-  }
-
-  private focusTab(index: number) {
-    this.activeTabIndex.set(index);
-    const tabElements = document.querySelectorAll<HTMLElement>('.tab-item');
-    tabElements[index]?.focus();
-    tabElements[index]?.click();
   }
 }

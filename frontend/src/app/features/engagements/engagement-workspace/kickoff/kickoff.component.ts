@@ -4,8 +4,9 @@ import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { GovernanceProcessComponent } from './components/governance-process/governance-process.component';
 import { ChangeRequestsComponent } from './components/change-requests/change-requests.component';
+import { MeetingRecordComponent } from './components/meeting-record/meeting-record.component';
 import { AuthService } from '../../../../services/auth';
-import { DialogService } from '../../../../shared/dialog/dialog.service';
+import { DialogService } from '@common/services/dialog/dialog.service';
 import { EngagementService } from '../../services/engagement.service';
 import { KickoffReadinessDto, KickoffReadinessService } from '../../../../services/kickoff-readiness.service';
 import {
@@ -13,11 +14,13 @@ import {
   OverrideKickoffReadyDialogData,
   OverrideKickoffReadyDialogResult
 } from './dialogs/override-kickoff-ready-dialog/override-kickoff-ready-dialog.component';
+import { ButtonComponent } from '@common/components/button/button';
+import { KICKOFF_MESSAGES } from '@shared/constants/kickoff.constants';
 
 @Component({
   selector: 'app-kickoff',
   standalone: true,
-  imports: [CommonModule, GovernanceProcessComponent, ChangeRequestsComponent],
+  imports: [CommonModule, GovernanceProcessComponent, ChangeRequestsComponent, MeetingRecordComponent, ButtonComponent],
   templateUrl: './kickoff.component.html',
   styleUrl: './kickoff.component.scss'
 })
@@ -72,7 +75,7 @@ export class KickoffComponent {
         console.error('Failed to load kickoff readiness', err);
         this.readiness.set(null);
         this.loadFailed.set(true);
-        this.showMessage(this.extractErrorMessage(err, 'Failed to load kickoff readiness'), true);
+        this.showMessage(this.extractErrorMessage(err, KICKOFF_MESSAGES.READINESS_LOAD_ERROR), true);
         this.isLoading.set(false);
       }
     });
@@ -85,12 +88,12 @@ export class KickoffComponent {
     this.isSaving.set(true);
     this.kickoffReadinessService.markKickoffReady(id).subscribe({
       next: () => {
-        this.showMessage('Engagement marked kickoff-ready', false);
+        this.showMessage(KICKOFF_MESSAGES.MARKED_READY_SUCCESS, false);
         this.isSaving.set(false);
         this.loadReadiness(id);
       },
       error: (err) => {
-        this.showMessage(this.extractErrorMessage(err, 'Failed to mark kickoff-ready'), true);
+        this.showMessage(this.extractErrorMessage(err, KICKOFF_MESSAGES.MARK_READY_ERROR), true);
         this.isSaving.set(false);
       }
     });

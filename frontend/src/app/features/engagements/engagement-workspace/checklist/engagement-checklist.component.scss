@@ -7,58 +7,9 @@ $color-text-primary: #1a1d23;
 $color-text-secondary: #6b7280;
 $color-text-muted: #9ca3af;
 
-$color-mandatory-bg: #fef2f2;
-$color-mandatory-text: #dc2626;
-$color-optional-bg: #f3f4f6;
-$color-optional-text: #6b7280;
-
-$color-incomplete-bg: #f3f4f6;
-$color-incomplete-text: #6b7280;
 $color-incomplete-border: #d1d5db;
 
-$color-complete-bg: #ecfdf5;
-$color-complete-text: #059669;
-$color-complete-border: #a7f3d0;
-
-$color-na-bg: #f1f5f9;
-$color-na-text: #64748b;
-$color-na-border: #cbd5e1;
-
-$color-pending-bg: #fffbeb;
-$color-pending-text: #d97706;
-$color-pending-border: #fde68a;
-
-$color-blocked-bg: #fef2f2;
-$color-blocked-text: #b91c1c;
-$color-blocked-border: #fca5a5;
-
-$color-feature-badge-bg: #eff6ff;
-$color-feature-badge-text: #1d4ed8;
-$color-story-badge-bg: #f0fdf4;
-$color-story-badge-text: #16a34a;
-
 // Loading & Error states
-.checklist-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 64px 24px;
-  gap: 16px;
-  color: $color-text-secondary;
-
-  .spinner {
-    width: 36px;
-    height: 36px;
-    border: 3px solid $color-border;
-    border-top-color: #3b82f6;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-  }
-
-  p { font-size: 14px; margin: 0; }
-}
-
 .checklist-error {
   display: flex;
   align-items: center;
@@ -72,10 +23,6 @@ $color-story-badge-text: #16a34a;
 
   .error-icon { font-size: 20px; }
   p { margin: 0; font-size: 14px; }
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
 }
 
 // Container
@@ -122,42 +69,6 @@ $color-story-badge-text: #16a34a;
   font-weight: 600;
 }
 
-// Badges
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-
-  &.badge-feature {
-    background: $color-feature-badge-bg;
-    color: $color-feature-badge-text;
-    border: 1px solid #bfdbfe;
-  }
-
-  &.badge-story {
-    background: $color-story-badge-bg;
-    color: $color-story-badge-text;
-    border: 1px solid #bbf7d0;
-  }
-
-  &.badge-gate-feature {
-    background: #fef3c7;
-    color: #92400e;
-    border: 1px solid #fde68a;
-  }
-
-  &.badge-gate-story {
-    background: #fed7aa;
-    color: #9a3412;
-    border: 1px solid #ffbb7c;
-  }
-}
-
 // Callout Gate Banner (Image 2 style)
 .callout {
   display: flex;
@@ -189,12 +100,6 @@ $color-story-badge-text: #16a34a;
   flex-direction: column;
   gap: 8px;
   flex: 1;
-}
-
-.callout-badges {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
 }
 
 .callout-headline {
@@ -411,163 +316,12 @@ $color-story-badge-text: #16a34a;
   }
 }
 
-// Pills
-.pill {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 10px;
-  border-radius: 100px;
-  font-size: 11px;
-  font-weight: 600;
-  white-space: nowrap;
-
-  &.pill-mandatory {
-    background: $color-mandatory-bg;
-    color: $color-mandatory-text;
-    border: 1px solid #fecaca;
-  }
-
-  &.pill-optional {
-    background: $color-optional-bg;
-    color: $color-optional-text;
-    border: 1px solid #e5e7eb;
-  }
-
-  &.pill-incomplete {
-    background: $color-incomplete-bg;
-    color: $color-incomplete-text;
-    border: 1px solid $color-incomplete-border;
-  }
-
-  &.pill-complete {
-    background: $color-complete-bg;
-    color: $color-complete-text;
-    border: 1px solid $color-complete-border;
-  }
-
-  &.pill-na {
-    background: $color-na-bg;
-    color: $color-na-text;
-    border: 1px solid $color-na-border;
-  }
-
-  &.pill-pending {
-    background: $color-pending-bg;
-    color: $color-pending-text;
-    border: 1px solid $color-pending-border;
-  }
-
-  &.pill-blocked {
-    background: $color-blocked-bg;
-    color: $color-blocked-text;
-    border: 1px solid $color-blocked-border;
-  }
-}
-
 // Actions Group
 .actions-group {
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 8px;
-}
-
-.btn {
-  padding: 5px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  border-radius: 6px;
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  white-space: nowrap;
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  &.btn-complete {
-    background: #ffffff;
-    border-color: #d1d5db;
-    color: #374151;
-
-    &:hover:not(:disabled) {
-      background: #f9fafb;
-      border-color: #9ca3af;
-      color: #111827;
-    }
-  }
-
-  &.btn-reopen {
-    background: #ffffff;
-    border-color: #2563eb;
-    color: #2563eb;
-
-    &:hover:not(:disabled) {
-      background: #eff6ff;
-    }
-  }
-
-  &.btn-restore {
-    background: #ffffff;
-    border-color: #6b7280;
-    color: #374151;
-
-    &:hover:not(:disabled) {
-      background: #f3f4f6;
-    }
-  }
-
-  &.btn-review {
-    background: #f59e0b;
-    color: #ffffff;
-
-    &:hover:not(:disabled) {
-      background: #d97706;
-    }
-  }
-
-  &.btn-unblock {
-    background: #ffffff;
-    border-color: $color-blocked-text;
-    color: $color-blocked-text;
-
-    &:hover:not(:disabled) {
-      background: $color-blocked-bg;
-    }
-  }
-}
-
-.btn-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
-  color: #6b7280;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-
-  &:hover:not(:disabled) {
-    background: #fef2f2;
-    border-color: #fecaca;
-    color: #dc2626;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  &.btn-block:hover:not(:disabled) {
-    background: #fff7ed;
-    border-color: #fed7aa;
-  }
 }
 
 // Consolidated Not Applicable section

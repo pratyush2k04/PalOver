@@ -1,26 +1,25 @@
-<div class="modal-overlay" (click)="onCancel()">
-  <div class="modal-card" (click)="$event.stopPropagation()">
+<div class="dialog-container">
     <div class="modal-header">
       <h3 class="modal-title">Custom Document Visibility</h3>
-      <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close" [inlineSVG]="'assets/icons/close.svg'"></button>
+      <app-button type="button" variant="icon" ariaLabel="Close" (click)="onCancel()">
+        <span class="close-icon" [inlineSVG]="'assets/icons/close.svg'"></span>
+      </app-button>
     </div>
 
     <div class="modal-body">
       <div class="doc-info-banner">
         <div class="doc-name-row">
           <span class="file-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
-          <span class="file-name">{{ document().fileName }}</span>
+          <span class="file-name">{{ data.document.fileName }}</span>
         </div>
         <div class="doc-meta">
-          <span class="meta-item">Category: <strong>{{ document().categoryName || 'Other' }}</strong></span>
-          <span class="meta-item">Category default: <strong>{{ document().categoryDefaultVisibility || 'Team-wide' }}</strong></span>
+          <span class="meta-item">Category: <strong>{{ data.document.categoryName || 'Other' }}</strong></span>
+          <span class="meta-item">Category default: <strong>{{ data.document.categoryDefaultVisibility || 'Team-wide' }}</strong></span>
         </div>
       </div>
 
       @if (errorMessage()) {
-        <div class="alert alert-danger">
-          {{ errorMessage() }}
-        </div>
+        <app-alert variant="danger">{{ errorMessage() }}</app-alert>
       }
 
       <div class="form-group">
@@ -32,51 +31,40 @@
           <span>Project Management &amp; Admin — always granted</span>
         </div>
 
-        <div class="roles-grid">
-          @for (role of availableRoles; track role.id) {
-            <label class="role-checkbox-card" [class.is-selected]="isRoleSelected(role.id)">
-              <input
-                type="checkbox"
-                [checked]="isRoleSelected(role.id)"
-                (change)="toggleRole(role.id, $event)"
-              />
-              <span class="role-name">{{ role.label }}</span>
-            </label>
-          }
-        </div>
+        <app-multi-select-list
+          [options]="roleOptions"
+          [selectedValues]="selectedRoles()"
+          variant="cards"
+          (selectedValuesChange)="onRoleSelectionChange($event)"
+        />
       </div>
     </div>
 
     <div class="modal-footer">
-      @if (document().visibility === 'Custom' || (document().allowedRoles && document().allowedRoles!.length > 0)) {
-        <button
+      @if (data.document.visibility === 'Custom' || (data.document.allowedRoles && data.document.allowedRoles!.length > 0)) {
+        <app-button
           type="button"
-          class="btn btn-outline-warning btn-remove-override"
+          variant="warning"
           (click)="onRemoveOverride()"
           [disabled]="isSubmitting()"
         >
           Remove Override
-        </button>
+        </app-button>
       }
 
       <div class="footer-actions">
-        <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="isSubmitting()">
+        <app-button type="button" variant="stroked" (click)="onCancel()" [disabled]="isSubmitting()">
           Cancel
-        </button>
-        <button
+        </app-button>
+        <app-button
           type="button"
-          class="btn btn-primary"
+          variant="accent"
           (click)="onSave()"
-          [disabled]="isSubmitting() || selectedRoles().length === 0"
+          [disabled]="selectedRoles().length === 0"
+          [loading]="isSubmitting()"
         >
-          @if (isSubmitting()) {
-            <span class="spinner"></span>
-            <span>Saving...</span>
-          } @else {
-            <span>Apply Restriction</span>
-          }
-        </button>
+          {{ isSubmitting() ? 'Saving...' : 'Apply Restriction' }}
+        </app-button>
       </div>
     </div>
-  </div>
 </div>

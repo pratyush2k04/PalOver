@@ -1,0 +1,99 @@
+<div class="card access-tracker-card">
+  <!-- Card Header -->
+  <div class="card-header">
+    <div class="title-group">
+      <h3>Access Tracker</h3>
+    </div>
+    <div class="action-group">
+      @if (isTechLead()) {
+        <app-button variant="flat" (click)="openAddModal()">
+          <span [inlineSVG]="'assets/icons/plus.svg'"></span>
+          Add item
+        </app-button>
+      }
+    </div>
+  </div>
+
+  <!-- Flagged Items Summary -->
+  @if (kickoffReadiness()) {
+    <app-flagged-items-banner [items]="accessTrackerFlaggedItems()"></app-flagged-items-banner>
+  }
+
+  <!-- Loading state -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <p>Loading access items...</p>
+    </div>
+  } @else {
+    <!-- Table -->
+    <div class="table-responsive">
+      <table class="access-table">
+        <thead>
+          <tr>
+            <th>ITEM</th>
+            <th>OWNER</th>
+            <th>CLIENT-SIDE</th>
+            <th>DAYS TO BILLING</th>
+            <th>STATUS</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of accessItems(); track item.accessItemId) {
+            <tr>
+              <td class="item-name-cell">
+                {{ item.name }}
+              </td>
+              <td class="owner-cell">
+                {{ item.ownerFullName || 'Unassigned' }}
+              </td>
+              <td class="client-side-cell">
+                <div class="cell-content">
+                  @if (item.isClientSide) {
+                    <app-status-badge tone="warning">Client-side</app-status-badge>
+                  } @else {
+                    <app-status-badge tone="neutral">Internal</app-status-badge>
+                  }
+                  @if (item.isOverdueWithClient) {
+                    <app-status-badge tone="warning">Overdue</app-status-badge>
+                  }
+                  @if (item.timeZoneNote) {
+                    <span class="note-text">{{ item.timeZoneNote }}</span>
+                  }
+                </div>
+              </td>
+              <td class="days-cell">
+                {{ item.daysUntilBillingDate ?? '—' }}
+              </td>
+              <td class="status-cell">
+                @if (isTechLead()) {
+                  <select
+                    class="status-select"
+                    [ngClass]="getStatusBadgeClass(item.status)"
+                    (change)="onStatusChange(item, $event)">
+                    @for (opt of statusOptions; track opt.value) {
+                      <option
+                        [value]="opt.value"
+                        [selected]="opt.value === getStatusNumericValue(item.status)">
+                        {{ opt.label }}
+                      </option>
+                    }
+                  </select>
+                } @else {
+                  <app-status-badge [tone]="getStatusTone(item.status)">
+                    {{ item.status }}
+                  </app-status-badge>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="empty-cell">
+                No access items found for this engagement.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

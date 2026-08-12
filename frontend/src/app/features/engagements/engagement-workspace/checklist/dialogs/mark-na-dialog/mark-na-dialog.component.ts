@@ -1,8 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DialogRef } from 'src/app/shared/dialog/dialog-ref';
-import { DIALOG_DATA } from 'src/app/shared/dialog/dialog.service';
+import { DialogRef } from '@common/services/dialog/dialog-ref';
+import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
+import { ButtonComponent } from '@common/components/button/button';
+import { TextareaComponent } from '@common/components/form/textarea/textarea';
 
 export interface MarkNaDialogData {
   itemTitle: string;
@@ -16,9 +18,9 @@ export interface MarkNaDialogResult {
 @Component({
   selector: 'app-mark-na-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, TextareaComponent],
   templateUrl: './mark-na-dialog.component.html',
-  styleUrl: './mark-na-dialog.component.scss'
+  styleUrl: './mark-na-dialog.component.scss',
 })
 export class MarkNaDialogComponent {
   private fb = inject(FormBuilder);
@@ -26,7 +28,7 @@ export class MarkNaDialogComponent {
   readonly data = inject<MarkNaDialogData>(DIALOG_DATA);
 
   readonly form = this.fb.nonNullable.group({
-    reason: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(500)]]
+    reason: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(500)]],
   });
 
   get reasonControl() {

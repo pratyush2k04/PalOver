@@ -1,0 +1,16 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h3>{{ constants.MODAL_REASON_VIEW_TITLE }}</h3>
+    <app-button type="button" variant="icon" ariaLabel="Close" (click)="onClose()">&times;</app-button>
+  </div>
+
+  <div class="dialog-body">
+    <p class="reason-text">{{ data.reason }}</p>
+  </div>
+
+  <div class="dialog-footer">
+    <app-button type="button" variant="stroked" (click)="onClose()">
+      {{ constants.BTN_CLOSE }}
+    </app-button>
+  </div>
+</div>

@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PagedResult, UserListItem } from '../models/user.model';
 import { Role } from '../models/role.model';
-import { API_ENDPOINTS } from '../../../constants/app.constants';
+import { API_ENDPOINTS } from '@shared/constants/app.constants';
 
 @Injectable({
   providedIn: 'root'

@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
-import { TECHNICAL_READINESS_ROUTES, MASTER_CHECKLIST_ROUTES } from './constants/app.constants';
+import { TECHNICAL_READINESS_ROUTES, MASTER_CHECKLIST_ROUTES } from '@shared/constants/app.constants';
 
 import { LoginComponent } from './components/login/login';
-import { MainLayoutComponent } from './layouts/main-layout/main-layout';
+import { MainLayoutComponent } from '@layouts/main-layout/main-layout';
 
 import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';
@@ -104,6 +104,14 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/users/users.routes').then(
             m => m.USERS_ROUTES
+          ),
+      },
+      {
+        path: 'engagement-allocation',
+        canActivate: [adminGuard],
+        loadChildren: () =>
+          import('./features/engagement-allocation/engagement-allocation.routes').then(
+            m => m.ENGAGEMENT_ALLOCATION_ROUTES
           ),
       },
 

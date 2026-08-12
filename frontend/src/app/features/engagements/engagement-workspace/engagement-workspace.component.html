@@ -18,27 +18,7 @@
     <p>Loading engagement details...</p>
   </div>
 
-  <div class="workspace-tabs" role="tablist" (keydown)="onTabKeydown($event)">
-    <ng-container *ngFor="let tab of tabs(); let i = index">
-      <a *ngIf="tab.enabled"
-         [routerLink]="tab.route"
-         routerLinkActive="active"
-         class="tab-item"
-         role="tab"
-         [attr.aria-selected]="i === activeTabIndex()"
-         [tabindex]="i === activeTabIndex() ? 0 : -1">
-        {{ tab.label }}
-      </a>
-      <span *ngIf="!tab.enabled"
-            class="tab-item tab-item-disabled"
-            role="tab"
-            aria-disabled="true"
-            [attr.aria-selected]="false"
-            tabindex="-1">
-        {{ tab.label }}
-      </span>
-    </ng-container>
-  </div>
+  <app-tabs [tabs]="tabs()" [activeId]="activeTabId()" />
 
   <div class="workspace-content">
     <router-outlet></router-outlet>

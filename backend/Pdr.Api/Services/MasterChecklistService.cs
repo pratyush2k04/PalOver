@@ -1,3 +1,4 @@
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.MasterChecklist;
 using Pdr.Api.Models.MasterChecklist;
 using Pdr.Api.Repositories.Interfaces;
@@ -7,9 +8,6 @@ namespace Pdr.Api.Services;
 
 public class MasterChecklistService(IMasterChecklistRepository checklistRepository) : IMasterChecklistService
 {
-    private const string DraftStatusName = "Draft";
-    private const string PublishedStatusName = "Published";
-
     public async Task<MasterChecklistVersionResponseDto?> GetCurrentDraftVersionAsync()
     {
         var draftVersion = await checklistRepository.GetCurrentDraftVersionAsync();
@@ -33,7 +31,7 @@ public class MasterChecklistService(IMasterChecklistRepository checklistReposito
         var version = await checklistRepository.GetVersionByIdAsync(versionId);
         if (version is null)
         {
-            return ChecklistResultDto<MasterChecklistVersionResponseDto>.Failure("Checklist version not found.", isNotFound: true);
+            return ChecklistResultDto<MasterChecklistVersionResponseDto>.Failure(MasterChecklistConstants.Messages.VersionNotFound, isNotFound: true);
         }
 
         return ChecklistResultDto<MasterChecklistVersionResponseDto>.Success(MapVersion(version));
@@ -54,13 +52,13 @@ public class MasterChecklistService(IMasterChecklistRepository checklistReposito
         var draftVersion = await checklistRepository.GetCurrentDraftVersionAsync();
         if (draftVersion is null)
         {
-            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure("No Draft version exists to add items to.");
+            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure(MasterChecklistConstants.Messages.NoDraftToAddItems);
         }
 
         var category = await checklistRepository.GetCategoryByIdAsync(request.CategoryId);
         if (category is null)
         {
-            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure("Selected category does not exist.");
+            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure(MasterChecklistConstants.Messages.CategoryNotFound);
         }
 
         var item = new MasterChecklistItem
@@ -85,18 +83,18 @@ public class MasterChecklistService(IMasterChecklistRepository checklistReposito
         var item = await checklistRepository.GetChecklistItemAsync(id);
         if (item is null)
         {
-            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure("Checklist item not found.", isNotFound: true);
+            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure(MasterChecklistConstants.Messages.ItemNotFound, isNotFound: true);
         }
 
-        if (item.Version.Status.StatusName != DraftStatusName)
+        if (item.Version.Status.StatusName != MasterChecklistConstants.StatusNames.Draft)
         {
-            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure("Only items on the Draft version can be edited.");
+            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure(MasterChecklistConstants.Messages.OnlyDraftEditable);
         }
 
         var category = await checklistRepository.GetCategoryByIdAsync(request.CategoryId);
         if (category is null)
         {
-            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure("Selected category does not exist.");
+            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure(MasterChecklistConstants.Messages.CategoryNotFound);
         }
 
         item.Title = request.Title;
@@ -115,12 +113,12 @@ public class MasterChecklistService(IMasterChecklistRepository checklistReposito
         var item = await checklistRepository.GetChecklistItemAsync(id);
         if (item is null)
         {
-            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure("Checklist item not found.", isNotFound: true);
+            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure(MasterChecklistConstants.Messages.ItemNotFound, isNotFound: true);
         }
 
-        if (item.Version.Status.StatusName != DraftStatusName)
+        if (item.Version.Status.StatusName != MasterChecklistConstants.StatusNames.Draft)
         {
-            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure("Only items on the Draft version can be retired.");
+            return ChecklistResultDto<MasterChecklistItemResponseDto>.Failure(MasterChecklistConstants.Messages.OnlyDraftRetirable);
         }
 
         await checklistRepository.RetireChecklistItemAsync(item);
@@ -133,7 +131,7 @@ public class MasterChecklistService(IMasterChecklistRepository checklistReposito
         var draftVersion = await checklistRepository.GetCurrentDraftVersionAsync();
         if (draftVersion is null)
         {
-            return ChecklistResultDto<List<MasterChecklistItemResponseDto>>.Failure("No Draft version exists to reorder.");
+            return ChecklistResultDto<List<MasterChecklistItemResponseDto>>.Failure(MasterChecklistConstants.Messages.NoDraftToReorder);
         }
 
         var draftItemIds = draftVersion.Items.Select(i => i.Id).ToHashSet();
@@ -141,17 +139,17 @@ public class MasterChecklistService(IMasterChecklistRepository checklistReposito
 
         if (requestedIds.Any(itemId => !draftItemIds.Contains(itemId)))
         {
-            return ChecklistResultDto<List<MasterChecklistItemResponseDto>>.Failure("One or more items do not belong to the current Draft version.");
+            return ChecklistResultDto<List<MasterChecklistItemResponseDto>>.Failure(MasterChecklistConstants.Messages.ItemDoesNotBelongToDraft);
         }
 
         if (requestedIds.Count != draftItemIds.Count || requestedIds.Distinct().Count() != requestedIds.Count)
         {
-            return ChecklistResultDto<List<MasterChecklistItemResponseDto>>.Failure("Reorder request must include every item in the current Draft version exactly once.");
+            return ChecklistResultDto<List<MasterChecklistItemResponseDto>>.Failure(MasterChecklistConstants.Messages.ReorderMustIncludeAllItems);
         }
 
         if (request.Items.Select(i => i.DisplayOrder).Distinct().Count() != request.Items.Count)
         {
-            return ChecklistResultDto<List<MasterChecklistItemResponseDto>>.Failure("Display order values must be unique.");
+            return ChecklistResultDto<List<MasterChecklistItemResponseDto>>.Failure(MasterChecklistConstants.Messages.DisplayOrderMustBeUnique);
         }
 
         var orderByItemId = request.Items.ToDictionary(i => i.ItemId, i => i.DisplayOrder);
@@ -175,19 +173,29 @@ public class MasterChecklistService(IMasterChecklistRepository checklistReposito
         var draftVersion = await checklistRepository.GetVersionByIdAsync(versionId);
         if (draftVersion is null)
         {
-            return ChecklistResultDto<MasterChecklistVersionResponseDto>.Failure("Checklist version not found.", isNotFound: true);
+            return ChecklistResultDto<MasterChecklistVersionResponseDto>.Failure(MasterChecklistConstants.Messages.VersionNotFound, isNotFound: true);
         }
 
-        if (draftVersion.Status.StatusName != DraftStatusName)
+        if (draftVersion.Status.StatusName != MasterChecklistConstants.StatusNames.Draft)
         {
-            return ChecklistResultDto<MasterChecklistVersionResponseDto>.Failure("Only a Draft version can be published.");
+            return ChecklistResultDto<MasterChecklistVersionResponseDto>.Failure(MasterChecklistConstants.Messages.OnlyDraftPublishable);
         }
 
-        var publishedStatus = await checklistRepository.GetStatusByNameAsync(PublishedStatusName);
-        var draftStatus = await checklistRepository.GetStatusByNameAsync(DraftStatusName);
+        if (!draftVersion.Items.Any(i => !i.IsRetired))
+        {
+            return ChecklistResultDto<MasterChecklistVersionResponseDto>.Failure(MasterChecklistConstants.Messages.CannotPublishEmptyDraft);
+        }
+
+        if (draftVersion.Items.Any(i => !i.IsRetired && i.IsMandatory && string.IsNullOrWhiteSpace(i.Title)))
+        {
+            return ChecklistResultDto<MasterChecklistVersionResponseDto>.Failure(MasterChecklistConstants.Messages.CannotPublishMandatoryWithoutTitle);
+        }
+
+        var publishedStatus = await checklistRepository.GetStatusByNameAsync(MasterChecklistConstants.StatusNames.Published);
+        var draftStatus = await checklistRepository.GetStatusByNameAsync(MasterChecklistConstants.StatusNames.Draft);
         if (publishedStatus is null || draftStatus is null)
         {
-            return ChecklistResultDto<MasterChecklistVersionResponseDto>.Failure("Checklist statuses are not configured correctly.");
+            return ChecklistResultDto<MasterChecklistVersionResponseDto>.Failure(MasterChecklistConstants.Messages.StatusesNotConfigured);
         }
 
         draftVersion.StatusId = publishedStatus.Id;
@@ -226,6 +234,7 @@ public class MasterChecklistService(IMasterChecklistRepository checklistReposito
             VersionNumber = version.VersionNumber,
             StatusId = version.StatusId,
             StatusName = version.Status.StatusName,
+            UpdatedAt = version.UpdatedAt,
             Items = version.Items.OrderBy(i => i.DisplayOrder).Select(MapItem).ToList()
         };
     }

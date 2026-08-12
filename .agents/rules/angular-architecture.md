@@ -1,493 +1,470 @@
-<<<<<<< HEAD
 ---
 trigger: always_on
 ---
 
-=======
->>>>>>> dev
-# Angular Frontend Architecture Rules
+# Angular Architecture Rules
 
 ## Purpose
 
-This project follows a feature-first architecture with clear dependency boundaries.
-
-The architecture is divided into:
-
-- features
-- shared
-- common
-- layouts
-- core
+Feature-first Angular architecture. This file is the source of truth for Angular architecture and implementation.
 
 Dependency direction:
 
-Features
-    ↓
-Shared
-    ↓
-Common
+```text
+Features → Shared → Common
+```
 
-Never reverse these dependencies.
+Rules:
 
-- `common` must not import from `shared` or `features`.
-- `shared` must not import from `features`.
-- `features` may import from both `shared` and `common`.
+* `features` may import `shared` and `common`.
+* `shared` may import `common`.
+* `shared` must not import `features`.
+* `common` must not import `shared` or `features`.
+* `core` contains app-wide infrastructure only.
+* `core` must not contain feature-specific business logic.
+* `layouts` contain application shells, not feature implementation.
 
 ---
 
-# Folder Structure
+# Stack & Structure
 
-src/
-└── app/
-    ├── core/
-    ├── layouts/
-    ├── features/
-    ├── shared/
-    ├── common/
-    ├── app.routes.ts
-    └── app.config.ts
+* Angular 21.
+* Standalone components.
+* Zoneless application.
+
+```text
+src/app/
+├── core/
+├── layouts/
+├── features/
+├── shared/
+├── common/
+├── app.routes.ts
+└── app.config.ts
+```
 
 ---
 
 # Core
 
-Contains application-wide infrastructure.
+App-wide infrastructure:
 
-Examples:
+* authentication
+* route guards
+* HTTP/interceptors
+* loading
+* notifications
+* configuration
+* app initialization
+* tokens
+* environment configuration
 
-- Authentication
-- Route Guards
-- HTTP configuration
-- Global configuration
-- App initialization
-- Tokens
-- Environment configuration
-
-Core should be initialized once and should not contain feature-specific code.
+Initialize Core once.
 
 ---
 
 # Layouts
 
-Contains application shells.
+Application shells containing shared navigation and the global router outlet.
 
 Example:
 
+```text
 layouts/
 └── main-layout/
     ├── sidebar/
     ├── topbar/
     └── main-layout.component
+```
+- Structure secured top-level routes with `MainLayoutComponent` as the parent and feature routes as its children.
 
-The MainLayout contains:
+Feature routes render inside `MainLayoutComponent`.
 
-- Sidebar
-- Header
-- Global Router Outlet
+Do not bypass the layout unless the route is intentionally layout-less, e.g. login/error pages.
 
-Feature pages render inside this layout.
+Layouts must not depend on feature implementation details.
 
 ---
-
 # Features
 
-Each top-level sidebar menu is a Feature.
+Each top-level sidebar menu is a feature.
 
 Examples:
 
-- Engagements
-- Users
-- Templates
-- Config
-- Portfolio
-- Reports
-- Spec Map
+- engagements
+- engagement-allocation
+- users
+- templates
+- config
+- portfolio
+- reports
 
-Every feature owns:
+A feature owns its pages, components, services, models, and routes.
 
-- pages
-- components
-- services
-- models
-- routes
-
-Example:
-
-features/
-└── users/
-    ├── pages/
-    ├── components/
-    ├── services/
-    ├── models/
-    └── users.routes.ts
+Use the existing feature structure. Do not introduce additional architectural folders such as `pages/` unless the project already uses them or there is an explicit requirement.
 
 ---
 
-# Engagement Feature
+# Engagements
 
-Engagements is a single feature.
+`engagements` is a single feature.
 
-Overview, Checklist, Kickoff, Documents, etc. are NOT independent features.
+Engagement-specific areas such as Overview, Checklist, Documents, Handover, Kickoff, etc. belong under:
 
-They are pages inside Engagements.
-
-Structure:
-
+```text
 features/
 └── engagements/
-    ├── pages/
-    │   ├── engagement-list/
-    │   └── engagement-detail/
-    │
-    ├── overview/
-    ├── handover/
-    ├── documents/
-    ├── people/
-    ├── checklist/
-    ├── kickoff/
-    ├── resources/
-    ├── technical/
-    ├── risks/
-    ├── assumptions-decisions/
-    │
-    ├── components/
-    ├── services/
-    ├── models/
-    └── engagements.routes.ts
-
----
-
-# Engagement Navigation
-
-Application Flow
-
-Sidebar
-
-↓
-
-Engagements
-
-↓
-
-Engagement List
-
-↓
-
-Select Engagement
-
-↓
-
-Engagement Detail
-
-↓
-
-Overview
-Handover
-Documents
-People
-Checklist
-Kickoff
-Resources
-Technical
-Risks
-Assumptions & Decisions
-
----
-
+    └── engagement-workspace/
+        ├── checklist/
+        ├── documents/
+        ├── handover/
+        ├── kickoff/
+        ├── overview/
+        └── ...
 # Routing
 
-## App Routes
+`app.routes.ts` owns top-level navigation.
 
-Responsible for top-level navigation.
-
-Example:
-
-/
-
+```text
 /engagements
-
 /users
-
 /templates
-
 /config
-
 /portfolio
-
 /reports
-
 /spec-map
+```
 
-Every sidebar item loads its own feature routes.
+Use lazy loading for feature routes where appropriate.
 
-Example:
+Protect secured routes with guards.
 
-app.routes.ts
-
-MainLayout
-
-└── Engagements
-
-└── Users
-
-└── Templates
-
-└── Reports
-
-etc.
-
----
+Each feature owns its route file.
 
 ## Engagement Routes
 
-engagements.routes.ts controls navigation inside one engagement.
+`engagements.routes.ts` owns:
 
-Routes:
-
+```text
 /engagements
-
-Shows Engagement List.
-
 /engagements/:engagementId
-
-Loads Engagement Detail.
-
 /engagements/:engagementId/overview
-
-Shows Overview page.
-
 /engagements/:engagementId/handover
-
-Shows Handover page.
-
 /engagements/:engagementId/documents
-
-Shows Documents page.
-
 /engagements/:engagementId/people
-
-Shows People page.
-
 /engagements/:engagementId/checklist
-
-Shows Checklist page.
-
 /engagements/:engagementId/kickoff
-
-Shows Kickoff page.
-
 /engagements/:engagementId/resources
-
-Shows Resources page.
-
 /engagements/:engagementId/technical
-
-Shows Technical page.
-
 /engagements/:engagementId/risks
-
-Shows Risks page.
-
 /engagements/:engagementId/assumptions-decisions
+```
 
-Shows Assumptions & Decisions page.
+`/engagements` → list.
+
+`/engagements/:engagementId` → detail shell.
+
+Child routes render inside the detail shell.
 
 ---
 
-# Engagement Detail Layout
+# Engagement Detail
 
-EngagementDetailComponent acts as the shell for engagement pages.
+`EngagementDetailComponent` is the shell:
 
-Structure:
-
+```text
 EngagementDetail
+├── Tabs
+└── RouterOutlet
+```
 
-├── Engagement Tabs
+Tabs remain visible while only the child outlet changes.
 
-│
-
-└── Router Outlet
-
-The tabs remain visible.
-
-Only the Router Outlet changes.
-
-Example:
-
-Overview
-
-↓
-
-Checklist
-
-↓
-
-Kickoff
-
-The shell stays the same.
-
-Only the child page changes.
+Engagement tabs must use child routes rendered inside `EngagementDetailComponent`.
 
 ---
 
-# Feature Components
+# Component Placement
 
-Feature components belong inside their own feature.
-
-Example:
-
-features/
-└── engagements/
-    └── overview/
-        └── components/
-            ├── readiness-banner/
-            ├── team-card/
-            └── commercial-model-card/
-
-These components should not be moved to Shared unless reused across multiple top-level features.
+* One page → keep local to that page.
+* Multiple pages in one feature → `features/<feature>/components`.
+* Multiple top-level features + business/domain knowledge → `shared`.
+* Generic + business-logic-independent → `common`.
+* Prefer local feature code before promoting to Shared/Common.
+* Do not create premature abstractions.
 
 ---
 
+Change it to:
+
+```md
 # Shared
 
-Shared contains reusable BUSINESS components.
-
-These understand the application's domain.
+Reusable application/domain components, services, models, and constants shared across top-level features.
 
 Examples:
 
+```text
 shared/
 ├── components/
-│   ├── user-display/
-│   ├── engagement-status/
-│   └── checklist-status/
-│
 ├── services/
-│   ├── user.service.ts
-│   └── engagement.service.ts
-│
 ├── models/
+├── constants/
 └── pipes/
-
-Shared may import Common.
-
-Shared must never import Features.
 
 ---
 
 # Common
 
-Common contains completely generic building blocks.
-
-These should be reusable in any Angular application.
+Generic, business-logic-independent building blocks; treat it as the application's internal UI kit.
 
 Examples:
 
+```text
 common/
 ├── components/
-│   ├── button/
-│   ├── input/
-│   ├── modal/
-│   ├── spinner/
-│   ├── badge/
-│   ├── search-input/
-│   └── empty-state/
-│
 ├── services/
 ├── directives/
 ├── pipes/
 └── interceptors/
+```
 
-Common must never depend on business logic.
-
-Common must never import Shared or Features.
-
----
-
-# Decision Rules
-
-When creating new code:
-
-Question 1
-
-Is it only used by one page?
-
-→ Keep it inside that page.
-
-Example:
-
-overview/components/team-card
+Common must not depend on business logic, Shared, or Features.
 
 ---
 
-Question 2
+# Common UI Reuse
 
-Is it reused by multiple pages inside Engagements?
+Before creating generic UI, inspect:
 
-→ Move it to:
+```text
+common/components/
+common/services/
+common/directives/
+common/pipes/
+```
 
-features/engagements/components
+Do not rely on example lists in this file as the current inventory.
 
----
-
-Question 3
-
-Is it reused by multiple top-level features and understands business concepts?
-
-→ Move it to:
-
-shared/
-
----
-
-Question 4
-
-Can it be copied into another Angular application without modification?
-
-→ Move it to:
-
-common/
+* Reuse an existing Common component when it fits.
+* Do not hand-roll equivalent generic UI.
+* New Common UI must be business-logic-independent.
+* Use standalone components.
+* Follow existing Common component patterns.
+* Prefer signal-based inputs where supported.
+* Compose Common primitives in feature-specific UI where appropriate.
+- Use `@common/...` and `@shared/...` aliases for Common/Shared imports.
+- Never use long relative imports such as `../../../` for Common or Shared code.
 
 ---
 
-# Dependency Rules
+# Angular Imports
 
-Allowed
+Use configured aliases:
 
-Features
-    ↓
-Shared
-    ↓
-Common
+```text
+@core
+@features
+@shared
+@layout
+@env
+```
 
-Not Allowed
+Use the project's configured Common alias where applicable.
 
-Common
-    ↓
-Shared
+Prefer aliases over long relative paths.
 
-Common
-    ↓
-Features
-
-Shared
-    ↓
-Features
+Relative imports are acceptable within the same feature/folder.
 
 ---
 
-# Code Generation Rules
+# Components
 
-When generating Angular code:
+* Use standalone components.
+* Keep components focused on presentation, interaction, forms, and view state.
+* Business logic belongs in services.
+* API calls belong in services.
+* Components must not use `HttpClient` directly.
+* Keep components small and cohesive.
+* Use smart/container components only when necessary.
 
-- Follow feature-first architecture.
-- Use standalone components.
-- Keep routing modular.
-- Each feature owns its own routes file.
-- Do not place business-specific components inside Common.
-- Do not move feature components into Shared unless reused across multiple top-level features.
-- Prefer local feature components before promoting them to Shared.
-- Keep generic UI components in Common.
-- Keep application-wide infrastructure inside Core.
-- Keep layouts separate from features.
-- Engagement tabs must be child routes rendered inside EngagementDetailComponent.
+---
+
+# Templates
+
+Use:
+
+```text
+@if
+@for
+@switch
+```
+
+Avoid `*ngIf`, `*ngFor`, and `*ngSwitch` unless explicitly requested.
+
+Every `@for` must have an appropriate `track` expression.
+
+---
+
+# State
+
+* Application is zoneless.
+* Prefer Signals.
+* Use `signal()` for state.
+* Use `computed()` for derived state.
+* Use `effect()` only for actual side effects.
+* Prefer signal-based inputs/outputs where supported.
+* Avoid unnecessary RxJS for simple local state.
+
+---
+
+# Forms
+
+* Prefer Reactive Forms.
+* Use typed forms where possible.
+* Use FormBuilder where appropriate.
+* Avoid Template-driven Forms unless explicitly requested.
+* Keep validation reusable.
+* Display validation errors consistently.
+
+# Component Placement
+
+- Used by one component/page → keep it local to that component/page.
+- Reused within one Engagement area → keep it inside that area.
+- Reused across multiple Engagement areas → `engagement-workspace/components`.
+- Reused across multiple top-level features and understands business/domain concepts → `shared`.
+- Generic and business-logic-independent → `common`.
+- Prefer local code before promoting a component upward.
+---
+
+# HTTP, Loading & Errors
+
+All API calls go through services.
+
+Use the global:
+
+```text
+core/loading/loader.service.ts
+```
+
+for HTTP loading.
+
+Do not create local HTTP-loading signals such as:
+
+```text
+isLoading
+isSaving
+isSubmitting
+```
+
+Use:
+
+```text
+core/http/http-error.interceptor.ts
+```
+
+for centralized HTTP errors.
+
+Do not call `toastService.error()` inside normal HTTP `error:` callbacks.
+
+Component-level error toasts are only for business failures where HTTP succeeds but the response indicates failure:
+
+```typescript
+if (!res.success) {
+  this.toastService.error(res.message);
+}
+```
+
+Avoid duplicate error messages.
+
+---
+
+# TypeScript
+
+* Use strict typing.
+* Avoid `any` and `as any`.
+* Prefer interfaces and typed models.
+* Prefer `readonly` where appropriate.
+* Fix typing problems instead of bypassing TypeScript.
+* Prefer enums or typed constant objects over magic strings where appropriate.
+
+---
+
+# Constants
+
+Shared Angular constants belong in:
+
+```text
+shared/constants/app.constants.ts
+```
+
+Use it for reusable:
+
+* UI strings
+* route segments
+* API paths
+* claim names
+* roles
+* policies
+* status values
+* repeated keys
+* configuration keys
+* regex patterns
+
+Do not create multiple shared constants files unless they represent separate reusable domains.
+
+---
+
+# Styling
+
+* Use SCSS.
+* Reuse existing design tokens, CSS variables, mixins, and shared styles.
+* Use semantic tokens for colors, spacing, typography, breakpoints, and sizing.
+* Use SCSS mixins for repeated patterns.
+* Avoid duplicated styles.
+* Keep shared tokens/mixins in the project's shared styling/theme location.
+* Avoid inline styles.
+* Prefer responsive layouts.
+* Use `rem` for spacing, sizing, typography, margins, padding, gaps, and border radius.
+* Use HEX colors or existing CSS variables/tokens.
+* Avoid RGB/RGBA.
+
+---
+
+# Testing
+
+Do not generate `.spec.ts` files or frontend unit tests unless explicitly requested.
+
+---
+
+# Architecture Decision
+
+Use this order when placing Angular code:
+
+```text
+App-wide infrastructure → core
+
+Application shell → layouts
+
+One page → page-local
+
+Multiple pages in one feature → feature/components
+
+Multiple top-level features + domain logic → shared
+
+Generic, business-independent UI → common
+```
+
+Never violate:
+
+```text
+Features → Shared → Common
+```
+
+Prefer:
+
+```text
+existing pattern > new pattern
+local code > premature abstraction
+reuse > duplication
+```

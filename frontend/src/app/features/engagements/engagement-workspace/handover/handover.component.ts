@@ -1,13 +1,20 @@
-import { Component, inject, signal, computed, effect } from '@angular/core';
+import { Component, ViewChild, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  NgModel,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { HandoverService } from '../../services/handover.service';
 import { catchError, of } from 'rxjs';
 import { AuthService } from 'src/app/services/auth';
-import { KickoffReadinessDto, KickoffReadinessService } from '../../../../services/kickoff-readiness.service';
-import { FlaggedItemsBannerComponent, FlaggedItem } from '../../../../shared/flagged-items-banner/flagged-items-banner.component';
+import { KickoffReadinessDto, KickoffReadinessService } from 'src/app/services/kickoff-readiness.service';
+import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
 import {
   HandoverInfoDto,
   SaveHandoverDraftRequest,
@@ -17,6 +24,13 @@ import {
   UpdateRealisticCommitmentRequest,
   CommitmentDto
 } from '../../models/handover.model';
+import { AlertComponent } from '@common/components/alert/alert';
+import { ButtonComponent } from '@common/components/button/button';
+import { InputComponent } from '@common/components/form/input/input';
+import { TextareaComponent } from '@common/components/form/textarea/textarea';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
+import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
+import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 
 const MAX_FREE_TEXT_LENGTH = 2000;
 const SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
@@ -37,9 +51,21 @@ interface RealisticEditForm {
 @Component({
   selector: 'app-handover',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, FlaggedItemsBannerComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    FlaggedItemsBannerComponent,
+    AlertComponent,
+    ButtonComponent,
+    InputComponent,
+    TextareaComponent,
+    SelectComponent,
+    StatusBadgeComponent,
+    EmptyStateComponent,
+  ],
   templateUrl: './handover.component.html',
-  styleUrl: './handover.component.scss'
+  styleUrl: './handover.component.scss',
 })
 export class HandoverComponent {
   private static readonly KICKOFF_NOT_READY_MESSAGE =
@@ -75,21 +101,32 @@ export class HandoverComponent {
     ];
   });
 
-  readonly sentimentOptions = SENTIMENT_OPTIONS;
+  readonly sentimentOptions: SelectOption[] = SENTIMENT_OPTIONS.map((value) => ({ value, label: value }));
   readonly timelineUnits = TIMELINE_UNITS;
+  readonly timelineUnitOptions: SelectOption[] = TIMELINE_UNITS.map((value) => ({ value, label: value }));
   readonly maxFreeTextLength = MAX_FREE_TEXT_LENGTH;
+
+  getSentimentTone(sentiment: string | null | undefined): StatusBadgeTone {
+    switch (sentiment) {
+      case 'Warm':
+        return 'info';
+      case 'Strained':
+        return 'danger';
+      default:
+        return 'neutral';
+    }
+  }
 
   clientContextForm: FormGroup = this.fb.group({
     clientBackground: ['', [Validators.maxLength(MAX_FREE_TEXT_LENGTH)]],
     businessProblem: ['', [Validators.required, Validators.maxLength(MAX_FREE_TEXT_LENGTH)]],
     clientSentiment: ['', [Validators.required]],
-    dealOrigin: ['', [Validators.maxLength(MAX_FREE_TEXT_LENGTH)]]
+    dealOrigin: ['', [Validators.maxLength(MAX_FREE_TEXT_LENGTH)]],
   });
 
   commitments = signal<CommitmentDto[]>([]);
 
   newCommitment = signal<CreateCommitmentRequest>(this.emptyCommitment());
-  newCommitmentTouched = signal(false);
   editingCommitmentId = signal<number | null>(null);
   editCommitment = signal<UpdateCommitmentRequest>(this.emptyCommitment());
   pendingDeleteId = signal<number | null>(null);
@@ -103,29 +140,28 @@ export class HandoverComponent {
   commitmentTypes = [
     { id: 1, name: 'Software' },
     { id: 2, name: 'Services' },
-    { id: 3, name: 'Training' }
+    { id: 3, name: 'Training' },
   ];
 
-  get clientBackgroundControl() {
-    return this.clientContextForm.get('clientBackground')!;
-  }
-
-  get businessProblemControl() {
-    return this.clientContextForm.get('businessProblem')!;
-  }
-
-  get clientSentimentControl() {
-    return this.clientContextForm.get('clientSentiment')!;
-  }
-
-  get dealOriginControl() {
-    return this.clientContextForm.get('dealOrigin')!;
-  }
+  readonly commitmentTypeOptions: SelectOption[] = this.commitmentTypes.map((t) => ({
+    value: t.id,
+    label: t.name
+  }));
 
   isSubmitted = computed(() => this.handover()?.status === 'Submitted');
+  newCommitmentTouched = signal(false);
 
   isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
   isProjectManagement = computed(() => this.authService.hasRole('Project Management'));
+
+  originalAcknowledgementMessage = signal('');
+
+  acknowledgementWarningVisible = computed(() => {
+    return (
+      this.originalAcknowledgementMessage() !== '' &&
+      this.realisticEditForm().acknowledgementMessage === this.originalAcknowledgementMessage()
+    );
+  });
 
   constructor() {
     effect(() => {
@@ -148,7 +184,13 @@ export class HandoverComponent {
   }
 
   private emptyRealisticEditForm(): RealisticEditForm {
-    return { description: '', timeline: 1, timelineUnit: 'Weeks', acknowledgementMessage: '', isPossible: true };
+    return {
+      description: '',
+      timeline: 1,
+      timelineUnit: 'Weeks',
+      acknowledgementMessage: '',
+      isPossible: true,
+    };
   }
 
   loadHandover(id: number) {
@@ -160,7 +202,7 @@ export class HandoverComponent {
           clientBackground: data.clientBackground || '',
           businessProblem: data.businessProblem || '',
           clientSentiment: data.clientSentiment || '',
-          dealOrigin: data.dealOrigin || ''
+          dealOrigin: data.dealOrigin || '',
         });
         this.commitments.set(data.commitments || []);
         this.isLoading.set(false);
@@ -176,7 +218,7 @@ export class HandoverComponent {
           this.showMessage('Failed to load handover details', true);
           this.isLoading.set(false);
         }
-      }
+      },
     });
   }
 
@@ -204,7 +246,7 @@ export class HandoverComponent {
       error: (err) => {
         this.showMessage(this.extractErrorMessage(err, 'Failed to save draft'), true);
         this.isSaving.set(false);
-      }
+      },
     });
   }
 
@@ -245,7 +287,6 @@ export class HandoverComponent {
     const id = this.engagementId();
     if (!id) return;
 
-    this.newCommitmentTouched.set(true);
     const currentNew = this.newCommitment();
     if (!currentNew.description || !currentNew.title) {
       return;
@@ -253,14 +294,14 @@ export class HandoverComponent {
 
     this.handoverService.addCommitment(id, currentNew).subscribe({
       next: (data) => {
-        this.commitments.update(c => [...c, data]);
+        this.commitments.update((c) => [...c, data]);
         this.newCommitment.set(this.emptyCommitment());
         this.newCommitmentTouched.set(false);
         this.showMessage('Commitment added successfully', false);
       },
       error: (err) => {
         this.showMessage(this.extractErrorMessage(err, 'Failed to add commitment'), true);
-      }
+      },
     });
   }
 
@@ -272,7 +313,7 @@ export class HandoverComponent {
       commitmentTypeId: c.commitmentTypeId,
       title: c.title,
       timeline: c.timeline,
-      timelineUnit: c.timelineUnit
+      timelineUnit: c.timelineUnit,
     });
   }
 
@@ -289,7 +330,7 @@ export class HandoverComponent {
     const errors: string[] = [];
     if (!currentEdit.title) errors.push('Title is required.');
     if (!currentEdit.description) errors.push('Description is required.');
-    
+
     if (errors.length > 0) {
       this.editCommitmentErrors.set(errors);
       return;
@@ -299,9 +340,9 @@ export class HandoverComponent {
 
     this.handoverService.updateCommitment(id, commitmentId, currentEdit).subscribe({
       next: (data) => {
-        this.commitments.update(commits => {
+        this.commitments.update((commits) => {
           const arr = [...commits];
-          const index = arr.findIndex(c => c.commitmentId === commitmentId);
+          const index = arr.findIndex((c) => c.commitmentId === commitmentId);
           if (index !== -1) arr[index] = data;
           return arr;
         });
@@ -310,7 +351,7 @@ export class HandoverComponent {
       },
       error: (err) => {
         this.showMessage(this.extractErrorMessage(err, 'Failed to update commitment'), true);
-      }
+      },
     });
   }
 
@@ -328,14 +369,14 @@ export class HandoverComponent {
 
     this.handoverService.deleteCommitment(id, commitmentId).subscribe({
       next: () => {
-        this.commitments.update(c => c.filter(item => item.commitmentId !== commitmentId));
+        this.commitments.update((c) => c.filter((item) => item.commitmentId !== commitmentId));
         this.pendingDeleteId.set(null);
         this.showMessage('Commitment deleted', false);
       },
       error: (err) => {
         this.pendingDeleteId.set(null);
         this.showMessage(this.extractErrorMessage(err, 'Failed to delete commitment'), true);
-      }
+      },
     });
   }
 
@@ -344,12 +385,13 @@ export class HandoverComponent {
     this.editingRealisticCommitmentId.set(c.commitmentId);
     const existing = c.realisticCommitment;
     const ackMessage = existing?.acknowledgementMessage || '';
+    this.originalAcknowledgementMessage.set(ackMessage);
     this.realisticEditForm.set({
       description: existing?.description || '',
       timeline: existing?.timeline || c.timeline,
       timelineUnit: existing?.timelineUnit || c.timelineUnit,
       acknowledgementMessage: ackMessage,
-      isPossible: existing?.isPossible ?? true
+      isPossible: existing?.isPossible ?? true,
     });
   }
 
@@ -391,24 +433,37 @@ export class HandoverComponent {
       timeline: form.timeline,
       timelineUnit: form.timelineUnit,
       acknowledgementMessage: form.acknowledgementMessage || null,
-      isPossible: form.isPossible
+      isPossible: form.isPossible,
     };
 
     const request$ = c.realisticCommitment
-      ? this.handoverService.updateRealisticCommitment(id, c.commitmentId, payload as UpdateRealisticCommitmentRequest)
-      : this.handoverService.createRealisticCommitment(id, c.commitmentId, payload as CreateRealisticCommitmentRequest);
+      ? this.handoverService.updateRealisticCommitment(
+          id,
+          c.commitmentId,
+          payload as UpdateRealisticCommitmentRequest,
+        )
+      : this.handoverService.createRealisticCommitment(
+          id,
+          c.commitmentId,
+          payload as CreateRealisticCommitmentRequest,
+        );
 
     request$.subscribe({
       next: (data) => {
-        this.commitments.update(commits => commits.map(item =>
-          item.commitmentId === c.commitmentId ? { ...item, realisticCommitment: data } : item
-        ));
+        this.commitments.update((commits) =>
+          commits.map((item) =>
+            item.commitmentId === c.commitmentId ? { ...item, realisticCommitment: data } : item,
+          ),
+        );
         this.editingRealisticCommitmentId.set(null);
         this.showMessage('Realistic commitment saved', false);
       },
       error: (err) => {
-        this.showMessage(this.extractErrorMessage(err, 'Failed to save realistic commitment'), true);
-      }
+        this.showMessage(
+          this.extractErrorMessage(err, 'Failed to save realistic commitment'),
+          true,
+        );
+      },
     });
   }
 
@@ -421,18 +476,20 @@ export class HandoverComponent {
       timeline: c.realisticCommitment.timeline,
       timelineUnit: c.realisticCommitment.timelineUnit,
       acknowledgementMessage: c.realisticCommitment.acknowledgementMessage,
-      isPossible: !c.realisticCommitment.isPossible
+      isPossible: !c.realisticCommitment.isPossible,
     };
 
     this.handoverService.updateRealisticCommitment(id, c.commitmentId, payload).subscribe({
       next: (data) => {
-        this.commitments.update(commits => commits.map(item =>
-          item.commitmentId === c.commitmentId ? { ...item, realisticCommitment: data } : item
-        ));
+        this.commitments.update((commits) =>
+          commits.map((item) =>
+            item.commitmentId === c.commitmentId ? { ...item, realisticCommitment: data } : item,
+          ),
+        );
       },
       error: (err) => {
         this.showMessage(this.extractErrorMessage(err, 'Failed to update commitment'), true);
-      }
+      },
     });
   }
 
@@ -456,6 +513,8 @@ export class HandoverComponent {
   private showMessage(msg: string, isErr: boolean) {
     this.message.set(msg);
     this.isError.set(isErr);
-    setTimeout(() => { this.message.set(''); }, 5000);
+    setTimeout(() => {
+      this.message.set('');
+    }, 5000);
   }
 }

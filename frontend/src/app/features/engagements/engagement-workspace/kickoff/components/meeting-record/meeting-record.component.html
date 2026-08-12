@@ -1,0 +1,39 @@
+<div class="meeting-record-card">
+  <h3 class="title">Kickoff Meeting Record</h3>
+
+  @if (message()) {
+    <div class="alert" [class.alert-error]="isError()" [class.alert-success]="!isError()">
+      {{ message() }}
+    </div>
+  }
+
+  <textarea
+    class="outcomes-input"
+    rows="3"
+    placeholder="Outcomes and notes..."
+    [ngModel]="outcomes()"
+    (ngModelChange)="outcomes.set($event)"
+    (blur)="saveOutcomes()"
+  ></textarea>
+
+  <h4 class="actions-heading">ACTIONS</h4>
+
+  <ul class="action-list">
+    @for (item of actionItems(); track item.kickoffActionItemId) {
+      <li class="action-item">
+        <div class="action-details">
+          <p class="action-title">{{ item.title }}</p>
+          <p class="action-meta">{{ item.ownerName }} &middot; due {{ item.dueDate | date: 'd MMM y' }}</p>
+        </div>
+        <app-select
+          id="action-status-{{ item.kickoffActionItemId }}"
+          [options]="statusOptions"
+          [ngModel]="item.status"
+          (ngModelChange)="onStatusChange(item, $event)"
+        />
+      </li>
+    }
+  </ul>
+
+  <app-button type="button" variant="stroked" (click)="openAddActionDialog()">+ Add action</app-button>
+</div>

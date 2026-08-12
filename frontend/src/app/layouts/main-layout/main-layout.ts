@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from './sidebar/sidebar';
 import { HeaderComponent } from './header/header';
-import { ToastComponent } from '../../shared/toast/toast';
+import { ToastComponent } from '@common/components/toast/toast';
 
 @Component({
   selector: 'app-main-layout',

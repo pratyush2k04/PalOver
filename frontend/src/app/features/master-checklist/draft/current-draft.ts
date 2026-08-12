@@ -1,16 +1,29 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { DialogService } from '../../../shared/dialog/dialog.service';
-import { ToastService } from '../../../shared/toast/toast.service';
-import { LoadingSpinnerComponent } from '../../../shared/loading-spinner/loading-spinner';
+import { DialogService } from '@common/services/dialog/dialog.service';
+import { ToastService } from '@common/services/toast/toast';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
+import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
+import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
+import { ButtonComponent } from '@common/components/button/button';
+import { AlertComponent } from '@common/components/alert/alert';
+import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
+import { BadgeComponent } from '@common/components/badge/badge';
 import { MasterChecklistService } from '../services/master-checklist.service';
 import { MasterChecklistItem, MasterChecklistItemOrder } from '../models/master-checklist.model';
 import { ItemFormDialogComponent, ItemFormDialogData, ItemFormDialogResult } from '../dialogs/item-form/item-form-dialog';
-import { ConfirmDialogComponent, ConfirmDialogData } from '../dialogs/confirm/confirm-dialog';
 
 @Component({
   selector: 'app-current-draft',
   standalone: true,
-  imports: [LoadingSpinnerComponent],
+  imports: [
+    LoadingSpinnerComponent,
+    ConfirmDialogComponent,
+    StatusBadgeComponent,
+    ButtonComponent,
+    AlertComponent,
+    EmptyStateComponent,
+    BadgeComponent
+  ],
   templateUrl: './current-draft.html',
   styleUrl: './current-draft.scss',
 })
@@ -38,13 +51,16 @@ export class CurrentDraftComponent implements OnInit {
   readonly draggedItemId = signal<number | null>(null);
   readonly dragOverItemId = signal<number | null>(null);
 
+  readonly pendingRetireItem = signal<MasterChecklistItem | null>(null);
+  readonly pendingPublish = signal(false);
+
   ngOnInit(): void {
     this.masterChecklistService.getCurrentDraft();
     this.masterChecklistService.loadCategories();
   }
 
   private notify(message: string): void {
-    this.toast.open(message);
+    this.toast.show(message);
   }
 
   private reload(): void {
@@ -139,28 +155,27 @@ export class CurrentDraftComponent implements OnInit {
   }
 
   onRetireItem(item: MasterChecklistItem): void {
-    const dialogRef = this.dialog.open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
-      data: {
-        title: 'Retire this item?',
-        message: `"${item.title}" will be marked as retired and removed from the active list.`,
-        confirmLabel: 'Retire',
-        isDestructive: true,
+    this.pendingRetireItem.set(item);
+  }
+
+  confirmRetireItem(): void {
+    const item = this.pendingRetireItem();
+    if (!item) {
+      return;
+    }
+    this.pendingRetireItem.set(null);
+
+    this.masterChecklistService.retireItem(item.id).subscribe({
+      next: () => {
+        this.notify('Item retired.');
+        this.reload();
       },
+      error: () => this.notify('Unable to retire item. Please try again.'),
     });
+  }
 
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (!confirmed) {
-        return;
-      }
-
-      this.masterChecklistService.retireItem(item.id).subscribe({
-        next: () => {
-          this.notify('Item retired.');
-          this.reload();
-        },
-        error: () => this.notify('Unable to retire item. Please try again.'),
-      });
-    });
+  cancelRetireItem(): void {
+    this.pendingRetireItem.set(null);
   }
 
   onDragStart(item: MasterChecklistItem): void {
@@ -218,31 +233,29 @@ export class CurrentDraftComponent implements OnInit {
   }
 
   onPublish(): void {
+    if (!this.draft()) {
+      return;
+    }
+    this.pendingPublish.set(true);
+  }
+
+  confirmPublishVersion(): void {
     const draft = this.draft();
     if (!draft) {
       return;
     }
+    this.pendingPublish.set(false);
 
-    const dialogRef = this.dialog.open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
-      data: {
-        title: 'Publish this version?',
-        message: `Version ${draft.versionNumber} with ${this.activeItems().length} active item(s) will be published and become visible to everyone. A new draft version will be created automatically.`,
-        confirmLabel: 'Publish',
+    this.masterChecklistService.publishVersion(draft.id).subscribe({
+      next: () => {
+        this.notify('Version published.');
+        this.reload();
       },
+      error: () => this.notify('Unable to publish version. Please try again.'),
     });
+  }
 
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (!confirmed) {
-        return;
-      }
-
-      this.masterChecklistService.publishVersion(draft.id).subscribe({
-        next: () => {
-          this.notify('Version published.');
-          this.reload();
-        },
-        error: () => this.notify('Unable to publish version. Please try again.'),
-      });
-    });
+  cancelPublishVersion(): void {
+    this.pendingPublish.set(false);
   }
 }

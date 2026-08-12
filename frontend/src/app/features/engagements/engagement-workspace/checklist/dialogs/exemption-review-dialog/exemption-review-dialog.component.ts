@@ -1,8 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DialogRef } from 'src/app/shared/dialog/dialog-ref';
-import { DIALOG_DATA } from 'src/app/shared/dialog/dialog.service';
+import { DialogRef } from '@common/services/dialog/dialog-ref';
+import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
+import { ButtonComponent } from '@common/components/button/button';
+import { TextareaComponent } from '@common/components/form/textarea/textarea';
 
 export interface ExemptionReviewDialogData {
   itemTitle: string;
@@ -18,9 +20,9 @@ export interface ExemptionReviewDialogResult {
 @Component({
   selector: 'app-exemption-review-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, TextareaComponent],
   templateUrl: './exemption-review-dialog.component.html',
-  styleUrl: './exemption-review-dialog.component.scss'
+  styleUrl: './exemption-review-dialog.component.scss',
 })
 export class ExemptionReviewDialogComponent {
   private fb = inject(FormBuilder);
@@ -30,7 +32,7 @@ export class ExemptionReviewDialogComponent {
   isRejectMode = signal<boolean>(false);
 
   readonly form = this.fb.nonNullable.group({
-    rejectionReason: ['', [Validators.maxLength(500)]]
+    rejectionReason: ['', [Validators.maxLength(500)]],
   });
 
   get rejectionReasonControl() {

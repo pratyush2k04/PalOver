@@ -1,9 +1,6 @@
 <!-- Loading State -->
 @if (isLoading()) {
-  <div class="checklist-loading">
-    <div class="spinner"></div>
-    <p>Loading checklist...</p>
-  </div>
+  <app-loading-spinner label="Loading checklist..." />
 }
 
 <!-- Error State -->
@@ -22,9 +19,6 @@
     <div class="checklist-header">
       <div class="checklist-header-left">
         <h1 class="checklist-title">Kickoff Readiness Checklist</h1>
-        <span class="badge badge-feature">FTR-022</span>
-        <span class="badge badge-feature">FTR-023</span>
-        <span class="badge badge-story">US-040</span>
       </div>
       <div class="checklist-header-right">
         <span class="checklist-version">
@@ -38,10 +32,6 @@
       <div class="callout callout-gate callout-warning">
         <div class="callout-icon">🚩</div>
         <div class="callout-body">
-          <div class="callout-badges">
-            <span class="badge badge-gate-feature">FTR-024</span>
-            <span class="badge badge-gate-story">US-042</span>
-          </div>
           <h2 class="callout-headline">Clear these to go kickoff-ready</h2>
           <ul class="gate-incomplete-list">
             @for (gateItem of checklist()!.incompleteMandatoryItems; track gateItem.id) {
@@ -93,9 +83,9 @@
                         {{ item.title }}
                       </span>
                       @if (item.isMandatory) {
-                        <span class="pill pill-mandatory">Mandatory</span>
+                        <app-status-badge tone="danger">Mandatory</app-status-badge>
                       } @else {
-                        <span class="pill pill-optional">Optional</span>
+                        <app-status-badge tone="neutral">Optional</app-status-badge>
                       }
                     </div>
 
@@ -125,13 +115,13 @@
 
                   <td class="cell-status">
                     @if (item.exemptionStatus === 'Pending') {
-                      <span class="pill pill-pending">Pending Approval</span>
+                      <app-status-badge tone="warning">Pending Approval</app-status-badge>
                     } @else if (item.status === 'Blocked') {
-                      <span class="pill pill-blocked">Blocked</span>
+                      <app-status-badge tone="danger">Blocked</app-status-badge>
                     } @else if (item.status === 'Complete') {
-                      <span class="pill pill-complete">Complete</span>
+                      <app-status-badge tone="success">Complete</app-status-badge>
                     } @else {
-                      <span class="pill pill-incomplete">Incomplete</span>
+                      <app-status-badge tone="neutral">Incomplete</app-status-badge>
                     }
                   </td>
 
@@ -141,38 +131,38 @@
                         <!-- Status Toggle / Unblock (PM & Tech Lead) -->
                         @if (canToggleStatus()) {
                           @if (item.status === 'Blocked') {
-                            <button type="button" class="btn btn-unblock" [disabled]="isUpdating()" (click)="unblockItem(item)">
+                            <app-button type="button" variant="danger" [disabled]="isUpdating()" (click)="unblockItem(item)">
                               Unblock
-                            </button>
+                            </app-button>
                           } @else if (item.status === 'Complete') {
-                            <button type="button" class="btn btn-reopen" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
+                            <app-button type="button" variant="stroked" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
                               Reopen
-                            </button>
+                            </app-button>
                           } @else {
-                            <button type="button" class="btn btn-complete" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
+                            <app-button type="button" variant="stroked" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
                               Complete
-                            </button>
+                            </app-button>
                           }
 
                           @if (item.status !== 'Blocked') {
-                            <button type="button" class="btn-icon btn-block" [disabled]="isUpdating()" (click)="openBlockDialog(item)" title="Flag as Blocked">
+                            <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openBlockDialog(item)" title="Flag as Blocked">
                               🚩
-                            </button>
+                            </app-button>
                           }
                         }
 
                         <!-- Applicability Actions (PM only) -->
                         @if (canChangeApplicability() && item.exemptionStatus !== 'Pending') {
-                          <button type="button" class="btn-icon btn-na" [disabled]="isUpdating()" (click)="openMarkNaDialog(item)" title="Mark Not Applicable">
+                          <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openMarkNaDialog(item)" title="Mark Not Applicable">
                             ✕
-                          </button>
+                          </app-button>
                         }
 
                         <!-- Leadership Exemption Review -->
                         @if (isLeadership() && item.exemptionStatus === 'Pending') {
-                          <button type="button" class="btn btn-review" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
+                          <app-button type="button" variant="accent" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
                             Review Request
-                          </button>
+                          </app-button>
                         }
                       </div>
                     </td>
@@ -213,9 +203,9 @@
                       {{ item.title }}
                     </span>
                     @if (item.isMandatory) {
-                      <span class="pill pill-mandatory">Mandatory</span>
+                      <app-status-badge tone="danger">Mandatory</app-status-badge>
                     } @else {
-                      <span class="pill pill-optional">Optional</span>
+                      <app-status-badge tone="neutral">Optional</app-status-badge>
                     }
                   </div>
                 </td>
@@ -235,15 +225,15 @@
                   <td class="cell-actions">
                     <div class="actions-group">
                       @if (canChangeApplicability()) {
-                        <button type="button" class="btn btn-restore" [disabled]="isUpdating()" (click)="makeItemApplicable(item)">
+                        <app-button type="button" variant="stroked" [disabled]="isUpdating()" (click)="makeItemApplicable(item)">
                           Make Applicable
-                        </button>
+                        </app-button>
                       }
 
                       @if (isLeadership() && item.exemptionStatus === 'Pending') {
-                        <button type="button" class="btn btn-review" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
+                        <app-button type="button" variant="accent" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
                           Review Request
-                        </button>
+                        </app-button>
                       }
                     </div>
                   </td>

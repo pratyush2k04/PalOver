@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -7,14 +7,17 @@ import { EngagementInfo, EngagementOwners, OwnerChange, OwnerKind } from '../../
 import { UserDirectoryService } from '@features/users/services/user.service';
 import { UserListItem } from '@features/users/models/user.model';
 import { AuthService } from 'src/app/services/auth';
-import { ToastService } from '@shared/toast/toast.service';
-import { ConfirmDialogComponent } from '@shared/confirm-dialog/confirm-dialog';
-import { ENGAGEMENT_CONSTANTS, ENGAGEMENT_MESSAGES } from '../../../../../../constants/app.constants';
+import { ToastService } from '@common/services/toast/toast';
+import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
+import { AlertComponent } from '@common/components/alert/alert';
+import { ButtonComponent } from '@common/components/button/button';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
+import { ENGAGEMENT_CONSTANTS, ENGAGEMENT_MESSAGES } from '@shared/constants/app.constants';
 
 @Component({
   selector: 'app-engagement-detail',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ConfirmDialogComponent],
+  imports: [CommonModule, ReactiveFormsModule, ConfirmDialogComponent, AlertComponent, ButtonComponent, SelectComponent],
   templateUrl: './engagement-detail.html',
   styleUrl: './engagement-detail.scss'
 })
@@ -74,6 +77,16 @@ export class EngagementDetailComponent implements OnInit {
   get assignButtonLabel(): string {
     return this.hasAnyOwnerAssigned ? 'Reassign' : 'Assign';
   }
+
+  readonly projectManagerOptions = computed<SelectOption[]>(() => [
+    { value: null, label: '— Select —' },
+    ...this.projectManagers().map((user) => ({ value: user.id, label: user.fullName }))
+  ]);
+
+  readonly techLeadOptions = computed<SelectOption[]>(() => [
+    { value: null, label: '— Select —' },
+    ...this.techLeads().map((user) => ({ value: user.id, label: user.fullName }))
+  ]);
 
   openAssignModal(): void {
     if (!this.canAssignOwners) return;

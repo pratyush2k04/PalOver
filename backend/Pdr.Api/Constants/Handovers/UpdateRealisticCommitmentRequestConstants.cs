@@ -1,9 +1,0 @@
-namespace Pdr.Api.Constants.Handovers;
-
-public static class UpdateRealisticCommitmentRequestConstants
-{
-    public const string DescriptionRequired = "Description is required.";
-    public const string DescriptionMaxLength = "Description cannot exceed 2000 characters.";
-    public const string TimelineGreaterThanZero = "Timeline must be greater than 0.";
-    public const string TimelineUnitInvalid = "Timeline Unit must be one of: Days, Weeks, Months.";
-}

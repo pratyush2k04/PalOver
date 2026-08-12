@@ -3,31 +3,29 @@
     <div>
       <h1>Current Draft</h1>
       @if (draft(); as d) {
-        <span class="current-draft__version-badge">{{ d.statusName }} &middot; v{{ d.versionNumber }}</span>
+        <app-badge [text]="d.statusName + ' · v' + d.versionNumber" />
       }
     </div>
 
     <div class="current-draft__actions">
-      <button type="button" class="app-button app-button--stroked" (click)="onAddItem()">Add Item</button>
-      <button
+      <app-button type="button" variant="stroked" (click)="onAddItem()">Add Item</app-button>
+      <app-button
         type="button"
-        class="app-button app-button--flat"
+        variant="flat"
         (click)="onPublish()"
         [disabled]="!draft()"
       >
         Publish Version
-      </button>
+      </app-button>
     </div>
   </div>
 
   @if (loading()) {
     <app-loading-spinner label="Loading current draft..." />
   } @else if (error()) {
-    <div class="current-draft__state current-draft__state--error">{{ error() }}</div>
+    <app-alert variant="danger">{{ error() }}</app-alert>
   } @else if (notFound()) {
-    <div class="current-draft__state">
-      No draft version exists yet. Contact an administrator to create one.
-    </div>
+    <app-empty-state message="No draft version exists yet. Contact an administrator to create one." />
   } @else {
     <div class="current-draft__list-wrapper">
       <div class="current-draft__list-header">
@@ -54,7 +52,7 @@
               <div class="current-draft__row-title">
                 {{ item.title }}
                 @if (item.isMandatory) {
-                  <span class="badge badge--mandatory">Mandatory</span>
+                  <app-status-badge tone="info">Mandatory</app-status-badge>
                 }
               </div>
               <div class="current-draft__row-meta">{{ item.categoryName }}</div>
@@ -64,12 +62,12 @@
             </div>
 
             <div class="current-draft__row-actions">
-              <button type="button" class="app-button app-button--icon" (click)="onEditItem(item)" aria-label="Edit item">
+              <app-button type="button" variant="icon" ariaLabel="Edit item" (click)="onEditItem(item)">
                 &#9998;
-              </button>
-              <button type="button" class="app-button app-button--icon" (click)="onRetireItem(item)" aria-label="Retire item">
+              </app-button>
+              <app-button type="button" variant="icon" ariaLabel="Retire item" (click)="onRetireItem(item)">
                 &#128451;
-              </button>
+              </app-button>
             </div>
           </div>
         }
@@ -89,7 +87,7 @@
             <div class="current-draft__row-body">
               <div class="current-draft__row-title">
                 {{ item.title }}
-                <span class="badge badge--retired">Retired</span>
+                <app-status-badge tone="danger">Retired</app-status-badge>
               </div>
               <div class="current-draft__row-meta">{{ item.categoryName }}</div>
             </div>
@@ -97,5 +95,29 @@
         }
       }
     </div>
+  }
+
+  @if (pendingRetireItem(); as item) {
+    <app-confirm-dialog
+      title="Retire this item?"
+      confirmLabel="Retire"
+      [isDestructive]="true"
+      (confirmed)="confirmRetireItem()"
+      (cancelled)="cancelRetireItem()"
+    >
+      "{{ item.title }}" will be marked as retired and removed from the active list.
+    </app-confirm-dialog>
+  }
+
+  @if (pendingPublish()) {
+    <app-confirm-dialog
+      title="Publish this version?"
+      confirmLabel="Publish"
+      [isDestructive]="false"
+      (confirmed)="confirmPublishVersion()"
+      (cancelled)="cancelPublishVersion()"
+    >
+      Version {{ draft()?.versionNumber }} with {{ activeItems().length }} active item(s) will be published and become visible to everyone. A new draft version will be created automatically.
+    </app-confirm-dialog>
   }
 </div>

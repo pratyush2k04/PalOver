@@ -1,7 +1,7 @@
 <div class="dialog-container">
   <div class="dialog-header">
     <h2>Flag as Blocked</h2>
-    <button type="button" class="close-btn" (click)="onCancel()" aria-label="Close dialog">&times;</button>
+    <app-button type="button" variant="icon" ariaLabel="Close dialog" (click)="onCancel()">&times;</app-button>
   </div>
 
   <div class="dialog-body">
@@ -11,57 +11,34 @@
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="form-group">
-        <label for="block-reason">Reason for blocking <span class="required">*</span></label>
-        <textarea
+        <app-textarea
           id="block-reason"
+          label="Reason for blocking"
           formControlName="reason"
-          rows="4"
+          [rows]="4"
+          [maxLength]="500"
           placeholder="Describe what's blocking this item..."
-          [class.is-invalid]="reasonControl.invalid && reasonControl.touched">
-        </textarea>
-
-        <div class="form-footer-info">
-          @if (reasonControl.invalid && reasonControl.touched) {
-            <span class="error-text">
-              @if (reasonControl.hasError('required')) {
-                A reason is required.
-              } @else if (reasonControl.hasError('minlength')) {
-                Reason must be at least 10 characters long.
-              } @else if (reasonControl.hasError('maxlength')) {
-                Reason cannot exceed 500 characters.
-              }
-            </span>
-          } @else {
-            <span></span>
-          }
-          <span class="char-count" [class.char-limit]="reasonLength >= 500">
-            {{ reasonLength }} / 500
-          </span>
-        </div>
+          [errorMessages]="{
+            required: 'A reason is required.',
+            minlength: 'Reason must be at least 10 characters long.',
+            maxlength: 'Reason cannot exceed 500 characters.'
+          }"
+        />
       </div>
 
       <div class="form-group">
-        <label for="block-owner">Owner <span class="required">*</span></label>
-        <select
+        <app-select
           id="block-owner"
+          label="Owner"
           formControlName="personId"
-          [class.is-invalid]="personIdControl.invalid && personIdControl.touched">
-          <option [ngValue]="null" disabled>Select an owner...</option>
-          @for (person of data.people; track person.personId) {
-            <option [ngValue]="person.personId">{{ person.name }}</option>
-          }
-        </select>
-
-        @if (personIdControl.invalid && personIdControl.touched) {
-          <div class="form-footer-info">
-            <span class="error-text">An owner is required.</span>
-          </div>
-        }
+          [options]="ownerOptions"
+          [errorMessages]="{ required: 'An owner is required.' }"
+        />
       </div>
 
       <div class="dialog-actions">
-        <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
-        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Flag as Blocked</button>
+        <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+        <app-button type="submit" variant="flat" [disabled]="form.invalid">Flag as Blocked</app-button>
       </div>
     </form>
   </div>

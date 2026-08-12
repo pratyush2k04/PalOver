@@ -1,7 +1,7 @@
 <div class="dialog-container">
   <div class="dialog-header">
     <h2>Override to be Kickoff Ready</h2>
-    <button type="button" class="close-btn" (click)="onCancel()" aria-label="Close dialog">&times;</button>
+    <app-button type="button" variant="icon" ariaLabel="Close dialog" (click)="onCancel()">&times;</app-button>
   </div>
 
   <div class="dialog-body">
@@ -19,40 +19,26 @@
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="form-group">
-        <label for="override-reason">Reason for override <span class="required">*</span></label>
-        <textarea
+        <app-textarea
           id="override-reason"
+          label="Reason for override"
           formControlName="reason"
-          rows="4"
+          [rows]="4"
+          [maxLength]="500"
           placeholder="Enter a brief justification for overriding the kickoff-readiness gate..."
-          [class.is-invalid]="reasonControl.invalid && reasonControl.touched">
-        </textarea>
-
-        <div class="form-footer-info">
-          @if (reasonControl.invalid && reasonControl.touched) {
-            <span class="error-text">
-              @if (reasonControl.hasError('required')) {
-                A reason is required.
-              } @else if (reasonControl.hasError('minlength')) {
-                Reason must be at least 5 characters long.
-              } @else if (reasonControl.hasError('maxlength')) {
-                Reason cannot exceed 500 characters.
-              }
-            </span>
-          } @else {
-            <span></span>
-          }
-          <span class="char-count" [class.char-limit]="reasonLength >= 500">
-            {{ reasonLength }} / 500
-          </span>
-        </div>
+          [errorMessages]="{
+            required: 'A reason is required.',
+            minlength: 'Reason must be at least 5 characters long.',
+            maxlength: 'Reason cannot exceed 500 characters.'
+          }"
+        />
       </div>
 
       <div class="dialog-actions">
-        <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
-        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+        <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+        <app-button type="submit" variant="flat" [disabled]="form.invalid">
           Confirm Override
-        </button>
+        </app-button>
       </div>
     </form>
   </div>

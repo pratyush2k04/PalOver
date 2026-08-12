@@ -8,9 +8,9 @@
       <div class="team-card-header">
         <h3>Team</h3>
         @if (canAssignOwners) {
-          <button type="button" class="btn-assign" (click)="openAssignModal()">
+          <app-button type="button" variant="stroked" (click)="openAssignModal()">
             {{ assignButtonLabel }}
-          </button>
+          </app-button>
         }
       </div>
 
@@ -39,47 +39,37 @@
       <div class="modal-card">
         <div class="modal-header">
           <h3>Assign Project Manager and Tech Lead</h3>
-          <button type="button" class="btn-close" (click)="closeAssignModal()" aria-label="Close">&times;</button>
+          <app-button type="button" variant="icon" ariaLabel="Close" (click)="closeAssignModal()">&times;</app-button>
         </div>
 
         <p class="modal-subtitle">Routine start-of-engagement assignment — Leadership only.</p>
 
         <form [formGroup]="assignForm" (ngSubmit)="onSubmitAssignment()" novalidate>
           @if (errorMessage()) {
-            <div class="alert alert-danger" role="alert">
-              {{ errorMessage() }}
-            </div>
+            <app-alert>{{ errorMessage() }}</app-alert>
           }
 
-          <div class="form-group">
-            <label for="projectManagerId">Project Manager</label>
-            <select id="projectManagerId" formControlName="projectManagerId">
-              <option [ngValue]="null">— Select —</option>
-              @for (user of projectManagers(); track user.id) {
-                <option [ngValue]="user.id">{{ user.fullName }}</option>
-              }
-            </select>
-          </div>
+          <app-select
+            id="projectManagerId"
+            label="Project Manager"
+            formControlName="projectManagerId"
+            [options]="projectManagerOptions()"
+            [errorMessages]="{ required: 'Project Manager is required.' }"
+          />
 
-          <div class="form-group">
-            <label for="techLeadId">Tech / Delivery Lead</label>
-            <select id="techLeadId" formControlName="techLeadId">
-              <option [ngValue]="null">— Select —</option>
-              @for (user of techLeads(); track user.id) {
-                <option [ngValue]="user.id">{{ user.fullName }}</option>
-              }
-            </select>
-          </div>
+          <app-select
+            id="techLeadId"
+            label="Tech / Delivery Lead"
+            formControlName="techLeadId"
+            [options]="techLeadOptions()"
+            [errorMessages]="{ required: 'Tech / Delivery Lead is required.' }"
+          />
 
           <div class="modal-actions">
-            <button type="button" class="btn-cancel" (click)="closeAssignModal()">Cancel</button>
-            <button type="submit" class="btn-submit" [disabled]="isSubmitting()">
-              @if (isSubmitting()) {
-                <span class="spinner"></span> Saving...
-              } @else {
-                Save assignment
-              }
-            </button>
+            <app-button type="button" variant="stroked" (click)="closeAssignModal()">Cancel</app-button>
+            <app-button type="submit" variant="accent" [loading]="isSubmitting()">
+              {{ isSubmitting() ? 'Saving...' : 'Save assignment' }}
+            </app-button>
           </div>
         </form>
       </div>

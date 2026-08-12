@@ -111,31 +111,6 @@
   }
 }
 
-.sentiment-badge {
-  display: inline-flex;
-  align-self: flex-start;
-  padding: 0.3rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-
-  &.sentiment-warm {
-    background: $color-primary-focus-ring;
-    color: $color-primary;
-  }
-
-  &.sentiment-new {
-    background: $color-bg;
-    color: $color-text-muted;
-    border: 1px solid $color-border-soft;
-  }
-
-  &.sentiment-strained {
-    background: $color-danger-bg;
-    color: $color-danger-text;
-  }
-}
-
 textarea,
 input[type='text'],
 input[type='number'],
@@ -197,14 +172,6 @@ select {
   background: $color-bg;
   border-radius: $radius-sm;
   margin-bottom: 1.5rem;
-}
-
-.empty-state-prominent {
-  padding: 2.5rem 1rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  font-style: normal;
-  color: $color-text-muted;
 }
 
 .commitment-cards {
@@ -284,17 +251,6 @@ select {
   font-weight: 600;
 }
 
-.btn-icon {
-  background: transparent;
-  padding: 0.2rem 0.4rem;
-  font-size: 1rem;
-  color: $color-text-fainter;
-
-  &:hover {
-    color: $color-primary;
-  }
-}
-
 .timeline-info {
   font-size: 0.8125rem;
   color: $color-text-fainter;
@@ -367,20 +323,6 @@ select {
     background: $color-danger-bg;
     color: $color-danger-text;
     border-color: $color-danger-border;
-  }
-}
-
-.btn-warning {
-  background: $color-warning-bg;
-  color: $color-warning-text;
-  border: 1px solid $color-warning;
-  font-size: 0.8125rem;
-  padding: 0.4rem 0.75rem;
-  align-self: flex-start;
-
-  &:hover {
-    background: $color-warning;
-    color: $color-surface;
   }
 }
 
@@ -460,13 +402,6 @@ select {
   }
 }
 
-.actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 2rem;
-}
-
 button {
   padding: 0.75rem 1rem;
   border: none;
@@ -484,44 +419,6 @@ button {
     opacity: 0.6;
     cursor: not-allowed;
   }
-}
-
-.btn-primary,
-.btn-primary-sm {
-  background: $color-primary;
-  color: $color-surface;
-
-  &:hover:not(:disabled) {
-    background-color: $color-primary-hover;
-  }
-}
-
-.btn-secondary,
-.btn-secondary-sm {
-  background: $color-text-fainter;
-  color: $color-surface;
-}
-
-.btn-success {
-  background: $color-primary;
-  color: $color-surface;
-
-  &:hover:not(:disabled) {
-    background-color: $color-primary-hover;
-  }
-}
-
-.btn-danger-sm {
-  background: transparent;
-  color: $color-danger;
-  border: 1px solid $color-danger-border;
-}
-
-.btn-primary-sm,
-.btn-secondary-sm,
-.btn-danger-sm {
-  padding: 0.4rem 0.75rem;
-  font-size: 0.8125rem;
 }
 
 .inline-errors {

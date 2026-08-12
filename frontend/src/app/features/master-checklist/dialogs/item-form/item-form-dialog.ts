@@ -1,8 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DialogRef } from '../../../../shared/dialog/dialog-ref';
-import { DIALOG_DATA } from '../../../../shared/dialog/dialog.service';
+import { DialogRef } from '@common/services/dialog/dialog-ref';
+import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { MasterChecklistCategory, MasterChecklistItem } from '../../models/master-checklist.model';
+import { ButtonComponent } from '@common/components/button/button';
+import { InputComponent } from '@common/components/form/input/input';
+import { TextareaComponent } from '@common/components/form/textarea/textarea';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
+import { CheckboxComponent } from '@common/components/form/checkbox/checkbox';
 
 export interface ItemFormDialogData {
   mode: 'create' | 'edit';
@@ -21,7 +26,7 @@ export interface ItemFormDialogResult {
 @Component({
   selector: 'app-item-form-dialog',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, ButtonComponent, InputComponent, TextareaComponent, SelectComponent, CheckboxComponent],
   templateUrl: './item-form-dialog.html',
   styleUrl: './item-form-dialog.scss',
 })
@@ -40,6 +45,11 @@ export class ItemFormDialogComponent {
   get isEdit(): boolean {
     return this.data.mode === 'edit';
   }
+
+  readonly categoryOptions: SelectOption[] = this.data.categories.map((category) => ({
+    value: category.id,
+    label: category.categoryName
+  }));
 
   onCancel(): void {
     this.dialogRef.close();

@@ -9,27 +9,37 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DocumentService } from '../../../services/document.service';
-import { DocumentItem, DocumentVisibility } from '../../../models/document.model';
+import { DocumentCategory, DocumentItem, DocumentVisibility } from '../../../models/document.model';
 import { AuthService } from 'src/app/services/auth';
-import { UploadDocumentDialogComponent } from '../upload-document-dialog/upload-document-dialog.component';
-import { RemoveDocumentDialogComponent } from '../remove-document-dialog/remove-document-dialog.component';
-import { CustomVisibilityDialogComponent } from '../custom-visibility-dialog/custom-visibility-dialog.component';
+import { DialogService } from '@common/services/dialog/dialog.service';
+import { UploadDocumentDialogComponent, UploadDocumentDialogData } from '../upload-document-dialog/upload-document-dialog.component';
+import { RemoveDocumentDialogComponent, RemoveDocumentDialogData } from '../remove-document-dialog/remove-document-dialog.component';
+import { CustomVisibilityDialogComponent, CustomVisibilityDialogData } from '../custom-visibility-dialog/custom-visibility-dialog.component';
 
-import { DOCUMENT_MESSAGES } from 'src/app/constants/document.constants';
+import { DOCUMENT_CONFIG, DOCUMENT_MESSAGES } from '@shared/constants/document.constants';
+import { AlertComponent } from '@common/components/alert/alert';
+import { ButtonComponent } from '@common/components/button/button';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
+import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
+import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 
 @Component({
   selector: 'app-engagement-documents',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     InlineSVGModule,
-    UploadDocumentDialogComponent,
-    RemoveDocumentDialogComponent,
-    CustomVisibilityDialogComponent
+    AlertComponent,
+    ButtonComponent,
+    LoadingSpinnerComponent,
+    EmptyStateComponent,
+    StatusBadgeComponent
   ],
   templateUrl: './engagement-documents.component.html',
   styleUrl: './engagement-documents.component.scss'
@@ -39,6 +49,9 @@ export class EngagementDocumentsComponent {
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private destroyRef = inject(DestroyRef);
+  private dialog = inject(DialogService);
+
+  readonly DOCUMENT_MESSAGES = DOCUMENT_MESSAGES;
 
   private parentParamMap = toSignal(this.route.parent!.paramMap);
 
@@ -50,10 +63,20 @@ export class EngagementDocumentsComponent {
   documents = signal<DocumentItem[]>([]);
   isLoading = signal<boolean>(true);
   errorMessage = signal<string | null>(null);
-  showUploadModal = signal<boolean>(false);
-  selectedDocForRemoval = signal<DocumentItem | null>(null);
-  selectedDocForCustomVisibility = signal<DocumentItem | null>(null);
   downloadingId = signal<number | null>(null);
+
+  searchTerm = signal<string>('');
+  selectedCategoryId = signal<number | 'all'>('all');
+  categories = signal<DocumentCategory[]>([]);
+
+  filteredDocuments = computed(() => {
+    const term = this.searchTerm().trim().toLowerCase();
+    const categoryId = this.selectedCategoryId();
+    return this.documents().filter(doc =>
+      (categoryId === 'all' || doc.categoryId === categoryId) &&
+      (!term || doc.fileName.toLowerCase().includes(term))
+    );
+  });
 
   /** True for PM and Admin — can edit visibility inline */
   canManageVisibility = computed(() =>
@@ -69,6 +92,14 @@ export class EngagementDocumentsComponent {
         this.documents.set([]);
         this.isLoading.set(false);
       }
+    });
+    this.loadCategories();
+  }
+
+  private loadCategories(): void {
+    this.documentService.getCategories().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (cats) => this.categories.set(cats),
+      error: () => this.categories.set([...DOCUMENT_CONFIG.DEFAULT_CATEGORIES])
     });
   }
 
@@ -93,27 +124,28 @@ export class EngagementDocumentsComponent {
   }
 
   openUploadModal(): void {
-    this.showUploadModal.set(true);
-  }
+    const engagementId = this.engagementId();
+    if (!engagementId) return;
 
-  closeUploadModal(): void {
-    this.showUploadModal.set(false);
-  }
+    const dialogRef = this.dialog.open<UploadDocumentDialogComponent, UploadDocumentDialogData, boolean>(
+      UploadDocumentDialogComponent,
+      { data: { engagementId } }
+    );
 
-  onDocumentUploaded(): void {
-    this.loadDocuments();
+    dialogRef.closed$.subscribe((uploaded) => {
+      if (uploaded) this.loadDocuments();
+    });
   }
 
   openRemoveModal(doc: DocumentItem): void {
-    this.selectedDocForRemoval.set(doc);
-  }
+    const dialogRef = this.dialog.open<RemoveDocumentDialogComponent, RemoveDocumentDialogData, boolean>(
+      RemoveDocumentDialogComponent,
+      { data: { documentId: doc.id, documentName: doc.fileName } }
+    );
 
-  closeRemoveModal(): void {
-    this.selectedDocForRemoval.set(null);
-  }
-
-  onDocumentRemoved(): void {
-    this.loadDocuments();
+    dialogRef.closed$.subscribe((removed) => {
+      if (removed) this.loadDocuments();
+    });
   }
 
   onDownload(doc: DocumentItem): void {
@@ -130,21 +162,17 @@ export class EngagementDocumentsComponent {
   }
 
   openCustomVisibilityModal(doc: DocumentItem): void {
-    this.selectedDocForCustomVisibility.set(doc);
-  }
-
-  closeCustomVisibilityModal(): void {
-    this.selectedDocForCustomVisibility.set(null);
-  }
-
-  onCustomVisibilityUpdated(updatedDoc: DocumentItem): void {
-    this.documents.update(docs =>
-      docs.map(d => d.id === updatedDoc.id ? updatedDoc : d)
+    const dialogRef = this.dialog.open<CustomVisibilityDialogComponent, CustomVisibilityDialogData, DocumentItem>(
+      CustomVisibilityDialogComponent,
+      { data: { document: doc } }
     );
-    // Keep the signal fresh so re-opening the modal shows current allowedRoles
-    if (this.selectedDocForCustomVisibility()?.id === updatedDoc.id) {
-      this.selectedDocForCustomVisibility.set(updatedDoc);
-    }
+
+    dialogRef.closed$.subscribe((updatedDoc) => {
+      if (!updatedDoc) return;
+      this.documents.update(docs =>
+        docs.map(d => d.id === updatedDoc.id ? updatedDoc : d)
+      );
+    });
   }
 
   onVisibilityChange(doc: DocumentItem, newVisibility: DocumentVisibility): void {

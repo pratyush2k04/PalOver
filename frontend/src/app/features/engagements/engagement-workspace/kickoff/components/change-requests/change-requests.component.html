@@ -7,9 +7,9 @@
     </div>
 
     @if (isProjectManager()) {
-      <button type="button" class="btn-log-cr" (click)="openLogModal()">
+      <app-button type="button" variant="stroked" (click)="openLogModal()">
         {{ constants.BTN_LOG_CR }}
-      </button>
+      </app-button>
     }
   </div>
 
@@ -66,22 +66,20 @@
               <td class="cell-impact">{{ cr.impact }}</td>
               <td class="cell-status">
                 <div class="status-badge-wrapper">
-                  <span class="status-tag" [ngClass]="{
-                    'status-under-review': cr.status === 'Under Review',
-                    'status-approved': cr.status === 'Approved',
-                    'status-rejected': cr.status === 'Rejected'
-                  }">
+                  <app-status-badge [tone]="getStatusTone(cr.status)">
                     {{ cr.status }}
-                  </span>
+                  </app-status-badge>
 
                   @if (cr.status === 'Rejected' && cr.rejectionReason) {
-                    <button 
-                      type="button" 
-                      class="btn-info-icon" 
+                    <app-button
+                      type="button"
+                      variant="icon"
                       (click)="openReasonModal(cr.rejectionReason)"
+                      ariaLabel="View rejection reason"
                       title="View rejection reason"
-                      [inlineSVG]="'assets/icons/info.svg'">
-                    </button>
+                    >
+                      <span class="info-icon" [inlineSVG]="'assets/icons/info.svg'"></span>
+                    </app-button>
                   }
                 </div>
               </td>
@@ -89,12 +87,12 @@
                 <td class="cell-actions">
                   @if (cr.status === 'Under Review') {
                     <div class="action-buttons">
-                      <button type="button" class="btn-approve" (click)="onApprove(cr)">
+                      <app-button type="button" variant="stroked" (click)="onApprove(cr)">
                         {{ constants.BTN_APPROVE }}
-                      </button>
-                      <button type="button" class="btn-reject" (click)="openRejectModal(cr)">
+                      </app-button>
+                      <app-button type="button" variant="danger" (click)="openRejectModal(cr)">
                         {{ constants.BTN_REJECT }}
-                      </button>
+                      </app-button>
                     </div>
                   }
                 </td>
@@ -111,122 +109,3 @@
     }
   </div>
 </div>
-
-<!-- Log Change Request Modal -->
-@if (isLogModalOpen() && isProjectManager()) {
-  <div class="modal-backdrop" (click)="closeLogModal()">
-    <div class="modal-dialog" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3 class="modal-title">{{ constants.MODAL_LOG_TITLE }}</h3>
-        <button type="button" class="btn-close" (click)="closeLogModal()">✕</button>
-      </div>
-
-      <form [formGroup]="logForm" (ngSubmit)="onSubmitLog()">
-        <div class="modal-body">
-          @if (errorMessage()) {
-            <div class="alert-error">{{ errorMessage() }}</div>
-          }
-
-          <div class="form-group">
-            <label class="form-label" for="description">{{ constants.LABEL_DESCRIPTION }}</label>
-            <textarea
-              id="description"
-              class="form-control textarea-input"
-              rows="3"
-              formControlName="description">
-            </textarea>
-            @if (logForm.get('description')?.invalid && logForm.get('description')?.touched) {
-              <span class="error-text">{{ constants.ERROR_DESCRIPTION_REQUIRED }}</span>
-            }
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="impact">{{ constants.LABEL_IMPACT }}</label>
-            <input
-              id="impact"
-              type="text"
-              class="form-control"
-              formControlName="impact"
-            />
-            @if (logForm.get('impact')?.invalid && logForm.get('impact')?.touched) {
-              <span class="error-text">{{ constants.ERROR_IMPACT_REQUIRED }}</span>
-            }
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-cancel" (click)="closeLogModal()">
-            {{ constants.BTN_CANCEL }}
-          </button>
-          <button type="submit" class="btn btn-log" [disabled]="isSubmitting()">
-            {{ constants.BTN_LOG }}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-}
-
-<!-- Reject Change Request Modal -->
-@if (isRejectModalOpen() && isLeadership()) {
-  <div class="modal-backdrop" (click)="closeRejectModal()">
-    <div class="modal-dialog" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3 class="modal-title">{{ constants.MODAL_REJECT_TITLE }}</h3>
-        <button type="button" class="btn-close" (click)="closeRejectModal()">✕</button>
-      </div>
-
-      <form [formGroup]="rejectForm" (ngSubmit)="onSubmitReject()">
-        <div class="modal-body">
-          @if (errorMessage()) {
-            <div class="alert-error">{{ errorMessage() }}</div>
-          }
-
-          <div class="form-group">
-            <label class="form-label" for="rejectionReason">{{ constants.LABEL_REASON_REQUIRED }}</label>
-            <textarea
-              id="rejectionReason"
-              class="form-control textarea-input"
-              rows="4"
-              formControlName="rejectionReason">
-            </textarea>
-            @if (rejectForm.get('rejectionReason')?.invalid && rejectForm.get('rejectionReason')?.touched) {
-              <span class="error-text">{{ constants.ERROR_REASON_REQUIRED }}</span>
-            }
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-cancel" (click)="closeRejectModal()">
-            {{ constants.BTN_CANCEL }}
-          </button>
-          <button type="submit" class="btn btn-danger-action" [disabled]="isSubmitting()">
-            {{ constants.BTN_REJECT }}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-}
-
-<!-- View Rejection Reason Modal -->
-@if (isReasonModalOpen()) {
-  <div class="modal-backdrop" (click)="closeReasonModal()">
-    <div class="modal-dialog modal-dialog-sm" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3 class="modal-title">{{ constants.MODAL_REASON_VIEW_TITLE }}</h3>
-        <button type="button" class="btn-close" (click)="closeReasonModal()">✕</button>
-      </div>
-
-      <div class="modal-body">
-        <p class="reason-text">{{ selectedReasonText() }}</p>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-cancel" (click)="closeReasonModal()">
-          {{ constants.BTN_CLOSE }}
-        </button>
-      </div>
-    </div>
-  </div>
-}
