@@ -90,12 +90,12 @@ public class EnvironmentToolingService(
         item.Status = request.Status;
         await repository.SaveChangesAsync();
 
-        if (!string.IsNullOrWhiteSpace(request.BlockReason))
+        if (request.Status == EnvironmentToolingStatus.NotApplicable && !string.IsNullOrWhiteSpace(request.NotApplicableReason))
         {
             await riskService.AutoCreateRiskFromBlockerAsync(
                 item.EngagementId,
                 item.Name,
-                request.BlockReason,
+                request.NotApplicableReason,
                 item.OwnerId,
                 RiskConstants.SourceTypes.EnvironmentTooling,
                 item.EnvironmentToolingItemId,
