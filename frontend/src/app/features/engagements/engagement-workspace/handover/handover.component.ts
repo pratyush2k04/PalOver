@@ -31,6 +31,7 @@ import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
+import { ClientContactTransitionCardComponent } from './client-contact-transition-card/client-contact-transition-card.component';
 
 const MAX_FREE_TEXT_LENGTH = 2000;
 const SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
@@ -63,6 +64,7 @@ interface RealisticEditForm {
     SelectComponent,
     StatusBadgeComponent,
     EmptyStateComponent,
+    ClientContactTransitionCardComponent,
   ],
   templateUrl: './handover.component.html',
   styleUrl: './handover.component.scss',
@@ -508,6 +510,10 @@ export class HandoverComponent {
   private extractErrorMessage(err: unknown, fallback: string): string {
     const errorMessage = (err as { error?: { message?: string } })?.error?.message;
     return errorMessage || fallback;
+  }
+
+  onClientContactSaved(): void {
+    this.showMessage('Client contact transition recorded.', false);
   }
 
   private showMessage(msg: string, isErr: boolean) {

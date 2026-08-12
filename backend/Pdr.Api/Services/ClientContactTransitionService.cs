@@ -21,34 +21,20 @@ public class ClientContactTransitionService(IClientContactTransitionRepository r
 
     public async Task<ClientContactTransitionResponseDto> SaveTransitionAsync(int engagementId, SaveClientContactTransitionRequest request, string? currentUserId)
     {
-        var outgoingName = request.OutgoingContactName.Trim();
-        var outgoingRole = request.OutgoingContactRole.Trim();
-        var incomingName = request.IncomingContactName.Trim();
-        var incomingRole = request.IncomingContactRole.Trim();
-
         var existingTransition = await repository.GetByEngagementIdAsync(engagementId);
-
         if (existingTransition is not null)
         {
-            existingTransition.OutgoingContactName = outgoingName;
-            existingTransition.OutgoingContactRole = outgoingRole;
-            existingTransition.IncomingContactName = incomingName;
-            existingTransition.IncomingContactRole = incomingRole;
-            existingTransition.UpdatedBy = currentUserId;
-
+            existingTransition.IsDeleted = true;
             repository.Update(existingTransition);
-            await repository.SaveChangesAsync();
-
-            return MapToDto(existingTransition);
         }
 
         var transition = new ClientContactTransition
         {
             EngagementId = engagementId,
-            OutgoingContactName = outgoingName,
-            OutgoingContactRole = outgoingRole,
-            IncomingContactName = incomingName,
-            IncomingContactRole = incomingRole,
+            OutgoingContactName = request.OutgoingContactName.Trim(),
+            OutgoingContactRole = request.OutgoingContactRole.Trim(),
+            IncomingContactName = request.IncomingContactName.Trim(),
+            IncomingContactRole = request.IncomingContactRole.Trim(),
             CreatedBy = currentUserId,
             UpdatedBy = currentUserId
         };

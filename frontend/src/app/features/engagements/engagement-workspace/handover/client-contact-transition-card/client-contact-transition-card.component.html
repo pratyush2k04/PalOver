@@ -1,0 +1,97 @@
+<div class="client-contact-transition-card">
+  <div class="card-header">
+    <h3>Client Contact Transition</h3>
+  </div>
+
+  @if (message()) {
+    <app-alert [variant]="isError() ? 'danger' : 'neutral'" class="alert-margin">
+      {{ message() }}
+    </app-alert>
+  }
+
+  <div class="card-content">
+    @if (isPreSales()) {
+      <form [formGroup]="form" class="edit-form">
+        <div class="form-section">
+          <h4>Outgoing Contact (Current Pre-Sales)</h4>
+          <app-input
+            id="outgoingContactName"
+            label="Name (Required)"
+            formControlName="outgoingContactName"
+            [maxLength]="200"
+            [errorMessages]="errorMessages"
+          />
+          <app-input
+            id="outgoingContactRole"
+            label="Role (Required)"
+            formControlName="outgoingContactRole"
+            [maxLength]="200"
+            [errorMessages]="errorMessages"
+          />
+        </div>
+
+        <div class="form-section">
+          <h4>Incoming Contact (New Delivery)</h4>
+          <app-input
+            id="incomingContactName"
+            label="Name (Required)"
+            formControlName="incomingContactName"
+            [maxLength]="200"
+            [errorMessages]="errorMessages"
+          />
+          <app-input
+            id="incomingContactRole"
+            label="Role (Required)"
+            formControlName="incomingContactRole"
+            [maxLength]="200"
+            [errorMessages]="errorMessages"
+          />
+        </div>
+
+        <div class="button-group">
+          <app-button variant="flat" (click)="showConfirm()" [disabled]="isSaving() || !form.valid">
+            Record Transition
+          </app-button>
+        </div>
+      </form>
+
+      @if (pendingRequest()) {
+        <app-confirm-dialog
+          [title]="confirmTitle"
+          [confirmLabel]="confirmLabel"
+          [cancelLabel]="cancelLabel"
+          [isBusy]="isSaving()"
+          (confirmed)="confirmSave()"
+          (cancelled)="cancelConfirm()"
+        >
+          Please review the details before saving. <strong>This cannot be edited afterward.</strong>
+          <div class="confirm-content">
+            <div class="contact-block">
+              <h5>Outgoing Contact (Current Pre-Sales)</h5>
+              <p><strong>{{ pendingRequest()?.outgoingContactName }}</strong></p>
+              <p class="role">{{ pendingRequest()?.outgoingContactRole }}</p>
+            </div>
+            <div class="contact-block">
+              <h5>Incoming Contact (New Delivery)</h5>
+              <p><strong>{{ pendingRequest()?.incomingContactName }}</strong></p>
+              <p class="role">{{ pendingRequest()?.incomingContactRole }}</p>
+            </div>
+          </div>
+        </app-confirm-dialog>
+      }
+    }
+
+    @if (!isPreSales() && transition()) {
+      <div class="display-section">
+        <div class="contact-block">
+          <h4>Outgoing Contact (Pre-Sales)</h4>
+          <p><strong>{{ transition()?.outgoingContactName }}</strong> ({{ transition()?.outgoingContactRole }})</p>
+        </div>
+        <div class="contact-block">
+          <h4>Incoming Contact (Delivery)</h4>
+          <p><strong>{{ transition()?.incomingContactName }}</strong> ({{ transition()?.incomingContactRole }})</p>
+        </div>
+      </div>
+    }
+  </div>
+</div>

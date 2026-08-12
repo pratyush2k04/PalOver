@@ -10,7 +10,9 @@ public class ClientContactTransitionRepository(AppDbContext context) : IClientCo
     public async Task<ClientContactTransition?> GetByEngagementIdAsync(int engagementId)
     {
         return await context.ClientContactTransitions
-            .FirstOrDefaultAsync(c => c.EngagementId == engagementId);
+            .Where(c => c.EngagementId == engagementId)
+            .OrderByDescending(c => c.CreatedAt)
+            .FirstOrDefaultAsync();
     }
 
     public async Task AddAsync(ClientContactTransition transition)
