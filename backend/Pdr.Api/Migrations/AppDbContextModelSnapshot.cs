@@ -88,7 +88,89 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("AccessItems", (string)null);
+                    b.ToTable("AccessItems");
+
+                    b.HasData(
+                        new
+                        {
+                            AccessItemId = 1,
+                            AccessItemDefinitionId = 1,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EngagementId = 1,
+                            IsClientSide = false,
+                            IsDeleted = false,
+                            Name = "VPN Access",
+                            OwnerId = 1,
+                            Status = 1,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            AccessItemId = 2,
+                            AccessItemDefinitionId = 2,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EngagementId = 1,
+                            IsClientSide = true,
+                            IsDeleted = false,
+                            Name = "Jira",
+                            OwnerId = 1,
+                            Status = 1,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            AccessItemId = 3,
+                            AccessItemDefinitionId = 3,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EngagementId = 1,
+                            IsClientSide = true,
+                            IsDeleted = false,
+                            Name = "SandBox",
+                            OwnerId = 1,
+                            Status = 1,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            AccessItemId = 4,
+                            AccessItemDefinitionId = 1,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EngagementId = 2,
+                            GrantedDate = new DateOnly(2026, 6, 2),
+                            IsClientSide = false,
+                            IsDeleted = false,
+                            Name = "VPN Access",
+                            OwnerId = 1,
+                            Status = 2,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            AccessItemId = 5,
+                            AccessItemDefinitionId = 2,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EngagementId = 2,
+                            GrantedDate = new DateOnly(2026, 6, 2),
+                            IsClientSide = true,
+                            IsDeleted = false,
+                            Name = "Jira",
+                            OwnerId = 1,
+                            Status = 2,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            AccessItemId = 6,
+                            AccessItemDefinitionId = 3,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EngagementId = 2,
+                            IsClientSide = true,
+                            IsDeleted = false,
+                            Name = "SandBox",
+                            OwnerId = 1,
+                            Status = 1,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItemDefinition", b =>
@@ -1712,7 +1794,81 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("EnvironmentToolingItems", (string)null);
+                    b.ToTable("EnvironmentToolingItems");
+
+                    b.HasData(
+                        new
+                        {
+                            EnvironmentToolingItemId = 1,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EngagementId = 1,
+                            EnvironmentToolingDefinitionId = 1,
+                            IsDeleted = false,
+                            Name = "CI/CD",
+                            OwnerId = 1,
+                            Status = 1,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            EnvironmentToolingItemId = 2,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EngagementId = 1,
+                            EnvironmentToolingDefinitionId = 2,
+                            IsDeleted = false,
+                            Name = "Dev",
+                            OwnerId = 1,
+                            Status = 1,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            EnvironmentToolingItemId = 3,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EngagementId = 1,
+                            EnvironmentToolingDefinitionId = 3,
+                            IsDeleted = false,
+                            Name = "UAT Environment",
+                            OwnerId = 1,
+                            Status = 1,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            EnvironmentToolingItemId = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EngagementId = 2,
+                            EnvironmentToolingDefinitionId = 1,
+                            IsDeleted = false,
+                            Name = "CI/CD",
+                            OwnerId = 1,
+                            Status = 2,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            EnvironmentToolingItemId = 5,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EngagementId = 2,
+                            EnvironmentToolingDefinitionId = 2,
+                            IsDeleted = false,
+                            Name = "Dev",
+                            OwnerId = 1,
+                            Status = 2,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            EnvironmentToolingItemId = 6,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EngagementId = 2,
+                            EnvironmentToolingDefinitionId = 3,
+                            IsDeleted = false,
+                            Name = "UAT Environment",
+                            OwnerId = 1,
+                            Status = 1,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Handover.Commitment", b =>
