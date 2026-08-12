@@ -43,12 +43,14 @@
                 {{ item.ownerFullName || 'Unassigned' }}
               </td>
               <td class="status-cell">
-                <app-status-badge [tone]="getStatusTone(item.status)">
-                  {{ getStatusLabel(item.status) }}
-                </app-status-badge>
-                @if (item.notApplicableReason) {
-                  <span class="na-reason-text">({{ item.notApplicableReason }})</span>
-                }
+                <div class="cell-content">
+                  <app-status-badge [tone]="getStatusTone(item.status)">
+                    {{ getStatusLabel(item.status) }}
+                  </app-status-badge>
+                  @if (item.notApplicableReason) {
+                    <span class="na-reason-text">({{ item.notApplicableReason }})</span>
+                  }
+                </div>
               </td>
               @if (isTechLead()) {
                 <td class="actions-cell">
