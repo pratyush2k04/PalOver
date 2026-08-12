@@ -47,6 +47,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEngagementChecklistService, EngagementChecklistService>();
         services.AddScoped<IAccessTrackerService, AccessTrackerService>();
         services.AddScoped<IEnvironmentToolingService, EnvironmentToolingService>();
+        services.AddScoped<IBrownfieldFindingService, BrownfieldFindingService>();
         services.AddScoped<IChangeRequestService, ChangeRequestService>();
         services.AddScoped<IPersonService, PersonService>();
 
