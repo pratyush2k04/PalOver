@@ -3,6 +3,7 @@ using Pdr.Api.Repositories;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services;
 using Pdr.Api.Services.Interfaces;
+using Pdr.Api.Services.Notifications;
 
 namespace Pdr.Api.Extensions;
 
@@ -28,6 +29,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IBrownfieldFindingRepository, BrownfieldFindingRepository>();
         services.AddScoped<IChangeRequestRepository, ChangeRequestRepository>();
         services.AddScoped<IPersonRepository, PersonRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
 
         // Services
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
@@ -50,6 +52,9 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IBrownfieldFindingService, BrownfieldFindingService>();
         services.AddScoped<IChangeRequestService, ChangeRequestService>();
         services.AddScoped<IPersonService, PersonService>();
+        services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<TemplateMapperResolver>();
+        services.AddSingleton<TemplateRenderer>();
 
         return services;
     }
