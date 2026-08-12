@@ -1,6 +1,4 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Pdr.Api.Data;
 using Pdr.Api.DTOs.Common;
 using Pdr.Api.DTOs.Notifications;
 using Pdr.Api.Exceptions;
@@ -15,7 +13,6 @@ namespace Pdr.Api.Services;
 public class NotificationService(
     INotificationRepository repository,
     IEngagementRepository engagementRepository,
-    AppDbContext db,
     TemplateMapperResolver mapperResolver,
     TemplateRenderer renderer,
     ILogger<NotificationService> logger) : INotificationService
@@ -38,7 +35,7 @@ public class NotificationService(
             return;
         }
 
-        var template = await db.NotificationTemplates.FirstOrDefaultAsync(t => t.Key == templateKey, cancellationToken);
+        var template = await repository.GetTemplateByKeyAsync(templateKey);
         if (template is null)
         {
             logger.LogInformation(
@@ -65,7 +62,7 @@ public class NotificationService(
         DateTime scheduledFor,
         CancellationToken cancellationToken = default)
     {
-        var template = await db.NotificationTemplates.FirstOrDefaultAsync(t => t.Key == templateKey, cancellationToken)
+        var template = await repository.GetTemplateByKeyAsync(templateKey)
             ?? throw new NotificationTemplateNotFoundException(templateKey);
 
         await repository.AddAsync(new Notification

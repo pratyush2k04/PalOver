@@ -11,4 +11,5 @@ public interface INotificationRepository
     Task SetAllReadAsync(int userId, DateTime readAt);
     Task<int> GetUnreadCountAsync(int userId);
     Task BulkDeleteAsync(IEnumerable<int> ids);
+    Task<NotificationTemplate?> GetTemplateByKeyAsync(string templateKey);
 }

@@ -68,4 +68,7 @@ public class NotificationRepository(AppDbContext context) : INotificationReposit
             .Where(n => ids.Contains(n.Id))
             .ExecuteDeleteAsync();
     }
+
+    public async Task<NotificationTemplate?> GetTemplateByKeyAsync(string templateKey) =>
+        await context.NotificationTemplates.FirstOrDefaultAsync(t => t.Key == templateKey);
 }
