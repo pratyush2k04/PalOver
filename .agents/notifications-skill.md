@@ -18,6 +18,7 @@ They are stored in the `NotificationTemplates` table and seeded via an EF migrat
    - `Key` – a unique string, e.g. `"DocumentUploaded"` (must match the mapper's `TemplateKey`).
    - `Title` & `Body` – template strings with `{Variable}` placeholders.
    - `DefaultPriority` – `Low`, `Medium`, or `High`.
+   - `LinkPattern` – optional. A URL template with `{Variable}` placeholders (e.g. `"/engagements/{EngagementId}/workspace/overview"`), rendered the same way as `Title`/`Body`. Omit (leave `null`) if this notification type has no natural destination to link to.
    - `CreatedAt`, `UpdatedAt`, `CreatedBy`, `IsDeleted` – always set these (see existing entries for the pattern).
 
 ```csharp
@@ -28,12 +29,15 @@ new NotificationTemplate
     Title = "Document uploaded — {DocumentName}",
     Body = "{UploaderName} uploaded {DocumentName} to engagement {EngagementName}.",
     DefaultPriority = NotificationPriority.Medium,
+    LinkPattern = "/engagements/{EngagementId}/workspace/documents",
     CreatedAt = seedTimestamp,
     UpdatedAt = seedTimestamp,
     CreatedBy = "System",
     IsDeleted = false
 }
 ```
+
+Note: `Notification.Link` (per-row) still exists as an explicit override — if a specific notification instance needs a different link than its template's default pattern, set `Link` directly when creating it and it takes precedence over the rendered `LinkPattern`. Most notification types won't need this; the template's `LinkPattern` is the default path.
 
 3. Create and apply a migration:
 
@@ -68,7 +72,7 @@ public class DocumentUploadedMapper(
 {
     public string TemplateKey => "DocumentUploaded";
 
-    private record DocumentUploadedPayload(int DocumentId, int EngagementId, int UploaderUserId);
+    public record DocumentUploadedPayload(int DocumentId, int EngagementId, int UploaderUserId);
 
     public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
     {
@@ -83,7 +87,8 @@ public class DocumentUploadedMapper(
         {
             ["DocumentName"]   = document?.Name,
             ["EngagementName"] = engagement?.Name,
-            ["UploaderName"]   = uploader?.FullName
+            ["UploaderName"]   = uploader?.FullName,
+            ["EngagementId"]   = payload.EngagementId
         };
     }
 }
@@ -92,8 +97,9 @@ public class DocumentUploadedMapper(
 - The `TemplateKey` must exactly match the `Key` from the template seed.
 - Use a **primary constructor** — all existing mappers use this style.
 - Inject repositories via the primary constructor — all mappers are scoped services.
-- Place the `private record` payload type **inside** the class.
+- Place the payload record type **inside** the class, and make it **`public`** (not `private`) — the service that creates this notification (step 3) must construct this exact type instead of a hand-written anonymous object, so the compiler catches a property rename/typo/count mismatch between the two sides instead of it failing silently at deserialize time.
 - The `data` parameter is the same JSON you pass to `CreateFromTemplateAsync` later. Keep it to **IDs only**, no full objects.
+- If the template defines a `LinkPattern` that references a field not already in your dictionary (commonly `EngagementId`), add it to the dictionary too — the link is rendered with the same values dictionary as `Title`/`Body`.
 - Throw `InvalidOperationException` when the payload cannot be parsed — do **not** return an empty dictionary (that would leave unreplaced `{Placeholder}` tokens in the rendered notification).
 - Import `using Pdr.Api.Repositories.Interfaces;` for repository interfaces and `using System.Text.Json;` for `JsonSerializer`.
 
@@ -124,21 +130,18 @@ await notificationService.CreateFromTemplateAsync(
     templateKey: "DocumentUploaded",
     engagementId: engagementId,
     receiverRole: RoleEnum.ProjectManagement,   // who should be notified
-    data: JsonSerializer.Serialize(new
-    {
-        DocumentId = document.Id,
-        EngagementId = engagementId,
-        UploaderUserId = currentUserId
-    }),
-    scheduledFor: DateTime.UtcNow,
-    link: $"/engagements/{engagementId}/documents");   // optional – omit if not needed
+    data: JsonSerializer.Serialize(new DocumentUploadedMapper.DocumentUploadedPayload(
+        DocumentId: document.Id,
+        EngagementId: engagementId,
+        UploaderUserId: currentUserId)),
+    scheduledFor: DateTime.UtcNow);
 ```
 
 **What happens internally:**
 - Looks up the engagement assignment for the given role.
 - If no user is assigned → logs and returns (no exception, no row).
 - If the `templateKey` doesn't match any `NotificationTemplate` → logs and returns (no exception, no row). Unlike Option B, a missing template here is **not** an error.
-- Otherwise, creates a notification addressed to that user.
+- Otherwise, creates a notification addressed to that user. Its link is not set here — it's rendered from the template's `LinkPattern` (if any) at fetch time, using the mapper's returned values. There is no `link` parameter on this method; if this specific notification needs a link that differs from its template's default, set `Notification.Link` directly on the entity as an override (rare — most types don't need this).
 
 **Method signature:**
 
@@ -149,7 +152,6 @@ Task CreateFromTemplateAsync(
     RoleEnum receiverRole,
     string data,
     DateTime scheduledFor,
-    string? link = null,
     CancellationToken cancellationToken = default);
 ```
 
@@ -161,10 +163,8 @@ Use this when the recipient is not (or cannot be) derived from an engagement rol
 await notificationService.CreateFromTemplateAsync(
     templateKey: "PasswordChanged",
     receiverUserId: currentUserId,               // known user ID
-    data: JsonSerializer.Serialize(new
-    {
-        ChangedAt = DateTime.UtcNow
-    }),
+    data: JsonSerializer.Serialize(new PasswordChangedMapper.PasswordChangedPayload(
+        ChangedAt: DateTime.UtcNow)),
     scheduledFor: DateTime.UtcNow);
 ```
 
@@ -192,6 +192,6 @@ Every time a notification is fetched, the service automatically:
 
 1. Finds the matching mapper via the template's `Key`.
 2. Calls `MapAsync(data)` to get a variable dictionary.
-3. Renders `Title` and `Body` with `TemplateRenderer`.
+3. Renders `Title`, `Body`, and (if set) `LinkPattern` with `TemplateRenderer` — unless `Notification.Link` was explicitly set as an override, in which case that value wins for the link.
 
 Adding a new event is always **four steps**: seed template → mapper → register → fire.
