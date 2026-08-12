@@ -10,6 +10,7 @@ using Pdr.Api.Models.Handover;
 using Pdr.Api.Models.EngagementChecklist;
 using Pdr.Api.Models.Documents;
 using Pdr.Api.Models.Cadence;
+using Pdr.Api.Models.Risks;
 
 namespace Pdr.Api.Data;
 
@@ -61,6 +62,9 @@ public class AppDbContext : DbContext
 
     // People Directory
     public DbSet<Person> People => Set<Person>();
+
+    // Risks
+    public DbSet<Risk> Risks => Set<Risk>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
