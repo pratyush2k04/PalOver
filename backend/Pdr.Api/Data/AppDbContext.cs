@@ -63,6 +63,9 @@ public class AppDbContext : DbContext
     public DbSet<Person> People => Set<Person>();
 
     public DbSet<ClientContactTransition> ClientContactTransitions => Set<ClientContactTransition>();
+    // Notifications
+    public DbSet<Models.Notifications.Notification> Notifications => Set<Models.Notifications.Notification>();
+    public DbSet<Models.Notifications.NotificationTemplate> NotificationTemplates => Set<Models.Notifications.NotificationTemplate>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

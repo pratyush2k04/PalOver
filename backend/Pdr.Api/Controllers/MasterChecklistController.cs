@@ -23,7 +23,7 @@ public class MasterChecklistController(IMasterChecklistService checklistService)
     /// Retrieves the current draft version of the master checklist (Admin only).
     /// </summary>
     /// <returns>The current draft version details.</returns>
-    [HttpGet(MasterChecklistConstants.Routes.CurrentDraft)]
+    [HttpGet("current-draft")]
     [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [EndpointSummary("Get current draft master checklist (Admin only)")]
     [ProducesResponseType(typeof(MasterChecklistVersionResponseDto), StatusCodes.Status200OK)]
@@ -45,7 +45,7 @@ public class MasterChecklistController(IMasterChecklistService checklistService)
     /// Retrieves the currently published version of the master checklist.
     /// </summary>
     /// <returns>The published master checklist version.</returns>
-    [HttpGet(MasterChecklistConstants.Routes.Published)]
+    [HttpGet("published")]
     [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.Leadership, RoleEnum.PreSales)]
     [EndpointSummary("Get published master checklist")]
     [ProducesResponseType(typeof(MasterChecklistVersionResponseDto), StatusCodes.Status200OK)]
@@ -67,7 +67,7 @@ public class MasterChecklistController(IMasterChecklistService checklistService)
     /// Retrieves all version history records of the master checklist (Admin only).
     /// </summary>
     /// <returns>A list of master checklist versions.</returns>
-    [HttpGet(MasterChecklistConstants.Routes.Versions)]
+    [HttpGet("versions")]
     [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [EndpointSummary("Get master checklist version history (Admin only)")]
     [ProducesResponseType(typeof(List<MasterChecklistVersionSummaryResponseDto>), StatusCodes.Status200OK)]
@@ -84,7 +84,7 @@ public class MasterChecklistController(IMasterChecklistService checklistService)
     /// </summary>
     /// <param name="versionId">The version ID.</param>
     /// <returns>The requested version details.</returns>
-    [HttpGet(MasterChecklistConstants.Routes.Versions + "/{versionId:int}")]
+    [HttpGet("versions/{versionId:int}")]
     [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [EndpointSummary("Get master checklist version by ID (Admin only)")]
     [ProducesResponseType(typeof(MasterChecklistVersionResponseDto), StatusCodes.Status200OK)]
@@ -106,7 +106,7 @@ public class MasterChecklistController(IMasterChecklistService checklistService)
     /// Retrieves master checklist categories (Admin only).
     /// </summary>
     /// <returns>A list of master checklist categories.</returns>
-    [HttpGet(MasterChecklistConstants.Routes.Categories)]
+    [HttpGet("categories")]
     [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [EndpointSummary("Get master checklist categories (Admin only)")]
     [ProducesResponseType(typeof(List<MasterChecklistCategoryResponseDto>), StatusCodes.Status200OK)]
@@ -123,7 +123,7 @@ public class MasterChecklistController(IMasterChecklistService checklistService)
     /// </summary>
     /// <param name="request">The creation request payload.</param>
     /// <returns>The created master checklist item.</returns>
-    [HttpPost(MasterChecklistConstants.Routes.Items)]
+    [HttpPost("items")]
     [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [EndpointSummary("Create a master checklist item in draft (Admin only)")]
     [ProducesResponseType(typeof(MasterChecklistItemResponseDto), StatusCodes.Status200OK)]
@@ -147,7 +147,7 @@ public class MasterChecklistController(IMasterChecklistService checklistService)
     /// <param name="id">The checklist item ID.</param>
     /// <param name="request">The update payload.</param>
     /// <returns>The updated master checklist item.</returns>
-    [HttpPut(MasterChecklistConstants.Routes.Items + "/{id:int}")]
+    [HttpPut("items/{id:int}")]
     [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [EndpointSummary("Update a draft master checklist item (Admin only)")]
     [ProducesResponseType(typeof(MasterChecklistItemResponseDto), StatusCodes.Status200OK)]
@@ -173,7 +173,7 @@ public class MasterChecklistController(IMasterChecklistService checklistService)
     /// </summary>
     /// <param name="request">The reorder request payload.</param>
     /// <returns>The updated list of reordered items.</returns>
-    [HttpPut(MasterChecklistConstants.Routes.Items + "/reorder")]
+    [HttpPut("items/reorder")]
     [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [EndpointSummary("Reorder draft master checklist items (Admin only)")]
     [ProducesResponseType(typeof(List<MasterChecklistItemResponseDto>), StatusCodes.Status200OK)]
@@ -196,7 +196,7 @@ public class MasterChecklistController(IMasterChecklistService checklistService)
     /// </summary>
     /// <param name="id">The checklist item ID.</param>
     /// <returns>The retired item details.</returns>
-    [HttpPut(MasterChecklistConstants.Routes.Items + "/{id:int}/retire")]
+    [HttpPut("items/{id:int}/retire")]
     [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [EndpointSummary("Retire a draft master checklist item (Admin only)")]
     [ProducesResponseType(typeof(MasterChecklistItemResponseDto), StatusCodes.Status200OK)]
@@ -222,7 +222,7 @@ public class MasterChecklistController(IMasterChecklistService checklistService)
     /// </summary>
     /// <param name="versionId">The version ID to publish.</param>
     /// <returns>The published master checklist version.</returns>
-    [HttpPost(MasterChecklistConstants.Routes.Versions + "/{versionId:int}/publish")]
+    [HttpPost("versions/{versionId:int}/publish")]
     [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [EndpointSummary("Publish draft master checklist version (Admin only)")]
     [ProducesResponseType(typeof(MasterChecklistVersionResponseDto), StatusCodes.Status200OK)]
