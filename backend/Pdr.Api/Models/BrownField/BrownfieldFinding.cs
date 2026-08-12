@@ -4,19 +4,6 @@ using Pdr.Api.Models.Engagements;
 
 namespace Pdr.Api.Models.BrownField;
 
-public enum BrownfieldSeverity
-{
-    Low = 1,
-    Medium = 2,
-    High = 3
-}
-
-public enum ClientDecision
-{
-    AcceptNow = 1,
-    DeferLater = 2
-}
-
 public class BrownfieldFinding : BaseAuditableEntity
 {
     public int BrownfieldFindingId { get; set; }
