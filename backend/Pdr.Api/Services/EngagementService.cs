@@ -252,8 +252,7 @@ public class EngagementService(
                 engagementId,
                 RoleEnum.PreSales,
                 System.Text.Json.JsonSerializer.Serialize(new { AssignedUserId = userId, EngagementId = engagementId }),
-                DateTime.UtcNow,
-                $"/engagements/{engagementId}/workspace/overview");
+                DateTime.UtcNow);
         }
 
         if (requiredRole == RoleEnum.TechLead)

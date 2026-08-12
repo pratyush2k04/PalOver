@@ -23,7 +23,6 @@ public class NotificationService(
         RoleEnum receiverRole,
         string data,
         DateTime scheduledFor,
-        string? link = null,
         CancellationToken cancellationToken = default)
     {
         var assignment = await engagementRepository.GetAssignmentByRoleIdAsync(engagementId, (int)receiverRole);
@@ -50,8 +49,7 @@ public class NotificationService(
             ReceiverUserId = assignment.UserId,
             Priority = template.DefaultPriority,
             ScheduledFor = scheduledFor,
-            Data = data,
-            Link = link
+            Data = data
         });
     }
 
@@ -82,7 +80,7 @@ public class NotificationService(
         var items = new List<NotificationDto>();
         foreach (var notification in notifications)
         {
-            var (title, body) = await ResolveContentAsync(notification);
+            var (title, body, link) = await ResolveContentAsync(notification);
             items.Add(new NotificationDto(
                 notification.Id,
                 title,
@@ -91,7 +89,7 @@ public class NotificationService(
                 ComputeStatus(notification),
                 notification.ScheduledFor,
                 notification.ReadAt,
-                notification.Link));
+                link));
         }
 
         return new PagedResult<NotificationDto>
@@ -133,23 +131,29 @@ public class NotificationService(
             adminUserId, idList);
     }
 
-    private async Task<(string Title, string Body)> ResolveContentAsync(Notification notification)
+    private async Task<(string Title, string Body, string? Link)> ResolveContentAsync(Notification notification)
     {
         if (notification.TemplateId is null || notification.Template is null)
         {
-            return (notification.Title ?? string.Empty, notification.Body ?? string.Empty);
+            return (notification.Title ?? string.Empty, notification.Body ?? string.Empty, notification.Link);
         }
 
         var mapper = mapperResolver.Resolve(notification.Template.Key);
         if (mapper is null || notification.Data is null)
         {
-            return (notification.Template.Title, notification.Template.Body);
+            return (notification.Template.Title, notification.Template.Body, notification.Link);
         }
 
         var values = await mapper.MapAsync(notification.Data);
+        var link = notification.Link
+            ?? (notification.Template.LinkPattern is null
+                ? null
+                : renderer.Render(notification.Template.LinkPattern, values));
+
         return (
             renderer.Render(notification.Template.Title, values),
-            renderer.Render(notification.Template.Body, values));
+            renderer.Render(notification.Template.Body, values),
+            link);
     }
 
     private static string ComputeStatus(Notification notification)
