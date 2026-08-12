@@ -60,12 +60,6 @@ public class KickoffRepository(AppDbContext context) : IKickoffRepository
         context.KickoffActionItems.Update(item);
     }
 
-    public void DeleteActionItem(KickoffActionItem item)
-    {
-        item.IsDeleted = true;
-        context.KickoffActionItems.Update(item);
-    }
-
     public async Task<User?> GetUserByIdAsync(int userId)
     {
         return await context.Users.FirstOrDefaultAsync(u => u.Id == userId);

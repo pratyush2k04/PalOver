@@ -173,20 +173,6 @@ public class KickoffService(IKickoffRepository repository) : IKickoffService
         return MapActionItemToDto(item);
     }
 
-    public async Task DeleteActionItemAsync(int engagementId, int actionItemId, string? currentUserId)
-    {
-        await ValidateUserAccessAsync(engagementId, currentUserId);
-
-        var item = await repository.GetActionItemByIdAsync(actionItemId);
-        if (item is null || item.EngagementId != engagementId)
-        {
-            throw new KickoffActionItemNotFoundException(actionItemId);
-        }
-
-        repository.DeleteActionItem(item);
-        await repository.SaveChangesAsync();
-    }
-
     private async Task ValidateUserAccessAsync(int engagementId, string? currentUserId)
     {
         var exists = await repository.EngagementExistsAsync(engagementId);

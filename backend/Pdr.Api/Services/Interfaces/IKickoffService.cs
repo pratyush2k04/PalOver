@@ -12,5 +12,4 @@ public interface IKickoffService
     Task<KickoffActionItemDto> CreateActionItemAsync(int engagementId, KickoffActionItemDto dto, string? currentUserId);
     Task<KickoffActionItemDto> UpdateActionItemStatusAsync(int engagementId, int actionItemId, KickoffActionItemStatus status, string? currentUserId);
     Task<KickoffActionItemDto> UpdateActionItemAsync(int engagementId, int actionItemId, KickoffActionItemDto dto, string? currentUserId);
-    Task DeleteActionItemAsync(int engagementId, int actionItemId, string? currentUserId);
 }

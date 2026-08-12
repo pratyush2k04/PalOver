@@ -14,7 +14,6 @@ public interface IKickoffRepository
     Task<KickoffActionItem?> GetActionItemByIdAsync(int actionItemId);
     Task AddActionItemAsync(KickoffActionItem item);
     void UpdateActionItem(KickoffActionItem item);
-    void DeleteActionItem(KickoffActionItem item);
     Task<User?> GetUserByIdAsync(int userId);
     Task<bool> SaveChangesAsync();
 }
