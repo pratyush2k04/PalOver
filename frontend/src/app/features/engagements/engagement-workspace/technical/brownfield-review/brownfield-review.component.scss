@@ -114,3 +114,20 @@
     }
   }
 }
+
+.remove-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  ::ng-deep svg,
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.btn-remove:hover {
+  color: #ef4444;
+  background-color: #fef2f2;
+}

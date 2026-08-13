@@ -7,7 +7,8 @@ import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
-import { BrownfieldSeverity } from '@features/engagements/models/brownfield-review.model';
+import { BrownfieldSeverity } from '@features/engagements/models/brownfield-review/brownfield-review.enums';
+import { CreateBrownfieldFindingRequest } from '@features/engagements/models/brownfield-review/brownfield-review.requests';
 import { DocumentService } from '@features/engagements/services/document.service';
 import { DocumentItem } from '@features/engagements/models/document.model';
 

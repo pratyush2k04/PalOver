@@ -2,12 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { TECHNICAL_READINESS_API_ENDPOINTS } from '@shared/constants/technical-readiness.constants';
-import {
-  AccessItemDto,
-  AddCustomAccessItemRequest,
-  UpdateAccessItemStatusRequest,
-  UpdateAccessItemOwnerRequest
-} from '../models/technical-readiness.model';
+import { AccessItemDto } from '../models/access-tracker/access-tracker.dtos';
+import { AddCustomAccessItemRequest, UpdateAccessItemStatusRequest, UpdateAccessItemOwnerRequest } from '../models/access-tracker/access-tracker.requests';
 
 @Injectable({
   providedIn: 'root'
