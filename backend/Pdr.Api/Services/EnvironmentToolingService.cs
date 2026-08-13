@@ -90,17 +90,7 @@ public class EnvironmentToolingService(
         item.Status = request.Status;
         await repository.SaveChangesAsync();
 
-        if (request.Status == EnvironmentToolingStatus.NotApplicable && !string.IsNullOrWhiteSpace(request.NotApplicableReason))
-        {
-            await riskService.AutoCreateRiskFromBlockerAsync(
-                item.EngagementId,
-                item.Name,
-                request.NotApplicableReason,
-                item.OwnerId,
-                RiskConstants.SourceTypes.EnvironmentTooling,
-                item.EnvironmentToolingItemId,
-                item.Name);
-        }
+        await riskService.SyncAutoCreatedRisksAsync(item.EngagementId);
 
         return MapToDto(item);
     }

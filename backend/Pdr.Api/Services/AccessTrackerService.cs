@@ -115,16 +115,10 @@ public class AccessTrackerService(
 
         await repository.SaveChangesAsync();
 
+        await riskService.SyncAutoCreatedRisksAsync(item.EngagementId);
+
         if (request.Status == AccessItemStatus.Blocked)
         {
-            await riskService.AutoCreateRiskFromBlockerAsync(
-                item.EngagementId,
-                item.Name,
-                request.BlockReason!,
-                item.OwnerId,
-                RiskConstants.SourceTypes.AccessTracker,
-                item.AccessItemId,
-                item.Name);
             await notificationService.CreateFromTemplateAsync(
                 "AccessItemBlocked",
                 item.EngagementId,

@@ -10,5 +10,5 @@ public interface IRiskService
     Task<RiskDto> UpdateRiskAsync(int engagementId, int riskId, UpdateRiskDto dto);
     Task<RiskDto> CloseRiskAsync(int engagementId, int riskId, CloseRiskDto dto);
     Task<RiskDto> ReopenRiskAsync(int engagementId, int riskId);
-    Task AutoCreateRiskFromBlockerAsync(int engagementId, string title, string blockReason, int? ownerId, string sourceType, int sourceItemId, string sourceTitle);
+    Task SyncAutoCreatedRisksAsync(int engagementId);
 }
