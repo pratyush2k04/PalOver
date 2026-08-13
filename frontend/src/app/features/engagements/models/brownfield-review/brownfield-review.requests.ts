@@ -2,7 +2,7 @@ import { BrownfieldSeverity, ClientDecision } from './brownfield-review.enums';
 
 export interface CreateBrownfieldFindingRequest {
   title: string;
-  description?: string;
+  description: string;
   severity: BrownfieldSeverity;
   documentId?: number | null;
 }
