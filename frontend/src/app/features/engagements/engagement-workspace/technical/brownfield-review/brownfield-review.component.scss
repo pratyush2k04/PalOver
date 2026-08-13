@@ -88,6 +88,25 @@
         font-size: 0.825rem;
         color: #2563eb;
         font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+
+        .file-icon {
+          width: 16px;
+          height: 16px;
+          color: #64748b;
+          flex-shrink: 0;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+
+          ::ng-deep svg,
+          svg {
+            width: 16px;
+            height: 16px;
+          }
+        }
       }
 
       .no-doc {

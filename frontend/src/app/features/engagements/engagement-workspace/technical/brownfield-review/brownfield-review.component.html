@@ -55,7 +55,10 @@
               </td>
               <td>
                 @if (item.documentName) {
-                  <span class="doc-link">🗂️ {{ item.documentName }}</span>
+                  <span class="doc-link">
+                    <span class="file-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
+                    {{ item.documentName }}
+                  </span>
                 } @else {
                   <span class="no-doc">None</span>
                 }
