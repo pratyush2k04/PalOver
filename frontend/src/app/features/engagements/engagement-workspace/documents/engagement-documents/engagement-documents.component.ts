@@ -7,10 +7,10 @@ import {
   inject,
   signal,
   computed,
-  effect
+  effect,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -19,11 +19,26 @@ import { DocumentService } from '../../../services/document.service';
 import { DocumentCategory, DocumentItem, DocumentVisibility } from '../../../models/document.model';
 import { AuthService } from 'src/app/services/auth';
 import { DialogService } from '@common/services/dialog/dialog.service';
-import { UploadDocumentDialogComponent, UploadDocumentDialogData } from '../upload-document-dialog/upload-document-dialog.component';
-import { RemoveDocumentDialogComponent, RemoveDocumentDialogData } from '../remove-document-dialog/remove-document-dialog.component';
-import { CustomVisibilityDialogComponent, CustomVisibilityDialogData } from '../custom-visibility-dialog/custom-visibility-dialog.component';
-import { UploadVersionDialogComponent, UploadVersionDialogData } from '../upload-version-dialog/upload-version-dialog.component';
-import { VersionHistoryDialogComponent, VersionHistoryDialogData } from '../version-history-dialog/version-history-dialog.component';
+import {
+  UploadDocumentDialogComponent,
+  UploadDocumentDialogData,
+} from '../upload-document-dialog/upload-document-dialog.component';
+import {
+  RemoveDocumentDialogComponent,
+  RemoveDocumentDialogData,
+} from '../remove-document-dialog/remove-document-dialog.component';
+import {
+  CustomVisibilityDialogComponent,
+  CustomVisibilityDialogData,
+} from '../custom-visibility-dialog/custom-visibility-dialog.component';
+import {
+  UploadVersionDialogComponent,
+  UploadVersionDialogData,
+} from '../upload-version-dialog/upload-version-dialog.component';
+import {
+  VersionHistoryDialogComponent,
+  VersionHistoryDialogData,
+} from '../version-history-dialog/version-history-dialog.component';
 
 import { DOCUMENT_CONFIG, DOCUMENT_MESSAGES } from '@shared/constants/document.constants';
 import { AlertComponent } from '@common/components/alert/alert';
@@ -36,17 +51,17 @@ import { StatusBadgeComponent } from '@common/components/status-badge/status-bad
   selector: 'app-engagement-documents',
   standalone: true,
   imports: [
-    CommonModule,
+    DatePipe,
     FormsModule,
     InlineSVGModule,
     AlertComponent,
     ButtonComponent,
     LoadingSpinnerComponent,
     EmptyStateComponent,
-    StatusBadgeComponent
+    StatusBadgeComponent,
   ],
   templateUrl: './engagement-documents.component.html',
-  styleUrl: './engagement-documents.component.scss'
+  styleUrl: './engagement-documents.component.scss',
 })
 export class EngagementDocumentsComponent {
   private documentService = inject(DocumentService);
@@ -79,15 +94,16 @@ export class EngagementDocumentsComponent {
   filteredDocuments = computed(() => {
     const term = this.searchTerm().trim().toLowerCase();
     const categoryId = this.selectedCategoryId();
-    return this.documents().filter(doc =>
-      (categoryId === 'all' || doc.categoryId === categoryId) &&
-      (!term || doc.fileName.toLowerCase().includes(term))
+    return this.documents().filter(
+      (doc) =>
+        (categoryId === 'all' || doc.categoryId === categoryId) &&
+        (!term || doc.fileName.toLowerCase().includes(term)),
     );
   });
 
   /** True for PM and Admin — can edit visibility inline */
-  canManageVisibility = computed(() =>
-    this.authService.hasRole('Project Management') || this.authService.isAdmin()
+  canManageVisibility = computed(
+    () => this.authService.hasRole('Project Management') || this.authService.isAdmin(),
   );
 
   constructor() {
@@ -104,10 +120,13 @@ export class EngagementDocumentsComponent {
   }
 
   private loadCategories(): void {
-    this.documentService.getCategories().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (cats) => this.categories.set(cats),
-      error: () => this.categories.set([...DOCUMENT_CONFIG.DEFAULT_CATEGORIES])
-    });
+    this.documentService
+      .getCategories()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (cats) => this.categories.set(cats),
+        error: () => this.categories.set([...DOCUMENT_CONFIG.DEFAULT_CATEGORIES]),
+      });
   }
 
   loadDocuments(id?: number): void {
@@ -117,27 +136,34 @@ export class EngagementDocumentsComponent {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    this.documentService.getEngagementDocuments(targetId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (docs) => {
-        this.documents.set(docs);
-        this.isLoading.set(false);
-      },
-      error: (err) => {
-        this.isLoading.set(false);
-        const msg = typeof err.error === 'string' ? err.error : err.error?.message || DOCUMENT_MESSAGES.LOAD_FAILED;
-        this.errorMessage.set(msg);
-      }
-    });
+    this.documentService
+      .getEngagementDocuments(targetId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (docs) => {
+          this.documents.set(docs);
+          this.isLoading.set(false);
+        },
+        error: (err) => {
+          this.isLoading.set(false);
+          const msg =
+            typeof err.error === 'string'
+              ? err.error
+              : err.error?.message || DOCUMENT_MESSAGES.LOAD_FAILED;
+          this.errorMessage.set(msg);
+        },
+      });
   }
 
   openUploadModal(): void {
     const engagementId = this.engagementId();
     if (!engagementId) return;
 
-    const dialogRef = this.dialog.open<UploadDocumentDialogComponent, UploadDocumentDialogData, boolean>(
+    const dialogRef = this.dialog.open<
       UploadDocumentDialogComponent,
-      { data: { engagementId } }
-    );
+      UploadDocumentDialogData,
+      boolean
+    >(UploadDocumentDialogComponent, { data: { engagementId } });
 
     dialogRef.closed$.subscribe((uploaded) => {
       if (uploaded) this.loadDocuments();
@@ -145,10 +171,11 @@ export class EngagementDocumentsComponent {
   }
 
   openRemoveModal(doc: DocumentItem): void {
-    const dialogRef = this.dialog.open<RemoveDocumentDialogComponent, RemoveDocumentDialogData, boolean>(
+    const dialogRef = this.dialog.open<
       RemoveDocumentDialogComponent,
-      { data: { documentId: doc.id, documentName: doc.fileName } }
-    );
+      RemoveDocumentDialogData,
+      boolean
+    >(RemoveDocumentDialogComponent, { data: { documentId: doc.id, documentName: doc.fileName } });
 
     dialogRef.closed$.subscribe((removed) => {
       if (removed) this.loadDocuments();
@@ -157,57 +184,72 @@ export class EngagementDocumentsComponent {
 
   onDownload(doc: DocumentItem): void {
     this.downloadingId.set(doc.id);
-    this.documentService.downloadDocument(doc.id, doc.fileName).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.downloadingId.set(null);
-      },
-      error: () => {
-        this.downloadingId.set(null);
-        alert(DOCUMENT_MESSAGES.DOWNLOAD_FAILED(doc.fileName));
-      }
-    });
+    this.documentService
+      .downloadDocument(doc.id, doc.fileName)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.downloadingId.set(null);
+        },
+        error: () => {
+          this.downloadingId.set(null);
+          alert(DOCUMENT_MESSAGES.DOWNLOAD_FAILED(doc.fileName));
+        },
+      });
   }
 
-  openCustomVisibilityModal(doc: DocumentItem): void {
-    const dialogRef = this.dialog.open<CustomVisibilityDialogComponent, CustomVisibilityDialogData, DocumentItem>(
+  openCustomVisibilityModal(doc: DocumentItem, selectEl?: HTMLSelectElement): void {
+    const dialogRef = this.dialog.open<
       CustomVisibilityDialogComponent,
-      { data: { document: doc } }
-    );
+      CustomVisibilityDialogData,
+      DocumentItem
+    >(CustomVisibilityDialogComponent, { data: { document: doc } });
 
     dialogRef.closed$.subscribe((updatedDoc) => {
-      if (!updatedDoc) return;
-      this.documents.update(docs =>
-        docs.map(d => d.id === updatedDoc.id ? updatedDoc : d)
-      );
+      if (!updatedDoc) {
+        // Reset native <select> DOM element if modal was cancelled
+        if (selectEl) {
+          selectEl.value = doc.visibility === 'Custom' ? 'Custom' : doc.visibility;
+        }
+        return;
+      }
+      this.documents.update((docs) => docs.map((d) => (d.id === updatedDoc.id ? updatedDoc : d)));
     });
   }
 
-  onVisibilityChange(doc: DocumentItem, newVisibility: DocumentVisibility): void {
+  onVisibilityChange(
+    doc: DocumentItem,
+    newVisibility: DocumentVisibility,
+    selectEl?: HTMLSelectElement,
+  ): void {
     if (newVisibility === 'Custom') {
-      this.openCustomVisibilityModal(doc);
+      this.openCustomVisibilityModal(doc, selectEl);
       return;
     }
 
     // Optimistic update
-    this.documents.update(docs =>
-      docs.map(d => d.id === doc.id ? { ...d, visibility: newVisibility, allowedRoles: [] } : d)
+    this.documents.update((docs) =>
+      docs.map((d) =>
+        d.id === doc.id ? { ...d, visibility: newVisibility, allowedRoles: [] } : d,
+      ),
     );
 
-    this.documentService.updateVisibility(doc.id, newVisibility).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (updated) => {
-        this.documents.update(docs =>
-          docs.map(d => d.id === updated.id ? updated : d)
-        );
-      },
-      error: (err) => {
-        // Revert on failure
-        this.documents.update(docs =>
-          docs.map(d => d.id === doc.id ? { ...d, visibility: doc.visibility } : d)
-        );
-        const msg = err.error?.message || DOCUMENT_MESSAGES.UPDATE_VISIBILITY_FAILED;
-        this.errorMessage.set(msg);
-      }
-    });
+    this.documentService
+      .updateVisibility(doc.id, newVisibility)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (updated) => {
+          this.documents.update((docs) => docs.map((d) => (d.id === updated.id ? updated : d)));
+        },
+        error: (err) => {
+          // Revert on failure
+          this.documents.update((docs) =>
+            docs.map((d) => (d.id === doc.id ? { ...d, visibility: doc.visibility } : d)),
+          );
+          const msg = err.error?.message || DOCUMENT_MESSAGES.UPDATE_VISIBILITY_FAILED;
+          this.errorMessage.set(msg);
+        },
+      });
   }
 
   triggerVersionUpload(doc: DocumentItem): void {
@@ -228,10 +270,11 @@ export class EngagementDocumentsComponent {
     const file = input.files[0];
     input.value = '';
 
-    const dialogRef = this.dialog.open<UploadVersionDialogComponent, UploadVersionDialogData, boolean>(
+    const dialogRef = this.dialog.open<
       UploadVersionDialogComponent,
-      { data: { documentId, file } }
-    );
+      UploadVersionDialogData,
+      boolean
+    >(UploadVersionDialogComponent, { data: { documentId, file } });
 
     dialogRef.closed$.subscribe((uploaded) => {
       if (uploaded) this.loadDocuments();
@@ -241,17 +284,7 @@ export class EngagementDocumentsComponent {
   openVersionHistoryModal(doc: DocumentItem): void {
     this.dialog.open<VersionHistoryDialogComponent, VersionHistoryDialogData, void>(
       VersionHistoryDialogComponent,
-      { data: { documentId: doc.id, fileName: doc.fileName } }
+      { data: { documentId: doc.id, fileName: doc.fileName } },
     );
-  }
-
-  formatDate(dateStr: string): string {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
   }
 }
