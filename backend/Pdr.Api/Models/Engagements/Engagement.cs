@@ -37,14 +37,20 @@ public class Engagement : BaseAuditableEntity
 
     public EngagementChecklist.EngagementChecklist? Checklist { get; set; }
 
+
+    public ICollection<Person> People { get; set; } = new List<Person>();
+
+    public KickoffRecord? KickoffRecord { get; set; }
+
     public Handover.HandoverInfo? HandoverInfo { get; set; }
 
     public ICollection<EngagementAssignment.EngagementAssignment> EngagementAssignments { get; set; } = new List<EngagementAssignment.EngagementAssignment>();
 
-    public ICollection<Person> People { get; set; } = new List<Person>();
-    
     // Technical Readiness
     public ICollection<AccessItem> AccessItems { get; set; } = new List<AccessItem>();
 
-    public ICollection<EnvironmentToolingItem> EnvironmentToolingItems { get; set; } = new List<EnvironmentToolingItem>();
+    public ICollection<EnvironmentToolingItem> EnvironmentToolingItems { get; set; }
+        = new List<EnvironmentToolingItem>();
+
+    public ICollection<KickoffActionItem> KickoffActionItems { get; set; } = new List<KickoffActionItem>();
 }

@@ -1,10 +1,10 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { EngagementService } from './services/engagement.service';
-import { EngagementSortBy, PmEngagementListItem } from './models/engagement.model';
+import { EngagementService } from '../services/engagement.service';
+import { EngagementSortBy, PmEngagementListItem } from '../models/engagement.model';
 import { AppContextService } from 'src/app/services/app-context';
-import { EngagementsComponent } from './pages/createengagment/engagements';
+import { EngagementsComponent } from '../pages/createengagment/engagements';
 import { ENGAGEMENT_MESSAGES, USER_ROLES } from '@shared/constants/app.constants';
 import { AlertComponent } from '@common/components/alert/alert';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
