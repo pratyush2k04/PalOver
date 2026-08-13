@@ -172,7 +172,7 @@ public class KickoffController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteActionItem(int engagementId, int actionItemId)
     {
-        await kickoffService.DeleteActionItemAsync(engagementId, actionItemId, GetUserId());
+        //await kickoffService.DeleteActionItemAsync(engagementId, actionItemId, GetUserId());
         return NoContent();
     }
 }
