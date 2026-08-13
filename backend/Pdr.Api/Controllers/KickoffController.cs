@@ -157,22 +157,5 @@ public class KickoffController(
         return Ok(updated);
     }
 
-    /// <summary>
-    /// Deletes a kickoff action item.
-    /// </summary>
-    /// <param name="engagementId">The engagement ID.</param>
-    /// <param name="actionItemId">The action item ID to delete.</param>
-    /// <returns>No content on success.</returns>
-    [HttpDelete("actions/{actionItemId:int}")]
-    [Authorize(Roles = "Project Management")]
-    [EndpointSummary("Delete action item")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeleteActionItem(int engagementId, int actionItemId)
-    {
-        await kickoffService.DeleteActionItemAsync(engagementId, actionItemId, GetUserId());
-        return NoContent();
-    }
+   
 }
