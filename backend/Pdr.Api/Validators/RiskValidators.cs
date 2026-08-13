@@ -22,6 +22,10 @@ public class CreateRiskDtoValidator : AbstractValidator<CreateRiskDto>
         RuleFor(x => x.Likelihood)
             .IsInEnum().WithMessage(RiskConstants.Validation.LikelihoodInvalid);
 
+        RuleFor(x => x.OwnerId)
+            .NotNull().WithMessage(RiskConstants.Validation.OwnerRequired)
+            .GreaterThan(0).WithMessage(RiskConstants.Validation.OwnerRequired);
+
         RuleFor(x => x.Mitigation)
             .MaximumLength(2000).WithMessage(RiskConstants.Validation.MitigationMaxLength);
     }
@@ -44,6 +48,10 @@ public class UpdateRiskDtoValidator : AbstractValidator<UpdateRiskDto>
 
         RuleFor(x => x.Likelihood)
             .IsInEnum().WithMessage(RiskConstants.Validation.LikelihoodInvalid);
+
+        RuleFor(x => x.OwnerId)
+            .NotNull().WithMessage(RiskConstants.Validation.OwnerRequired)
+            .GreaterThan(0).WithMessage(RiskConstants.Validation.OwnerRequired);
 
         RuleFor(x => x.Status)
             .IsInEnum().WithMessage(RiskConstants.Validation.StatusInvalid);

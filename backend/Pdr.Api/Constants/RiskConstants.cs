@@ -14,6 +14,8 @@ public static class RiskConstants
         public const string LikelihoodInvalid = "Likelihood must be a valid RiskLikelihood value (Low, Medium, High).";
         public const string StatusInvalid = "Status must be a valid RiskStatus value.";
 
+        public const string OwnerRequired = "Risk owner is required.";
+
         public const string MitigationMaxLength = "Mitigation details must not exceed 2000 characters.";
 
         public const string ResolutionNoteRequired = "Resolution note is required when closing a risk.";

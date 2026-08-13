@@ -25,23 +25,23 @@
   <!-- Filters Bar -->
   <div class="filters-bar">
     <div class="filter-group">
-      <label for="statusFilter">Status:</label>
-      <select id="statusFilter" class="form-select" [value]="statusFilter()" (change)="onStatusFilterChange($event)">
-        <option value="ALL">All Statuses</option>
-        <option value="Open">Open</option>
-        <option value="Mitigating">Mitigating</option>
-        <option value="Closed">Closed</option>
-      </select>
+      <app-select
+        id="statusFilter"
+        label="Status"
+        [options]="statusFilterOptions"
+        [ngModel]="statusFilter()"
+        (ngModelChange)="onStatusFilterSelect($event)"
+      />
     </div>
 
     <div class="filter-group">
-      <label for="ownerFilter">Owner:</label>
-      <select id="ownerFilter" class="form-select" [value]="ownerFilter()" (change)="onOwnerFilterChange($event)">
-        <option value="ALL">All Owners</option>
-        @for (owner of owners(); track owner.id) {
-          <option [value]="owner.id">{{ owner.name }}{{ owner.role ? ' (' + owner.role + ')' : '' }}</option>
-        }
-      </select>
+      <app-select
+        id="ownerFilter"
+        label="Owner"
+        [options]="ownerFilterOptions()"
+        [ngModel]="ownerFilter()"
+        (ngModelChange)="onOwnerFilterSelect($event)"
+      />
     </div>
 
     <div class="metrics-summary">
@@ -82,7 +82,6 @@
                   class="source-link-badge clickable"
                   title="Click to view linked blocker in Technical Readiness"
                 >
-                  
                   <span class="link-title">{{ risk.sourceTitle }}</span>
                   <span class="link-type">({{ risk.sourceType }})</span>
                 </a>
@@ -155,82 +154,73 @@
 
         <form [formGroup]="riskForm" (ngSubmit)="saveRisk()">
           <div class="modal-body">
-            <div class="form-group">
-              <label for="title" class="required">Risk Title</label>
-              <input
-                id="title"
-                type="text"
-                formControlName="title"
-                class="form-control"
-                [class.is-invalid]="riskForm.get('title')?.invalid && (riskForm.get('title')?.touched || formSubmitted())"
-                placeholder="Short descriptive title of the risk"
-              />
-              @if (riskForm.get('title')?.invalid && (riskForm.get('title')?.touched || formSubmitted())) {
-                <span class="error-msg">Title is required (max 300 characters).</span>
-              }
-            </div>
+            <app-input
+              id="title"
+              label="Risk Title"
+              formControlName="title"
+              placeholder="Short descriptive title of the risk"
+              [maxLength]="300"
+            />
 
-            <div class="form-group">
-              <label for="description" class="required">Description</label>
-              <textarea
-                id="description"
-                formControlName="description"
-                rows="3"
-                class="form-control"
-                [class.is-invalid]="riskForm.get('description')?.invalid && (riskForm.get('description')?.touched || formSubmitted())"
-                placeholder="Detailed explanation of potential risk impact and context"
-              ></textarea>
-              @if (riskForm.get('description')?.invalid && (riskForm.get('description')?.touched || formSubmitted())) {
-                <span class="error-msg">Description is required (max 2000 characters).</span>
-              }
-            </div>
+            <app-textarea
+              id="description"
+              label="Description"
+              formControlName="description"
+              [rows]="3"
+              placeholder="Detailed explanation of potential risk impact and context"
+              [maxLength]="2000"
+            />
 
             <div class="form-row">
               <div class="form-group col">
-                <label for="impact" class="required">Impact</label>
-                <select id="impact" formControlName="impact" class="form-select">
-                  <option value="Low">Low</option>
-                  <option value="Medium">Medium</option>
-                  <option value="High">High</option>
-                </select>
+                <app-select
+                  id="impact"
+                  label="Impact"
+                  formControlName="impact"
+                  [options]="impactOptions"
+                />
               </div>
 
               <div class="form-group col">
-                <label for="likelihood" class="required">Likelihood</label>
-                <select id="likelihood" formControlName="likelihood" class="form-select">
-                  <option value="Low">Low</option>
-                  <option value="Medium">Medium</option>
-                  <option value="High">High</option>
-                </select>
+                <app-select
+                  id="likelihood"
+                  label="Likelihood"
+                  formControlName="likelihood"
+                  [options]="likelihoodOptions"
+                />
               </div>
             </div>
 
             <div class="form-row">
               <div class="form-group col">
-                <label for="ownerId">Owner</label>
-                <select id="ownerId" formControlName="ownerId" class="form-select">
-                  <option [ngValue]="null">-- Select Owner --</option>
-                  @for (owner of owners(); track owner.id) {
-                    <option [value]="owner.id">{{ owner.name }}{{ owner.role ? ' (' + owner.role + ')' : '' }}</option>
-                  }
-                </select>
+                <app-select
+                  id="ownerId"
+                  label="Owner *"
+                  formControlName="ownerId"
+                  [options]="ownerSelectOptions()"
+                />
               </div>
 
               @if (isEditMode()) {
                 <div class="form-group col">
-                  <label for="status">Status</label>
-                  <select id="status" formControlName="status" class="form-select">
-                    <option value="Open">Open</option>
-                    <option value="Mitigating">Mitigating</option>
-                  </select>
+                  <app-select
+                    id="status"
+                    label="Status"
+                    formControlName="status"
+                    [options]="statusEditOptions"
+                  />
                 </div>
               }
             </div>
 
-            <div class="form-group">
-              <label for="mitigation">Mitigation Plan</label>
-              <textarea id="mitigation" formControlName="mitigation" rows="3" class="form-control" placeholder="Actions taken or planned to reduce or eliminate the risk"></textarea>
-            </div>
+            <app-textarea
+              id="mitigation"
+              label="Mitigation Plan"
+              formControlName="mitigation"
+              [rows]="3"
+              placeholder="Actions taken or planned to reduce or eliminate the risk"
+              [maxLength]="2000"
+            />
           </div>
 
           <div class="modal-footer">
@@ -256,20 +246,15 @@
         <form [formGroup]="closeForm" (ngSubmit)="submitCloseRisk()">
           <div class="modal-body">
             <p class="modal-info">A resolution note is required when closing a risk to document how it was addressed.</p>
-            <div class="form-group">
-              <label for="resolutionNote" class="required">Resolution Note</label>
-              <textarea
-                id="resolutionNote"
-                formControlName="resolutionNote"
-                rows="4"
-                class="form-control"
-                [class.is-invalid]="closeForm.get('resolutionNote')?.invalid && (closeForm.get('resolutionNote')?.touched || closeFormSubmitted())"
-                placeholder="Describe how this risk was resolved or why it is closed"
-              ></textarea>
-              @if (closeForm.get('resolutionNote')?.invalid && (closeForm.get('resolutionNote')?.touched || closeFormSubmitted())) {
-                <span class="error-msg">Resolution note is required when closing a risk (max 2000 characters).</span>
-              }
-            </div>
+
+            <app-textarea
+              id="resolutionNote"
+              label="Resolution Note"
+              formControlName="resolutionNote"
+              [rows]="4"
+              placeholder="Describe how this risk was resolved or why it is closed"
+              [maxLength]="2000"
+            />
           </div>
 
           <div class="modal-footer">

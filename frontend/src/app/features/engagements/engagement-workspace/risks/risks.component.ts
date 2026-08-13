@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { RiskService } from './services/risk.service';
 import {
@@ -10,8 +10,7 @@ import {
   RiskStatus,
   OwnerOption,
   CreateRiskRequest,
-  UpdateRiskRequest
-} from './models/risk.model';
+  UpdateRiskRequest} from './models/risk.model';
 import { forkJoin, of, catchError } from 'rxjs';
 import { EngagementService } from '../../services/engagement.service';
 import { EngagementAllocationService } from '../../../engagement-allocation/services/engagement-allocation.service';
@@ -21,6 +20,10 @@ import { ButtonComponent } from '@common/components/button/button';
 import { AlertComponent } from '@common/components/alert/alert';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
+import { InputComponent } from '@common/components/form/input/input';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
+import { TextareaComponent } from '@common/components/form/textarea/textarea';
+import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { ToastService } from '@common/services/toast/toast';
 import { RISK_MESSAGES } from '@shared/constants/app.constants';
 
@@ -30,12 +33,16 @@ import { RISK_MESSAGES } from '@shared/constants/app.constants';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     RouterLink,
     LoadingSpinnerComponent,
     ButtonComponent,
     AlertComponent,
     StatusBadgeComponent,
-    EmptyStateComponent
+    EmptyStateComponent,
+    InputComponent,
+    SelectComponent,
+    TextareaComponent 
   ],
   templateUrl: './risks.component.html',
   styleUrl: './risks.component.scss'
@@ -60,6 +67,58 @@ export class RisksComponent implements OnInit {
   // Filter signals
   statusFilter = signal<RiskStatus | 'ALL'>('ALL');
   ownerFilter = signal<number | 'ALL'>('ALL');
+
+  readonly impactOptions: SelectOption[] = [
+    { value: 'Low', label: 'Low' },
+    { value: 'Medium', label: 'Medium' },
+    { value: 'High', label: 'High' }
+  ];
+
+  readonly likelihoodOptions: SelectOption[] = [
+    { value: 'Low', label: 'Low' },
+    { value: 'Medium', label: 'Medium' },
+    { value: 'High', label: 'High' }
+  ];
+
+  readonly statusEditOptions: SelectOption[] = [
+    { value: 'Open', label: 'Open' },
+    { value: 'Mitigating', label: 'Mitigating' }
+  ];
+
+  readonly statusFilterOptions: SelectOption[] = [
+    { value: 'ALL', label: 'All Statuses' },
+    { value: 'Open', label: 'Open' },
+    { value: 'Mitigating', label: 'Mitigating' },
+    { value: 'Closed', label: 'Closed' }
+  ];
+
+  readonly ownerFilterOptions = computed<SelectOption[]>(() => [
+    { value: 'ALL', label: 'All Owners' },
+    ...this.owners().map(o => ({
+      value: o.id,
+      label: o.role ? `${o.name} (${o.role})` : o.name
+    }))
+  ]);
+
+  readonly ownerSelectOptions = computed<SelectOption[]>(() => [
+    { value: null, label: '-- Select Owner --' },
+    ...this.owners().map(o => ({
+      value: o.id,
+      label: o.role ? `${o.name} (${o.role})` : o.name
+    }))
+  ]);
+
+  onStatusFilterSelect(val: unknown): void {
+    this.statusFilter.set((val as RiskStatus | 'ALL') || 'ALL');
+  }
+
+  onOwnerFilterSelect(val: unknown): void {
+    if (val === 'ALL' || val === null || val === undefined) {
+      this.ownerFilter.set('ALL');
+    } else {
+      this.ownerFilter.set(Number(val));
+    }
+  }
 
   // Filtered & Sorted Risks
   filteredRisks = computed(() => {
@@ -96,9 +155,9 @@ export class RisksComponent implements OnInit {
     description: ['', [Validators.required, Validators.maxLength(2000)]],
     impact: ['Medium', [Validators.required]],
     likelihood: ['Medium', [Validators.required]],
-    ownerId: [null],
+    ownerId: [null, [Validators.required]],
     mitigation: ['', [Validators.maxLength(2000)]],
-    status: ['Open']
+    status: ['Open', [Validators.required]]
   });
 
   closeForm: FormGroup = this.fb.group({
