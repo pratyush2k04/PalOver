@@ -12,3 +12,12 @@ export const KICKOFF_MESSAGES = {
   STATUS_UPDATED_SUCCESS: (status: string) => `Status updated to ${status}`,
   DELETE_ACTION_CONFIRM: (title: string) => `Are you sure you want to delete "${title}"?`,
 } as const;
+
+export const KICKOFF_API_ENDPOINTS = {
+  RECORD: (id: number) => `/api/engagements/${id}/kickoff`,
+  ACTIONS_OPEN: (id: number) => `/api/engagements/${id}/kickoff/actions/open`,
+  ACTIONS_CREATE: (id: number) => `/api/engagements/${id}/kickoff/actions`,
+  ACTIONS_UPDATE_STATUS: (id: number, actionId: number) => `/api/engagements/${id}/kickoff/actions/${actionId}/status`,
+  ACTIONS_UPDATE: (id: number, actionId: number) => `/api/engagements/${id}/kickoff/actions/${actionId}`,
+  ACTIONS_DELETE: (id: number, actionId: number) => `/api/engagements/${id}/kickoff/actions/${actionId}`,
+} as const;

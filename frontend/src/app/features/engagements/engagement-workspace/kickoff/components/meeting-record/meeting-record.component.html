@@ -7,15 +7,14 @@
     </div>
   }
 
-  <textarea
-    class="outcomes-input"
-    rows="3"
+  <app-textarea
+    id="outcomes-input"
     placeholder="Outcomes and notes..."
     [ngModel]="outcomes()"
     (ngModelChange)="outcomes.set($event)"
     (blur)="saveOutcomes()"
     [disabled]="!isProjectManager()"
-  ></textarea>
+  />
 
   <h4 class="actions-heading">ACTIONS</h4>
 
