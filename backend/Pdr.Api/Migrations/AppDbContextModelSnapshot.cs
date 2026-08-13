@@ -228,6 +228,59 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.BrownField.BrownfieldFinding", b =>
+                {
+                    b.Property<int>("BrownfieldFindingId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("BrownfieldFindingId"));
+
+                    b.Property<int?>("ClientDecision")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int?>("DocumentId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Severity")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("BrownfieldFindingId");
+
+                    b.HasIndex("DocumentId");
+
+                    b.HasIndex("EngagementId");
+
+                    b.ToTable("brownfield_findings", (string)null);
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Cadence.CommunicationCadence", b =>
                 {
                     b.Property<int>("Id")
@@ -3775,6 +3828,24 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Engagement");
 
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.BrownField.BrownfieldFinding", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Documents.Document", "Document")
+                        .WithMany()
+                        .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
+                        .WithMany()
+                        .HasForeignKey("EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Document");
+
+                    b.Navigation("Engagement");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.ChangeRequest.ChangeRequest", b =>

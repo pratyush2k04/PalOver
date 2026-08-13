@@ -9,7 +9,7 @@ using Pdr.Api.Services.Interfaces;
 namespace Pdr.Api.Controllers;
 
 /// <summary>
-/// Manages Brownfield Review (Code Review & Architecture Analysis) findings for an engagement.
+/// Manages Brownfield Review findings for an engagement.
 /// </summary>
 [ApiController]
 [Authorize]
@@ -89,11 +89,11 @@ public class BrownfieldFindingItemController(IBrownfieldFindingService service) 
     /// Soft-deletes a brownfield finding (Tech Lead only).
     /// </summary>
     /// <param name="id">The finding ID.</param>
-    /// <returns>24 No Content.</returns>
+    /// <returns>204 No Content.</returns>
     [HttpDelete("{id:int}")]
     [AuthorizeRoles(RoleEnum.TechLead)]
     [EndpointSummary("Delete brownfield finding (Tech Lead only)")]
-    [ProducesResponseType(StatusCodes.Status24NoContent)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
