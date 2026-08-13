@@ -26,6 +26,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEngagementChecklistRepository, EngagementChecklistRepository>();
         services.AddScoped<IAccessTrackerRepository, AccessTrackerRepository>();
         services.AddScoped<IEnvironmentToolingRepository, EnvironmentToolingRepository>();
+        services.AddScoped<IBrownfieldFindingRepository, BrownfieldFindingRepository>();
         services.AddScoped<IChangeRequestRepository, ChangeRequestRepository>();
         services.AddScoped<IPersonRepository, PersonRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
@@ -48,6 +49,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEngagementChecklistService, EngagementChecklistService>();
         services.AddScoped<IAccessTrackerService, AccessTrackerService>();
         services.AddScoped<IEnvironmentToolingService, EnvironmentToolingService>();
+        services.AddScoped<IBrownfieldFindingService, BrownfieldFindingService>();
         services.AddScoped<IChangeRequestService, ChangeRequestService>();
         services.AddScoped<IPersonService, PersonService>();
         services.AddScoped<IKickoffRepository, KickoffRepository>();

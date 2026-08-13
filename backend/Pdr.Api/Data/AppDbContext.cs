@@ -58,11 +58,12 @@ public class AppDbContext : DbContext
     public DbSet<KickoffRecord> KickoffRecords => Set<KickoffRecord>();
     public DbSet<KickoffActionItem> KickoffActionItems => Set<KickoffActionItem>();
 
-    // Technical Readiness (Access Tracker, Environment & Tooling)
+    // Technical Readiness (Access Tracker, Environment & Tooling, Brownfield Review)
     public DbSet<Models.AccessTracker.AccessItem> AccessItems => Set<Models.AccessTracker.AccessItem>();
     public DbSet<Models.AccessTracker.AccessItemDefinition> AccessItemDefinitions => Set<Models.AccessTracker.AccessItemDefinition>();
     public DbSet<Models.EnvironmentTooling.EnvironmentToolingItem> EnvironmentToolingItems => Set<Models.EnvironmentTooling.EnvironmentToolingItem>();
     public DbSet<Models.EnvironmentTooling.EnvironmentToolingDefinition> EnvironmentToolingDefinitions => Set<Models.EnvironmentTooling.EnvironmentToolingDefinition>();
+    public DbSet<Models.BrownField.BrownfieldFinding> BrownfieldFindings => Set<Models.BrownField.BrownfieldFinding>();
     public DbSet<Pdr.Api.Models.ChangeRequest.ChangeRequest> ChangeRequests => Set<Pdr.Api.Models.ChangeRequest.ChangeRequest>();
 
  
