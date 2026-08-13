@@ -16,8 +16,8 @@
     </div>
   </div>
 
-  <!-- Access Tracker Section -->
   @if (engagementId()) {
+    <!-- Access Tracker Section -->
     <div class="readiness-section">
       <app-access-tracker
         [engagementId]="engagementId()!"
@@ -25,11 +25,33 @@
       </app-access-tracker>
     </div>
 
+    <!-- Environment & Tooling Section -->
     <div class="readiness-section">
       <app-environment-tooling
         [engagementId]="engagementId()!"
         (itemsUpdated)="onToolingItemsUpdated($event)">
       </app-environment-tooling>
     </div>
+
+    <!-- Architecture Validation & Discovery Card (Placeholder for future implementation) -->
+    <div class="readiness-section">
+      <div class="placeholder-card">
+        <div class="placeholder-info">
+          <h3>Architecture Validation & Discovery</h3>
+          <p>Validation checklists and discovery artifacts will be available here.</p>
+        </div>
+        <app-status-badge tone="neutral">Coming soon</app-status-badge>
+      </div>
+    </div>
+
+    <!-- Code Review & Architecture Analysis Card (Brownfield Only) -->
+    @if (isBrownfield()) {
+      <div class="readiness-section">
+        <app-brownfield-review
+          [engagementId]="engagementId()!"
+          (readinessUpdated)="onBrownfieldReadinessUpdated($event)">
+        </app-brownfield-review>
+      </div>
+    }
   }
 </div>

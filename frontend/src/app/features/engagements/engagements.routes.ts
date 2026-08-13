@@ -4,7 +4,7 @@ export const ENGAGEMENTS_ROUTES: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./my-engagements').then((m) => m.MyEngagementsComponent),
+      import('./my-engagements/my-engagements').then((m) => m.MyEngagementsComponent),
   },
   {
     path: ':id',

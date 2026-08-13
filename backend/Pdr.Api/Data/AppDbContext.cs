@@ -51,16 +51,22 @@ public class AppDbContext : DbContext
     public DbSet<DocumentCategory> DocumentCategories => Set<DocumentCategory>();
     public DbSet<Document> Documents => Set<Document>();
     public DbSet<CommunicationCadence> CommunicationCadences => Set<CommunicationCadence>();
+    // People
+    public DbSet<Person> People => Set<Person>();
 
-    // Technical Readiness (Access Tracker, Environment & Tooling)
+    // Kickoff Records & Action Items
+    public DbSet<KickoffRecord> KickoffRecords => Set<KickoffRecord>();
+    public DbSet<KickoffActionItem> KickoffActionItems => Set<KickoffActionItem>();
+
+    // Technical Readiness (Access Tracker, Environment & Tooling, Brownfield Review)
     public DbSet<Models.AccessTracker.AccessItem> AccessItems => Set<Models.AccessTracker.AccessItem>();
     public DbSet<Models.AccessTracker.AccessItemDefinition> AccessItemDefinitions => Set<Models.AccessTracker.AccessItemDefinition>();
     public DbSet<Models.EnvironmentTooling.EnvironmentToolingItem> EnvironmentToolingItems => Set<Models.EnvironmentTooling.EnvironmentToolingItem>();
     public DbSet<Models.EnvironmentTooling.EnvironmentToolingDefinition> EnvironmentToolingDefinitions => Set<Models.EnvironmentTooling.EnvironmentToolingDefinition>();
+    public DbSet<Models.BrownField.BrownfieldFinding> BrownfieldFindings => Set<Models.BrownField.BrownfieldFinding>();
     public DbSet<Pdr.Api.Models.ChangeRequest.ChangeRequest> ChangeRequests => Set<Pdr.Api.Models.ChangeRequest.ChangeRequest>();
 
-    // People Directory
-    public DbSet<Person> People => Set<Person>();
+ 
 
     // Notifications
     public DbSet<Models.Notifications.Notification> Notifications => Set<Models.Notifications.Notification>();
