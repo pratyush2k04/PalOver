@@ -50,7 +50,7 @@ export const ENGAGEMENT_WORKSPACE_CONFIG = {
     { label: 'Kickoff', route: 'kickoff', enabled: true },
     { label: 'Resourcing', route: 'resourcing', enabled: false },
     { label: 'Technical Readiness', route: 'technical-readiness', enabled: true },
-    { label: 'Risks', route: 'risks', enabled: false },
+    { label: 'Risks', route: 'risks', enabled: true },
     { label: 'Reporting', route: 'reporting', enabled: false }
   ]
 } as const;

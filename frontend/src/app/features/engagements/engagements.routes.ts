@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { RISK_ROUTES } from '@shared/constants/app.constants';
 
 export const ENGAGEMENTS_ROUTES: Routes = [
   {
@@ -65,6 +66,13 @@ export const ENGAGEMENTS_ROUTES: Routes = [
         loadComponent: () =>
           import('./engagement-workspace/technical/technical-readiness.component').then(
             (m) => m.TechnicalReadinessComponent
+          ),
+      },
+      {
+        path: RISK_ROUTES.BASE,
+        loadComponent: () =>
+          import('./engagement-workspace/risks/risks.component').then(
+            (m) => m.RisksComponent
           ),
       },
       {

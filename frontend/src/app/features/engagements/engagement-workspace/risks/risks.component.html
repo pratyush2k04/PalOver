@@ -1,0 +1,285 @@
+<div class="risks-container">
+  <!-- Header / Action Bar -->
+  <div class="risks-header">
+    <div class="header-title">
+      <h2>Risk Register</h2>
+      <p class="subtitle">Identify, track, and mitigate project risks to ensure delivery readiness.</p>
+    </div>
+    <div class="header-actions">
+      <app-button variant="flat" (click)="openCreateModal()">
+        + Record Risk
+      </app-button>
+    </div>
+  </div>
+
+  <!-- Priority Banner -->
+  @if (topPriorityCount() > 0) {
+    <app-alert variant="danger">
+      <div class="banner-content">
+        <strong>{{ topPriorityCount() }} Top Priority Risk(s) Identified</strong>
+        <p>Risks with High Impact and High Likelihood require immediate attention and active mitigation.</p>
+      </div>
+    </app-alert>
+  }
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="filter-group">
+      <label for="statusFilter">Status:</label>
+      <select id="statusFilter" class="form-select" [value]="statusFilter()" (change)="onStatusFilterChange($event)">
+        <option value="ALL">All Statuses</option>
+        <option value="Open">Open</option>
+        <option value="Mitigating">Mitigating</option>
+        <option value="Closed">Closed</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="ownerFilter">Owner:</label>
+      <select id="ownerFilter" class="form-select" [value]="ownerFilter()" (change)="onOwnerFilterChange($event)">
+        <option value="ALL">All Owners</option>
+        @for (owner of owners(); track owner.id) {
+          <option [value]="owner.id">{{ owner.name }}{{ owner.role ? ' (' + owner.role + ')' : '' }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="metrics-summary">
+      <span class="count-badge">Total: {{ filteredRisks().length }}</span>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <app-loading-spinner label="Loading risk register..." />
+    </div>
+  } @else {
+    <!-- Risks List -->
+    @if (filteredRisks().length === 0) {
+      <app-empty-state message="No risks match the selected filters or none have been logged yet for this engagement." />
+    } @else {
+      <div class="risks-grid">
+        @for (risk of filteredRisks(); track risk.id) {
+          <div class="risk-card" [class.top-priority]="isTopPriority(risk)" [class.closed]="risk.status === 'Closed'">
+            <div class="risk-card-header">
+              <div class="title-section">
+                <h3 class="risk-title">{{ risk.title }}</h3>
+              </div>
+
+              <div class="right-section">
+                <span class="open-days-badge">Open for {{ risk.openForDays }} day(s)</span>
+              </div>
+            </div>
+
+            <div class="risk-card-body">
+              <p class="risk-description">{{ risk.description }}</p>
+
+              <!-- Linked Blocker Source Badge -->
+              @if (risk.sourceTitle) {
+                <a
+                  [routerLink]="['/engagements', engagementId(), 'workspace', 'technical-readiness']"
+                  class="source-link-badge clickable"
+                  title="Click to view linked blocker in Technical Readiness"
+                >
+                  
+                  <span class="link-title">{{ risk.sourceTitle }}</span>
+                  <span class="link-type">({{ risk.sourceType }})</span>
+                </a>
+              }
+
+              <!-- Rating & Properties Grid -->
+              <div class="risk-meta-grid">
+                <div class="meta-item">
+                  <span class="meta-label">Impact:</span>
+                  <span class="meta-value impact-{{ risk.impact.toLowerCase() }}">{{ risk.impact }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Likelihood:</span>
+                  <span class="meta-value likelihood-{{ risk.likelihood.toLowerCase() }}">{{ risk.likelihood }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Owner:</span>
+                  <span class="meta-value">{{ risk.ownerName || 'Unassigned' }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Status:</span>
+                  <app-status-badge [tone]="getStatusTone(risk.status)">
+                    {{ risk.status }}
+                  </app-status-badge>
+                </div>
+              </div>
+
+              <!-- Mitigation Section -->
+              @if (risk.mitigation) {
+                <div class="risk-section mitigation-section">
+                  <strong>Mitigation Plan:</strong>
+                  <p>{{ risk.mitigation }}</p>
+                </div>
+              }
+
+              <!-- Closed Resolution Note -->
+              @if (risk.status === 'Closed' && risk.resolutionNote) {
+                <div class="risk-section resolution-section">
+                  <strong>Resolution Note:</strong>
+                  <p>{{ risk.resolutionNote }}</p>
+                </div>
+              }
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="risk-card-footer">
+              <div class="action-buttons">
+                @if (risk.status !== 'Closed') {
+                  <app-button variant="stroked" size="sm" (click)="openEditModal(risk)">Edit</app-button>
+                  <app-button variant="danger" size="sm" (click)="openCloseModal(risk)">Close Risk</app-button>
+                } @else {
+                  <app-button variant="stroked" size="sm" (click)="reopenRisk(risk)">Reopen Risk</app-button>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+
+  <!-- Create / Edit Risk Modal -->
+  @if (showFormModal()) {
+    <div class="modal-backdrop" (click)="closeFormModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>{{ isEditMode() ? 'Edit Risk' : 'Record New Risk' }}</h3>
+          <button type="button" class="close-btn" (click)="closeFormModal()">&times;</button>
+        </div>
+
+        <form [formGroup]="riskForm" (ngSubmit)="saveRisk()">
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="title" class="required">Risk Title</label>
+              <input
+                id="title"
+                type="text"
+                formControlName="title"
+                class="form-control"
+                [class.is-invalid]="riskForm.get('title')?.invalid && (riskForm.get('title')?.touched || formSubmitted())"
+                placeholder="Short descriptive title of the risk"
+              />
+              @if (riskForm.get('title')?.invalid && (riskForm.get('title')?.touched || formSubmitted())) {
+                <span class="error-msg">Title is required (max 300 characters).</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="description" class="required">Description</label>
+              <textarea
+                id="description"
+                formControlName="description"
+                rows="3"
+                class="form-control"
+                [class.is-invalid]="riskForm.get('description')?.invalid && (riskForm.get('description')?.touched || formSubmitted())"
+                placeholder="Detailed explanation of potential risk impact and context"
+              ></textarea>
+              @if (riskForm.get('description')?.invalid && (riskForm.get('description')?.touched || formSubmitted())) {
+                <span class="error-msg">Description is required (max 2000 characters).</span>
+              }
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col">
+                <label for="impact" class="required">Impact</label>
+                <select id="impact" formControlName="impact" class="form-select">
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </div>
+
+              <div class="form-group col">
+                <label for="likelihood" class="required">Likelihood</label>
+                <select id="likelihood" formControlName="likelihood" class="form-select">
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col">
+                <label for="ownerId">Owner</label>
+                <select id="ownerId" formControlName="ownerId" class="form-select">
+                  <option [ngValue]="null">-- Select Owner --</option>
+                  @for (owner of owners(); track owner.id) {
+                    <option [value]="owner.id">{{ owner.name }}{{ owner.role ? ' (' + owner.role + ')' : '' }}</option>
+                  }
+                </select>
+              </div>
+
+              @if (isEditMode()) {
+                <div class="form-group col">
+                  <label for="status">Status</label>
+                  <select id="status" formControlName="status" class="form-select">
+                    <option value="Open">Open</option>
+                    <option value="Mitigating">Mitigating</option>
+                  </select>
+                </div>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="mitigation">Mitigation Plan</label>
+              <textarea id="mitigation" formControlName="mitigation" rows="3" class="form-control" placeholder="Actions taken or planned to reduce or eliminate the risk"></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <app-button variant="stroked" (click)="closeFormModal()">Cancel</app-button>
+            <app-button type="submit" variant="flat" [disabled]="isSubmitting()">
+              {{ isSubmitting() ? 'Saving...' : (isEditMode() ? 'Update Risk' : 'Save Risk') }}
+            </app-button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- Close Risk Modal -->
+  @if (showCloseModal()) {
+    <div class="modal-backdrop" (click)="closeCloseModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Close Risk: {{ closingRisk()?.title }}</h3>
+          <button type="button" class="close-btn" (click)="closeCloseModal()">&times;</button>
+        </div>
+
+        <form [formGroup]="closeForm" (ngSubmit)="submitCloseRisk()">
+          <div class="modal-body">
+            <p class="modal-info">A resolution note is required when closing a risk to document how it was addressed.</p>
+            <div class="form-group">
+              <label for="resolutionNote" class="required">Resolution Note</label>
+              <textarea
+                id="resolutionNote"
+                formControlName="resolutionNote"
+                rows="4"
+                class="form-control"
+                [class.is-invalid]="closeForm.get('resolutionNote')?.invalid && (closeForm.get('resolutionNote')?.touched || closeFormSubmitted())"
+                placeholder="Describe how this risk was resolved or why it is closed"
+              ></textarea>
+              @if (closeForm.get('resolutionNote')?.invalid && (closeForm.get('resolutionNote')?.touched || closeFormSubmitted())) {
+                <span class="error-msg">Resolution note is required when closing a risk (max 2000 characters).</span>
+              }
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <app-button variant="stroked" (click)="closeCloseModal()">Cancel</app-button>
+            <app-button type="submit" variant="danger" [disabled]="isSubmitting()">
+              {{ isSubmitting() ? 'Closing...' : 'Close Risk' }}
+            </app-button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>
