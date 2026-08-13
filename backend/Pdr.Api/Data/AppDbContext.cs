@@ -10,6 +10,7 @@ using Pdr.Api.Models.Handover;
 using Pdr.Api.Models.EngagementChecklist;
 using Pdr.Api.Models.Documents;
 using Pdr.Api.Models.Cadence;
+using Pdr.Api.Models.Risks;
 
 namespace Pdr.Api.Data;
 
@@ -65,6 +66,8 @@ public class AppDbContext : DbContext
     public DbSet<Models.EnvironmentTooling.EnvironmentToolingDefinition> EnvironmentToolingDefinitions => Set<Models.EnvironmentTooling.EnvironmentToolingDefinition>();
     public DbSet<Models.BrownField.BrownfieldFinding> BrownfieldFindings => Set<Models.BrownField.BrownfieldFinding>();
     public DbSet<Pdr.Api.Models.ChangeRequest.ChangeRequest> ChangeRequests => Set<Pdr.Api.Models.ChangeRequest.ChangeRequest>();
+    public DbSet<Risk> Risks => Set<Risk>();
+   
 
  
 

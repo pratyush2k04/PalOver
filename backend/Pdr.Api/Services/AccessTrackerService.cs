@@ -1,3 +1,4 @@
+using Pdr.Api.Constants;
 using System.Text.Json;
 using Pdr.Api.DTOs.AccessTracker;
 using Pdr.Api.Exceptions;
@@ -11,6 +12,7 @@ namespace Pdr.Api.Services;
 
 public class AccessTrackerService(
     IAccessTrackerRepository repository,
+    IRiskService riskService,
     INotificationService notificationService,
     ICurrentUserService currentUserService) : IAccessTrackerService
 {
@@ -112,6 +114,8 @@ public class AccessTrackerService(
         }
 
         await repository.SaveChangesAsync();
+
+        await riskService.SyncAutoCreatedRisksAsync(item.EngagementId);
 
         if (request.Status == AccessItemStatus.Blocked)
         {
