@@ -26,8 +26,8 @@ public class ClientContactTransitionConfiguration : IEntityTypeConfiguration<Cli
         builder.Property(c => c.UpdatedBy).HasColumnName("updated_by").HasMaxLength(255);
         builder.Property(c => c.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
 
-        // One transition record per engagement (latest is current)
-        builder.HasIndex(c => c.EngagementId).IsUnique().HasFilter("is_deleted = false");
+        // Multiple transitions per engagement allowed (show full history)
+        builder.HasIndex(c => c.EngagementId);
 
         // Global Query Filter for Soft Delete
         builder.HasQueryFilter(c => !c.IsDeleted);

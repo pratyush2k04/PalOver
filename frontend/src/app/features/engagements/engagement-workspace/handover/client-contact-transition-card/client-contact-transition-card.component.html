@@ -1,96 +1,65 @@
 <div class="client-contact-transition-card">
+  <!-- Card Header -->
   <div class="card-header">
-    <h3>Client Contact Transition</h3>
+    <h3>{{ formLabels.CARD_TITLE }}</h3>
   </div>
 
-  @if (message()) {
-    <app-alert [variant]="isError() ? 'danger' : 'neutral'" class="alert-margin">
-      {{ message() }}
+  <!-- Success Message -->
+  @if (successMsg()) {
+    <app-alert [variant]="'neutral'" class="alert-container">
+      {{ successMsg() }}
     </app-alert>
   }
 
+  <!-- Add Button (Pre-Sales Only) -->
+  @if (isPreSales()) {
+    <div class="presales-actions">
+      <app-button
+        variant="flat"
+        (click)="openAddTransitionDialog()"
+        class="add-button"
+      >
+        {{ buttonLabels.ADD_TRANSITION }}
+      </app-button>
+    </div>
+  }
+
+  <!-- Card Content -->
   <div class="card-content">
-    @if (isPreSales()) {
-      <form [formGroup]="form" class="edit-form">
-        <div class="form-section">
-          <h4>Outgoing Contact (Current Pre-Sales)</h4>
-          <app-input
-            id="outgoingContactName"
-            label="Name (Required)"
-            formControlName="outgoingContactName"
-            [maxLength]="200"
-            [errorMessages]="errorMessages"
-          />
-          <app-input
-            id="outgoingContactRole"
-            label="Role (Required)"
-            formControlName="outgoingContactRole"
-            [maxLength]="200"
-            [errorMessages]="errorMessages"
-          />
-        </div>
-
-        <div class="form-section">
-          <h4>Incoming Contact (New Delivery)</h4>
-          <app-input
-            id="incomingContactName"
-            label="Name (Required)"
-            formControlName="incomingContactName"
-            [maxLength]="200"
-            [errorMessages]="errorMessages"
-          />
-          <app-input
-            id="incomingContactRole"
-            label="Role (Required)"
-            formControlName="incomingContactRole"
-            [maxLength]="200"
-            [errorMessages]="errorMessages"
-          />
-        </div>
-
-        <div class="button-group">
-          <app-button variant="flat" (click)="showConfirm()" [disabled]="isSaving() || !form.valid">
-            Record Transition
-          </app-button>
-        </div>
-      </form>
-
-      @if (pendingRequest()) {
-        <app-confirm-dialog
-          [title]="confirmTitle"
-          [confirmLabel]="confirmLabel"
-          [cancelLabel]="cancelLabel"
-          [isBusy]="isSaving()"
-          (confirmed)="confirmSave()"
-          (cancelled)="cancelConfirm()"
-        >
-          Please review the details before saving. <strong>This cannot be edited afterward.</strong>
-          <div class="confirm-content">
-            <div class="contact-block">
-              <h5>Outgoing Contact (Current Pre-Sales)</h5>
-              <p><strong>{{ pendingRequest()?.outgoingContactName }}</strong></p>
-              <p class="role">{{ pendingRequest()?.outgoingContactRole }}</p>
-            </div>
-            <div class="contact-block">
-              <h5>Incoming Contact (New Delivery)</h5>
-              <p><strong>{{ pendingRequest()?.incomingContactName }}</strong></p>
-              <p class="role">{{ pendingRequest()?.incomingContactRole }}</p>
-            </div>
+    <!-- Loading State -->
+    @if (isLoading()) {
+      <p class="loading-text">{{ statusMessages.LOADING }}</p>
+    } @else {
+      <!-- History or Current Contact Display -->
+      <div class="history-container">
+        @if (transitions().length > 0) {
+          <!-- History List -->
+          <div class="history-list">
+            @for (t of transitions(); track t.id; let last = $last) {
+              <div class="transition-item">
+                <p class="transition-row">
+                  <span class="label">{{ dialogLabels.OUTGOING }}</span>
+                  <span class="contact-info">{{ t.outgoingContactName }} ({{ t.outgoingContactRole }})</span>
+                </p>
+                <p class="transition-row">
+                  <span class="label">{{ dialogLabels.INCOMING }}</span>
+                  <span class="contact-info">{{ t.incomingContactName }} ({{ t.incomingContactRole }})</span>
+                </p>
+                @if (!last) {
+                  <hr class="divider" />
+                }
+              </div>
+            }
           </div>
-        </app-confirm-dialog>
-      }
-    }
-
-    @if (!isPreSales() && transition()) {
-      <div class="display-section">
-        <div class="contact-block">
-          <h4>Outgoing Contact (Pre-Sales)</h4>
-          <p><strong>{{ transition()?.outgoingContactName }}</strong> ({{ transition()?.outgoingContactRole }})</p>
-        </div>
-        <div class="contact-block">
-          <h4>Incoming Contact (Delivery)</h4>
-          <p><strong>{{ transition()?.incomingContactName }}</strong> ({{ transition()?.incomingContactRole }})</p>
-        </div>
+        } @else {
+          <!-- Empty State: Show Current/Present Contact -->
+          <div class="empty-state">
+            <p class="present-contact">
+              <span class="label">{{ dialogLabels.PRESENT }}</span>
+              <span class="contact-info">{{ clientName() }} - {{ dialogLabels.NO_ROLE }}</span>
+            </p>
+          </div>
+        }
       </div>
     }
   </div>

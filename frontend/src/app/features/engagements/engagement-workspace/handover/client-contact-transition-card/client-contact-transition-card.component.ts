@@ -1,107 +1,108 @@
 import { Component, inject, input, output, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ClientContactTransitionService, SaveClientContactTransitionRequest } from '../../../services/client-contact-transition.service';
-import { AuthService } from 'src/app/services/auth';
 import { ButtonComponent } from '@common/components/button/button';
-import { InputComponent } from '@common/components/form/input/input';
 import { AlertComponent } from '@common/components/alert/alert';
-import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
-import { CLIENT_CONTACT_TRANSITION_MESSAGES } from '@shared/constants/handover.constants';
+
+import { ClientContactTransitionService } from '../../../services/client-contact-transition.service';
+import { TransitionResponse } from '../../../models/client-contact-transition.model';
+
+import { AuthService } from 'src/app/services/auth';
+import { DialogService } from '@common/services/dialog/dialog.service';
+import {
+  FORM_LABELS,
+  BUTTON_LABELS,
+  DIALOG_LABELS,
+  STATUS_MESSAGES,
+} from '@shared/constants/client-contact-transition.constants';
+import { AddClientContactTransitionDialogComponent, AddClientContactTransitionDialogData } from '../dialogs/add-client-contact-transition-dialog/add-client-contact-transition-dialog.component';
 
 @Component({
   selector: 'app-client-contact-transition-card',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, InputComponent, AlertComponent, ConfirmDialogComponent],
+  imports: [
+    CommonModule,
+    ButtonComponent,
+    AlertComponent,
+  ],
   templateUrl: './client-contact-transition-card.component.html',
-  styleUrl: './client-contact-transition-card.component.scss'
+  styleUrl: './client-contact-transition-card.component.scss',
 })
 export class ClientContactTransitionCardComponent {
   engagementId = input.required<number>();
+  clientName = input<string>('');
   onSaved = output<void>();
-
-  readonly confirmTitle = CLIENT_CONTACT_TRANSITION_MESSAGES.CONFIRM_TITLE;
-  readonly confirmLabel = CLIENT_CONTACT_TRANSITION_MESSAGES.CONFIRM_LABEL;
-  readonly cancelLabel = CLIENT_CONTACT_TRANSITION_MESSAGES.CANCEL_LABEL;
-  readonly errorMessages = {
-    required: CLIENT_CONTACT_TRANSITION_MESSAGES.VALIDATION_REQUIRED,
-    maxlength: CLIENT_CONTACT_TRANSITION_MESSAGES.VALIDATION_MAXLENGTH
-  };
 
   private transitionService = inject(ClientContactTransitionService);
   private authService = inject(AuthService);
-  private fb = inject(FormBuilder);
+  private dialog = inject(DialogService);
+
+  formLabels = FORM_LABELS;
+  buttonLabels = BUTTON_LABELS;
+  dialogLabels = DIALOG_LABELS;
+  statusMessages = STATUS_MESSAGES;
+
+  transitions = signal<TransitionResponse[]>([]);
+  isLoading = signal(false);
+  successMsg = signal('');
 
   isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
-  isSaving = signal(false);
-  message = signal('');
-  isError = signal(false);
 
-  form = this.fb.group({
-    outgoingContactName: ['', [Validators.required, Validators.maxLength(200)]],
-    outgoingContactRole: ['', [Validators.required, Validators.maxLength(200)]],
-    incomingContactName: ['', [Validators.required, Validators.maxLength(200)]],
-    incomingContactRole: ['', [Validators.required, Validators.maxLength(200)]]
+  currentIncomingContact = computed(() => {
+    const trans = this.transitions();
+    if (trans.length > 0) {
+      const latest = trans[trans.length - 1];
+      return {
+        name: latest.incomingContactName,
+        role: latest.incomingContactRole,
+      };
+    }
+    return {
+      name: this.clientName(),
+      role: '',
+    };
   });
-
-  pendingRequest = signal<SaveClientContactTransitionRequest | null>(null);
-  transition = signal<any>(null);
-  isLoadingTransition = signal(false);
 
   constructor() {
     effect(() => {
       const id = this.engagementId();
       if (id) {
-        this.loadTransition();
+        this.loadHistory();
       }
     });
   }
 
-  private loadTransition(): void {
-    this.isLoadingTransition.set(true);
-    this.transitionService.getTransition(this.engagementId()).subscribe({
+  loadHistory(): void {
+    this.isLoading.set(true);
+    this.transitionService.getTransitions(this.engagementId()).subscribe({
       next: (data) => {
-        this.transition.set(data);
-        this.isLoadingTransition.set(false);
+        this.transitions.set(data);
+        this.isLoading.set(false);
       },
       error: () => {
-        this.isLoadingTransition.set(false);
-      }
+        this.transitions.set([]);
+        this.isLoading.set(false);
+      },
     });
   }
 
-  showConfirm(): void {
-    if (!this.form.valid) {
-      this.message.set('Please fill in all required fields.');
-      this.isError.set(true);
-      return;
-    }
-    this.pendingRequest.set(this.form.value as SaveClientContactTransitionRequest);
-  }
+  openAddTransitionDialog(): void {
+    const current = this.currentIncomingContact();
+    const data: AddClientContactTransitionDialogData = {
+      engagementId: this.engagementId(),
+      outgoingContactName: current.name,
+      outgoingContactRole: current.role,
+    };
 
-  confirmSave(): void {
-    const request = this.pendingRequest();
-    if (!request) return;
+    const dialogRef = this.dialog.open<AddClientContactTransitionDialogComponent, AddClientContactTransitionDialogData, TransitionResponse>(
+      AddClientContactTransitionDialogComponent,
+      { data }
+    );
 
-    this.isSaving.set(true);
-    this.transitionService.saveTransition(this.engagementId(), request).subscribe({
-      next: () => {
-        this.form.reset();
-        this.pendingRequest.set(null);
-        this.message.set(CLIENT_CONTACT_TRANSITION_MESSAGES.SAVE_SUCCESS);
-        this.isError.set(false);
-        this.isSaving.set(false);
-        this.onSaved.emit();
-      },
-      error: () => {
-        this.message.set(CLIENT_CONTACT_TRANSITION_MESSAGES.SAVE_ERROR);
-        this.isError.set(true);
-        this.isSaving.set(false);
-      }
+    dialogRef.closed$.subscribe((response) => {
+      if (!response) return;
+      this.successMsg.set(this.statusMessages.SAVE_SUCCESS);
+      this.loadHistory();
+      this.onSaved.emit();
     });
-  }
-
-  cancelConfirm(): void {
-    this.pendingRequest.set(null);
   }
 }

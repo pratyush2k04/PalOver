@@ -19,15 +19,14 @@ public class ClientContactTransitionService(IClientContactTransitionRepository r
         return MapToDto(transition);
     }
 
+    public async Task<List<ClientContactTransitionResponseDto>> GetAllByEngagementIdAsync(int engagementId)
+    {
+        var transitions = await repository.GetAllByEngagementIdAsync(engagementId);
+        return transitions.Select(MapToDto).ToList();
+    }
+
     public async Task<ClientContactTransitionResponseDto> SaveTransitionAsync(int engagementId, SaveClientContactTransitionRequest request, string? currentUserId)
     {
-        var existingTransition = await repository.GetByEngagementIdAsync(engagementId);
-        if (existingTransition is not null)
-        {
-            existingTransition.IsDeleted = true;
-            repository.Update(existingTransition);
-        }
-
         var transition = new ClientContactTransition
         {
             EngagementId = engagementId,
@@ -43,21 +42,6 @@ public class ClientContactTransitionService(IClientContactTransitionRepository r
         await repository.SaveChangesAsync();
 
         return MapToDto(transition);
-    }
-
-    public async Task<CurrentClientContactDto> GetCurrentClientContactAsync(int engagementId)
-    {
-        var transition = await repository.GetByEngagementIdAsync(engagementId);
-        if (transition is null)
-        {
-            return new CurrentClientContactDto();
-        }
-
-        return new CurrentClientContactDto
-        {
-            Name = transition.IncomingContactName,
-            Role = transition.IncomingContactRole
-        };
     }
 
     private static ClientContactTransitionResponseDto MapToDto(ClientContactTransition transition) =>

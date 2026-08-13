@@ -23,10 +23,10 @@ public class ClientContactTransitionsController(
         return Ok(result);
     }
 
-    [HttpGet("current-contact")]
-    public async Task<ActionResult<CurrentClientContactDto>> GetCurrentContact(int engagementId)
+    [HttpGet("history")]
+    public async Task<ActionResult<List<ClientContactTransitionResponseDto>>> GetHistory(int engagementId)
     {
-        var result = await transitionService.GetCurrentClientContactAsync(engagementId);
+        var result = await transitionService.GetAllByEngagementIdAsync(engagementId);
         return Ok(result);
     }
 

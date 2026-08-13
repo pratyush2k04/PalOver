@@ -95,6 +95,7 @@
   <div class="section">
     <app-client-contact-transition-card
       [engagementId]="engagementId()!"
+      [clientName]="engagementInfo()?.clientName || ''"
       (onSaved)="onClientContactSaved()">
     </app-client-contact-transition-card>
   </div>

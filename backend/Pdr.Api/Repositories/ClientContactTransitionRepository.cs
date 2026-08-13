@@ -15,6 +15,14 @@ public class ClientContactTransitionRepository(AppDbContext context) : IClientCo
             .FirstOrDefaultAsync();
     }
 
+    public async Task<List<ClientContactTransition>> GetAllByEngagementIdAsync(int engagementId)
+    {
+        return await context.ClientContactTransitions
+            .Where(c => c.EngagementId == engagementId)
+            .OrderBy(c => c.CreatedAt)
+            .ToListAsync();
+    }
+
     public async Task AddAsync(ClientContactTransition transition)
     {
         await context.ClientContactTransitions.AddAsync(transition);
