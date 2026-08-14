@@ -14,5 +14,5 @@ public class Commitment : BaseAuditableEntity
 
     public int Timeline { get; set; }
 
-    public string TimelineUnit { get; set; } = string.Empty;
+    public CommitmentTimelineUnitEnum TimelineUnit { get; set; }
 }
