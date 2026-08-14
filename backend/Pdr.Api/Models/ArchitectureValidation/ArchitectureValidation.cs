@@ -5,7 +5,7 @@ namespace Pdr.Api.Models.ArchitectureValidation;
 
 public class ArchitectureValidation : BaseAuditableEntity
 {
-    public int ArchitectureValidationId { get; set; }
+    public int Id { get; set; }
 
     public int EngagementId { get; set; }
 

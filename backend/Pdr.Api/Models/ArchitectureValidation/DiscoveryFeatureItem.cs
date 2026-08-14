@@ -4,7 +4,7 @@ namespace Pdr.Api.Models.ArchitectureValidation;
 
 public class DiscoveryFeatureItem : BaseAuditableEntity
 {
-    public int DiscoveryFeatureItemId { get; set; }
+    public int Id { get; set; }
 
     public int ArchitectureValidationId { get; set; }
 

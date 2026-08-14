@@ -230,11 +230,11 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.ArchitectureValidation.ArchitectureValidation", b =>
                 {
-                    b.Property<int>("ArchitectureValidationId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ArchitectureValidationId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -261,7 +261,7 @@ namespace Pdr.Api.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.HasKey("ArchitectureValidationId");
+                    b.HasKey("Id");
 
                     b.HasIndex("EngagementId");
 
@@ -270,11 +270,11 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.ArchitectureValidation.DiscoveryFeatureItem", b =>
                 {
-                    b.Property<int>("DiscoveryFeatureItemId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("DiscoveryFeatureItemId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ArchitectureValidationId")
                         .HasColumnType("integer");
@@ -308,7 +308,7 @@ namespace Pdr.Api.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.HasKey("DiscoveryFeatureItemId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ArchitectureValidationId");
 
@@ -317,11 +317,11 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.BrownField.BrownfieldFinding", b =>
                 {
-                    b.Property<int>("BrownfieldFindingId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("BrownfieldFindingId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("ClientDecision")
                         .HasColumnType("integer");
@@ -359,7 +359,7 @@ namespace Pdr.Api.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.HasKey("BrownfieldFindingId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DocumentId");
 

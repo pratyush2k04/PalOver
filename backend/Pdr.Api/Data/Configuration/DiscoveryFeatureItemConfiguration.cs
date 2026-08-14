@@ -10,7 +10,7 @@ public class DiscoveryFeatureItemConfiguration : IEntityTypeConfiguration<Discov
     {
         builder.ToTable("discovery_feature_items");
 
-        builder.HasKey(x => x.DiscoveryFeatureItemId);
+        builder.HasKey(x => x.Id);
 
         builder.Property(x => x.FeatureName)
             .IsRequired()

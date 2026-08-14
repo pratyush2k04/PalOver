@@ -10,7 +10,7 @@ public class ArchitectureValidationConfiguration : IEntityTypeConfiguration<Arch
     {
         builder.ToTable("architecture_validations");
 
-        builder.HasKey(x => x.ArchitectureValidationId);
+        builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Rationale)
             .HasMaxLength(2000);
