@@ -131,6 +131,15 @@ export const routes: Routes = [
           ),
       },
 
+      // Portfolio (Leadership)
+      {
+        path: 'portfolio',
+        loadChildren: () =>
+          import('./features/portfolio/portfolio.routes').then(
+            m => m.PORTFOLIO_ROUTES
+          ),
+      },
+
       // Access denied
       {
         path: 'access-denied',
