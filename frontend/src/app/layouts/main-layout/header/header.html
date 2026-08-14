@@ -1,10 +1,5 @@
 <header class="header">
-  <div class="search-box">
-    <span class="search-icon">
-      <span [inlineSVG]="'assets/icons/search.svg'"></span>
-    </span>
-    <input type="text" placeholder="Search engagements, documents, people, checklist items..." />
-  </div>
+  <app-global-search />
 
   @if (user(); as currentUser) {
     <div class="header-actions">
