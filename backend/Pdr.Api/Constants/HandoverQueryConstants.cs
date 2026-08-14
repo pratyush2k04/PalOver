@@ -16,5 +16,4 @@ public static class HandoverQueryConstants
     public const string AlreadyResponded = "This query has already been responded to and cannot be changed.";
 
     public static string NotFound(int queryId) => $"Handover query with ID {queryId} was not found.";
-    public static string ReferencedCommitmentNotFound(int commitmentId) => $"Commitment with ID {commitmentId} was not found for this handover.";
 }

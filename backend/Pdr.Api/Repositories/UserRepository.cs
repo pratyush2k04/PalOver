@@ -25,6 +25,7 @@ public class UserRepository(AppDbContext context) : IUserRepository
     {
         return await context.Users
             .AsNoTracking()
+            .Include(u => u.Role)
             .Where(u => ids.Contains(u.Id))
             .ToListAsync();
     }

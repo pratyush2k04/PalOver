@@ -50,6 +50,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IHandoverService, HandoverService>();
         services.AddScoped<ICommitmentService, CommitmentService>();
         services.AddScoped<IRealisticCommitmentService, RealisticCommitmentService>();
+        services.AddScoped<IHandoverQueryService, HandoverQueryService>();
         services.AddScoped<IKickoffReadinessService, KickoffReadinessService>();
         services.AddScoped<IMasterChecklistService, MasterChecklistService>();
         services.AddScoped<IHomeService, HomeService>();

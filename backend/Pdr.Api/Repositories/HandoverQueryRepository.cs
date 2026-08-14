@@ -10,12 +10,16 @@ public class HandoverQueryRepository(AppDbContext context) : IHandoverQueryRepos
     public async Task<List<HandoverQuery>> GetByHandoverIdAsync(int handoverId) =>
         await context.HandoverQueries
             .AsNoTracking()
+            .Include(q => q.FieldSection)
+            .Include(q => q.ResolvedByUser).ThenInclude(u => u!.Role)
             .Where(q => q.HandoverId == handoverId)
             .OrderBy(q => q.CreatedAt)
             .ToListAsync();
 
     public async Task<HandoverQuery?> GetByIdAsync(int queryId, int handoverId) =>
         await context.HandoverQueries
+            .Include(q => q.FieldSection)
+            .Include(q => q.ResolvedByUser).ThenInclude(u => u!.Role)
             .FirstOrDefaultAsync(q => q.QueryId == queryId && q.HandoverId == handoverId);
 
     public async Task AddAsync(HandoverQuery query) =>

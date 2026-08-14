@@ -12,6 +12,12 @@ public class HandoverQueryResponseRepository(AppDbContext context) : IHandoverQu
             .AsNoTracking()
             .FirstOrDefaultAsync(r => r.QueryId == queryId);
 
+    public async Task<Dictionary<int, HandoverQueryResponse>> GetByQueryIdsAsync(List<int> queryIds) =>
+        await context.HandoverQueryResponses
+            .AsNoTracking()
+            .Where(r => queryIds.Contains(r.QueryId))
+            .ToDictionaryAsync(r => r.QueryId);
+
     public async Task AddAsync(HandoverQueryResponse response) =>
         await context.HandoverQueryResponses.AddAsync(response);
 
