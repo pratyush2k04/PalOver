@@ -4,6 +4,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Handovers;
 using Pdr.Api.Services.Interfaces;
 
@@ -89,6 +90,26 @@ public class HandoversController : ControllerBase
         await _accessService.CanAccessHandoverAsync(engagementId, GetUserId());
 
         var dto = await _handoverService.SubmitHandoverAsync(engagementId, GetUserIdString());
+        return Ok(dto);
+    }
+
+    /// <summary>
+    /// Marks a submitted handover as reviewed by the Project Manager. Idempotent once reviewed.
+    /// </summary>
+    /// <param name="engagementId">The unique identifier of the engagement.</param>
+    /// <returns>The handover details.</returns>
+    [HttpPost("review")]
+    [EndpointSummary("Mark handover reviewed (Project Manager only)")]
+    [ProducesResponseType(typeof(HandoverInfoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<HandoverInfoDto>> MarkReviewed(int engagementId)
+    {
+        await _accessService.CanAccessHandoverAsync(engagementId, GetUserId(), RoleConstants.ProjectManagement);
+
+        var dto = await _handoverService.MarkReviewedAsync(engagementId, GetUserIdString());
         return Ok(dto);
     }
 }

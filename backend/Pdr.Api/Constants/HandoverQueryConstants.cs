@@ -12,7 +12,6 @@ public static class HandoverQueryConstants
     public const string ReferenceIdNotAllowed = "A reference is not applicable for this field section.";
     public const string ResponseTextRequired = "Response is required.";
     public const string ResponseTextMaxLength = "Response cannot exceed 2000 characters.";
-    public const string NotYetSubmitted = "Queries can only be raised against a submitted handover.";
     public const string AlreadyResponded = "This query has already been responded to and cannot be changed.";
 
     public static string NotFound(int queryId) => $"Handover query with ID {queryId} was not found.";

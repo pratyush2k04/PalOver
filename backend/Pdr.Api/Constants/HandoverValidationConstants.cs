@@ -4,6 +4,7 @@ public static class HandoverValidationConstants
 {
     public const string AccessDenied = "You don't have access to Handover.";
     public const string AlreadySubmitted = "This handover has already been submitted and its commitments can no longer be changed.";
+    public const string NotYetSubmitted = "This action requires the handover to be submitted first.";
     public const string NotFoundForSubmit = "Cannot submit a handover that does not exist.";
     public const string BusinessProblemRequiredSubmit = "Business Problem is required to submit.";
     public const string ClientSentimentRequiredSubmit = "Client Sentiment is required to submit.";
