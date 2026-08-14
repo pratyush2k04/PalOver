@@ -8,8 +8,23 @@
       </div>
       <app-button *ngIf="isPreSales()" variant="stroked" [disabled]="isSaving() || isSubmitted()" (click)="saveDraft()">Save Draft</app-button>
       <app-button variant="flat" [disabled]="isSaving() || isSubmitted()" (click)="submitHandover()">Submit Handover</app-button>
+      <app-button
+        *ngIf="isProjectManagement() && isSubmitted() && !handover()?.reviewedAt"
+        variant="flat"
+        [disabled]="isSaving()"
+        (click)="markReviewed()"
+      >
+        Mark Reviewed
+      </app-button>
     </div>
   </div>
+
+  <p class="submitted-info" *ngIf="isSubmitted() && handover()?.submittedAt">
+    Submitted by {{ handover()?.submittedByName || 'Unknown' }} on {{ handover()?.submittedAt | date: 'medium' }}
+  </p>
+  <p class="reviewed-info" *ngIf="handover()?.reviewedAt">
+    Reviewed by {{ handover()?.reviewedByName || 'Unknown' }} on {{ handover()?.reviewedAt | date: 'medium' }}
+  </p>
 
   <app-alert *ngIf="message()" [variant]="isError() ? 'danger' : 'neutral'">
     {{ message() }}
@@ -59,21 +74,21 @@
   <div class="section client-context client-context-readonly" *ngIf="!isPreSales()">
     <h3>Client Context</h3>
 
-    <div class="readonly-field">
+    <div class="readonly-field" id="handover-client-background">
       <span class="readonly-label">Client Background</span>
       <p class="readonly-value" [class.readonly-value-empty]="!handover()?.clientBackground">
         {{ handover()?.clientBackground || 'Not provided' }}
       </p>
     </div>
 
-    <div class="readonly-field">
+    <div class="readonly-field" id="handover-business-problem">
       <span class="readonly-label">Business Problem</span>
       <p class="readonly-value" [class.readonly-value-empty]="!handover()?.businessProblem">
         {{ handover()?.businessProblem || 'Not provided' }}
       </p>
     </div>
 
-    <div class="readonly-field">
+    <div class="readonly-field" id="handover-client-sentiment">
       <span class="readonly-label">Client Sentiment</span>
       <app-status-badge *ngIf="handover()?.clientSentiment; else noSentiment"
         [tone]="getSentimentTone(handover()?.clientSentiment)">
@@ -84,7 +99,7 @@
       </ng-template>
     </div>
 
-    <div class="readonly-field">
+    <div class="readonly-field" id="handover-deal-origin">
       <span class="readonly-label">Deal Origin</span>
       <p class="readonly-value" [class.readonly-value-empty]="!handover()?.dealOrigin">
         {{ handover()?.dealOrigin || 'Not provided' }}
@@ -110,6 +125,7 @@
       <div class="commitment-cards" *ngIf="commitments().length > 0">
         <div
           class="commitment-card"
+          [id]="'handover-commitment-' + c.commitmentId"
           *ngFor="let c of commitments()"
           [class.commitment-card-impossible]="
             c.realisticCommitment && !c.realisticCommitment.isPossible

@@ -297,6 +297,24 @@ export class HandoverComponent {
     });
   }
 
+  markReviewed() {
+    const id = this.engagementId();
+    if (!id) return;
+
+    this.isSaving.set(true);
+    this.handoverService.markReviewed(id).subscribe({
+      next: (data) => {
+        this.handover.set(data);
+        this.showMessage('Handover marked reviewed', false);
+        this.isSaving.set(false);
+      },
+      error: (err) => {
+        this.showMessage(this.extractErrorMessage(err, 'Failed to mark handover reviewed'), true);
+        this.isSaving.set(false);
+      },
+    });
+  }
+
   addCommitment() {
     const id = this.engagementId();
     if (!id) return;
