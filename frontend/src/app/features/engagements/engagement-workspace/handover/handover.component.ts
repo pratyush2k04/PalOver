@@ -1,4 +1,4 @@
-import { Component, ViewChild, inject, signal, computed, effect } from '@angular/core';
+import { Component, ViewChild, inject, signal, computed, effect, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -11,9 +11,11 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { HandoverService } from '../../services/handover.service';
+import { EngagementService } from '../../services/engagement.service';
 import { catchError, of } from 'rxjs';
 import { AuthService } from 'src/app/services/auth';
 import { KickoffReadinessDto, KickoffReadinessService } from 'src/app/services/kickoff-readiness.service';
+import { EngagementInfoDto } from '../../models/engagement.model';
 import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
 import {
   HandoverInfoDto,
@@ -31,6 +33,7 @@ import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
+import { ClientContactTransitionCardComponent } from './client-contact-transition-card/client-contact-transition-card.component';
 
 const MAX_FREE_TEXT_LENGTH = 2000;
 const SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
@@ -63,6 +66,7 @@ interface RealisticEditForm {
     SelectComponent,
     StatusBadgeComponent,
     EmptyStateComponent,
+    ClientContactTransitionCardComponent,
   ],
   templateUrl: './handover.component.html',
   styleUrl: './handover.component.scss',
@@ -71,9 +75,12 @@ export class HandoverComponent {
   private static readonly KICKOFF_NOT_READY_MESSAGE =
     'Engagement is not kickoff-ready. All mandatory items must be complete before submitting the handover.';
 
+  engagementInfo = signal<EngagementInfoDto | null>(null);
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private handoverService = inject(HandoverService);
+  private engagementService = inject(EngagementService);
   private kickoffReadinessService = inject(KickoffReadinessService);
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
@@ -169,6 +176,7 @@ export class HandoverComponent {
       if (id) {
         this.loadHandover(id);
         this.loadKickoffReadiness(id);
+        this.loadEngagement(id);
       }
     });
   }
@@ -177,6 +185,12 @@ export class HandoverComponent {
     this.kickoffReadinessService.getReadiness(id).pipe(
       catchError(() => of(null))
     ).subscribe(data => this.kickoffReadiness.set(data));
+  }
+
+  private loadEngagement(id: number) {
+    this.engagementService.getEngagementInfo(id).pipe(
+      catchError(() => of(null))   //when an api falls it catches the error and returns null instead the crashing the component
+    ).subscribe(data => this.engagementInfo.set(data)); 
   }
 
   private emptyCommitment(): CreateCommitmentRequest {
@@ -508,6 +522,10 @@ export class HandoverComponent {
   private extractErrorMessage(err: unknown, fallback: string): string {
     const errorMessage = (err as { error?: { message?: string } })?.error?.message;
     return errorMessage || fallback;
+  }
+
+  onClientContactSaved(): void {
+    this.showMessage('Client contact transition recorded.', false);
   }
 
   private showMessage(msg: string, isErr: boolean) {

@@ -3,6 +3,7 @@ using Pdr.Api.Repositories;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services;
 using Pdr.Api.Services.Interfaces;
+using Pdr.Api.Services.Notifications;
 
 namespace Pdr.Api.Extensions;
 
@@ -25,8 +26,12 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEngagementChecklistRepository, EngagementChecklistRepository>();
         services.AddScoped<IAccessTrackerRepository, AccessTrackerRepository>();
         services.AddScoped<IEnvironmentToolingRepository, EnvironmentToolingRepository>();
+        services.AddScoped<IBrownfieldFindingRepository, BrownfieldFindingRepository>();
         services.AddScoped<IChangeRequestRepository, ChangeRequestRepository>();
         services.AddScoped<IPersonRepository, PersonRepository>();
+        services.AddScoped<IClientContactTransitionRepository, ClientContactTransitionRepository>();
+        services.AddScoped<IRiskRepository, RiskRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
 
         // Services
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
@@ -46,8 +51,16 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEngagementChecklistService, EngagementChecklistService>();
         services.AddScoped<IAccessTrackerService, AccessTrackerService>();
         services.AddScoped<IEnvironmentToolingService, EnvironmentToolingService>();
+        services.AddScoped<IBrownfieldFindingService, BrownfieldFindingService>();
         services.AddScoped<IChangeRequestService, ChangeRequestService>();
         services.AddScoped<IPersonService, PersonService>();
+        services.AddScoped<IClientContactTransitionService, ClientContactTransitionService>();
+        services.AddScoped<IRiskService, RiskService>();
+        services.AddScoped<IKickoffRepository, KickoffRepository>();
+        services.AddScoped<IKickoffService, KickoffService>();
+        services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<TemplateMapperResolver>();
+        services.AddSingleton<TemplateRenderer>();
 
         return services;
     }

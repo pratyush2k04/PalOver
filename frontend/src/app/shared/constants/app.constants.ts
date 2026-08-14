@@ -7,4 +7,6 @@ export * from './handover.constants';
 export * from './technical-readiness.constants';
 export * from './document.constants';
 export * from './master-checklist.constants';
+export * from './risk.constants';
+export * from './portfolio.constants';
 

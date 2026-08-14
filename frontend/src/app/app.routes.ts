@@ -126,8 +126,17 @@ export const routes: Routes = [
       {
         path: 'my-engagements',
         loadComponent: () =>
-          import('./features/engagements/my-engagements').then(
+          import('./features/engagements/my-engagements/my-engagements').then(
             m => m.MyEngagementsComponent
+          ),
+      },
+
+      // Portfolio (Leadership)
+      {
+        path: 'portfolio',
+        loadChildren: () =>
+          import('./features/portfolio/portfolio.routes').then(
+            m => m.PORTFOLIO_ROUTES
           ),
       },
 

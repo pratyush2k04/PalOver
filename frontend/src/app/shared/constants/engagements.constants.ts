@@ -7,6 +7,7 @@ export const ENGAGEMENT_API_ENDPOINTS = {
   ASSIGN_PROJECT_MANAGER: (id: number) => `/api/Engagements/${id}/project-manager`,
   ASSIGN_TECH_LEAD: (id: number) => `/api/Engagements/${id}/tech-lead`,
   MY_ENGAGEMENTS: '/api/Engagements/my-engagements',
+  LEADERSHIP_DASHBOARD: '/api/engagements/leadership-dashboard',
   ALL_ENGAGEMENTS: '/api/Engagements',
   LEADERSHIP_USERS: (id: number) => `/api/Engagements/${id}/leadership-users`,
   LEADERSHIP_ROLE_USERS: '/api/Roles/4/users',
@@ -50,7 +51,7 @@ export const ENGAGEMENT_WORKSPACE_CONFIG = {
     { label: 'Kickoff', route: 'kickoff', enabled: true },
     { label: 'Resourcing', route: 'resourcing', enabled: false },
     { label: 'Technical Readiness', route: 'technical-readiness', enabled: true },
-    { label: 'Risks', route: 'risks', enabled: false },
+    { label: 'Risks', route: 'risks', enabled: true },
     { label: 'Reporting', route: 'reporting', enabled: false }
   ]
 } as const;

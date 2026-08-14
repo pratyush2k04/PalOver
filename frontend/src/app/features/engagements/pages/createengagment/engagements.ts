@@ -85,14 +85,6 @@ export class EngagementsComponent implements OnInit {
     this.commercialModels().map((model) => ({ value: model.id, label: model.name }))
   );
 
-  get billingBeforeKickoffError(): string | null {
-    const control = this.engagementForm.get('billingStartDate');
-    const touched = !!control && (control.touched || control.dirty);
-    return touched && this.engagementForm.errors?.['billingBeforeKickoff']
-      ? 'Billing start cannot be before the kickoff date.'
-      : null;
-  }
-
   openModal(): void {
     this.errorMessage.set(null);
     this.warnings.set([]);

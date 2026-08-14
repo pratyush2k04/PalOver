@@ -1,3 +1,4 @@
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.EnvironmentTooling;
 using Pdr.Api.Exceptions;
 
@@ -7,7 +8,9 @@ using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class EnvironmentToolingService(IEnvironmentToolingRepository repository) : IEnvironmentToolingService
+public class EnvironmentToolingService(
+    IEnvironmentToolingRepository repository,
+    IRiskService riskService) : IEnvironmentToolingService
 {
     public async Task<EnvironmentToolingReadinessResponse> GetItemsByEngagementIdAsync(int engagementId)
     {
@@ -57,7 +60,7 @@ public class EnvironmentToolingService(IEnvironmentToolingRepository repository)
         await repository.AddAsync(item);
         await repository.SaveChangesAsync();
 
-        var createdItem = await repository.GetByIdAsync(item.EnvironmentToolingItemId);
+        var createdItem = await repository.GetByIdAsync(item.Id);
         return MapToDto(createdItem!);
     }
 
@@ -86,6 +89,8 @@ public class EnvironmentToolingService(IEnvironmentToolingRepository repository)
         item.BlockReason = request.BlockReason;
         item.Status = request.Status;
         await repository.SaveChangesAsync();
+
+        await riskService.SyncAutoCreatedRisksAsync(item.EngagementId);
 
         return MapToDto(item);
     }
@@ -118,7 +123,7 @@ public class EnvironmentToolingService(IEnvironmentToolingRepository repository)
     private static EnvironmentToolingItemDto MapToDto(EnvironmentToolingItem item) =>
         new()
         {
-            EnvironmentToolingItemId = item.EnvironmentToolingItemId,
+            Id = item.Id,
             Name = GetItemDisplayName(item),
             EnvironmentToolingDefinitionId = item.EnvironmentToolingDefinitionId,
             EngagementId = item.EngagementId,

@@ -16,7 +16,10 @@ export const TECHNICAL_READINESS_API_ENDPOINTS = {
   ACCESS_ITEM_OWNER: (id: number) => `/api/access-items/${id}/owner`,
   ENVIRONMENT_TOOLING_ITEMS: (engagementId: number) => `/api/engagements/${engagementId}/environment-tooling`,
   ENVIRONMENT_TOOLING_STATUS: (id: number) => `/api/environment-tooling/${id}/status`,
-  ENVIRONMENT_TOOLING_OWNER: (id: number) => `/api/environment-tooling/${id}/owner`
+  ENVIRONMENT_TOOLING_OWNER: (id: number) => `/api/environment-tooling/${id}/owner`,
+  BROWNFIELD_FINDINGS: (engagementId: number) => `/api/engagements/${engagementId}/brownfield-findings`,
+  BROWNFIELD_DECISION: (id: number) => `/api/brownfield-findings/${id}/decision`,
+  BROWNFIELD_ITEM: (id: number) => `/api/brownfield-findings/${id}`
 } as const;
 
 export const TECHNICAL_READINESS_MESSAGES = {

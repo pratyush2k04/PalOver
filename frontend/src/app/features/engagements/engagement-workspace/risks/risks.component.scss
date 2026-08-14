@@ -1,0 +1,419 @@
+@use '../../../../../styles/mixins' as *;
+
+.risks-container {
+  padding: $spacing-6;
+  @include flex-column($spacing-6);
+}
+
+.risks-header {
+  @include flex-between;
+  align-items: flex-start;
+  gap: $spacing-4;
+
+  .header-title {
+    h2 {
+      margin: 0 0 $spacing-1 0;
+      font-size: $font-size-2xl;
+      font-weight: $font-weight-semibold;
+      color: $color-text;
+    }
+    .subtitle {
+      margin: 0;
+      font-size: $font-size-sm;
+      color: $color-text-faint;
+    }
+  }
+}
+
+.priority-banner {
+  @include flex-between;
+  justify-content: flex-start;
+  gap: $spacing-4;
+  padding: $spacing-4 $spacing-5;
+  background: $color-danger-bg;
+  border: 1px solid $color-danger-border;
+  border-left: 4px solid $color-danger;
+  border-radius: $radius-lg;
+  color: $color-danger-text;
+
+  .banner-icon {
+    font-size: $font-size-2xl;
+  }
+  .banner-content {
+    strong {
+      display: block;
+      font-size: $font-size-sm;
+      margin-bottom: $spacing-1;
+    }
+    p {
+      margin: 0;
+      font-size: $font-size-xs;
+      color: $color-danger-text;
+    }
+  }
+}
+
+.filters-bar {
+  @include flex-between;
+  justify-content: flex-start;
+  gap: $spacing-6;
+  padding: $spacing-4;
+  background: $color-surface-hover;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-lg;
+
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+
+    label {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+      color: $color-text-muted;
+    }
+
+    .form-select {
+      padding: $spacing-2 $spacing-3;
+      border: 1px solid $color-border-input;
+      border-radius: $radius-md;
+      background-color: $color-surface;
+      font-size: $font-size-sm;
+      color: $color-text;
+
+      &:focus {
+        outline: none;
+        border-color: $color-primary;
+        box-shadow: 0 0 0 2px $color-primary-focus-ring;
+      }
+    }
+  }
+
+  .metrics-summary {
+    margin-left: auto;
+    .count-badge {
+      font-size: $font-size-xs;
+      font-weight: $font-weight-semibold;
+      background: $color-border-soft;
+      color: $color-text-muted;
+      padding: $spacing-1 $spacing-3;
+      border-radius: $radius-full;
+    }
+  }
+}
+
+.risks-grid {
+  @include flex-column($spacing-4);
+}
+
+.risk-card {
+  background: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  transition: all $transition-base;
+  border-left: 4px solid $color-border-input;
+
+  &:hover {
+    box-shadow: $shadow-card;
+  }
+
+  &.top-priority {
+    border-left: 4px solid $color-danger;
+    background: $color-danger-bg;
+  }
+
+  &.closed {
+    opacity: 0.85;
+    background: $color-surface-hover;
+    border-left: 4px solid $color-text-fainter;
+  }
+
+  .risk-card-header {
+    @include flex-between;
+    padding: $spacing-4 $spacing-5 $spacing-2 $spacing-5;
+
+    .title-section {
+      display: flex;
+      align-items: center;
+      gap: $spacing-2;
+
+      .risk-id {
+        font-size: $font-size-xs;
+        font-weight: $font-weight-bold;
+        color: $color-text-faint;
+        background: $color-bg;
+        padding: 0.15rem 0.4rem;
+        border-radius: $radius-sm;
+      }
+
+      .risk-title {
+        margin: 0;
+        font-size: $font-size-lg;
+        font-weight: $font-weight-semibold;
+        color: $color-text;
+      }
+    }
+
+    .right-section {
+      display: flex;
+      align-items: center;
+
+      .open-days-badge {
+        font-size: $font-size-xs;
+        font-weight: $font-weight-medium;
+        color: $color-text-faint;
+        background: rgba(0, 0, 0, 0.05);
+        padding: 0.25rem 0.6rem;
+        border-radius: $radius-full;
+      }
+    }
+  }
+
+  .risk-card-body {
+    padding: $spacing-2 $spacing-5 $spacing-4 $spacing-5;
+
+    .risk-description {
+      margin: 0 0 $spacing-3 0;
+      font-size: $font-size-sm;
+      color: $color-text-muted;
+      line-height: 1.45;
+    }
+
+    .source-link-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: $spacing-1;
+      font-size: $font-size-xs;
+      background: $color-primary-light;
+      border: 1px solid #bfdbfe;
+      color: #1e40af;
+      padding: $spacing-1 $spacing-3;
+      border-radius: $radius-md;
+      margin-bottom: $spacing-3;
+      text-decoration: none;
+      transition: all $transition-fast;
+
+      &.clickable {
+        cursor: pointer;
+
+        &:hover {
+          background: #dbeafe;
+          border-color: #93c5fd;
+          box-shadow: $shadow-sm;
+
+          .link-title {
+            text-decoration: underline;
+          }
+        }
+      }
+
+      .link-title {
+        font-weight: $font-weight-semibold;
+      }
+      .link-type {
+        color: $color-primary;
+      }
+    }
+
+    .risk-meta-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: $spacing-5;
+      padding: $spacing-2 0;
+
+      .meta-item {
+        font-size: $font-size-sm;
+
+        .meta-label {
+          color: $color-text-faint;
+          margin-right: $spacing-1;
+        }
+
+        .meta-value {
+          font-weight: $font-weight-semibold;
+          color: $color-text;
+
+          &.impact-high, &.likelihood-high {
+            color: $color-danger;
+          }
+          &.impact-medium, &.likelihood-medium {
+            color: $color-warning-text;
+          }
+          &.impact-low, &.likelihood-low {
+            color: $color-success;
+          }
+        }
+      }
+    }
+
+    .risk-section {
+      margin-top: $spacing-3;
+      padding: $spacing-2 $spacing-3;
+      border-radius: $radius-md;
+      font-size: $font-size-sm;
+
+      strong {
+        display: block;
+        margin-bottom: $spacing-1;
+      }
+      p {
+        margin: 0;
+      }
+
+      &.mitigation-section {
+        background: $color-primary-light;
+        border: 1px solid #bfdbfe;
+        color: #1e40af;
+      }
+
+      &.resolution-section {
+        background: $color-bg;
+        border: 1px solid $color-border-soft;
+        color: $color-text-muted;
+      }
+    }
+  }
+
+  .risk-card-footer {
+    padding: $spacing-2 $spacing-5;
+    border-top: 1px solid $color-border-soft;
+    background: $color-surface-hover;
+    display: flex;
+    justify-content: flex-end;
+    border-bottom-left-radius: $radius-lg;
+    border-bottom-right-radius: $radius-lg;
+
+    .action-buttons {
+      display: flex;
+      gap: $spacing-2;
+    }
+  }
+}
+
+// Modals
+.modal-backdrop {
+  @include modal-overlay;
+
+  .modal-content {
+    @include modal-card(560px);
+    padding: 0;
+    animation: modalSlide $transition-base;
+
+    .modal-header {
+      @include flex-between;
+      padding: $spacing-4 $spacing-5;
+      border-bottom: 1px solid $color-border-soft;
+      background: $color-surface-hover;
+
+      h3 {
+        margin: 0;
+        font-size: $font-size-lg;
+        font-weight: $font-weight-semibold;
+        color: $color-text;
+      }
+
+      .close-btn {
+        background: transparent;
+        border: none;
+        font-size: $font-size-xl;
+        color: $color-text-faint;
+        cursor: pointer;
+        &:hover {
+          color: $color-text;
+        }
+      }
+    }
+
+    .modal-body {
+      padding: $spacing-5;
+      @include flex-column($spacing-4);
+
+      .modal-info {
+        margin: 0;
+        font-size: $font-size-xs;
+        color: $color-text-faint;
+        background: $color-bg;
+        padding: $spacing-2 $spacing-3;
+        border-radius: $radius-md;
+      }
+    }
+
+    .modal-footer {
+      padding: $spacing-3 $spacing-5;
+      border-top: 1px solid $color-border-soft;
+      background: $color-surface-hover;
+      display: flex;
+      justify-content: flex-end;
+      gap: $spacing-3;
+    }
+  }
+}
+
+@keyframes modalSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-group {
+  @include flex-column($spacing-1);
+
+  label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-muted;
+
+    &.required::after {
+      content: ' *';
+      color: $color-danger;
+    }
+  }
+
+  .form-control, .form-select {
+    @include form-input-base;
+  }
+
+  .error-msg {
+    font-size: $font-size-xs;
+    color: $color-danger;
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: $spacing-4;
+
+  .col {
+    flex: 1;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: $spacing-8 $spacing-4;
+  background: $color-surface;
+  border: 1px dashed $color-border;
+  border-radius: $radius-lg;
+
+  .empty-icon {
+    font-size: 2.5rem;
+    margin-bottom: $spacing-2;
+  }
+
+  h3 {
+    margin: 0 0 $spacing-2 0;
+    color: $color-text;
+  }
+
+  p {
+    margin: 0 0 $spacing-4 0;
+    color: $color-text-faint;
+    font-size: $font-size-sm;
+  }
+}

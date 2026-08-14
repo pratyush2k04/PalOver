@@ -71,6 +71,15 @@ export class SidebarComponent {
       });
     }
 
+    // New Portfolio navigation item: visible ONLY to Leadership
+    if (currentUser.role === USER_ROLES.LEADERSHIP) {
+      items.push({
+        label: 'Portfolio',
+        icon: 'target',
+        route: APP_ROUTES.PORTFOLIO
+      });
+    }
+
     // Alerts and Profile: no route assigned
     items.push(
       { label: 'Alerts', icon: 'bell', badge: 'dot' },

@@ -1,13 +1,20 @@
+using Pdr.Api.Constants;
+using System.Text.Json;
 using Pdr.Api.DTOs.AccessTracker;
 using Pdr.Api.Exceptions;
 
 using Pdr.Api.Models.AccessTracker;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class AccessTrackerService(IAccessTrackerRepository repository) : IAccessTrackerService
+public class AccessTrackerService(
+    IAccessTrackerRepository repository,
+    IRiskService riskService,
+    INotificationService notificationService,
+    ICurrentUserService currentUserService) : IAccessTrackerService
 {
     // -------------------------------------------------------------------------
     // State machine: defines which transitions are allowed
@@ -61,8 +68,8 @@ public class AccessTrackerService(IAccessTrackerRepository repository) : IAccess
         await repository.SaveChangesAsync();
 
         // Reload with Owner navigation populated for the response
-        var created = await repository.GetAccessItemByIdAsync(item.AccessItemId)
-            ?? throw new AccessItemNotFoundException(item.AccessItemId);
+        var created = await repository.GetAccessItemByIdAsync(item.Id)
+            ?? throw new AccessItemNotFoundException(item.Id);
 
         return MapToDto(created);
     }
@@ -107,6 +114,20 @@ public class AccessTrackerService(IAccessTrackerRepository repository) : IAccess
         }
 
         await repository.SaveChangesAsync();
+
+        await riskService.SyncAutoCreatedRisksAsync(item.EngagementId);
+
+        if (request.Status == AccessItemStatus.Blocked)
+        {
+            await notificationService.CreateFromTemplateAsync(
+                "AccessItemBlocked",
+                item.EngagementId,
+                RoleEnum.TechLead,
+                JsonSerializer.Serialize(new { AccessItemId = item.Id, TriggerUserId = currentUserService.GetUserId() }),
+                DateTime.UtcNow,
+                $"/engagements/{item.EngagementId}/workspace/technical-readiness");
+        }
+
         return MapToDto(item);
     }
 
@@ -169,7 +190,7 @@ public class AccessTrackerService(IAccessTrackerRepository repository) : IAccess
 
         return new AccessItemDto
         {
-            AccessItemId = item.AccessItemId,
+            Id = item.Id,
             Name = item.Name,
             IsClientSide = item.IsClientSide,
             OwnerId = item.OwnerId,

@@ -2,13 +2,6 @@ namespace Pdr.Api.Constants;
 
 public static class AccessTrackerConstants
 {
-    public static class Routes
-    {
-        public const string Base = "api/engagements/{engagementId:int}/access-items";
-        public const string ItemsBase = "api/access-items";
-        public const string EvaluateRisks = "evaluate-risks";
-    }
-
     public static class Roles
     {
         public const string TechLead = "Tech Lead";
