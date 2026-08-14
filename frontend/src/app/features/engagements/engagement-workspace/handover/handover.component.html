@@ -419,6 +419,12 @@
       </div>
     </div>
   </form>
+
+  <app-handover-queries
+    *ngIf="isSubmitted()"
+    [engagementId]="engagementId()!"
+    [commitments]="commitments()"
+  ></app-handover-queries>
 </div>
 
 <div class="loading" *ngIf="isLoading()">Loading handover details...</div>

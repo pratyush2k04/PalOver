@@ -34,6 +34,7 @@ import { SelectComponent, SelectOption } from '@common/components/form/select/se
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { ClientContactTransitionCardComponent } from './client-contact-transition-card/client-contact-transition-card.component';
+import { HandoverQueriesComponent } from './handover-queries/handover-queries.component';
 
 const MAX_FREE_TEXT_LENGTH = 2000;
 const SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
@@ -67,6 +68,7 @@ interface RealisticEditForm {
     StatusBadgeComponent,
     EmptyStateComponent,
     ClientContactTransitionCardComponent,
+    HandoverQueriesComponent,
   ],
   templateUrl: './handover.component.html',
   styleUrl: './handover.component.scss',

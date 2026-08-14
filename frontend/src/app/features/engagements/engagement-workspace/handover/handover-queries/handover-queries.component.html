@@ -1,0 +1,62 @@
+<div class="section handover-queries">
+  <h3>Handover Queries</h3>
+
+  <app-alert *ngIf="message()" [variant]="isError() ? 'danger' : 'neutral'">
+    {{ message() }}
+  </app-alert>
+
+  <app-empty-state *ngIf="!isLoading() && queries().length === 0" message="No queries raised yet" />
+
+  <div class="query-cards" *ngIf="queries().length > 0">
+    <div class="query-card" *ngFor="let query of queries()">
+      <div class="query-card-header">
+        <div class="query-field">
+          <span class="query-field-label">{{ fieldSectionLabel(query) }}</span>
+          <app-button variant="stroked" size="sm" (click)="jumpToField(query)">Jump to field</app-button>
+        </div>
+        <app-status-badge [tone]="query.isResolved ? 'success' : 'warning'">
+          {{ query.isResolved ? 'Resolved' : 'Open query' }}
+        </app-status-badge>
+      </div>
+
+      <p class="query-question">{{ query.question }}</p>
+      <p class="query-meta">Raised by {{ query.raisedByName }}<span *ngIf="query.raisedByRole"> ({{ query.raisedByRole }})</span> on {{ query.raisedAt | date: 'medium' }}</p>
+
+      <ng-container *ngIf="query.responseText; else noResponse">
+        <p class="query-response">{{ query.responseText }}</p>
+        <p class="query-meta">Responded by {{ query.respondedByName }}<span *ngIf="query.respondedByRole"> ({{ query.respondedByRole }})</span> on {{ query.respondedAt | date: 'medium' }}</p>
+      </ng-container>
+      <ng-template #noResponse>
+        <div class="query-response-form" *ngIf="isPreSales()">
+          <app-textarea
+            [id]="'response-' + query.queryId"
+            placeholder="Type your response..."
+            [rows]="2"
+            [ngModel]="responseDraft(query.queryId)"
+            (ngModelChange)="updateResponseDraft(query.queryId, $event)"
+            [ngModelOptions]="{ standalone: true }"
+          />
+          <app-button
+            variant="flat"
+            size="sm"
+            [disabled]="!responseDraft(query.queryId).trim()"
+            (click)="submitResponse(query)"
+          >
+            Submit Response
+          </app-button>
+        </div>
+        <p class="query-response-empty" *ngIf="!isPreSales()">Awaiting a response from Pre Sales.</p>
+      </ng-template>
+
+      <div class="query-actions" *ngIf="isProjectManagement()">
+        <app-button variant="stroked" size="sm" (click)="toggleResolve(query)">
+          {{ query.isResolved ? 'Reopen' : 'Mark Resolved' }}
+        </app-button>
+      </div>
+    </div>
+  </div>
+
+  <div class="raise-query-actions" *ngIf="isProjectManagement()">
+    <app-button variant="flat" (click)="openRaiseQueryDialog()">Raise another query</app-button>
+  </div>
+</div>
