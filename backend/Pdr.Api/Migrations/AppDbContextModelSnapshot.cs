@@ -25,11 +25,11 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItem", b =>
                 {
-                    b.Property<int>("AccessItemId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AccessItemId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("AccessItemDefinitionId")
                         .HasColumnType("integer");
@@ -80,7 +80,7 @@ namespace Pdr.Api.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.HasKey("AccessItemId");
+                    b.HasKey("Id");
 
                     b.HasIndex("AccessItemDefinitionId");
 
@@ -93,7 +93,7 @@ namespace Pdr.Api.Migrations
                     b.HasData(
                         new
                         {
-                            AccessItemId = 1,
+                            Id = 1,
                             AccessItemDefinitionId = 1,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
@@ -106,7 +106,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemId = 2,
+                            Id = 2,
                             AccessItemDefinitionId = 2,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
@@ -119,7 +119,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemId = 3,
+                            Id = 3,
                             AccessItemDefinitionId = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
@@ -132,7 +132,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemId = 4,
+                            Id = 4,
                             AccessItemDefinitionId = 1,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
@@ -146,7 +146,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemId = 5,
+                            Id = 5,
                             AccessItemDefinitionId = 2,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
@@ -160,7 +160,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemId = 6,
+                            Id = 6,
                             AccessItemDefinitionId = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
@@ -175,11 +175,11 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItemDefinition", b =>
                 {
-                    b.Property<int>("AccessItemDefinitionId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AccessItemDefinitionId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("integer");
@@ -197,14 +197,14 @@ namespace Pdr.Api.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.HasKey("AccessItemDefinitionId");
+                    b.HasKey("Id");
 
                     b.ToTable("AccessItemDefinitions");
 
                     b.HasData(
                         new
                         {
-                            AccessItemDefinitionId = 1,
+                            Id = 1,
                             DisplayOrder = 1,
                             IsActive = true,
                             IsClientSide = false,
@@ -212,7 +212,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemDefinitionId = 2,
+                            Id = 2,
                             DisplayOrder = 2,
                             IsActive = true,
                             IsClientSide = true,
@@ -220,7 +220,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemDefinitionId = 3,
+                            Id = 3,
                             DisplayOrder = 3,
                             IsActive = true,
                             IsClientSide = true,
@@ -1833,11 +1833,11 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition", b =>
                 {
-                    b.Property<int>("EnvironmentToolingDefinitionId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EnvironmentToolingDefinitionId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("integer");
@@ -1855,14 +1855,14 @@ namespace Pdr.Api.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.HasKey("EnvironmentToolingDefinitionId");
+                    b.HasKey("Id");
 
                     b.ToTable("EnvironmentToolingDefinitions");
 
                     b.HasData(
                         new
                         {
-                            EnvironmentToolingDefinitionId = 1,
+                            Id = 1,
                             DisplayOrder = 1,
                             IsActive = true,
                             IsMandatory = true,
@@ -1870,7 +1870,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingDefinitionId = 2,
+                            Id = 2,
                             DisplayOrder = 2,
                             IsActive = true,
                             IsMandatory = true,
@@ -1878,7 +1878,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingDefinitionId = 3,
+                            Id = 3,
                             DisplayOrder = 3,
                             IsActive = true,
                             IsMandatory = false,
@@ -1888,11 +1888,11 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem", b =>
                 {
-                    b.Property<int>("EnvironmentToolingItemId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EnvironmentToolingItemId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("BlockReason")
                         .HasMaxLength(500)
@@ -1937,7 +1937,7 @@ namespace Pdr.Api.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.HasKey("EnvironmentToolingItemId");
+                    b.HasKey("Id");
 
                     b.HasIndex("EngagementId");
 
@@ -1950,7 +1950,7 @@ namespace Pdr.Api.Migrations
                     b.HasData(
                         new
                         {
-                            EnvironmentToolingItemId = 1,
+                            Id = 1,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
                             EnvironmentToolingDefinitionId = 1,
@@ -1962,7 +1962,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingItemId = 2,
+                            Id = 2,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
                             EnvironmentToolingDefinitionId = 2,
@@ -1974,7 +1974,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingItemId = 3,
+                            Id = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
                             EnvironmentToolingDefinitionId = 3,
@@ -1986,7 +1986,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingItemId = 4,
+                            Id = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
                             EnvironmentToolingDefinitionId = 1,
@@ -1998,7 +1998,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingItemId = 5,
+                            Id = 5,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
                             EnvironmentToolingDefinitionId = 2,
@@ -2010,7 +2010,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingItemId = 6,
+                            Id = 6,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
                             EnvironmentToolingDefinitionId = 3,
