@@ -24,7 +24,6 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
   imports: [
     CommonModule,
     InlineSVGModule,
-    StatusBadgeComponent,
     AccessTrackerComponent,
     EnvironmentToolingComponent,
     BrownfieldReviewComponent,
