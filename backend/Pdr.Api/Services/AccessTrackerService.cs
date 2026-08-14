@@ -68,8 +68,8 @@ public class AccessTrackerService(
         await repository.SaveChangesAsync();
 
         // Reload with Owner navigation populated for the response
-        var created = await repository.GetAccessItemByIdAsync(item.AccessItemId)
-            ?? throw new AccessItemNotFoundException(item.AccessItemId);
+        var created = await repository.GetAccessItemByIdAsync(item.Id)
+            ?? throw new AccessItemNotFoundException(item.Id);
 
         return MapToDto(created);
     }
@@ -123,7 +123,7 @@ public class AccessTrackerService(
                 "AccessItemBlocked",
                 item.EngagementId,
                 RoleEnum.TechLead,
-                JsonSerializer.Serialize(new { AccessItemId = item.AccessItemId, TriggerUserId = currentUserService.GetUserId() }),
+                JsonSerializer.Serialize(new { AccessItemId = item.Id, TriggerUserId = currentUserService.GetUserId() }),
                 DateTime.UtcNow,
                 $"/engagements/{item.EngagementId}/workspace/technical-readiness");
         }
@@ -190,7 +190,7 @@ public class AccessTrackerService(
 
         return new AccessItemDto
         {
-            AccessItemId = item.AccessItemId,
+            Id = item.Id,
             Name = item.Name,
             IsClientSide = item.IsClientSide,
             OwnerId = item.OwnerId,

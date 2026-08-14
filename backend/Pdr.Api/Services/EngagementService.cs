@@ -308,7 +308,7 @@ public class EngagementService(
             db.AccessItems.Add(new Pdr.Api.Models.AccessTracker.AccessItem
             {
                 EngagementId = engagementId,
-                AccessItemDefinitionId = def.AccessItemDefinitionId,
+                AccessItemDefinitionId = def.Id,
                 Name = def.Name,
                 IsClientSide = def.IsClientSide,
                 OwnerId = ownerId,

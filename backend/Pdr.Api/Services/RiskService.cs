@@ -137,7 +137,7 @@ public class RiskService(
             .Select(a => new
             {
                 SourceType = RiskConstants.SourceTypes.AccessTracker,
-                SourceItemId = a.AccessItemId,
+                SourceItemId = a.Id,
                 Title = a.Name,
                 Reason = a.BlockReason ?? string.Empty,
                 OwnerId = a.OwnerId
