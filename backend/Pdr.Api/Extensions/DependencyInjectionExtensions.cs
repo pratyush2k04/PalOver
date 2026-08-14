@@ -33,6 +33,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IRiskRepository, RiskRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IArchitectureValidationRepository, ArchitectureValidationRepository>();
+        services.AddScoped<ISearchRepository, SearchRepository>();
 
         // Services
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
@@ -61,6 +62,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IKickoffService, KickoffService>();
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IArchitectureValidationService, ArchitectureValidationService>();
+        services.AddScoped<ISearchService, SearchService>();
         services.AddScoped<TemplateMapperResolver>();
         services.AddSingleton<TemplateRenderer>();
 
