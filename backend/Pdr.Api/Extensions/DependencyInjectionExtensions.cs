@@ -29,6 +29,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IBrownfieldFindingRepository, BrownfieldFindingRepository>();
         services.AddScoped<IChangeRequestRepository, ChangeRequestRepository>();
         services.AddScoped<IPersonRepository, PersonRepository>();
+        services.AddScoped<IRiskRepository, RiskRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
 
         // Services
@@ -52,6 +53,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IBrownfieldFindingService, BrownfieldFindingService>();
         services.AddScoped<IChangeRequestService, ChangeRequestService>();
         services.AddScoped<IPersonService, PersonService>();
+        services.AddScoped<IRiskService, RiskService>();
         services.AddScoped<IKickoffRepository, KickoffRepository>();
         services.AddScoped<IKickoffService, KickoffService>();
         services.AddScoped<INotificationService, NotificationService>();
