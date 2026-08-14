@@ -200,19 +200,7 @@ namespace Pdr.Api.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.UpdateData(
-                table: "commitments",
-                keyColumn: "commitment_id",
-                keyValue: 1,
-                column: "quantity",
-                value: "1");
-
-            migrationBuilder.UpdateData(
-                table: "handover_info",
-                keyColumn: "handover_id",
-                keyValue: 1,
-                columns: new string[0],
-                values: new object[0]);
+            migrationBuilder.Sql("UPDATE commitments SET quantity = '1' WHERE commitment_id = 1;");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Risks_EngagementId",
