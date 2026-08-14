@@ -1,27 +1,31 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
-import { UpdateDiscoveryFeatureItemRequest } from '@features/engagements/models/architecture-validation/architecture-validation.requests';
+import { CreateDiscoveryFeatureItemRequest, UpdateDiscoveryFeatureItemRequest } from '@features/engagements/models/architecture-validation/architecture-validation.requests';
 import { DiscoveryFeatureItemDto } from '@features/engagements/models/architecture-validation/architecture-validation.dtos';
 
-export interface EditFeatureDialogData {
-  feature: DiscoveryFeatureItemDto;
+export interface DiscoveryFeatureDialogData {
+  feature?: DiscoveryFeatureItemDto;
 }
 
 @Component({
-  selector: 'app-edit-feature-dialog',
+  selector: 'app-discovery-feature-dialog',
   standalone: true,
   imports: [CommonModule, FormsModule, ButtonComponent, InputComponent],
-  templateUrl: './edit-feature-dialog.component.html',
-  styleUrl: './edit-feature-dialog.component.scss'
+  templateUrl: './discovery-feature-dialog.component.html',
+  styleUrl: './discovery-feature-dialog.component.scss'
 })
-export class EditFeatureDialogComponent implements OnInit {
-  private dialogRef = inject<DialogRef<UpdateDiscoveryFeatureItemRequest>>(DialogRef);
-  readonly data = inject<EditFeatureDialogData>(DIALOG_DATA, { optional: true });
+export class DiscoveryFeatureDialogComponent implements OnInit {
+  private dialogRef = inject<DialogRef<CreateDiscoveryFeatureItemRequest | UpdateDiscoveryFeatureItemRequest>>(DialogRef);
+  readonly data = inject<DiscoveryFeatureDialogData>(DIALOG_DATA, { optional: true });
+
+  isEditMode = computed(() => !!this.data?.feature);
+  dialogTitle = computed(() => this.isEditMode() ? 'Edit Discovery Feature' : 'Add Discovery Feature');
+  submitButtonText = computed(() => this.isEditMode() ? 'Save Changes' : 'Add Feature');
 
   featureName = signal('');
   estimateWeeks = signal<number | null>(null);
@@ -82,7 +86,7 @@ export class EditFeatureDialogComponent implements OnInit {
     }
 
     if (!sprintVal) {
-      this.targetSprintError.set('Target sprint is required');
+      this.targetSprintError.set('Target sprint is required (e.g., Sprint 1)');
       isValid = false;
     } else if (sprintVal.length > 50) {
       this.targetSprintError.set('Target sprint cannot exceed 50 characters');

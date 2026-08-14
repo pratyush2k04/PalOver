@@ -19,8 +19,7 @@ import {
   UpdateDiscoveryFeatureItemRequest
 } from '@features/engagements/models/architecture-validation/architecture-validation.requests';
 import { ArchitectureValidationService } from '@features/engagements/services/architecture-validation.service';
-import { AddFeatureDialogComponent } from './dialogs/add-feature-dialog/add-feature-dialog.component';
-import { EditFeatureDialogComponent, EditFeatureDialogData } from './dialogs/edit-feature-dialog/edit-feature-dialog.component';
+import { DiscoveryFeatureDialogComponent, DiscoveryFeatureDialogData } from './dialogs/discovery-feature-dialog/discovery-feature-dialog.component';
 
 @Component({
   selector: 'app-architecture-validation',
@@ -152,8 +151,8 @@ export class ArchitectureValidationComponent {
   onAddFeature(): void {
     if (!this.isTechLead()) return;
 
-    const dialogRef = this.dialog.open<AddFeatureDialogComponent, undefined, CreateDiscoveryFeatureItemRequest>(
-      AddFeatureDialogComponent
+    const dialogRef = this.dialog.open<DiscoveryFeatureDialogComponent, DiscoveryFeatureDialogData, CreateDiscoveryFeatureItemRequest>(
+      DiscoveryFeatureDialogComponent
     );
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -169,8 +168,8 @@ export class ArchitectureValidationComponent {
   onEditFeature(feature: DiscoveryFeatureItemDto): void {
     if (!this.isTechLead()) return;
 
-    const dialogRef = this.dialog.open<EditFeatureDialogComponent, EditFeatureDialogData, UpdateDiscoveryFeatureItemRequest>(
-      EditFeatureDialogComponent,
+    const dialogRef = this.dialog.open<DiscoveryFeatureDialogComponent, DiscoveryFeatureDialogData, UpdateDiscoveryFeatureItemRequest>(
+      DiscoveryFeatureDialogComponent,
       { data: { feature } }
     );
 

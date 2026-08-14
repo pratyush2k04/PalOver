@@ -1,6 +1,6 @@
 <div class="dialog-container">
   <div class="dialog-header">
-    <h3>Add Discovery Feature</h3>
+    <h3>{{ dialogTitle() }}</h3>
   </div>
 
   <form (ngSubmit)="onSubmit()">
@@ -46,7 +46,7 @@
 
     <div class="dialog-footer">
       <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
-      <app-button type="submit" variant="flat">Add Feature</app-button>
+      <app-button type="submit" variant="flat">{{ submitButtonText() }}</app-button>
     </div>
   </form>
 </div>
