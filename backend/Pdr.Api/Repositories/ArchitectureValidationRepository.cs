@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
 using Pdr.Api.Models.ArchitectureValidation;
+using Pdr.Api.Models.Handover;
 using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Repositories;
@@ -51,20 +52,12 @@ public class ArchitectureValidationRepository(AppDbContext context) : IArchitect
         decimal totalWeeks = 0m;
         foreach (var c in commitments)
         {
-            var unit = (c.TimelineUnit ?? string.Empty).Trim().ToLowerInvariant();
-            if (unit.StartsWith("month"))
+            totalWeeks += c.TimelineUnit switch
             {
-                totalWeeks += c.Timeline * 4m;
-            }
-            else if (unit.StartsWith("day"))
-            {
-                totalWeeks += c.Timeline / 5m;
-            }
-            else
-            {
-                // Default to weeks
-                totalWeeks += c.Timeline;
-            }
+                CommitmentTimelineUnitEnum.Months => c.Timeline * 4m,
+                CommitmentTimelineUnitEnum.Days => c.Timeline / 5m,
+                _ => c.Timeline
+            };
         }
 
         return totalWeeks;
