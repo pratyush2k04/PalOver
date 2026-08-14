@@ -6,20 +6,20 @@ public class GlobalSearchResponseDto
 
     public int TotalCount { get; set; }
 
-    public SearchEngagementGroupDto Engagements { get; set; } = new();
+    public SearchResultGroupDto<SearchEngagementResultDto> Engagements { get; set; } = new();
 
-    public SearchDocumentGroupDto Documents { get; set; } = new();
+    public SearchResultGroupDto<SearchDocumentResultDto> Documents { get; set; } = new();
 
-    public SearchPersonGroupDto People { get; set; } = new();
+    public SearchResultGroupDto<SearchPersonResultDto> People { get; set; } = new();
 
-    public SearchChecklistItemGroupDto ChecklistItems { get; set; } = new();
+    public SearchResultGroupDto<SearchChecklistItemResultDto> ChecklistItems { get; set; } = new();
 }
 
-public class SearchEngagementGroupDto
+public class SearchResultGroupDto<T>
 {
     public int Count { get; set; }
 
-    public List<SearchEngagementResultDto> Items { get; set; } = new();
+    public List<T> Items { get; set; } = new();
 }
 
 public class SearchEngagementResultDto
@@ -29,13 +29,6 @@ public class SearchEngagementResultDto
     public string EngagementName { get; set; } = string.Empty;
 
     public string ClientName { get; set; } = string.Empty;
-}
-
-public class SearchDocumentGroupDto
-{
-    public int Count { get; set; }
-
-    public List<SearchDocumentResultDto> Items { get; set; } = new();
 }
 
 public class SearchDocumentResultDto
@@ -51,13 +44,6 @@ public class SearchDocumentResultDto
     public string CategoryName { get; set; } = string.Empty;
 }
 
-public class SearchPersonGroupDto
-{
-    public int Count { get; set; }
-
-    public List<SearchPersonResultDto> Items { get; set; } = new();
-}
-
 public class SearchPersonResultDto
 {
     public int PersonId { get; set; }
@@ -69,13 +55,6 @@ public class SearchPersonResultDto
     public int EngagementId { get; set; }
 
     public string EngagementName { get; set; } = string.Empty;
-}
-
-public class SearchChecklistItemGroupDto
-{
-    public int Count { get; set; }
-
-    public List<SearchChecklistItemResultDto> Items { get; set; } = new();
 }
 
 public class SearchChecklistItemResultDto

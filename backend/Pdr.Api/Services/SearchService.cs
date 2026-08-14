@@ -50,7 +50,7 @@ public class SearchService(
         {
             Query = term,
             TotalCount = engagementCount + documentCount + peopleCount + checklistCount,
-            Engagements = new SearchEngagementGroupDto
+            Engagements = new SearchResultGroupDto<SearchEngagementResultDto>
             {
                 Count = engagementCount,
                 Items = engagementItems.Select(e => new SearchEngagementResultDto
@@ -60,7 +60,7 @@ public class SearchService(
                     ClientName = e.ClientName
                 }).ToList()
             },
-            Documents = new SearchDocumentGroupDto
+            Documents = new SearchResultGroupDto<SearchDocumentResultDto>
             {
                 Count = documentCount,
                 Items = documentItems.Select(d => new SearchDocumentResultDto
@@ -72,7 +72,7 @@ public class SearchService(
                     CategoryName = d.Category.CategoryName
                 }).ToList()
             },
-            People = new SearchPersonGroupDto
+            People = new SearchResultGroupDto<SearchPersonResultDto>
             {
                 Count = peopleCount,
                 Items = peopleItems.Select(p => new SearchPersonResultDto
@@ -84,7 +84,7 @@ public class SearchService(
                     EngagementName = p.Engagement.EngagementName
                 }).ToList()
             },
-            ChecklistItems = new SearchChecklistItemGroupDto
+            ChecklistItems = new SearchResultGroupDto<SearchChecklistItemResultDto>
             {
                 Count = checklistCount,
                 Items = checklistItems.Select(i => new SearchChecklistItemResultDto
