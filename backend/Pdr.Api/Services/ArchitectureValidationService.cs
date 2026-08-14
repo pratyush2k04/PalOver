@@ -7,9 +7,7 @@ using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class ArchitectureValidationService(
-    IArchitectureValidationRepository repository,
-    ICurrentUserService currentUserService) : IArchitectureValidationService
+public class ArchitectureValidationService(IArchitectureValidationRepository repository) : IArchitectureValidationService
 {
     public async Task<ArchitectureValidationDto> GetByEngagementIdAsync(int engagementId)
     {
@@ -19,6 +17,17 @@ public class ArchitectureValidationService(
         }
 
         var validation = await repository.GetByEngagementIdAsync(engagementId);
+        if (validation is null)
+        {
+            validation = new ArchitectureValidation
+            {
+                EngagementId = engagementId,
+                Status = ArchitectureStatus.StillValid
+            };
+            await repository.AddValidationAsync(validation);
+            await repository.SaveChangesAsync();
+        }
+
         var committedTimelineWeeks = await repository.GetCommittedTimelineWeeksAsync(engagementId);
 
         return BuildDto(validation, engagementId, committedTimelineWeeks);
@@ -43,9 +52,7 @@ public class ArchitectureValidationService(
             {
                 EngagementId = engagementId,
                 Status = request.Status,
-                Rationale = request.Rationale?.Trim(),
-                CreatedAt = DateTime.UtcNow,
-                CreatedBy = currentUserService.GetFullName() ?? currentUserService.GetEmail()
+                Rationale = request.Rationale?.Trim()
             };
             await repository.AddValidationAsync(validation);
         }
@@ -53,8 +60,6 @@ public class ArchitectureValidationService(
         {
             validation.Status = request.Status;
             validation.Rationale = request.Rationale?.Trim();
-            validation.UpdatedAt = DateTime.UtcNow;
-            validation.UpdatedBy = currentUserService.GetFullName() ?? currentUserService.GetEmail();
         }
 
         await repository.SaveChangesAsync();
@@ -76,9 +81,7 @@ public class ArchitectureValidationService(
             validation = new ArchitectureValidation
             {
                 EngagementId = engagementId,
-                Status = ArchitectureStatus.StillValid,
-                CreatedAt = DateTime.UtcNow,
-                CreatedBy = currentUserService.GetFullName() ?? currentUserService.GetEmail()
+                Status = ArchitectureStatus.StillValid
             };
             await repository.AddValidationAsync(validation);
             await repository.SaveChangesAsync();
@@ -89,9 +92,7 @@ public class ArchitectureValidationService(
             ArchitectureValidationId = validation.Id,
             FeatureName = request.FeatureName.Trim(),
             EstimateWeeks = request.EstimateWeeks,
-            TargetSprint = request.TargetSprint.Trim(),
-            CreatedAt = DateTime.UtcNow,
-            CreatedBy = currentUserService.GetFullName() ?? currentUserService.GetEmail()
+            TargetSprint = request.TargetSprint.Trim()
         };
 
         await repository.AddFeatureItemAsync(item);
@@ -111,8 +112,6 @@ public class ArchitectureValidationService(
         item.FeatureName = request.FeatureName.Trim();
         item.EstimateWeeks = request.EstimateWeeks;
         item.TargetSprint = request.TargetSprint.Trim();
-        item.UpdatedAt = DateTime.UtcNow;
-        item.UpdatedBy = currentUserService.GetFullName() ?? currentUserService.GetEmail();
 
         await repository.SaveChangesAsync();
 
@@ -128,9 +127,6 @@ public class ArchitectureValidationService(
         }
 
         item.IsDeleted = true;
-        item.UpdatedAt = DateTime.UtcNow;
-        item.UpdatedBy = currentUserService.GetFullName() ?? currentUserService.GetEmail();
-
         await repository.SaveChangesAsync();
     }
 
