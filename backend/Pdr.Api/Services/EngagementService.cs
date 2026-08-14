@@ -333,6 +333,12 @@ public class EngagementService(
             });
         }
 
+        db.ArchitectureValidations.Add(new Pdr.Api.Models.ArchitectureValidation.ArchitectureValidation
+        {
+            EngagementId = engagementId,
+            Status = Pdr.Api.Models.ArchitectureValidation.ArchitectureStatus.StillValid
+        });
+
         await db.SaveChangesAsync();
     }
 

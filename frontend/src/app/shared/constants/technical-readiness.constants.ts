@@ -19,7 +19,10 @@ export const TECHNICAL_READINESS_API_ENDPOINTS = {
   ENVIRONMENT_TOOLING_OWNER: (id: number) => `/api/environment-tooling/${id}/owner`,
   BROWNFIELD_FINDINGS: (engagementId: number) => `/api/engagements/${engagementId}/brownfield-findings`,
   BROWNFIELD_DECISION: (id: number) => `/api/brownfield-findings/${id}/decision`,
-  BROWNFIELD_ITEM: (id: number) => `/api/brownfield-findings/${id}`
+  BROWNFIELD_ITEM: (id: number) => `/api/brownfield-findings/${id}`,
+  ARCHITECTURE_VALIDATION: (engagementId: number) => `/api/engagements/${engagementId}/architecture-validation`,
+  ARCHITECTURE_VALIDATION_FEATURES: (engagementId: number) => `/api/engagements/${engagementId}/architecture-validation/features`,
+  ARCHITECTURE_VALIDATION_FEATURE_ITEM: (featureId: number) => `/api/architecture-validation/features/${featureId}`
 } as const;
 
 export const TECHNICAL_READINESS_MESSAGES = {
