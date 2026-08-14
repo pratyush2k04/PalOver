@@ -18,6 +18,9 @@ public class AuditLogConfiguration : IEntityTypeConfiguration<AuditLog>
 
         builder.HasIndex(x => x.AuditActionId);
 
+        builder.Property(x => x.PayloadJson)
+            .IsRequired();
+
         builder.HasOne(x => x.User)
             .WithMany()
             .HasForeignKey(x => x.UserId)

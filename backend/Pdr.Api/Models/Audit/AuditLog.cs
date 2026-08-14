@@ -16,4 +16,6 @@ public class AuditLog : BaseAuditableEntity
 
     [JsonIgnore]
     public AuditAction? AuditAction { get; set; }
+
+    public string PayloadJson { get; set; } = "{}";
 }

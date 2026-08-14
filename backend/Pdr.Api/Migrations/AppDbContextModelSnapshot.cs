@@ -255,25 +255,25 @@ namespace Pdr.Api.Migrations
                         {
                             AuditActionId = 1,
                             Action = "UserLoggedIn",
-                            Details = "User logged into the system"
+                            Details = "User {userName} logged into the system"
                         },
                         new
                         {
                             AuditActionId = 2,
                             Action = "UserCreated",
-                            Details = "A new user account was created"
+                            Details = "User {userName} was created by {actorName}"
                         },
                         new
                         {
                             AuditActionId = 3,
                             Action = "UserUpdated",
-                            Details = "A user account was updated"
+                            Details = "User {userName} was updated by {actorName}"
                         },
                         new
                         {
                             AuditActionId = 4,
                             Action = "UserDeleted",
-                            Details = "A user account was deleted"
+                            Details = "User {userName} was deleted by {actorName}"
                         });
                 });
 
@@ -296,6 +296,10 @@ namespace Pdr.Api.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("PayloadJson")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
