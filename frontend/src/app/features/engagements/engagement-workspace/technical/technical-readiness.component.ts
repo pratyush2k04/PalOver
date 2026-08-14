@@ -124,8 +124,7 @@ export class TechnicalReadinessComponent {
     !this.hasBlockers() &&
     this.totalRequired() > 0 &&
     this.totalReady() === this.totalRequired() &&
-    this.isBrownfieldReady() &&
-    this.isArchitectureReady()
+    this.isBrownfieldReady()
   );
 
   onAccessItemsUpdated(items: AccessItemDto[]) {

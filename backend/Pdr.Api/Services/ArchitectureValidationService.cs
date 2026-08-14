@@ -19,6 +19,19 @@ public class ArchitectureValidationService(
         }
 
         var validation = await repository.GetByEngagementIdAsync(engagementId);
+        if (validation is null)
+        {
+            validation = new ArchitectureValidation
+            {
+                EngagementId = engagementId,
+                Status = ArchitectureStatus.StillValid,
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = "System"
+            };
+            await repository.AddValidationAsync(validation);
+            await repository.SaveChangesAsync();
+        }
+
         var committedTimelineWeeks = await repository.GetCommittedTimelineWeeksAsync(engagementId);
 
         return BuildDto(validation, engagementId, committedTimelineWeeks);

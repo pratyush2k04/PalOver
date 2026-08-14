@@ -7,17 +7,6 @@
         {{ statusBadgeLabel() }}
       </app-status-badge>
     </div>
-
-    @if (isTechLead()) {
-      <div class="header-actions">
-        <app-button
-          type="button"
-          variant="flat"
-          (click)="onAddFeature()">
-          + Add Feature
-        </app-button>
-      </div>
-    }
   </div>
 
   @if (isLoading()) {
@@ -150,18 +139,26 @@
     <!-- SECTION 3: Discovery Feature Breakdown Table -->
     <div class="section-container table-section">
       <div class="section-header">
-        <h4>Discovery Feature Breakdown</h4>
-        <p class="section-desc">Individual feature scope breakdown sized into sprint deliverables.</p>
+        <div class="section-header-row">
+          <div class="section-title-text">
+            <h4>Discovery Feature Breakdown</h4>
+            <p class="section-desc">Individual feature scope breakdown sized into sprint deliverables.</p>
+          </div>
+          @if (isTechLead()) {
+            <app-button
+              type="button"
+              variant="flat"
+              (click)="onAddFeature()">
+              + Add Feature
+            </app-button>
+          }
+        </div>
       </div>
 
       @if (features().length === 0) {
         <div class="empty-state">
           <p>No discovery feature items added yet.</p>
-          @if (isTechLead()) {
-            <app-button type="button" variant="stroked" (click)="onAddFeature()">
-              + Add First Feature
-            </app-button>
-          }
+          <p>Click the "Add Feature" button to get started.</p>
         </div>
       } @else {
         <div class="table-responsive">

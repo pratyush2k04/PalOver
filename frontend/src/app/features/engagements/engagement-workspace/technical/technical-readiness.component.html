@@ -1,15 +1,12 @@
 <div class="technical-readiness-container">
   <!-- Day-1 Readiness Banner -->
-  <div class="readiness-banner" [ngClass]="{ 'ready': isDayOneReady(), 'warning': isSizingRiskRaised() }">
+  <div class="readiness-banner" [ngClass]="{ 'ready': isDayOneReady() }">
     <div class="banner-content">
       <div class="banner-icon">
         <span [inlineSVG]="'assets/icons/clock.svg'"></span>
       </div>
       <div class="banner-text">
-        @if (isSizingRiskRaised()) {
-          <strong>Technical readiness cannot be reached</strong>
-          <span> &mdash; Discovery sizing estimate exceeds committed timeline by &gt; 20%</span>
-        } @else if (!isDayOneReady()) {
+        @if (!isDayOneReady()) {
           <strong>Not yet able to start Day-1</strong>
           <span> &mdash; access {{ accessGrantedCount() }}/{{ accessTotalCount() }} granted, tooling {{ toolingReadyCount() }}/{{ toolingTotalCount() }} ready</span>
         } @else {

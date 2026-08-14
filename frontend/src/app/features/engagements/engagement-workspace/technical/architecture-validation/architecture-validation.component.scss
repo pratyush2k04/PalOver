@@ -47,6 +47,14 @@
   gap: 0.75rem;
 
   .section-header {
+    .section-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
     h4 {
       font-size: 0.95rem;
       font-weight: 600;
@@ -346,6 +354,20 @@
 
         &.btn-danger:hover {
           color: #dc2626;
+        }
+      }
+
+      .action-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+
+        ::ng-deep svg,
+        svg {
+          width: 16px;
+          height: 16px;
         }
       }
     }
