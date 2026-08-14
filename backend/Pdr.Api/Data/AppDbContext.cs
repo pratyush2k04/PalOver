@@ -65,6 +65,8 @@ public class AppDbContext : DbContext
     public DbSet<Models.EnvironmentTooling.EnvironmentToolingItem> EnvironmentToolingItems => Set<Models.EnvironmentTooling.EnvironmentToolingItem>();
     public DbSet<Models.EnvironmentTooling.EnvironmentToolingDefinition> EnvironmentToolingDefinitions => Set<Models.EnvironmentTooling.EnvironmentToolingDefinition>();
     public DbSet<Models.BrownField.BrownfieldFinding> BrownfieldFindings => Set<Models.BrownField.BrownfieldFinding>();
+    public DbSet<Models.ArchitectureValidation.ArchitectureValidation> ArchitectureValidations => Set<Models.ArchitectureValidation.ArchitectureValidation>();
+    public DbSet<Models.ArchitectureValidation.DiscoveryFeatureItem> DiscoveryFeatureItems => Set<Models.ArchitectureValidation.DiscoveryFeatureItem>();
     public DbSet<Pdr.Api.Models.ChangeRequest.ChangeRequest> ChangeRequests => Set<Pdr.Api.Models.ChangeRequest.ChangeRequest>();
     public DbSet<Risk> Risks => Set<Risk>();
    

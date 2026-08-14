@@ -5,7 +5,7 @@ namespace Pdr.Api.Models.AccessTracker
 {
     public class AccessItem : BaseAuditableEntity
     {
-        public int AccessItemId { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public int EngagementId { get; set; }
         [System.Text.Json.Serialization.JsonIgnore]

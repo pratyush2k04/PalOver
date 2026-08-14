@@ -108,12 +108,12 @@ export class EnvironmentToolingComponent {
       notApplicableReason: newStatus === EnvironmentToolingStatus.NotApplicable ? naReason : undefined
     };
 
-    this.service.updateStatus(item.environmentToolingItemId, payload).pipe(
+    this.service.updateStatus(item.id, payload).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (updatedItem) => {
         const updatedList = this.items().map(i =>
-          i.environmentToolingItemId === updatedItem.environmentToolingItemId ? updatedItem : i
+          i.id === updatedItem.id ? updatedItem : i
         );
         this.items.set(updatedList);
         this.itemsUpdated.emit(updatedList);
@@ -121,7 +121,7 @@ export class EnvironmentToolingComponent {
       error: (err) => {
         console.warn('API update environment status failed, updating local state for testing', err);
         const updatedList = this.items().map(i => {
-          if (i.environmentToolingItemId === item.environmentToolingItemId) {
+          if (i.id === item.id) {
             return {
               ...i,
               status: newStatus,
@@ -192,7 +192,7 @@ export class EnvironmentToolingComponent {
       error: (err) => {
         console.warn('API add environment item failed, adding local item for testing', err);
         const localNewItem: EnvironmentToolingItemDto = {
-          environmentToolingItemId: Date.now(),
+          id: Date.now(),
           name: requestData.customName,
           customName: requestData.customName,
           engagementId: this.engagementId(),
