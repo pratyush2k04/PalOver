@@ -12,10 +12,7 @@
         <div class="welcome-message">{{ welcomeMsg }}</div>
       }
 
-      <button class="notification-button" type="button" title="Notifications">
-        <span [inlineSVG]="'assets/icons/bell.svg'"></span>
-        <span class="notification-badge">3</span>
-      </button>
+      <app-notifications-dropdown />
 
       <div class="user-info">
         <app-avatar [name]="currentUser.fullName" />
