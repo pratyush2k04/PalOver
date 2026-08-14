@@ -17,6 +17,7 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
         builder.Property(t => t.Title).HasColumnName("title").HasMaxLength(200).IsRequired();
         builder.Property(t => t.Body).HasColumnName("body").HasMaxLength(1000).IsRequired();
         builder.Property(t => t.DefaultPriority).HasColumnName("default_priority").IsRequired();
+        builder.Property(t => t.LinkPattern).HasColumnName("link_pattern").HasColumnType("text");
 
         builder.HasIndex(t => t.Key).IsUnique();
 
@@ -39,6 +40,7 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
                 Title = "Access Item Blocked — {ItemName}",
                 Body = "{ItemName} was blocked by {TriggerUserName}. Reason: {BlockReason}",
                 DefaultPriority = NotificationPriority.High,
+                LinkPattern = "/engagements/{EngagementId}/workspace/technical-readiness",
                 CreatedAt = seedTimestamp,
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",
@@ -51,6 +53,7 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
                 Title = "Project Manager Assigned to {EngagementName}",
                 Body = "{PMName} has been allocated as Project Manager for {EngagementName}.",
                 DefaultPriority = NotificationPriority.Medium,
+                LinkPattern = "/engagements/{EngagementId}/workspace/overview",
                 CreatedAt = seedTimestamp,
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",
@@ -63,6 +66,7 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
                 Title = "Handover Submitted — {EngagementName}",
                 Body = "The handover for {EngagementName} has been submitted by {TriggerUserName} and is ready for your review.",
                 DefaultPriority = NotificationPriority.High,
+                LinkPattern = "/engagements/{EngagementId}/workspace/handover",
                 CreatedAt = seedTimestamp,
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",

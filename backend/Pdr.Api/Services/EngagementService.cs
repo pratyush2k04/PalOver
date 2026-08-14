@@ -10,6 +10,7 @@ using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Models.Risks;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
+using Pdr.Api.Services.Notifications.Mappers;
 
 namespace Pdr.Api.Services;
 
@@ -253,9 +254,8 @@ public class EngagementService(
                 "PMAllocated",
                 engagementId,
                 RoleEnum.PreSales,
-                System.Text.Json.JsonSerializer.Serialize(new { AssignedUserId = userId, EngagementId = engagementId }),
-                DateTime.UtcNow,
-                $"/engagements/{engagementId}/workspace/overview");
+                System.Text.Json.JsonSerializer.Serialize(new PMAllocatedMapper.PMAllocatedData(AssignedUserId: userId, EngagementId: engagementId)),
+                DateTime.UtcNow);
         }
 
         if (requiredRole == RoleEnum.TechLead)
