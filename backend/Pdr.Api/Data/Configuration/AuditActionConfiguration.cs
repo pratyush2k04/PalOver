@@ -31,25 +31,25 @@ public class AuditActionConfiguration : IEntityTypeConfiguration<AuditAction>
             {
                 AuditActionId = (int)AuditActionEnum.UserLoggedIn,
                 Action = "UserLoggedIn",
-                Details = "User logged into the system"
+                Details = "User {userName} logged into the system"
             },
             new AuditAction
             {
                 AuditActionId = (int)AuditActionEnum.UserCreated,
                 Action = "UserCreated",
-                Details = "A new user account was created"
+                Details = "User {userName} was created by {actorName}"
             },
             new AuditAction
             {
                 AuditActionId = (int)AuditActionEnum.UserUpdated,
                 Action = "UserUpdated",
-                Details = "A user account was updated"
+                Details = "User {userName} was updated by {actorName}"
             },
             new AuditAction
             {
                 AuditActionId = (int)AuditActionEnum.UserDeleted,
                 Action = "UserDeleted",
-                Details = "A user account was deleted"
+                Details = "User {userName} was deleted by {actorName}"
             });
     }
 }
