@@ -189,8 +189,8 @@ export class HandoverComponent {
 
   private loadEngagement(id: number) {
     this.engagementService.getEngagementInfo(id).pipe(
-      catchError(() => of(null))
-    ).subscribe(data => this.engagementInfo.set(data));
+      catchError(() => of(null))   //when an api falls it catches the error and returns null instead the crashing the component
+    ).subscribe(data => this.engagementInfo.set(data)); 
   }
 
   private emptyCommitment(): CreateCommitmentRequest {
