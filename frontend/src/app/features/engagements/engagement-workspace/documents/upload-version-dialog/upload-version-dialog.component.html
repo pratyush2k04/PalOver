@@ -1,0 +1,42 @@
+<div class="dialog-container">
+  <div class="modal-header">
+    <h3 class="modal-title">Upload new version</h3>
+    <app-button type="button" variant="icon" ariaLabel="Close" (click)="onClose()">
+      <span class="close-icon" [inlineSVG]="'assets/icons/close.svg'"></span>
+    </app-button>
+  </div>
+
+  <div class="modal-body">
+    <p class="file-preview">{{ data.file.name }}</p>
+
+    @if (errorMessage()) {
+      <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+    }
+
+    <div class="form-group">
+      <app-textarea
+        id="change-note"
+        label="What changed (optional)"
+        [rows]="4"
+        [maxLength]="200"
+        [ngModel]="changeNote()"
+        (ngModelChange)="onChangeNoteChange($event)"
+        placeholder="Describe what changed in this version..."
+      />
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <app-button type="button" variant="stroked" (click)="onClose()" [disabled]="isSubmitting()">
+      Cancel
+    </app-button>
+    <app-button
+      type="button"
+      variant="accent"
+      (click)="onSubmit()"
+      [loading]="isSubmitting()"
+    >
+      Upload version
+    </app-button>
+  </div>
+</div>

@@ -668,9 +668,9 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("file_path");
 
-                    b.Property<long>("FileSizeBytes")
-                        .HasColumnType("bigint")
-                        .HasColumnName("file_size_bytes");
+                    b.Property<int>("FileSizeKB")
+                        .HasColumnType("integer")
+                        .HasColumnName("file_size_kb");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -761,6 +761,85 @@ namespace Pdr.Api.Migrations
                             Id = 7,
                             CategoryName = "Commercial"
                         });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Documents.DocumentVersion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeNote")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("change_note");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("content_type");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<int>("DocumentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("document_id");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("file_path");
+
+                    b.Property<int>("FileSizeKB")
+                        .HasColumnType("integer")
+                        .HasColumnName("file_size_kb");
+
+                    b.Property<bool>("IsCurrent")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_current");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.Property<int>("VersionNumber")
+                        .HasColumnType("integer")
+                        .HasColumnName("version_number");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DocumentId", "IsCurrent");
+
+                    b.ToTable("document_versions", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
@@ -4185,6 +4264,17 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Engagement");
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.Documents.DocumentVersion", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Documents.Document", "Document")
+                        .WithMany("Versions")
+                        .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Document");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
                 {
                     b.HasOne("Pdr.Api.Models.Engagements.CommercialModel", "CommercialModel")
@@ -4452,6 +4542,11 @@ namespace Pdr.Api.Migrations
             modelBuilder.Entity("Pdr.Api.Models.ArchitectureValidation.ArchitectureValidation", b =>
                 {
                     b.Navigation("Features");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Documents.Document", b =>
+                {
+                    b.Navigation("Versions");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Documents.DocumentCategory", b =>

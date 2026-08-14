@@ -34,8 +34,8 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
                .HasMaxLength(500)
                .IsRequired();
 
-        builder.Property(d => d.FileSizeBytes)
-               .HasColumnName("file_size_bytes")
+        builder.Property(d => d.FileSizeKB)
+               .HasColumnName("file_size_kb")
                .IsRequired();
 
         builder.Property(d => d.ContentType)
