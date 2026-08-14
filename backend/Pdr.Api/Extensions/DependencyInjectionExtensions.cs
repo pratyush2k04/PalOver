@@ -61,6 +61,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IKickoffService, KickoffService>();
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IArchitectureValidationService, ArchitectureValidationService>();
+        services.AddScoped<ITechnicalSummaryService, TechnicalSummaryService>();
         services.AddScoped<TemplateMapperResolver>();
         services.AddSingleton<TemplateRenderer>();
 
