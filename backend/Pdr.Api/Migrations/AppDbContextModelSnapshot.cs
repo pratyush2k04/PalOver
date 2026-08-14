@@ -3888,6 +3888,10 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("key");
 
+                    b.Property<string>("LinkPattern")
+                        .HasColumnType("text")
+                        .HasColumnName("link_pattern");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -3922,6 +3926,7 @@ namespace Pdr.Api.Migrations
                             DefaultPriority = 3,
                             IsDeleted = false,
                             Key = "AccessItemBlocked",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/technical-readiness",
                             Title = "Access Item Blocked — {ItemName}",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
@@ -3934,6 +3939,7 @@ namespace Pdr.Api.Migrations
                             DefaultPriority = 2,
                             IsDeleted = false,
                             Key = "PMAllocated",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/overview",
                             Title = "Project Manager Assigned to {EngagementName}",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
@@ -3946,6 +3952,7 @@ namespace Pdr.Api.Migrations
                             DefaultPriority = 3,
                             IsDeleted = false,
                             Key = "HandoverSubmitted",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/handover",
                             Title = "Handover Submitted — {EngagementName}",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });

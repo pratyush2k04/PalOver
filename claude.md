@@ -235,6 +235,7 @@ Examples:
 * Avoid unnecessary `Include()` calls.
 * Prevent N+1 query problems.
 * Keep queries optimized.
+* Place navigation properties at the bottom of entity classes, after all scalar and foreign-key properties, for easier code review.
 
 ## Dependency Injection
 
