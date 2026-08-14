@@ -6,7 +6,9 @@ export const DOCUMENT_API_ENDPOINTS = {
   UPLOAD: '/api/documents/upload',
   DOWNLOAD: (id: number) => `/api/documents/${id}/download`,
   REMOVE: (id: number) => `/api/documents/${id}/remove`,
-  VISIBILITY: (id: number) => `/api/documents/${id}/visibility`
+  VISIBILITY: (id: number) => `/api/documents/${id}/visibility`,
+  VERSIONS: (id: number) => `/api/documents/${id}/versions`,
+  DOWNLOAD_VERSION: (id: number, versionId: number) => `/api/documents/${id}/versions/${versionId}/download`
 } as const;
 
 export const DOCUMENT_MESSAGES = {
@@ -30,7 +32,14 @@ export const DOCUMENT_MESSAGES = {
   UPLOAD_FAILED: 'Failed to upload document.',
 
   // Remove Document Dialog
-  REMOVE_FAILED: 'Failed to remove document.'
+  REMOVE_FAILED: 'Failed to remove document.',
+
+  // Upload Version Dialog
+  UPLOAD_VERSION_FAILED: 'Failed to upload new version.',
+
+  // Version History Dialog
+  VERSION_HISTORY_LOAD_FAILED: 'Failed to load version history.',
+  DOWNLOAD_VERSION_FAILED: (fileName: string) => `Failed to download ${fileName}`
 } as const;
 
 export const DOCUMENT_CONFIG = {

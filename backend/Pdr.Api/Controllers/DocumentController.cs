@@ -1,8 +1,6 @@
-using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Documents;
 using Pdr.Api.Services.Interfaces;
 using System.Collections.Generic;
@@ -17,9 +15,7 @@ namespace Pdr.Api.Controllers;
 [ApiController]
 [Route("api/documents")]
 [Produces("application/json")]
-public class DocumentController(
-    IDocumentService documentService,
-    IValidator<DocumentUploadDto> uploadValidator) : ControllerBase
+public class DocumentController(IDocumentService documentService) : ControllerBase
 {
     /// <summary>
     /// Uploads one or more documents for an engagement.
@@ -31,67 +27,21 @@ public class DocumentController(
     [RequestSizeLimit(50 * 1024 * 1024)]
     [RequestFormLimits(MultipartBodyLengthLimit = 50 * 1024 * 1024)]
     [EndpointSummary("Upload engagement documents")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status207MultiStatus)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(List<DocumentUploadResultDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<DocumentUploadResultDto>), StatusCodes.Status207MultiStatus)]
+    [ProducesResponseType(typeof(List<DocumentUploadResultDto>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> UploadDocuments([FromForm] List<DocumentUploadDto> dtos)
     {
-        if (dtos == null || dtos.Count == 0)
-        {
-            return BadRequest(new { message = DocumentValidationConstants.Messages.NoDocumentsProvided });
-        }
+        var results = await documentService.UploadDocumentsAsync(dtos);
 
-        var results = new List<object>();
-        var hasErrors = false;
-
-        foreach (var dto in dtos)
-        {
-            var validationResult = await uploadValidator.ValidateAsync(dto);
-            if (!validationResult.IsValid)
-            {
-                hasErrors = true;
-                results.Add(new
-                {
-                    fileName = dto.File?.FileName,
-                    success = false,
-                    errors = validationResult.Errors.Select(e => e.ErrorMessage)
-                });
-                continue;
-            }
-
-            try
-            {
-                var uploaded = await documentService.UploadDocumentAsync(dto);
-                results.Add(new
-                {
-                    fileName = dto.File?.FileName,
-                    success = true,
-                    document = uploaded
-                });
-            }
-            catch (Exception ex)
-            {
-                hasErrors = true;
-                results.Add(new
-                {
-                    fileName = dto.File?.FileName,
-                    success = false,
-                    errors = new[] { ex.Message }
-                });
-            }
-        }
-
-        if (hasErrors && results.Any(r => (bool)((dynamic)r).success))
+        var hasErrors = results.Any(r => !r.Success);
+        if (hasErrors && results.Any(r => r.Success))
         {
             return StatusCode(207, results);
         }
-        else if (hasErrors)
-        {
-            return BadRequest(results);
-        }
 
-        return Ok(results);
+        return hasErrors ? BadRequest(results) : Ok(results);
     }
 
     /// <summary>
@@ -124,12 +74,7 @@ public class DocumentController(
     public async Task<IActionResult> DownloadDocument(int id)
     {
         var result = await documentService.DownloadDocumentAsync(id);
-        if (result == null)
-        {
-            return NotFound(new { message = DocumentValidationConstants.Messages.FileNotFound });
-        }
-
-        return File(result.Value.FileStream, result.Value.ContentType, result.Value.FileName);
+        return File(result.FileStream, result.ContentType, result.FileName);
     }
 
     /// <summary>
@@ -182,5 +127,61 @@ public class DocumentController(
     {
         var updated = await documentService.UpdateDocumentVisibilityAsync(id, request);
         return Ok(updated);
+    }
+
+    /// <summary>
+    /// Uploads a new version of an existing document, superseding the current one.
+    /// </summary>
+    /// <param name="id">The document ID.</param>
+    /// <param name="dto">The new file and optional change note.</param>
+    /// <returns>The updated document with its new current version.</returns>
+    [HttpPost("{id:int}/versions")]
+    [Consumes("multipart/form-data")]
+    [RequestSizeLimit(50 * 1024 * 1024)]
+    [RequestFormLimits(MultipartBodyLengthLimit = 50 * 1024 * 1024)]
+    [EndpointSummary("Upload a new document version")]
+    [ProducesResponseType(typeof(DocumentResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UploadNewVersion(int id, [FromForm] UploadDocumentVersionDto dto)
+    {
+        var updated = await documentService.UploadNewVersionAsync(id, dto);
+        return Ok(updated);
+    }
+
+    /// <summary>
+    /// Retrieves the version history for a document, newest first.
+    /// </summary>
+    /// <param name="id">The document ID.</param>
+    /// <returns>All versions of the document.</returns>
+    [HttpGet("{id:int}/versions")]
+    [EndpointSummary("Get document version history")]
+    [ProducesResponseType(typeof(List<DocumentVersionResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetVersionHistory(int id)
+    {
+        var versions = await documentService.GetVersionHistoryAsync(id);
+        return Ok(versions);
+    }
+
+    /// <summary>
+    /// Downloads a specific historical version of a document.
+    /// </summary>
+    /// <param name="id">The document ID.</param>
+    /// <param name="versionId">The version ID to download.</param>
+    /// <returns>The requested version's file stream.</returns>
+    [HttpGet("{id:int}/versions/{versionId:int}/download")]
+    [EndpointSummary("Download a specific document version")]
+    [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DownloadVersion(int id, int versionId)
+    {
+        var result = await documentService.DownloadVersionAsync(id, versionId);
+        return File(result.FileStream, result.ContentType, result.FileName);
     }
 }
