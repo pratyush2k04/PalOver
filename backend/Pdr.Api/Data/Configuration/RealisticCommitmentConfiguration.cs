@@ -15,7 +15,7 @@ public class RealisticCommitmentConfiguration : IEntityTypeConfiguration<Realist
 
         builder.Property(rc => rc.Description).HasColumnName("description").HasMaxLength(2000).IsRequired();
         builder.Property(rc => rc.Timeline).HasColumnName("timeline").IsRequired();
-        builder.Property(rc => rc.TimelineUnit).HasColumnName("timeline_unit").HasMaxLength(20).IsRequired();
+        builder.Property(rc => rc.TimelineUnit).HasColumnName("timeline_unit").HasConversion<string>().HasMaxLength(20).IsRequired();
         builder.Property(rc => rc.AcknowledgementMessage).HasColumnName("acknowledgement_message").HasMaxLength(2000);
         builder.Property(rc => rc.IsPossible).HasColumnName("is_possible").HasDefaultValue(true);
 
