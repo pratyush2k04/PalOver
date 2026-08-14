@@ -33,6 +33,7 @@ or one you run yourself in Docker) and point the app at it. Since `appsettings.D
 no longer carries a real password, set your local secrets once via .NET **User Secrets**
 (already wired up via `UserSecretsId`, untracked by git):
 ```bash
+
 cd backend/Pdr.Api
 dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=pdrDB;Username=<you>;Password=<pw>"
 dotnet user-secrets set "JwtSettings:SecretKey" "<any-local-dev-value>"

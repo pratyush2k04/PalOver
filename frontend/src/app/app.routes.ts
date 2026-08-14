@@ -126,7 +126,7 @@ export const routes: Routes = [
       {
         path: 'my-engagements',
         loadComponent: () =>
-          import('./features/engagements/my-engagements').then(
+          import('./features/engagements/my-engagements/my-engagements').then(
             m => m.MyEngagementsComponent
           ),
       },
