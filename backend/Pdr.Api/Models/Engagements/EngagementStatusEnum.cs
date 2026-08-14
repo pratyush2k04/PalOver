@@ -2,7 +2,7 @@ namespace Pdr.Api.Models.Engagements;
 
 public enum EngagementStatusEnum
 {
-    KickoffPending,
+    KickoffPending, // to be removed later
     Active,
     Inactive
 }

@@ -8,7 +8,7 @@ public class RealisticCommitment : BaseAuditableEntity
 
     public int Timeline { get; set; }
 
-    public string TimelineUnit { get; set; } = string.Empty;
+    public CommitmentTimelineUnitEnum TimelineUnit { get; set; }
 
     public string? AcknowledgementMessage { get; set; }
 

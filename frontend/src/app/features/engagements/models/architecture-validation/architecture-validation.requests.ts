@@ -5,14 +5,12 @@ export interface SaveArchitectureValidationRequest {
   rationale?: string;
 }
 
-export interface CreateDiscoveryFeatureItemRequest {
+export interface DiscoveryFeatureItemRequest {
   featureName: string;
   estimateWeeks: number;
   targetSprint: string;
 }
 
-export interface UpdateDiscoveryFeatureItemRequest {
-  featureName: string;
-  estimateWeeks: number;
-  targetSprint: string;
-}
+// Aliases for backwards compatibility / semantic clarity
+export type CreateDiscoveryFeatureItemRequest = DiscoveryFeatureItemRequest;
+export type UpdateDiscoveryFeatureItemRequest = DiscoveryFeatureItemRequest;
