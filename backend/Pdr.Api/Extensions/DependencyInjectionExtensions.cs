@@ -31,6 +31,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IPersonRepository, PersonRepository>();
         services.AddScoped<IRiskRepository, RiskRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 
         // Services
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
@@ -57,6 +58,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IKickoffRepository, KickoffRepository>();
         services.AddScoped<IKickoffService, KickoffService>();
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IAuditLogService, AuditLogService>();
         services.AddScoped<TemplateMapperResolver>();
         services.AddSingleton<TemplateRenderer>();
 
