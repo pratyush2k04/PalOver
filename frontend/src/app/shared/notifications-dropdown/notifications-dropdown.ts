@@ -4,8 +4,8 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { ButtonComponent } from '@common/components/button/button';
-import { NotificationService } from '../../../../shared/services/notification.service';
-import { Notification } from '../../../../shared/models/notification.model';
+import { NotificationService } from '../services/notification.service';
+import { Notification } from '../models/notification.model';
 
 const PAGE_SIZE = 10;
 
