@@ -1,7 +1,6 @@
 using FluentValidation;
 using Pdr.Api.DTOs.Handovers;
 using Pdr.Api.Constants;
-using System.Linq;
 
 namespace Pdr.Api.Validators;
 
@@ -24,7 +23,6 @@ public class CreateCommitmentRequestValidator : AbstractValidator<CreateCommitme
             .GreaterThan(0).WithMessage(CreateCommitmentRequestConstants.TimelineGreaterThanZero);
 
         RuleFor(x => x.TimelineUnit)
-            .Must(unit => CreateCommitmentRequestConstants.ValidTimelineUnits.Contains(unit))
-            .WithMessage(CreateCommitmentRequestConstants.TimelineUnitInvalid);
+            .IsInEnum().WithMessage(CreateCommitmentRequestConstants.TimelineUnitInvalid);
     }
 }

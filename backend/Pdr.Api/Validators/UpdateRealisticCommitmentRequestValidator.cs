@@ -1,7 +1,6 @@
 using FluentValidation;
 using Pdr.Api.DTOs.Handovers;
 using Pdr.Api.Constants;
-using System.Linq;
 
 namespace Pdr.Api.Validators;
 
@@ -17,7 +16,6 @@ public class UpdateRealisticCommitmentRequestValidator : AbstractValidator<Updat
             .GreaterThan(0).WithMessage(UpdateRealisticCommitmentRequestConstants.TimelineGreaterThanZero);
 
         RuleFor(x => x.TimelineUnit)
-            .Must(unit => UpdateRealisticCommitmentRequestConstants.ValidTimelineUnits.Contains(unit))
-            .WithMessage(UpdateRealisticCommitmentRequestConstants.TimelineUnitInvalid);
+            .IsInEnum().WithMessage(UpdateRealisticCommitmentRequestConstants.TimelineUnitInvalid);
     }
 }

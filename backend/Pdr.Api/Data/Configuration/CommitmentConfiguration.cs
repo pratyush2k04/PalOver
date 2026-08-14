@@ -18,7 +18,7 @@ public class CommitmentConfiguration : IEntityTypeConfiguration<Commitment>
         builder.Property(c => c.Description).HasColumnName("description").HasMaxLength(2000).IsRequired();
         builder.Property(c => c.CommitmentTypeId).HasColumnName("commitment_type_id").IsRequired();
         builder.Property(c => c.Timeline).HasColumnName("timeline").IsRequired();
-        builder.Property(c => c.TimelineUnit).HasColumnName("timeline_unit").HasMaxLength(20).IsRequired();
+        builder.Property(c => c.TimelineUnit).HasColumnName("timeline_unit").HasConversion<string>().HasMaxLength(20).IsRequired();
 
         // BaseAuditableEntity Column Mappings
         builder.Property(c => c.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
@@ -39,7 +39,7 @@ public class CommitmentConfiguration : IEntityTypeConfiguration<Commitment>
                 Description = "Delivery of MVP banking module within 3 months of kickoff.",
                 Title = "MVP Banking Module Delivery",
                 Timeline = 3,
-                TimelineUnit = "Months",
+                TimelineUnit = CommitmentTimelineUnitEnum.Months,
                 CreatedAt = seedTimestamp,
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",
