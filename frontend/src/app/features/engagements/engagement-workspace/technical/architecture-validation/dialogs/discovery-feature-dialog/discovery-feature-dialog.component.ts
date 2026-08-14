@@ -5,7 +5,7 @@ import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
-import { CreateDiscoveryFeatureItemRequest, UpdateDiscoveryFeatureItemRequest } from '@features/engagements/models/architecture-validation/architecture-validation.requests';
+import { DiscoveryFeatureItemRequest } from '@features/engagements/models/architecture-validation/architecture-validation.requests';
 import { DiscoveryFeatureItemDto } from '@features/engagements/models/architecture-validation/architecture-validation.dtos';
 
 export interface DiscoveryFeatureDialogData {
@@ -20,7 +20,7 @@ export interface DiscoveryFeatureDialogData {
   styleUrl: './discovery-feature-dialog.component.scss'
 })
 export class DiscoveryFeatureDialogComponent implements OnInit {
-  private dialogRef = inject<DialogRef<CreateDiscoveryFeatureItemRequest | UpdateDiscoveryFeatureItemRequest>>(DialogRef);
+  private dialogRef = inject<DialogRef<DiscoveryFeatureItemRequest>>(DialogRef);
   readonly data = inject<DiscoveryFeatureDialogData>(DIALOG_DATA, { optional: true });
 
   isEditMode = computed(() => !!this.data?.feature);
