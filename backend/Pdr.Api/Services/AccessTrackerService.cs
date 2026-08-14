@@ -124,7 +124,7 @@ public class AccessTrackerService(
                 "AccessItemBlocked",
                 item.EngagementId,
                 RoleEnum.TechLead,
-                JsonSerializer.Serialize(new AccessItemBlockedMapper.AccessItemBlockedData(AccessItemId: item.AccessItemId, TriggerUserId: currentUserService.GetUserId())),
+                JsonSerializer.Serialize(new AccessItemBlockedMapper.AccessItemBlockedData(AccessItemId: item.Id, TriggerUserId: currentUserService.GetUserId())),
                 DateTime.UtcNow);
         }
 
