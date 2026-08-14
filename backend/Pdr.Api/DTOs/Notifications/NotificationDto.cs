@@ -8,6 +8,6 @@ public record NotificationDto(
     string Body,
     NotificationPriority Priority,
     string Status,
-    DateTime ScheduledFor,
+    DateTime ReceivedAt,
     DateTime? ReadAt,
     string? Link);

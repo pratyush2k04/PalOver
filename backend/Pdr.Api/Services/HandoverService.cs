@@ -8,6 +8,7 @@ using Pdr.Api.Models.Handover;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
+using Pdr.Api.Services.Notifications.Mappers;
 
 namespace Pdr.Api.Services;
 
@@ -147,9 +148,8 @@ public class HandoverService : IHandoverService
             "HandoverSubmitted",
             engagementId,
             RoleEnum.ProjectManagement,
-            JsonSerializer.Serialize(new { HandoverId = handover.HandoverId, TriggerUserId = int.Parse(userIdStr), EngagementId = engagementId }),
-            DateTime.UtcNow,
-            $"/engagements/{engagementId}/workspace/handover");
+            JsonSerializer.Serialize(new HandoverSubmittedMapper.HandoverSubmittedData(HandoverId: handover.HandoverId, TriggerUserId: int.Parse(userIdStr), EngagementId: engagementId)),
+            DateTime.UtcNow);
 
         return await GetHandoverAsync(engagementId);
     }
