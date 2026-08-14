@@ -32,6 +32,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IClientContactTransitionRepository, ClientContactTransitionRepository>();
         services.AddScoped<IRiskRepository, RiskRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<IArchitectureValidationRepository, ArchitectureValidationRepository>();
         services.AddScoped<ISearchRepository, SearchRepository>();
 
         // Services
@@ -60,6 +61,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IKickoffRepository, KickoffRepository>();
         services.AddScoped<IKickoffService, KickoffService>();
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IArchitectureValidationService, ArchitectureValidationService>();
         services.AddScoped<ISearchService, SearchService>();
         services.AddScoped<TemplateMapperResolver>();
         services.AddSingleton<TemplateRenderer>();
