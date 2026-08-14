@@ -34,17 +34,12 @@ public class SearchService(
         var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
         var roleId = currentUserService.GetRoleId();
 
-        var engagementsTask = searchRepository.SearchEngagementsAsync(engagementIds, term, ResultsPerGroupCap);
-        var documentsTask = searchRepository.SearchDocumentsAsync(engagementIds, term, ResultsPerGroupCap, roleId, isAdmin, isPm);
-        var peopleTask = searchRepository.SearchPeopleAsync(engagementIds, term, ResultsPerGroupCap);
-        var checklistItemsTask = searchRepository.SearchChecklistItemsAsync(engagementIds, term, ResultsPerGroupCap);
-
-        await Task.WhenAll(engagementsTask, documentsTask, peopleTask, checklistItemsTask);
-
-        var (engagementCount, engagementItems) = engagementsTask.Result;
-        var (documentCount, documentItems) = documentsTask.Result;
-        var (peopleCount, peopleItems) = peopleTask.Result;
-        var (checklistCount, checklistItems) = checklistItemsTask.Result;
+        // Sequential, not Task.WhenAll: all four queries share one scoped AppDbContext instance,
+        // and DbContext does not support concurrent operations on the same instance.
+        var (engagementCount, engagementItems) = await searchRepository.SearchEngagementsAsync(engagementIds, term, ResultsPerGroupCap);
+        var (documentCount, documentItems) = await searchRepository.SearchDocumentsAsync(engagementIds, term, ResultsPerGroupCap, roleId, isAdmin, isPm);
+        var (peopleCount, peopleItems) = await searchRepository.SearchPeopleAsync(engagementIds, term, ResultsPerGroupCap);
+        var (checklistCount, checklistItems) = await searchRepository.SearchChecklistItemsAsync(engagementIds, term, ResultsPerGroupCap);
 
         return new GlobalSearchResponseDto
         {
