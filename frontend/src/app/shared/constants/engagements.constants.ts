@@ -7,6 +7,7 @@ export const ENGAGEMENT_API_ENDPOINTS = {
   ASSIGN_PROJECT_MANAGER: (id: number) => `/api/Engagements/${id}/project-manager`,
   ASSIGN_TECH_LEAD: (id: number) => `/api/Engagements/${id}/tech-lead`,
   MY_ENGAGEMENTS: '/api/Engagements/my-engagements',
+  LEADERSHIP_DASHBOARD: '/api/engagements/leadership-dashboard',
   ALL_ENGAGEMENTS: '/api/Engagements',
   LEADERSHIP_USERS: (id: number) => `/api/Engagements/${id}/leadership-users`,
   LEADERSHIP_ROLE_USERS: '/api/Roles/4/users',

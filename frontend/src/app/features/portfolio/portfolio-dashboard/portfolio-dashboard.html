@@ -1,0 +1,179 @@
+<div class="portfolio-dashboard">
+  <!-- Dashboard Header -->
+  <header class="dashboard-header">
+    <div class="header-titles">
+      <h1>Portfolio Readiness Dashboard</h1>
+      <app-banner message="Overview of active engagements, readiness scores, open blockers, and kickoff timelines." />
+    </div>
+  </header>
+
+  <!-- Error Alert -->
+  @if (errorMessage()) {
+    <app-alert variant="danger">
+      {{ errorMessage() }}
+    </app-alert>
+  }
+
+  <!-- KPI Metric Cards -->
+  <div class="kpi-grid">
+    <div class="kpi-card kpi-card--total" (click)="setStatusFilter(STATUS.ALL)" [class.kpi-card--active]="statusFilter() === STATUS.ALL">
+      <div class="kpi-icon">
+        <span [inlineSVG]="'assets/icons/briefcase.svg'"></span>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-value">{{ totalCount() }}</span>
+        <span class="kpi-label">Total Engagements</span>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-card--ready" (click)="setStatusFilter(STATUS.KICKOFF_READY)" [class.kpi-card--active]="statusFilter() === STATUS.KICKOFF_READY">
+      <div class="kpi-icon">
+        <span [inlineSVG]="'assets/icons/check-circle.svg'"></span>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-value">{{ kickoffReadyCount() }}</span>
+        <span class="kpi-label">Kickoff Ready</span>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-card--progress" (click)="setStatusFilter(STATUS.IN_PROGRESS)" [class.kpi-card--active]="statusFilter() === STATUS.IN_PROGRESS">
+      <div class="kpi-icon">
+        <span [inlineSVG]="'assets/icons/clock.svg'"></span>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-value">{{ inProgressCount() }}</span>
+        <span class="kpi-label">In Progress</span>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-card--atrisk" (click)="setStatusFilter(STATUS.AT_RISK)" [class.kpi-card--active]="statusFilter() === STATUS.AT_RISK">
+      <div class="kpi-icon">
+        <span [inlineSVG]="'assets/icons/alert-circle.svg'"></span>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-value">{{ atRiskCount() }}</span>
+        <span class="kpi-label">At Risk</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Toolbar with Common TabsComponent -->
+  <div class="filter-toolbar">
+    <div class="filter-group">
+      <span class="filter-label">Status:</span>
+      <app-tabs
+        [tabs]="statusTabs"
+        [activeId]="statusFilter()"
+        (tabChange)="setStatusFilter($event)"
+      />
+    </div>
+
+    <div class="filter-group">
+      <span class="filter-label">Days to Kickoff:</span>
+      <app-tabs
+        [tabs]="daysTabs"
+        [activeId]="daysFilter()"
+        (tabChange)="setDaysFilter($event)"
+      />
+    </div>
+  </div>
+
+  <!-- Table Listing / Loading / Empty -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <app-loading-spinner label="Loading portfolio dashboard..." />
+    </div>
+  } @else if (filteredEngagements().length === 0) {
+    <app-empty-state
+      [message]="MESSAGES.NO_ENGAGEMENTS_DESC"
+    />
+  } @else {
+    <div class="table-card">
+      <table class="portfolio-table">
+        <thead>
+          <tr>
+            <th>Engagement / Client</th>
+            <th>Project Manager</th>
+            <th>Days to Kickoff</th>
+            <th>Readiness Score</th>
+            <th>Open Blockers</th>
+            <th>Status</th>
+            <th class="text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of filteredEngagements(); track item.engagementId) {
+            <tr class="table-row" (click)="openWorkspace(item.engagementId)">
+              <!-- Engagement & Client -->
+              <td class="cell-primary">
+                <div class="engagement-name">{{ item.engagementName }}</div>
+                <div class="client-name">{{ item.clientName }}</div>
+              </td>
+
+              <!-- Project Manager with Avatar -->
+              <td>
+                <div class="pm-info">
+                  @if (item.pmName) {
+                    <app-avatar [name]="item.pmName" size="sm" />
+                    <span class="pm-name">{{ item.pmName }}</span>
+                  } @else {
+                    <span class="pm-unassigned">{{ MESSAGES.UNASSIGNED_PM }}</span>
+                  }
+                </div>
+              </td>
+
+              <!-- Days to Kickoff -->
+              <td>
+                <span class="days-badge" [ngClass]="getDaysBadgeClass(item.daysToKickoff)">
+                  {{ getDaysLabel(item.daysToKickoff) }}
+                </span>
+              </td>
+
+              <!-- Readiness Score -->
+              <td>
+                <div class="readiness-cell" [ngClass]="getReadinessToneClass(item.readinessScore)">
+                  <div class="readiness-bar-bg">
+                    <div
+                      class="readiness-bar-fill"
+                      [style.width.%]="item.readinessScore"
+                    ></div>
+                  </div>
+                  <span class="readiness-score">
+                    {{ item.readinessScore }}%
+                  </span>
+                </div>
+              </td>
+
+              <!-- Open Blockers -->
+              <td>
+                @if (item.openBlockerCount > 0) {
+                  <app-badge [text]="item.openBlockerCount + ' Open Blockers'" />
+                } @else {
+                  <span class="blocker-badge blocker-badge--zero">0 Blockers</span>
+                }
+              </td>
+
+              <!-- Status -->
+              <td>
+                <app-status-badge [tone]="getStatusBadgeTone(item.status)">
+                  {{ item.status }}
+                </app-status-badge>
+              </td>
+
+              <!-- Action -->
+              <td class="text-right" (click)="$event.stopPropagation()">
+                <app-button
+                  variant="stroked"
+                  (click)="openWorkspace(item.engagementId)"
+                  title="Open Workspace"
+                >
+                  Workspace &rarr;
+                </app-button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
