@@ -38,18 +38,19 @@
         <table class="documents-table">
           <thead>
             <tr>
-              <th class="col-name">NAME</th>
-              <th class="col-category">CATEGORY</th>
-              <th class="col-uploader">UPLOADER</th>
-              <th class="col-date">DATE</th>
-              <th class="col-visibility">VISIBILITY</th>
+              <th>NAME</th>
+              <th>CATEGORY</th>
+              <th class="col-nowrap">VISIBILITY</th>
+              <th class="col-nowrap">VERSION</th>
+              <th>UPLOADER</th>
+              <th>DATE</th>
               <th class="col-actions">ACTIONS</th>
             </tr>
           </thead>
           <tbody>
             @for (doc of filteredDocuments(); track doc.id) {
               <tr class="document-row">
-                <td class="col-name">
+                <td>
                   <button type="button" class="btn-file-link" (click)="onDownload(doc)" [disabled]="downloadingId() === doc.id">
                     <span class="file-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
                     <span class="file-name">{{ doc.fileName }}</span>
@@ -58,16 +59,10 @@
                     }
                   </button>
                 </td>
-                <td class="col-category">
+                <td>
                   <span class="category-label">{{ doc.categoryName || 'Other' }}</span>
                 </td>
-                <td class="col-uploader">
-                  <span class="uploader-name">{{ doc.uploadedBy || 'N/A' }}</span>
-                </td>
-                <td class="col-date">
-                  <span class="upload-date">{{ formatDate(doc.uploadedAt) }}</span>
-                </td>
-                <td class="col-visibility">
+                <td class="col-nowrap">
                   @if (canManageVisibility()) {
                     <!-- PM / Admin: inline editable dropdown & custom edit trigger -->
                     <div class="visibility-cell-wrapper">
@@ -76,7 +71,7 @@
                         [class.is-pm-only]="doc.visibility === 'PM-only'"
                         [class.is-custom]="doc.visibility === 'Custom'"
                         [value]="doc.visibility === 'Custom' ? 'Custom' : doc.visibility"
-                        (change)="onVisibilityChange(doc, $any($event.target).value)"
+                        (change)="onVisibilityChange(doc, $any($event.target).value, $any($event.target))"
                         [attr.aria-label]="'Visibility for ' + doc.fileName"
                       >
                         <option value="Team-wide">Team-wide</option>
@@ -112,7 +107,31 @@
                     }
                   }
                 </td>
+                <td class="col-nowrap">
+                  <span class="version-number">v{{ doc.currentVersionNumber }}</span>
+                  @if (doc.currentVersionNumber > 1) {
+                    <button type="button" class="btn-version-history" (click)="openVersionHistoryModal(doc)">
+                      history
+                    </button>
+                  }
+                </td>
+                <td>
+                  <span class="uploader-name">{{ doc.uploadedBy || 'N/A' }}</span>
+                </td>
+                <td>
+                  <span class="upload-date">{{ doc.uploadedAt | date:'dd MMM y' }}</span>
+                </td>
                 <td class="col-actions">
+                  <app-button
+                    type="button"
+                    variant="icon"
+                    class="btn-upload-version"
+                    ariaLabel="Upload new version"
+                    title="Upload new version"
+                    (click)="triggerVersionUpload(doc)"
+                  >
+                    <span class="upload-version-icon" [inlineSVG]="'assets/icons/upload.svg'"></span>
+                  </app-button>
                   <app-button
                     type="button"
                     variant="icon"
@@ -131,4 +150,12 @@
       </div>
     }
   </div>
+
+  <input
+    #versionFileInput
+    type="file"
+    accept=".pdf,.docx,.xlsx,.pptx,.png,.jpg,.jpeg,.msg,.eml"
+    hidden
+    (change)="onVersionFileSelected($event)"
+  />
 </div>

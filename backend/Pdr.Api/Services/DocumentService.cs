@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Hosting;
 using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Documents;
@@ -20,7 +21,8 @@ public class DocumentService(
     IDocumentRepository repository,
     IWebHostEnvironment environment,
     ICurrentUserService currentUserService,
-    IUserRepository userRepository) : IDocumentService
+    IUserRepository userRepository,
+    IValidator<DocumentUploadDto> uploadValidator) : IDocumentService
 {
     // ── Helper methods ──────────────────────────────────────────────────────
 
@@ -81,24 +83,90 @@ public class DocumentService(
             await dto.File.CopyToAsync(stream);
         }
 
+        var contentType = string.IsNullOrWhiteSpace(dto.File.ContentType)
+            ? DocumentValidationConstants.DefaultContentType
+            : dto.File.ContentType;
+
+        var fileSizeKb = (int)Math.Ceiling(dto.File.Length / 1024.0);
+
         var document = new Document
         {
             EngagementId = dto.EngagementId,
             CategoryId = dto.CategoryId,
             FileName = dto.File.FileName,
             FilePath = filePath,
-            FileSizeBytes = dto.File.Length,
-            ContentType = string.IsNullOrWhiteSpace(dto.File.ContentType)
-                ? DocumentValidationConstants.DefaultContentType
-                : dto.File.ContentType,
+            FileSizeKB = fileSizeKb,
+            ContentType = contentType,
             Visibility = dto.Visibility
         };
+
+        document.Versions.Add(new DocumentVersion
+        {
+            DocumentId = document.Id,
+            VersionNumber = 1,
+            FilePath = filePath,
+            FileSizeKB = fileSizeKb,
+            ContentType = contentType,
+            IsCurrent = true
+        });
 
         var saved = await repository.AddAsync(document);
         var reloaded = await repository.GetByIdAsync(saved.Id) ?? saved;
 
         var uploaderNames = await GetUploaderNamesAsync([reloaded.CreatedBy]);
         return MapToResponseDto(reloaded, uploaderNames);
+    }
+
+    /// <summary>
+    /// Uploads multiple documents, reporting a per-file result rather than failing the whole batch.
+    /// A `List&lt;DocumentUploadDto&gt;` argument doesn't match any registered `IValidator&lt;List&lt;T&gt;&gt;`, so the
+    /// global ValidationFilter can't validate per-item — each file is validated here instead.
+    /// </summary>
+    public async Task<List<DocumentUploadResultDto>> UploadDocumentsAsync(List<DocumentUploadDto> dtos)
+    {
+        if (dtos == null || dtos.Count == 0)
+        {
+            throw new NoDocumentsProvidedException();
+        }
+
+        var results = new List<DocumentUploadResultDto>();
+
+        foreach (var dto in dtos)
+        {
+            var validationResult = await uploadValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+            {
+                results.Add(new DocumentUploadResultDto
+                {
+                    FileName = dto.File?.FileName,
+                    Success = false,
+                    Errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList()
+                });
+                continue;
+            }
+
+            try
+            {
+                var uploaded = await UploadDocumentAsync(dto);
+                results.Add(new DocumentUploadResultDto
+                {
+                    FileName = dto.File?.FileName,
+                    Success = true,
+                    Document = uploaded
+                });
+            }
+            catch (AppException ex)
+            {
+                results.Add(new DocumentUploadResultDto
+                {
+                    FileName = dto.File?.FileName,
+                    Success = false,
+                    Errors = [ex.Message]
+                });
+            }
+        }
+
+        return results;
     }
 
     public async Task<IEnumerable<DocumentResponseDto>> GetDocumentsByEngagementAsync(int engagementId)
@@ -112,12 +180,17 @@ public class DocumentService(
         return docs.Select(d => MapToResponseDto(d, uploaderNames));
     }
 
-    public async Task<(Stream FileStream, string ContentType, string FileName)?> DownloadDocumentAsync(int id)
+    public async Task<(Stream FileStream, string ContentType, string FileName)> DownloadDocumentAsync(int id)
     {
         var doc = await repository.GetByIdAsync(id);
-        if (doc == null || !File.Exists(doc.FilePath))
+        if (doc == null)
         {
-            return null;
+            throw new DocumentNotFoundException(id);
+        }
+
+        if (!File.Exists(doc.FilePath))
+        {
+            throw new DocumentFileMissingException();
         }
 
         if (!CanAccessDocument(doc))
@@ -206,6 +279,105 @@ public class DocumentService(
         return MapToResponseDto(updated, uploaderNames);
     }
 
+    public async Task<DocumentResponseDto> UploadNewVersionAsync(int documentId, UploadDocumentVersionDto dto)
+    {
+        var doc = await repository.GetByIdAsync(documentId);
+        if (doc == null)
+        {
+            throw new DocumentNotFoundException(documentId);
+        }
+
+        if (!CanAccessDocument(doc))
+        {
+            throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.UploadVersionDenied);
+        }
+
+        var engagementFolder = Path.Combine(environment.ContentRootPath, DocumentValidationConstants.UploadsFolder, doc.EngagementId.ToString());
+        if (!Directory.Exists(engagementFolder))
+        {
+            Directory.CreateDirectory(engagementFolder);
+        }
+
+        var uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(dto.File.FileName)}";
+        var filePath = Path.Combine(engagementFolder, uniqueFileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await dto.File.CopyToAsync(stream);
+        }
+
+        var nextVersionNumber = doc.Versions.Count == 0 ? 1 : doc.Versions.Max(v => v.VersionNumber) + 1;
+
+        var newVersion = new DocumentVersion
+        {
+            DocumentId = doc.Id,
+            VersionNumber = nextVersionNumber,
+            FilePath = filePath,
+            FileSizeKB = (int)Math.Ceiling(dto.File.Length / 1024.0),
+            ContentType = string.IsNullOrWhiteSpace(dto.File.ContentType)
+                ? DocumentValidationConstants.DefaultContentType
+                : dto.File.ContentType,
+            ChangeNote = dto.ChangeNote,
+            IsCurrent = true
+        };
+
+        var updated = await repository.AddVersionAsync(doc, newVersion);
+        var reloaded = await repository.GetByIdAsync(updated.Id) ?? updated;
+
+        var uploaderNames = await GetUploaderNamesAsync([reloaded.CreatedBy]);
+        return MapToResponseDto(reloaded, uploaderNames);
+    }
+
+    public async Task<IEnumerable<DocumentVersionResponseDto>> GetVersionHistoryAsync(int documentId)
+    {
+        var doc = await repository.GetByIdAsync(documentId);
+        if (doc == null)
+        {
+            throw new DocumentNotFoundException(documentId);
+        }
+
+        if (!CanAccessDocument(doc))
+        {
+            throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.DownloadDenied);
+        }
+
+        var versions = (await repository.GetVersionsByDocumentIdAsync(documentId)).ToList();
+        var uploaderNames = await GetUploaderNamesAsync(versions.Select(v => v.CreatedBy));
+
+        return versions.Select(v => new DocumentVersionResponseDto
+        {
+            Id = v.Id,
+            VersionNumber = v.VersionNumber,
+            IsCurrent = v.IsCurrent,
+            UploadedBy = ResolveUploaderDisplayName(v.CreatedBy, uploaderNames),
+            UploadedAt = v.CreatedAt,
+            ChangeNote = v.ChangeNote
+        });
+    }
+
+    public async Task<(Stream FileStream, string ContentType, string FileName)> DownloadVersionAsync(int documentId, int versionId)
+    {
+        var doc = await repository.GetByIdAsync(documentId);
+        if (doc == null)
+        {
+            throw new DocumentNotFoundException(documentId);
+        }
+
+        if (!CanAccessDocument(doc))
+        {
+            throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.DownloadDenied);
+        }
+
+        var version = await repository.GetVersionByIdAsync(documentId, versionId);
+        if (version == null || !File.Exists(version.FilePath))
+        {
+            throw new DocumentVersionNotFoundException();
+        }
+
+        var stream = new FileStream(version.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        return (stream, version.ContentType, doc.FileName);
+    }
+
     // ── Mapping ─────────────────────────────────────────────────────────────
 
     /// <summary>
@@ -249,13 +421,14 @@ public class DocumentService(
             CategoryId = doc.CategoryId,
             CategoryName = doc.Category?.CategoryName ?? string.Empty,
             FileName = doc.FileName,
-            FileSizeBytes = doc.FileSizeBytes,
+            FileSizeKB = doc.FileSizeKB,
             ContentType = doc.ContentType,
             UploadedBy = ResolveUploaderDisplayName(doc.CreatedBy, uploaderNames),
             UploadedAt = doc.CreatedAt,
             Visibility = doc.Visibility,
             AllowedRoles = doc.AllowedRoles ?? new List<int>(),
-            CategoryDefaultVisibility = categoryDefault
+            CategoryDefaultVisibility = categoryDefault,
+            CurrentVersionNumber = doc.Versions.Count == 0 ? 1 : doc.Versions.Max(v => v.VersionNumber)
         };
     }
 }

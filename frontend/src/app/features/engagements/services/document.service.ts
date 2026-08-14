@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { DocumentCategory, DocumentItem, DocumentUploadResult, DocumentVisibility, UpdateDocumentVisibilityRequest } from '../models/document.model';
+import { DocumentCategory, DocumentItem, DocumentUploadResult, DocumentVersion, DocumentVisibility, UpdateDocumentVisibilityRequest } from '../models/document.model';
 import { DOCUMENT_API_ENDPOINTS } from '@shared/constants/document.constants';
 
 @Injectable({
@@ -58,5 +58,33 @@ export class DocumentService {
         ? { visibility: request as DocumentVisibility }
         : request;
     return this.http.patch<DocumentItem>(DOCUMENT_API_ENDPOINTS.VISIBILITY(id), body);
+  }
+
+  getVersionHistory(documentId: number): Observable<DocumentVersion[]> {
+    return this.http.get<DocumentVersion[]>(DOCUMENT_API_ENDPOINTS.VERSIONS(documentId));
+  }
+
+  uploadNewVersion(documentId: number, file: File, changeNote: string): Observable<DocumentItem> {
+    const formData = new FormData();
+    formData.append('File', file, file.name);
+    if (changeNote) {
+      formData.append('ChangeNote', changeNote);
+    }
+    return this.http.post<DocumentItem>(DOCUMENT_API_ENDPOINTS.VERSIONS(documentId), formData);
+  }
+
+  downloadVersion(documentId: number, versionId: number, fileName: string): Observable<void> {
+    return this.http.get(DOCUMENT_API_ENDPOINTS.DOWNLOAD_VERSION(documentId, versionId), { responseType: 'blob' }).pipe(
+      map((blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      })
+    );
   }
 }

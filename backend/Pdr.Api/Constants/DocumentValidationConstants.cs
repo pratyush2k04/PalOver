@@ -11,6 +11,8 @@ public static class DocumentValidationConstants
     public const int MinRemovalReasonLength = 10;
     public const int MaxRemovalReasonLength = 500;
 
+    public const int MaxChangeNoteLength = 200;
+
     public static class Messages
     {
         public const string FileRequired = "File is required.";
@@ -38,6 +40,10 @@ public static class DocumentValidationConstants
 
         public const string NoDocumentsProvided = "No documents provided.";
         public const string FileNotFound = "Document not found or file missing.";
+
+        public const string VersionNotFound = "The requested document version was not found.";
+        public const string UploadVersionDenied = "You do not have permission to upload a new version of this document.";
+        public const string ChangeNoteMaxLength = "Change note cannot exceed 200 characters.";
 
         public static string NotFound(int id) => $"Document with id {id} was not found or already deleted.";
     }
