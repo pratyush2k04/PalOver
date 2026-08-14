@@ -8,7 +8,7 @@ namespace Pdr.Api.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<AccessItemDefinition> builder)
         {
-            builder.HasKey(x => x.AccessItemDefinitionId);
+            builder.HasKey(x => x.Id);
 
             builder.Property(x => x.Name)
                 .IsRequired()
@@ -24,9 +24,9 @@ namespace Pdr.Api.Data.Configuration
                 .HasDefaultValue(true);
 
             builder.HasData(
-                new AccessItemDefinition { AccessItemDefinitionId = 1, Name = "VPN Access", IsClientSide = false, DisplayOrder = 1, IsActive = true },
-                new AccessItemDefinition { AccessItemDefinitionId = 2, Name = "Jira", IsClientSide = true, DisplayOrder = 2, IsActive = true },
-                new AccessItemDefinition { AccessItemDefinitionId = 3, Name = "SandBox", IsClientSide = true, DisplayOrder = 3, IsActive = true }
+                new AccessItemDefinition { Id = 1, Name = "VPN Access", IsClientSide = false, DisplayOrder = 1, IsActive = true },
+                new AccessItemDefinition { Id = 2, Name = "Jira", IsClientSide = true, DisplayOrder = 2, IsActive = true },
+                new AccessItemDefinition { Id = 3, Name = "SandBox", IsClientSide = true, DisplayOrder = 3, IsActive = true }
             );
         }
     }

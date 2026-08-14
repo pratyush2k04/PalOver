@@ -1,7 +1,7 @@
 import { BrownfieldSeverity, ClientDecision } from './brownfield-review.enums';
 
 export interface BrownfieldFindingDto {
-  brownfieldFindingId: number;
+  id: number;
   engagementId: number;
   title: string;
   description?: string;

@@ -69,8 +69,8 @@ public class AccessTrackerService(
         await repository.SaveChangesAsync();
 
         // Reload with Owner navigation populated for the response
-        var created = await repository.GetAccessItemByIdAsync(item.AccessItemId)
-            ?? throw new AccessItemNotFoundException(item.AccessItemId);
+        var created = await repository.GetAccessItemByIdAsync(item.Id)
+            ?? throw new AccessItemNotFoundException(item.Id);
 
         return MapToDto(created);
     }
@@ -190,7 +190,7 @@ public class AccessTrackerService(
 
         return new AccessItemDto
         {
-            AccessItemId = item.AccessItemId,
+            Id = item.Id,
             Name = item.Name,
             IsClientSide = item.IsClientSide,
             OwnerId = item.OwnerId,

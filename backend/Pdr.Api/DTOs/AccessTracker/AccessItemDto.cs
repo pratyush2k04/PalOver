@@ -2,7 +2,7 @@ namespace Pdr.Api.DTOs.AccessTracker;
 
 public class AccessItemDto
 {
-    public int AccessItemId { get; set; }
+    public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public bool IsClientSide { get; set; }
     public int OwnerId { get; set; }

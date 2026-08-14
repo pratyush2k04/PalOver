@@ -1,0 +1,89 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h3>{{ formLabels.ADD_TRANSITION_TITLE }}</h3>
+    <app-button type="button" variant="icon" ariaLabel="Close" (click)="onCancel()">&times;</app-button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="reviewAndConfirm()">
+    <div class="dialog-body">
+      <!-- Outgoing Contact Section -->
+      @if (!showConfirm()) {
+        <div class="form-section">
+          <h4>{{ formLabels.OUTGOING_SECTION }}</h4>
+          <app-input
+            id="outgoing-name"
+            [label]="formLabels.OUTGOING_NAME"
+            [placeholder]="formPlaceholders.OUTGOING_NAME"
+            formControlName="outgoingContactName"
+            [maxLength]="200"
+          />
+          <app-input
+            id="outgoing-role"
+            [label]="formLabels.OUTGOING_ROLE"
+            [placeholder]="formPlaceholders.OUTGOING_ROLE"
+            formControlName="outgoingContactRole"
+            [maxLength]="200"
+          />
+        </div>
+
+        <!-- Incoming Contact Section -->
+        <div class="form-section">
+          <h4>{{ formLabels.INCOMING_SECTION }}</h4>
+          <app-input
+            id="incoming-name"
+            [label]="formLabels.INCOMING_NAME"
+            [placeholder]="formPlaceholders.INCOMING_NAME"
+            formControlName="incomingContactName"
+            [maxLength]="200"
+          />
+          <app-input
+            id="incoming-role"
+            [label]="formLabels.INCOMING_ROLE"
+            [placeholder]="formPlaceholders.INCOMING_ROLE"
+            formControlName="incomingContactRole"
+            [maxLength]="200"
+          />
+        </div>
+      }
+
+      <!-- Confirmation Preview -->
+      @if (showConfirm()) {
+        <div class="confirm-section">
+          <p class="confirm-message">{{ dialogLabels.CONFIRM_MESSAGE }}</p>
+          <div class="confirm-details">
+            <p class="detail-row">
+              <span class="label">{{ dialogLabels.OUTGOING }}</span>
+              <span class="contact-info">{{ form.value.outgoingContactName }} ({{ form.value.outgoingContactRole }})</span>
+            </p>
+            <p class="detail-row">
+              <span class="label">{{ dialogLabels.INCOMING }}</span>
+              <span class="contact-info">{{ form.value.incomingContactName }} ({{ form.value.incomingContactRole }})</span>
+            </p>
+          </div>
+        </div>
+      }
+
+      @if (errorMessage()) {
+        <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+      }
+    </div>
+
+    <div class="dialog-footer">
+      @if (showConfirm()) {
+        <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="cancelConfirm()">
+          {{ buttonLabels.BACK }}
+        </app-button>
+        <app-button type="button" variant="accent" [disabled]="isSubmitting()" (click)="confirmAndSave()">
+          {{ isSubmitting() ? buttonLabels.SAVING : buttonLabels.CONFIRM_SAVE }}
+        </app-button>
+      } @else {
+        <app-button type="button" variant="stroked" (click)="onCancel()">
+          {{ buttonLabels.CANCEL }}
+        </app-button>
+        <app-button type="submit" variant="accent" [disabled]="!form.valid || isSubmitting()">
+          {{ buttonLabels.REVIEW_CONFIRM }}
+        </app-button>
+      }
+    </div>
+  </form>
+</div>
