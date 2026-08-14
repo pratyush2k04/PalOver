@@ -1,0 +1,223 @@
+<div class="architecture-validation-card">
+  <!-- Card Header -->
+  <div class="card-header">
+    <div class="title-group">
+      <h3>Architecture Validation & Discovery</h3>
+      <app-status-badge [tone]="statusBadgeTone()">
+        {{ statusBadgeLabel() }}
+      </app-status-badge>
+    </div>
+
+    @if (isTechLead()) {
+      <div class="header-actions">
+        <app-button
+          type="button"
+          variant="flat"
+          (click)="onAddFeature()">
+          + Add Feature
+        </app-button>
+      </div>
+    }
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-state">Loading architecture validation details...</div>
+  } @else {
+    <!-- SECTION 1: Pre-sales Proposed Architecture Status -->
+    <div class="section-container status-section">
+      <div class="section-header">
+        <h4>Proposed Architecture Validation</h4>
+        <p class="section-desc">Verify whether the pre-sales architecture holds or has been modified based on discovery findings.</p>
+      </div>
+
+      <div class="status-selector-row">
+        <div class="status-options">
+          <label
+            class="status-option-label"
+            [class.selected]="!isModified()"
+            [class.disabled]="!isTechLead()"
+            (click)="onStatusSelect(ArchitectureStatus.StillValid)">
+            <input
+              type="radio"
+              name="archStatus"
+              [value]="ArchitectureStatus.StillValid"
+              [checked]="!isModified()"
+              [disabled]="!isTechLead()"
+            />
+            <span class="radio-custom"></span>
+            <div class="option-text">
+              <strong>Still Valid</strong>
+              <span>Pre-sales architecture remains accurate</span>
+            </div>
+          </label>
+
+          <label
+            class="status-option-label"
+            [class.selected]="isModified()"
+            [class.disabled]="!isTechLead()"
+            (click)="onStatusSelect(ArchitectureStatus.Modified)">
+            <input
+              type="radio"
+              name="archStatus"
+              [value]="ArchitectureStatus.Modified"
+              [checked]="isModified()"
+              [disabled]="!isTechLead()"
+            />
+            <span class="radio-custom"></span>
+            <div class="option-text">
+              <strong>Modified</strong>
+              <span>Architecture updated during discovery</span>
+            </div>
+          </label>
+        </div>
+
+        @if (isTechLead() && hasStatusChanged()) {
+          <div class="save-status-action">
+            <app-button
+              type="button"
+              variant="flat"
+              (click)="onSaveStatus()">
+              Save Status
+            </app-button>
+          </div>
+        }
+      </div>
+
+      @if (isModified()) {
+        <div class="rationale-container">
+          <app-textarea
+            id="arch-rationale"
+            label="Rationale / Justification for Modifications"
+            [ngModel]="rationale()"
+            (ngModelChange)="onRationaleChange($event)"
+            name="archRationale"
+            placeholder="Explain why the architecture was modified, key design trade-offs, and new decisions..."
+            [extraError]="rationaleError() || null"
+            [disabled]="!isTechLead()"
+          />
+        </div>
+      }
+    </div>
+
+    <!-- SECTION 2: Timeline Sizing Comparison KPIs -->
+    <div class="section-container sizing-kpi-section">
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <span class="kpi-label">Pre-Sales Timeline</span>
+          <div class="kpi-value">{{ committedTimelineWeeks() }} <span class="kpi-unit">wks</span></div>
+          <span class="kpi-subtext">Handover commitment (read-only)</span>
+        </div>
+
+        <div class="kpi-card">
+          <span class="kpi-label">Discovery Estimate</span>
+          <div class="kpi-value">{{ totalEstimatedWeeks() }} <span class="kpi-unit">wks</span></div>
+          <span class="kpi-subtext">{{ features().length }} feature(s) sized</span>
+        </div>
+
+        <div class="kpi-card" [class.risk-border]="isRiskRaised()">
+          <span class="kpi-label">Sizing Variance (Delta)</span>
+          <div class="kpi-value-row">
+            <div class="kpi-value">
+              @if (sizingDeltaWeeks() > 0) { + }{{ sizingDeltaWeeks() }} <span class="kpi-unit">wks</span>
+            </div>
+            <app-status-badge [tone]="deltaBadgeTone()">
+              @if (sizingDeltaPercentage() > 0) { + }{{ sizingDeltaPercentage() }}%
+            </app-status-badge>
+          </div>
+          <span class="kpi-subtext">
+            @if (isRiskRaised()) {
+              Exceeds timeline by &gt; 20%
+            } @else if (sizingDeltaWeeks() <= 0) {
+              Within committed timeline
+            } @else {
+              Within &le; 20% margin
+            }
+          </span>
+        </div>
+      </div>
+
+      @if (isRiskRaised() && riskSummary()) {
+        <div class="sizing-risk-alert">
+          <span class="alert-icon" [inlineSVG]="'assets/icons/clock.svg'"></span>
+          <div class="alert-content">
+            <strong>Sizing Variance Risk Raised (&gt; 20% Threshold)</strong>
+            <p>{{ riskSummary() }}</p>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- SECTION 3: Discovery Feature Breakdown Table -->
+    <div class="section-container table-section">
+      <div class="section-header">
+        <h4>Discovery Feature Breakdown</h4>
+        <p class="section-desc">Individual feature scope breakdown sized into sprint deliverables.</p>
+      </div>
+
+      @if (features().length === 0) {
+        <div class="empty-state">
+          <p>No discovery feature items added yet.</p>
+          @if (isTechLead()) {
+            <app-button type="button" variant="stroked" (click)="onAddFeature()">
+              + Add First Feature
+            </app-button>
+          }
+        </div>
+      } @else {
+        <div class="table-responsive">
+          <table class="features-table">
+            <thead>
+              <tr>
+                <th>FEATURE NAME</th>
+                <th>ESTIMATE (WEEKS)</th>
+                <th>TARGET SPRINT</th>
+                @if (isTechLead()) {
+                  <th class="actions-col">ACTIONS</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of features(); track item.id) {
+                <tr>
+                  <td class="feature-name-cell">
+                    <strong>{{ item.featureName }}</strong>
+                  </td>
+                  <td class="estimate-cell">
+                    <span class="weeks-badge">{{ item.estimateWeeks }} wks</span>
+                  </td>
+                  <td class="sprint-cell">
+                    <span class="sprint-tag">{{ item.targetSprint }}</span>
+                  </td>
+                  @if (isTechLead()) {
+                    <td class="actions-col">
+                      <div class="action-btn-group">
+                        <app-button
+                          type="button"
+                          variant="icon"
+                          class="btn-action"
+                          ariaLabel="Edit feature"
+                          title="Edit feature"
+                          (click)="onEditFeature(item)">
+                          <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                        </app-button>
+                        <app-button
+                          type="button"
+                          variant="icon"
+                          class="btn-action btn-danger"
+                          ariaLabel="Delete feature"
+                          title="Delete feature"
+                          (click)="onDeleteFeature(item.id)">
+                          <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
+                        </app-button>
+                      </div>
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+</div>
