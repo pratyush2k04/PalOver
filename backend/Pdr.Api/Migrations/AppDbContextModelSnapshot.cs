@@ -228,6 +228,93 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.ArchitectureValidation.ArchitectureValidation", b =>
+                {
+                    b.Property<int>("ArchitectureValidationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ArchitectureValidationId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Rationale")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("ArchitectureValidationId");
+
+                    b.HasIndex("EngagementId");
+
+                    b.ToTable("architecture_validations", (string)null);
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.ArchitectureValidation.DiscoveryFeatureItem", b =>
+                {
+                    b.Property<int>("DiscoveryFeatureItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("DiscoveryFeatureItemId"));
+
+                    b.Property<int>("ArchitectureValidationId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("EstimateWeeks")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
+
+                    b.Property<string>("FeatureName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("TargetSprint")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("DiscoveryFeatureItemId");
+
+                    b.HasIndex("ArchitectureValidationId");
+
+                    b.ToTable("discovery_feature_items", (string)null);
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.BrownField.BrownfieldFinding", b =>
                 {
                     b.Property<int>("BrownfieldFindingId")
@@ -3934,6 +4021,28 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Owner");
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.ArchitectureValidation.ArchitectureValidation", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
+                        .WithMany()
+                        .HasForeignKey("EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Engagement");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.ArchitectureValidation.DiscoveryFeatureItem", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.ArchitectureValidation.ArchitectureValidation", "ArchitectureValidation")
+                        .WithMany("Features")
+                        .HasForeignKey("ArchitectureValidationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ArchitectureValidation");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.BrownField.BrownfieldFinding", b =>
                 {
                     b.HasOne("Pdr.Api.Models.Documents.Document", "Document")
@@ -4249,6 +4358,11 @@ namespace Pdr.Api.Migrations
                     b.Navigation("AccessItems");
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.ArchitectureValidation.ArchitectureValidation", b =>
+                {
+                    b.Navigation("Features");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Documents.DocumentCategory", b =>
                 {
                     b.Navigation("Documents");
@@ -4265,6 +4379,10 @@ namespace Pdr.Api.Migrations
                     b.Navigation("EnvironmentToolingItems");
 
                     b.Navigation("HandoverInfo");
+
+                    b.Navigation("KickoffActionItems");
+
+                    b.Navigation("KickoffRecord");
 
                     b.Navigation("People");
                 });
