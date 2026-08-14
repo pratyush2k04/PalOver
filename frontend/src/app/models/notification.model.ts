@@ -10,7 +10,7 @@ export interface Notification {
   body: string;
   priority: NotificationPriority;
   status: string;
-  scheduledFor: string;
+  receivedAt: string;
   readAt: string | null;
   link: string | null;
 }
