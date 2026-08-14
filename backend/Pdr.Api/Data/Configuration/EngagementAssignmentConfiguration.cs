@@ -25,6 +25,10 @@ public class EngagementAssignmentConfiguration : IEntityTypeConfiguration<Engage
                .HasForeignKey(ea => ea.EngagementId)
                .OnDelete(DeleteBehavior.Cascade);
 
+        // Matching filter: User and Engagement are both required ends with their own
+        // soft-delete query filters, so mirror it here to avoid EF's dangling-required-navigation warning.
+        builder.HasQueryFilter(ea => !ea.User.IsDeleted && !ea.Engagement.IsDeleted);
+
         builder.HasData(
             new EngagementAssignment { UserId = 1, EngagementId = 1 }, // Rahul Verma (Pre Sales) on FinTech Solutions
             new EngagementAssignment { UserId = 2, EngagementId = 1 }, // Asha Rao (PM) on FinTech Solutions
