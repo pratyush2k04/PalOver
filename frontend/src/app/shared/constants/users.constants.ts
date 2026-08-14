@@ -6,6 +6,7 @@ export const APP_ROUTES = {
   MY_ENGAGEMENTS: '/my-engagements',
   MY_HANDOVERS: '/my-handovers',
   TECHNICAL_READINESS: '/technical-readiness',
+  PORTFOLIO: '/portfolio',
   PORTFOLIO_DASHBOARD: '/portfolio-dashboard',
   USER_DIRECTORY: '/user-directory',
   ENGAGEMENT_ALLOCATION: '/engagement-allocation',

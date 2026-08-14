@@ -1,11 +1,7 @@
-export enum EnvironmentToolingStatus {
-  NotReady = 1,
-  Ready = 2,
-  NotApplicable = 3
-}
+import { EnvironmentToolingStatus } from './environment-tooling.enums';
 
 export interface EnvironmentToolingItemDto {
-  environmentToolingItemId: number;
+  id: number;
   name: string;
   environmentToolingDefinitionId?: number;
   engagementId: number;
@@ -24,19 +20,4 @@ export interface EnvironmentToolingReadinessResponse {
   isTechnicallyReady: boolean;
   outstandingItems: EnvironmentToolingItemDto[];
   items: EnvironmentToolingItemDto[];
-}
-
-export interface AddCustomEnvironmentToolingItemRequest {
-  customName: string;
-  ownerId?: number;
-}
-
-export interface UpdateEnvironmentToolingStatusRequest {
-  status: EnvironmentToolingStatus;
-  notApplicableReason?: string;
-  blockReason?: string;
-}
-
-export interface UpdateEnvironmentToolingOwnerRequest {
-  ownerId: number;
 }

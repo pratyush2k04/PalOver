@@ -7,6 +7,7 @@ using Pdr.Api.Models;
 using Pdr.Api.Models.Engagements;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.EngagementAssignment;
+using Pdr.Api.Models.Risks;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 using Pdr.Api.Services.Notifications.Mappers;
@@ -18,7 +19,8 @@ public class EngagementService(
     IEngagementRepository engagementRepository,
     ICurrentUserService currentUserService,
     IEngagementChecklistService engagementChecklistService,
-    INotificationService notificationService) : IEngagementService
+    INotificationService notificationService,
+    IKickoffReadinessService kickoffReadinessService) : IEngagementService
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
 
@@ -306,7 +308,7 @@ public class EngagementService(
             db.AccessItems.Add(new Pdr.Api.Models.AccessTracker.AccessItem
             {
                 EngagementId = engagementId,
-                AccessItemDefinitionId = def.AccessItemDefinitionId,
+                AccessItemDefinitionId = def.Id,
                 Name = def.Name,
                 IsClientSide = def.IsClientSide,
                 OwnerId = ownerId,
@@ -324,7 +326,7 @@ public class EngagementService(
             db.EnvironmentToolingItems.Add(new Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem
             {
                 EngagementId = engagementId,
-                EnvironmentToolingDefinitionId = def.EnvironmentToolingDefinitionId,
+                EnvironmentToolingDefinitionId = def.Id,
                 Name = def.Name,
                 OwnerId = ownerId,
                 Status = Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingStatus.NotReady
@@ -410,4 +412,87 @@ public class EngagementService(
         await engagementRepository.RemoveAssignmentAsync(assignmentToRemove);
         return await GetLeadershipUsersAsync(engagementId);
     }
+
+    public async Task<List<LeadershipEngagementListItemDto>> GetLeadershipDashboardAsync()
+    {
+        var currentUserId = currentUserService.GetUserId();
+
+        var activeEngagements = await db.Engagements
+            .AsNoTracking()
+            .Include(e => e.EngagementAssignments)
+                .ThenInclude(ea => ea.User)
+            .Where(e => e.EngagementAssignments.Any(ea => ea.UserId == currentUserId))
+            .OrderBy(e => e.KickoffDate)
+            .ToListAsync();
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var items = new List<LeadershipEngagementListItemDto>();
+
+        foreach (var engagement in activeEngagements)
+        {
+            var pmUser = engagement.EngagementAssignments
+                .FirstOrDefault(ea => ea.User.RoleId == (int)RoleEnum.ProjectManagement)?.User;
+
+            var readiness = await kickoffReadinessService.GetReadinessAsync(engagement.EngagementId);
+            var readinessScore = readiness.Score;
+
+            var openBlockerCount = await db.Risks
+                .AsNoTracking()
+                .CountAsync(r => r.EngagementId == engagement.EngagementId &&
+                                 (r.Status == RiskStatus.Open || r.Status == RiskStatus.Mitigating) &&
+                                 !r.IsDeleted);
+
+            var daysToKickoff = engagement.KickoffDate.DayNumber - today.DayNumber;
+
+            int requiredThreshold;
+            if (daysToKickoff > 14)
+            {
+                requiredThreshold = LeadershipDashboardConstants.Thresholds.TierGreaterThan14;
+            }
+            else if (daysToKickoff >= 8)
+            {
+                requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier8To14;
+            }
+            else if (daysToKickoff >= 4)
+            {
+                requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier4To7;
+            }
+            else if (daysToKickoff >= 1)
+            {
+                requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier1To3;
+            }
+            else
+            {
+                requiredThreshold = LeadershipDashboardConstants.Thresholds.TierDay0OrPast;
+            }
+
+            string status;
+            if (readinessScore == 100 && openBlockerCount == 0)
+            {
+                status = LeadershipDashboardConstants.Statuses.KickoffReady;
+            }
+            else if (openBlockerCount > 0 || readinessScore < requiredThreshold)
+            {
+                status = LeadershipDashboardConstants.Statuses.AtRisk;
+            }
+            else
+            {
+                status = LeadershipDashboardConstants.Statuses.InProgress;
+            }
+
+            items.Add(new LeadershipEngagementListItemDto(
+                engagement.EngagementId,
+                engagement.EngagementName,
+                engagement.ClientName,
+                pmUser?.FullName,
+                readinessScore,
+                openBlockerCount,
+                daysToKickoff,
+                status));
+        }
+
+        // Default sorted by soonest kickoff days (daysToKickoff ascending)
+        return items.OrderBy(i => i.DaysToKickoff).ToList();
+    }
 }
+

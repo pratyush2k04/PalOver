@@ -19,15 +19,15 @@ public class AccessTrackerRepository(AppDbContext context) : IAccessTrackerRepos
             .Include(a => a.AccessItemDefinition)
             .Where(a => a.EngagementId == engagementId)
             .OrderBy(a => a.AccessItemDefinition != null ? a.AccessItemDefinition.DisplayOrder : int.MaxValue)
-            .ThenBy(a => a.AccessItemId)
+            .ThenBy(a => a.Id)
             .ToListAsync();
 
     // Fetch a single access item with owner info for status/owner updates
-    public async Task<AccessItem?> GetAccessItemByIdAsync(int accessItemId) =>
+    public async Task<AccessItem?> GetAccessItemByIdAsync(int id) =>
         await context.AccessItems
             .Include(a => a.Owner)
             .Include(a => a.Engagement)
-            .FirstOrDefaultAsync(a => a.AccessItemId == accessItemId);
+            .FirstOrDefaultAsync(a => a.Id == id);
 
     public async Task AddAccessItemAsync(AccessItem item)
     {

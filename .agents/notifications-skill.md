@@ -185,6 +185,44 @@ Task CreateFromTemplateAsync(
 
 ---
 
+## 4. (Rare) Ad-hoc notifications — no template, literal title/body/link
+
+> ⚠️ **Avoid this unless absolutely necessary.** Sections 1–3 (template + mapper) are the default for every notification type, including ones that look like a "just this once" case. Only reach for this section when the notification is a genuine one-off that will never recur as an application-driven event — e.g. a manually seeded row, a support/ops-driven message, or migration-time data.
+>
+> Reasons to avoid it:
+> - It bypasses `NotificationTemplates`, the single source of truth for notification copy — wording can no longer be centrally audited, updated, or kept consistent with every other notification type.
+> - There's no mapper/placeholder rendering, so every string must be hand-assembled by the calling code at creation time. That bakes stale data into the row instead of resolving it at fetch time the way templated notifications do.
+> - Ad-hoc rows are invisible to the `NotificationTemplates` inventory — anyone auditing "what notifications can this app send" won't find them there.
+>
+> If there's any chance this event fires again from real application code, add a template (sections 1–3) instead.
+
+### How it works today
+
+A `Notification` row does not require a template. `Notification.TemplateId` (and the `Template` navigation) are nullable, and `Title`, `Body`, `Link` are plain nullable strings directly on the entity (`Pdr.Api/Models/Notifications/Notification.cs`).
+
+`NotificationService.ResolveContentAsync` branches on whether a template is attached:
+
+```csharp
+if (notification.TemplateId is null || notification.Template is null)
+{
+    return (notification.Title ?? string.Empty, notification.Body ?? string.Empty, notification.Link);
+}
+```
+
+When there's no template, the row's literal `Title`/`Body`/`Link` are returned exactly as stored — no mapper, no `TemplateRenderer` involved.
+
+This is an **all-or-nothing** split, not a partial override: once a `Template` **is** attached, `Title`/`Body` always come from the template (rendered or raw), and any literal value sitting in `notification.Title`/`notification.Body` is silently ignored. Only `Link` has a true per-row override that coexists with a template (`notification.Link ?? renderedLinkPattern`) — there is no equivalent override for `Title`/`Body` against an attached template.
+
+### How to actually create one
+
+There is currently **no** public method for this — `INotificationService`/`NotificationService` only expose the two `CreateFromTemplateAsync` overloads (template-key-based), both of which always look up a `NotificationTemplate`. If an ad-hoc notification is genuinely needed, don't repurpose `CreateFromTemplateAsync` or invent a fake template row to work around it — that defeats the point of the template system and produces confusing seed data.
+
+Instead, follow the project's Controller → Service → Repository layering: add a small, explicitly-named method to `INotificationService`/`NotificationService` (e.g. `CreateAdHocAsync(int receiverUserId, string title, string body, string? link, NotificationPriority priority, DateTime scheduledFor, CancellationToken cancellationToken = default)`) that builds a `Notification` with `TemplateId = null` and the literal `Title`/`Body`/`Link`, then persists it via the existing `INotificationRepository.AddAsync`. Do not call the repository directly from a feature service — the service layer stays the only entry point, same as the templated path.
+
+Repeat: this path should stay rare. Default to sections 1–3.
+
+---
+
 ## That's all
 
 No changes are needed in controllers, DTOs, or the fetch pipeline.
@@ -195,3 +233,4 @@ Every time a notification is fetched, the service automatically:
 3. Renders `Title`, `Body`, and (if set) `LinkPattern` with `TemplateRenderer` — unless `Notification.Link` was explicitly set as an override, in which case that value wins for the link.
 
 Adding a new event is always **four steps**: seed template → mapper → register → fire.
+The ad-hoc path in section 4 is the rare exception to this — not an alternative default.

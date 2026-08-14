@@ -38,7 +38,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (item of findings(); track item.brownfieldFindingId) {
+          @for (item of findings(); track item.id) {
             <tr>
               <td>
                 <div class="finding-info">
@@ -55,7 +55,10 @@
               </td>
               <td>
                 @if (item.documentName) {
-                  <span class="doc-link">🗂️ {{ item.documentName }}</span>
+                  <span class="doc-link">
+                    <span class="file-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
+                    {{ item.documentName }}
+                  </span>
                 } @else {
                   <span class="no-doc">None</span>
                 }
@@ -68,6 +71,8 @@
                     <app-status-badge tone="success">Accepted</app-status-badge>
                   } @else if (item.clientDecision && +item.clientDecision === 2) {
                     <app-status-badge tone="info">Deferred</app-status-badge>
+                  } @else if (!item.clientDecision) {
+                    <app-status-badge tone="neutral">Open</app-status-badge>
                   }
 
                   @if (isTechLead()) {
@@ -76,14 +81,14 @@
                         type="button"
                         variant="stroked"
                         [disabled]="item.clientDecision !== null && item.clientDecision !== undefined && +item.clientDecision === 1"
-                        (click)="onUpdateDecision(item.brownfieldFindingId, 1)">
+                        (click)="onUpdateDecision(item.id, 1)">
                         Accept
                       </app-button>
                       <app-button
                         type="button"
                         variant="stroked"
                         [disabled]="item.clientDecision !== null && item.clientDecision !== undefined && +item.clientDecision === 2"
-                        (click)="onUpdateDecision(item.brownfieldFindingId, 2)">
+                        (click)="onUpdateDecision(item.id, 2)">
                         Defer
                       </app-button>
                     </div>
@@ -95,9 +100,11 @@
                   <app-button
                     type="button"
                     variant="icon"
+                    class="btn-remove"
                     ariaLabel="Delete finding"
-                    (click)="onDeleteFinding(item.brownfieldFindingId)">
-                    ❌
+                    title="Delete finding"
+                    (click)="onDeleteFinding(item.id)">
+                    <span class="remove-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
                   </app-button>
                 </td>
               }

@@ -20,4 +20,5 @@ public interface IEngagementService
     Task<List<LeadershipUserDto>> AssignLeadershipUserAsync(int engagementId, int userId);
     Task<List<LeadershipUserDto>> AssignLeadershipUsersAsync(int engagementId, List<int> userIds);
     Task<List<LeadershipUserDto>> RemoveLeadershipUserAsync(int engagementId, int userId);
+    Task<List<LeadershipEngagementListItemDto>> GetLeadershipDashboardAsync();
 }

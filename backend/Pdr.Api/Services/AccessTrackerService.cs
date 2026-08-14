@@ -1,3 +1,4 @@
+using Pdr.Api.Constants;
 using System.Text.Json;
 using Pdr.Api.DTOs.AccessTracker;
 using Pdr.Api.Exceptions;
@@ -12,6 +13,7 @@ namespace Pdr.Api.Services;
 
 public class AccessTrackerService(
     IAccessTrackerRepository repository,
+    IRiskService riskService,
     INotificationService notificationService,
     ICurrentUserService currentUserService) : IAccessTrackerService
 {
@@ -67,8 +69,8 @@ public class AccessTrackerService(
         await repository.SaveChangesAsync();
 
         // Reload with Owner navigation populated for the response
-        var created = await repository.GetAccessItemByIdAsync(item.AccessItemId)
-            ?? throw new AccessItemNotFoundException(item.AccessItemId);
+        var created = await repository.GetAccessItemByIdAsync(item.Id)
+            ?? throw new AccessItemNotFoundException(item.Id);
 
         return MapToDto(created);
     }
@@ -114,13 +116,15 @@ public class AccessTrackerService(
 
         await repository.SaveChangesAsync();
 
+        await riskService.SyncAutoCreatedRisksAsync(item.EngagementId);
+
         if (request.Status == AccessItemStatus.Blocked)
         {
             await notificationService.CreateFromTemplateAsync(
                 "AccessItemBlocked",
                 item.EngagementId,
                 RoleEnum.TechLead,
-                JsonSerializer.Serialize(new AccessItemBlockedMapper.AccessItemBlockedData(AccessItemId: item.AccessItemId, TriggerUserId: currentUserService.GetUserId())),
+                JsonSerializer.Serialize(new AccessItemBlockedMapper.AccessItemBlockedData(AccessItemId: item.Id, TriggerUserId: currentUserService.GetUserId())),
                 DateTime.UtcNow);
         }
 
@@ -186,7 +190,7 @@ public class AccessTrackerService(
 
         return new AccessItemDto
         {
-            AccessItemId = item.AccessItemId,
+            Id = item.Id,
             Name = item.Name,
             IsClientSide = item.IsClientSide,
             OwnerId = item.OwnerId,

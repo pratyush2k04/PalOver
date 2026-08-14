@@ -1,16 +1,7 @@
-export enum BrownfieldSeverity {
-  Low = 1,
-  Medium = 2,
-  High = 3
-}
-
-export enum ClientDecision {
-  AcceptNow = 1,
-  DeferLater = 2
-}
+import { BrownfieldSeverity, ClientDecision } from './brownfield-review.enums';
 
 export interface BrownfieldFindingDto {
-  brownfieldFindingId: number;
+  id: number;
   engagementId: number;
   title: string;
   description?: string;
@@ -21,17 +12,6 @@ export interface BrownfieldFindingDto {
   documentName?: string;
   createdAt: string;
   createdBy?: string;
-}
-
-export interface CreateBrownfieldFindingRequest {
-  title: string;
-  description?: string;
-  severity: BrownfieldSeverity;
-  documentId?: number | null;
-}
-
-export interface UpdateClientDecisionRequest {
-  clientDecision: ClientDecision;
 }
 
 export interface BrownfieldReadinessResponse {

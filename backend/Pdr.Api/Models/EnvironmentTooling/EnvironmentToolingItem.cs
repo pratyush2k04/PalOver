@@ -5,7 +5,7 @@ namespace Pdr.Api.Models.EnvironmentTooling
 {
     public class EnvironmentToolingItem : BaseAuditableEntity
     {
-        public int EnvironmentToolingItemId { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public int? EnvironmentToolingDefinitionId { get; set; }
         public EnvironmentToolingDefinition? EnvironmentToolingDefinition { get; set; }

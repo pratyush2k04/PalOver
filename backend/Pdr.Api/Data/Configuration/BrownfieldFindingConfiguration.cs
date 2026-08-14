@@ -10,7 +10,7 @@ public class BrownfieldFindingConfiguration : IEntityTypeConfiguration<Brownfiel
     {
         builder.ToTable("brownfield_findings");
 
-        builder.HasKey(x => x.BrownfieldFindingId);
+        builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Title)
             .IsRequired()
