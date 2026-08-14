@@ -14,14 +14,14 @@ public class EnvironmentToolingRepository(AppDbContext context) : IEnvironmentTo
             .Include(e => e.EnvironmentToolingDefinition)
             .Where(e => e.EngagementId == engagementId)
             .OrderBy(e => e.EnvironmentToolingDefinition != null ? e.EnvironmentToolingDefinition.DisplayOrder : int.MaxValue)
-            .ThenBy(e => e.EnvironmentToolingItemId)
+            .ThenBy(e => e.Id)
             .ToListAsync();
 
     public async Task<EnvironmentToolingItem?> GetByIdAsync(int id) =>
         await context.EnvironmentToolingItems
             .Include(e => e.Owner)
             .Include(e => e.EnvironmentToolingDefinition)
-            .FirstOrDefaultAsync(e => e.EnvironmentToolingItemId == id);
+            .FirstOrDefaultAsync(e => e.Id == id);
 
     public async Task AddAsync(EnvironmentToolingItem item)
     {

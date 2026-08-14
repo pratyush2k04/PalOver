@@ -326,7 +326,7 @@ public class EngagementService(
             db.EnvironmentToolingItems.Add(new Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem
             {
                 EngagementId = engagementId,
-                EnvironmentToolingDefinitionId = def.EnvironmentToolingDefinitionId,
+                EnvironmentToolingDefinitionId = def.Id,
                 Name = def.Name,
                 OwnerId = ownerId,
                 Status = Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingStatus.NotReady

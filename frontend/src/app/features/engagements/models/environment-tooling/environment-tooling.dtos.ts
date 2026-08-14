@@ -1,7 +1,7 @@
 import { EnvironmentToolingStatus } from './environment-tooling.enums';
 
 export interface EnvironmentToolingItemDto {
-  environmentToolingItemId: number;
+  id: number;
   name: string;
   environmentToolingDefinitionId?: number;
   engagementId: number;
