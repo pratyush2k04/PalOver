@@ -25,9 +25,6 @@ export class NotificationsDropdownComponent implements OnInit {
   readonly notifications = signal<Notification[]>([]);
   readonly unreadCount = signal(0);
   readonly loading = signal(false);
-  readonly hasMore = signal(false);
-
-  private page = 1;
 
   ngOnInit(): void {
     this.notificationService.getUnreadCount().subscribe(count => this.unreadCount.set(count));
@@ -43,12 +40,8 @@ export class NotificationsDropdownComponent implements OnInit {
   toggle(): void {
     this.isOpen.update(open => !open);
     if (this.isOpen() && this.notifications().length === 0) {
-      this.loadPage(1);
+      this.loadNotifications();
     }
-  }
-
-  loadMore(): void {
-    this.loadPage(this.page + 1);
   }
 
   onNotificationClick(notification: Notification): void {
@@ -79,12 +72,10 @@ export class NotificationsDropdownComponent implements OnInit {
     );
   }
 
-  private loadPage(page: number): void {
+  private loadNotifications(): void {
     this.loading.set(true);
-    this.notificationService.getNotifications(page, PAGE_SIZE).subscribe(result => {
-      this.notifications.update(existing => (page === 1 ? result.items : [...existing, ...result.items]));
-      this.page = result.page;
-      this.hasMore.set(result.page * result.pageSize < result.totalCount);
+    this.notificationService.getNotifications(1, PAGE_SIZE).subscribe(result => {
+      this.notifications.set(result.items);
       this.loading.set(false);
     });
   }
