@@ -9,11 +9,12 @@ import { KickoffReadinessDto, KickoffReadinessService } from 'src/app/services/k
 import { ENGAGEMENT_WORKSPACE_CONFIG } from '@shared/constants/engagements.constants';
 import { EngagementInfoDto } from '../models/engagement.model';
 import { TabItem, TabsComponent } from '@common/components/tabs/tabs';
+import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 
 @Component({
   selector: 'app-engagement-workspace',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, TabsComponent],
+  imports: [CommonModule, RouterOutlet, TabsComponent, StatusBadgeComponent],
   templateUrl: './engagement-workspace.component.html',
   styleUrl: './engagement-workspace.component.scss'
 })

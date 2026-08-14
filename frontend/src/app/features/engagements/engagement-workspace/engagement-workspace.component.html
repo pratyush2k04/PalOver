@@ -10,6 +10,13 @@
       <p>
         <strong>Readiness Score:</strong> {{ readiness()?.score ?? '—' }}
         <span class="kickoff-ready-badge" *ngIf="engagement()!.isKickoffReady">Kickoff-ready</span>
+        <app-status-badge
+          *ngIf="engagement()!.handoverReviewedAt"
+          tone="success"
+          [title]="'Reviewed on ' + (engagement()!.handoverReviewedAt | date: 'medium')"
+        >
+          Reviewed
+        </app-status-badge>
       </p>
       <p><strong>Client Contact:</strong> {{ engagement()!.clientName }}</p>
     </div>
