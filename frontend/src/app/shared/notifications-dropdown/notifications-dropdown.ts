@@ -1,6 +1,8 @@
-import { Component, ElementRef, HostListener, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, HostListener, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { switchMap, timer } from 'rxjs';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { ButtonComponent } from '@common/components/button/button';
@@ -8,6 +10,7 @@ import { NotificationService } from '../services/notification.service';
 import { Notification } from '../models/notification.model';
 
 const PAGE_SIZE = 10;
+const UNREAD_COUNT_POLL_INTERVAL_MS = 30_000;
 
 @Component({
   selector: 'app-notifications-dropdown',
@@ -20,6 +23,7 @@ export class NotificationsDropdownComponent implements OnInit {
   private notificationService = inject(NotificationService);
   private router = inject(Router);
   private elementRef = inject(ElementRef);
+  private destroyRef = inject(DestroyRef);
 
   readonly isOpen = signal(false);
   readonly notifications = signal<Notification[]>([]);
@@ -27,7 +31,19 @@ export class NotificationsDropdownComponent implements OnInit {
   readonly loading = signal(false);
 
   ngOnInit(): void {
-    this.notificationService.getUnreadCount().subscribe(count => this.unreadCount.set(count));
+    timer(0, UNREAD_COUNT_POLL_INTERVAL_MS)
+      .pipe(
+        switchMap(() => this.notificationService.getUnreadCount()),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(count => {
+        const previousCount = this.unreadCount();
+        this.unreadCount.set(count);
+
+        if (this.isOpen() && count > previousCount) {
+          this.loadNotifications(false);
+        }
+      });
   }
 
   @HostListener('document:click', ['$event'])
@@ -72,8 +88,10 @@ export class NotificationsDropdownComponent implements OnInit {
     );
   }
 
-  private loadNotifications(): void {
-    this.loading.set(true);
+  private loadNotifications(showLoading = true): void {
+    if (showLoading) {
+      this.loading.set(true);
+    }
     this.notificationService.getNotifications(1, PAGE_SIZE).subscribe(result => {
       this.notifications.set(result.items);
       this.loading.set(false);
