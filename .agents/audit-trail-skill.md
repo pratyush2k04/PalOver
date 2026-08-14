@@ -48,14 +48,14 @@ builder.HasData(
     new AuditAction
     {
         AuditActionId = (int)AuditActionEnum.UserLoggedIn,
-        Action = "UserLoggedIn",
+        Action = AuditActionEnum.UserLoggedIn.ToString(),
         Details = "User {userName} logged into the system"
     },
     // ...existing entries...
     new AuditAction
     {
         AuditActionId = (int)AuditActionEnum.EngagementArchived,
-        Action = "EngagementArchived",
+        Action = AuditActionEnum.EngagementArchived.ToString(),
         Details = "Engagement {engagementName} was archived by {actorName}"
     });
 ```
