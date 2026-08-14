@@ -55,7 +55,10 @@
               </td>
               <td>
                 @if (item.documentName) {
-                  <span class="doc-link">🗂️ {{ item.documentName }}</span>
+                  <span class="doc-link">
+                    <span class="file-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
+                    {{ item.documentName }}
+                  </span>
                 } @else {
                   <span class="no-doc">None</span>
                 }
@@ -68,6 +71,8 @@
                     <app-status-badge tone="success">Accepted</app-status-badge>
                   } @else if (item.clientDecision && +item.clientDecision === 2) {
                     <app-status-badge tone="info">Deferred</app-status-badge>
+                  } @else if (!item.clientDecision) {
+                    <app-status-badge tone="neutral">Open</app-status-badge>
                   }
 
                   @if (isTechLead()) {
@@ -95,9 +100,11 @@
                   <app-button
                     type="button"
                     variant="icon"
+                    class="btn-remove"
                     ariaLabel="Delete finding"
+                    title="Delete finding"
                     (click)="onDeleteFinding(item.brownfieldFindingId)">
-                    ❌
+                    <span class="remove-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
                   </app-button>
                 </td>
               }

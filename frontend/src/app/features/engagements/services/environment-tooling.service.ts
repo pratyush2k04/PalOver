@@ -2,13 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { TECHNICAL_READINESS_API_ENDPOINTS } from '@shared/constants/technical-readiness.constants';
-import {
-  EnvironmentToolingItemDto,
-  EnvironmentToolingReadinessResponse,
-  AddCustomEnvironmentToolingItemRequest,
-  UpdateEnvironmentToolingStatusRequest,
-  UpdateEnvironmentToolingOwnerRequest
-} from '../models/environment-tooling.model';
+import { EnvironmentToolingReadinessResponse, EnvironmentToolingItemDto } from '../models/environment-tooling/environment-tooling.dtos';
+import { AddCustomEnvironmentToolingItemRequest, UpdateEnvironmentToolingStatusRequest, UpdateEnvironmentToolingOwnerRequest } from '../models/environment-tooling/environment-tooling.requests';
 
 @Injectable({
   providedIn: 'root'

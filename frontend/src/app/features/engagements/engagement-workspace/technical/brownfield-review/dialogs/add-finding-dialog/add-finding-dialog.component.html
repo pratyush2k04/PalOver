@@ -33,9 +33,10 @@
           id="finding-desc"
           label="Description"
           [ngModel]="description()"
-          (ngModelChange)="description.set($event)"
+          (ngModelChange)="onDescriptionChange($event)"
           name="findingDesc"
           placeholder="Detailed observations and findings..."
+          [extraError]="descriptionError() || null"
         />
       </div>
 
