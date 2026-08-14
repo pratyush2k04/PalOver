@@ -8,7 +8,7 @@ public class PMAllocatedMapper(IEngagementRepository engagementRepository, IUser
 {
     public string TemplateKey => "PMAllocated";
 
-    private record PMAllocatedData(int AssignedUserId, int EngagementId);
+    public record PMAllocatedData(int AssignedUserId, int EngagementId);
 
     public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
     {
@@ -21,7 +21,8 @@ public class PMAllocatedMapper(IEngagementRepository engagementRepository, IUser
         return new Dictionary<string, object?>
         {
             ["PMName"] = pm?.FullName,
-            ["EngagementName"] = engagement?.EngagementName
+            ["EngagementName"] = engagement?.EngagementName,
+            ["EngagementId"] = payload.EngagementId
         };
     }
 }
