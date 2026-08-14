@@ -6,7 +6,8 @@ import { catchError, of } from 'rxjs';
 import { TECHNICAL_READINESS_ROLES } from '@shared/constants/app.constants';
 import { TechnicalReadinessService } from '@features/engagements/services/technical-readiness.service';
 import { AuthService } from 'src/app/services/auth';
-import { AccessItemDto, AccessItemStatus } from '@features/engagements/models/technical-readiness.model';
+import { AccessItemDto } from '@features/engagements/models/access-tracker/access-tracker.dtos';
+import { AccessItemStatus } from '@features/engagements/models/access-tracker/access-tracker.enums';
 import { KickoffReadinessDto, KickoffReadinessService } from 'src/app/services/kickoff-readiness.service';
 import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
 

@@ -3,8 +3,10 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Pdr.Api.Attributes;
 using Pdr.Api.DTOs.Kickoff;
 using Pdr.Api.Models;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Controllers;
@@ -13,6 +15,7 @@ namespace Pdr.Api.Controllers;
 /// Manages kickoff records, action items, and meeting outcomes.
 /// </summary>
 [ApiController]
+[Authorize]
 [Route("api/engagements/{engagementId:int}/kickoff")]
 [Produces("application/json")]
 public class KickoffController(
@@ -28,7 +31,7 @@ public class KickoffController(
     /// <param name="engagementId">The engagement ID.</param>
     /// <returns>The kickoff record with action items and outcomes.</returns>
     [HttpGet]
-    [Authorize(Roles = "Project Management,Tech Lead,Pre Sales")]
+    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.PreSales)]
     [EndpointSummary("Get kickoff record")]
     [ProducesResponseType(typeof(KickoffRecordDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -46,7 +49,7 @@ public class KickoffController(
     /// <param name="request">The request containing meeting outcomes.</param>
     /// <returns>The updated kickoff record.</returns>
     [HttpPost]
-    [Authorize(Roles = "Project Management")]
+    [AuthorizeRoles(RoleEnum.ProjectManagement)]
     [EndpointSummary("Save kickoff meeting outcomes")]
     [ProducesResponseType(typeof(KickoffRecordDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -71,7 +74,7 @@ public class KickoffController(
     /// <param name="engagementId">The engagement ID.</param>
     /// <returns>List of open action items.</returns>
     [HttpGet("actions/open")]
-    [Authorize(Roles = "Project Management,Tech Lead,Pre Sales")]
+    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.PreSales)]
     [EndpointSummary("Get open action items")]
     [ProducesResponseType(typeof(IEnumerable<KickoffActionItemDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -89,7 +92,7 @@ public class KickoffController(
     /// <param name="dto">The action item details.</param>
     /// <returns>The created action item with assigned ID.</returns>
     [HttpPost("actions")]
-    [Authorize(Roles = "Project Management")]
+    [AuthorizeRoles(RoleEnum.ProjectManagement)]
     [EndpointSummary("Create action item")]
     [ProducesResponseType(typeof(KickoffActionItemDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -116,7 +119,7 @@ public class KickoffController(
     /// <param name="request">The new status value.</param>
     /// <returns>The updated action item.</returns>
     [HttpPatch("actions/{actionItemId:int}/status")]
-    [Authorize(Roles = "Project Management")]
+    [AuthorizeRoles(RoleEnum.ProjectManagement)]
     [EndpointSummary("Update action item status")]
     [ProducesResponseType(typeof(KickoffActionItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -137,7 +140,7 @@ public class KickoffController(
     /// <param name="dto">The updated action item details.</param>
     /// <returns>The updated action item.</returns>
     [HttpPut("actions/{actionItemId:int}")]
-    [Authorize(Roles = "Project Management")]
+    [AuthorizeRoles(RoleEnum.ProjectManagement)]
     [EndpointSummary("Update action item")]
     [ProducesResponseType(typeof(KickoffActionItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

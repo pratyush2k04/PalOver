@@ -7,7 +7,8 @@ import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
-import { BrownfieldSeverity } from '@features/engagements/models/brownfield-review.model';
+import { BrownfieldSeverity } from '@features/engagements/models/brownfield-review/brownfield-review.enums';
+import { CreateBrownfieldFindingRequest } from '@features/engagements/models/brownfield-review/brownfield-review.requests';
 import { DocumentService } from '@features/engagements/services/document.service';
 import { DocumentItem } from '@features/engagements/models/document.model';
 
@@ -17,7 +18,7 @@ export interface AddFindingDialogData {
 
 export interface AddFindingDialogResult {
   title: string;
-  description?: string;
+  description: string;
   severity: BrownfieldSeverity;
   documentId?: number | null;
 }
@@ -39,6 +40,7 @@ export class AddFindingDialogComponent implements OnInit {
   severity = signal<BrownfieldSeverity>(BrownfieldSeverity.Low);
   documentId = signal<number | null>(null);
   titleError = signal('');
+  descriptionError = signal('');
 
   severityOptions: SelectOption[] = [
     { value: BrownfieldSeverity.Low, label: 'Low' },
@@ -68,20 +70,37 @@ export class AddFindingDialogComponent implements OnInit {
     this.titleError.set('');
   }
 
+  onDescriptionChange(val: string): void {
+    this.description.set(val);
+    this.descriptionError.set('');
+  }
+
   onCancel(): void {
     this.dialogRef.close();
   }
 
   onSubmit(): void {
     const titleVal = this.title().trim();
+    const descVal = this.description().trim();
+    let isValid = true;
+
     if (!titleVal) {
       this.titleError.set('Finding title is required');
+      isValid = false;
+    }
+
+    if (!descVal) {
+      this.descriptionError.set('Finding description is required');
+      isValid = false;
+    }
+
+    if (!isValid) {
       return;
     }
 
     this.dialogRef.close({
       title: titleVal,
-      description: this.description().trim() || undefined,
+      description: descVal,
       severity: Number(this.severity()) as BrownfieldSeverity,
       documentId: this.documentId()
     });

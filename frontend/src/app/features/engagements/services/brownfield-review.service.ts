@@ -2,13 +2,9 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { TECHNICAL_READINESS_API_ENDPOINTS } from '@shared/constants/technical-readiness.constants';
-import {
-  BrownfieldFindingDto,
-  BrownfieldReadinessResponse,
-  CreateBrownfieldFindingRequest,
-  UpdateClientDecisionRequest,
-  ClientDecision
-} from '../models/brownfield-review.model';
+import { BrownfieldFindingDto, BrownfieldReadinessResponse } from '../models/brownfield-review/brownfield-review.dtos';
+import { CreateBrownfieldFindingRequest, UpdateClientDecisionRequest } from '../models/brownfield-review/brownfield-review.requests';
+import { ClientDecision } from '../models/brownfield-review/brownfield-review.enums';
 
 @Injectable({
   providedIn: 'root'

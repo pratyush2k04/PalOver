@@ -6,12 +6,8 @@ import { ButtonComponent } from '@common/components/button/button';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { AuthService } from 'src/app/services/auth';
 import { TECHNICAL_READINESS_ROLES } from '@shared/constants/technical-readiness.constants';
-import {
-  BrownfieldFindingDto,
-  BrownfieldReadinessResponse,
-  BrownfieldSeverity,
-  ClientDecision
-} from '@features/engagements/models/brownfield-review.model';
+import { BrownfieldFindingDto, BrownfieldReadinessResponse } from '@features/engagements/models/brownfield-review/brownfield-review.dtos';
+import { BrownfieldSeverity, ClientDecision } from '@features/engagements/models/brownfield-review/brownfield-review.enums';
 import { BrownfieldReviewService } from '@features/engagements/services/brownfield-review.service';
 import {
   AddFindingDialogComponent,
