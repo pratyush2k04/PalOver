@@ -10,4 +10,7 @@ public record EngagementInfoDto(
     DateOnly KickoffDate,
     DateOnly? BillingStartDate,
     string Status,
-    bool IsKickoffReady);
+    bool IsKickoffReady,
+    string? HandoverStatus,
+    DateTime? HandoverReviewedAt,
+    string? HandoverReviewedByName);

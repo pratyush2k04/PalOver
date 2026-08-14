@@ -5,6 +5,7 @@ using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
 using Pdr.Api.Models.Engagements;
+using Pdr.Api.Models.Handover;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Models.Risks;
@@ -138,7 +139,14 @@ public class EngagementService(
                 e.KickoffDate,
                 e.BillingStartDate,
                 e.Status.StatusName,
-                e.IsKickoffReady))
+                e.IsKickoffReady,
+                e.HandoverInfo == null
+                    ? null
+                    : e.HandoverInfo.StatusId == (int)HandoverStatusEnum.Submitted
+                        ? HandoverStatusNames.Submitted
+                        : HandoverStatusNames.Draft,
+                e.HandoverInfo == null ? null : e.HandoverInfo.ReviewedAt,
+                e.HandoverInfo == null ? null : e.HandoverInfo.ReviewedByUser!.FullName))
             .FirstOrDefaultAsync();
 
     public async Task<IEnumerable<EngagementInfoDto>> GetAllEngagementsAsync() =>
@@ -154,7 +162,14 @@ public class EngagementService(
                 e.KickoffDate,
                 e.BillingStartDate,
                 e.Status.StatusName,
-                e.IsKickoffReady))
+                e.IsKickoffReady,
+                e.HandoverInfo == null
+                    ? null
+                    : e.HandoverInfo.StatusId == (int)HandoverStatusEnum.Submitted
+                        ? HandoverStatusNames.Submitted
+                        : HandoverStatusNames.Draft,
+                e.HandoverInfo == null ? null : e.HandoverInfo.ReviewedAt,
+                e.HandoverInfo == null ? null : e.HandoverInfo.ReviewedByUser!.FullName))
             .ToListAsync();
     
 
