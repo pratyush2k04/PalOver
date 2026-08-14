@@ -1,17 +1,21 @@
 <div class="technical-readiness-container">
   <!-- Day-1 Readiness Banner -->
-  <div class="readiness-banner" [ngClass]="{ 'ready': isDayOneReady() }">
+  <div class="readiness-banner" [ngClass]="{ 'ready': isDayOneReady(), 'warning': isSizingRiskRaised() }">
     <div class="banner-content">
       <div class="banner-icon">
         <span [inlineSVG]="'assets/icons/clock.svg'"></span>
       </div>
       <div class="banner-text">
-        @if (!isDayOneReady()) {
+        @if (isSizingRiskRaised()) {
+          <strong>Technical readiness cannot be reached</strong>
+          <span> &mdash; Discovery sizing estimate exceeds committed timeline by &gt; 20%</span>
+        } @else if (!isDayOneReady()) {
           <strong>Not yet able to start Day-1</strong>
+          <span> &mdash; access {{ accessGrantedCount() }}/{{ accessTotalCount() }} granted, tooling {{ toolingReadyCount() }}/{{ toolingTotalCount() }} ready</span>
         } @else {
           <strong>Ready for Day-1</strong>
+          <span> &mdash; access {{ accessGrantedCount() }}/{{ accessTotalCount() }} granted, tooling {{ toolingReadyCount() }}/{{ toolingTotalCount() }} ready</span>
         }
-        <span> &mdash; access {{ accessGrantedCount() }}/{{ accessTotalCount() }} granted, tooling {{ toolingReadyCount() }}/{{ toolingTotalCount() }} ready</span>
       </div>
     </div>
   </div>
@@ -33,15 +37,12 @@
       </app-environment-tooling>
     </div>
 
-    <!-- Architecture Validation & Discovery Card (Placeholder for future implementation) -->
+    <!-- Architecture Validation & Discovery Section -->
     <div class="readiness-section">
-      <div class="placeholder-card">
-        <div class="placeholder-info">
-          <h3>Architecture Validation & Discovery</h3>
-          <p>Validation checklists and discovery artifacts will be available here.</p>
-        </div>
-        <app-status-badge tone="neutral">Coming soon</app-status-badge>
-      </div>
+      <app-architecture-validation
+        [engagementId]="engagementId()!"
+        (validationUpdated)="onArchitectureValidationUpdated($event)">
+      </app-architecture-validation>
     </div>
 
     <!-- Code Review & Architecture Analysis Card (Brownfield Only) -->
