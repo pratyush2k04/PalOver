@@ -4,6 +4,7 @@ using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services;
 using Pdr.Api.Services.Interfaces;
 using Pdr.Api.Services.Notifications;
+using Pdr.Api.Services.Templating;
 
 namespace Pdr.Api.Extensions;
 
@@ -57,7 +58,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IKickoffRepository, KickoffRepository>();
         services.AddScoped<IKickoffService, KickoffService>();
         services.AddScoped<INotificationService, NotificationService>();
-        services.AddScoped<TemplateMapperResolver>();
+        services.AddScoped<TemplateMapperResolver<INotificationTemplateMapper>>();
         services.AddSingleton<TemplateRenderer>();
 
         return services;
