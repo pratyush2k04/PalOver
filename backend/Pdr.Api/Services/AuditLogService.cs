@@ -2,6 +2,7 @@ using System.Text.Json;
 using Pdr.Api.DTOs.Audit;
 using Pdr.Api.DTOs.Common;
 using Pdr.Api.Models.Audit;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Audit;
 using Pdr.Api.Services.Interfaces;
@@ -34,7 +35,10 @@ public class AuditLogService(
 
     public async Task<CursorPagedResult<AuditLogDto>> GetAuditLogsAsync(int? cursor, int limit)
     {
-        var logs = await repository.GetPageAsync(cursor, limit);
+        var isElevated = currentUserService.IsInRole(RoleEnum.Leadership) || currentUserService.IsAdmin();
+        var scopedUserId = isElevated ? (int?)null : currentUserService.GetUserId();
+
+        var logs = await repository.GetPageAsync(cursor, limit, scopedUserId);
 
         var hasMore = logs.Count > limit;
         var pageLogs = hasMore ? logs.Take(limit).ToList() : logs;

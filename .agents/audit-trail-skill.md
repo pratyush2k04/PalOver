@@ -208,7 +208,7 @@ There is nothing to add here for a new action type — as soon as your mapper is
 | Log an event using an **existing** action type | Inject `IAuditLogService`, call `LogAsync(existingEnumValue, idPayloadDict)`. Nothing else. |
 | Introduce a **brand-new** action type | Add an enum value to `AuditActionEnum`, seed a matching row in `AuditActionConfiguration`, add an `IAuditTemplateMapper` implementation and register it in `AuditMapperRegistry`, generate a migration, then call `LogAsync` as above. |
 | Read/display the audit log | Nothing to build — `GET /api/audit-logs` already exists; every authenticated user can call it, scoped to their own entries unless `Leadership`/`Admin`. |
-| Change who can read the full (unscoped) audit log | Edit the elevated-access check in `AuditLogService.GetAuditLogsAsync`. |
+| Change who can read the full (unscoped) audit log, or which rows non-elevated users see | Edit the `isElevated`/`scopedUserId` logic in `AuditLogService.GetAuditLogsAsync`. |
 
 ---
 
