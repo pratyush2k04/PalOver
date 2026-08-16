@@ -4,7 +4,7 @@ namespace Pdr.Api.DTOs.EnvironmentTooling
 {
     public class EnvironmentToolingItemDto
     {
-        public int EnvironmentToolingItemId { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public int? EnvironmentToolingDefinitionId { get; set; }
         public int EngagementId { get; set; }

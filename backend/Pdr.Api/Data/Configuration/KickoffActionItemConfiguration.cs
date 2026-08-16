@@ -25,6 +25,7 @@ public class KickoffActionItemConfiguration : IEntityTypeConfiguration<KickoffAc
             .HasConversion<string>()
             .HasMaxLength(50)
             .HasDefaultValue(KickoffActionItemStatus.Open)
+            .HasSentinel(default(KickoffActionItemStatus))
             .IsRequired();
 
         builder.Property(a => a.IsNotified).HasColumnName("is_notified").HasDefaultValue(true);

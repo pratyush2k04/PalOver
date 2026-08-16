@@ -1,0 +1,52 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h3>{{ dialogTitle() }}</h3>
+  </div>
+
+  <form (ngSubmit)="onSubmit()">
+    <div class="dialog-body">
+      <div class="form-group">
+        <app-input
+          id="feature-name"
+          label="Feature Name"
+          [ngModel]="featureName()"
+          (ngModelChange)="onFeatureNameChange($event)"
+          name="featureName"
+          placeholder="e.g., SSO Authentication & RBAC"
+          [extraError]="featureNameError() || null"
+        />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group flex-1">
+          <app-input
+            id="estimate-weeks"
+            label="Estimate (Weeks)"
+            [ngModel]="estimateWeeks()"
+            (ngModelChange)="onEstimateWeeksChange($event)"
+            name="estimateWeeks"
+            placeholder="e.g., 2.5"
+            [extraError]="estimateWeeksError() || null"
+          />
+        </div>
+
+        <div class="form-group flex-1">
+          <app-input
+            id="target-sprint"
+            label="Target Sprint"
+            [ngModel]="targetSprint()"
+            (ngModelChange)="onTargetSprintChange($event)"
+            name="targetSprint"
+            placeholder="e.g., Sprint 1"
+            [extraError]="targetSprintError() || null"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="dialog-footer">
+      <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+      <app-button type="submit" variant="flat">{{ submitButtonText() }}</app-button>
+    </div>
+  </form>
+</div>

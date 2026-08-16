@@ -8,7 +8,7 @@ namespace Pdr.Api.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<EnvironmentToolingDefinition> builder)
         {
-            builder.HasKey(x => x.EnvironmentToolingDefinitionId);
+            builder.HasKey(x => x.Id);
 
             builder.Property(x => x.Name)
                 .IsRequired()
@@ -24,9 +24,9 @@ namespace Pdr.Api.Data.Configuration
                 .HasDefaultValue(true);
 
             builder.HasData(
-                new EnvironmentToolingDefinition { EnvironmentToolingDefinitionId = 1, Name = "CI/CD", IsMandatory = true, DisplayOrder = 1, IsActive = true },
-                new EnvironmentToolingDefinition { EnvironmentToolingDefinitionId = 2, Name = "Dev", IsMandatory = true, DisplayOrder = 2, IsActive = true },
-                new EnvironmentToolingDefinition { EnvironmentToolingDefinitionId = 3, Name = "UAT Environment", IsMandatory = false, DisplayOrder = 3, IsActive = true }
+                new EnvironmentToolingDefinition { Id = 1, Name = "CI/CD", IsMandatory = true, DisplayOrder = 1, IsActive = true },
+                new EnvironmentToolingDefinition { Id = 2, Name = "Dev", IsMandatory = true, DisplayOrder = 2, IsActive = true },
+                new EnvironmentToolingDefinition { Id = 3, Name = "UAT Environment", IsMandatory = false, DisplayOrder = 3, IsActive = true }
             );
         }
     }

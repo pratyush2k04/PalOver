@@ -38,7 +38,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (item of findings(); track item.brownfieldFindingId) {
+          @for (item of findings(); track item.id) {
             <tr>
               <td>
                 <div class="finding-info">
@@ -81,14 +81,14 @@
                         type="button"
                         variant="stroked"
                         [disabled]="item.clientDecision !== null && item.clientDecision !== undefined && +item.clientDecision === 1"
-                        (click)="onUpdateDecision(item.brownfieldFindingId, 1)">
+                        (click)="onUpdateDecision(item.id, 1)">
                         Accept
                       </app-button>
                       <app-button
                         type="button"
                         variant="stroked"
                         [disabled]="item.clientDecision !== null && item.clientDecision !== undefined && +item.clientDecision === 2"
-                        (click)="onUpdateDecision(item.brownfieldFindingId, 2)">
+                        (click)="onUpdateDecision(item.id, 2)">
                         Defer
                       </app-button>
                     </div>
@@ -103,7 +103,7 @@
                     class="btn-remove"
                     ariaLabel="Delete finding"
                     title="Delete finding"
-                    (click)="onDeleteFinding(item.brownfieldFindingId)">
+                    (click)="onDeleteFinding(item.id)">
                     <span class="remove-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
                   </app-button>
                 </td>

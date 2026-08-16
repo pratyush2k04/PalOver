@@ -19,7 +19,7 @@ public class BrownfieldFindingRepository(AppDbContext context) : IBrownfieldFind
     public async Task<BrownfieldFinding?> GetByIdAsync(int findingId) =>
         await context.BrownfieldFindings
             .Include(f => f.Document)
-            .FirstOrDefaultAsync(f => f.BrownfieldFindingId == findingId);
+            .FirstOrDefaultAsync(f => f.Id == findingId);
 
     public async Task AddAsync(BrownfieldFinding finding)
     {

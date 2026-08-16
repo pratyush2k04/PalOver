@@ -7,6 +7,7 @@ namespace Pdr.Api.Repositories.Interfaces;
 public interface IEngagementRepository
 {
     Task<List<Engagement>> GetEngagementsForUserAsync(int userId, string sortBy);
+    Task<List<int>> GetEngagementIdsForUserAsync(int userId);
     Task<Engagement?> GetByIdAsync(int engagementId);
     Task SaveChangesAsync();
     //assignment details 

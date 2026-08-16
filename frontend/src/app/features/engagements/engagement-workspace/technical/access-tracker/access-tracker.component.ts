@@ -140,12 +140,12 @@ export class AccessTrackerComponent {
       blockReason: newStatusNum === AccessItemStatus.Blocked ? blockReason : undefined
     };
 
-    this.readinessService.updateAccessItemStatus(item.accessItemId, payload).pipe(
+    this.readinessService.updateAccessItemStatus(item.id, payload).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (updatedItem) => {
         const updatedList = this.accessItems().map(i =>
-          i.accessItemId === updatedItem.accessItemId ? updatedItem : i
+          i.id === updatedItem.id ? updatedItem : i
         );
         this.accessItems.set(updatedList);
         this.itemsUpdated.emit(updatedList);
@@ -153,7 +153,7 @@ export class AccessTrackerComponent {
       error: (err) => {
         console.warn('API update status failed, updating local state for testing', err);
         const updatedList = this.accessItems().map(i => {
-          if (i.accessItemId === item.accessItemId) {
+          if (i.id === item.id) {
             return {
               ...i,
               status: statusTextMap[newStatusNum] || 'InProgress',
@@ -230,7 +230,7 @@ export class AccessTrackerComponent {
       error: (err) => {
         console.warn('API add item failed, adding item locally for testing', err);
         const localNewItem: AccessItemDto = {
-          accessItemId: Date.now(),
+          id: Date.now(),
           name: requestData.name,
           isClientSide: requestData.isClientSide,
           ownerId: 1,

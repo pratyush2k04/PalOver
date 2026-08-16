@@ -1,3 +1,5 @@
+using Pdr.Api.Models.Handover;
+
 namespace Pdr.Api.DTOs.Handovers;
 
 public class UpdateCommitmentRequest
@@ -6,5 +8,5 @@ public class UpdateCommitmentRequest
     public int CommitmentTypeId { get; set; }
     public string Title { get; set; } = string.Empty;
     public int Timeline { get; set; }
-    public string TimelineUnit { get; set; } = string.Empty;
+    public CommitmentTimelineUnitEnum TimelineUnit { get; set; }
 }

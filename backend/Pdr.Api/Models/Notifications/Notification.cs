@@ -8,12 +8,7 @@ public class Notification : BaseAuditableEntity
 
     public int? TemplateId { get; set; }
 
-    public NotificationTemplate? Template { get; set; }
-
     public int ReceiverUserId { get; set; }
-
-    [System.Text.Json.Serialization.JsonIgnore]
-    public User Receiver { get; set; } = null!;
 
     public NotificationPriority Priority { get; set; } = NotificationPriority.Medium;
 
@@ -28,4 +23,9 @@ public class Notification : BaseAuditableEntity
     public string? Data { get; set; }
 
     public string? Link { get; set; }
+
+    public NotificationTemplate? Template { get; set; }
+
+    [System.Text.Json.Serialization.JsonIgnore]
+    public User Receiver { get; set; } = null!;
 }

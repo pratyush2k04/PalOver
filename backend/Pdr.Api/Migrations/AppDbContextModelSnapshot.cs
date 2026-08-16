@@ -25,11 +25,11 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItem", b =>
                 {
-                    b.Property<int>("AccessItemId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AccessItemId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("AccessItemDefinitionId")
                         .HasColumnType("integer");
@@ -80,7 +80,7 @@ namespace Pdr.Api.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.HasKey("AccessItemId");
+                    b.HasKey("Id");
 
                     b.HasIndex("AccessItemDefinitionId");
 
@@ -88,12 +88,12 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("AccessItems", (string)null);
+                    b.ToTable("AccessItems");
 
                     b.HasData(
                         new
                         {
-                            AccessItemId = 1,
+                            Id = 1,
                             AccessItemDefinitionId = 1,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
@@ -106,7 +106,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemId = 2,
+                            Id = 2,
                             AccessItemDefinitionId = 2,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
@@ -119,7 +119,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemId = 3,
+                            Id = 3,
                             AccessItemDefinitionId = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
@@ -132,7 +132,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemId = 4,
+                            Id = 4,
                             AccessItemDefinitionId = 1,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
@@ -146,7 +146,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemId = 5,
+                            Id = 5,
                             AccessItemDefinitionId = 2,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
@@ -160,7 +160,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemId = 6,
+                            Id = 6,
                             AccessItemDefinitionId = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
@@ -175,11 +175,11 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItemDefinition", b =>
                 {
-                    b.Property<int>("AccessItemDefinitionId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AccessItemDefinitionId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("integer");
@@ -197,14 +197,14 @@ namespace Pdr.Api.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.HasKey("AccessItemDefinitionId");
+                    b.HasKey("Id");
 
-                    b.ToTable("AccessItemDefinitions", (string)null);
+                    b.ToTable("AccessItemDefinitions");
 
                     b.HasData(
                         new
                         {
-                            AccessItemDefinitionId = 1,
+                            Id = 1,
                             DisplayOrder = 1,
                             IsActive = true,
                             IsClientSide = false,
@@ -212,7 +212,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemDefinitionId = 2,
+                            Id = 2,
                             DisplayOrder = 2,
                             IsActive = true,
                             IsClientSide = true,
@@ -220,12 +220,152 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemDefinitionId = 3,
+                            Id = 3,
                             DisplayOrder = 3,
                             IsActive = true,
                             IsClientSide = true,
                             Name = "SandBox"
                         });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.ArchitectureValidation.ArchitectureValidation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Rationale")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EngagementId");
+
+                    b.ToTable("architecture_validations", (string)null);
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.ArchitectureValidation.DiscoveryFeatureItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ArchitectureValidationId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("EstimateWeeks")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
+
+                    b.Property<string>("FeatureName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("TargetSprint")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArchitectureValidationId");
+
+                    b.ToTable("discovery_feature_items", (string)null);
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.BrownField.BrownfieldFinding", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ClientDecision")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int?>("DocumentId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Severity")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DocumentId");
+
+                    b.HasIndex("EngagementId");
+
+                    b.ToTable("brownfield_findings", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Cadence.CommunicationCadence", b =>
@@ -397,6 +537,79 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.ClientContactTransition", b =>
+                {
+                    b.Property<int>("ClientContactTransitionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("client_contact_transition_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("ClientContactTransitionId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer")
+                        .HasColumnName("engagement_id");
+
+                    b.Property<string>("IncomingContactName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("incoming_contact_name");
+
+                    b.Property<string>("IncomingContactRole")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("incoming_contact_role");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("OutgoingContactName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("outgoing_contact_name");
+
+                    b.Property<string>("OutgoingContactRole")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("outgoing_contact_role");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("ClientContactTransitionId");
+
+                    b.HasIndex("EngagementId")
+                        .IsUnique();
+
+                    b.ToTable("client_contact_transitions", (string)null);
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Documents.Document", b =>
                 {
                     b.Property<int>("Id")
@@ -455,9 +668,9 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("file_path");
 
-                    b.Property<long>("FileSizeBytes")
-                        .HasColumnType("bigint")
-                        .HasColumnName("file_size_bytes");
+                    b.Property<int>("FileSizeKB")
+                        .HasColumnType("integer")
+                        .HasColumnName("file_size_kb");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -548,6 +761,85 @@ namespace Pdr.Api.Migrations
                             Id = 7,
                             CategoryName = "Commercial"
                         });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Documents.DocumentVersion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeNote")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("change_note");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("content_type");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<int>("DocumentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("document_id");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("file_path");
+
+                    b.Property<int>("FileSizeKB")
+                        .HasColumnType("integer")
+                        .HasColumnName("file_size_kb");
+
+                    b.Property<bool>("IsCurrent")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_current");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.Property<int>("VersionNumber")
+                        .HasColumnType("integer")
+                        .HasColumnName("version_number");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DocumentId", "IsCurrent");
+
+                    b.ToTable("document_versions", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
@@ -1693,11 +1985,11 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition", b =>
                 {
-                    b.Property<int>("EnvironmentToolingDefinitionId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EnvironmentToolingDefinitionId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("integer");
@@ -1715,14 +2007,14 @@ namespace Pdr.Api.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.HasKey("EnvironmentToolingDefinitionId");
+                    b.HasKey("Id");
 
-                    b.ToTable("EnvironmentToolingDefinitions", (string)null);
+                    b.ToTable("EnvironmentToolingDefinitions");
 
                     b.HasData(
                         new
                         {
-                            EnvironmentToolingDefinitionId = 1,
+                            Id = 1,
                             DisplayOrder = 1,
                             IsActive = true,
                             IsMandatory = true,
@@ -1730,7 +2022,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingDefinitionId = 2,
+                            Id = 2,
                             DisplayOrder = 2,
                             IsActive = true,
                             IsMandatory = true,
@@ -1738,7 +2030,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingDefinitionId = 3,
+                            Id = 3,
                             DisplayOrder = 3,
                             IsActive = true,
                             IsMandatory = false,
@@ -1748,11 +2040,11 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem", b =>
                 {
-                    b.Property<int>("EnvironmentToolingItemId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EnvironmentToolingItemId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("BlockReason")
                         .HasMaxLength(500)
@@ -1797,7 +2089,7 @@ namespace Pdr.Api.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.HasKey("EnvironmentToolingItemId");
+                    b.HasKey("Id");
 
                     b.HasIndex("EngagementId");
 
@@ -1805,12 +2097,12 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("EnvironmentToolingItems", (string)null);
+                    b.ToTable("EnvironmentToolingItems");
 
                     b.HasData(
                         new
                         {
-                            EnvironmentToolingItemId = 1,
+                            Id = 1,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
                             EnvironmentToolingDefinitionId = 1,
@@ -1822,7 +2114,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingItemId = 2,
+                            Id = 2,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
                             EnvironmentToolingDefinitionId = 2,
@@ -1834,7 +2126,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingItemId = 3,
+                            Id = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
                             EnvironmentToolingDefinitionId = 3,
@@ -1846,7 +2138,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingItemId = 4,
+                            Id = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
                             EnvironmentToolingDefinitionId = 1,
@@ -1858,7 +2150,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingItemId = 5,
+                            Id = 5,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
                             EnvironmentToolingDefinitionId = 2,
@@ -1870,7 +2162,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingItemId = 6,
+                            Id = 6,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
                             EnvironmentToolingDefinitionId = 3,
@@ -2195,6 +2487,150 @@ namespace Pdr.Api.Migrations
                     b.HasKey("CommitmentId");
 
                     b.ToTable("realistic_commitments", (string)null);
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.KickoffActionItem", b =>
+                {
+                    b.Property<int>("KickoffActionItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("kickoff_action_item_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("KickoffActionItemId"));
+
+                    b.Property<int?>("AssignedToUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("assigned_to_user_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateOnly>("DueDate")
+                        .HasColumnType("date")
+                        .HasColumnName("due_date");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer")
+                        .HasColumnName("engagement_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsNotified")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_notified");
+
+                    b.Property<int>("KickoffRecordId")
+                        .HasColumnType("integer")
+                        .HasColumnName("kickoff_record_id");
+
+                    b.Property<string>("OwnerName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("owner_name");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasDefaultValue("Open")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("KickoffActionItemId");
+
+                    b.HasIndex("AssignedToUserId");
+
+                    b.HasIndex("EngagementId");
+
+                    b.HasIndex("KickoffRecordId");
+
+                    b.ToTable("kickoff_action_items", (string)null);
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.KickoffRecord", b =>
+                {
+                    b.Property<int>("KickoffRecordId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("kickoff_record_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("KickoffRecordId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer")
+                        .HasColumnName("engagement_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("Outcomes")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("outcomes");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("KickoffRecordId");
+
+                    b.HasIndex("EngagementId")
+                        .IsUnique();
+
+                    b.ToTable("kickoff_records", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.LoginEntity.Role", b =>
@@ -3236,6 +3672,292 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.Notifications.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Body")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("body");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<string>("Data")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("data");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("Link")
+                        .HasColumnType("text")
+                        .HasColumnName("link");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer")
+                        .HasColumnName("priority");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("read_at");
+
+                    b.Property<int>("ReceiverUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("receiver_user_id");
+
+                    b.Property<DateTime>("ScheduledFor")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("scheduled_for");
+
+                    b.Property<int?>("TemplateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("template_id");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TemplateId");
+
+                    b.HasIndex("ReceiverUserId", "ReadAt");
+
+                    b.ToTable("notifications", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_notifications_read_at_after_scheduled", "read_at IS NULL OR read_at >= scheduled_for");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            Data = "{\"AssignedUserId\":2,\"EngagementId\":1}",
+                            IsDeleted = false,
+                            Link = "/engagements/1/workspace/overview",
+                            Priority = 2,
+                            ReceiverUserId = 1,
+                            ScheduledFor = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            TemplateId = 2,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Body = "This is a MOCK DB ENTRY notification seeded for manual testing. Use PUT /api/Notifications/2/read to mark it read, then confirm GET /api/Notifications/unread-count decreases by one.",
+                            CreatedAt = new DateTime(2026, 8, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            IsDeleted = false,
+                            Link = "/engagements/1/workspace/overview",
+                            Priority = 2,
+                            ReceiverUserId = 1,
+                            ScheduledFor = new DateTime(2026, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Title = "MOCK DB ENTRY notification — mark as read test",
+                            UpdatedAt = new DateTime(2026, 8, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Body = "This is a MOCK DB ENTRY notification seeded for manual testing. Use GET /api/Notifications?engagementId=1 to confirm this entry is included in the filtered results.",
+                            CreatedAt = new DateTime(2026, 8, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            Data = "{\"EngagementId\":1}",
+                            IsDeleted = false,
+                            Link = "/engagements/1/workspace/handover",
+                            Priority = 3,
+                            ReceiverUserId = 1,
+                            ScheduledFor = new DateTime(2026, 8, 6, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Title = "MOCK DB ENTRY notification — Engagement 1 filter test",
+                            UpdatedAt = new DateTime(2026, 8, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Body = "This is a MOCK DB ENTRY notification seeded for manual testing. Use GET /api/Notifications?engagementId=2 to confirm this entry is included, and GET /api/Notifications?engagementId=1 to confirm it's excluded. Link is intentionally null to test handling of notifications with no redirect target.",
+                            CreatedAt = new DateTime(2026, 8, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            Data = "{\"EngagementId\":2}",
+                            IsDeleted = false,
+                            Priority = 1,
+                            ReceiverUserId = 1,
+                            ScheduledFor = new DateTime(2026, 8, 7, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Title = "MOCK DB ENTRY notification — Engagement 2, no link",
+                            UpdatedAt = new DateTime(2026, 8, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Body = "This is a MOCK DB ENTRY notification seeded for manual testing. ScheduledFor is in the future, so it should show Status: Pending and must be EXCLUDED from GET /api/Notifications/unread-count even though it is unread. Note: PUT /api/Notifications/read-all will still mark it read, since that endpoint doesn't check ScheduledFor.",
+                            CreatedAt = new DateTime(2026, 8, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            IsDeleted = false,
+                            Link = "/engagements/2/workspace/overview",
+                            Priority = 2,
+                            ReceiverUserId = 1,
+                            ScheduledFor = new DateTime(2026, 9, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Title = "MOCK DB ENTRY notification — Pending (future scheduled)",
+                            UpdatedAt = new DateTime(2026, 8, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Body = "This is a MOCK DB ENTRY notification seeded for manual testing. It is already marked read and is intended as the target for DELETE /api/Notifications — send { \"ids\": [6] } to remove it and confirm it no longer appears in GET /api/Notifications.",
+                            CreatedAt = new DateTime(2026, 8, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            IsDeleted = false,
+                            Priority = 1,
+                            ReadAt = new DateTime(2026, 8, 4, 0, 0, 0, 0, DateTimeKind.Utc),
+                            ReceiverUserId = 1,
+                            ScheduledFor = new DateTime(2026, 8, 3, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Title = "MOCK DB ENTRY notification — already read, safe to delete",
+                            UpdatedAt = new DateTime(2026, 8, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Notifications.NotificationTemplate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("body");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<int>("DefaultPriority")
+                        .HasColumnType("integer")
+                        .HasColumnName("default_priority");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("key");
+
+                    b.Property<string>("LinkPattern")
+                        .HasColumnType("text")
+                        .HasColumnName("link_pattern");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Key")
+                        .IsUnique();
+
+                    b.ToTable("notification_templates", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Body = "{ItemName} was blocked by {TriggerUserName}. Reason: {BlockReason}",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 3,
+                            IsDeleted = false,
+                            Key = "AccessItemBlocked",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/technical-readiness",
+                            Title = "Access Item Blocked — {ItemName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Body = "{PMName} has been allocated as Project Manager for {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 2,
+                            IsDeleted = false,
+                            Key = "PMAllocated",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/overview",
+                            Title = "Project Manager Assigned to {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Body = "The handover for {EngagementName} has been submitted by {TriggerUserName} and is ready for your review.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 3,
+                            IsDeleted = false,
+                            Key = "HandoverSubmitted",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/handover",
+                            Title = "Handover Submitted — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Person", b =>
                 {
                     b.Property<int>("PersonId")
@@ -3458,6 +4180,46 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Owner");
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.ArchitectureValidation.ArchitectureValidation", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
+                        .WithMany()
+                        .HasForeignKey("EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Engagement");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.ArchitectureValidation.DiscoveryFeatureItem", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.ArchitectureValidation.ArchitectureValidation", "ArchitectureValidation")
+                        .WithMany("Features")
+                        .HasForeignKey("ArchitectureValidationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ArchitectureValidation");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.BrownField.BrownfieldFinding", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Documents.Document", "Document")
+                        .WithMany()
+                        .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
+                        .WithMany()
+                        .HasForeignKey("EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Document");
+
+                    b.Navigation("Engagement");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.ChangeRequest.ChangeRequest", b =>
                 {
                     b.HasOne("Pdr.Api.Models.Engagement", null)
@@ -3470,6 +4232,17 @@ namespace Pdr.Api.Migrations
                         .WithMany()
                         .HasForeignKey("ReviewedById")
                         .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.ClientContactTransition", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
+                        .WithOne()
+                        .HasForeignKey("Pdr.Api.Models.ClientContactTransition", "EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Engagement");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Documents.Document", b =>
@@ -3489,6 +4262,17 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Engagement");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Documents.DocumentVersion", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Documents.Document", "Document")
+                        .WithMany("Versions")
+                        .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Document");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
@@ -3627,6 +4411,43 @@ namespace Pdr.Api.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.KickoffActionItem", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "AssignedToUser")
+                        .WithMany()
+                        .HasForeignKey("AssignedToUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
+                        .WithMany("KickoffActionItems")
+                        .HasForeignKey("EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.KickoffRecord", "KickoffRecord")
+                        .WithMany("ActionItems")
+                        .HasForeignKey("KickoffRecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AssignedToUser");
+
+                    b.Navigation("Engagement");
+
+                    b.Navigation("KickoffRecord");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.KickoffRecord", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
+                        .WithOne("KickoffRecord")
+                        .HasForeignKey("Pdr.Api.Models.KickoffRecord", "EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Engagement");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.LoginEntity.User", b =>
                 {
                     b.HasOne("Pdr.Api.Models.LoginEntity.Role", "Role")
@@ -3668,6 +4489,24 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Status");
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.Notifications.Notification", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "Receiver")
+                        .WithMany()
+                        .HasForeignKey("ReceiverUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.Notifications.NotificationTemplate", "Template")
+                        .WithMany()
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Template");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Person", b =>
                 {
                     b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
@@ -3700,6 +4539,16 @@ namespace Pdr.Api.Migrations
                     b.Navigation("AccessItems");
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.ArchitectureValidation.ArchitectureValidation", b =>
+                {
+                    b.Navigation("Features");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Documents.Document", b =>
+                {
+                    b.Navigation("Versions");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Documents.DocumentCategory", b =>
                 {
                     b.Navigation("Documents");
@@ -3717,6 +4566,10 @@ namespace Pdr.Api.Migrations
 
                     b.Navigation("HandoverInfo");
 
+                    b.Navigation("KickoffActionItems");
+
+                    b.Navigation("KickoffRecord");
+
                     b.Navigation("People");
                 });
 
@@ -3733,6 +4586,11 @@ namespace Pdr.Api.Migrations
             modelBuilder.Entity("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition", b =>
                 {
                     b.Navigation("EnvironmentToolingItems");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.KickoffRecord", b =>
+                {
+                    b.Navigation("ActionItems");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.LoginEntity.Role", b =>

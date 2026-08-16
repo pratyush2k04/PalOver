@@ -60,7 +60,7 @@ public class EnvironmentToolingService(
         await repository.AddAsync(item);
         await repository.SaveChangesAsync();
 
-        var createdItem = await repository.GetByIdAsync(item.EnvironmentToolingItemId);
+        var createdItem = await repository.GetByIdAsync(item.Id);
         return MapToDto(createdItem!);
     }
 
@@ -123,7 +123,7 @@ public class EnvironmentToolingService(
     private static EnvironmentToolingItemDto MapToDto(EnvironmentToolingItem item) =>
         new()
         {
-            EnvironmentToolingItemId = item.EnvironmentToolingItemId,
+            Id = item.Id,
             Name = GetItemDisplayName(item),
             EnvironmentToolingDefinitionId = item.EnvironmentToolingDefinitionId,
             EngagementId = item.EngagementId,

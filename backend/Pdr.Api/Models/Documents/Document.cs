@@ -14,7 +14,7 @@ public class Document : BaseAuditableEntity
 
     public required string FilePath { get; set; }
 
-    public long FileSizeBytes { get; set; }
+    public int FileSizeKB { get; set; }
 
     public required string ContentType { get; set; }
 
@@ -26,6 +26,8 @@ public class Document : BaseAuditableEntity
 
     // Navigation properties
     public DocumentCategory Category { get; set; } = null!;
-    
+
     public Engagement Engagement { get; set; } = null!;
+
+    public ICollection<DocumentVersion> Versions { get; set; } = new List<DocumentVersion>();
 }

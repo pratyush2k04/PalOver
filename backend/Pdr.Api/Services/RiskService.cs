@@ -137,7 +137,7 @@ public class RiskService(
             .Select(a => new
             {
                 SourceType = RiskConstants.SourceTypes.AccessTracker,
-                SourceItemId = a.AccessItemId,
+                SourceItemId = a.Id,
                 Title = a.Name,
                 Reason = a.BlockReason ?? string.Empty,
                 OwnerId = a.OwnerId
@@ -153,7 +153,7 @@ public class RiskService(
             .Select(e => new
             {
                 SourceType = RiskConstants.SourceTypes.EnvironmentTooling,
-                SourceItemId = e.EnvironmentToolingItemId,
+                SourceItemId = e.Id,
                 Title = e.EnvironmentToolingDefinition != null ? e.EnvironmentToolingDefinition.Name : (e.CustomName ?? e.Name),
                 Reason = e.NotApplicableReason ?? string.Empty,
                 OwnerId = e.OwnerId
