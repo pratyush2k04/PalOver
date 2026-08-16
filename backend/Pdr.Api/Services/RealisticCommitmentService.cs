@@ -24,7 +24,7 @@ public class RealisticCommitmentService : IRealisticCommitmentService
         _realisticCommitmentRepository = realisticCommitmentRepository;
     }
 
-    public static bool TimelinesMatch(int timeline1, string unit1, int timeline2, string unit2) =>
+    public static bool TimelinesMatch(int timeline1, CommitmentTimelineUnitEnum unit1, int timeline2, CommitmentTimelineUnitEnum unit2) =>
         timeline1 == timeline2 && unit1 == unit2;
 
     private async Task<HandoverInfo> GetHandoverOrThrowAsync(int engagementId)

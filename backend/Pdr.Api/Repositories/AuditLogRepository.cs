@@ -11,7 +11,7 @@ public class AuditLogRepository(AppDbContext context) : IAuditLogRepository
     {
         return await context.AuditActions
             .AsNoTracking()
-            .FirstOrDefaultAsync(a => a.AuditActionId == auditActionId);
+            .FirstOrDefaultAsync(a => a.Id == auditActionId);
     }
 
     public async Task AddAsync(AuditLog auditLog)
@@ -30,9 +30,9 @@ public class AuditLogRepository(AppDbContext context) : IAuditLogRepository
             .AsNoTracking()
             .Include(x => x.User)
             .Include(x => x.AuditAction)
-            .Where(x => cursor == null || x.AuditLogId < cursor)
+            .Where(x => cursor == null || x.Id < cursor)
             .Where(x => userId == null || x.UserId == userId)
-            .OrderByDescending(x => x.AuditLogId)
+            .OrderByDescending(x => x.Id)
             .Take(limit + 1)
             .ToListAsync();
     }

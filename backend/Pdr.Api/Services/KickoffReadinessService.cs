@@ -121,7 +121,7 @@ public class KickoffReadinessService(
     {
         var failingIds = accessItems
             .Where(a => a.Status == AccessItemStatus.Blocked)
-            .Select(a => a.AccessItemId)
+            .Select(a => a.Id)
             .ToList();
 
         return new ReadinessCheck(

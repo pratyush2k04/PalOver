@@ -20,6 +20,7 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
     {
         return await context.Documents
             .Include(d => d.Category)
+            .Include(d => d.Versions)
             .Include(d => d.Engagement)
                 .ThenInclude(e => e.HandoverInfo)
             .FirstOrDefaultAsync(d => d.Id == id);
@@ -29,6 +30,7 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
     {
         var query = context.Documents
             .Include(d => d.Category)
+            .Include(d => d.Versions)
             .Where(d => d.EngagementId == engagementId);
 
         if (!isAdmin && !isPm)
@@ -68,6 +70,37 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
         document.AllowedRoles = allowedRoles ?? new List<int>();
         document.UpdatedAt = DateTime.UtcNow;
         document.UpdatedBy = updatedBy;
+        await context.SaveChangesAsync();
+        return document;
+    }
+
+    public async Task<IEnumerable<DocumentVersion>> GetVersionsByDocumentIdAsync(int documentId)
+    {
+        return await context.DocumentVersions
+            .Where(v => v.DocumentId == documentId)
+            .OrderByDescending(v => v.VersionNumber)
+            .ToListAsync();
+    }
+
+    public async Task<DocumentVersion?> GetVersionByIdAsync(int documentId, int versionId)
+    {
+        return await context.DocumentVersions
+            .FirstOrDefaultAsync(v => v.DocumentId == documentId && v.Id == versionId);
+    }
+
+    public async Task<Document> AddVersionAsync(Document document, DocumentVersion newVersion)
+    {
+        var currentVersion = document.Versions.FirstOrDefault(v => v.IsCurrent);
+        if (currentVersion != null)
+        {
+            currentVersion.IsCurrent = false;
+        }
+
+        document.Versions.Add(newVersion);
+        document.FilePath = newVersion.FilePath;
+        document.FileSizeKB = newVersion.FileSizeKB;
+        document.ContentType = newVersion.ContentType;
+
         await context.SaveChangesAsync();
         return document;
     }

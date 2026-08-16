@@ -8,7 +8,7 @@ public class HandoverSubmittedMapper(IEngagementRepository engagementRepository,
 {
     public string TemplateKey => "HandoverSubmitted";
 
-    private record HandoverSubmittedData(int HandoverId, int TriggerUserId, int EngagementId);
+    public record HandoverSubmittedData(int HandoverId, int TriggerUserId, int EngagementId);
 
     public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
     {
@@ -21,7 +21,8 @@ public class HandoverSubmittedMapper(IEngagementRepository engagementRepository,
         return new Dictionary<string, object?>
         {
             ["EngagementName"] = engagement?.EngagementName,
-            ["TriggerUserName"] = triggerUser?.FullName
+            ["TriggerUserName"] = triggerUser?.FullName,
+            ["EngagementId"] = payload.EngagementId
         };
     }
 }

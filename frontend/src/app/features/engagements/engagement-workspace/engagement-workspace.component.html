@@ -11,6 +11,7 @@
         <strong>Readiness Score:</strong> {{ readiness()?.score ?? '—' }}
         <span class="kickoff-ready-badge" *ngIf="engagement()!.isKickoffReady">Kickoff-ready</span>
       </p>
+      <p><strong>Client Contact:</strong> {{ engagement()!.clientName }}</p>
     </div>
   </div>
 

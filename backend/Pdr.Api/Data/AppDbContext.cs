@@ -51,6 +51,7 @@ public class AppDbContext : DbContext
     // Documents
     public DbSet<DocumentCategory> DocumentCategories => Set<DocumentCategory>();
     public DbSet<Document> Documents => Set<Document>();
+    public DbSet<DocumentVersion> DocumentVersions => Set<DocumentVersion>();
     public DbSet<CommunicationCadence> CommunicationCadences => Set<CommunicationCadence>();
     // People
     public DbSet<Person> People => Set<Person>();
@@ -65,12 +66,15 @@ public class AppDbContext : DbContext
     public DbSet<Models.EnvironmentTooling.EnvironmentToolingItem> EnvironmentToolingItems => Set<Models.EnvironmentTooling.EnvironmentToolingItem>();
     public DbSet<Models.EnvironmentTooling.EnvironmentToolingDefinition> EnvironmentToolingDefinitions => Set<Models.EnvironmentTooling.EnvironmentToolingDefinition>();
     public DbSet<Models.BrownField.BrownfieldFinding> BrownfieldFindings => Set<Models.BrownField.BrownfieldFinding>();
+    public DbSet<Models.ArchitectureValidation.ArchitectureValidation> ArchitectureValidations => Set<Models.ArchitectureValidation.ArchitectureValidation>();
+    public DbSet<Models.ArchitectureValidation.DiscoveryFeatureItem> DiscoveryFeatureItems => Set<Models.ArchitectureValidation.DiscoveryFeatureItem>();
     public DbSet<Pdr.Api.Models.ChangeRequest.ChangeRequest> ChangeRequests => Set<Pdr.Api.Models.ChangeRequest.ChangeRequest>();
     public DbSet<Risk> Risks => Set<Risk>();
    
 
  
 
+    public DbSet<ClientContactTransition> ClientContactTransitions => Set<ClientContactTransition>();
     // Notifications
     public DbSet<Models.Notifications.Notification> Notifications => Set<Models.Notifications.Notification>();
     public DbSet<Models.Notifications.NotificationTemplate> NotificationTemplates => Set<Models.Notifications.NotificationTemplate>();

@@ -4,7 +4,6 @@ public static class CreateCommitmentRequestConstants
 {
     public const int MaxDescriptionLength = 2000;
     public const int MaxTitleLength = 100;
-    public static readonly string[] ValidTimelineUnits = { "Days", "Weeks", "Months" };
 
     public const string DescriptionRequired = "Description is required.";
     public const string DescriptionMaxLength = "Description cannot exceed 2000 characters.";

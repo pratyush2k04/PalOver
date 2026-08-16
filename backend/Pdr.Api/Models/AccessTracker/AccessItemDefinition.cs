@@ -2,7 +2,7 @@ namespace Pdr.Api.Models.AccessTracker
 {
     public class AccessItemDefinition 
     {
-        public int AccessItemDefinitionId { get; set; }
+        public int Id { get; set; }
 
         public string Name { get; set; } = string.Empty;
 

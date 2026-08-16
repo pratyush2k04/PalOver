@@ -6,7 +6,7 @@ namespace Pdr.Api.Models.BrownField;
 
 public class BrownfieldFinding : BaseAuditableEntity
 {
-    public int BrownfieldFindingId { get; set; }
+    public int Id { get; set; }
 
     public int EngagementId { get; set; }
 

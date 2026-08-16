@@ -15,4 +15,10 @@ public interface IDocumentRepository
     Task<bool> SoftDeleteAsync(Document document, string reason, string updatedBy);
 
     Task<Document> UpdateVisibilityAsync(Document document, string visibility, List<int> allowedRoles, string updatedBy);
+
+    Task<IEnumerable<DocumentVersion>> GetVersionsByDocumentIdAsync(int documentId);
+
+    Task<DocumentVersion?> GetVersionByIdAsync(int documentId, int versionId);
+
+    Task<Document> AddVersionAsync(Document document, DocumentVersion newVersion);
 }

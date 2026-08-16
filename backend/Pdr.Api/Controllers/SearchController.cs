@@ -1,0 +1,32 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Pdr.Api.DTOs.Search;
+using Pdr.Api.Services.Interfaces;
+
+namespace Pdr.Api.Controllers;
+
+/// <summary>
+/// Provides permission-aware cross-entity search across engagements, documents, people, and checklist items.
+/// </summary>
+[ApiController]
+[Authorize]
+[Route("api/search")]
+[Produces("application/json")]
+public class SearchController(ISearchService searchService) : ControllerBase
+{
+    /// <summary>
+    /// Searches across engagements, documents, people, and checklist items the current user can access.
+    /// </summary>
+    /// <param name="q">The search term.</param>
+    /// <returns>Grouped search results with per-group counts.</returns>
+    [HttpGet]
+    [EndpointSummary("Global search across engagements, documents, people, and checklist items")]
+    [ProducesResponseType(typeof(GlobalSearchResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<GlobalSearchResponseDto>> GetSearch([FromQuery] string? q)
+    {
+        var result = await searchService.SearchAsync(q);
+        return Ok(result);
+    }
+}
