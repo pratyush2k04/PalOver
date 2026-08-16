@@ -80,14 +80,13 @@ export class SidebarComponent {
       });
     }
 
-    // Audit Trail navigation item: visible to Leadership and Admin
-    if (isAdminUser || currentUser.role === USER_ROLES.LEADERSHIP) {
-      items.push({
-        label: 'Audit Trail',
-        icon: 'clock',
-        route: APP_ROUTES.AUDIT_TRAIL
-      });
-    }
+    // Audit Trail navigation item: visible to all authenticated users (own entries;
+    // Leadership/Admin see everyone's, enforced by the backend)
+    items.push({
+      label: 'Audit Trail',
+      icon: 'clock',
+      route: APP_ROUTES.AUDIT_TRAIL
+    });
 
     // Alerts and Profile: no route assigned
     items.push(

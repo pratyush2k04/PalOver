@@ -6,7 +6,6 @@ import { MainLayoutComponent } from '@layouts/main-layout/main-layout';
 
 import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';
-import { leadershipOrAdminGuard } from './guards/leadership-or-admin.guard';
 import { workspaceGuard } from './guards/workspace.guard';
 import { workspaceRedirectGuard } from './guards/workspace-redirect.guard';
 // import { engagementAccessGuard } from './core/guards/engagement-access.guard';
@@ -141,10 +140,9 @@ export const routes: Routes = [
           ),
       },
 
-      // Audit Trail (Leadership/Admin)
+      // Audit Trail (own entries for all users; Leadership/Admin see everyone's)
       {
         path: 'audit-trail',
-        canActivate: [leadershipOrAdminGuard],
         loadChildren: () =>
           import('./features/audit-trail/audit-trail.routes').then(
             m => m.AUDIT_TRAIL_ROUTES
