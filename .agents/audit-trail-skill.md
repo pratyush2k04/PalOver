@@ -77,7 +77,7 @@ dotnet ef migrations add Add<YourActionName>AuditAction
 **Signature** (`Pdr.Api/Services/Interfaces/IAuditLogService.cs`):
 
 ```csharp
-Task LogAsync(AuditActionEnum action, IDictionary<string, object?> payload);
+Task LogAsync(AuditActionEnum action, IDictionary<string, object?> payload, int? actingUserId = null);
 ```
 
 **The payload holds ids, not resolved display strings.** `LogAsync` doesn't render anything itself — it just serializes whatever dictionary you pass and stores it as-is. Resolution to display values (e.g. an id to a user's full name) happens later, at read time, via the action's registered `IAuditTemplateMapper`.
@@ -96,23 +96,23 @@ public class AuthService(
 
         var token = jwtTokenGenerator.GenerateToken(user);
 
-        await auditLogService.LogAsync(AuditActionEnum.UserLoggedIn, new Dictionary<string, object?>
-        {
-            ["UserId"] = user.Id
-        });
+        await auditLogService.LogAsync(
+            AuditActionEnum.UserLoggedIn,
+            new Dictionary<string, object?> { ["UserId"] = user.Id },
+            actingUserId: user.Id);
 
         return new AuthResultDto { IsSuccess = true, Token = token };
     }
 }
 ```
 
-Note the payload key is `UserId` (an id), not `userName` (a resolved string) — the opposite of what you might expect from the `Details` template's `{userName}` placeholder. The `UserLoggedInMapper` (section 2b) is what turns `UserId` into `userName` at read time.
+Note the payload key is `UserId` (an id), not `userName` (a resolved string) — the opposite of what you might expect from the `Details` template's `{userName}` placeholder. The `UserLoggedInMapper` (section 2b) is what turns `UserId` into `userName` at read time. Also note `actingUserId: user.Id` is passed explicitly here — login is anonymous, so there's no authenticated caller on the request yet for `ICurrentUserService` to fall back to.
 
 No DI registration is needed for `IAuditLogService` itself — it's already registered as scoped in `DependencyInjectionExtensions.cs`. Just constructor-inject it like any other service.
 
 ### What happens internally, step by step
 
-1. **The acting user is always the current caller.** `LogAsync` resolves the user via `ICurrentUserService.GetUserId()`. There is no parameter to attribute the log entry to a different user, and no supported way to log on behalf of a system/background process — it always requires an authenticated `HttpContext`.
+1. **The acting user defaults to the current caller, via an optional override.** `LogAsync(action, payload, actingUserId: null)` resolves the user via `ICurrentUserService.GetUserId()` when `actingUserId` is omitted. Pass `actingUserId` explicitly for the rare case where the acting user isn't (yet) the authenticated caller of the current request — e.g. `AuthService.LoginAsync` passes the just-authenticated `user.Id`, since login itself is an anonymous endpoint with no JWT on the request yet. There's still no supported way to log on behalf of a true system/background process with no user at all.
 2. **The action row is looked up by the enum's int value.** If no seeded `AuditAction` row exists for that value (e.g. you forgot section 1, or passed a value that was never seeded), it throws a raw `InvalidOperationException`. Note this bypasses this repo's usual `AppException`-based exception convention — that's a known gap in this feature, not a pattern to copy elsewhere.
 3. **The payload is serialized to JSON exactly as given, with no schema enforced by `LogAsync` itself.** `PayloadJson` accepts any `IDictionary<string, object?>` — there is no fixed shape checked at write time. But the keys/values you choose are only useful if they match what your action's registered `IAuditTemplateMapper.MapAsync` expects to deserialize (ids, keyed to that mapper's private payload record) — not the `Details` template's placeholder names.
 4. **The write is its own, separate save.** The repository calls `AddAsync` then its own `SaveChangesAsync` — this is **not** batched with whatever `SaveChangesAsync` your calling code already did (or is about to do). The audit entry commits independently. If your own business save fails *after* you've already called `LogAsync`, the audit entry is **not** automatically rolled back.
@@ -217,6 +217,6 @@ There is nothing to add here for a new action type — as soon as your mapper is
 - **Never call `LogAsync` with an `AuditActionEnum` value that has no seeded `AuditAction` row** — it throws `InvalidOperationException`, not a handled/logged failure.
 - **A missing `IAuditTemplateMapper` for a seeded action throws `InvalidOperationException` at read time** (in `AuditLogService.MapToDtoAsync`) — every seeded `AuditAction` must have a matching registered mapper.
 - **`PayloadJson` holds ids, not resolved display values, and has no schema enforced by `LogAsync` itself.** Its keys/values are whatever the original caller passed — but they're only meaningful if they match what that action's `IAuditTemplateMapper` expects to deserialize.
-- **`LogAsync` always attributes the entry to the current authenticated user.** It cannot log on behalf of another user or an unauthenticated/system/background actor.
+- **`LogAsync` attributes the entry to the current authenticated user by default, or to `actingUserId` if you pass one.** Use the override only when the acting user genuinely isn't yet the request's authenticated caller (e.g. logging in). It still can't log on behalf of a true unauthenticated/system/background actor with no user id at all.
 - **The audit write commits on its own `SaveChangesAsync`,** independent of the caller's own transaction/save. Don't assume atomicity between your business write and the audit write.
 - **Do not add action-specific typed fields to `AuditLog`/`AuditLogDto` (new columns, new DTOs per action).** The whole point of the JSON payload + per-action mapper is to be the single, generic extensibility point for every action type. Adding typed per-action fields would break that contract — express anything action-specific through payload ids, a matching mapper, and a `Details` template instead.

@@ -15,9 +15,9 @@ public class AuditLogService(
     TemplateMapperResolver<IAuditTemplateMapper> mapperResolver,
     TemplateRenderer templateRenderer) : IAuditLogService
 {
-    public async Task LogAsync(AuditActionEnum action, IDictionary<string, object?> payload)
+    public async Task LogAsync(AuditActionEnum action, IDictionary<string, object?> payload, int? actingUserId = null)
     {
-        var userId = currentUserService.GetUserId();
+        var userId = actingUserId ?? currentUserService.GetUserId();
 
         var auditAction = await repository.GetAuditActionByIdAsync((int)action)
             ?? throw new InvalidOperationException($"No AuditAction row found for {action}.");
