@@ -10,7 +10,7 @@ public class AuditLogConfiguration : IEntityTypeConfiguration<AuditLog>
     {
         builder.ToTable("audit_logs");
 
-        builder.HasKey(x => x.AuditLogId);
+        builder.HasKey(x => x.Id);
 
         builder.HasQueryFilter(x => !x.IsDeleted);
 

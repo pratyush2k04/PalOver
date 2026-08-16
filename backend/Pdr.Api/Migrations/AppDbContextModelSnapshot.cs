@@ -230,7 +230,7 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.Audit.AuditAction", b =>
                 {
-                    b.Property<int>("AuditActionId")
+                    b.Property<int>("Id")
                         .HasColumnType("integer");
 
                     b.Property<string>("Action")
@@ -243,7 +243,7 @@ namespace Pdr.Api.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.HasKey("AuditActionId");
+                    b.HasKey("Id");
 
                     b.HasIndex("Action")
                         .IsUnique();
@@ -253,25 +253,25 @@ namespace Pdr.Api.Migrations
                     b.HasData(
                         new
                         {
-                            AuditActionId = 1,
+                            Id = 1,
                             Action = "UserLoggedIn",
                             Details = "User {userName} logged into the system"
                         },
                         new
                         {
-                            AuditActionId = 2,
+                            Id = 2,
                             Action = "UserCreated",
                             Details = "User {userName} was created by {actorName}"
                         },
                         new
                         {
-                            AuditActionId = 3,
+                            Id = 3,
                             Action = "UserUpdated",
                             Details = "User {userName} was updated by {actorName}"
                         },
                         new
                         {
-                            AuditActionId = 4,
+                            Id = 4,
                             Action = "UserDeleted",
                             Details = "User {userName} was deleted by {actorName}"
                         });
@@ -279,11 +279,11 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.Audit.AuditLog", b =>
                 {
-                    b.Property<int>("AuditLogId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AuditLogId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AuditActionId")
                         .HasColumnType("integer");
@@ -310,7 +310,7 @@ namespace Pdr.Api.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
-                    b.HasKey("AuditLogId");
+                    b.HasKey("Id");
 
                     b.HasIndex("AuditActionId");
 

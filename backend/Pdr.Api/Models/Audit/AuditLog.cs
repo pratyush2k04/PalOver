@@ -5,7 +5,7 @@ namespace Pdr.Api.Models.Audit;
 
 public class AuditLog : BaseAuditableEntity
 {
-    public int AuditLogId { get; set; }
+    public int Id { get; set; }
 
     public int UserId { get; set; }
 

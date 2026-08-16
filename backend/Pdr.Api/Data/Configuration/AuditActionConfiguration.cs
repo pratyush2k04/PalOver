@@ -10,9 +10,9 @@ public class AuditActionConfiguration : IEntityTypeConfiguration<AuditAction>
     {
         builder.ToTable("audit_actions");
 
-        builder.HasKey(x => x.AuditActionId);
+        builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.AuditActionId)
+        builder.Property(x => x.Id)
             .ValueGeneratedNever();
 
         builder.Property(x => x.Action)
@@ -29,25 +29,25 @@ public class AuditActionConfiguration : IEntityTypeConfiguration<AuditAction>
         builder.HasData(
             new AuditAction
             {
-                AuditActionId = (int)AuditActionEnum.UserLoggedIn,
+                Id = (int)AuditActionEnum.UserLoggedIn,
                 Action = "UserLoggedIn",
                 Details = "User {userName} logged into the system"
             },
             new AuditAction
             {
-                AuditActionId = (int)AuditActionEnum.UserCreated,
+                Id = (int)AuditActionEnum.UserCreated,
                 Action = "UserCreated",
                 Details = "User {userName} was created by {actorName}"
             },
             new AuditAction
             {
-                AuditActionId = (int)AuditActionEnum.UserUpdated,
+                Id = (int)AuditActionEnum.UserUpdated,
                 Action = "UserUpdated",
                 Details = "User {userName} was updated by {actorName}"
             },
             new AuditAction
             {
-                AuditActionId = (int)AuditActionEnum.UserDeleted,
+                Id = (int)AuditActionEnum.UserDeleted,
                 Action = "UserDeleted",
                 Details = "User {userName} was deleted by {actorName}"
             });
