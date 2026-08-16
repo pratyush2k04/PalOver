@@ -1,11 +1,15 @@
 using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Auth;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class AuthService(IUserRepository userRepository, IJwtTokenGenerator jwtTokenGenerator) : IAuthService
+public class AuthService(
+    IUserRepository userRepository,
+    IJwtTokenGenerator jwtTokenGenerator,
+    IAuditLogService auditLogService) : IAuthService
 {
     public async Task<AuthResultDto> LoginAsync(LoginRequestDto request)
     {
@@ -67,6 +71,12 @@ public class AuthService(IUserRepository userRepository, IJwtTokenGenerator jwtT
         }
 
         var token = jwtTokenGenerator.GenerateToken(user);
+
+        await auditLogService.LogAsync(
+            AuditActionEnum.UserLoggedIn,
+            new Dictionary<string, object?> { ["UserId"] = user.Id },
+            actingUserId: user.Id);
+
         return new AuthResultDto
         {
             IsSuccess = true,

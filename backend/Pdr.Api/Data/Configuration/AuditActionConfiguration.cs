@@ -30,25 +30,25 @@ public class AuditActionConfiguration : IEntityTypeConfiguration<AuditAction>
             new AuditAction
             {
                 AuditActionId = (int)AuditActionEnum.UserLoggedIn,
-                Action = "UserLoggedIn",
+                Action = AuditActionEnum.UserLoggedIn.ToString(),
                 Details = "User {userName} logged into the system"
             },
             new AuditAction
             {
                 AuditActionId = (int)AuditActionEnum.UserCreated,
-                Action = "UserCreated",
+                Action = AuditActionEnum.UserCreated.ToString(),
                 Details = "User {userName} was created by {actorName}"
             },
             new AuditAction
             {
                 AuditActionId = (int)AuditActionEnum.UserUpdated,
-                Action = "UserUpdated",
+                Action = AuditActionEnum.UserUpdated.ToString(),
                 Details = "User {userName} was updated by {actorName}"
             },
             new AuditAction
             {
                 AuditActionId = (int)AuditActionEnum.UserDeleted,
-                Action = "UserDeleted",
+                Action = AuditActionEnum.UserDeleted.ToString(),
                 Details = "User {userName} was deleted by {actorName}"
             });
     }

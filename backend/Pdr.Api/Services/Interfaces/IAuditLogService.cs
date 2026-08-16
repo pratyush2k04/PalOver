@@ -6,7 +6,7 @@ namespace Pdr.Api.Services.Interfaces;
 
 public interface IAuditLogService
 {
-    Task LogAsync(AuditActionEnum action, IDictionary<string, object?> payload);
+    Task LogAsync(AuditActionEnum action, IDictionary<string, object?> payload, int? actingUserId = null);
 
     Task<CursorPagedResult<AuditLogDto>> GetAuditLogsAsync(int? cursor, int limit);
 }

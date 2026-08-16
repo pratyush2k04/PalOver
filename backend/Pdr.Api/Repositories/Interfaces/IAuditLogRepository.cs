@@ -7,5 +7,5 @@ public interface IAuditLogRepository
     Task<AuditAction?> GetAuditActionByIdAsync(int auditActionId);
     Task AddAsync(AuditLog auditLog);
     Task SaveChangesAsync();
-    Task<List<AuditLog>> GetPageAsync(int? cursor, int limit);
+    Task<List<AuditLog>> GetPageAsync(int? cursor, int limit, int? userId);
 }
