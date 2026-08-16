@@ -315,6 +315,97 @@ namespace Pdr.Api.Migrations
                     b.ToTable("discovery_feature_items", (string)null);
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.Audit.AuditAction", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Details")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Action")
+                        .IsUnique();
+
+                    b.ToTable("audit_actions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Action = "UserLoggedIn",
+                            Details = "User {userName} logged into the system"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Action = "UserCreated",
+                            Details = "User {userName} was created by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Action = "UserUpdated",
+                            Details = "User {userName} was updated by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Action = "UserDeleted",
+                            Details = "User {userName} was deleted by {actorName}"
+                        });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Audit.AuditLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AuditActionId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("PayloadJson")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuditActionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("audit_logs", (string)null);
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.BrownField.BrownfieldFinding", b =>
                 {
                     b.Property<int>("Id")
@@ -4200,6 +4291,25 @@ namespace Pdr.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("ArchitectureValidation");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Audit.AuditLog", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Audit.AuditAction", "AuditAction")
+                        .WithMany()
+                        .HasForeignKey("AuditActionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AuditAction");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.BrownField.BrownfieldFinding", b =>
