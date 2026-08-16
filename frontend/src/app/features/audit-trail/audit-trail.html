@@ -30,7 +30,9 @@
       <thead>
         <tr>
           <th class="col-date">Date/Time</th>
-          <th class="col-user">User</th>
+          @if (showUserColumn) {
+            <th class="col-user">User</th>
+          }
           <th class="col-action">Action</th>
           <th class="col-details">Details</th>
         </tr>
@@ -39,14 +41,16 @@
         @for (log of pagedLogs(); track log.auditLogId) {
           <tr>
             <td class="col-date">{{ log.createdAt | date: 'medium' }}</td>
-            <td class="col-user">{{ log.userName }}</td>
+            @if (showUserColumn) {
+              <td class="col-user">{{ log.userName }}</td>
+            }
             <td class="col-action">{{ log.action }}</td>
             <td class="col-details">{{ log.details }}</td>
           </tr>
         } @empty {
           @if (!isLoading()) {
             <tr>
-              <td colspan="4" class="empty-row">
+              <td [attr.colspan]="showUserColumn ? 4 : 3" class="empty-row">
                 <app-empty-state message="No audit trail entries found." />
               </td>
             </tr>

@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuditTrailService } from './services/audit-trail.service';
 import { AuditLogDto } from './models/audit-log.model';
-import { AUDIT_LOG_MESSAGES } from '@shared/constants/app.constants';
+import { AUDIT_LOG_MESSAGES, USER_ROLES } from '@shared/constants/app.constants';
+import { AuthService } from 'src/app/services/auth';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { AlertComponent } from '@common/components/alert/alert';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
@@ -38,6 +39,9 @@ function escapeCsvField(value: string): string {
 })
 export class AuditTrailComponent implements OnInit {
   private auditTrailService = inject(AuditTrailService);
+  private authService = inject(AuthService);
+
+  readonly showUserColumn = this.authService.hasRole(USER_ROLES.LEADERSHIP) || this.authService.isAdmin();
 
   allLogs = signal<AuditLogDto[]>([]);
   isLoading = signal(true);
@@ -90,16 +94,16 @@ export class AuditTrailComponent implements OnInit {
 
   exportCsv(): void {
     const rows = this.filteredLogs();
-    const header = ['Date/Time', 'User', 'Action', 'Details'];
+    const header = this.showUserColumn ? ['Date/Time', 'User', 'Action', 'Details'] : ['Date/Time', 'Action', 'Details'];
     const lines = [header.join(',')];
 
     for (const log of rows) {
-      lines.push([
-        escapeCsvField(log.createdAt),
-        escapeCsvField(log.userName),
-        escapeCsvField(log.action),
-        escapeCsvField(log.details)
-      ].join(','));
+      const fields = [escapeCsvField(log.createdAt)];
+      if (this.showUserColumn) {
+        fields.push(escapeCsvField(log.userName));
+      }
+      fields.push(escapeCsvField(log.action), escapeCsvField(log.details));
+      lines.push(fields.join(','));
     }
 
     const csv = lines.join('\n');
