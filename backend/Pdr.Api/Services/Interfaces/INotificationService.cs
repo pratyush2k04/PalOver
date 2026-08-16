@@ -12,7 +12,6 @@ public interface INotificationService
         RoleEnum receiverRole,
         string data,
         DateTime scheduledFor,
-        string? link = null,
         CancellationToken cancellationToken = default);
 
     Task CreateFromTemplateAsync(

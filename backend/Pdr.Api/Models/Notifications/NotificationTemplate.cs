@@ -11,4 +11,6 @@ public class NotificationTemplate : BaseAuditableEntity
     public required string Body { get; set; }
 
     public NotificationPriority DefaultPriority { get; set; } = NotificationPriority.Medium;
+
+    public string? LinkPattern { get; set; }
 }

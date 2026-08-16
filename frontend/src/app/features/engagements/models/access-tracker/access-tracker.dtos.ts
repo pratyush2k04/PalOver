@@ -1,7 +1,7 @@
 import { AccessItemStatus } from './access-tracker.enums';
 
 export interface AccessItemDto {
-  accessItemId: number;
+  id: number;
   name: string;
   isClientSide: boolean;
   ownerId: number;

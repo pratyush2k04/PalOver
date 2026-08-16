@@ -1,0 +1,66 @@
+<div class="client-contact-transition-card">
+  <!-- Card Header -->
+  <div class="card-header">
+    <h3>{{ formLabels.CARD_TITLE }}</h3>
+  </div>
+
+  <!-- Success Message -->
+  @if (successMsg()) {
+    <app-alert [variant]="'neutral'" class="alert-container">
+      {{ successMsg() }}
+    </app-alert>
+  }
+
+  <!-- Add Button (Pre-Sales Only) -->
+  @if (isPreSales()) {
+    <div class="presales-actions">
+      <app-button
+        variant="flat"
+        (click)="openAddTransitionDialog()"
+        class="add-button"
+      >
+        {{ buttonLabels.ADD_TRANSITION }}
+      </app-button>
+    </div>
+  }
+
+  <!-- Card Content -->
+  <div class="card-content">
+    <!-- Loading State -->
+    @if (isLoading()) {
+      <p class="loading-text">{{ statusMessages.LOADING }}</p>
+    } @else {
+      <!-- History or Current Contact Display -->
+      <div class="history-container">
+        @if (transitions().length > 0) {
+          <!-- History List -->
+          <div class="history-list">
+            @for (t of transitions(); track t.id; let last = $last) {
+              <div class="transition-item">
+                <p class="transition-row">
+                  <span class="label">{{ dialogLabels.OUTGOING }}</span>
+                  <span class="contact-info">{{ t.outgoingContactName }} ({{ t.outgoingContactRole }})</span>
+                </p>
+                <p class="transition-row">
+                  <span class="label">{{ dialogLabels.INCOMING }}</span>
+                  <span class="contact-info">{{ t.incomingContactName }} ({{ t.incomingContactRole }})</span>
+                </p>
+                @if (!last) {
+                  <hr class="divider" />
+                }
+              </div>
+            }
+          </div>
+        } @else {
+          <!-- Empty State: Show Current/Present Contact -->
+          <div class="empty-state">
+            <p class="present-contact">
+              <span class="label">{{ dialogLabels.PRESENT }}</span>
+              <span class="contact-info">{{ clientName() }} - {{ dialogLabels.NO_ROLE }}</span>
+            </p>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

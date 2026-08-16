@@ -13,8 +13,8 @@ using Pdr.Api.Data;
 namespace Pdr.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260814060649_AddAuditLogTables")]
-    partial class AddAuditLogTables
+    [Migration("20260814105958_AddDocumentVersioningAndUpdatetoKB")]
+    partial class AddDocumentVersioningAndUpdatetoKB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,11 +28,11 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItem", b =>
                 {
-                    b.Property<int>("AccessItemId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AccessItemId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("AccessItemDefinitionId")
                         .HasColumnType("integer");
@@ -83,7 +83,7 @@ namespace Pdr.Api.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.HasKey("AccessItemId");
+                    b.HasKey("Id");
 
                     b.HasIndex("AccessItemDefinitionId");
 
@@ -96,7 +96,7 @@ namespace Pdr.Api.Migrations
                     b.HasData(
                         new
                         {
-                            AccessItemId = 1,
+                            Id = 1,
                             AccessItemDefinitionId = 1,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
@@ -109,7 +109,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemId = 2,
+                            Id = 2,
                             AccessItemDefinitionId = 2,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
@@ -122,7 +122,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemId = 3,
+                            Id = 3,
                             AccessItemDefinitionId = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
@@ -135,7 +135,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemId = 4,
+                            Id = 4,
                             AccessItemDefinitionId = 1,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
@@ -149,7 +149,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemId = 5,
+                            Id = 5,
                             AccessItemDefinitionId = 2,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
@@ -163,7 +163,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemId = 6,
+                            Id = 6,
                             AccessItemDefinitionId = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
@@ -178,11 +178,11 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItemDefinition", b =>
                 {
-                    b.Property<int>("AccessItemDefinitionId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AccessItemDefinitionId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("integer");
@@ -200,14 +200,14 @@ namespace Pdr.Api.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.HasKey("AccessItemDefinitionId");
+                    b.HasKey("Id");
 
                     b.ToTable("AccessItemDefinitions");
 
                     b.HasData(
                         new
                         {
-                            AccessItemDefinitionId = 1,
+                            Id = 1,
                             DisplayOrder = 1,
                             IsActive = true,
                             IsClientSide = false,
@@ -215,7 +215,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemDefinitionId = 2,
+                            Id = 2,
                             DisplayOrder = 2,
                             IsActive = true,
                             IsClientSide = true,
@@ -223,7 +223,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            AccessItemDefinitionId = 3,
+                            Id = 3,
                             DisplayOrder = 3,
                             IsActive = true,
                             IsClientSide = true,
@@ -231,64 +231,55 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.Audit.AuditAction", b =>
+            modelBuilder.Entity("Pdr.Api.Models.ArchitectureValidation.ArchitectureValidation", b =>
                 {
-                    b.Property<int>("AuditActionId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Details")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.HasKey("AuditActionId");
-
-                    b.HasIndex("Action")
-                        .IsUnique();
-
-                    b.ToTable("audit_actions", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            AuditActionId = 1,
-                            Action = "UserLoggedIn",
-                            Details = "User logged into the system"
-                        },
-                        new
-                        {
-                            AuditActionId = 2,
-                            Action = "UserCreated",
-                            Details = "A new user account was created"
-                        },
-                        new
-                        {
-                            AuditActionId = 3,
-                            Action = "UserUpdated",
-                            Details = "A user account was updated"
-                        },
-                        new
-                        {
-                            AuditActionId = 4,
-                            Action = "UserDeleted",
-                            Details = "A user account was deleted"
-                        });
-                });
-
-            modelBuilder.Entity("Pdr.Api.Models.Audit.AuditLog", b =>
-                {
-                    b.Property<int>("AuditLogId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AuditLogId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AuditActionId")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Rationale")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EngagementId");
+
+                    b.ToTable("architecture_validations", (string)null);
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.ArchitectureValidation.DiscoveryFeatureItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ArchitectureValidationId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
@@ -297,8 +288,22 @@ namespace Pdr.Api.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
+                    b.Property<decimal>("EstimateWeeks")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
+
+                    b.Property<string>("FeatureName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("TargetSprint")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -306,25 +311,20 @@ namespace Pdr.Api.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.HasKey("Id");
 
-                    b.HasKey("AuditLogId");
+                    b.HasIndex("ArchitectureValidationId");
 
-                    b.HasIndex("AuditActionId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("audit_logs", (string)null);
+                    b.ToTable("discovery_feature_items", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.BrownField.BrownfieldFinding", b =>
                 {
-                    b.Property<int>("BrownfieldFindingId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("BrownfieldFindingId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("ClientDecision")
                         .HasColumnType("integer");
@@ -362,7 +362,7 @@ namespace Pdr.Api.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.HasKey("BrownfieldFindingId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DocumentId");
 
@@ -540,6 +540,79 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.ClientContactTransition", b =>
+                {
+                    b.Property<int>("ClientContactTransitionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("client_contact_transition_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("ClientContactTransitionId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer")
+                        .HasColumnName("engagement_id");
+
+                    b.Property<string>("IncomingContactName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("incoming_contact_name");
+
+                    b.Property<string>("IncomingContactRole")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("incoming_contact_role");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("OutgoingContactName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("outgoing_contact_name");
+
+                    b.Property<string>("OutgoingContactRole")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("outgoing_contact_role");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("ClientContactTransitionId");
+
+                    b.HasIndex("EngagementId")
+                        .IsUnique();
+
+                    b.ToTable("client_contact_transitions", (string)null);
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Documents.Document", b =>
                 {
                     b.Property<int>("Id")
@@ -598,9 +671,9 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("file_path");
 
-                    b.Property<long>("FileSizeBytes")
-                        .HasColumnType("bigint")
-                        .HasColumnName("file_size_bytes");
+                    b.Property<int>("FileSizeKB")
+                        .HasColumnType("integer")
+                        .HasColumnName("file_size_kb");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -691,6 +764,85 @@ namespace Pdr.Api.Migrations
                             Id = 7,
                             CategoryName = "Commercial"
                         });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Documents.DocumentVersion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeNote")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("change_note");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("content_type");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<int>("DocumentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("document_id");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("file_path");
+
+                    b.Property<int>("FileSizeKB")
+                        .HasColumnType("integer")
+                        .HasColumnName("file_size_kb");
+
+                    b.Property<bool>("IsCurrent")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_current");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.Property<int>("VersionNumber")
+                        .HasColumnType("integer")
+                        .HasColumnName("version_number");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DocumentId", "IsCurrent");
+
+                    b.ToTable("document_versions", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
@@ -1836,11 +1988,11 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition", b =>
                 {
-                    b.Property<int>("EnvironmentToolingDefinitionId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EnvironmentToolingDefinitionId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("integer");
@@ -1858,14 +2010,14 @@ namespace Pdr.Api.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.HasKey("EnvironmentToolingDefinitionId");
+                    b.HasKey("Id");
 
                     b.ToTable("EnvironmentToolingDefinitions");
 
                     b.HasData(
                         new
                         {
-                            EnvironmentToolingDefinitionId = 1,
+                            Id = 1,
                             DisplayOrder = 1,
                             IsActive = true,
                             IsMandatory = true,
@@ -1873,7 +2025,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingDefinitionId = 2,
+                            Id = 2,
                             DisplayOrder = 2,
                             IsActive = true,
                             IsMandatory = true,
@@ -1881,7 +2033,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingDefinitionId = 3,
+                            Id = 3,
                             DisplayOrder = 3,
                             IsActive = true,
                             IsMandatory = false,
@@ -1891,11 +2043,11 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem", b =>
                 {
-                    b.Property<int>("EnvironmentToolingItemId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EnvironmentToolingItemId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("BlockReason")
                         .HasMaxLength(500)
@@ -1940,7 +2092,7 @@ namespace Pdr.Api.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.HasKey("EnvironmentToolingItemId");
+                    b.HasKey("Id");
 
                     b.HasIndex("EngagementId");
 
@@ -1953,7 +2105,7 @@ namespace Pdr.Api.Migrations
                     b.HasData(
                         new
                         {
-                            EnvironmentToolingItemId = 1,
+                            Id = 1,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
                             EnvironmentToolingDefinitionId = 1,
@@ -1965,7 +2117,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingItemId = 2,
+                            Id = 2,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
                             EnvironmentToolingDefinitionId = 2,
@@ -1977,7 +2129,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingItemId = 3,
+                            Id = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 1,
                             EnvironmentToolingDefinitionId = 3,
@@ -1989,7 +2141,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingItemId = 4,
+                            Id = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
                             EnvironmentToolingDefinitionId = 1,
@@ -2001,7 +2153,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingItemId = 5,
+                            Id = 5,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
                             EnvironmentToolingDefinitionId = 2,
@@ -2013,7 +2165,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            EnvironmentToolingItemId = 6,
+                            Id = 6,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             EngagementId = 2,
                             EnvironmentToolingDefinitionId = 3,
@@ -4024,23 +4176,26 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.Audit.AuditLog", b =>
+            modelBuilder.Entity("Pdr.Api.Models.ArchitectureValidation.ArchitectureValidation", b =>
                 {
-                    b.HasOne("Pdr.Api.Models.Audit.AuditAction", "AuditAction")
+                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
                         .WithMany()
-                        .HasForeignKey("AuditActionId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.Navigation("Engagement");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.ArchitectureValidation.DiscoveryFeatureItem", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.ArchitectureValidation.ArchitectureValidation", "ArchitectureValidation")
+                        .WithMany("Features")
+                        .HasForeignKey("ArchitectureValidationId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("AuditAction");
-
-                    b.Navigation("User");
+                    b.Navigation("ArchitectureValidation");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.BrownField.BrownfieldFinding", b =>
@@ -4075,6 +4230,17 @@ namespace Pdr.Api.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.ClientContactTransition", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
+                        .WithOne()
+                        .HasForeignKey("Pdr.Api.Models.ClientContactTransition", "EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Engagement");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Documents.Document", b =>
                 {
                     b.HasOne("Pdr.Api.Models.Documents.DocumentCategory", "Category")
@@ -4092,6 +4258,17 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Engagement");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Documents.DocumentVersion", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Documents.Document", "Document")
+                        .WithMany("Versions")
+                        .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Document");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Engagement", b =>
@@ -4356,6 +4533,16 @@ namespace Pdr.Api.Migrations
             modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItemDefinition", b =>
                 {
                     b.Navigation("AccessItems");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.ArchitectureValidation.ArchitectureValidation", b =>
+                {
+                    b.Navigation("Features");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Documents.Document", b =>
+                {
+                    b.Navigation("Versions");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Documents.DocumentCategory", b =>

@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Pdr.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class AddAuditLogTables : Migration
+    public partial class AddAuditTrail : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,23 +18,24 @@ namespace Pdr.Api.Migrations
                 name: "audit_actions",
                 columns: table => new
                 {
-                    AuditActionId = table.Column<int>(type: "integer", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false),
                     Action = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Details = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_audit_actions", x => x.AuditActionId);
+                    table.PrimaryKey("PK_audit_actions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "audit_logs",
                 columns: table => new
                 {
-                    AuditLogId = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     AuditActionId = table.Column<int>(type: "integer", nullable: false),
+                    PayloadJson = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
@@ -43,12 +44,12 @@ namespace Pdr.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_audit_logs", x => x.AuditLogId);
+                    table.PrimaryKey("PK_audit_logs", x => x.Id);
                     table.ForeignKey(
                         name: "FK_audit_logs_audit_actions_AuditActionId",
                         column: x => x.AuditActionId,
                         principalTable: "audit_actions",
-                        principalColumn: "AuditActionId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_audit_logs_users_UserId",
@@ -60,13 +61,13 @@ namespace Pdr.Api.Migrations
 
             migrationBuilder.InsertData(
                 table: "audit_actions",
-                columns: new[] { "AuditActionId", "Action", "Details" },
+                columns: new[] { "Id", "Action", "Details" },
                 values: new object[,]
                 {
-                    { 1, "UserLoggedIn", "User logged into the system" },
-                    { 2, "UserCreated", "A new user account was created" },
-                    { 3, "UserUpdated", "A user account was updated" },
-                    { 4, "UserDeleted", "A user account was deleted" }
+                    { 1, "UserLoggedIn", "User {userName} logged into the system" },
+                    { 2, "UserCreated", "User {userName} was created by {actorName}" },
+                    { 3, "UserUpdated", "User {userName} was updated by {actorName}" },
+                    { 4, "UserDeleted", "User {userName} was deleted by {actorName}" }
                 });
 
             migrationBuilder.CreateIndex(

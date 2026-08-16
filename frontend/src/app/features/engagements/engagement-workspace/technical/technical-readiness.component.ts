@@ -8,11 +8,13 @@ import { AccessItemStatus } from '@features/engagements/models/access-tracker/ac
 import { EnvironmentToolingItemDto } from '@features/engagements/models/environment-tooling/environment-tooling.dtos';
 import { EnvironmentToolingStatus } from '@features/engagements/models/environment-tooling/environment-tooling.enums';
 import { BrownfieldReadinessResponse } from '@features/engagements/models/brownfield-review/brownfield-review.dtos';
+import { ArchitectureValidationDto } from '@features/engagements/models/architecture-validation/architecture-validation.dtos';
 import { EngagementService } from '@features/engagements/services/engagement.service';
 import { EngagementInfoDto } from '@features/engagements/models/engagement.model';
 import { AccessTrackerComponent } from './access-tracker/access-tracker.component';
 import { EnvironmentToolingComponent } from './environment-tooling/environment-tooling.component';
 import { BrownfieldReviewComponent } from './brownfield-review/brownfield-review.component';
+import { ArchitectureValidationComponent } from './architecture-validation/architecture-validation.component';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 
@@ -22,10 +24,10 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
   imports: [
     CommonModule,
     InlineSVGModule,
-    StatusBadgeComponent,
     AccessTrackerComponent,
     EnvironmentToolingComponent,
-    BrownfieldReviewComponent
+    BrownfieldReviewComponent,
+    ArchitectureValidationComponent
   ],
   templateUrl: './technical-readiness.component.html',
   styleUrl: './technical-readiness.component.scss'
@@ -45,6 +47,7 @@ export class TechnicalReadinessComponent {
   accessItems = signal<AccessItemDto[]>([]);
   toolingItems = signal<EnvironmentToolingItemDto[]>([]);
   brownfieldReadiness = signal<BrownfieldReadinessResponse | null>(null);
+  architectureValidation = signal<ArchitectureValidationDto | null>(null);
 
   isBrownfield = computed(() => {
     const type = this.engagementInfo()?.engagementType ?? '';
@@ -108,6 +111,11 @@ export class TechnicalReadinessComponent {
     !this.isBrownfield() || (this.brownfieldReadiness()?.isTechnicallyReady ?? true)
   );
 
+  // Architecture Sizing & Risk
+  isSizingRiskRaised = computed(() => this.architectureValidation()?.isRiskRaised ?? false);
+  sizingRiskSummary = computed(() => this.architectureValidation()?.riskSummary ?? null);
+  isArchitectureReady = computed(() => !this.isSizingRiskRaised());
+
   // Total readiness check
   totalRequired = computed(() => this.accessTotalCount() + this.toolingTotalCount());
   totalReady = computed(() => this.accessGrantedCount() + this.toolingReadyCount());
@@ -129,6 +137,10 @@ export class TechnicalReadinessComponent {
 
   onBrownfieldReadinessUpdated(res: BrownfieldReadinessResponse) {
     this.brownfieldReadiness.set(res);
+  }
+
+  onArchitectureValidationUpdated(val: ArchitectureValidationDto) {
+    this.architectureValidation.set(val);
   }
 
   shareSummary() {

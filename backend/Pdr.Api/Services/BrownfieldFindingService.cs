@@ -55,7 +55,7 @@ public class BrownfieldFindingService(IBrownfieldFindingRepository repository) :
         await repository.AddAsync(finding);
         await repository.SaveChangesAsync();
 
-        var created = await repository.GetByIdAsync(finding.BrownfieldFindingId);
+        var created = await repository.GetByIdAsync(finding.Id);
         return MapToDto(created!);
     }
 
@@ -88,7 +88,7 @@ public class BrownfieldFindingService(IBrownfieldFindingRepository repository) :
     private static BrownfieldFindingDto MapToDto(BrownfieldFinding finding) =>
         new()
         {
-            BrownfieldFindingId = finding.BrownfieldFindingId,
+            Id = finding.Id,
             EngagementId = finding.EngagementId,
             Title = finding.Title,
             Description = finding.Description,

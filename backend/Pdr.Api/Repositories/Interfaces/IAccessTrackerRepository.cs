@@ -8,7 +8,7 @@ public interface IAccessTrackerRepository
 {
     // Access Item queries
     Task<List<AccessItem>> GetAccessItemsByEngagementIdAsync(int engagementId);
-    Task<AccessItem?> GetAccessItemByIdAsync(int accessItemId);
+    Task<AccessItem?> GetAccessItemByIdAsync(int id);
     Task AddAccessItemAsync(AccessItem item);
     Task SaveChangesAsync();
 

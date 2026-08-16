@@ -26,7 +26,7 @@ public class AuditLogService(
         await repository.AddAsync(new AuditLog
         {
             UserId = userId,
-            AuditActionId = auditAction.AuditActionId,
+            AuditActionId = auditAction.Id,
             PayloadJson = JsonSerializer.Serialize(payload)
         });
 
@@ -52,7 +52,7 @@ public class AuditLogService(
         return new CursorPagedResult<AuditLogDto>
         {
             Items = items,
-            NextCursor = hasMore ? pageLogs[^1].AuditLogId : null,
+            NextCursor = hasMore ? pageLogs[^1].Id : null,
             HasMore = hasMore
         };
     }
@@ -68,7 +68,7 @@ public class AuditLogService(
 
         return new AuditLogDto
         {
-            AuditLogId = auditLog.AuditLogId,
+            AuditLogId = auditLog.Id,
             UserId = auditLog.UserId,
             UserName = auditLog.User?.FullName ?? string.Empty,
             Action = actionKey,

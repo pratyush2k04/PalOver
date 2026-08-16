@@ -10,6 +10,7 @@ using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Models.Risks;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
+using Pdr.Api.Services.Notifications.Mappers;
 
 namespace Pdr.Api.Services;
 
@@ -253,9 +254,8 @@ public class EngagementService(
                 "PMAllocated",
                 engagementId,
                 RoleEnum.PreSales,
-                System.Text.Json.JsonSerializer.Serialize(new { AssignedUserId = userId, EngagementId = engagementId }),
-                DateTime.UtcNow,
-                $"/engagements/{engagementId}/workspace/overview");
+                System.Text.Json.JsonSerializer.Serialize(new PMAllocatedMapper.PMAllocatedData(AssignedUserId: userId, EngagementId: engagementId)),
+                DateTime.UtcNow);
         }
 
         if (requiredRole == RoleEnum.TechLead)
@@ -308,7 +308,7 @@ public class EngagementService(
             db.AccessItems.Add(new Pdr.Api.Models.AccessTracker.AccessItem
             {
                 EngagementId = engagementId,
-                AccessItemDefinitionId = def.AccessItemDefinitionId,
+                AccessItemDefinitionId = def.Id,
                 Name = def.Name,
                 IsClientSide = def.IsClientSide,
                 OwnerId = ownerId,
@@ -326,12 +326,18 @@ public class EngagementService(
             db.EnvironmentToolingItems.Add(new Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem
             {
                 EngagementId = engagementId,
-                EnvironmentToolingDefinitionId = def.EnvironmentToolingDefinitionId,
+                EnvironmentToolingDefinitionId = def.Id,
                 Name = def.Name,
                 OwnerId = ownerId,
                 Status = Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingStatus.NotReady
             });
         }
+
+        db.ArchitectureValidations.Add(new Pdr.Api.Models.ArchitectureValidation.ArchitectureValidation
+        {
+            EngagementId = engagementId,
+            Status = Pdr.Api.Models.ArchitectureValidation.ArchitectureStatus.StillValid
+        });
 
         await db.SaveChangesAsync();
     }

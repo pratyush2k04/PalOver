@@ -31,9 +31,12 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IBrownfieldFindingRepository, BrownfieldFindingRepository>();
         services.AddScoped<IChangeRequestRepository, ChangeRequestRepository>();
         services.AddScoped<IPersonRepository, PersonRepository>();
+        services.AddScoped<IClientContactTransitionRepository, ClientContactTransitionRepository>();
         services.AddScoped<IRiskRepository, RiskRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+        services.AddScoped<IArchitectureValidationRepository, ArchitectureValidationRepository>();
+        services.AddScoped<ISearchRepository, SearchRepository>();
 
         // Services
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
@@ -56,11 +59,14 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IBrownfieldFindingService, BrownfieldFindingService>();
         services.AddScoped<IChangeRequestService, ChangeRequestService>();
         services.AddScoped<IPersonService, PersonService>();
+        services.AddScoped<IClientContactTransitionService, ClientContactTransitionService>();
         services.AddScoped<IRiskService, RiskService>();
         services.AddScoped<IKickoffRepository, KickoffRepository>();
         services.AddScoped<IKickoffService, KickoffService>();
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IAuditLogService, AuditLogService>();
+        services.AddScoped<IArchitectureValidationService, ArchitectureValidationService>();
+        services.AddScoped<ISearchService, SearchService>();
         services.AddScoped<TemplateMapperResolver<INotificationTemplateMapper>>();
         services.AddScoped<TemplateMapperResolver<IAuditTemplateMapper>>();
         services.AddSingleton<TemplateRenderer>();
