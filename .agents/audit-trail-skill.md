@@ -1,8 +1,8 @@
 # Audit Trail – Reference for Recording and Reading Audit Events
 
-This guide explains how to use the central audit trail: seeding a new action type, logging an event from any service, and how reads render the final message.
+This guide explains how to use the central audit trail: seeding a new action type, logging an event from any service, and how reads resolve and render the final message.
 
-You only need to touch **one file** to log an existing action from a new place, and **two files + one migration** if you're introducing a brand-new action type. Nothing else in the pipeline (pagination, rendering, the read endpoint) needs to change.
+You only need to touch **one file** to log an existing action from a new place, and **3 files + one migration** if you're introducing a brand-new action type (an enum value, a seed row, and a mapper class). Nothing else in the pipeline (pagination, rendering, the read endpoint) needs to change.
 
 ---
 
@@ -11,9 +11,9 @@ You only need to touch **one file** to log an existing action from a new place, 
 The audit trail is a central, append-only log of significant actions taken by users (logging in, creating/updating/deleting entities, etc.). It is stored in two tables:
 
 - `audit_actions` — a small, seeded lookup table of action *types* (e.g. `UserCreated`). Rarely changes.
-- `audit_logs` — one row per actual *event* (who did it, which action type, when, and a free-form JSON payload). Grows continuously.
+- `audit_logs` — one row per actual *event* (who did it, which action type, when, and a JSON payload of ids). Grows continuously.
 
-Reading the log is already fully built: `GET /api/audit-logs` returns a cursor-paginated, human-readable feed, restricted to `Leadership`/`Admin` users. **You never need to touch the controller, DTOs, or pagination logic.**
+Reading the log is already fully built: `GET /api/audit-logs` returns a cursor-paginated, human-readable feed — every authenticated user can call it, but a non-`Leadership`/non-`Admin` caller only sees their own entries (see section 3). **You never need to touch the controller, DTOs, or pagination logic.**
 
 Writing to the log is a single call: inject `IAuditLogService` into your own service and call `LogAsync(...)`. That's the entire integration surface for recording a new event of an *existing* action type.
 
@@ -60,9 +60,11 @@ builder.HasData(
     });
 ```
 
-**Important — `Details` is a template, not literal text.** The `{userName}`, `{actorName}`, `{engagementName}` placeholders are **not** filled in when the row is seeded or when a log entry is written. They are filled in later, at *read* time, by matching each `{placeholder}` against a key in the JSON payload you pass to `LogAsync` (see section 2). You can invent any placeholder names you like — there is no compile-time or database-level link between a placeholder name and anything else. Pick names that match the keys you intend to put in the payload dictionary.
+**Important — `Details` is a template, not literal text, and its placeholders are filled from the *mapper's* output, not the raw payload.** The `{userName}`, `{actorName}`, `{engagementName}` placeholders are filled in at *read* time by matching each `{placeholder}` against a key in the dictionary your action's `IAuditTemplateMapper` returns — **not** against the raw JSON payload you pass to `LogAsync` (that payload holds ids; the mapper resolves those ids into the display values the template expects). You can invent any placeholder names you like as long as your mapper's returned dictionary uses the same keys.
 
-Once you've added the enum value and the seed row, generate a migration (this is schema-layer work):
+**You also need a mapper class for a brand-new action type** — see section 2b.
+
+Once you've added the enum value, seed row, and mapper, generate a migration (this is schema-layer work):
 
 ```bash
 dotnet ef migrations add Add<YourActionName>AuditAction
@@ -78,61 +80,124 @@ dotnet ef migrations add Add<YourActionName>AuditAction
 Task LogAsync(AuditActionEnum action, IDictionary<string, object?> payload);
 ```
 
-**Example** — logging from a hypothetical service, after archiving an engagement:
+**The payload holds ids, not resolved display strings.** `LogAsync` doesn't render anything itself — it just serializes whatever dictionary you pass and stores it as-is. Resolution to display values (e.g. an id to a user's full name) happens later, at read time, via the action's registered `IAuditTemplateMapper`.
+
+**Example** — the real `UserLoggedIn` call site, from `AuthService.LoginAsync`, fired only on a successful login:
 
 ```csharp
-public class EngagementService(
-    IEngagementRepository repository,
-    ICurrentUserService currentUserService,
-    IAuditLogService auditLogService) : IEngagementService
+public class AuthService(
+    IUserRepository userRepository,
+    IJwtTokenGenerator jwtTokenGenerator,
+    IAuditLogService auditLogService) : IAuthService
 {
-    public async Task ArchiveAsync(int engagementId)
+    public async Task<AuthResultDto> LoginAsync(LoginRequestDto request)
     {
-        var engagement = await repository.GetByIdAsync(engagementId)
-            ?? throw new EngagementNotFoundException(engagementId);
+        // ...credential validation...
 
-        engagement.IsArchived = true;
-        await repository.SaveChangesAsync();
+        var token = jwtTokenGenerator.GenerateToken(user);
 
-        await auditLogService.LogAsync(AuditActionEnum.EngagementArchived, new Dictionary<string, object?>
+        await auditLogService.LogAsync(AuditActionEnum.UserLoggedIn, new Dictionary<string, object?>
         {
-            ["engagementName"] = engagement.Name,
-            ["actorName"] = currentUserService.GetFullName()
+            ["UserId"] = user.Id
         });
+
+        return new AuthResultDto { IsSuccess = true, Token = token };
     }
 }
 ```
 
-No DI registration is needed — `IAuditLogService` is already registered as scoped in `DependencyInjectionExtensions.cs`. Just constructor-inject it like any other service.
+Note the payload key is `UserId` (an id), not `userName` (a resolved string) — the opposite of what you might expect from the `Details` template's `{userName}` placeholder. The `UserLoggedInMapper` (section 2b) is what turns `UserId` into `userName` at read time.
+
+No DI registration is needed for `IAuditLogService` itself — it's already registered as scoped in `DependencyInjectionExtensions.cs`. Just constructor-inject it like any other service.
 
 ### What happens internally, step by step
 
 1. **The acting user is always the current caller.** `LogAsync` resolves the user via `ICurrentUserService.GetUserId()`. There is no parameter to attribute the log entry to a different user, and no supported way to log on behalf of a system/background process — it always requires an authenticated `HttpContext`.
 2. **The action row is looked up by the enum's int value.** If no seeded `AuditAction` row exists for that value (e.g. you forgot section 1, or passed a value that was never seeded), it throws a raw `InvalidOperationException`. Note this bypasses this repo's usual `AppException`-based exception convention — that's a known gap in this feature, not a pattern to copy elsewhere.
-3. **The payload is serialized to JSON exactly as given, with no schema.** `PayloadJson` accepts any `IDictionary<string, object?>` — there is no fixed shape per action type, no required keys, and no size limit enforced in code. This is the main flexibility of the feature: you are not constrained to a specific DTO per action; any JSON-serializable dictionary works.
+3. **The payload is serialized to JSON exactly as given, with no schema enforced by `LogAsync` itself.** `PayloadJson` accepts any `IDictionary<string, object?>` — there is no fixed shape checked at write time. But the keys/values you choose are only useful if they match what your action's registered `IAuditTemplateMapper.MapAsync` expects to deserialize (ids, keyed to that mapper's private payload record) — not the `Details` template's placeholder names.
 4. **The write is its own, separate save.** The repository calls `AddAsync` then its own `SaveChangesAsync` — this is **not** batched with whatever `SaveChangesAsync` your calling code already did (or is about to do). The audit entry commits independently. If your own business save fails *after* you've already called `LogAsync`, the audit entry is **not** automatically rolled back.
+
+## 2b. Add a mapper (required for a brand-new action type)
+
+Every seeded `AuditAction` needs a matching `IAuditTemplateMapper` — it's what resolves the ids in your payload into the display values the `Details` template needs. Mirrors `INotificationTemplateMapper`/the notification mappers exactly.
+
+**File:** `Pdr.Api/Services/Audit/Mappers/<YourAction>Mapper.cs`
+
+```csharp
+using System.Text.Json;
+using Pdr.Api.Models.Audit;
+using Pdr.Api.Repositories.Interfaces;
+
+namespace Pdr.Api.Services.Audit.Mappers;
+
+public class UserLoggedInMapper(IUserRepository userRepository) : IAuditTemplateMapper
+{
+    public string TemplateKey => nameof(AuditActionEnum.UserLoggedIn);
+
+    private record UserLoggedInData(int UserId);
+
+    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+    {
+        var payload = JsonSerializer.Deserialize<UserLoggedInData>(data)
+            ?? throw new InvalidOperationException("UserLoggedIn audit payload could not be parsed.");
+
+        var user = await userRepository.GetByIdAsync(payload.UserId);
+
+        return new Dictionary<string, object?>
+        {
+            ["userName"] = user?.FullName
+        };
+    }
+}
+```
+
+`TemplateKey` must exactly match the `AuditAction.Action` value, which is always `AuditActionEnum.<YourAction>.ToString()` — using `nameof(AuditActionEnum.<YourAction>)` keeps them in sync automatically.
+
+Then register it in `Pdr.Api/Services/Audit/AuditMapperRegistry.cs`:
+
+```csharp
+public static class AuditMapperRegistry
+{
+    public static IServiceCollection AddAuditMappers(this IServiceCollection services)
+    {
+        services.AddScoped<IAuditTemplateMapper, UserLoggedInMapper>();
+        // ...existing mappers...
+        services.AddScoped<IAuditTemplateMapper, YourNewMapper>();
+
+        return services;
+    }
+}
+```
+
+No other DI changes needed — `TemplateMapperResolver<IAuditTemplateMapper>` is already registered and picks up every `IAuditTemplateMapper` in the container via `IEnumerable<IAuditTemplateMapper>`.
 
 ---
 
 ## 3. How reads and rendering work (informational — you don't need to build this)
 
-`GET /api/audit-logs?cursor={id}&limit={n}` is already fully implemented and restricted to `Leadership`/`Admin` roles (`AuditLogController`, inline `IsInRole`/`IsAdmin` check — no attribute-based policy). It returns a `CursorPagedResult<AuditLogDto>`, newest entries first.
+`GET /api/audit-logs?cursor={id}&limit={n}` is already fully implemented. Every authenticated user can call it (`AuditLogController`, `[Authorize]`), but the rows returned are scoped: `Leadership`/`Admin` callers (inline `IsInRole`/`IsAdmin` check, computed in `AuditLogService.GetAuditLogsAsync`) see every user's entries; everyone else only sees rows where they were the acting user. It returns a `CursorPagedResult<AuditLogDto>`, newest entries first.
 
 Internally, `AuditLogService.GetAuditLogsAsync`:
 
-1. Fetches `limit + 1` rows ordered by `AuditLogId` descending (cursor = "give me rows with a smaller id than this"); if it got more than `limit` back, there's a next page (`HasMore = true`, `NextCursor` = the last item's id).
-2. Maps each `AuditLog` row to an `AuditLogDto` by deserializing `PayloadJson` back into a dictionary and rendering the action's `Details` template against it:
+1. Computes whether the caller is elevated (`Leadership` or `Admin`) and passes `null` (no filter) or the caller's own user id into `repository.GetPageAsync(cursor, limit, scopedUserId)`.
+2. Fetches `limit + 1` rows ordered by `AuditLogId` descending (cursor = "give me rows with a smaller id than this"); if it got more than `limit` back, there's a next page (`HasMore = true`, `NextCursor` = the last item's id).
+3. Maps each `AuditLog` row to an `AuditLogDto` by resolving the row's mapper and rendering against its output:
 
 ```csharp
-Details = templateRenderer.Render(auditLog.AuditAction?.Details ?? string.Empty, payload)
+var mapper = mapperResolver.Resolve(auditLog.AuditAction.Action)
+    ?? throw new InvalidOperationException($"No IAuditTemplateMapper registered for action {actionKey}.");
+
+var values = await mapper.MapAsync(auditLog.PayloadJson);
+
+Details = templateRenderer.Render(auditLog.AuditAction?.Details ?? string.Empty, values);
 ```
 
-`TemplateRenderer.Render` is a simple loop of `template.Replace("{key}", value)` calls. Two things to know about how loose this is:
+`TemplateRenderer.Render` is a simple loop of `template.Replace("{key}", value)` calls over the mapper's returned dictionary. Two things to know about how loose this is:
 
-- If your payload has a key with **no matching placeholder** in the template, that key is silently ignored — no error.
-- If the template has a **placeholder with no matching payload key**, it is left in the output as literal text (e.g. `"Engagement {engagementName} was archived by {actorName}"` renders with a literal `{actorName}` if that key was missing) — no error, no exception, just a visibly wrong string.
+- If the mapper's returned dictionary has a key with **no matching placeholder** in the template, that key is silently ignored — no error.
+- If the template has a **placeholder with no matching key** in the mapper's output, it is left in the output as literal text (e.g. `"Engagement {engagementName} was archived by {actorName}"` renders with a literal `{actorName}` if that key was missing) — no error, no exception, just a visibly wrong string.
 
-There is nothing to add here for a new action type — as soon as the `AuditAction.Details` template and your `LogAsync` payload keys line up, rendering works automatically.
+There is nothing to add here for a new action type — as soon as your mapper is registered and its output keys line up with the `AuditAction.Details` template's placeholders, rendering works automatically.
 
 ---
 
@@ -140,17 +205,18 @@ There is nothing to add here for a new action type — as soon as the `AuditActi
 
 | I want to... | Then do this |
 |---|---|
-| Log an event using an **existing** action type | Inject `IAuditLogService`, call `LogAsync(existingEnumValue, payloadDict)`. Nothing else. |
-| Introduce a **brand-new** action type | Add an enum value to `AuditActionEnum`, seed a matching row in `AuditActionConfiguration`, generate a migration, then call `LogAsync` as above. |
-| Read/display the audit log | Nothing to build — `GET /api/audit-logs` already exists, restricted to `Leadership`/`Admin`. |
-| Change who can read the audit log | Edit the `IsInRole`/`IsAdmin` check in `AuditLogController.GetAuditLogs`. |
+| Log an event using an **existing** action type | Inject `IAuditLogService`, call `LogAsync(existingEnumValue, idPayloadDict)`. Nothing else. |
+| Introduce a **brand-new** action type | Add an enum value to `AuditActionEnum`, seed a matching row in `AuditActionConfiguration`, add an `IAuditTemplateMapper` implementation and register it in `AuditMapperRegistry`, generate a migration, then call `LogAsync` as above. |
+| Read/display the audit log | Nothing to build — `GET /api/audit-logs` already exists; every authenticated user can call it, scoped to their own entries unless `Leadership`/`Admin`. |
+| Change who can read the full (unscoped) audit log | Edit the elevated-access check in `AuditLogService.GetAuditLogsAsync`. |
 
 ---
 
 ## Constraints and gotchas
 
 - **Never call `LogAsync` with an `AuditActionEnum` value that has no seeded `AuditAction` row** — it throws `InvalidOperationException`, not a handled/logged failure.
-- **`PayloadJson` has no schema.** Don't assume any particular shape when reading it back outside of `AuditLogService.MapToDto` — it's whatever dictionary the original caller passed.
+- **A missing `IAuditTemplateMapper` for a seeded action throws `InvalidOperationException` at read time** (in `AuditLogService.MapToDtoAsync`) — every seeded `AuditAction` must have a matching registered mapper.
+- **`PayloadJson` holds ids, not resolved display values, and has no schema enforced by `LogAsync` itself.** Its keys/values are whatever the original caller passed — but they're only meaningful if they match what that action's `IAuditTemplateMapper` expects to deserialize.
 - **`LogAsync` always attributes the entry to the current authenticated user.** It cannot log on behalf of another user or an unauthenticated/system/background actor.
 - **The audit write commits on its own `SaveChangesAsync`,** independent of the caller's own transaction/save. Don't assume atomicity between your business write and the audit write.
-- **Do not add action-specific typed fields (new columns, new DTOs per action).** The whole point of the JSON payload dictionary is to be the single, generic extensibility point for every action type. Adding typed per-action fields would break that contract — express anything action-specific through payload keys and a matching `Details` template instead.
+- **Do not add action-specific typed fields to `AuditLog`/`AuditLogDto` (new columns, new DTOs per action).** The whole point of the JSON payload + per-action mapper is to be the single, generic extensibility point for every action type. Adding typed per-action fields would break that contract — express anything action-specific through payload ids, a matching mapper, and a `Details` template instead.

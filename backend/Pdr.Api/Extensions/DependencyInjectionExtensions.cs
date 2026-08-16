@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Pdr.Api.Repositories;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services;
+using Pdr.Api.Services.Audit;
 using Pdr.Api.Services.Interfaces;
 using Pdr.Api.Services.Notifications;
 using Pdr.Api.Services.Templating;
@@ -61,6 +62,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IAuditLogService, AuditLogService>();
         services.AddScoped<TemplateMapperResolver<INotificationTemplateMapper>>();
+        services.AddScoped<TemplateMapperResolver<IAuditTemplateMapper>>();
         services.AddSingleton<TemplateRenderer>();
 
         return services;

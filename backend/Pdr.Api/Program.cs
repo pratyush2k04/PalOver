@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Pdr.Api.Extensions;
 using Pdr.Api.Filters;
+using Pdr.Api.Services.Audit;
 using Pdr.Api.Services.Notifications;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +22,8 @@ builder.Services
     .AddJwtAuthentication(builder.Configuration)
     .AddValidationServices()
     .AddApplicationServices()
-    .AddNotificationMappers();
+    .AddNotificationMappers()
+    .AddAuditMappers();
 
 var app = builder.Build();
 
