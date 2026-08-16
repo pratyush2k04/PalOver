@@ -7,13 +7,14 @@ using Pdr.Api.Models.Notifications;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 using Pdr.Api.Services.Notifications;
+using Pdr.Api.Services.Templating;
 
 namespace Pdr.Api.Services;
 
 public class NotificationService(
     INotificationRepository repository,
     IEngagementRepository engagementRepository,
-    TemplateMapperResolver mapperResolver,
+    TemplateMapperResolver<INotificationTemplateMapper> mapperResolver,
     TemplateRenderer renderer,
     ILogger<NotificationService> logger) : INotificationService
 {
