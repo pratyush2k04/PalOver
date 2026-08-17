@@ -24,6 +24,7 @@ public class NotificationService(
         RoleEnum receiverRole,
         string data,
         DateTime scheduledFor,
+        NotificationPriority? priorityOverride = null,
         CancellationToken cancellationToken = default)
     {
         var assignment = await engagementRepository.GetAssignmentByRoleIdAsync(engagementId, (int)receiverRole);
@@ -48,7 +49,7 @@ public class NotificationService(
         {
             TemplateId = template.Id,
             ReceiverUserId = assignment.UserId,
-            Priority = template.DefaultPriority,
+            Priority = priorityOverride ?? template.DefaultPriority,
             ScheduledFor = scheduledFor,
             Data = data
         });
@@ -59,6 +60,7 @@ public class NotificationService(
         int receiverUserId,
         string data,
         DateTime scheduledFor,
+        NotificationPriority? priorityOverride = null,
         CancellationToken cancellationToken = default)
     {
         var template = await repository.GetTemplateByKeyAsync(templateKey)
@@ -68,7 +70,7 @@ public class NotificationService(
         {
             TemplateId = template.Id,
             ReceiverUserId = receiverUserId,
-            Priority = template.DefaultPriority,
+            Priority = priorityOverride ?? template.DefaultPriority,
             ScheduledFor = scheduledFor,
             Data = data
         });
