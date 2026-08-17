@@ -15,6 +15,11 @@
         }
       </div>
     </div>
+
+    <button type="button" class="share-btn" (click)="shareSummary()">
+      <span [inlineSVG]="'assets/icons/share.svg'"></span>
+      Share Summary
+    </button>
   </div>
 
   @if (engagementId()) {

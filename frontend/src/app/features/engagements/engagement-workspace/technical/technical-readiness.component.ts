@@ -143,7 +143,9 @@ export class TechnicalReadinessComponent {
     this.architectureValidation.set(val);
   }
 
-  shareSummary() {
-    alert(TECHNICAL_READINESS_ALERTS.SHARE_SUMMARY);
+  shareSummary(): void {
+    const id = this.engagementId();
+    if (!id) return;
+    window.open(`/engagements/${id}/day-one-summary-print`, '_blank');
   }
 }
