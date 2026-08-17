@@ -67,13 +67,13 @@ public class AuditActionConfiguration : IEntityTypeConfiguration<AuditAction>
             {
                 Id = (int)AuditActionEnum.KickoffReminderSuppressed,
                 Action = AuditActionEnum.KickoffReminderSuppressed.ToString(),
-                Details = "Kickoff reminder for engagement {engagementName} was suppressed after readiness reached 100%"
+                Details = "Kickoff reminders for engagement {engagementName} ({thresholdsLabel} before kickoff on {kickoffDate}) were suppressed after readiness reached 100%"
             },
             new AuditAction
             {
                 Id = (int)AuditActionEnum.KickoffReminderReactivated,
                 Action = AuditActionEnum.KickoffReminderReactivated.ToString(),
-                Details = "Kickoff reminder for engagement {engagementName} was reactivated after readiness dropped to {readinessScore}%"
+                Details = "Kickoff reminders for engagement {engagementName} ({thresholdsLabel} before kickoff on {kickoffDate}) were reactivated after readiness dropped to {readinessScore}%"
             },
             new AuditAction
             {

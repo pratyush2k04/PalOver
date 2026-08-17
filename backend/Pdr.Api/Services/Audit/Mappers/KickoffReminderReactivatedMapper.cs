@@ -8,7 +8,7 @@ public class KickoffReminderReactivatedMapper(IEngagementRepository engagementRe
 {
     public string TemplateKey => nameof(AuditActionEnum.KickoffReminderReactivated);
 
-    public record KickoffReminderReactivatedData(int EngagementId, int ReadinessScore);
+    public record KickoffReminderReactivatedData(int EngagementId, List<int> ThresholdDays, string? KickoffDate, int ReadinessScore);
 
     public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
     {
@@ -20,6 +20,8 @@ public class KickoffReminderReactivatedMapper(IEngagementRepository engagementRe
         return new Dictionary<string, object?>
         {
             ["engagementName"] = engagement?.EngagementName,
+            ["thresholdsLabel"] = KickoffReminderSuppressedMapper.FormatThresholdsLabel(payload.ThresholdDays),
+            ["kickoffDate"] = payload.KickoffDate,
             ["readinessScore"] = payload.ReadinessScore
         };
     }

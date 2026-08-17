@@ -378,13 +378,13 @@ namespace Pdr.Api.Migrations
                         {
                             Id = 7,
                             Action = "KickoffReminderSuppressed",
-                            Details = "Kickoff reminder for engagement {engagementName} was suppressed after readiness reached 100%"
+                            Details = "Kickoff reminders for engagement {engagementName} ({thresholdsLabel} before kickoff on {kickoffDate}) were suppressed after readiness reached 100%"
                         },
                         new
                         {
                             Id = 8,
                             Action = "KickoffReminderReactivated",
-                            Details = "Kickoff reminder for engagement {engagementName} was reactivated after readiness dropped to {readinessScore}%"
+                            Details = "Kickoff reminders for engagement {engagementName} ({thresholdsLabel} before kickoff on {kickoffDate}) were reactivated after readiness dropped to {readinessScore}%"
                         },
                         new
                         {

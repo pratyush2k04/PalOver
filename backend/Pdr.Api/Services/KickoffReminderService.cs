@@ -66,15 +66,16 @@ public class KickoffReminderService(
         var reminders = await notificationRepository.GetKickoffRemindersAsync(engagementId, template.Id);
         if (reminders.Count == 0) return;
 
-        var suppressedAny = false;
-        var reactivatedAny = false;
+        var suppressedThresholds = new List<int>();
+        var reactivatedThresholds = new List<int>();
 
         if (readinessScore == 100)
         {
             foreach (var reminder in reminders.Where(r => !r.IsDeleted))
             {
                 reminder.IsDeleted = true;
-                suppressedAny = true;
+                var thresholdDays = TryParseData(reminder.Data)?.ThresholdDays;
+                if (thresholdDays is not null) suppressedThresholds.Add(thresholdDays.Value);
             }
         }
         else
@@ -82,29 +83,43 @@ public class KickoffReminderService(
             foreach (var reminder in reminders.Where(r => r.IsDeleted))
             {
                 reminder.IsDeleted = false;
-                reactivatedAny = true;
+                var thresholdDays = TryParseData(reminder.Data)?.ThresholdDays;
+                if (thresholdDays is not null) reactivatedThresholds.Add(thresholdDays.Value);
             }
         }
 
-        if (!suppressedAny && !reactivatedAny) return;
+        if (suppressedThresholds.Count == 0 && reactivatedThresholds.Count == 0) return;
 
         await notificationRepository.SaveChangesAsync();
 
         var actorId = ResolveActingUserId(actingUserId);
+        var engagement = await engagementRepository.GetByIdAsync(engagementId);
+        var kickoffDate = engagement?.KickoffDate.ToString("yyyy-MM-dd");
 
-        if (suppressedAny)
+        if (suppressedThresholds.Count > 0)
         {
             await LogAsync(
                 AuditActionEnum.KickoffReminderSuppressed,
-                new Dictionary<string, object?> { ["EngagementId"] = engagementId },
+                new Dictionary<string, object?>
+                {
+                    ["EngagementId"] = engagementId,
+                    ["ThresholdDays"] = suppressedThresholds.OrderByDescending(d => d).ToList(),
+                    ["KickoffDate"] = kickoffDate
+                },
                 actorId);
         }
 
-        if (reactivatedAny)
+        if (reactivatedThresholds.Count > 0)
         {
             await LogAsync(
                 AuditActionEnum.KickoffReminderReactivated,
-                new Dictionary<string, object?> { ["EngagementId"] = engagementId, ["ReadinessScore"] = readinessScore },
+                new Dictionary<string, object?>
+                {
+                    ["EngagementId"] = engagementId,
+                    ["ThresholdDays"] = reactivatedThresholds.OrderByDescending(d => d).ToList(),
+                    ["KickoffDate"] = kickoffDate,
+                    ["ReadinessScore"] = readinessScore
+                },
                 actorId);
         }
     }
