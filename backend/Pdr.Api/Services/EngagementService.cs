@@ -20,7 +20,8 @@ public class EngagementService(
     ICurrentUserService currentUserService,
     IEngagementChecklistService engagementChecklistService,
     INotificationService notificationService,
-    IKickoffReadinessService kickoffReadinessService) : IEngagementService
+    IKickoffReadinessService kickoffReadinessService,
+    IKickoffReminderService kickoffReminderService) : IEngagementService
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
 
@@ -80,6 +81,8 @@ public class EngagementService(
         }
 
         await db.SaveChangesAsync();
+
+        await kickoffReminderService.ScheduleRemindersAsync(engagement.EngagementId, engagement.KickoffDate);
 
         try
         {
@@ -187,6 +190,13 @@ public class EngagementService(
         engagement.StatusId = activeStatus.StatusId;
 
         await db.SaveChangesAsync();
+
+        if (request.KickoffDate is not null)
+            await kickoffReminderService.ScheduleRemindersAsync(id, request.KickoffDate.Value);
+
+        if (request.BillingStartDate is not null)
+            await kickoffReminderService.RetireForBillingAsync(id);
+
         return true;
     }
 
@@ -256,6 +266,10 @@ public class EngagementService(
                 RoleEnum.PreSales,
                 System.Text.Json.JsonSerializer.Serialize(new PMAllocatedMapper.PMAllocatedData(AssignedUserId: userId, EngagementId: engagementId)),
                 DateTime.UtcNow);
+
+            var engagementForReminder = await db.Engagements.FindAsync(engagementId);
+            if (engagementForReminder is not null)
+                await kickoffReminderService.ScheduleRemindersAsync(engagementId, engagementForReminder.KickoffDate);
         }
 
         if (requiredRole == RoleEnum.TechLead)

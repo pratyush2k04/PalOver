@@ -11,7 +11,12 @@ public class KickoffReadinessReminderMapper(
 {
     public string TemplateKey => KickoffReminderConstants.TemplateKey;
 
-    public record KickoffReadinessReminderData(int EngagementId, int ThresholdDays);
+    // RetiredForBilling defaults to false so existing/newly-scheduled payloads deserialize cleanly;
+    // KickoffReminderService flips it to true (by rewriting Data, not IsDeleted alone) when billing is
+    // signed off, so a later readiness drop can never resurrect a permanently retired reminder - the
+    // Notification.UpdatedBy column can't be used for this because AppDbContext.SaveChangesAsync always
+    // overwrites UpdatedBy with the current user on every modified row.
+    public record KickoffReadinessReminderData(int EngagementId, int ThresholdDays, bool RetiredForBilling = false);
 
     public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
     {

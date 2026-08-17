@@ -5,8 +5,6 @@ namespace Pdr.Api.Constants;
 public static class KickoffReminderConstants
 {
     public const string TemplateKey = "KickoffReadinessReminder";
-    public const string ReadinessSyncActor = "ReadinessSync";
-    public const string BillingSignOffActor = "BillingSignOff";
 
     public static readonly IReadOnlyList<(int ThresholdDays, NotificationPriority Priority)> Thresholds =
     [

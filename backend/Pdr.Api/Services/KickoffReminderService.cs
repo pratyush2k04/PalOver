@@ -11,6 +11,7 @@ namespace Pdr.Api.Services;
 public class KickoffReminderService(
     INotificationService notificationService,
     INotificationRepository notificationRepository,
+    IEngagementRepository engagementRepository,
     IAuditLogService auditLogService,
     ICurrentUserService currentUserService) : IKickoffReminderService
 {
@@ -18,6 +19,11 @@ public class KickoffReminderService(
     {
         var template = await notificationRepository.GetTemplateByKeyAsync(KickoffReminderConstants.TemplateKey);
         if (template is null) return;
+
+        // CreateFromTemplateAsync silently no-ops if the PM role is unfilled - check up front so we
+        // don't write a KickoffReminderScheduled audit entry for a notification that was never created.
+        var pmAssignment = await engagementRepository.GetAssignmentByRoleIdAsync(engagementId, (int)RoleEnum.ProjectManagement);
+        if (pmAssignment is null) return;
 
         var existingReminders = await notificationRepository.GetKickoffRemindersAsync(engagementId, template.Id);
         var actorId = ResolveActingUserId(actingUserId);
@@ -28,7 +34,7 @@ public class KickoffReminderService(
                 kickoffDate.AddDays(-thresholdDays).ToDateTime(TimeOnly.MinValue),
                 DateTimeKind.Utc);
 
-            var match = existingReminders.FirstOrDefault(n => TryGetThresholdDays(n.Data) == thresholdDays);
+            var match = existingReminders.FirstOrDefault(n => TryParseData(n.Data)?.ThresholdDays == thresholdDays);
 
             if (match is null)
             {
@@ -68,16 +74,14 @@ public class KickoffReminderService(
             foreach (var reminder in reminders.Where(r => !r.IsDeleted))
             {
                 reminder.IsDeleted = true;
-                reminder.UpdatedBy = KickoffReminderConstants.ReadinessSyncActor;
                 suppressedAny = true;
             }
         }
         else
         {
-            foreach (var reminder in reminders.Where(r => r.IsDeleted && r.UpdatedBy != KickoffReminderConstants.BillingSignOffActor))
+            foreach (var reminder in reminders.Where(r => r.IsDeleted && TryParseData(r.Data)?.RetiredForBilling != true))
             {
                 reminder.IsDeleted = false;
-                reminder.UpdatedBy = KickoffReminderConstants.ReadinessSyncActor;
                 reactivatedAny = true;
             }
         }
@@ -116,8 +120,11 @@ public class KickoffReminderService(
 
         foreach (var reminder in active)
         {
+            var payload = TryParseData(reminder.Data);
+            if (payload is not null)
+                reminder.Data = JsonSerializer.Serialize(payload with { RetiredForBilling = true });
+
             reminder.IsDeleted = true;
-            reminder.UpdatedBy = KickoffReminderConstants.BillingSignOffActor;
         }
 
         await notificationRepository.SaveChangesAsync();
@@ -155,14 +162,13 @@ public class KickoffReminderService(
         }
     }
 
-    private static int? TryGetThresholdDays(string? data)
+    private static KickoffReadinessReminderMapper.KickoffReadinessReminderData? TryParseData(string? data)
     {
         if (data is null) return null;
 
         try
         {
-            var payload = JsonSerializer.Deserialize<KickoffReadinessReminderMapper.KickoffReadinessReminderData>(data);
-            return payload?.ThresholdDays;
+            return JsonSerializer.Deserialize<KickoffReadinessReminderMapper.KickoffReadinessReminderData>(data);
         }
         catch (JsonException)
         {

@@ -17,7 +17,8 @@ namespace Pdr.Api.Controllers;
 [Produces("application/json")]
 public class EngagementsController(
     IEngagementService engagementService,
-    IKickoffReadinessService kickoffReadinessService) : ControllerBase
+    IKickoffReadinessService kickoffReadinessService,
+    IKickoffReminderService kickoffReminderService) : ControllerBase
 {
     /// <summary>
     /// Retrieves engagements assigned to the logged-in user.
@@ -172,6 +173,7 @@ public class EngagementsController(
     public async Task<ActionResult<KickoffReadinessDto>> GetKickoffReadiness(int id)
     {
         var readiness = await kickoffReadinessService.GetReadinessAsync(id);
+        await kickoffReminderService.SyncSuppressionAsync(id, readiness.Score);
         return Ok(readiness);
     }
 
