@@ -48,6 +48,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ICommitmentService, CommitmentService>();
         services.AddScoped<IRealisticCommitmentService, RealisticCommitmentService>();
         services.AddScoped<IKickoffReadinessService, KickoffReadinessService>();
+        services.AddScoped<IKickoffReminderService, KickoffReminderService>();
         services.AddScoped<IMasterChecklistService, MasterChecklistService>();
         services.AddScoped<IHomeService, HomeService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();

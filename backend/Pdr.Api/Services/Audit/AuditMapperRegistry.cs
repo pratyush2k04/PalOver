@@ -12,6 +12,11 @@ public static class AuditMapperRegistry
         services.AddScoped<IAuditTemplateMapper, UserCreatedMapper>();
         services.AddScoped<IAuditTemplateMapper, UserUpdatedMapper>();
         services.AddScoped<IAuditTemplateMapper, UserDeletedMapper>();
+        services.AddScoped<IAuditTemplateMapper, KickoffReminderScheduledMapper>();
+        services.AddScoped<IAuditTemplateMapper, KickoffReminderFiredMapper>();
+        services.AddScoped<IAuditTemplateMapper, KickoffReminderSuppressedMapper>();
+        services.AddScoped<IAuditTemplateMapper, KickoffReminderReactivatedMapper>();
+        services.AddScoped<IAuditTemplateMapper, KickoffReminderRetiredForBillingMapper>();
 
         // Add new mappers here when adding new audit action types.
 
