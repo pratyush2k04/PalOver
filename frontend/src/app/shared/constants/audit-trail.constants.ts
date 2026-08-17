@@ -1,3 +1,7 @@
+export const AUDIT_TRAIL_ROUTES = {
+  BASE: 'audit-trail',
+} as const;
+
 export const AUDIT_LOG_API_ENDPOINTS = {
   LIST: '/api/audit-logs',
 } as const;
