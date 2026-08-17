@@ -89,6 +89,7 @@ public class AppDbContext : DbContext
     // Resource Requests
     public DbSet<Models.ResourceRequests.ResourceRequest> ResourceRequests => Set<Models.ResourceRequests.ResourceRequest>();
     public DbSet<Models.ResourceRequests.ResourceRequestSkill> ResourceRequestSkills => Set<Models.ResourceRequests.ResourceRequestSkill>();
+    public DbSet<Models.ResourceRequests.ResourceAllocation> ResourceAllocations => Set<Models.ResourceRequests.ResourceAllocation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
