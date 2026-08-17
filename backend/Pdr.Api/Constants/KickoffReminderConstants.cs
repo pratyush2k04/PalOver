@@ -1,3 +1,4 @@
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.Notifications;
 
 namespace Pdr.Api.Constants;
@@ -11,5 +12,12 @@ public static class KickoffReminderConstants
         (5, NotificationPriority.Low),
         (2, NotificationPriority.Medium),
         (1, NotificationPriority.High)
+    ];
+
+    public static readonly IReadOnlyList<RoleEnum> ReceiverRoles =
+    [
+        RoleEnum.PreSales,
+        RoleEnum.ProjectManagement,
+        RoleEnum.TechLead
     ];
 }

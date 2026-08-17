@@ -1,7 +1,6 @@
 using System.Text.Json;
 using Pdr.Api.Constants;
 using Pdr.Api.Models.Audit;
-using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 using Pdr.Api.Services.Notifications.Mappers;
@@ -20,40 +19,44 @@ public class KickoffReminderService(
         var template = await notificationRepository.GetTemplateByKeyAsync(KickoffReminderConstants.TemplateKey);
         if (template is null) return;
 
-        // CreateFromTemplateAsync silently no-ops if the PM role is unfilled - check up front so we
-        // don't write a KickoffReminderScheduled audit entry for a notification that was never created.
-        var pmAssignment = await engagementRepository.GetAssignmentByRoleIdAsync(engagementId, (int)RoleEnum.ProjectManagement);
-        if (pmAssignment is null) return;
-
         var existingReminders = await notificationRepository.GetKickoffRemindersAsync(engagementId, template.Id);
         var actorId = ResolveActingUserId(actingUserId);
 
-        foreach (var (thresholdDays, priority) in KickoffReminderConstants.Thresholds)
+        foreach (var role in KickoffReminderConstants.ReceiverRoles)
         {
-            var scheduledFor = DateTime.SpecifyKind(
-                kickoffDate.AddDays(-thresholdDays).ToDateTime(TimeOnly.MinValue),
-                DateTimeKind.Utc);
+            // CreateFromTemplateAsync silently no-ops if this role is unfilled - check up front so we
+            // don't write a KickoffReminderScheduled audit entry for a notification that was never created.
+            var assignment = await engagementRepository.GetAssignmentByRoleIdAsync(engagementId, (int)role);
+            if (assignment is null) continue;
 
-            var match = existingReminders.FirstOrDefault(n => TryParseData(n.Data)?.ThresholdDays == thresholdDays);
-
-            if (match is null)
+            foreach (var (thresholdDays, priority) in KickoffReminderConstants.Thresholds)
             {
-                await notificationService.CreateFromTemplateAsync(
-                    KickoffReminderConstants.TemplateKey,
-                    engagementId,
-                    RoleEnum.ProjectManagement,
-                    JsonSerializer.Serialize(new KickoffReadinessReminderMapper.KickoffReadinessReminderData(engagementId, thresholdDays)),
-                    scheduledFor,
-                    priority);
+                var scheduledFor = DateTime.SpecifyKind(
+                    kickoffDate.AddDays(-thresholdDays).ToDateTime(TimeOnly.MinValue),
+                    DateTimeKind.Utc);
 
-                await LogScheduledAsync(engagementId, thresholdDays, actorId);
-            }
-            else if (match.ScheduledFor != scheduledFor)
-            {
-                match.ScheduledFor = scheduledFor;
-                await notificationRepository.SaveChangesAsync();
+                var match = existingReminders.FirstOrDefault(n =>
+                    n.ReceiverUserId == assignment.UserId && TryParseData(n.Data)?.ThresholdDays == thresholdDays);
 
-                await LogScheduledAsync(engagementId, thresholdDays, actorId);
+                if (match is null)
+                {
+                    await notificationService.CreateFromTemplateAsync(
+                        KickoffReminderConstants.TemplateKey,
+                        engagementId,
+                        role,
+                        JsonSerializer.Serialize(new KickoffReadinessReminderMapper.KickoffReadinessReminderData(engagementId, thresholdDays)),
+                        scheduledFor,
+                        priority);
+
+                    await LogScheduledAsync(engagementId, thresholdDays, actorId);
+                }
+                else if (match.ScheduledFor != scheduledFor)
+                {
+                    match.ScheduledFor = scheduledFor;
+                    await notificationRepository.SaveChangesAsync();
+
+                    await LogScheduledAsync(engagementId, thresholdDays, actorId);
+                }
             }
         }
     }
