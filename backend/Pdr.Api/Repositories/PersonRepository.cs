@@ -33,6 +33,14 @@ public class PersonRepository(AppDbContext context) : IPersonRepository
             .FirstOrDefaultAsync(p => p.EngagementId == engagementId && p.Name.ToLower() == name.ToLower());
     }
 
+    public async Task<IEnumerable<Person>> GetByNamesAndEngagementAsync(int engagementId, IEnumerable<string> names)
+    {
+        var lowerNames = names.Select(n => n.ToLower()).ToList();
+        return await context.People
+            .Where(p => p.EngagementId == engagementId && lowerNames.Contains(p.Name.ToLower()))
+            .ToListAsync();
+    }
+
     public async Task AddAsync(Person person)
     {
         await context.People.AddAsync(person);

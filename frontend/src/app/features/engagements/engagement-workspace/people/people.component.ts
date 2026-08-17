@@ -11,6 +11,8 @@ import { ToastService } from '@common/services/toast/toast';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { ButtonComponent } from '@common/components/button/button';
 import { DialogService } from '@common/services/dialog/dialog.service';
+import { AuthService } from '../../../../services/auth';
+import { USER_ROLES } from '../../../../shared/constants/users.constants';
 import {
   PersonFormDialogComponent,
   PersonFormDialogData,
@@ -36,6 +38,7 @@ export class PeopleComponent {
   private toastService = inject(ToastService);
   private dialog = inject(DialogService);
   public loaderService = inject(LoaderService);
+  private authService = inject(AuthService);
 
   private paramMap = toSignal(this.route.parent?.paramMap ?? this.route.paramMap);
 
@@ -48,6 +51,8 @@ export class PeopleComponent {
   isDeleting = signal(false);
   personToDelete = signal<PersonDto | null>(null);
   isImporting = signal(false);
+  
+  isLeadership = computed(() => this.authService.hasRole(USER_ROLES.LEADERSHIP));
 
   constructor() {
     effect(() => {

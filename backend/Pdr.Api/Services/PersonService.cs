@@ -143,10 +143,10 @@ public class PersonService(
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        foreach (var outgoingName in outgoingNames)
+        if (outgoingNames.Any())
         {
-            var personToDelete = await personRepository.GetByNameAndEngagementAsync(engagementId, outgoingName);
-            if (personToDelete is not null)
+            var peopleToDelete = await personRepository.GetByNamesAndEngagementAsync(engagementId, outgoingNames);
+            foreach (var personToDelete in peopleToDelete)
             {
                 personToDelete.UpdatedBy = currentUserId;
                 personRepository.Delete(personToDelete);
