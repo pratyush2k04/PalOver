@@ -4141,6 +4141,102 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.ResourceRequests.ResourceRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer")
+                        .HasColumnName("engagement_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("JobDescription")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("job_description");
+
+                    b.Property<int>("PeopleNeeded")
+                        .HasColumnType("integer")
+                        .HasColumnName("people_needed");
+
+                    b.Property<int>("RequestedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("requested_by_id");
+
+                    b.Property<DateOnly>("RequiredByDate")
+                        .HasColumnType("date")
+                        .HasColumnName("required_by_date");
+
+                    b.Property<int>("StandardRole")
+                        .HasColumnType("integer")
+                        .HasColumnName("standard_role");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestedById");
+
+                    b.HasIndex("EngagementId", "Status");
+
+                    b.ToTable("resource_requests", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_resource_requests_job_description_min_length", "char_length(job_description) >= 15");
+
+                            t.HasCheckConstraint("ck_resource_requests_people_needed_positive", "people_needed > 0");
+                        });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.ResourceRequests.ResourceRequestSkill", b =>
+                {
+                    b.Property<int>("ResourceRequestId")
+                        .HasColumnType("integer")
+                        .HasColumnName("resource_request_id");
+
+                    b.Property<int>("Skill")
+                        .HasColumnType("integer")
+                        .HasColumnName("skill");
+
+                    b.HasKey("ResourceRequestId", "Skill");
+
+                    b.ToTable("resource_request_skills", (string)null);
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Risks.Risk", b =>
                 {
                     b.Property<int>("Id")
@@ -4628,6 +4724,32 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Engagement");
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.ResourceRequests.ResourceRequest", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Engagement", null)
+                        .WithMany()
+                        .HasForeignKey("EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", null)
+                        .WithMany()
+                        .HasForeignKey("RequestedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.ResourceRequests.ResourceRequestSkill", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.ResourceRequests.ResourceRequest", "ResourceRequest")
+                        .WithMany("RequestSkills")
+                        .HasForeignKey("ResourceRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ResourceRequest");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Risks.Risk", b =>
                 {
                     b.HasOne("Pdr.Api.Models.Engagement", null)
@@ -4720,6 +4842,11 @@ namespace Pdr.Api.Migrations
             modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.MasterChecklistVersion", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.ResourceRequests.ResourceRequest", b =>
+                {
+                    b.Navigation("RequestSkills");
                 });
 #pragma warning restore 612, 618
         }
