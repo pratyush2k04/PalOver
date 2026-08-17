@@ -1,0 +1,55 @@
+<div class="resources-container">
+  <div class="resources-header">
+    <h2 class="page-title">{{ constants.PAGE_TITLE }}</h2>
+    <app-button variant="accent" (click)="openRaiseModal()">
+      {{ constants.BTN_RAISE_REQUEST }}
+    </app-button>
+  </div>
+
+  @if (showWarningBanner()) {
+    <div class="warning-banner" role="alert">
+      <span class="banner-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+          <line x1="4" y1="22" x2="4" y2="15"></line>
+        </svg>
+      </span>
+      <span class="banner-text">
+        <strong>Resources not confirmed</strong> — billing starts {{ formattedBillingDate() }}. {{ unconfirmedCount() }} request(s) still open.
+      </span>
+    </div>
+  }
+
+  <div class="requests-list">
+    @if (requests().length > 0) {
+      @for (request of requests(); track request.id) {
+        <div class="request-card">
+          <div class="card-header">
+            <div class="role-info">
+              <span class="role-title">{{ request.standardRole }}</span>
+              @if (request.isUrgent) {
+                <span class="urgent-badge">Urgent</span>
+              }
+              <span class="need-details">
+                {{ request.peopleNeeded }} needed by {{ formatDisplayDate(request.requiredByDate) }}
+              </span>
+            </div>
+            <div class="status-wrapper">
+              <span class="status-pill status-{{ request.status.toLowerCase() }}">{{ request.status }}</span>
+            </div>
+          </div>
+
+          <div class="skills-row">
+            @for (skill of request.skills; track skill) {
+              <span class="skill-tag">{{ skill }}</span>
+            }
+          </div>
+        </div>
+      }
+    } @else {
+      <div class="empty-state-wrapper">
+        <app-empty-state [message]="constants.EMPTY_STATE_SUBTITLE" />
+      </div>
+    }
+  </div>
+</div>

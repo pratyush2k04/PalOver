@@ -62,6 +62,13 @@ export const ENGAGEMENTS_ROUTES: Routes = [
           ),
       },
       {
+        path: 'resources',
+        loadComponent: () =>
+          import('./engagement-workspace/resources/resources.component').then(
+            (m) => m.ResourcesComponent
+          ),
+      },
+      {
         path: 'technical-readiness',
         loadComponent: () =>
           import('./engagement-workspace/technical/technical-readiness.component').then(
