@@ -79,7 +79,7 @@ public class KickoffReminderService(
         }
         else
         {
-            foreach (var reminder in reminders.Where(r => r.IsDeleted && TryParseData(r.Data)?.RetiredForBilling != true))
+            foreach (var reminder in reminders.Where(r => r.IsDeleted))
             {
                 reminder.IsDeleted = false;
                 reactivatedAny = true;
@@ -107,32 +107,6 @@ public class KickoffReminderService(
                 new Dictionary<string, object?> { ["EngagementId"] = engagementId, ["ReadinessScore"] = readinessScore },
                 actorId);
         }
-    }
-
-    public async Task RetireForBillingAsync(int engagementId, int? actingUserId = null)
-    {
-        var template = await notificationRepository.GetTemplateByKeyAsync(KickoffReminderConstants.TemplateKey);
-        if (template is null) return;
-
-        var reminders = await notificationRepository.GetKickoffRemindersAsync(engagementId, template.Id);
-        var active = reminders.Where(r => !r.IsDeleted).ToList();
-        if (active.Count == 0) return;
-
-        foreach (var reminder in active)
-        {
-            var payload = TryParseData(reminder.Data);
-            if (payload is not null)
-                reminder.Data = JsonSerializer.Serialize(payload with { RetiredForBilling = true });
-
-            reminder.IsDeleted = true;
-        }
-
-        await notificationRepository.SaveChangesAsync();
-
-        await LogAsync(
-            AuditActionEnum.KickoffReminderRetiredForBilling,
-            new Dictionary<string, object?> { ["EngagementId"] = engagementId },
-            ResolveActingUserId(actingUserId));
     }
 
     private async Task LogScheduledAsync(int engagementId, int thresholdDays, int? actorId) =>

@@ -194,9 +194,6 @@ public class EngagementService(
         if (request.KickoffDate is not null)
             await kickoffReminderService.ScheduleRemindersAsync(id, request.KickoffDate.Value);
 
-        if (request.BillingStartDate is not null)
-            await kickoffReminderService.RetireForBillingAsync(id);
-
         return true;
     }
 
