@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Constants;
+using Pdr.Api.Data;
 using Pdr.Api.DTOs.EngagementChecklist;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.EngagementChecklist;
@@ -10,7 +12,7 @@ namespace Pdr.Api.Services;
 public class EngagementChecklistService(
     IEngagementChecklistRepository checklistRepository,
     IMasterChecklistRepository masterChecklistRepository,
-    IPersonRepository personRepository,
+    AppDbContext dbContext,
     ICurrentUserService currentUserService) : IEngagementChecklistService
 {
     public async Task<EngagementChecklistResponseDto?> GetByEngagementIdAsync(int engagementId)
@@ -214,7 +216,7 @@ public class EngagementChecklistService(
 
         if (dto.PersonId is not null)
         {
-            await EnsurePersonBelongsToEngagementAsync(engagementId, dto.PersonId.Value);
+            await EnsureUserBelongsToEngagementAsync(engagementId, dto.PersonId.Value);
         }
 
         var currentUserId = currentUserService.GetUserId();
@@ -245,7 +247,7 @@ public class EngagementChecklistService(
             throw new ChecklistBlockReasonRequiredException();
         }
 
-        await EnsurePersonBelongsToEngagementAsync(engagementId, dto.PersonId);
+        await EnsureUserBelongsToEngagementAsync(engagementId, dto.PersonId);
 
         var currentUserId = currentUserService.GetUserId();
         item.Status = "Blocked";
@@ -286,12 +288,18 @@ public class EngagementChecklistService(
         return MapToDto(updated);
     }
 
-    private async Task EnsurePersonBelongsToEngagementAsync(int engagementId, int personId)
+    private async Task EnsureUserBelongsToEngagementAsync(int engagementId, int personId)
     {
-        var people = await personRepository.GetByEngagementIdAsync(engagementId);
-        if (!people.Any(p => p.PersonId == personId))
+        var isAssigned = await dbContext.EngagementAssignments
+            .AnyAsync(a => a.EngagementId == engagementId && a.UserId == personId && !a.User.IsDeleted);
+
+        if (!isAssigned)
         {
-            throw new PersonNotFoundException(personId, engagementId);
+            var hasAnyAssignments = await dbContext.EngagementAssignments.AnyAsync(a => a.EngagementId == engagementId);
+            if (hasAnyAssignments || !await dbContext.Users.AnyAsync(u => u.Id == personId && !u.IsDeleted))
+            {
+                throw new UserNotFoundException(personId);
+            }
         }
     }
 
@@ -336,7 +344,7 @@ public class EngagementChecklistService(
                      i.ExemptionReviewedAt,
                      i.ExemptionRejectionReason,
                      i.OwnerId,
-                     i.Owner != null ? i.Owner.Name : null,
+                     i.Owner != null ? i.Owner.FullName : null,
                      i.BlockReason))
                  .ToList()))
             .ToList();
