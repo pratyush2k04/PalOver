@@ -47,6 +47,7 @@ export class PeopleComponent {
   people = signal<PersonDto[]>([]);
   isDeleting = signal(false);
   personToDelete = signal<PersonDto | null>(null);
+  isImporting = signal(false);
 
   constructor() {
     effect(() => {
@@ -151,6 +152,31 @@ export class PeopleComponent {
       },
       error: () => {
         this.isDeleting.set(false);
+      }
+    });
+  }
+
+  onImportFromHandover(): void {
+    const engagementId = this.engagementId();
+    if (!engagementId) return;
+
+    this.isImporting.set(true);
+    this.personService.importFromHandover(engagementId).subscribe({
+      next: (response) => {
+        const messages: string[] = [];
+        if (response.added > 0) messages.push(`${response.added} added`);
+        if (response.alreadyPresent > 0) messages.push(`${response.alreadyPresent} already present`);
+        if (response.deleted > 0) messages.push(`${response.deleted} deleted`);
+
+        const toastMessage = messages.length > 0 ? messages.join(', ') : 'No contacts imported';
+        this.toastService.success(toastMessage);
+        this.isImporting.set(false);
+        this.loadPeople(engagementId);
+      },
+      error: (err) => {
+        console.error('Error importing contacts:', err);
+        this.toastService.error('Failed to import contacts from handover');
+        this.isImporting.set(false);
       }
     });
   }

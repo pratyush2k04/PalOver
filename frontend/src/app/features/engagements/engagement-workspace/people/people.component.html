@@ -7,6 +7,13 @@
     <div class="people-directory__actions">
       <app-button
         type="button"
+        variant="flat"
+        [disabled]="isImporting()"
+        (click)="onImportFromHandover()">
+        Import from handover
+      </app-button>
+      <app-button
+        type="button"
         variant="accent"
         (click)="onAddPerson()">
         <span class="btn-icon">+</span>
