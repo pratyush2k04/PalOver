@@ -6,41 +6,32 @@
     </app-button>
   </div>
 
-  <form (ngSubmit)="onSubmit()" class="modal-form">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="modal-form">
     <div class="modal-body">
       @if (errorMessage()) {
         <app-alert variant="danger">{{ errorMessage() }}</app-alert>
       }
 
       <div class="form-group">
-        <label for="standard-role" class="form-label">{{ constants.LABEL_STANDARD_ROLE }}</label>
-        <select
+        <app-select
           id="standard-role"
-          class="form-select"
-          [value]="selectedRole()"
-          (change)="onRoleChange($event)"
-        >
-          @for (role of roleOptions; track role.value) {
-            <option [value]="role.value">{{ role.label }}</option>
-          }
-        </select>
+          [label]="constants.LABEL_STANDARD_ROLE"
+          formControlName="standardRole"
+          [options]="roleOptions"
+        />
       </div>
 
       <div class="form-group">
         <label class="form-label">{{ constants.LABEL_SKILLS }}</label>
-        <div class="skills-grid">
-          @for (skill of skillOptions; track skill.value) {
-            <label class="skill-checkbox-item" [class.is-checked]="isSkillSelected(skill.value)">
-              <input
-                type="checkbox"
-                class="skill-checkbox-input"
-                [checked]="isSkillSelected(skill.value)"
-                (change)="toggleSkill(skill.value)"
-              />
-              <span class="skill-label">{{ skill.label }}</span>
-            </label>
-          }
-        </div>
+        <app-multi-select-list
+          [options]="skillOptions"
+          [selectedValues]="selectedSkills()"
+          variant="cards"
+          (selectedValuesChange)="onSkillsChange($event)"
+        />
+        @if (skillsTouched() && selectedSkills().length === 0) {
+          <span class="app-field__error">{{ constants.MSG_SKILL_REQUIRED }}</span>
+        }
       </div>
 
       <div class="form-group">
@@ -50,37 +41,41 @@
           type="number"
           min="1"
           class="form-input"
-          [value]="peopleNeeded()"
-          (input)="onPeopleChange($event)"
+          formControlName="peopleNeeded"
         />
+        @if (form.controls.peopleNeeded.invalid && form.controls.peopleNeeded.touched) {
+          <span class="app-field__error">{{ constants.MSG_PEOPLE_NEEDED_POSITIVE }}</span>
+        }
       </div>
 
       <div class="form-group">
-        <label for="required-by-date" class="form-label">{{ constants.LABEL_REQUIRED_BY }}</label>
-        <input
+        <app-input
           id="required-by-date"
+          [label]="constants.LABEL_REQUIRED_BY"
           type="date"
-          class="form-input"
-          [value]="requiredByDate()"
-          (input)="onDateChange($event)"
+          formControlName="requiredByDate"
+          [errorMessages]="{
+            required: 'Please select a required-by date.',
+            pastDate: constants.MSG_REQUIRED_DATE_PAST,
+            afterBillingDate: constants.MSG_REQUIRED_BEFORE_BILLING
+          }"
         />
       </div>
 
       <div class="form-group">
-        <div class="label-with-counter">
-          <label for="job-description" class="form-label">{{ constants.LABEL_JOB_DESCRIPTION }}</label>
-          <span class="char-counter" [class.is-invalid]="descLength() > constants.MAX_JOB_DESCRIPTION_LENGTH || (descLength() > 0 && descLength() < constants.MIN_JOB_DESCRIPTION_LENGTH)">
-            {{ descLength() }}/{{ constants.MAX_JOB_DESCRIPTION_LENGTH }}
-          </span>
-        </div>
-        <textarea
+        <app-textarea
           id="job-description"
-          rows="4"
-          class="form-textarea"
-          [value]="jobDescription()"
-          (input)="onJobDescriptionInput($event)"
+          [label]="constants.LABEL_JOB_DESCRIPTION"
+          formControlName="jobDescription"
+          [rows]="4"
+          [maxLength]="constants.MAX_JOB_DESCRIPTION_LENGTH"
           placeholder="Provide a short description of the role responsibilities (15 to 500 characters)..."
-        ></textarea>
+          [errorMessages]="{
+            required: constants.MSG_JOB_DESC_LENGTH,
+            minlength: constants.MSG_JOB_DESC_LENGTH,
+            maxlength: constants.MSG_JOB_DESC_LENGTH
+          }"
+        />
       </div>
     </div>
 
@@ -96,7 +91,7 @@
       <app-button
         type="submit"
         variant="accent"
-        [disabled]="isSubmitting() || !isFormValid()"
+        [disabled]="isSubmitting() || form.invalid || selectedSkills().length === 0"
         [loading]="isSubmitting()"
       >
         {{ constants.BTN_RAISE }}

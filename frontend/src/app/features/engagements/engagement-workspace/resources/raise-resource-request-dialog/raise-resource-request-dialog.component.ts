@@ -1,12 +1,23 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { AlertComponent } from '@common/components/alert/alert';
 import { ToastService } from '@common/services/toast/toast';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
+import { InputComponent } from '@common/components/form/input/input';
+import { TextareaComponent } from '@common/components/form/textarea/textarea';
+import { MultiSelectListComponent } from '@common/components/multi-select-list/multi-select-list';
 import {
   RESOURCE_REQUEST_CONSTANTS,
   STANDARD_ROLE_OPTIONS,
@@ -24,145 +35,107 @@ export interface RaiseResourceRequestDialogData {
   billingStartDate?: string | null;
 }
 
+function notPastDateValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    if (!control.value) {
+      return null;
+    }
+    const todayStr = new Date().toISOString().split('T')[0];
+    return control.value < todayStr ? { pastDate: true } : null;
+  };
+}
+
+function notAfterBillingDateValidator(billingStartDate: string | null | undefined): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    if (!control.value || !billingStartDate) {
+      return null;
+    }
+    return control.value > billingStartDate ? { afterBillingDate: true } : null;
+  };
+}
+
 @Component({
   selector: 'app-raise-resource-request-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, InlineSVGModule, ButtonComponent, AlertComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    InlineSVGModule,
+    ButtonComponent,
+    AlertComponent,
+    SelectComponent,
+    InputComponent,
+    TextareaComponent,
+    MultiSelectListComponent,
+  ],
   templateUrl: './raise-resource-request-dialog.component.html',
   styleUrl: './raise-resource-request-dialog.component.scss',
 })
 export class RaiseResourceRequestDialogComponent {
+  private fb = inject(FormBuilder);
   private dialogRef = inject<DialogRef<ResourceRequestItem | null>>(DialogRef);
   private resourceRequestService = inject(ResourceRequestService);
   private toastService = inject(ToastService);
   readonly data = inject<RaiseResourceRequestDialogData>(DIALOG_DATA);
 
   readonly constants = RESOURCE_REQUEST_CONSTANTS;
-  readonly roleOptions = STANDARD_ROLE_OPTIONS;
-  readonly skillOptions = SKILL_OPTIONS;
+  readonly roleOptions: SelectOption[] = [...STANDARD_ROLE_OPTIONS];
+  readonly skillOptions: SelectOption[] = [...SKILL_OPTIONS];
 
-  selectedRole = signal<number>(StandardRoleEnum.SeniorDeveloper);
+  readonly form = this.fb.nonNullable.group({
+    standardRole: [StandardRoleEnum.SeniorDeveloper as number, [Validators.required]],
+    peopleNeeded: [1, [Validators.required, Validators.min(1)]],
+    requiredByDate: [
+      '',
+      [
+        Validators.required,
+        notPastDateValidator(),
+        notAfterBillingDateValidator(this.data.billingStartDate),
+      ],
+    ],
+    jobDescription: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(RESOURCE_REQUEST_CONSTANTS.MIN_JOB_DESCRIPTION_LENGTH),
+        Validators.maxLength(RESOURCE_REQUEST_CONSTANTS.MAX_JOB_DESCRIPTION_LENGTH),
+      ],
+    ],
+  });
+
+  // MultiSelectListComponent isn't a ControlValueAccessor, so skills live outside the
+  // FormGroup as a signal — same pattern as custom-visibility-dialog's role selection.
   selectedSkills = signal<number[]>([]);
-  peopleNeeded = signal<number>(1);
-  requiredByDate = signal<string>('');
-  jobDescription = signal<string>('');
+  skillsTouched = signal(false);
 
   errorMessage = signal<string | null>(null);
   isSubmitting = signal<boolean>(false);
 
-  readonly descLength = computed(() => this.jobDescription().trim().length);
-
-  readonly isFormValid = computed(() => {
-    const roleValid = this.selectedRole() > 0;
-    const skillsValid = this.selectedSkills().length > 0;
-    const peopleValid = this.peopleNeeded() > 0;
-    const dateValid = !!this.requiredByDate();
-    const descLength = this.descLength();
-    const descValid =
-      descLength >= RESOURCE_REQUEST_CONSTANTS.MIN_JOB_DESCRIPTION_LENGTH &&
-      descLength <= RESOURCE_REQUEST_CONSTANTS.MAX_JOB_DESCRIPTION_LENGTH;
-
-    return roleValid && skillsValid && peopleValid && dateValid && descValid;
-  });
-
-  onRoleChange(event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    this.selectedRole.set(Number(select.value));
-    this.clearError();
-  }
-
-  toggleSkill(skillValue: number): void {
-    const current = this.selectedSkills();
-    if (current.includes(skillValue)) {
-      this.selectedSkills.set(current.filter((s) => s !== skillValue));
-    } else {
-      this.selectedSkills.set([...current, skillValue]);
-    }
-    this.clearError();
-  }
-
-  isSkillSelected(skillValue: number): boolean {
-    return this.selectedSkills().includes(skillValue);
-  }
-
-  onPeopleChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const val = Number(input.value);
-    this.peopleNeeded.set(val > 0 ? val : 1);
-    this.clearError();
-  }
-
-  onDateChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.requiredByDate.set(input.value);
-    this.clearError();
-  }
-
-  onJobDescriptionInput(event: Event): void {
-    const textarea = event.target as HTMLTextAreaElement;
-    this.jobDescription.set(textarea.value);
-    this.clearError();
-  }
-
-  private clearError(): void {
-    if (this.errorMessage()) {
-      this.errorMessage.set(null);
-    }
-  }
-
-  validate(): boolean {
-    if (this.selectedSkills().length === 0) {
-      this.errorMessage.set(RESOURCE_REQUEST_CONSTANTS.MSG_SKILL_REQUIRED);
-      return false;
-    }
-
-    if (this.peopleNeeded() <= 0) {
-      this.errorMessage.set(RESOURCE_REQUEST_CONSTANTS.MSG_PEOPLE_NEEDED_POSITIVE);
-      return false;
-    }
-
-    if (!this.requiredByDate()) {
-      this.errorMessage.set('Please select a required-by date.');
-      return false;
-    }
-
-    const todayStr = new Date().toISOString().split('T')[0];
-    if (this.requiredByDate() < todayStr) {
-      this.errorMessage.set(RESOURCE_REQUEST_CONSTANTS.MSG_REQUIRED_DATE_PAST);
-      return false;
-    }
-
-    if (this.data.billingStartDate && this.requiredByDate() > this.data.billingStartDate) {
-      this.errorMessage.set(RESOURCE_REQUEST_CONSTANTS.MSG_REQUIRED_BEFORE_BILLING);
-      return false;
-    }
-
-    const descLength = this.descLength();
-    if (
-      descLength < RESOURCE_REQUEST_CONSTANTS.MIN_JOB_DESCRIPTION_LENGTH ||
-      descLength > RESOURCE_REQUEST_CONSTANTS.MAX_JOB_DESCRIPTION_LENGTH
-    ) {
-      this.errorMessage.set(RESOURCE_REQUEST_CONSTANTS.MSG_JOB_DESC_LENGTH);
-      return false;
-    }
-
-    return true;
+  onSkillsChange(values: unknown[]): void {
+    this.selectedSkills.set(values as number[]);
+    this.skillsTouched.set(true);
   }
 
   onSubmit(): void {
-    if (!this.validate()) {
+    const skillsValid = this.selectedSkills().length > 0;
+
+    if (this.form.invalid || !skillsValid) {
+      this.form.markAllAsTouched();
+      this.skillsTouched.set(true);
       return;
     }
 
     this.isSubmitting.set(true);
     this.errorMessage.set(null);
 
+    const { standardRole, peopleNeeded, requiredByDate, jobDescription } = this.form.getRawValue();
+
     const payload: CreateResourceRequestPayload = {
-      standardRole: this.selectedRole(),
+      standardRole,
       skills: this.selectedSkills(),
-      peopleNeeded: this.peopleNeeded(),
-      requiredByDate: this.requiredByDate(),
-      jobDescription: this.jobDescription().trim(),
+      peopleNeeded,
+      requiredByDate,
+      jobDescription: jobDescription.trim(),
     };
 
     this.resourceRequestService

@@ -53,7 +53,7 @@ export const STANDARD_ROLE_OPTIONS: readonly RoleOption[] = [
 export const SKILL_OPTIONS: readonly SkillOption[] = [
   { value: 1, label: 'React / Frontend' },
   { value: 2, label: 'Angular / Frontend' },
-  { value: 3, label: 'Node.js Backend' },
+  { value: 3, label: 'Node.js / Backend' },
   { value: 4, label: '.NET / Backend' },
   { value: 5, label: 'Data Engineering' },
   { value: 6, label: 'QA Automation' },
