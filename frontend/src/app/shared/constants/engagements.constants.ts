@@ -49,7 +49,7 @@ export const ENGAGEMENT_WORKSPACE_CONFIG = {
     { label: 'People', route: 'people', enabled: true },
     { label: 'Checklist', route: 'checklist', enabled: true },
     { label: 'Kickoff', route: 'kickoff', enabled: true },
-    { label: 'Resourcing', route: 'resourcing', enabled: false },
+    { label: 'Resources', route: 'resources', enabled: true },
     { label: 'Technical Readiness', route: 'technical-readiness', enabled: true },
     { label: 'Risks', route: 'risks', enabled: true },
     { label: 'Reporting', route: 'reporting', enabled: false }
