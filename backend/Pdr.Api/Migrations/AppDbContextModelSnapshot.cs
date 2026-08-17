@@ -361,6 +361,36 @@ namespace Pdr.Api.Migrations
                             Id = 4,
                             Action = "UserDeleted",
                             Details = "User {userName} was deleted by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Action = "KickoffReminderScheduled",
+                            Details = "Kickoff readiness reminder scheduled for engagement {engagementName} ({thresholdLabel} before kickoff)"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Action = "KickoffReminderFired",
+                            Details = "A {thresholdLabel}-before-kickoff readiness reminder was sent for engagement {engagementName}"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Action = "KickoffReminderSuppressed",
+                            Details = "Kickoff reminder for engagement {engagementName} was suppressed after readiness reached 100%"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Action = "KickoffReminderReactivated",
+                            Details = "Kickoff reminder for engagement {engagementName} was reactivated after readiness dropped to {readinessScore}%"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Action = "KickoffReminderRetiredForBilling",
+                            Details = "Kickoff reminders for engagement {engagementName} were retired after billing was signed off"
                         });
                 });
 
