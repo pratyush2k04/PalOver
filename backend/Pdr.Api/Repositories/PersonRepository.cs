@@ -27,6 +27,12 @@ public class PersonRepository(AppDbContext context) : IPersonRepository
             .FirstOrDefaultAsync(p => p.PersonId == personId);
     }
 
+    public async Task<Person?> GetByNameAndEngagementAsync(int engagementId, string name)
+    {
+        return await context.People
+            .FirstOrDefaultAsync(p => p.EngagementId == engagementId && p.Name.ToLower() == name.ToLower());
+    }
+
     public async Task AddAsync(Person person)
     {
         await context.People.AddAsync(person);

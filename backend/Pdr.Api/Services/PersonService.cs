@@ -6,7 +6,9 @@ using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class PersonService(IPersonRepository personRepository) : IPersonService
+public class PersonService(
+    IPersonRepository personRepository,
+    IClientContactTransitionRepository transitionRepository) : IPersonService
 {
     public async Task<IEnumerable<PersonDto>> GetPeopleByEngagementAsync(int engagementId)
     {
@@ -89,6 +91,77 @@ public class PersonService(IPersonRepository personRepository) : IPersonService
         person.UpdatedBy = currentUserId;
         personRepository.Delete(person);
         await personRepository.SaveChangesAsync();
+    }
+
+    public async Task<ImportHandoverContactsResponseDto> ImportHandoverContactsAsync(int engagementId, string? currentUserId)
+    {
+        var exists = await personRepository.EngagementExistsAsync(engagementId);
+        if (!exists)
+        {
+            throw new EngagementNotFoundException(engagementId);
+        }
+
+        var transitions = await transitionRepository.GetAllByEngagementIdAsync(engagementId);
+        if (!transitions.Any())
+        {
+            return new ImportHandoverContactsResponseDto { Added = 0, AlreadyPresent = 0, Deleted = 0 };
+        }
+
+        var latestTransition = transitions.OrderByDescending(t => t.CreatedAt).First();
+        var incomingName = latestTransition.IncomingContactName.Trim();
+
+        int added = 0, alreadyPresent = 0, deleted = 0;
+
+        if (!string.IsNullOrEmpty(incomingName))
+        {
+            var existingPerson = await personRepository.GetByNameAndEngagementAsync(engagementId, incomingName);
+            if (existingPerson is null)
+            {
+                var newPerson = new Person
+                {
+                    EngagementId = engagementId,
+                    Name = incomingName,
+                    Role = latestTransition.IncomingContactRole.Trim(),
+                    PersonType = PersonType.Client,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    CreatedBy = currentUserId,
+                    UpdatedBy = currentUserId
+                };
+                await personRepository.AddAsync(newPerson);
+                added++;
+            }
+            else
+            {
+                alreadyPresent++;
+            }
+        }
+
+        var outgoingNames = transitions
+            .Select(t => t.OutgoingContactName.Trim())
+            .Where(name => !string.IsNullOrEmpty(name))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        foreach (var outgoingName in outgoingNames)
+        {
+            var personToDelete = await personRepository.GetByNameAndEngagementAsync(engagementId, outgoingName);
+            if (personToDelete is not null)
+            {
+                personToDelete.UpdatedBy = currentUserId;
+                personRepository.Delete(personToDelete);
+                deleted++;
+            }
+        }
+
+        await personRepository.SaveChangesAsync();
+
+        return new ImportHandoverContactsResponseDto
+        {
+            Added = added,
+            AlreadyPresent = alreadyPresent,
+            Deleted = deleted
+        };
     }
 
     private static PersonDto MapToDto(Person person)
