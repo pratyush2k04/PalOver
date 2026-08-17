@@ -3,7 +3,10 @@ export const TECHNICAL_READINESS_ROUTES = {
 } as const;
 
 export const TECHNICAL_READINESS_ROLES = {
-  TECH_LEAD: 'Tech Lead'
+  PRE_SALES: 'Pre Sales',
+  PROJECT_MANAGEMENT: 'Project Management',
+  TECH_LEAD: 'Tech Lead',
+  LEADERSHIP: 'Leadership'
 } as const;
 
 export const TECHNICAL_READINESS_ALERTS = {
