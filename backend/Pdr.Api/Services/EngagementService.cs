@@ -82,8 +82,6 @@ public class EngagementService(
 
         await db.SaveChangesAsync();
 
-        await kickoffReminderService.ScheduleRemindersAsync(engagement.EngagementId, engagement.KickoffDate);
-
         try
         {
             var currentUserId = currentUserService.GetUserId();
@@ -106,6 +104,10 @@ public class EngagementService(
         {
             // Fallback for unauthenticated test calls
         }
+
+        // Runs after the PreSales assignment bookkeeping above, so a brand-new engagement's
+        // signing PreSales user is already visible when ScheduleRemindersAsync checks role assignments.
+        await kickoffReminderService.ScheduleRemindersAsync(engagement.EngagementId, engagement.KickoffDate);
 
 
         // Apply master checklist snapshot and technical readiness items for new engagements
@@ -284,6 +286,10 @@ public class EngagementService(
             }
 
             await db.SaveChangesAsync();
+
+            var engagementForReminder = await db.Engagements.FindAsync(engagementId);
+            if (engagementForReminder is not null)
+                await kickoffReminderService.ScheduleRemindersAsync(engagementId, engagementForReminder.KickoffDate);
         }
 
         return await GetEngagementOwnersAsync(engagementId);
