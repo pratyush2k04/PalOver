@@ -4046,6 +4046,19 @@ namespace Pdr.Api.Migrations
                             LinkPattern = "/engagements/{EngagementId}/workspace/handover",
                             Title = "Handover Submitted — {EngagementName}",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Body = "{PeopleNeeded} {RoleName} requested for {EngagementName} by {RequiredByDate}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 3,
+                            IsDeleted = false,
+                            Key = "ResourceRequestRaised",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/resources",
+                            Title = "Resource Request Raised — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
