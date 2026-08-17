@@ -1,0 +1,106 @@
+<div class="dialog-container">
+  <div class="modal-header">
+    <h3 class="modal-title">{{ constants.MODAL_TITLE }}</h3>
+    <app-button type="button" variant="icon" ariaLabel="Close" (click)="onCancel()">
+      <span class="close-icon" [inlineSVG]="'assets/icons/close.svg'"></span>
+    </app-button>
+  </div>
+
+  <form (ngSubmit)="onSubmit()" class="modal-form">
+    <div class="modal-body">
+      @if (errorMessage()) {
+        <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+      }
+
+      <div class="form-group">
+        <label for="standard-role" class="form-label">{{ constants.LABEL_STANDARD_ROLE }}</label>
+        <select
+          id="standard-role"
+          class="form-select"
+          [value]="selectedRole()"
+          (change)="onRoleChange($event)"
+        >
+          @for (role of roleOptions; track role.value) {
+            <option [value]="role.value">{{ role.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">{{ constants.LABEL_SKILLS }}</label>
+        <div class="skills-grid">
+          @for (skill of skillOptions; track skill.value) {
+            <label class="skill-checkbox-item" [class.is-checked]="isSkillSelected(skill.value)">
+              <input
+                type="checkbox"
+                class="skill-checkbox-input"
+                [checked]="isSkillSelected(skill.value)"
+                (change)="toggleSkill(skill.value)"
+              />
+              <span class="skill-label">{{ skill.label }}</span>
+            </label>
+          }
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="number-of-people" class="form-label">{{ constants.LABEL_NUMBER_OF_PEOPLE }}</label>
+        <input
+          id="number-of-people"
+          type="number"
+          min="1"
+          class="form-input"
+          [value]="peopleNeeded()"
+          (input)="onPeopleChange($event)"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="required-by-date" class="form-label">{{ constants.LABEL_REQUIRED_BY }}</label>
+        <input
+          id="required-by-date"
+          type="date"
+          class="form-input"
+          [value]="requiredByDate()"
+          (input)="onDateChange($event)"
+        />
+      </div>
+
+      <div class="form-group">
+        <div class="label-with-counter">
+          <label for="job-description" class="form-label">{{ constants.LABEL_JOB_DESCRIPTION }}</label>
+          <span class="char-counter" [class.is-invalid]="descLength() > constants.MAX_JOB_DESCRIPTION_LENGTH || (descLength() > 0 && descLength() < constants.MIN_JOB_DESCRIPTION_LENGTH)">
+            {{ descLength() }}/{{ constants.MAX_JOB_DESCRIPTION_LENGTH }}
+          </span>
+        </div>
+        <textarea
+          id="job-description"
+          rows="4"
+          class="form-textarea"
+          [value]="jobDescription()"
+          (input)="onJobDescriptionInput($event)"
+          placeholder="Provide a short description of the role responsibilities (15 to 500 characters)..."
+        ></textarea>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <app-button
+        type="button"
+        variant="stroked"
+        (click)="onCancel()"
+        [disabled]="isSubmitting()"
+      >
+        {{ constants.BTN_CANCEL }}
+      </app-button>
+      <app-button
+        type="submit"
+        variant="accent"
+        [disabled]="isSubmitting() || !isFormValid()"
+        [loading]="isSubmitting()"
+      >
+        {{ constants.BTN_RAISE }}
+      </app-button>
+    </div>
+  </form>
+</div>
