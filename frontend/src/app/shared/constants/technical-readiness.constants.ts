@@ -22,7 +22,8 @@ export const TECHNICAL_READINESS_API_ENDPOINTS = {
   BROWNFIELD_ITEM: (id: number) => `/api/brownfield-findings/${id}`,
   ARCHITECTURE_VALIDATION: (engagementId: number) => `/api/engagements/${engagementId}/architecture-validation`,
   ARCHITECTURE_VALIDATION_FEATURES: (engagementId: number) => `/api/engagements/${engagementId}/architecture-validation/features`,
-  ARCHITECTURE_VALIDATION_FEATURE_ITEM: (featureId: number) => `/api/architecture-validation/features/${featureId}`
+  ARCHITECTURE_VALIDATION_FEATURE_ITEM: (featureId: number) => `/api/architecture-validation/features/${featureId}`,
+  TECHNICAL_SUMMARY: (engagementId: number) => `/api/engagements/${engagementId}/technical-readiness/summary`
 } as const;
 
 export const TECHNICAL_READINESS_MESSAGES = {
