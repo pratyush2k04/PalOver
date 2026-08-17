@@ -3,10 +3,14 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { InlineSVGModule } from 'ng-inline-svg-2';
-import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
+import { StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
 import { TechnicalReadinessService } from '@features/engagements/services/technical-readiness.service';
 import { DayOneReadinessSummaryDto } from '@features/engagements/models/technical-readiness/technical-summary.dtos';
+import { SummaryPrintHeaderComponent } from './components/summary-print-header/summary-print-header.component';
+import { SummaryPrintHeroComponent } from './components/summary-print-hero/summary-print-hero.component';
+import { SummaryPrintPillarsComponent } from './components/summary-print-pillars/summary-print-pillars.component';
+import { SummaryPrintBlockersComponent } from './components/summary-print-blockers/summary-print-blockers.component';
 
 @Component({
   selector: 'app-day-one-summary-print',
@@ -14,8 +18,11 @@ import { DayOneReadinessSummaryDto } from '@features/engagements/models/technica
   imports: [
     CommonModule,
     InlineSVGModule,
-    StatusBadgeComponent,
-    ButtonComponent
+    ButtonComponent,
+    SummaryPrintHeaderComponent,
+    SummaryPrintHeroComponent,
+    SummaryPrintPillarsComponent,
+    SummaryPrintBlockersComponent
   ],
   templateUrl: './day-one-summary-print.component.html',
   styleUrl: './day-one-summary-print.component.scss'
@@ -34,35 +41,6 @@ export class DayOneSummaryPrintComponent implements OnInit {
   statusTone = computed<StatusBadgeTone>(() =>
     this.isAbleToStart() ? 'success' : 'danger'
   );
-
-  accessStatusTone = computed<StatusBadgeTone>(() => {
-    const s = this.summary();
-    if (!s) return 'neutral';
-    if (s.isAccessReady) return 'success';
-    if (s.blockedAccessCount > 0) return 'danger';
-    return 'warning';
-  });
-
-  toolingStatusTone = computed<StatusBadgeTone>(() => {
-    const s = this.summary();
-    if (!s) return 'neutral';
-    if (s.isToolingReady) return 'success';
-    return 'warning';
-  });
-
-  architectureStatusTone = computed<StatusBadgeTone>(() => {
-    const s = this.summary();
-    if (!s) return 'neutral';
-    if (s.isSizingRiskRaised) return 'danger';
-    return 'success';
-  });
-
-  brownfieldStatusTone = computed<StatusBadgeTone>(() => {
-    const s = this.summary();
-    if (!s || !s.isBrownfieldApplicable) return 'neutral';
-    if (s.isBrownfieldReady) return 'success';
-    return 'danger';
-  });
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('engagementId') ?? this.route.snapshot.paramMap.get('id');
