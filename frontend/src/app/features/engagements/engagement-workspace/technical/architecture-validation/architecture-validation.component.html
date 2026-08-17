@@ -20,54 +20,73 @@
       </div>
 
       <div class="status-selector-row">
-        <div class="status-options">
-          <label
-            class="status-option-label"
-            [class.selected]="!isModified()"
-            [class.disabled]="!isTechLead()"
-            (click)="onStatusSelect(ArchitectureStatus.StillValid)">
-            <input
-              type="radio"
-              name="archStatus"
-              [value]="ArchitectureStatus.StillValid"
-              [checked]="!isModified()"
-              [disabled]="!isTechLead()"
-            />
-            <span class="radio-custom"></span>
-            <div class="option-text">
-              <strong>Still Valid</strong>
-              <span>Pre-sales architecture remains accurate</span>
-            </div>
-          </label>
+        @if (isTechLead()) {
+          <div class="status-options">
+            <label
+              class="status-option-label"
+              [class.selected]="!isModified()"
+              (click)="onStatusSelect(ArchitectureStatus.StillValid)">
+              <input
+                type="radio"
+                name="archStatus"
+                [value]="ArchitectureStatus.StillValid"
+                [checked]="!isModified()"
+              />
+              <span class="radio-custom"></span>
+              <div class="option-text">
+                <strong>Still Valid</strong>
+                <span>Pre-sales architecture remains accurate</span>
+              </div>
+            </label>
 
-          <label
-            class="status-option-label"
-            [class.selected]="isModified()"
-            [class.disabled]="!isTechLead()"
-            (click)="onStatusSelect(ArchitectureStatus.Modified)">
-            <input
-              type="radio"
-              name="archStatus"
-              [value]="ArchitectureStatus.Modified"
-              [checked]="isModified()"
-              [disabled]="!isTechLead()"
-            />
-            <span class="radio-custom"></span>
-            <div class="option-text">
-              <strong>Modified</strong>
-              <span>Architecture updated during discovery</span>
-            </div>
-          </label>
-        </div>
+            <label
+              class="status-option-label"
+              [class.selected]="isModified()"
+              (click)="onStatusSelect(ArchitectureStatus.Modified)">
+              <input
+                type="radio"
+                name="archStatus"
+                [value]="ArchitectureStatus.Modified"
+                [checked]="isModified()"
+              />
+              <span class="radio-custom"></span>
+              <div class="option-text">
+                <strong>Modified</strong>
+                <span>Architecture updated during discovery</span>
+              </div>
+            </label>
+          </div>
 
-        @if (isTechLead() && hasStatusChanged()) {
-          <div class="save-status-action">
-            <app-button
-              type="button"
-              variant="flat"
-              (click)="onSaveStatus()">
-              Save Status
-            </app-button>
+          @if (hasStatusChanged()) {
+            <div class="save-status-action">
+              <app-button
+                type="button"
+                variant="flat"
+                (click)="onSaveStatus()">
+                Save Status
+              </app-button>
+            </div>
+          }
+        } @else {
+          <!-- Read-only view for PM & Leadership: Displays only the selected status -->
+          <div class="status-readonly-display">
+            @if (!isModified()) {
+              <div class="status-readonly-card valid">
+                <div class="status-readonly-header">
+                  <span class="status-dot valid"></span>
+                  <strong>Still Valid</strong>
+                </div>
+                <span class="status-readonly-desc">Pre-sales architecture remains accurate</span>
+              </div>
+            } @else {
+              <div class="status-readonly-card modified">
+                <div class="status-readonly-header">
+                  <span class="status-dot modified"></span>
+                  <strong>Modified</strong>
+                </div>
+                <span class="status-readonly-desc">Architecture updated during discovery</span>
+              </div>
+            }
           </div>
         }
       </div>
