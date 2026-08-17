@@ -4,6 +4,7 @@ using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Documents;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.Documents;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.Handover;
@@ -22,7 +23,8 @@ public class DocumentService(
     IWebHostEnvironment environment,
     ICurrentUserService currentUserService,
     IUserRepository userRepository,
-    IValidator<DocumentUploadDto> uploadValidator) : IDocumentService
+    IValidator<DocumentUploadDto> uploadValidator,
+    IAuditLogService auditLogService) : IDocumentService
 {
     // ── Helper methods ──────────────────────────────────────────────────────
 
@@ -112,6 +114,18 @@ public class DocumentService(
 
         var saved = await repository.AddAsync(document);
         var reloaded = await repository.GetByIdAsync(saved.Id) ?? saved;
+
+        var actorUserId = currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            AuditActionEnum.DocumentUploaded,
+            new Dictionary<string, object?>
+            {
+                ["DocumentId"] = reloaded.Id,
+                ["CategoryId"] = reloaded.CategoryId,
+                ["ActorUserId"] = actorUserId,
+                ["DocumentName"] = reloaded.FileName
+            },
+            actingUserId: actorUserId);
 
         var uploaderNames = await GetUploaderNamesAsync([reloaded.CreatedBy]);
         return MapToResponseDto(reloaded, uploaderNames);
@@ -323,6 +337,18 @@ public class DocumentService(
 
         var updated = await repository.AddVersionAsync(doc, newVersion);
         var reloaded = await repository.GetByIdAsync(updated.Id) ?? updated;
+
+        var actorUserId = currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            AuditActionEnum.DocumentVersioned,
+            new Dictionary<string, object?>
+            {
+                ["DocumentId"] = reloaded.Id,
+                ["Version"] = newVersion.VersionNumber,
+                ["ActorUserId"] = actorUserId,
+                ["DocumentName"] = reloaded.FileName
+            },
+            actingUserId: actorUserId);
 
         var uploaderNames = await GetUploaderNamesAsync([reloaded.CreatedBy]);
         return MapToResponseDto(reloaded, uploaderNames);
