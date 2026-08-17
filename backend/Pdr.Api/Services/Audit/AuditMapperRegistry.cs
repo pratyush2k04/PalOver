@@ -16,6 +16,8 @@ public static class AuditMapperRegistry
         services.AddScoped<IAuditTemplateMapper, AccountLockoutMapper>();
         services.AddScoped<IAuditTemplateMapper, DocumentVersionedMapper>();
         services.AddScoped<IAuditTemplateMapper, DocumentUploadedMapper>();
+        services.AddScoped<IAuditTemplateMapper, ClientContactDetailsChangedMapper>();
+        services.AddScoped<IAuditTemplateMapper, ClientPersonaChangedMapper>();
 
         // Add new mappers here when adding new audit action types.
 

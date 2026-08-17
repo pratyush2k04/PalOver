@@ -1,12 +1,16 @@
 using Pdr.Api.DTOs.ClientContactTransitions;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class ClientContactTransitionService(IClientContactTransitionRepository repository) : IClientContactTransitionService
+public class ClientContactTransitionService(
+    IClientContactTransitionRepository repository,
+    IAuditLogService auditLogService,
+    ICurrentUserService currentUserService) : IClientContactTransitionService
 {
     public async Task<ClientContactTransitionResponseDto> GetByEngagementIdAsync(int engagementId)
     {
@@ -40,6 +44,17 @@ public class ClientContactTransitionService(IClientContactTransitionRepository r
 
         await repository.AddAsync(transition);
         await repository.SaveChangesAsync();
+
+        var actorUserId = int.TryParse(currentUserId, out var uid) ? uid : currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            AuditActionEnum.ClientContactDetailsChanged,
+            new Dictionary<string, object?>
+            {
+                ["EngagementId"] = engagementId,
+                ["ClientName"] = request.IncomingContactName.Trim(),
+                ["ActorUserId"] = actorUserId
+            },
+            actingUserId: actorUserId > 0 ? actorUserId : null);
 
         return MapToDto(transition);
     }
