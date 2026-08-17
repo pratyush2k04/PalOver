@@ -64,11 +64,6 @@ export class DayOneSummaryPrintComponent implements OnInit {
         this.summary.set(data);
         this.isLoading.set(false);
         this.titleService.setTitle(`${data.engagementName} - Day-1 Technical Readiness Summary`);
-        
-        // Auto-invoke print dialog after brief rendering delay
-        setTimeout(() => {
-          window.print();
-        }, 600);
       },
       error: () => {
         this.error.set('Failed to load Day-1 Technical Readiness Summary.');
