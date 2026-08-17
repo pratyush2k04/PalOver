@@ -106,7 +106,7 @@ public class KickoffReminderService(
                 new Dictionary<string, object?>
                 {
                     ["EngagementId"] = engagementId,
-                    ["ThresholdDays"] = suppressedThresholds.OrderByDescending(d => d).ToList(),
+                    ["ThresholdDays"] = suppressedThresholds.Distinct().OrderByDescending(d => d).ToList(),
                     ["KickoffDate"] = kickoffDate
                 },
                 actorId);
@@ -119,7 +119,7 @@ public class KickoffReminderService(
                 new Dictionary<string, object?>
                 {
                     ["EngagementId"] = engagementId,
-                    ["ThresholdDays"] = reactivatedThresholds.OrderByDescending(d => d).ToList(),
+                    ["ThresholdDays"] = reactivatedThresholds.Distinct().OrderByDescending(d => d).ToList(),
                     ["KickoffDate"] = kickoffDate,
                     ["ReadinessScore"] = readinessScore
                 },
