@@ -251,6 +251,13 @@ public class EngagementService(
         if (requiredRole == RoleEnum.ProjectManagement)
         {
             await notificationService.CreateFromTemplateAsync(
+                NotificationConstants.TemplateKeys.PMAllocated,
+                engagementId,
+                RoleEnum.PreSales,
+                System.Text.Json.JsonSerializer.Serialize(new PMAllocatedMapper.PMAllocatedData(AssignedUserId: userId, EngagementId: engagementId)),
+                DateTime.UtcNow);
+
+            await notificationService.CreateFromTemplateAsync(
                 NotificationConstants.TemplateKeys.PMAssigned,
                 userId,
                 System.Text.Json.JsonSerializer.Serialize(new PMAssignedMapper.PMAssignedPayload(EngagementId: engagementId)),
