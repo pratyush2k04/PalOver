@@ -4310,6 +4310,73 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.ResourceRequests.ResourceAllocation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly?>("ConfirmedDate")
+                        .HasColumnType("date")
+                        .HasColumnName("confirmed_date");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("RemovalReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("removal_reason");
+
+                    b.Property<DateTime?>("RemovedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("removed_at");
+
+                    b.Property<int>("ResourceRequestId")
+                        .HasColumnType("integer")
+                        .HasColumnName("resource_request_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResourceRequestId");
+
+                    b.ToTable("resource_allocations", (string)null);
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.ResourceRequests.ResourceRequest", b =>
                 {
                     b.Property<int>("Id")
@@ -4959,6 +5026,17 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Engagement");
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.ResourceRequests.ResourceAllocation", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.ResourceRequests.ResourceRequest", "ResourceRequest")
+                        .WithMany("Allocations")
+                        .HasForeignKey("ResourceRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ResourceRequest");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.ResourceRequests.ResourceRequest", b =>
                 {
                     b.HasOne("Pdr.Api.Models.Engagements.Engagement", null)
@@ -5098,6 +5176,8 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.ResourceRequests.ResourceRequest", b =>
                 {
+                    b.Navigation("Allocations");
+
                     b.Navigation("RequestSkills");
                 });
 #pragma warning restore 612, 618
