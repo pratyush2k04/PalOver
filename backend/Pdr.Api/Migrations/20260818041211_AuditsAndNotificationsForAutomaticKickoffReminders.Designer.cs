@@ -13,8 +13,8 @@ using Pdr.Api.Data;
 namespace Pdr.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260817074446_AddKickoffReminderAuditActions")]
-    partial class AddKickoffReminderAuditActions
+    [Migration("20260818041211_AuditsAndNotificationsForAutomaticKickoffReminders")]
+    partial class AuditsAndNotificationsForAutomaticKickoffReminders
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -367,31 +367,31 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            Id = 5,
+                            Id = 19,
                             Action = "KickoffReminderScheduled",
                             Details = "Kickoff readiness reminder scheduled for engagement {engagementName} ({thresholdLabel} before kickoff)"
                         },
                         new
                         {
-                            Id = 6,
+                            Id = 20,
                             Action = "KickoffReminderFired",
                             Details = "A {thresholdLabel}-before-kickoff readiness reminder was sent for engagement {engagementName}"
                         },
                         new
                         {
-                            Id = 7,
+                            Id = 21,
                             Action = "KickoffReminderSuppressed",
-                            Details = "Kickoff reminder for engagement {engagementName} was suppressed after readiness reached 100%"
+                            Details = "Kickoff reminders for engagement {engagementName} ({thresholdsLabel} before kickoff on {kickoffDate}) were suppressed after readiness reached 100%"
                         },
                         new
                         {
-                            Id = 8,
+                            Id = 22,
                             Action = "KickoffReminderReactivated",
-                            Details = "Kickoff reminder for engagement {engagementName} was reactivated after readiness dropped to {readinessScore}%"
+                            Details = "Kickoff reminders for engagement {engagementName} ({thresholdsLabel} before kickoff on {kickoffDate}) were reactivated after readiness dropped to {readinessScore}%"
                         },
                         new
                         {
-                            Id = 9,
+                            Id = 23,
                             Action = "KickoffReminderRetiredForBilling",
                             Details = "Kickoff reminders for engagement {engagementName} were retired after billing was signed off"
                         });
@@ -4082,7 +4082,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            Id = 4,
+                            Id = 11,
                             Body = "{EngagementName} still has open mandatory items with kickoff in {DaysBeforeKickoff} day(s). Priority escalates as the date approaches.",
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",

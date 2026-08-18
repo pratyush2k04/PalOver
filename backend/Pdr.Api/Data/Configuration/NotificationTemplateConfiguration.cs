@@ -74,7 +74,7 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             },
             new NotificationTemplate
             {
-                Id = 4,
+                Id = 11,
                 Key = "KickoffReadinessReminder",
                 Title = "{DaysBeforeKickoff} day(s) until kickoff — {EngagementName} readiness incomplete",
                 Body = "{EngagementName} still has open mandatory items with kickoff in {DaysBeforeKickoff} day(s). Priority escalates as the date approaches.",

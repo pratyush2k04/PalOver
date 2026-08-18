@@ -6,9 +6,9 @@ public enum AuditActionEnum
     UserCreated = 2,
     UserUpdated = 3,
     UserDeleted = 4,
-    KickoffReminderScheduled = 5,
-    KickoffReminderFired = 6,
-    KickoffReminderSuppressed = 7,
-    KickoffReminderReactivated = 8,
-    KickoffReminderRetiredForBilling = 9
+    KickoffReminderScheduled = 19,
+    KickoffReminderFired = 20,
+    KickoffReminderSuppressed = 21,
+    KickoffReminderReactivated = 22,
+    KickoffReminderRetiredForBilling = 23
 }
