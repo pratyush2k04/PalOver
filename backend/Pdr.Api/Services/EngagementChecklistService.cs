@@ -13,7 +13,8 @@ public class EngagementChecklistService(
     IEngagementChecklistRepository checklistRepository,
     IMasterChecklistRepository masterChecklistRepository,
     AppDbContext dbContext,
-    ICurrentUserService currentUserService) : IEngagementChecklistService
+    ICurrentUserService currentUserService,
+    IRiskService riskService) : IEngagementChecklistService
 {
     public async Task<EngagementChecklistResponseDto?> GetByEngagementIdAsync(int engagementId)
     {
@@ -95,6 +96,7 @@ public class EngagementChecklistService(
         item.UpdatedBy = currentUserId.ToString();
 
         await checklistRepository.SaveChangesAsync();
+        await riskService.SyncAutoCreatedRisksAsync(engagementId);
 
         var updated = await checklistRepository.GetByEngagementIdAsync(engagementId)
             ?? throw new InvalidOperationException(MasterChecklistConstants.Messages.FailedToUpdateChecklist);
@@ -158,6 +160,7 @@ public class EngagementChecklistService(
         item.UpdatedBy = currentUserId.ToString();
 
         await checklistRepository.SaveChangesAsync();
+        await riskService.SyncAutoCreatedRisksAsync(engagementId);
 
         var updated = await checklistRepository.GetByEngagementIdAsync(engagementId)
             ?? throw new InvalidOperationException(MasterChecklistConstants.Messages.FailedToUpdateChecklist);
@@ -225,6 +228,7 @@ public class EngagementChecklistService(
         item.UpdatedBy = currentUserId.ToString();
 
         await checklistRepository.SaveChangesAsync();
+        await riskService.SyncAutoCreatedRisksAsync(engagementId);
 
         var updated = await checklistRepository.GetByEngagementIdAsync(engagementId)
             ?? throw new InvalidOperationException("Failed to retrieve updated checklist.");
@@ -257,6 +261,7 @@ public class EngagementChecklistService(
         item.UpdatedBy = currentUserId.ToString();
 
         await checklistRepository.SaveChangesAsync();
+        await riskService.SyncAutoCreatedRisksAsync(engagementId);
 
         var updated = await checklistRepository.GetByEngagementIdAsync(engagementId)
             ?? throw new InvalidOperationException("Failed to retrieve updated checklist.");
@@ -281,6 +286,7 @@ public class EngagementChecklistService(
         item.UpdatedBy = currentUserId.ToString();
 
         await checklistRepository.SaveChangesAsync();
+        await riskService.SyncAutoCreatedRisksAsync(engagementId);
 
         var updated = await checklistRepository.GetByEngagementIdAsync(engagementId)
             ?? throw new InvalidOperationException("Failed to retrieve updated checklist.");

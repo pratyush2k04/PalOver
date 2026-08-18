@@ -108,6 +108,15 @@ export class RisksComponent implements OnInit {
     }))
   ]);
 
+  getSourceRoute(sourceType: string | null | undefined): string[] {
+    const id = this.engagementId();
+    if (!id) return [];
+    if (sourceType === 'Checklist') {
+      return ['/engagements', id.toString(), 'workspace', 'checklist'];
+    }
+    return ['/engagements', id.toString(), 'workspace', 'technical-readiness'];
+  }
+
   onStatusFilterSelect(val: unknown): void {
     this.statusFilter.set((val as RiskStatus | 'ALL') || 'ALL');
   }
