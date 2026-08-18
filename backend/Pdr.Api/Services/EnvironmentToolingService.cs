@@ -115,6 +115,15 @@ public class EnvironmentToolingService(
         return MapToDto(updatedItem!);
     }
 
+    public async Task DeleteItemAsync(int id)
+    {
+        var item = await repository.GetByIdAsync(id)
+            ?? throw new EnvironmentToolingItemNotFoundException(id);
+
+        item.IsDeleted = true;
+        await repository.SaveChangesAsync();
+    }
+
     private static string GetItemDisplayName(EnvironmentToolingItem item) =>
         item.EnvironmentToolingDefinition != null
             ? item.EnvironmentToolingDefinition.Name

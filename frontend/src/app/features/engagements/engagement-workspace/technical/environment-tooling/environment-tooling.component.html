@@ -40,7 +40,14 @@
                 {{ item.name }}
               </td>
               <td class="owner-cell">
-                {{ item.ownerFullName || 'Unassigned' }}
+                <div class="owner-content">
+                  <span>{{ item.ownerFullName || 'Unassigned' }}</span>
+                  @if (isTechLead()) {
+                    <button class="edit-owner-btn" (click)="openEditOwnerModal(item)" [appTooltip]="'Change owner'">
+                      <span [inlineSVG]="'assets/icons/edit.svg'"></span>
+                    </button>
+                  }
+                </div>
               </td>
               <td class="status-cell">
                 <div class="cell-content">
@@ -54,17 +61,26 @@
               </td>
               @if (isTechLead()) {
                 <td class="actions-cell">
-                  <select
-                    class="status-select"
-                    (change)="onStatusChange(item, $event)">
-                    @for (opt of statusOptions; track opt.value) {
-                      <option
-                        [value]="opt.value"
-                        [selected]="opt.value === +item.status">
-                        {{ opt.label }}
-                      </option>
-                    }
-                  </select>
+                  <div class="actions-wrapper">
+                    <select
+                      class="status-select"
+                      (change)="onStatusChange(item, $event)">
+                      @for (opt of statusOptions; track opt.value) {
+                        <option
+                          [value]="opt.value"
+                          [selected]="opt.value === +item.status">
+                          {{ opt.label }}
+                        </option>
+                      }
+                    </select>
+                    <button
+                      type="button"
+                      class="delete-item-btn"
+                      (click)="onDeleteItem(item)"
+                      [appTooltip]="'Delete item'">
+                      <span [inlineSVG]="'assets/icons/trash.svg'"></span>
+                    </button>
+                  </div>
                 </td>
               }
             </tr>
@@ -80,3 +96,16 @@
     </div>
   }
 </div>
+
+<!-- Delete Confirmation Dialog -->
+@if (itemToDelete(); as item) {
+  <app-confirm-dialog
+    title="Delete Environment Item"
+    confirmLabel="Delete"
+    [isBusy]="isDeleting()"
+    [isDestructive]="true"
+    (confirmed)="confirmDelete()"
+    (cancelled)="cancelDelete()">
+    Are you sure you want to delete <strong>{{ item.name }}</strong>? This action cannot be undone.
+  </app-confirm-dialog>
+}

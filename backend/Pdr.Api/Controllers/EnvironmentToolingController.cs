@@ -104,4 +104,22 @@ public class EnvironmentToolingItemsController(IEnvironmentToolingService servic
         var item = await service.UpdateOwnerAsync(id, request);
         return Ok(item);
     }
+
+    /// <summary>
+    /// Soft-deletes an environment or tooling item (Tech Lead only).
+    /// </summary>
+    /// <param name="id">The item ID.</param>
+    /// <returns>204 No Content.</returns>
+    [HttpDelete("{id:int}")]
+    [AuthorizeRoles(RoleEnum.TechLead)]
+    [EndpointSummary("Delete environment item (Tech Lead only)")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteItem(int id)
+    {
+        await service.DeleteItemAsync(id);
+        return NoContent();
+    }
 }
