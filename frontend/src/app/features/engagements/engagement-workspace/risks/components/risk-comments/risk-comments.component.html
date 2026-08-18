@@ -1,0 +1,121 @@
+<div class="discussion-card" [class.is-collapsed]="!isExpanded()">
+  <!-- Collapsible Header Bar -->
+  <div class="discussion-header" (click)="toggleExpanded()">
+    <div class="header-left">
+      <span class="chat-icon" [inlineSVG]="'assets/icons/message-square.svg'"></span>
+      <span class="header-title">Discussion ({{ comments().length }})</span>
+    </div>
+
+    <div class="header-right">
+      <span class="chevron-icon" [class.expanded]="isExpanded()" [inlineSVG]="'assets/icons/chevron-down.svg'"></span>
+    </div>
+  </div>
+
+  <!-- Expanded Discussion Content -->
+  @if (isExpanded()) {
+    <div class="discussion-body">
+      @if (isLoading()) {
+        <div class="loading-box">
+          <app-loading-spinner label="Loading discussion..." />
+        </div>
+      } @else {
+        <!-- Comments List -->
+        <div class="comments-list">
+          @if (comments().length === 0) {
+            <app-empty-state [message]="constants.EMPTY_DISCUSSION_MSG" />
+          } @else {
+            @for (comment of comments(); track comment.id) {
+              <div class="comment-item" [class.is-editing]="editingCommentId() === comment.id">
+                <!-- Common Avatar Component -->
+                <app-avatar [name]="comment.authorName" size="sm" />
+
+                <!-- Comment Content Block -->
+                <div class="comment-content-block">
+                  <div class="comment-meta-row">
+                    <div class="author-details">
+                      <span class="author-name">{{ comment.authorName }}</span>
+                      @if (comment.isEdited) {
+                        <span class="edited-badge" title="This comment was edited">(edited)</span>
+                      }
+                    </div>
+                    <div class="time-and-actions">
+                      <span class="comment-time">{{ getRelativeTime(comment.createdAt) }}</span>
+                      @if (comment.canEdit && editingCommentId() !== comment.id) {
+                        <app-button variant="stroked" size="sm" (click)="startEditing(comment)">
+                          Edit
+                        </app-button>
+                      }
+                    </div>
+                  </div>
+
+                  @if (editingCommentId() === comment.id) {
+                    <div class="inline-edit-box">
+                      <app-textarea
+                        [id]="'edit-comment-' + comment.id"
+                        [rows]="2"
+                        [maxLength]="constants.MAX_LENGTH"
+                        [ngModel]="editingCommentText()"
+                        (ngModelChange)="editingCommentText.set($event)"
+                      />
+                      <div class="edit-actions">
+                        <app-button variant="stroked" size="sm" (click)="cancelEditing()">Cancel</app-button>
+                        <app-button variant="flat" size="sm" (click)="saveEdit(comment.id)">Save</app-button>
+                      </div>
+                    </div>
+                  } @else {
+                    <div class="comment-text">
+                      {{ comment.content }}
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          }
+        </div>
+      }
+
+      <!-- Bottom Add Comment Row -->
+      <div class="add-comment-row">
+        <div class="textarea-container">
+          <app-textarea
+            [id]="'new-comment-' + riskId"
+            [rows]="1"
+            [placeholder]="constants.INPUT_PLACEHOLDER"
+            [maxLength]="constants.MAX_LENGTH"
+            [ngModel]="newCommentText()"
+            (ngModelChange)="onInputTextChange($event)"
+          />
+
+          <!-- @Mentions Autocomplete Dropdown -->
+          @if (showMentionDropdown()) {
+            <div class="mention-dropdown">
+              <div class="dropdown-header">Mention Teammate:</div>
+              @if (filteredMembers().length === 0) {
+                <div class="no-members">No matching members</div>
+              } @else {
+                <ul class="members-list">
+                  @for (member of filteredMembers(); track member.id) {
+                    <li class="member-item" (click)="selectMention(member)">
+                      <span class="member-name">{{ member.fullName }}</span>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="post-button-wrapper">
+          <app-button
+            variant="flat"
+            size="sm"
+            [disabled]="isSubmitting() || !newCommentText().trim()"
+            (click)="submitComment()"
+          >
+            {{ isSubmitting() ? 'Posting...' : 'Post' }}
+          </app-button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
