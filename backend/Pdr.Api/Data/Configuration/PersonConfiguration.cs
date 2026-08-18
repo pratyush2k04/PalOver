@@ -1,7 +1,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pdr.Api.Models;
+using Pdr.Api.Models.People;
 
 namespace Pdr.Api.Data.Configuration;
 

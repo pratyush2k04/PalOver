@@ -54,7 +54,7 @@ public class EngagementChecklistItemConfiguration : IEntityTypeConfiguration<Eng
                .HasForeignKey(e => e.CategoryId)
                .OnDelete(DeleteBehavior.Restrict);
 
-        // FK to Person (owner — no cascade, a deleted person shouldn't take checklist items with it)
+        // FK to User (owner — no cascade, a deleted user shouldn't take checklist items with it)
         builder.HasOne(e => e.Owner)
                .WithMany()
                .HasForeignKey(e => e.OwnerId)
