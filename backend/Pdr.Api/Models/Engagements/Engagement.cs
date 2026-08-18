@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using Pdr.Api.Models.AccessTracker;
 using Pdr.Api.Models.EnvironmentTooling;
-using Pdr.Api.Models.Engagements;
+using Pdr.Api.Models.Kickoff;
+using Pdr.Api.Models.People;
 
-
-namespace Pdr.Api.Models;
+namespace Pdr.Api.Models.Engagements;
 
 public class Engagement : BaseAuditableEntity
 {   
