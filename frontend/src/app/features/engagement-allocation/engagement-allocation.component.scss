@@ -40,19 +40,6 @@
     align-items: center;
     gap: 1.25rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-    cursor: pointer;
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      border-color: #cbd5e1;
-    }
-
-    &.active {
-      border-color: #2563eb;
-      background: #f8fafc;
-    }
 
     .metric-icon {
       width: 48px;
@@ -234,6 +221,26 @@
       }
     }
 
+    .type-cell {
+      &[data-type="Greenfield"],
+      &[data-type="greenfield"] {
+        ::ng-deep .status-badge {
+          background-color: #f0fdf4;
+          color: #16a34a;
+          border: 1px solid #bbf7d0;
+        }
+      }
+
+      &[data-type="Brownfield"],
+      &[data-type="brownfield"] {
+        ::ng-deep .status-badge {
+          background-color: #fff7ed;
+          color: #c2410c;
+          border: 1px solid #ffedd5;
+        }
+      }
+    }
+
     .model-sub {
       font-size: 0.78rem;
       color: #64748b;
@@ -299,6 +306,16 @@
   }
 
   .empty-icon {
-    font-size: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    margin-bottom: 0.5rem;
+
+    ::ng-deep svg,
+    svg {
+      width: 48px;
+      height: 48px;
+    }
   }
 }
