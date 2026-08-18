@@ -12,7 +12,8 @@
 
     @if (isTechLead()) {
       <app-button type="button" variant="flat" (click)="onAddFinding()">
-        + Add Finding
+        <span class="btn-icon" [inlineSVG]="'assets/icons/plus.svg'"></span>
+        <span>Add Finding</span>
       </app-button>
     }
   </div>
