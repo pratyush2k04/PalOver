@@ -95,7 +95,7 @@ export class AddClientContactTransitionDialogComponent {
 
   reviewAndConfirm(): void {
     if (!this.form.valid) {
-      this.errorMessage.set(this.validationMessages.REQUIRED);
+      this.form.markAllAsTouched();
       return;
     }
     this.showConfirm.set(true);

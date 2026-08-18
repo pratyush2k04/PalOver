@@ -4,13 +4,6 @@
     <h3>{{ formLabels.CARD_TITLE }}</h3>
   </div>
 
-  <!-- Success Message -->
-  @if (successMsg()) {
-    <app-alert [variant]="'neutral'" class="alert-container">
-      {{ successMsg() }}
-    </app-alert>
-  }
-
   <!-- Add Button (Pre-Sales Only) -->
   @if (isPreSales()) {
     <div class="presales-actions">

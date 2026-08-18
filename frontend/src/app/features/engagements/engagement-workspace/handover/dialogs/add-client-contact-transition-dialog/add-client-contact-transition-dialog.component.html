@@ -74,7 +74,7 @@
         <app-button type="button" variant="stroked" (click)="onCancel()">
           {{ buttonLabels.CANCEL }}
         </app-button>
-        <app-button type="submit" variant="accent" [disabled]="!form.valid || isSubmitting()">
+        <app-button type="submit" variant="accent" [disabled]="isSubmitting()">
           {{ buttonLabels.REVIEW_CONFIRM }}
         </app-button>
       }
