@@ -10,19 +10,13 @@
       @if (!showConfirm()) {
         <div class="form-section">
           <h4>{{ formLabels.OUTGOING_SECTION }}</h4>
-          <app-input
-            id="outgoing-name"
-            [label]="formLabels.OUTGOING_NAME"
+          <app-select
+            id="outgoing-person"
+            [label]="formLabels.OUTGOING_PERSON"
             [placeholder]="formPlaceholders.OUTGOING_NAME"
-            formControlName="outgoingContactName"
-            [maxLength]="200"
-          />
-          <app-input
-            id="outgoing-role"
-            [label]="formLabels.OUTGOING_ROLE"
-            [placeholder]="formPlaceholders.OUTGOING_ROLE"
-            formControlName="outgoingContactRole"
-            [maxLength]="200"
+            [options]="outgoingContactOptions()"
+            [errorMessages]="{ required: validationMessages.OUTGOING_PERSON_REQUIRED }"
+            formControlName="outgoingPersonId"
           />
         </div>
 

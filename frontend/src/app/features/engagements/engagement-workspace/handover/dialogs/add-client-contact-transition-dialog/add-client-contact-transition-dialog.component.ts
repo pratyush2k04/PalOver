@@ -6,8 +6,10 @@ import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { AlertComponent } from '@common/components/alert/alert';
 import { InputComponent } from '@common/components/form/input/input';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { ClientContactTransitionService } from '@features/engagements/services/client-contact-transition.service';
 import { TransitionResponse } from '@features/engagements/models/client-contact-transition.model';
+import { PersonService } from 'src/app/services/person.service';
 import {
   FORM_LABELS,
   FORM_PLACEHOLDERS,
@@ -19,8 +21,6 @@ import {
 
 export interface AddClientContactTransitionDialogData {
   engagementId: number;
-  outgoingContactName: string;
-  outgoingContactRole: string;
 }
 
 @Component({
@@ -32,6 +32,7 @@ export interface AddClientContactTransitionDialogData {
     ButtonComponent,
     AlertComponent,
     InputComponent,
+    SelectComponent,
   ],
   templateUrl: './add-client-contact-transition-dialog.component.html',
   styleUrl: './add-client-contact-transition-dialog.component.scss',
@@ -39,6 +40,7 @@ export interface AddClientContactTransitionDialogData {
 export class AddClientContactTransitionDialogComponent {
   private dialogRef = inject<DialogRef<TransitionResponse>>(DialogRef);
   private transitionService = inject(ClientContactTransitionService);
+  private personService = inject(PersonService);
   private fb = inject(FormBuilder);
   readonly data = inject<AddClientContactTransitionDialogData>(DIALOG_DATA);
 
@@ -50,6 +52,7 @@ export class AddClientContactTransitionDialogComponent {
   statusMessages = STATUS_MESSAGES;
 
   form: FormGroup = this.fb.group({
+    outgoingPersonId: [null as number | null, Validators.required],
     outgoingContactName: ['', [Validators.required, Validators.maxLength(200)]],
     outgoingContactRole: ['', [Validators.required, Validators.maxLength(200)]],
     incomingContactName: ['', [Validators.required, Validators.maxLength(200)]],
@@ -59,11 +62,26 @@ export class AddClientContactTransitionDialogComponent {
   showConfirm = signal(false);
   isSubmitting = signal(false);
   errorMessage = signal<string>('');
+  outgoingContactOptions = signal<SelectOption[]>([]);
+
+  private peopleById = new Map<number, { name: string; role: string }>();
 
   constructor() {
-    this.form.patchValue({
-      outgoingContactName: this.data.outgoingContactName,
-      outgoingContactRole: this.data.outgoingContactRole,
+    this.personService.getPeopleByEngagement(this.data.engagementId).subscribe({
+      next: (people) => {
+        this.outgoingContactOptions.set(
+          people.map((p) => ({ value: p.personId, label: `${p.name} - ${p.role}` }))
+        );
+        this.peopleById = new Map(people.map((p) => [p.personId, { name: p.name, role: p.role }]));
+      },
+    });
+
+    this.form.get('outgoingPersonId')!.valueChanges.subscribe((personId: number | null) => {
+      const person = personId !== null ? this.peopleById.get(personId) : undefined;
+      this.form.patchValue({
+        outgoingContactName: person?.name ?? '',
+        outgoingContactRole: person?.role ?? '',
+      });
     });
   }
 

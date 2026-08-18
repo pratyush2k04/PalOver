@@ -47,21 +47,6 @@ export class ClientContactTransitionCardComponent {
 
   isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
 
-  currentIncomingContact = computed(() => {
-    const trans = this.transitions();
-    if (trans.length > 0) {
-      const latest = trans[trans.length - 1];
-      return {
-        name: latest.incomingContactName,
-        role: latest.incomingContactRole,
-      };
-    }
-    return {
-      name: this.clientName(),
-      role: '',
-    };
-  });
-
   constructor() {
     effect(() => {
       const id = this.engagementId();
@@ -86,11 +71,8 @@ export class ClientContactTransitionCardComponent {
   }
 
   openAddTransitionDialog(): void {
-    const current = this.currentIncomingContact();
     const data: AddClientContactTransitionDialogData = {
       engagementId: this.engagementId(),
-      outgoingContactName: current.name,
-      outgoingContactRole: current.role,
     };
 
     const dialogRef = this.dialog.open<AddClientContactTransitionDialogComponent, AddClientContactTransitionDialogData, TransitionResponse>(
