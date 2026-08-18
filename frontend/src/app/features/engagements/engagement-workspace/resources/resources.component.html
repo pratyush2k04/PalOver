@@ -49,9 +49,9 @@
                   <span>Actions</span>
                 }
               </div>
-              @for (allocation of request.allocations; track allocation.id) {
+              @for (allocation of request.allocations; track allocation.id; let i = $index) {
                 <div class="allocations-row">
-                  <span class="allocation-name">{{ allocation.name }}</span>
+                  <span class="allocation-name">{{ i + 1 }}. {{ allocation.name }}</span>
                   <span>{{ formatDisplayDate(allocation.allocatedDate) }}</span>
                   <span>
                     @if (allocation.isConfirmed) {
