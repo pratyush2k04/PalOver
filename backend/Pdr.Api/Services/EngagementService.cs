@@ -190,14 +190,14 @@ public class EngagementService(
         return true;
     }
 
-    public async Task<PmEngagementListResponse> GetMyEngagementsAsync(string sortBy)
+    public async Task<EngagementListResponse> GetMyEngagementsAsync(string sortBy)
     {
         var userId = currentUserService.GetUserId();
         var engagements = await engagementRepository.GetEngagementsForUserAsync(userId, sortBy);
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
         var items = engagements
-            .Select(e => new PmEngagementListItemDto(
+            .Select(e => new EngagementListItemDto(
                 e.EngagementId,
                 e.EngagementName,
                 e.ClientName,
@@ -208,7 +208,7 @@ public class EngagementService(
                 ReadinessScore: null))
             .ToList();
 
-        return new PmEngagementListResponse(items);
+        return new EngagementListResponse(items);
     }
     //assign
 
@@ -332,6 +332,12 @@ public class EngagementService(
                 Status = Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingStatus.NotReady
             });
         }
+
+        db.ArchitectureValidations.Add(new Pdr.Api.Models.ArchitectureValidation.ArchitectureValidation
+        {
+            EngagementId = engagementId,
+            Status = Pdr.Api.Models.ArchitectureValidation.ArchitectureStatus.StillValid
+        });
 
         await db.SaveChangesAsync();
     }
@@ -493,6 +499,22 @@ public class EngagementService(
 
         // Default sorted by soonest kickoff days (daysToKickoff ascending)
         return items.OrderBy(i => i.DaysToKickoff).ToList();
+    }
+
+    public async Task<EngagementOpenItemsSummaryDto?> GetOpenItemsSummaryAsync(int engagementId)
+    {
+        var exists = await db.Engagements.AnyAsync(e => e.EngagementId == engagementId);
+        if (!exists) return null;
+
+        var userId = currentUserService.GetUserId();
+        var isAssigned = await db.EngagementAssignments
+            .AsNoTracking()
+            .AnyAsync(a => a.EngagementId == engagementId && a.UserId == userId);
+
+        if (!isAssigned)
+            throw new UserNotAssignedToEngagementException(engagementId);
+
+        return await engagementRepository.GetOpenItemsSummaryAsync(engagementId);
     }
 }
 

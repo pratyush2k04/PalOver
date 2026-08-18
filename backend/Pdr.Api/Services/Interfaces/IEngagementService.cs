@@ -10,7 +10,7 @@ public interface IEngagementService
     Task<EngagementInfoDto?> GetEngagementInfoAsync(int id);
     Task<IEnumerable<EngagementInfoDto>> GetAllEngagementsAsync();
     Task<bool> EditEngagementAsync(int id, EditEngagementRequest request);
-    Task<PmEngagementListResponse> GetMyEngagementsAsync(string sortBy);
+    Task<EngagementListResponse> GetMyEngagementsAsync(string sortBy);
     //assigning
     Task<EngagementOwnersDto> GetEngagementOwnersAsync(int engagementId);
 
@@ -21,4 +21,5 @@ public interface IEngagementService
     Task<List<LeadershipUserDto>> AssignLeadershipUsersAsync(int engagementId, List<int> userIds);
     Task<List<LeadershipUserDto>> RemoveLeadershipUserAsync(int engagementId, int userId);
     Task<List<LeadershipEngagementListItemDto>> GetLeadershipDashboardAsync();
+    Task<EngagementOpenItemsSummaryDto?> GetOpenItemsSummaryAsync(int engagementId);
 }

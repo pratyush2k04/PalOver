@@ -1,13 +1,18 @@
 using Pdr.Api.DTOs.Common;
 using Pdr.Api.DTOs.Users;
 using Pdr.Api.Exceptions;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class UserManagementService(IUserRepository userRepository, IRoleRepository roleRepository) : IUserManagementService
+public class UserManagementService(
+    IUserRepository userRepository,
+    IRoleRepository roleRepository,
+    ICurrentUserService currentUserService,
+    IAuditLogService auditLogService) : IUserManagementService
 {
     public async Task<PagedResult<UserListItemDto>> GetUsersAsync(string? search, int page, int pageSize)
     {
@@ -35,6 +40,12 @@ public class UserManagementService(IUserRepository userRepository, IRoleReposito
             user.RoleId = newRole.Id;
             user.Role = newRole;
             await userRepository.UpdateAsync(user);
+
+            await auditLogService.LogAsync(AuditActionEnum.UserUpdated, new Dictionary<string, object?>
+            {
+                ["UserId"] = user.Id,
+                ["ActorUserId"] = currentUserService.GetUserId()
+            });
         }
 
         return ToDto(user);

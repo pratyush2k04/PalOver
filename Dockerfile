@@ -5,7 +5,7 @@ FROM node:22-alpine AS build-web
 WORKDIR /web
 # Install deps first (better layer caching)
 COPY frontend/package*.json ./
-RUN npm ci
+RUN npm install
 COPY frontend/ ./
 RUN npm run build -- --configuration production
 # Angular output lands in dist/pdr-web/browser

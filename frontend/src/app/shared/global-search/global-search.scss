@@ -1,0 +1,103 @@
+:host {
+  position: relative;
+  display: block;
+  flex: 1;
+  max-width: 30rem;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9aa4b2;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+
+  ::ng-deep svg,
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.global-search__input {
+  width: 100%;
+  padding: 0.5rem 1rem 0.5rem 2.5rem;
+  font-size: 0.875rem;
+  color: #1a1a1a;
+  background: #f4f6f9;
+  border: 1px solid #e5e9ef;
+  border-radius: 0.5rem;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+
+  &::placeholder {
+    color: #9aa4b2;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #2563eb;
+    background: #ffffff;
+    box-shadow: 0 0 0 2px #2563eb26;
+  }
+}
+
+.global-search__panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  max-height: 28rem;
+  overflow-y: auto;
+  background: #ffffff;
+  border: 1px solid #e5e9ef;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  z-index: 50;
+  padding: 0.5rem 0;
+}
+
+.global-search__hint {
+  padding: 0.75rem 1rem;
+  font-size: 0.8125rem;
+  color: #8b95a3;
+}
+
+.global-search__group + .global-search__group {
+  border-top: 1px solid #f4f6f9;
+}
+
+.global-search__group-header {
+  padding: 0.5rem 1rem 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #8b95a3;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.global-search__row {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: #f4f6f9;
+  }
+}
+
+.global-search__row-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.global-search__row-subtitle {
+  font-size: 0.75rem;
+  color: #8b95a3;
+}

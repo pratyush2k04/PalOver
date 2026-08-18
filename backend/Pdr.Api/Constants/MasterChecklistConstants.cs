@@ -22,6 +22,7 @@ public static class MasterChecklistConstants
     {
         public const string Incomplete = "Incomplete";
         public const string Complete = "Complete";
+        public const string Blocked = "Blocked";
     }
 
     public static class ExemptionStatuses
