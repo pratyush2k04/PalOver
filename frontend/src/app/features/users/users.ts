@@ -1,6 +1,7 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { InlineSVGModule } from 'ng-inline-svg-2';
 import { UserService } from './services/user.service';
 import { ToastService } from '@common/services/toast/toast';
 import { UserListItem } from './models/user.model';
@@ -11,6 +12,9 @@ import { USER_MESSAGES } from '@shared/constants/app.constants';
 import { AlertComponent } from '@common/components/alert/alert';
 import { AvatarComponent } from '@common/components/avatar/avatar';
 import { PaginatorComponent } from '@common/components/paginator/paginator';
+import { InputComponent } from '@common/components/form/input/input';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
+import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 
 interface PendingRoleChange {
   user: UserListItem;
@@ -21,7 +25,19 @@ interface PendingRoleChange {
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, FormsModule, ConfirmDialogComponent, LoadingSpinnerComponent, AlertComponent, AvatarComponent, PaginatorComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    InlineSVGModule,
+    ConfirmDialogComponent,
+    LoadingSpinnerComponent,
+    AlertComponent,
+    AvatarComponent,
+    PaginatorComponent,
+    InputComponent,
+    SelectComponent,
+    EmptyStateComponent
+  ],
   templateUrl: './users.html',
   styleUrl: './users.scss'
 })
@@ -31,6 +47,9 @@ export class UsersComponent implements OnInit {
 
   users = signal<UserListItem[]>([]);
   roles = signal<Role[]>([]);
+  readonly roleOptions = computed<SelectOption[]>(() =>
+    this.roles().map((r) => ({ value: r.id, label: r.name }))
+  );
   searchTerm = '';
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
@@ -97,9 +116,9 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  onRoleSelected(user: UserListItem, newRoleIdRaw: string): void {
+  onRoleSelected(user: UserListItem, newRoleIdRaw: unknown): void {
     const newRoleId = Number(newRoleIdRaw);
-    if (newRoleId === user.roleId) {
+    if (!newRoleId || newRoleId === user.roleId) {
       return;
     }
 

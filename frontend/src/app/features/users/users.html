@@ -1,62 +1,87 @@
 <div class="user-directory">
-  <div class="search-bar">
-    <input
-      type="text"
-      placeholder="Search by name or email"
-      [(ngModel)]="searchTerm"
-      (ngModelChange)="onSearchChange()"
-    />
-  </div>
+  <!-- Top Header (Title, Subtitle, Search stacked on Left | Total Users Card on Right) -->
+  <header class="directory-header">
+    <div class="header-main">
+      <div class="header-titles">
+        <h1>User Directory</h1>
+        <p class="subtitle">Manage system users and assign access roles across the organization.</p>
+      </div>
+
+      <div class="search-box">
+        <app-input
+          id="user-search"
+          placeholder="Search by name or email..."
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchChange()"
+        />
+      </div>
+    </div>
+
+    <div class="header-card">
+      <div class="metric-card">
+        <div class="metric-icon total">
+          <span [inlineSVG]="'assets/icons/users.svg'"></span>
+        </div>
+        <div class="metric-content">
+          <span class="metric-value">{{ totalCount() }}</span>
+          <span class="metric-label">Total Users</span>
+        </div>
+      </div>
+    </div>
+  </header>
 
   @if (errorMessage()) {
     <app-alert>{{ errorMessage() }}</app-alert>
   }
 
-  <div class="table-card">
-    <table>
-      <thead>
-        <tr>
-          <th class="col-name">Name</th>
-          <th class="col-email">Email</th>
-          <th class="col-role">Role</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (user of users(); track user.id) {
-          <tr>
-            <td class="col-name">
-              <app-avatar [name]="user.fullName" size="sm" />
-              <span class="name">{{ user.fullName }}</span>
-            </td>
-            <td class="col-email">{{ user.email }}</td>
-            <td class="col-role">
-              <select
-                [ngModel]="user.roleId"
-                (ngModelChange)="onRoleSelected(user, $event)"
-              >
-                @for (role of roles(); track role.id) {
-                  <option [value]="role.id">{{ role.name }}</option>
-                }
-              </select>
-            </td>
-          </tr>
-        } @empty {
-          @if (!isLoading()) {
+  <!-- Content Section -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <app-loading-spinner label="Loading users..."></app-loading-spinner>
+    </div>
+  } @else {
+    @if (users().length === 0) {
+      <div class="empty-state-wrapper">
+        <app-empty-state message="No users found matching your search criteria." />
+      </div>
+    } @else {
+      <div class="table-card">
+        <table class="users-table">
+          <thead>
             <tr>
-              <td colspan="3" class="empty-row">No users found.</td>
+              <th>Name</th>
+              <th>Email</th>
+              <th class="col-role">Role</th>
             </tr>
-          }
-        }
-      </tbody>
-    </table>
-
-    @if (isLoading()) {
-      <app-loading-spinner label="Loading users..." />
+          </thead>
+          <tbody>
+            @for (user of users(); track user.id) {
+              <tr>
+                <td class="user-name-cell">
+                  <app-avatar [name]="user.fullName" size="sm" />
+                  <span class="name">{{ user.fullName }}</span>
+                </td>
+                <td class="col-email">{{ user.email }}</td>
+                <td class="col-role">
+                  <app-select
+                    [id]="'user-role-' + user.id"
+                    [options]="roleOptions()"
+                    [ngModel]="user.roleId"
+                    (ngModelChange)="onRoleSelected(user, $event)"
+                  />
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     }
-  </div>
+  }
 
   @if (totalCount() > 0) {
-    <app-paginator [page]="page()" [totalPages]="totalPages" (pageChange)="goToPage($event)" />
+    <div class="pagination-wrapper">
+      <app-paginator [page]="page()" [totalPages]="totalPages" (pageChange)="goToPage($event)" />
+    </div>
   }
 </div>
 
