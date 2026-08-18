@@ -11,6 +11,8 @@ using Pdr.Api.Models.EngagementChecklist;
 using Pdr.Api.Models.Documents;
 using Pdr.Api.Models.Cadence;
 using Pdr.Api.Models.Risks;
+using Pdr.Api.Models.Kickoff;
+using Pdr.Api.Models.People;
 
 namespace Pdr.Api.Data;
 

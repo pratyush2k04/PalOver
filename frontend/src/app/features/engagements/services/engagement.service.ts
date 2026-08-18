@@ -15,6 +15,13 @@ import {
 } from '../models/engagement.model';
 import { ENGAGEMENT_API_ENDPOINTS } from '@shared/constants/app.constants';
 
+export interface EngagementOpenItemsSummary {
+  checklistOpenCount: number;
+  accessOpenCount: number;
+  openRisksCount: number;
+  resourcingOpenCount: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -57,5 +64,9 @@ export class EngagementService {
     return this.http.get<PmEngagementListResponse>(ENGAGEMENT_API_ENDPOINTS.MY_ENGAGEMENTS, {
       params: { sortBy }
     });
+  }
+
+  getOpenItemsSummary(id: number): Observable<EngagementOpenItemsSummary> {
+    return this.http.get<EngagementOpenItemsSummary>(ENGAGEMENT_API_ENDPOINTS.OPEN_ITEMS_SUMMARY(id));
   }
 }

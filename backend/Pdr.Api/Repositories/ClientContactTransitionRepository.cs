@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
-using Pdr.Api.Models;
+using Pdr.Api.Models.Handover;
 using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Repositories;

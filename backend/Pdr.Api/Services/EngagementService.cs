@@ -500,5 +500,21 @@ public class EngagementService(
         // Default sorted by soonest kickoff days (daysToKickoff ascending)
         return items.OrderBy(i => i.DaysToKickoff).ToList();
     }
+
+    public async Task<EngagementOpenItemsSummaryDto?> GetOpenItemsSummaryAsync(int engagementId)
+    {
+        var exists = await db.Engagements.AnyAsync(e => e.EngagementId == engagementId);
+        if (!exists) return null;
+
+        var userId = currentUserService.GetUserId();
+        var isAssigned = await db.EngagementAssignments
+            .AsNoTracking()
+            .AnyAsync(a => a.EngagementId == engagementId && a.UserId == userId);
+
+        if (!isAssigned)
+            throw new UserNotAssignedToEngagementException(engagementId);
+
+        return await engagementRepository.GetOpenItemsSummaryAsync(engagementId);
+    }
 }
 

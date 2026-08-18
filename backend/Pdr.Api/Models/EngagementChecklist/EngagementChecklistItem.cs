@@ -1,5 +1,6 @@
 using Pdr.Api.Models;
 using Pdr.Api.Models.MasterChecklist;
+using Pdr.Api.Models.People;
 
 namespace Pdr.Api.Models.EngagementChecklist;
 

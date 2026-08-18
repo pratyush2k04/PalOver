@@ -1,6 +1,6 @@
 using Pdr.Api.Models.Engagements;
 
-namespace Pdr.Api.Models;
+namespace Pdr.Api.Models.People;
 
 public class Person : BaseAuditableEntity
 {
