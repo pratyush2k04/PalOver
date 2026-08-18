@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
@@ -28,6 +29,7 @@ import { DiscoveryFeatureDialogComponent, DiscoveryFeatureDialogData } from './d
     CommonModule,
     FormsModule,
     InlineSVGModule,
+    TooltipDirective,
     StatusBadgeComponent,
     ButtonComponent,
     TextareaComponent

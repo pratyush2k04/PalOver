@@ -1,6 +1,7 @@
 import { Component, inject, input, output, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
 import { DialogService } from '@common/services/dialog/dialog.service';
@@ -18,7 +19,7 @@ import {
 @Component({
   selector: 'app-brownfield-review',
   standalone: true,
-  imports: [CommonModule, InlineSVGModule, StatusBadgeComponent, ButtonComponent],
+  imports: [CommonModule, InlineSVGModule, TooltipDirective, StatusBadgeComponent, ButtonComponent],
   templateUrl: './brownfield-review.component.html',
   styleUrl: './brownfield-review.component.scss'
 })

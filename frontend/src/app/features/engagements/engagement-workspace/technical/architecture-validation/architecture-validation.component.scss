@@ -359,15 +359,23 @@
       }
 
       .btn-action {
-        color: #6b7280;
-        transition: color 0.15s ease;
+        ::ng-deep .btn {
+          color: #6b7280;
+          transition: color 0.15s ease, background-color 0.15s ease;
 
-        &:hover {
-          color: #2563eb;
+          &:hover {
+            color: #2563eb;
+            background-color: #eff6ff;
+          }
         }
 
-        &.btn-danger:hover {
-          color: #dc2626;
+        &.btn-danger {
+          ::ng-deep .btn {
+            &:hover {
+              color: #dc2626;
+              background-color: #fee2e2;
+            }
+          }
         }
       }
 

@@ -194,7 +194,7 @@
                           variant="icon"
                           class="btn-action"
                           ariaLabel="Edit feature"
-                          title="Edit feature"
+                          [appTooltip]="'Edit feature'"
                           (click)="onEditFeature(item)">
                           <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
                         </app-button>
@@ -203,7 +203,7 @@
                           variant="icon"
                           class="btn-action btn-danger"
                           ariaLabel="Delete feature"
-                          title="Delete feature"
+                          [appTooltip]="'Delete feature'"
                           (click)="onDeleteFeature(item.id)">
                           <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
                         </app-button>
