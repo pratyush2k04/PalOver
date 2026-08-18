@@ -277,6 +277,7 @@ public class ResourceRequestService(
             {
                 Id = a.Id,
                 Name = a.Name,
+                AllocatedDate = DateOnly.FromDateTime(a.CreatedAt),
                 IsConfirmed = a.ConfirmedDate != null,
                 ConfirmedDate = a.ConfirmedDate
             })
