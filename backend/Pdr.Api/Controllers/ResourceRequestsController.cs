@@ -56,4 +56,77 @@ public class ResourceRequestsController(IResourceRequestService resourceRequestS
         var result = await resourceRequestService.CreateResourceRequestAsync(engagementId, request);
         return CreatedAtAction(nameof(GetResourceRequests), new { engagementId }, result);
     }
+
+    /// <summary>
+    /// Allocates named resources against a request's open slots (Leadership assigned to the engagement, or Admin, only).
+    /// </summary>
+    /// <param name="engagementId">The ID of the engagement.</param>
+    /// <param name="id">The ID of the resource request.</param>
+    /// <param name="request">The names to allocate — one per person needed.</param>
+    /// <returns>The updated resource request, including its named allocations.</returns>
+    [HttpPost("{id:int}/allocations")]
+    [EndpointSummary("Allocate named resources to a request (Leadership or Admin only)")]
+    [ProducesResponseType(typeof(ResourceRequestDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ResourceRequestDto>> AllocateResources(
+        int engagementId,
+        int id,
+        [FromBody] AllocateResourcesDto request)
+    {
+        var result = await resourceRequestService.AllocateResourcesAsync(engagementId, id, request);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Records a confirmation date for a named resource (Leadership assigned to the engagement, or Admin, only).
+    /// </summary>
+    /// <param name="engagementId">The ID of the engagement.</param>
+    /// <param name="id">The ID of the resource request.</param>
+    /// <param name="allocationId">The ID of the named resource allocation.</param>
+    /// <param name="request">The confirmation date (must not be in the future).</param>
+    /// <returns>The updated resource request; flips to Confirmed once every named resource is confirmed.</returns>
+    [HttpPost("{id:int}/allocations/{allocationId:int}/confirm")]
+    [EndpointSummary("Confirm a named resource with a confirmation date (Leadership or Admin only)")]
+    [ProducesResponseType(typeof(ResourceRequestDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ResourceRequestDto>> ConfirmAllocation(
+        int engagementId,
+        int id,
+        int allocationId,
+        [FromBody] ConfirmAllocationDto request)
+    {
+        var result = await resourceRequestService.ConfirmAllocationAsync(engagementId, id, allocationId, request);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Removes a confirmed named resource with a required reason, reopening the request to Allocated (Leadership assigned to the engagement, or Admin, only).
+    /// </summary>
+    /// <param name="engagementId">The ID of the engagement.</param>
+    /// <param name="id">The ID of the resource request.</param>
+    /// <param name="allocationId">The ID of the named resource allocation.</param>
+    /// <param name="request">The reason for removal.</param>
+    /// <returns>The updated resource request.</returns>
+    [HttpPost("{id:int}/allocations/{allocationId:int}/remove")]
+    [EndpointSummary("Remove a confirmed resource with a reason, reopening the request (Leadership or Admin only)")]
+    [ProducesResponseType(typeof(ResourceRequestDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ResourceRequestDto>> RemoveAllocation(
+        int engagementId,
+        int id,
+        int allocationId,
+        [FromBody] RemoveAllocationDto request)
+    {
+        var result = await resourceRequestService.RemoveAllocationAsync(engagementId, id, allocationId, request);
+        return Ok(result);
+    }
 }
