@@ -1,6 +1,6 @@
 using Pdr.Api.DTOs.ClientContactTransitions;
 using Pdr.Api.Exceptions;
-using Pdr.Api.Models;
+using Pdr.Api.Models.Handover;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
