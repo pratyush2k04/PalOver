@@ -25,6 +25,7 @@ public class ResourceRequestRepository(AppDbContext context) : IResourceRequestR
     {
         return await context.ResourceRequests
             .Include(r => r.RequestSkills)
+            .Include(r => r.Allocations)
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 

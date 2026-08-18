@@ -17,6 +17,7 @@ public static class NotificationMapperRegistry
         services.AddScoped<INotificationTemplateMapper, PMAssignedMapper>();
         services.AddScoped<INotificationTemplateMapper, TechLeadAssignedMapper>();
         services.AddScoped<INotificationTemplateMapper, DocumentUploadedMapper>();
+        services.AddScoped<INotificationTemplateMapper, ResourceRequestConfirmedMapper>();
 
         // Add new mappers here when adding new notification types.
 
