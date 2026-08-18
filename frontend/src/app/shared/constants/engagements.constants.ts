@@ -38,6 +38,12 @@ export const ENGAGEMENT_MESSAGES = {
   ASSIGNMENT_ERROR: 'Failed to save assignment. Please try again.',
 } as const;
 
+export const OPEN_ITEMS_ERROR_MESSAGES = {
+  ENGAGEMENT_NOT_FOUND: 'Engagement not found',
+  NOT_ASSIGNED: 'You are not assigned to this engagement',
+  LOAD_FAILED: 'Failed to load open items'
+} as const;
+
 export const ENGAGEMENT_CHECKLIST_MESSAGES = {
   LOAD_FAILED: 'Failed to load the engagement checklist. Please try again.'
 } as const;

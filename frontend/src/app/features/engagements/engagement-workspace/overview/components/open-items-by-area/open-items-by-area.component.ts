@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { AlertComponent } from '@common/components/alert/alert';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { EngagementService, EngagementOpenItemsSummary } from '../../../../services/engagement.service';
+import { OPEN_ITEMS_ERROR_MESSAGES } from '@shared/constants/engagements.constants';
 
 @Component({
   selector: 'app-open-items-by-area',
@@ -38,10 +39,10 @@ export class OpenItemsByAreaComponent implements OnChanges {
       error: (err) => {
         this.summary.set(null);
         const errorMessage = err.status === 404
-          ? 'Engagement not found'
+          ? OPEN_ITEMS_ERROR_MESSAGES.ENGAGEMENT_NOT_FOUND
           : err.status === 403
-          ? 'You are not assigned to this engagement'
-          : 'Failed to load open items';
+          ? OPEN_ITEMS_ERROR_MESSAGES.NOT_ASSIGNED
+          : OPEN_ITEMS_ERROR_MESSAGES.LOAD_FAILED;
         this.error.set(errorMessage);
         this.isLoading.set(false);
       }
