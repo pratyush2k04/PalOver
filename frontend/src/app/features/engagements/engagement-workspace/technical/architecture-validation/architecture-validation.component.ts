@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { TooltipDirective } from '@common/directives/tooltip.directive';
+import { ToastService } from '@common/services/toast/toast';
+import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
@@ -30,6 +32,7 @@ import { DiscoveryFeatureDialogComponent, DiscoveryFeatureDialogData } from './d
     FormsModule,
     InlineSVGModule,
     TooltipDirective,
+    ConfirmDialogComponent,
     StatusBadgeComponent,
     ButtonComponent,
     TextareaComponent
@@ -42,6 +45,7 @@ export class ArchitectureValidationComponent {
   validationUpdated = output<ArchitectureValidationDto>();
 
   private service = inject(ArchitectureValidationService);
+  private toastService = inject(ToastService);
   private authService = inject(AuthService);
   private dialog = inject(DialogService);
   private destroyRef = inject(DestroyRef);
@@ -50,6 +54,8 @@ export class ArchitectureValidationComponent {
 
   validation = signal<ArchitectureValidationDto | null>(null);
   isLoading = signal<boolean>(true);
+  featureToDelete = signal<DiscoveryFeatureItemDto | null>(null);
+  isDeleting = signal<boolean>(false);
   selectedStatus = signal<ArchitectureStatus>(ArchitectureStatus.StillValid);
   rationale = signal<string>('');
   rationaleError = signal<string>('');
@@ -185,15 +191,34 @@ export class ArchitectureValidationComponent {
     });
   }
 
-  onDeleteFeature(featureId: number): void {
+  onDeleteFeature(feature: DiscoveryFeatureItemDto): void {
     if (!this.isTechLead()) return;
+    this.featureToDelete.set(feature);
+  }
 
-    if (confirm('Are you sure you want to delete this discovery feature item?')) {
-      this.service.deleteFeatureItem(featureId).pipe(
-        takeUntilDestroyed(this.destroyRef)
-      ).subscribe({
-        next: () => this.loadValidation()
-      });
-    }
+  cancelDeleteFeature(): void {
+    this.featureToDelete.set(null);
+  }
+
+  confirmDeleteFeature(): void {
+    const feature = this.featureToDelete();
+    if (!feature) return;
+
+    this.isDeleting.set(true);
+    this.service.deleteFeatureItem(feature.id).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: () => {
+        this.toastService.success(`Feature "${feature.featureName}" deleted successfully`);
+        this.isDeleting.set(false);
+        this.featureToDelete.set(null);
+        this.loadValidation();
+      },
+      error: (err) => {
+        this.toastService.error(`Failed to delete feature "${feature.featureName}"`);
+        console.error('API delete feature failed', err);
+        this.isDeleting.set(false);
+      }
+    });
   }
 }

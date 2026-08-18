@@ -104,7 +104,7 @@
                     class="btn-remove"
                     ariaLabel="Delete finding"
                     [appTooltip]="'Delete finding'"
-                    (click)="onDeleteFinding(item.id)">
+                    (click)="onDeleteFinding(item)">
                     <span class="remove-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
                   </app-button>
                 </td>
@@ -116,3 +116,16 @@
     </div>
   }
 </div>
+
+<!-- Delete Confirmation Dialog -->
+@if (findingToDelete(); as finding) {
+  <app-confirm-dialog
+    title="Delete Finding"
+    confirmLabel="Delete"
+    [isBusy]="isDeleting()"
+    [isDestructive]="true"
+    (confirmed)="confirmDeleteFinding()"
+    (cancelled)="cancelDeleteFinding()">
+    Are you sure you want to delete <strong>{{ finding.title }}</strong>? This action cannot be undone.
+  </app-confirm-dialog>
+}
