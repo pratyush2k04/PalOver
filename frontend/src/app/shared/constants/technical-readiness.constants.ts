@@ -16,7 +16,6 @@ export const TECHNICAL_READINESS_API_ENDPOINTS = {
   ACCESS_ITEM_STATUS: (id: number) => `/api/access-items/${id}/status`,
   ACCESS_ITEM_OWNER: (id: number) => `/api/access-items/${id}/owner`,
   ENVIRONMENT_TOOLING_ITEMS: (engagementId: number) => `/api/engagements/${engagementId}/environment-tooling`,
-  ENVIRONMENT_TOOLING_ITEM: (id: number) => `/api/environment-tooling/${id}`,
   ENVIRONMENT_TOOLING_STATUS: (id: number) => `/api/environment-tooling/${id}/status`,
   ENVIRONMENT_TOOLING_OWNER: (id: number) => `/api/environment-tooling/${id}/owner`,
   BROWNFIELD_FINDINGS: (engagementId: number) => `/api/engagements/${engagementId}/brownfield-findings`,
@@ -36,6 +35,5 @@ export const TECHNICAL_READINESS_MESSAGES = {
   LOAD_TOOLING_ITEMS_ERROR: 'Failed to load environment and tooling items.',
   ADD_TOOLING_ITEM_ERROR: 'Failed to add custom environment/tooling item.',
   UPDATE_TOOLING_STATUS_ERROR: 'Failed to update environment/tooling status.',
-  UPDATE_TOOLING_OWNER_ERROR: 'Failed to update environment/tooling owner.',
-  DELETE_TOOLING_ITEM_ERROR: 'Failed to delete environment and tooling item.'
+  UPDATE_TOOLING_OWNER_ERROR: 'Failed to update environment/tooling owner.'
 } as const;

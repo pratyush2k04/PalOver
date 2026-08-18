@@ -61,26 +61,17 @@
               </td>
               @if (isTechLead()) {
                 <td class="actions-cell">
-                  <div class="actions-wrapper">
-                    <select
-                      class="status-select"
-                      (change)="onStatusChange(item, $event)">
-                      @for (opt of statusOptions; track opt.value) {
-                        <option
-                          [value]="opt.value"
-                          [selected]="opt.value === +item.status">
-                          {{ opt.label }}
-                        </option>
-                      }
-                    </select>
-                    <button
-                      type="button"
-                      class="delete-item-btn"
-                      (click)="onDeleteItem(item)"
-                      [appTooltip]="'Delete item'">
-                      <span [inlineSVG]="'assets/icons/trash.svg'"></span>
-                    </button>
-                  </div>
+                  <select
+                    class="status-select"
+                    (change)="onStatusChange(item, $event)">
+                    @for (opt of statusOptions; track opt.value) {
+                      <option
+                        [value]="opt.value"
+                        [selected]="opt.value === +item.status">
+                        {{ opt.label }}
+                      </option>
+                    }
+                  </select>
                 </td>
               }
             </tr>
@@ -96,16 +87,3 @@
     </div>
   }
 </div>
-
-<!-- Delete Confirmation Dialog -->
-@if (itemToDelete(); as item) {
-  <app-confirm-dialog
-    title="Delete Environment Item"
-    confirmLabel="Delete"
-    [isBusy]="isDeleting()"
-    [isDestructive]="true"
-    (confirmed)="confirmDelete()"
-    (cancelled)="cancelDelete()">
-    Are you sure you want to delete <strong>{{ item.name }}</strong>? This action cannot be undone.
-  </app-confirm-dialog>
-}
