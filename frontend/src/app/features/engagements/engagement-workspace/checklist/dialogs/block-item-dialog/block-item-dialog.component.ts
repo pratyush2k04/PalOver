@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
-import { PersonDto } from 'src/app/models/person.model';
+import { EngagementParticipant } from '@features/engagements/models/cadence.model';
 import { ButtonComponent } from '@common/components/button/button';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
@@ -11,7 +11,7 @@ import { SelectComponent, SelectOption } from '@common/components/form/select/se
 export interface BlockItemDialogData {
   itemTitle: string;
   currentOwnerId: number | null;
-  people: PersonDto[];
+  assignedUsers: EngagementParticipant[];
 }
 
 export interface BlockItemDialogResult {
@@ -33,7 +33,7 @@ export class BlockItemDialogComponent {
 
   readonly form = this.fb.nonNullable.group({
     reason: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
-    personId: [this.data.currentOwnerId ?? null as number | null, [Validators.required]]
+    personId: [this.data.currentOwnerId ?? (this.data.assignedUsers?.[0]?.userId ?? null), [Validators.required]]
   });
 
   get reasonControl() {
@@ -48,9 +48,9 @@ export class BlockItemDialogComponent {
     return this.reasonControl.value?.length || 0;
   }
 
-  readonly ownerOptions: SelectOption[] = this.data.people.map((person) => ({
-    value: person.personId,
-    label: person.name
+  readonly ownerOptions: SelectOption[] = (this.data.assignedUsers || []).map((user) => ({
+    value: user.userId,
+    label: user.fullName
   }));
 
   onCancel(): void {
