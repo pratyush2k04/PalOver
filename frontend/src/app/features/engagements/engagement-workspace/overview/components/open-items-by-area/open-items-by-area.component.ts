@@ -38,11 +38,11 @@ export class OpenItemsByAreaComponent implements OnChanges {
       },
       error: (err) => {
         this.summary.set(null);
-        const errorMessage = err.status === 404
-          ? OPEN_ITEMS_ERROR_MESSAGES.ENGAGEMENT_NOT_FOUND
-          : err.status === 403
-          ? OPEN_ITEMS_ERROR_MESSAGES.NOT_ASSIGNED
-          : OPEN_ITEMS_ERROR_MESSAGES.LOAD_FAILED;
+        const errorMessage = err.error?.message || (
+          err.status === 404
+            ? OPEN_ITEMS_ERROR_MESSAGES.ENGAGEMENT_NOT_FOUND
+            : OPEN_ITEMS_ERROR_MESSAGES.LOAD_FAILED
+        );
         this.error.set(errorMessage);
         this.isLoading.set(false);
       }

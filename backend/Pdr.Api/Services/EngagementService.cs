@@ -512,7 +512,7 @@ public class EngagementService(
             .AnyAsync(a => a.EngagementId == engagementId && a.UserId == userId);
 
         if (!isAssigned)
-            throw new UserNotAssignedToEngagementException(engagementId, userId);
+            throw new UserNotAssignedToEngagementException(engagementId);
 
         return await engagementRepository.GetOpenItemsSummaryAsync(engagementId);
     }

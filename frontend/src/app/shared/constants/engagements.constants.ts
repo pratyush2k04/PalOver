@@ -40,7 +40,6 @@ export const ENGAGEMENT_MESSAGES = {
 
 export const OPEN_ITEMS_ERROR_MESSAGES = {
   ENGAGEMENT_NOT_FOUND: 'Engagement not found',
-  NOT_ASSIGNED: 'You are not assigned to this engagement',
   LOAD_FAILED: 'Failed to load open items'
 } as const;
 
