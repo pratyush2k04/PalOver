@@ -107,21 +107,31 @@ public class PersonService(
             return new ImportHandoverContactsResponseDto { Added = 0, AlreadyPresent = 0, Deleted = 0 };
         }
 
-        var latestTransition = transitions.OrderByDescending(t => t.CreatedAt).First();
-        var incomingName = latestTransition.IncomingContactName.Trim();
-
         int added = 0, alreadyPresent = 0, deleted = 0;
 
-        if (!string.IsNullOrEmpty(incomingName))
+        // For each outgoing contact, only the latest transition naming them as outgoing
+        // reflects the current handover state - earlier transitions for the same outgoing
+        // contact are superseded and their incoming contact is discarded.
+        var latestPerOutgoing = transitions
+            .Where(t => !string.IsNullOrEmpty(t.OutgoingContactName.Trim()))
+            .GroupBy(t => t.OutgoingContactName.Trim(), StringComparer.OrdinalIgnoreCase)
+            .Select(g => g.OrderByDescending(t => t.CreatedAt).First());
+
+        var incomingContacts = latestPerOutgoing
+            .Select(t => new { Name = t.IncomingContactName.Trim(), Role = t.IncomingContactRole.Trim() })
+            .Where(c => !string.IsNullOrEmpty(c.Name) && !string.IsNullOrEmpty(c.Role))
+            .DistinctBy(c => (c.Name.ToLower(), c.Role.ToLower()));
+
+        foreach (var incoming in incomingContacts)
         {
-            var existingPerson = await personRepository.GetByNameAndEngagementAsync(engagementId, incomingName);
+            var existingPerson = await personRepository.GetByNameAndRoleAndEngagementAsync(engagementId, incoming.Name, incoming.Role);
             if (existingPerson is null)
             {
                 var newPerson = new Person
                 {
                     EngagementId = engagementId,
-                    Name = incomingName,
-                    Role = latestTransition.IncomingContactRole.Trim(),
+                    Name = incoming.Name,
+                    Role = incoming.Role,
                     PersonType = PersonType.Client,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,

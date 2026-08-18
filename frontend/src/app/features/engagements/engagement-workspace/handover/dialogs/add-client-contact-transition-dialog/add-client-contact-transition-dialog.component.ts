@@ -10,6 +10,7 @@ import { SelectComponent, SelectOption } from '@common/components/form/select/se
 import { ClientContactTransitionService } from '@features/engagements/services/client-contact-transition.service';
 import { TransitionResponse } from '@features/engagements/models/client-contact-transition.model';
 import { PersonService } from 'src/app/services/person.service';
+import { PersonType } from 'src/app/models/person.model';
 import {
   FORM_LABELS,
   FORM_PLACEHOLDERS,
@@ -69,10 +70,13 @@ export class AddClientContactTransitionDialogComponent {
   constructor() {
     this.personService.getPeopleByEngagement(this.data.engagementId).subscribe({
       next: (people) => {
-        this.outgoingContactOptions.set(
-          people.map((p) => ({ value: p.personId, label: `${p.name} - ${p.role}` }))
+        const clients = people.filter(
+          (p) => p.personType === PersonType.Client || p.personType === 'Client' || Number(p.personType) === PersonType.Client
         );
-        this.peopleById = new Map(people.map((p) => [p.personId, { name: p.name, role: p.role }]));
+        this.outgoingContactOptions.set(
+          clients.map((p) => ({ value: p.personId, label: `${p.name} - ${p.role}` }))
+        );
+        this.peopleById = new Map(clients.map((p) => [p.personId, { name: p.name, role: p.role }]));
       },
     });
 

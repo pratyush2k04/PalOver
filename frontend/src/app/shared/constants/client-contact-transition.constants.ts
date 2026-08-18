@@ -16,8 +16,7 @@ export const FORM_LABELS = {
 } as const;
 
 export const FORM_PLACEHOLDERS = {
-  OUTGOING_NAME: 'Current contact name',
-  OUTGOING_ROLE: 'e.g., Sales Manager, Account Lead',
+  OUTGOING_PERSON: '-- Select --',
   INCOMING_NAME: 'New contact name',
   INCOMING_ROLE: 'e.g., Delivery Manager, PM',
 } as const;

@@ -27,10 +27,12 @@ public class PersonRepository(AppDbContext context) : IPersonRepository
             .FirstOrDefaultAsync(p => p.PersonId == personId);
     }
 
-    public async Task<Person?> GetByNameAndEngagementAsync(int engagementId, string name)
+    public async Task<Person?> GetByNameAndRoleAndEngagementAsync(int engagementId, string name, string role)
     {
         return await context.People
-            .FirstOrDefaultAsync(p => p.EngagementId == engagementId && p.Name.ToLower() == name.ToLower());
+            .FirstOrDefaultAsync(p => p.EngagementId == engagementId
+                && p.Name.ToLower() == name.ToLower()
+                && p.Role.ToLower() == role.ToLower());
     }
 
     public async Task<IEnumerable<Person>> GetByNamesAndEngagementAsync(int engagementId, IEnumerable<string> names)
