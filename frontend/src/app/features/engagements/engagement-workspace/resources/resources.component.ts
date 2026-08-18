@@ -2,11 +2,14 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { AuthService } from 'src/app/services/auth';
 import { ButtonComponent } from '@common/components/button/button';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
+import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
+import { AlertComponent } from '@common/components/alert/alert';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { RESOURCE_REQUEST_CONSTANTS } from '@shared/constants/app.constants';
-import { ResourceRequestItem } from '../../models/resource-request.model';
+import { ResourceAllocationItem, ResourceRequestItem } from '../../models/resource-request.model';
 import { EngagementInfoDto } from '../../models/engagement.model';
 import { ResourceRequestService } from '../../services/resource-request.service';
 import { EngagementService } from '../../services/engagement.service';
@@ -14,11 +17,23 @@ import {
   RaiseResourceRequestDialogComponent,
   RaiseResourceRequestDialogData,
 } from './raise-resource-request-dialog/raise-resource-request-dialog.component';
+import {
+  AllocateResourcesDialogComponent,
+  AllocateResourcesDialogData,
+} from './allocate-resources-dialog/allocate-resources-dialog.component';
+import {
+  ConfirmAllocationDialogComponent,
+  ConfirmAllocationDialogData,
+} from './confirm-allocation-dialog/confirm-allocation-dialog.component';
+import {
+  RemoveAllocationDialogComponent,
+  RemoveAllocationDialogData,
+} from './remove-allocation-dialog/remove-allocation-dialog.component';
 
 @Component({
   selector: 'app-resources',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, EmptyStateComponent],
+  imports: [CommonModule, ButtonComponent, EmptyStateComponent, StatusBadgeComponent, AlertComponent],
   templateUrl: './resources.component.html',
   styleUrl: './resources.component.scss',
 })
@@ -26,9 +41,14 @@ export class ResourcesComponent {
   private route = inject(ActivatedRoute);
   private resourceRequestService = inject(ResourceRequestService);
   private engagementService = inject(EngagementService);
+  private authService = inject(AuthService);
   private dialog = inject(DialogService);
 
   readonly constants = RESOURCE_REQUEST_CONSTANTS;
+
+  readonly isLeadershipOrAdmin = computed(
+    () => this.authService.hasRole('Leadership') || this.authService.isAdmin(),
+  );
 
   private paramMap = toSignal(this.route.parent?.paramMap ?? this.route.paramMap);
 
@@ -95,6 +115,90 @@ export class ResourcesComponent {
         this.loadData(id);
       }
     });
+  }
+
+  openAllocateModal(request: ResourceRequestItem): void {
+    const id = this.engagementId();
+    if (!id) return;
+
+    const dialogRef = this.dialog.open<
+      AllocateResourcesDialogComponent,
+      AllocateResourcesDialogData,
+      ResourceRequestItem | null
+    >(AllocateResourcesDialogComponent, {
+      data: {
+        engagementId: id,
+        requestId: request.id,
+        peopleNeeded: request.peopleNeeded,
+        standardRoleLabel: request.standardRole,
+        existingAllocations: request.allocations,
+      },
+    });
+
+    dialogRef.closed$.subscribe((updated) => {
+      if (updated) {
+        this.loadData(id);
+      }
+    });
+  }
+
+  openConfirmDialog(request: ResourceRequestItem, allocation: ResourceAllocationItem): void {
+    const id = this.engagementId();
+    if (!id) return;
+
+    const dialogRef = this.dialog.open<
+      ConfirmAllocationDialogComponent,
+      ConfirmAllocationDialogData,
+      ResourceRequestItem | null
+    >(ConfirmAllocationDialogComponent, {
+      data: {
+        engagementId: id,
+        requestId: request.id,
+        allocationId: allocation.id,
+        allocationName: allocation.name,
+      },
+    });
+
+    dialogRef.closed$.subscribe((updated) => {
+      if (updated) {
+        this.loadData(id);
+      }
+    });
+  }
+
+  openRemoveDialog(request: ResourceRequestItem, allocation: ResourceAllocationItem): void {
+    const id = this.engagementId();
+    if (!id) return;
+
+    const dialogRef = this.dialog.open<
+      RemoveAllocationDialogComponent,
+      RemoveAllocationDialogData,
+      ResourceRequestItem | null
+    >(RemoveAllocationDialogComponent, {
+      data: {
+        engagementId: id,
+        requestId: request.id,
+        allocationId: allocation.id,
+        allocationName: allocation.name,
+      },
+    });
+
+    dialogRef.closed$.subscribe((updated) => {
+      if (updated) {
+        this.loadData(id);
+      }
+    });
+  }
+
+  statusTone(status: string): StatusBadgeTone {
+    switch (status) {
+      case 'Allocated':
+        return 'info';
+      case 'Confirmed':
+        return 'success';
+      default:
+        return 'neutral';
+    }
   }
 
   formatDisplayDate(dateStr: string): string {

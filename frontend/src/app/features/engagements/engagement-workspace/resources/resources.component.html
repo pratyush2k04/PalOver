@@ -7,17 +7,9 @@
   </div>
 
   @if (showWarningBanner()) {
-    <div class="warning-banner" role="alert">
-      <span class="banner-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
-          <line x1="4" y1="22" x2="4" y2="15"></line>
-        </svg>
-      </span>
-      <span class="banner-text">
-        <strong>Resources not confirmed</strong> — billing starts {{ formattedBillingDate() }}. {{ unconfirmedCount() }} request(s) still open.
-      </span>
-    </div>
+    <app-alert variant="warning">
+      <strong>Resources not confirmed</strong> — billing starts {{ formattedBillingDate() }}. {{ unconfirmedCount() }} request(s) still open.
+    </app-alert>
   }
 
   <div class="requests-list">
@@ -28,14 +20,14 @@
             <div class="role-info">
               <span class="role-title">{{ request.standardRole }}</span>
               @if (request.isUrgent) {
-                <span class="urgent-badge">Urgent</span>
+                <app-status-badge tone="danger">Urgent</app-status-badge>
               }
               <span class="need-details">
                 {{ request.peopleNeeded }} needed by {{ formatDisplayDate(request.requiredByDate) }}
               </span>
             </div>
             <div class="status-wrapper">
-              <span class="status-pill status-{{ request.status.toLowerCase() }}">{{ request.status }}</span>
+              <app-status-badge [tone]="statusTone(request.status)">{{ request.status }}</app-status-badge>
             </div>
           </div>
 
@@ -44,6 +36,43 @@
               <span class="skill-tag">{{ skill }}</span>
             }
           </div>
+
+          @if (request.status !== 'Raised') {
+            <div class="allocations-list">
+              @for (allocation of request.allocations; track allocation.id) {
+                <div class="allocation-row">
+                  <span class="allocation-name">{{ allocation.name }}</span>
+                  @if (allocation.isConfirmed) {
+                    <span class="allocation-confirmed">
+                      Confirmed {{ formatDisplayDate(allocation.confirmedDate ?? '') }}
+                    </span>
+                  } @else {
+                    <span class="allocation-pending">{{ constants.PENDING_CONFIRMATION }}</span>
+                  }
+
+                  @if (isLeadershipOrAdmin()) {
+                    @if (!allocation.isConfirmed) {
+                      <app-button variant="flat" size="sm" (click)="openConfirmDialog(request, allocation)">
+                        {{ constants.BTN_CONFIRM }}
+                      </app-button>
+                    } @else {
+                      <app-button variant="danger" size="sm" (click)="openRemoveDialog(request, allocation)">
+                        {{ constants.BTN_REMOVE }}
+                      </app-button>
+                    }
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          @if (isLeadershipOrAdmin() && request.status !== 'Confirmed') {
+            <div class="card-footer">
+              <app-button variant="stroked" size="sm" (click)="openAllocateModal(request)">
+                {{ constants.BTN_ALLOCATE }}
+              </app-button>
+            </div>
+          }
         </div>
       }
     } @else {
