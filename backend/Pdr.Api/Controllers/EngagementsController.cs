@@ -27,9 +27,9 @@ public class EngagementsController(
     [HttpGet("my-engagements")]
     [Authorize]
     [EndpointSummary("Get my assigned engagements")]
-    [ProducesResponseType(typeof(PmEngagementListResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(EngagementListResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<PmEngagementListResponse>> GetMyEngagements([FromQuery] string sortBy = "kickoff")
+    public async Task<ActionResult<EngagementListResponse>> GetMyEngagements([FromQuery] string sortBy = "kickoff")
     {
         var result = await engagementService.GetMyEngagementsAsync(sortBy);
         return Ok(result);

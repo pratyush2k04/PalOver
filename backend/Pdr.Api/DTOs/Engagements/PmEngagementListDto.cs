@@ -1,7 +1,7 @@
 namespace Pdr.Api.DTOs.Engagements;
 
-public record PmEngagementListItemDto(
-    int EngagementId,
+public record EngagementListItemDto(
+    int Id,
     string EngagementName,
     string ClientName,
     string EngagementTypeName,
@@ -10,4 +10,4 @@ public record PmEngagementListItemDto(
     int DaysToKickoff,
     int? ReadinessScore);
 
-public record PmEngagementListResponse(List<PmEngagementListItemDto> Engagements);
+public record EngagementListResponse(List<EngagementListItemDto> Engagements);
