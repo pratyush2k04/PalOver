@@ -26,4 +26,8 @@ export class TechnicalReadinessService {
   updateAccessItemOwner(id: number, request: UpdateAccessItemOwnerRequest): Observable<AccessItemDto> {
     return this.http.patch<AccessItemDto>(TECHNICAL_READINESS_API_ENDPOINTS.ACCESS_ITEM_OWNER(id), request);
   }
+
+  deleteAccessItem(id: number): Observable<void> {
+    return this.http.delete<void>(TECHNICAL_READINESS_API_ENDPOINTS.ACCESS_ITEM(id));
+  }
 }

@@ -153,6 +153,18 @@ public class AccessTrackerService(
     }
 
     // -------------------------------------------------------------------------
+    // DELETE: soft-delete an access item (Tech Lead only)
+    // -------------------------------------------------------------------------
+    public async Task DeleteAccessItemAsync(int accessItemId)
+    {
+        var item = await repository.GetAccessItemByIdAsync(accessItemId)
+            ?? throw new AccessItemNotFoundException(accessItemId);
+
+        item.IsDeleted = true;
+        await repository.SaveChangesAsync();
+    }
+
+    // -------------------------------------------------------------------------
     // POST: evaluate the 2-day billing risk rule (User Story 3 — test endpoint)
     // -------------------------------------------------------------------------
     public async Task EvaluateClientSideRisksAsync(int engagementId)

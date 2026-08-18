@@ -297,4 +297,25 @@ export class AccessTrackerComponent {
       }
     });
   }
+
+  onDeleteItem(item: AccessItemDto): void {
+    if (!this.isTechLead()) return;
+
+    if (!confirm(`Are you sure you want to delete "${item.name}"?`)) return;
+
+    this.readinessService.deleteAccessItem(item.id).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: () => {
+        const updatedList = this.accessItems().filter(i => i.id !== item.id);
+        this.accessItems.set(updatedList);
+        this.itemsUpdated.emit(updatedList);
+        this.toastService.success(`Access item "${item.name}" deleted successfully`);
+      },
+      error: (err) => {
+        this.toastService.error(`Failed to delete "${item.name}"`);
+        console.error('API delete access item failed', err);
+      }
+    });
+  }
 }

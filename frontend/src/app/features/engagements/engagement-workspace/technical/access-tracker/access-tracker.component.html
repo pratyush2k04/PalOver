@@ -35,6 +35,9 @@
             <th>CLIENT-SIDE</th>
             <th>DAYS TO BILLING</th>
             <th>STATUS</th>
+            @if (isTechLead()) {
+              <th>ACTIONS</th>
+            }
           </tr>
         </thead>
         <tbody>
@@ -91,10 +94,21 @@
                   </app-status-badge>
                 }
               </td>
+              @if (isTechLead()) {
+                <td class="actions-cell">
+                  <button
+                    type="button"
+                    class="delete-item-btn"
+                    (click)="onDeleteItem(item)"
+                    [appTooltip]="'Delete access item'">
+                    <span [inlineSVG]="'assets/icons/trash.svg'"></span>
+                  </button>
+                </td>
+              }
             </tr>
           } @empty {
             <tr>
-              <td colspan="5" class="empty-cell">
+              <td [attr.colspan]="isTechLead() ? 6 : 5" class="empty-cell">
                 No access items found for this engagement.
               </td>
             </tr>
