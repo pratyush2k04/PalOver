@@ -1,4 +1,4 @@
-using Pdr.Api.Models;
+using Pdr.Api.Models.Kickoff;
 
 namespace Pdr.Api.DTOs.Kickoff;
 

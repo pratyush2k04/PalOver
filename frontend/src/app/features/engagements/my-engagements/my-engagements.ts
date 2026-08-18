@@ -2,7 +2,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { EngagementService } from '../services/engagement.service';
-import { EngagementSortBy, PmEngagementListItem } from '../models/engagement.model';
+import { EngagementSortBy, EngagementListItem } from '../models/engagement.model';
 import { AppContextService } from 'src/app/services/app-context';
 import { EngagementsComponent } from '../pages/createengagment/engagements';
 import { ENGAGEMENT_MESSAGES, USER_ROLES } from '@shared/constants/app.constants';
@@ -12,7 +12,7 @@ import { TabItem, TabsComponent } from '@common/components/tabs/tabs';
 import { ButtonComponent } from '@common/components/button/button';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 
-interface MyEngagementRow extends PmEngagementListItem {
+interface MyEngagementRow extends EngagementListItem {
   displayReadinessScore: number;
   isOverdue: boolean;
 }
@@ -50,7 +50,8 @@ export class MyEngagementsComponent implements OnInit {
   // Past Engagements has no backing data yet - static placeholder until billing sign-off exists.
   readonly pastEngagements: MyEngagementRow[] = [
     {
-      engagementId: 9001,
+      id: 9001,
+      engagementName: 'Platform Modernization',
       clientName: 'Aurora Retail Co.',
       engagementTypeName: 'Greenfield',
       commercialModelName: 'Fixed',
@@ -74,7 +75,7 @@ export class MyEngagementsComponent implements OnInit {
     this.loadEngagements();
   }
 
-  private loadEngagements(): void {
+  loadEngagements(): void {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
@@ -83,7 +84,7 @@ export class MyEngagementsComponent implements OnInit {
         this.isLoading.set(false);
         const rows = response.engagements.map((engagement) => ({
           ...engagement,
-          displayReadinessScore: SAMPLE_READINESS_SCORES[engagement.engagementId] ?? 0,
+          displayReadinessScore: SAMPLE_READINESS_SCORES[engagement.id] ?? 0,
           isOverdue: engagement.daysToKickoff < 0
         }));
 

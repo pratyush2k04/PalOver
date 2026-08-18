@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
-using Pdr.Api.Models;
+using Pdr.Api.Models.People;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Models.Engagements;
 

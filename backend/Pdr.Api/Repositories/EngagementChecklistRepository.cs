@@ -10,6 +10,7 @@ public class EngagementChecklistRepository(AppDbContext context) : IEngagementCh
     public async Task<EngagementChecklist?> GetByEngagementIdAsync(int engagementId)
     {
         return await context.EngagementChecklists
+            .AsNoTracking()
             .Include(c => c.Items.OrderBy(i => i.DisplayOrder))
             .ThenInclude(i => i.Category)
             .Include(c => c.Items)

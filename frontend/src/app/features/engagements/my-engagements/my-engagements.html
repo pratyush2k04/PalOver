@@ -2,7 +2,7 @@
   <div class="page-header">
     <h2>My Engagements</h2>
     @if (isPreSales()) {
-      <app-engagements />
+      <app-engagements (engagementCreated)="loadEngagements()" />
     }
   </div>
 
@@ -29,11 +29,11 @@
       <app-empty-state message="You have no engagements yet. They appear here once assigned to you." />
     } @else {
       <div class="engagement-list">
-        @for (engagement of engagements(); track engagement.engagementId) {
-          <div class="engagement-row" (click)="openEngagement(engagement.engagementId)">
+        @for (engagement of engagements(); track engagement.id) {
+          <div class="engagement-row" (click)="openEngagement(engagement.id)">
             <div class="engagement-info">
               <div class="engagement-title-line">
-                <span class="client-name">{{ engagement.clientName }}</span>
+                <span class="client-name">{{ engagement.engagementName }}</span>
                 @if (engagement.isOverdue) {
                   <app-status-badge tone="danger">Overdue</app-status-badge>
                 }
@@ -66,7 +66,7 @@
               <app-button
                 type="button"
                 variant="stroked"
-                (click)="$event.stopPropagation(); openEngagement(engagement.engagementId)"
+                (click)="$event.stopPropagation(); openEngagement(engagement.id)"
               >
                 Open
               </app-button>
@@ -80,11 +80,11 @@
       <app-empty-state message="You have no engagements yet. They appear here once assigned to you." />
     } @else {
       <div class="engagement-list">
-        @for (engagement of pastEngagements; track engagement.engagementId) {
-          <div class="engagement-row" (click)="openEngagement(engagement.engagementId)">
+        @for (engagement of pastEngagements; track engagement.id) {
+          <div class="engagement-row" (click)="openEngagement(engagement.id)">
             <div class="engagement-info">
               <div class="engagement-title-line">
-                <span class="client-name">{{ engagement.clientName }}</span>
+                <span class="client-name">{{ engagement.engagementName }}</span>
                 @if (engagement.isOverdue) {
                   <app-status-badge tone="danger">Overdue</app-status-badge>
                 }
@@ -117,7 +117,7 @@
               <app-button
                 type="button"
                 variant="stroked"
-                (click)="$event.stopPropagation(); openEngagement(engagement.engagementId)"
+                (click)="$event.stopPropagation(); openEngagement(engagement.id)"
               >
                 Open
               </app-button>
