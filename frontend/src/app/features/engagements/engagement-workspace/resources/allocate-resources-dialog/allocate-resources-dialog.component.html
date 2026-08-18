@@ -6,25 +6,23 @@
     </app-button>
   </div>
 
-  <form (ngSubmit)="onSubmit()" class="modal-form">
+  <form [formGroup]="namesArrayHost" (ngSubmit)="onSubmit()" class="modal-form">
     <div class="modal-body">
       @if (errorMessage()) {
         <app-alert variant="danger">{{ errorMessage() }}</app-alert>
       }
 
-      <div [formGroup]="namesArrayHost">
-        <div formArrayName="names">
-          @for (control of namesArray.controls; track $index) {
-            <div class="form-group">
-              <app-input
-                [id]="'allocation-name-' + $index"
-                [label]="slotLabel($index)"
-                [formControlName]="$index"
-                [errorMessages]="{ required: constants.MSG_NAME_REQUIRED }"
-              />
-            </div>
-          }
-        </div>
+      <div formArrayName="names">
+        @for (control of namesArray.controls; track $index) {
+          <div class="form-group">
+            <app-input
+              [id]="'allocation-name-' + $index"
+              [label]="slotLabel($index)"
+              [formControlName]="$index"
+              [errorMessages]="{ required: constants.MSG_NAME_REQUIRED }"
+            />
+          </div>
+        }
       </div>
     </div>
 
