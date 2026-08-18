@@ -34,6 +34,7 @@ public class ResourceRequestRepository(AppDbContext context) : IResourceRequestR
         return await context.ResourceRequests
             .AsNoTracking()
             .Include(r => r.RequestSkills)
+            .Include(r => r.Allocations)
             .Where(r => r.EngagementId == engagementId)
             .OrderByDescending(r => r.CreatedAt)
             .ToListAsync();
