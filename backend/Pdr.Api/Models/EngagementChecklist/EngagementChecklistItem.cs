@@ -1,4 +1,5 @@
 using Pdr.Api.Models;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.MasterChecklist;
 using Pdr.Api.Models.People;
 
@@ -28,7 +29,7 @@ public class EngagementChecklistItem : BaseAuditableEntity
 
     // Owner assignment
     public int? OwnerId { get; set; }
-    public Person? Owner { get; set; }
+    public User? Owner { get; set; }
 
     // Blocking
     public string? BlockReason { get; set; }

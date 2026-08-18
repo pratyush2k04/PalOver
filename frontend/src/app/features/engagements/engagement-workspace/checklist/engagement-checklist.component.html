@@ -100,12 +100,11 @@
                     @if (canToggleStatus()) {
                       <select
                         class="owner-select"
-                        [value]="item.ownerId ?? ''"
                         [disabled]="isUpdating()"
                         (change)="onOwnerChange(item, $any($event.target).value)">
-                        <option value="">Unassigned</option>
-                        @for (person of people(); track person.personId) {
-                          <option [value]="person.personId">{{ person.name }}</option>
+                        <option value="" [selected]="!item.ownerId">Unassigned</option>
+                        @for (user of assignedUsers(); track user.userId) {
+                          <option [value]="user.userId" [selected]="item.ownerId === user.userId">{{ user.fullName }}</option>
                         }
                       </select>
                     } @else {
