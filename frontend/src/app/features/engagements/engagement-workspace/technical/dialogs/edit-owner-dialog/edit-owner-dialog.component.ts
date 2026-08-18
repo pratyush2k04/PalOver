@@ -4,11 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
-import { UserDirectoryService } from '@features/users/services/user.service';
-import { UserListItem } from '@features/users/models/user.model';
+import { EngagementService } from '@features/engagements/services/engagement.service';
 
 export interface EditOwnerDialogData {
   itemName: string;
+  engagementId: number;
   currentOwnerId?: number;
 }
 
@@ -26,11 +26,11 @@ export interface EditOwnerDialogResult {
 export class EditOwnerDialogComponent implements OnInit {
   private dialogRef = inject<DialogRef<EditOwnerDialogResult>>(DialogRef);
   readonly data = inject<EditOwnerDialogData>(DIALOG_DATA);
-  private userService = inject(UserDirectoryService);
+  private engagementService = inject(EngagementService);
 
   itemName = signal('');
   selectedOwnerId = signal<number | null>(null);
-  users = signal<UserListItem[]>([]);
+  users = signal<any[]>([]);
   isLoading = signal(true);
 
   ngOnInit(): void {
@@ -41,19 +41,23 @@ export class EditOwnerDialogComponent implements OnInit {
       }
     }
 
-    this.userService.getUsers('', 1, 100).subscribe({
-      next: (result) => {
-        // Sort users alphabetically
-        const sortedUsers = (result.items || []).sort((a, b) => 
-          a.fullName.localeCompare(b.fullName)
-        );
-        this.users.set(sortedUsers);
-        this.isLoading.set(false);
-      },
-      error: () => {
-        this.isLoading.set(false);
-      }
-    });
+    if (this.data?.engagementId) {
+      this.engagementService.getEngagementUsers(this.data.engagementId).subscribe({
+        next: (users) => {
+          // Sort users alphabetically
+          const sortedUsers = (users || []).sort((a, b) => 
+            a.fullName.localeCompare(b.fullName)
+          );
+          this.users.set(sortedUsers);
+          this.isLoading.set(false);
+        },
+        error: () => {
+          this.isLoading.set(false);
+        }
+      });
+    } else {
+      this.isLoading.set(false);
+    }
   }
 
   onCancel(): void {

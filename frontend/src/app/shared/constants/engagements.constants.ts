@@ -4,6 +4,7 @@ export const ENGAGEMENT_API_ENDPOINTS = {
   COMMERCIAL_MODELS: '/api/CommercialModels',
   ENGAGEMENT_INFO: (id: number) => `/api/Engagements/${id}`,
   ENGAGEMENT_OWNERS: (id: number) => `/api/Engagements/${id}/owners`,
+  ENGAGEMENT_USERS: (id: number) => `/api/Engagements/${id}/users`,
   ASSIGN_PROJECT_MANAGER: (id: number) => `/api/Engagements/${id}/project-manager`,
   ASSIGN_TECH_LEAD: (id: number) => `/api/Engagements/${id}/tech-lead`,
   MY_ENGAGEMENTS: '/api/Engagements/my-engagements',

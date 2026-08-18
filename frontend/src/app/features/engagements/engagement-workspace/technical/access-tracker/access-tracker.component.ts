@@ -13,6 +13,7 @@ import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { TooltipDirective } from '@common/directives/tooltip.directive';
+import { ToastService } from '@common/services/toast/toast';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
 import { DialogService } from '@common/services/dialog/dialog.service';
@@ -51,6 +52,7 @@ export class AccessTrackerComponent {
   itemsUpdated = output<AccessItemDto[]>();
 
   private readinessService = inject(TechnicalReadinessService);
+  private toastService = inject(ToastService);
   private kickoffReadinessService = inject(KickoffReadinessService);
   private authService = inject(AuthService);
   private destroyRef = inject(DestroyRef);
@@ -156,8 +158,10 @@ export class AccessTrackerComponent {
         );
         this.accessItems.set(updatedList);
         this.itemsUpdated.emit(updatedList);
+        this.toastService.success(`Status updated for ${item.name}`);
       },
       error: (err) => {
+        this.toastService.error(`Failed to update status for ${item.name}`);
         console.warn('API update status failed, updating local state for testing', err);
         const updatedList = this.accessItems().map(i => {
           if (i.id === item.id) {
@@ -221,7 +225,13 @@ export class AccessTrackerComponent {
   openEditOwnerModal(item: AccessItemDto): void {
     const dialogRef = this.dialog.open<EditOwnerDialogComponent, EditOwnerDialogData, EditOwnerDialogResult>(
       EditOwnerDialogComponent,
-      { data: { itemName: item.name, currentOwnerId: item.ownerId } }
+      { 
+        data: { 
+          itemName: item.name, 
+          engagementId: this.engagementId(),
+          currentOwnerId: item.ownerId 
+        } 
+      }
     );
 
     dialogRef.closed$.subscribe((result) => {
@@ -240,8 +250,10 @@ export class AccessTrackerComponent {
         );
         this.accessItems.set(updatedList);
         this.itemsUpdated.emit(updatedList);
+        this.toastService.success(`Owner updated for ${item.name}`);
       },
       error: (err) => {
+        this.toastService.error(`Failed to update owner for ${item.name}`);
         console.error('API update owner failed', err);
       }
     });
