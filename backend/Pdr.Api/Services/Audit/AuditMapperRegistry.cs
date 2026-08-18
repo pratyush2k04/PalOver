@@ -12,6 +12,9 @@ public static class AuditMapperRegistry
         services.AddScoped<IAuditTemplateMapper, UserCreatedMapper>();
         services.AddScoped<IAuditTemplateMapper, UserUpdatedMapper>();
         services.AddScoped<IAuditTemplateMapper, UserDeletedMapper>();
+        services.AddScoped<IAuditTemplateMapper, HandoverQueryRaisedMapper>();
+        services.AddScoped<IAuditTemplateMapper, HandoverQueryRespondedMapper>();
+        services.AddScoped<IAuditTemplateMapper, HandoverQueryResolvedMapper>();
 
         // Add new mappers here when adding new audit action types.
 

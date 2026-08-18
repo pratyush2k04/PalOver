@@ -1,6 +1,7 @@
 using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Handovers;
 using Pdr.Api.Exceptions;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.Handover;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
@@ -15,6 +16,7 @@ public class HandoverQueryService : IHandoverQueryService
     private readonly IHandoverQueryQuestionRepository _questionRepository;
     private readonly IHandoverQueryResponseRepository _responseRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IAuditLogService _auditLogService;
 
     public HandoverQueryService(
         IHandoverRepository handoverRepository,
@@ -22,7 +24,8 @@ public class HandoverQueryService : IHandoverQueryService
         IHandoverQueryRepository queryRepository,
         IHandoverQueryQuestionRepository questionRepository,
         IHandoverQueryResponseRepository responseRepository,
-        IUserRepository userRepository)
+        IUserRepository userRepository,
+        IAuditLogService auditLogService)
     {
         _handoverRepository = handoverRepository;
         _commitmentRepository = commitmentRepository;
@@ -30,6 +33,7 @@ public class HandoverQueryService : IHandoverQueryService
         _questionRepository = questionRepository;
         _responseRepository = responseRepository;
         _userRepository = userRepository;
+        _auditLogService = auditLogService;
     }
 
     private async Task<HandoverInfo> GetHandoverOrThrowAsync(int engagementId)
@@ -88,6 +92,18 @@ public class HandoverQueryService : IHandoverQueryService
         await _questionRepository.AddAsync(question);
         await _questionRepository.SaveChangesAsync();
 
+        var actorUserId = int.Parse(userIdStr);
+        await _auditLogService.LogAsync(
+            AuditActionEnum.HandoverQueryRaised,
+            new Dictionary<string, object?>
+            {
+                ["QueryId"] = query.QueryId,
+                ["HandoverId"] = handover.HandoverId,
+                ["EngagementId"] = engagementId,
+                ["ActorUserId"] = actorUserId
+            },
+            actorUserId);
+
         return await GetSingleDtoOrThrowAsync(engagementId, query.QueryId);
     }
 
@@ -113,6 +129,18 @@ public class HandoverQueryService : IHandoverQueryService
         await _responseRepository.AddAsync(response);
         await _responseRepository.SaveChangesAsync();
 
+        var actorUserId = int.Parse(userIdStr);
+        await _auditLogService.LogAsync(
+            AuditActionEnum.HandoverQueryResponded,
+            new Dictionary<string, object?>
+            {
+                ["QueryId"] = queryId,
+                ["HandoverId"] = handover.HandoverId,
+                ["EngagementId"] = engagementId,
+                ["ActorUserId"] = actorUserId
+            },
+            actorUserId);
+
         return await GetSingleDtoOrThrowAsync(engagementId, queryId);
     }
 
@@ -124,12 +152,29 @@ public class HandoverQueryService : IHandoverQueryService
         if (query == null)
             throw new HandoverQueryNotFoundException(queryId);
 
+        var isNewlyResolved = request.IsResolved && !query.IsResolved;
+
         query.IsResolved = request.IsResolved;
         query.ResolvedByUserId = request.IsResolved ? int.Parse(userIdStr) : null;
         query.ResolvedAt = request.IsResolved ? DateTime.UtcNow : null;
         query.UpdatedBy = userIdStr;
 
         await _queryRepository.SaveChangesAsync();
+
+        if (isNewlyResolved)
+        {
+            var actorUserId = int.Parse(userIdStr);
+            await _auditLogService.LogAsync(
+                AuditActionEnum.HandoverQueryResolved,
+                new Dictionary<string, object?>
+                {
+                    ["QueryId"] = queryId,
+                    ["HandoverId"] = handover.HandoverId,
+                    ["EngagementId"] = engagementId,
+                    ["ActorUserId"] = actorUserId
+                },
+                actorUserId);
+        }
 
         return await GetSingleDtoOrThrowAsync(engagementId, queryId);
     }
