@@ -8,6 +8,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { AlertComponent } from '@common/components/alert/alert';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { BadgeComponent } from '@common/components/badge/badge';
+import { InlineSVGModule } from 'ng-inline-svg-2';
 import { MasterChecklistService } from '../services/master-checklist.service';
 import { MasterChecklistItem, MasterChecklistItemOrder } from '../models/master-checklist.model';
 import { ItemFormDialogComponent, ItemFormDialogData, ItemFormDialogResult } from '../dialogs/item-form/item-form-dialog';
@@ -22,7 +23,8 @@ import { ItemFormDialogComponent, ItemFormDialogData, ItemFormDialogResult } fro
     ButtonComponent,
     AlertComponent,
     EmptyStateComponent,
-    BadgeComponent
+    BadgeComponent,
+    InlineSVGModule
   ],
   templateUrl: './current-draft.html',
   styleUrl: './current-draft.scss',

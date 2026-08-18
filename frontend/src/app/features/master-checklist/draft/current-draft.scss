@@ -146,7 +146,28 @@
 
   &__row-actions {
     display: flex;
+    align-items: center;
     gap: $spacing-1;
+  }
+
+  &__action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    ::ng-deep svg,
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  &__action-btn--edit:hover {
+    color: $color-primary;
+  }
+
+  &__action-btn--retire:hover {
+    color: $color-danger;
   }
 
   &__empty {
