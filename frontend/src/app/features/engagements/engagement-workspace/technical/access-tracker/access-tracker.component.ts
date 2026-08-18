@@ -16,6 +16,7 @@ import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { ToastService } from '@common/services/toast/toast';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
+import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import {
   AddAccessItemDialogComponent,
@@ -42,7 +43,8 @@ import {
     TooltipDirective,
     FlaggedItemsBannerComponent,
     StatusBadgeComponent,
-    ButtonComponent
+    ButtonComponent,
+    ConfirmDialogComponent
   ],
   templateUrl: './access-tracker.component.html',
   styleUrl: './access-tracker.component.scss'
@@ -61,6 +63,9 @@ export class AccessTrackerComponent {
   accessItems = signal<AccessItemDto[]>([]);
   isLoading = signal<boolean>(true);
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+
+  itemToDelete = signal<AccessItemDto | null>(null);
+  isDeleting = signal<boolean>(false);
 
   kickoffReadiness = signal<KickoffReadinessDto | null>(null);
   blockedItems = computed(() => this.accessItems().filter(i => i.status === 'Blocked'));
@@ -300,9 +305,18 @@ export class AccessTrackerComponent {
 
   onDeleteItem(item: AccessItemDto): void {
     if (!this.isTechLead()) return;
+    this.itemToDelete.set(item);
+  }
 
-    if (!confirm(`Are you sure you want to delete "${item.name}"?`)) return;
+  cancelDelete(): void {
+    this.itemToDelete.set(null);
+  }
 
+  confirmDelete(): void {
+    const item = this.itemToDelete();
+    if (!item) return;
+
+    this.isDeleting.set(true);
     this.readinessService.deleteAccessItem(item.id).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
@@ -311,10 +325,13 @@ export class AccessTrackerComponent {
         this.accessItems.set(updatedList);
         this.itemsUpdated.emit(updatedList);
         this.toastService.success(`Access item "${item.name}" deleted successfully`);
+        this.isDeleting.set(false);
+        this.itemToDelete.set(null);
       },
       error: (err) => {
         this.toastService.error(`Failed to delete "${item.name}"`);
         console.error('API delete access item failed', err);
+        this.isDeleting.set(false);
       }
     });
   }
