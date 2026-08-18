@@ -40,29 +40,37 @@
           </div>
 
           @if (request.status !== 'Raised') {
-            <div class="allocations-list">
+            <div class="allocations-table">
+              <div class="allocations-row allocations-row--header">
+                <span>Resource name</span>
+                <span>Allocated on</span>
+                <span>Confirmed on</span>
+                <span>Actions</span>
+              </div>
               @for (allocation of request.allocations; track allocation.id) {
-                <div class="allocation-row">
+                <div class="allocations-row">
                   <span class="allocation-name">{{ allocation.name }}</span>
-                  @if (allocation.isConfirmed) {
-                    <span class="allocation-confirmed">
-                      Confirmed {{ formatDisplayDate(allocation.confirmedDate ?? '') }}
-                    </span>
-                  } @else {
-                    <span class="allocation-pending">{{ constants.PENDING_CONFIRMATION }}</span>
-                  }
-
-                  @if (isLeadershipOrAdmin()) {
-                    @if (!allocation.isConfirmed) {
-                      <app-button variant="flat" size="sm" (click)="openConfirmDialog(request, allocation)">
-                        {{ constants.BTN_CONFIRM }}
-                      </app-button>
+                  <span>{{ formatDisplayDate(allocation.allocatedDate) }}</span>
+                  <span>
+                    @if (allocation.isConfirmed) {
+                      {{ formatDisplayDate(allocation.confirmedDate ?? '') }}
                     } @else {
-                      <app-button variant="danger" size="sm" (click)="openRemoveDialog(request, allocation)">
-                        {{ constants.BTN_REMOVE }}
-                      </app-button>
+                      <span class="allocation-pending">{{ constants.PENDING_CONFIRMATION }}</span>
                     }
-                  }
+                  </span>
+                  <span class="allocation-actions">
+                    @if (isLeadershipOrAdmin()) {
+                      @if (!allocation.isConfirmed) {
+                        <app-button variant="flat" size="sm" (click)="openConfirmDialog(request, allocation)">
+                          {{ constants.BTN_CONFIRM }}
+                        </app-button>
+                      } @else {
+                        <app-button variant="danger" size="sm" (click)="openRemoveDialog(request, allocation)">
+                          {{ constants.BTN_REMOVE }}
+                        </app-button>
+                      }
+                    }
+                  </span>
                 </div>
               }
             </div>

@@ -26,6 +26,7 @@ export enum ResourceRequestStatus {
 export interface ResourceAllocationItem {
   id: number;
   name: string;
+  allocatedDate: string;
   isConfirmed: boolean;
   confirmedDate: string | null;
 }

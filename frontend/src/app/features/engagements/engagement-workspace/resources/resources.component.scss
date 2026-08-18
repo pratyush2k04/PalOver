@@ -91,35 +91,55 @@
     }
   }
 
-  .allocations-list {
+  .allocations-table {
     margin-top: 0.875rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
     padding-top: 0.875rem;
     border-top: 1px solid $color-border-soft;
+    display: flex;
+    flex-direction: column;
   }
 
-  .allocation-row {
-    display: flex;
+  .allocations-row {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
     align-items: center;
     gap: 0.75rem;
-    flex-wrap: wrap;
+    padding: 0.5rem 0;
 
-    .allocation-name {
+    &:not(:last-child) {
+      border-bottom: 1px solid $color-border-soft;
+    }
+
+    &--header {
+      border-bottom: none;
+      padding-top: 0;
+      padding-bottom: 0.375rem;
+
+      span {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: $color-text-faint;
+      }
+    }
+
+    span {
       font-size: 0.875rem;
-      font-weight: 600;
       color: $color-text;
     }
 
-    .allocation-confirmed {
-      font-size: 0.8125rem;
-      color: #15803d;
+    .allocation-name {
+      font-weight: 600;
     }
 
     .allocation-pending {
-      font-size: 0.8125rem;
       color: $color-text-faint;
+    }
+
+    .allocation-actions {
+      display: flex;
+      justify-content: flex-start;
     }
   }
 
