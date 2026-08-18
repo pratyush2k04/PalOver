@@ -270,4 +270,20 @@ public class EngagementsController(
         var dashboard = await engagementService.GetLeadershipDashboardAsync();
         return Ok(dashboard);
     }
+
+    /// <summary>
+    /// Retrieves open items summary for a specific engagement (checklist open, access open, open risks, resourcing open).
+    /// </summary>
+    /// <param name="id">The engagement ID.</param>
+    [HttpGet("{id:int}/open-items-summary")]
+    [Authorize]
+    [EndpointSummary("Get open items summary")]
+    [ProducesResponseType(typeof(EngagementOpenItemsSummaryDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<EngagementOpenItemsSummaryDto>> GetOpenItemsSummary(int id)
+    {
+        var summary = await engagementService.GetOpenItemsSummaryAsync(id);
+        return summary is null ? NotFound() : Ok(summary);
+    }
 }
