@@ -1,10 +1,13 @@
+using System.Text.Json;
 using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Handovers;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.Handover;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
+using Pdr.Api.Services.Notifications.Mappers;
 
 namespace Pdr.Api.Services;
 
@@ -17,6 +20,7 @@ public class HandoverQueryService : IHandoverQueryService
     private readonly IHandoverQueryResponseRepository _responseRepository;
     private readonly IUserRepository _userRepository;
     private readonly IAuditLogService _auditLogService;
+    private readonly INotificationService _notificationService;
 
     public HandoverQueryService(
         IHandoverRepository handoverRepository,
@@ -25,7 +29,8 @@ public class HandoverQueryService : IHandoverQueryService
         IHandoverQueryQuestionRepository questionRepository,
         IHandoverQueryResponseRepository responseRepository,
         IUserRepository userRepository,
-        IAuditLogService auditLogService)
+        IAuditLogService auditLogService,
+        INotificationService notificationService)
     {
         _handoverRepository = handoverRepository;
         _commitmentRepository = commitmentRepository;
@@ -34,6 +39,7 @@ public class HandoverQueryService : IHandoverQueryService
         _responseRepository = responseRepository;
         _userRepository = userRepository;
         _auditLogService = auditLogService;
+        _notificationService = notificationService;
     }
 
     private async Task<HandoverInfo> GetHandoverOrThrowAsync(int engagementId)
@@ -103,6 +109,14 @@ public class HandoverQueryService : IHandoverQueryService
                 ["ActorUserId"] = actorUserId
             },
             actorUserId);
+
+        await _notificationService.CreateFromTemplateAsync(
+            "HandoverQueryRaised",
+            engagementId,
+            RoleEnum.PreSales,
+            JsonSerializer.Serialize(new HandoverQueryRaisedMapper.HandoverQueryRaisedData(
+                QueryId: query.QueryId, HandoverId: handover.HandoverId, TriggerUserId: actorUserId, EngagementId: engagementId)),
+            DateTime.UtcNow);
 
         return await GetSingleDtoOrThrowAsync(engagementId, query.QueryId);
     }
