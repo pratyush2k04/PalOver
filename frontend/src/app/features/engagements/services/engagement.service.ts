@@ -16,7 +16,6 @@ import {
 import { ENGAGEMENT_API_ENDPOINTS } from '@shared/constants/app.constants';
 
 export interface EngagementOpenItemsSummary {
-  engagementId: number;
   checklistOpenCount: number;
   accessOpenCount: number;
   openRisksCount: number;

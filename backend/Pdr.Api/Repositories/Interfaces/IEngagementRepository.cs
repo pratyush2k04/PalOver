@@ -18,5 +18,5 @@ public interface IEngagementRepository
     Task<EngagementAssignment?> GetAssignmentByUserAsync(int engagementId, int userId);
     Task RemoveAssignmentAsync(EngagementAssignment assignment);
     Task AddAssignmentAsync(int engagementId, int userId);
-    Task<EngagementOpenItemsSummaryDto> GetOpenItemsSummaryAsync(int engagementId, int userId);
+    Task<EngagementOpenItemsSummaryDto> GetOpenItemsSummaryAsync(int engagementId);
 }

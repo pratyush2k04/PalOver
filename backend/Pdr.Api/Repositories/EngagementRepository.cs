@@ -85,22 +85,8 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
         await context.SaveChangesAsync();
     }
 
-    public async Task<EngagementOpenItemsSummaryDto> GetOpenItemsSummaryAsync(int engagementId, int userId)
+    public async Task<EngagementOpenItemsSummaryDto> GetOpenItemsSummaryAsync(int engagementId)
     {
-        // Verify user is assigned to engagement
-        var isAssigned = await context.EngagementAssignments
-            .AsNoTracking()
-            .AnyAsync(a => a.EngagementId == engagementId && a.UserId == userId);
-
-        if (!isAssigned)
-            return new EngagementOpenItemsSummaryDto
-            {
-                ChecklistOpenCount = 0,
-                AccessOpenCount = 0,
-                OpenRisksCount = 0,
-                ResourcingOpenCount = 0
-            };
-
         var checklistOpenCount = await context.Set<EngagementChecklistItem>()
             .AsNoTracking()
             .Where(i => i.EngagementChecklist.EngagementId == engagementId

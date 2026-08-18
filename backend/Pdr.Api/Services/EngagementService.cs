@@ -507,7 +507,14 @@ public class EngagementService(
         if (!exists) return null;
 
         var userId = currentUserService.GetUserId();
-        return await engagementRepository.GetOpenItemsSummaryAsync(engagementId, userId);
+        var isAssigned = await db.EngagementAssignments
+            .AsNoTracking()
+            .AnyAsync(a => a.EngagementId == engagementId && a.UserId == userId);
+
+        if (!isAssigned)
+            throw new UserNotAssignedToEngagementException(engagementId, userId);
+
+        return await engagementRepository.GetOpenItemsSummaryAsync(engagementId);
     }
 }
 
