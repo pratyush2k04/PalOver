@@ -1,4 +1,6 @@
-namespace Pdr.Api.Models;
+using Pdr.Api.Models.Engagements;
+
+namespace Pdr.Api.Models.Kickoff;
 
 public class KickoffRecord : BaseAuditableEntity
 {

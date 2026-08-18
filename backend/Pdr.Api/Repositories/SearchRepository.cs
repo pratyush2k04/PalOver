@@ -5,6 +5,7 @@ using Pdr.Api.Models.Documents;
 using Pdr.Api.Models.EngagementChecklist;
 using Pdr.Api.Models.Engagements;
 using Pdr.Api.Models.LoginEntity;
+using Pdr.Api.Models.People;
 using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Repositories;
