@@ -31,9 +31,22 @@ export class BlockItemDialogComponent {
   private dialogRef = inject<DialogRef<BlockItemDialogResult>>(DialogRef);
   readonly data = inject<BlockItemDialogData>(DIALOG_DATA);
 
-  readonly form = this.fb.nonNullable.group({
+  readonly ownerOptions: SelectOption[] = [
+    { value: null, label: '-- Select Owner --' },
+    ...(this.data.assignedUsers || []).map((user) => ({
+      value: Number(user.userId),
+      label: user.fullName
+    }))
+  ];
+
+  readonly form = this.fb.group({
     reason: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
-    personId: [this.data.currentOwnerId ?? (this.data.assignedUsers?.[0]?.userId ?? null), [Validators.required]]
+    personId: [
+      this.data.currentOwnerId != null
+        ? Number(this.data.currentOwnerId)
+        : (this.data.assignedUsers?.[0]?.userId != null ? Number(this.data.assignedUsers[0].userId) : null),
+      [Validators.required]
+    ]
   });
 
   get reasonControl() {
@@ -45,13 +58,8 @@ export class BlockItemDialogComponent {
   }
 
   get reasonLength(): number {
-    return this.reasonControl.value?.length || 0;
+    return (this.reasonControl.value as string)?.length || 0;
   }
-
-  readonly ownerOptions: SelectOption[] = (this.data.assignedUsers || []).map((user) => ({
-    value: user.userId,
-    label: user.fullName
-  }));
 
   onCancel(): void {
     this.dialogRef.close();
@@ -63,7 +71,7 @@ export class BlockItemDialogComponent {
       return;
     }
 
-    const reason = this.reasonControl.value.trim();
+    const reason = (this.reasonControl.value || '').trim();
     const personId = Number(this.personIdControl.value);
     this.dialogRef.close({ reason, personId });
   }
