@@ -23,6 +23,13 @@ export enum ResourceRequestStatus {
   Confirmed = 'Confirmed',
 }
 
+export interface ResourceAllocationItem {
+  id: number;
+  name: string;
+  isConfirmed: boolean;
+  confirmedDate: string | null;
+}
+
 export interface ResourceRequestItem {
   id: number;
   engagementId: number;
@@ -34,6 +41,7 @@ export interface ResourceRequestItem {
   status: string;
   requestedById: number;
   isUrgent: boolean;
+  allocations: ResourceAllocationItem[];
 }
 
 export interface CreateResourceRequestPayload {
@@ -42,4 +50,16 @@ export interface CreateResourceRequestPayload {
   peopleNeeded: number;
   requiredByDate: string;
   jobDescription: string;
+}
+
+export interface AllocateResourcesPayload {
+  names: string[];
+}
+
+export interface ConfirmAllocationPayload {
+  confirmedDate: string;
+}
+
+export interface RemoveAllocationPayload {
+  reason: string;
 }
