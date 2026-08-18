@@ -7,8 +7,8 @@
     <div class="action-group">
       @if (isTechLead()) {
         <app-button variant="flat" (click)="openAddModal()">
-          <span [inlineSVG]="'assets/icons/plus.svg'"></span>
-          Add item
+          <span class="btn-icon" [inlineSVG]="'assets/icons/plus.svg'"></span>
+          <span>Add item</span>
         </app-button>
       }
     </div>
