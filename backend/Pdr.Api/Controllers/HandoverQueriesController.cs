@@ -118,21 +118,21 @@ public class HandoverQueriesController : ControllerBase
     }
 
     /// <summary>
-    /// Marks a handover query resolved or reopens it (Project Manager only).
+    /// Marks a handover query resolved or reopens it (Pre Sales or Project Manager).
     /// </summary>
     /// <param name="engagementId">The unique identifier of the engagement.</param>
     /// <param name="queryId">The unique identifier of the query.</param>
     /// <param name="request">The resolved state to set.</param>
     /// <returns>The updated query.</returns>
     [HttpPut("{queryId:int}/resolve")]
-    [EndpointSummary("Resolve or reopen a handover query (Project Manager only)")]
+    [EndpointSummary("Resolve or reopen a handover query (Pre Sales or Project Manager)")]
     [ProducesResponseType(typeof(HandoverQueryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<HandoverQueryDto>> ResolveQuery(int engagementId, int queryId, [FromBody] ResolveHandoverQueryRequest request)
     {
-        await _accessService.CanAccessHandoverAsync(engagementId, GetUserId(), RoleConstants.ProjectManagement);
+        await _accessService.CanAccessHandoverAsync(engagementId, GetUserId());
 
         var dto = await _handoverQueryService.ResolveQueryAsync(engagementId, queryId, request, GetUserIdString());
         return Ok(dto);
