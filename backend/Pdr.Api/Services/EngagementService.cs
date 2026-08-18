@@ -506,7 +506,8 @@ public class EngagementService(
         var exists = await db.Engagements.AnyAsync(e => e.EngagementId == engagementId);
         if (!exists) return null;
 
-        return await engagementRepository.GetOpenItemsSummaryAsync(engagementId);
+        var userId = currentUserService.GetUserId();
+        return await engagementRepository.GetOpenItemsSummaryAsync(engagementId, userId);
     }
 }
 
