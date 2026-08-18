@@ -40,12 +40,14 @@
           </div>
 
           @if (request.status !== 'Raised') {
-            <div class="allocations-table">
+            <div class="allocations-table" [class.allocations-table--readonly]="!isLeadershipOrAdmin()">
               <div class="allocations-row allocations-row--header">
                 <span>Resource name</span>
                 <span>Allocated on</span>
                 <span>Confirmed on</span>
-                <span>Actions</span>
+                @if (isLeadershipOrAdmin()) {
+                  <span>Actions</span>
+                }
               </div>
               @for (allocation of request.allocations; track allocation.id) {
                 <div class="allocations-row">
@@ -58,8 +60,8 @@
                       <span class="allocation-pending">{{ constants.PENDING_CONFIRMATION }}</span>
                     }
                   </span>
-                  <span class="allocation-actions">
-                    @if (isLeadershipOrAdmin()) {
+                  @if (isLeadershipOrAdmin()) {
+                    <span class="allocation-actions">
                       @if (!allocation.isConfirmed) {
                         <app-button variant="flat" size="sm" (click)="openConfirmDialog(request, allocation)">
                           {{ constants.BTN_CONFIRM }}
@@ -69,8 +71,8 @@
                           {{ constants.BTN_REMOVE }}
                         </app-button>
                       }
-                    }
-                  </span>
+                    </span>
+                  }
                 </div>
               }
             </div>

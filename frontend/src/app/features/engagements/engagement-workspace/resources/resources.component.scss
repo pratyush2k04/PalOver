@@ -99,6 +99,10 @@
     flex-direction: column;
   }
 
+  .allocations-table--readonly .allocations-row {
+    grid-template-columns: 1.5fr 1fr 1fr;
+  }
+
   .allocations-row {
     display: grid;
     grid-template-columns: 1.5fr 1fr 1fr 1fr;
