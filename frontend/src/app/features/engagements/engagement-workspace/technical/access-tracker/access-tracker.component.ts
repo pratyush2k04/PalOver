@@ -12,6 +12,7 @@ import { KickoffReadinessDto, KickoffReadinessService } from 'src/app/services/k
 import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
 import { DialogService } from '@common/services/dialog/dialog.service';
@@ -24,6 +25,11 @@ import {
   BlockAccessItemDialogData,
   BlockAccessItemDialogResult
 } from './dialogs/block-access-item-dialog/block-access-item-dialog.component';
+import {
+  EditOwnerDialogComponent,
+  EditOwnerDialogData,
+  EditOwnerDialogResult
+} from '../dialogs/edit-owner-dialog/edit-owner-dialog.component';
 
 @Component({
   selector: 'app-access-tracker',
@@ -32,6 +38,7 @@ import {
     CommonModule,
     FormsModule,
     InlineSVGModule,
+    TooltipDirective,
     FlaggedItemsBannerComponent,
     StatusBadgeComponent,
     ButtonComponent
@@ -208,6 +215,35 @@ export class AccessTrackerComponent {
     dialogRef.closed$.subscribe((result) => {
       if (!result) return;
       this.submitAddItem(result);
+    });
+  }
+
+  openEditOwnerModal(item: AccessItemDto): void {
+    const dialogRef = this.dialog.open<EditOwnerDialogComponent, EditOwnerDialogData, EditOwnerDialogResult>(
+      EditOwnerDialogComponent,
+      { data: { itemName: item.name, currentOwnerId: item.ownerId } }
+    );
+
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+      this.updateOwner(item, result.ownerId);
+    });
+  }
+
+  private updateOwner(item: AccessItemDto, ownerId: number) {
+    this.readinessService.updateAccessItemOwner(item.id, { ownerId }).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (updatedItem) => {
+        const updatedList = this.accessItems().map(i =>
+          i.id === updatedItem.id ? updatedItem : i
+        );
+        this.accessItems.set(updatedList);
+        this.itemsUpdated.emit(updatedList);
+      },
+      error: (err) => {
+        console.error('API update owner failed', err);
+      }
     });
   }
 

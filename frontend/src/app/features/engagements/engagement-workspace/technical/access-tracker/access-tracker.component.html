@@ -44,7 +44,14 @@
                 {{ item.name }}
               </td>
               <td class="owner-cell">
-                {{ item.ownerFullName || 'Unassigned' }}
+                <div class="owner-content">
+                  <span>{{ item.ownerFullName || 'Unassigned' }}</span>
+                  @if (isTechLead()) {
+                    <button class="edit-owner-btn" (click)="openEditOwnerModal(item)" [appTooltip]="'Change owner'">
+                      <span [inlineSVG]="'assets/icons/edit.svg'"></span>
+                    </button>
+                  }
+                </div>
               </td>
               <td class="client-side-cell">
                 <div class="cell-content">

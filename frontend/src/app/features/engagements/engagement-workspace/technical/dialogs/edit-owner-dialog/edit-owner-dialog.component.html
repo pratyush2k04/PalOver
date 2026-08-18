@@ -1,0 +1,35 @@
+<div class="dialog-header">
+  <h2>Change Owner</h2>
+</div>
+
+<div class="dialog-content">
+  <p class="dialog-description">
+    Select a new owner for <strong>{{ itemName() }}</strong>.
+  </p>
+
+  <div class="form-group">
+    <label for="ownerSelect">Owner</label>
+    
+    @if (isLoading()) {
+      <div class="loading-state">
+        Loading users...
+      </div>
+    } @else {
+      <select 
+        id="ownerSelect" 
+        class="form-control" 
+        [ngModel]="selectedOwnerId()" 
+        (ngModelChange)="selectedOwnerId.set($event)">
+        <option [ngValue]="null" disabled>Select an owner...</option>
+        @for (user of users(); track user.id) {
+          <option [ngValue]="user.id">{{ user.fullName }} ({{ user.email }})</option>
+        }
+      </select>
+    }
+  </div>
+</div>
+
+<div class="dialog-footer">
+  <app-button variant="stroked" (click)="onCancel()">Cancel</app-button>
+  <app-button variant="flat" [disabled]="!selectedOwnerId() || isLoading()" (click)="onSubmit()">Save</app-button>
+</div>
