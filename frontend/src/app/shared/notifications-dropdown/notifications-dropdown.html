@@ -19,7 +19,7 @@
         @if (loading() && notifications().length === 0) {
           <app-loading-spinner label="Loading notifications..." />
         } @else if (notifications().length === 0) {
-          <app-empty-state message="No notifications" />
+          <app-empty-state message="No unread notifications" />
         } @else {
           @for (notification of notifications(); track notification.id) {
             <div
@@ -34,6 +34,10 @@
             </div>
           }
         }
+      </div>
+
+      <div class="dropdown-footer">
+        <app-button variant="flat" size="sm" (click)="onViewAllClick()">View All Notifications</app-button>
       </div>
     </div>
   }

@@ -140,6 +140,15 @@ export const routes: Routes = [
           ),
       },
 
+      // Notifications
+      {
+        path: 'notifications',
+        loadChildren: () =>
+          import('./features/notifications/notification-fullpage.routes').then(
+            m => m.NOTIFICATION_FULLPAGE_ROUTES
+          ),
+      },
+
       // Access denied
       {
         path: 'access-denied',

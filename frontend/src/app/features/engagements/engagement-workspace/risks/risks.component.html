@@ -68,6 +68,11 @@
               </div>
 
               <div class="right-section">
+                @if (risk.currentEscalationLevel && risk.currentEscalationLevel !== 'None') {
+                  <app-status-badge [tone]="risk.currentEscalationLevel === 'Leadership' ? 'danger' : 'warning'">
+                    Escalated ({{ risk.currentEscalationLevel }})
+                  </app-status-badge>
+                }
                 <span class="open-days-badge">Open for {{ risk.openForDays }} day(s)</span>
               </div>
             </div>

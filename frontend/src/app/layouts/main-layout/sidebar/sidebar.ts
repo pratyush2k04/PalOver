@@ -80,9 +80,8 @@ export class SidebarComponent {
       });
     }
 
-    // Alerts and Profile: no route assigned
+    // Profile: no route assigned
     items.push(
-      { label: 'Alerts', icon: 'bell', badge: 'dot' },
       { label: 'Profile', icon: 'user' }
     );
 
