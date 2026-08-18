@@ -260,11 +260,13 @@ export class AccessTrackerComponent {
   }
 
   private submitAddItem(result: AddAccessItemDialogResult) {
+    const currentUserId = this.authService.getUserId() ?? 1;
+    const currentUser = this.authService.currentUser();
     const requestData = {
       name: result.name,
       isClientSide: result.isClientSide,
       timeZoneNote: result.timeZoneNote,
-      ownerId: 1 // Default to Rahul Verma (ID 1)
+      ownerId: currentUserId
     };
 
     this.readinessService.addCustomAccessItem(this.engagementId(), requestData).pipe(
@@ -274,6 +276,7 @@ export class AccessTrackerComponent {
         const updatedList = [...this.accessItems(), newItem];
         this.accessItems.set(updatedList);
         this.itemsUpdated.emit(updatedList);
+        this.toastService.success(`Access item "${newItem.name}" added successfully`);
       },
       error: (err) => {
         console.warn('API add item failed, adding item locally for testing', err);
@@ -281,8 +284,8 @@ export class AccessTrackerComponent {
           id: Date.now(),
           name: requestData.name,
           isClientSide: requestData.isClientSide,
-          ownerId: 1,
-          ownerFullName: 'Rahul Verma',
+          ownerId: currentUserId,
+          ownerFullName: currentUser?.fullName ?? 'Tech Lead',
           status: 'InProgress',
           timeZoneNote: requestData.timeZoneNote,
           daysUntilBillingDate: 5,
