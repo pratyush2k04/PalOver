@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Pdr.Api.Constants;
 using Pdr.Api.Models.Notifications;
 
 namespace Pdr.Api.Data.Configuration;
@@ -67,6 +68,19 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
                 Body = "The handover for {EngagementName} has been submitted by {TriggerUserName} and is ready for your review.",
                 DefaultPriority = NotificationPriority.High,
                 LinkPattern = "/engagements/{EngagementId}/workspace/handover",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 6,
+                Key = NotificationConstants.RiskCommentMention.TemplateKey,
+                Title = "Mentioned in Risk — {RiskTitle}",
+                Body = "{AuthorName} mentioned you in a comment on risk '{RiskTitle}'",
+                DefaultPriority = NotificationPriority.Medium,
+                LinkPattern = "/engagements/{EngagementId}/workspace/risks",
                 CreatedAt = seedTimestamp,
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",

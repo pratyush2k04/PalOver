@@ -2,6 +2,25 @@ namespace Pdr.Api.Constants;
 
 public static class NotificationConstants
 {
+    public static class TemplateKeys
+    {
+        public const string AccessItemBlocked = "AccessItemBlocked";
+        public const string PMAllocated = "PMAllocated";
+        public const string HandoverSubmitted = "HandoverSubmitted";
+        public const string RiskCommentMention = "RiskCommentMention";
+    }
+
+    public static class RiskCommentMention
+    {
+        public const string TemplateKey = "RiskCommentMention";
+        public const string ParseErrorMessage = "RiskCommentMention notification data could not be parsed.";
+        public const string RiskTitleKey = "RiskTitle";
+        public const string AuthorNameKey = "AuthorName";
+        public const string CommentSnippetKey = "CommentSnippet";
+        public const string DefaultRiskTitle = "Risk";
+        public const string DefaultAuthorName = "A team member";
+    }
+
     public static class Messages
     {
         public static string NotFound(int id) => $"Notification with id {id} was not found.";

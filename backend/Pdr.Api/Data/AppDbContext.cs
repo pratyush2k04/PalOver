@@ -70,7 +70,8 @@ public class AppDbContext : DbContext
     public DbSet<Models.ArchitectureValidation.DiscoveryFeatureItem> DiscoveryFeatureItems => Set<Models.ArchitectureValidation.DiscoveryFeatureItem>();
     public DbSet<Pdr.Api.Models.ChangeRequest.ChangeRequest> ChangeRequests => Set<Pdr.Api.Models.ChangeRequest.ChangeRequest>();
     public DbSet<Risk> Risks => Set<Risk>();
-   
+    public DbSet<RiskComment> RiskComments => Set<RiskComment>();
+
 
  
 
