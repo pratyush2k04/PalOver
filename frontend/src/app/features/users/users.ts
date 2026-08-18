@@ -50,6 +50,10 @@ export class UsersComponent implements OnInit {
   readonly roleOptions = computed<SelectOption[]>(() =>
     this.roles().map((r) => ({ value: r.id, label: r.name }))
   );
+  readonly roleFilterOptions = computed<SelectOption[]>(() => [
+    { value: 'all', label: 'All Roles' },
+    ...this.roles().map((r) => ({ value: r.name, label: r.name }))
+  ]);
   searchTerm = '';
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
@@ -57,6 +61,26 @@ export class UsersComponent implements OnInit {
   page = signal(1);
   pageSize = 5;
   totalCount = signal(0);
+
+  selectedRoleFilter = signal<string>('all');
+
+  readonly filteredUsers = computed(() => {
+    const list = this.users();
+    const filter = this.selectedRoleFilter();
+    if (!filter || filter === 'all') {
+      return list;
+    }
+    return list.filter((u) => String(u.roleId) === filter || u.roleName === filter);
+  });
+
+  readonly showingStart = computed(() => {
+    if (this.totalCount() === 0) return 0;
+    return (this.page() - 1) * this.pageSize + 1;
+  });
+
+  readonly showingEnd = computed(() => {
+    return Math.min(this.page() * this.pageSize, this.totalCount());
+  });
 
   pendingChange = signal<PendingRoleChange | null>(null);
   isSavingRoleChange = signal(false);

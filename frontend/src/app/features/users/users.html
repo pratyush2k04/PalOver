@@ -1,30 +1,41 @@
 <div class="user-directory">
-  <!-- Top Header (Title, Subtitle, Search stacked on Left | Total Users Card on Right) -->
+  <!-- Top Header (Title, Subtitle, Controls on Left | Total Card on Right) -->
   <header class="directory-header">
-    <div class="header-main">
+    <div class="header-left">
       <div class="header-titles">
         <h1>User Directory</h1>
         <p class="subtitle">Manage system users and assign access roles across the organization.</p>
       </div>
 
-      <div class="search-box">
-        <app-input
-          id="user-search"
-          placeholder="Search by name or email..."
-          [(ngModel)]="searchTerm"
-          (ngModelChange)="onSearchChange()"
-        />
+      <div class="controls-row">
+        <div class="search-box">
+          <app-input
+            id="user-search"
+            placeholder="Search by name or email..."
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange()"
+          />
+        </div>
+
+        <div class="role-filter-box">
+          <app-select
+            id="user-role-filter"
+            [options]="roleFilterOptions()"
+            [ngModel]="selectedRoleFilter()"
+            (ngModelChange)="selectedRoleFilter.set($event)"
+          />
+        </div>
       </div>
     </div>
 
-    <div class="header-card">
-      <div class="metric-card">
-        <div class="metric-icon total">
+    <div class="header-right">
+      <div class="total-users-card">
+        <div class="card-icon">
           <span [inlineSVG]="'assets/icons/users.svg'"></span>
         </div>
-        <div class="metric-content">
-          <span class="metric-value">{{ totalCount() }}</span>
-          <span class="metric-label">Total Users</span>
+        <div class="card-content">
+          <span class="card-value">{{ totalCount() }}</span>
+          <span class="card-label">Total Users</span>
         </div>
       </div>
     </div>
@@ -40,29 +51,29 @@
       <app-loading-spinner label="Loading users..."></app-loading-spinner>
     </div>
   } @else {
-    @if (users().length === 0) {
+    @if (filteredUsers().length === 0) {
       <div class="empty-state-wrapper">
-        <app-empty-state message="No users found matching your search criteria." />
+        <app-empty-state message="No users found matching your criteria." />
       </div>
     } @else {
       <div class="table-card">
         <table class="users-table">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th class="col-role">Role</th>
+              <th>NAME</th>
+              <th>EMAIL</th>
+              <th class="col-role">ROLE</th>
             </tr>
           </thead>
           <tbody>
-            @for (user of users(); track user.id) {
+            @for (user of filteredUsers(); track user.id) {
               <tr>
                 <td class="user-name-cell">
                   <app-avatar [name]="user.fullName" size="sm" />
                   <span class="name">{{ user.fullName }}</span>
                 </td>
                 <td class="col-email">{{ user.email }}</td>
-                <td class="col-role">
+                <td class="col-role" [attr.data-role]="user.roleName">
                   <app-select
                     [id]="'user-role-' + user.id"
                     [options]="roleOptions()"
@@ -74,14 +85,20 @@
             }
           </tbody>
         </table>
+
+        <!-- Table Footer -->
+        <div class="table-footer">
+          <div class="showing-text">
+            Showing {{ showingStart() }} to {{ showingEnd() }} of {{ totalCount() }} users
+          </div>
+          @if (totalCount() > 0) {
+            <div class="pagination-controls">
+              <app-paginator [page]="page()" [totalPages]="totalPages" (pageChange)="goToPage($event)" />
+            </div>
+          }
+        </div>
       </div>
     }
-  }
-
-  @if (totalCount() > 0) {
-    <div class="pagination-wrapper">
-      <app-paginator [page]="page()" [totalPages]="totalPages" (pageChange)="goToPage($event)" />
-    </div>
   }
 </div>
 
