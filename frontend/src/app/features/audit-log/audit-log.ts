@@ -1,8 +1,9 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuditTrailService } from './services/audit-trail.service';
-import { AuditLogDto } from './models/audit-log.model';
+import { HttpErrorResponse } from '@angular/common/http';
+import { AuditLogService } from './services/audit-log.service';
+import { AuditLogDto, AuditLogFilters } from './models/audit-log.model';
 import { AUDIT_LOG_MESSAGES, USER_ROLES } from '@shared/constants/app.constants';
 import { AuthService } from 'src/app/services/auth';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
@@ -10,35 +11,18 @@ import { AlertComponent } from '@common/components/alert/alert';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { PaginatorComponent } from '@common/components/paginator/paginator';
 import { ButtonComponent } from '@common/components/button/button';
-
-interface AuditTrailFilters {
-  search: string;
-  fromDate: string | null;
-  toDate: string | null;
-}
-
-function matchesSearch(log: AuditLogDto, term: string): boolean {
-  return log.userName.toLowerCase().includes(term)
-    || log.action.toLowerCase().includes(term)
-    || log.details.toLowerCase().includes(term);
-}
-
-function escapeCsvField(value: string): string {
-  if (/[",\n]/.test(value)) {
-    return `"${value.replace(/"/g, '""')}"`;
-  }
-  return value;
-}
+import { InputComponent } from '@common/components/form/input/input';
+import { downloadCsv } from '@shared/utils/csv.util';
 
 @Component({
-  selector: 'app-audit-trail',
+  selector: 'app-audit-log',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, AlertComponent, EmptyStateComponent, PaginatorComponent, ButtonComponent],
-  templateUrl: './audit-trail.html',
-  styleUrl: './audit-trail.scss'
+  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, AlertComponent, EmptyStateComponent, PaginatorComponent, ButtonComponent, InputComponent],
+  templateUrl: './audit-log.html',
+  styleUrl: './audit-log.scss'
 })
-export class AuditTrailComponent implements OnInit {
-  private auditTrailService = inject(AuditTrailService);
+export class AuditLogComponent implements OnInit {
+  private auditLogService = inject(AuditLogService);
   private authService = inject(AuthService);
 
   readonly showUserColumn = this.authService.hasRole(USER_ROLES.LEADERSHIP) || this.authService.isAdmin();
@@ -51,7 +35,7 @@ export class AuditTrailComponent implements OnInit {
   filterFromDate: string | null = null;
   filterToDate: string | null = null;
 
-  filters = signal<AuditTrailFilters>({ search: '', fromDate: null, toDate: null });
+  filters = signal<AuditLogFilters>({ search: '', fromDate: null, toDate: null });
   page = signal(1);
   readonly pageSize = 20;
 
@@ -61,7 +45,7 @@ export class AuditTrailComponent implements OnInit {
     return this.allLogs()
       .filter((log) => !f.fromDate || log.createdAt >= f.fromDate)
       .filter((log) => !f.toDate || log.createdAt <= f.toDate)
-      .filter((log) => !term || matchesSearch(log, term))
+      .filter((log) => !term || this.matchesSearch(log, term))
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   });
 
@@ -95,31 +79,28 @@ export class AuditTrailComponent implements OnInit {
   exportCsv(): void {
     const rows = this.filteredLogs();
     const header = this.showUserColumn ? ['Date/Time', 'User', 'Action', 'Details'] : ['Date/Time', 'Action', 'Details'];
-    const lines = [header.join(',')];
 
-    for (const log of rows) {
-      const fields = [escapeCsvField(log.createdAt)];
+    const dataRows = rows.map((log) => {
+      const fields = [new Date(log.createdAt).toLocaleString()];
       if (this.showUserColumn) {
-        fields.push(escapeCsvField(log.userName));
+        fields.push(log.userName);
       }
-      fields.push(escapeCsvField(log.action), escapeCsvField(log.details));
-      lines.push(fields.join(','));
-    }
+      fields.push(log.action, log.details);
+      return fields;
+    });
 
-    const csv = lines.join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    const date = new Date().toISOString().slice(0, 10);
-    link.href = url;
-    link.download = `audit-trail-export-${date}.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
+    downloadCsv(dataRows, header, 'audit-log-export');
+  }
+
+  private matchesSearch(log: AuditLogDto, term: string): boolean {
+    return log.userName.toLowerCase().includes(term)
+      || log.action.toLowerCase().includes(term)
+      || log.details.toLowerCase().includes(term);
   }
 
   private loadAllLogs(cursor: number | null = null, accumulated: AuditLogDto[] = []): void {
     this.isLoading.set(true);
-    this.auditTrailService.getAuditLogPage(cursor, 100).subscribe({
+    this.auditLogService.getAuditLogPage(cursor, 100).subscribe({
       next: (result) => {
         const combined = [...accumulated, ...result.items];
         if (result.hasMore && result.nextCursor != null) {
@@ -129,8 +110,9 @@ export class AuditTrailComponent implements OnInit {
           this.isLoading.set(false);
         }
       },
-      error: () => {
-        this.errorMessage.set(AUDIT_LOG_MESSAGES.LOAD_ERROR);
+      error: (error: HttpErrorResponse) => {
+        const message = error.status === 401 ? AUDIT_LOG_MESSAGES.UNAUTHORIZED_ERROR : AUDIT_LOG_MESSAGES.LOAD_ERROR;
+        this.errorMessage.set(message);
         this.isLoading.set(false);
       }
     });

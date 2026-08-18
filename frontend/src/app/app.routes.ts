@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { TECHNICAL_READINESS_ROUTES, MASTER_CHECKLIST_ROUTES, AUDIT_TRAIL_ROUTES } from '@shared/constants/app.constants';
+import { TECHNICAL_READINESS_ROUTES, MASTER_CHECKLIST_ROUTES, AUDIT_LOG_ROUTES } from '@shared/constants/app.constants';
 
 import { LoginComponent } from './components/login/login';
 import { MainLayoutComponent } from '@layouts/main-layout/main-layout';
@@ -140,12 +140,12 @@ export const routes: Routes = [
           ),
       },
 
-      // Audit Trail (own entries for all users; Leadership/Admin see everyone's)
+      // Audit Log (own entries for all users; Leadership/Admin see everyone's)
       {
-        path: AUDIT_TRAIL_ROUTES.BASE,
+        path: AUDIT_LOG_ROUTES.BASE,
         loadChildren: () =>
-          import('./features/audit-trail/audit-trail.routes').then(
-            m => m.AUDIT_TRAIL_ROUTES
+          import('./features/audit-log/audit-log.routes').then(
+            m => m.AUDIT_LOG_ROUTE
           ),
       },
 

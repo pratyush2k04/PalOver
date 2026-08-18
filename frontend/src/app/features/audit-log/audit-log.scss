@@ -3,7 +3,7 @@
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
-.audit-trail {
+.audit-log {
   max-width: 60rem;
   margin: 0 auto;
   padding: 2rem 1.5rem;
@@ -23,36 +23,8 @@
   margin-bottom: 1.25rem;
   flex-wrap: wrap;
 
-  input[type='text'] {
+  app-input {
     flex: 1 1 16rem;
-  }
-
-  label {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    font-size: 0.75rem;
-    color: #8b95a3;
-  }
-
-  input {
-    padding: 0.65rem 0.9rem;
-    font-size: 0.875rem;
-    border: 1px solid #d7dce2;
-    border-radius: 0.5rem;
-    box-sizing: border-box;
-    background: #ffffff;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-
-    &:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 0.1875rem #2563eb26;
-    }
-
-    &::placeholder {
-      color: #9aa4b2;
-    }
   }
 }
 

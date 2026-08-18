@@ -7,7 +7,7 @@ import { AuditLogDto, CursorPagedResult } from '../models/audit-log.model';
 @Injectable({
   providedIn: 'root'
 })
-export class AuditTrailService {
+export class AuditLogService {
   private http = inject(HttpClient);
 
   getAuditLogPage(cursor: number | null, limit: number): Observable<CursorPagedResult<AuditLogDto>> {

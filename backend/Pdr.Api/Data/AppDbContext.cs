@@ -79,7 +79,7 @@ public class AppDbContext : DbContext
     public DbSet<Models.Notifications.Notification> Notifications => Set<Models.Notifications.Notification>();
     public DbSet<Models.Notifications.NotificationTemplate> NotificationTemplates => Set<Models.Notifications.NotificationTemplate>();
 
-    // Audit Trail
+    // Audit Log
     public DbSet<Models.Audit.AuditAction> AuditActions => Set<Models.Audit.AuditAction>();
     public DbSet<Models.Audit.AuditLog> AuditLogs => Set<Models.Audit.AuditLog>();
 

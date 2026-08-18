@@ -1,24 +1,30 @@
-<div class="audit-trail">
+<div class="audit-log">
   <div class="header">
-    <h1>Audit Trail</h1>
+    <h1>Audit Log</h1>
     <app-button variant="stroked" (click)="exportCsv()">Export</app-button>
   </div>
 
   <div class="filter-bar">
-    <input
-      type="text"
-      placeholder="Search audit trail..."
+    <app-input
+      [id]="'audit-log-search'"
+      placeholder="Search audit log..."
       [(ngModel)]="filterSearch"
       (ngModelChange)="onFilterChange()"
     />
-    <label>
-      From
-      <input type="date" [(ngModel)]="filterFromDate" (ngModelChange)="onFilterChange()" />
-    </label>
-    <label>
-      To
-      <input type="date" [(ngModel)]="filterToDate" (ngModelChange)="onFilterChange()" />
-    </label>
+    <app-input
+      [id]="'audit-log-from-date'"
+      label="From"
+      type="date"
+      [(ngModel)]="filterFromDate"
+      (ngModelChange)="onFilterChange()"
+    />
+    <app-input
+      [id]="'audit-log-to-date'"
+      label="To"
+      type="date"
+      [(ngModel)]="filterToDate"
+      (ngModelChange)="onFilterChange()"
+    />
   </div>
 
   @if (errorMessage()) {
@@ -38,7 +44,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (log of pagedLogs(); track log.auditLogId) {
+        @for (log of pagedLogs(); track log.id) {
           <tr>
             <td class="col-date">{{ log.createdAt | date: 'medium' }}</td>
             @if (showUserColumn) {
@@ -51,7 +57,7 @@
           @if (!isLoading()) {
             <tr>
               <td [attr.colspan]="showUserColumn ? 4 : 3" class="empty-row">
-                <app-empty-state message="No audit trail entries found." />
+                <app-empty-state message="No audit log entries found." />
               </td>
             </tr>
           }
@@ -60,7 +66,7 @@
     </table>
 
     @if (isLoading()) {
-      <app-loading-spinner label="Loading audit trail..." />
+      <app-loading-spinner label="Loading audit log..." />
     }
   </div>
 

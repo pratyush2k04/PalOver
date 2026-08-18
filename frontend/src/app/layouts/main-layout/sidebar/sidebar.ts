@@ -80,12 +80,12 @@ export class SidebarComponent {
       });
     }
 
-    // Audit Trail navigation item: visible to all authenticated users (own entries;
+    // Audit Log navigation item: visible to all authenticated users (own entries;
     // Leadership/Admin see everyone's, enforced by the backend)
     items.push({
-      label: 'Audit Trail',
+      label: 'Audit Log',
       icon: 'clock',
-      route: APP_ROUTES.AUDIT_TRAIL
+      route: APP_ROUTES.AUDIT_LOG
     });
 
     // Alerts and Profile: no route assigned
