@@ -10,7 +10,7 @@ public interface IEngagementService
     Task<EngagementInfoDto?> GetEngagementInfoAsync(int id);
     Task<IEnumerable<EngagementInfoDto>> GetAllEngagementsAsync();
     Task<bool> EditEngagementAsync(int id, EditEngagementRequest request);
-    Task<PmEngagementListResponse> GetMyEngagementsAsync(string sortBy);
+    Task<EngagementListResponse> GetMyEngagementsAsync(string sortBy);
     //assigning
     Task<EngagementOwnersDto> GetEngagementOwnersAsync(int engagementId);
 

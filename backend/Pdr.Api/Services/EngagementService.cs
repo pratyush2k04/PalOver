@@ -190,14 +190,14 @@ public class EngagementService(
         return true;
     }
 
-    public async Task<PmEngagementListResponse> GetMyEngagementsAsync(string sortBy)
+    public async Task<EngagementListResponse> GetMyEngagementsAsync(string sortBy)
     {
         var userId = currentUserService.GetUserId();
         var engagements = await engagementRepository.GetEngagementsForUserAsync(userId, sortBy);
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
         var items = engagements
-            .Select(e => new PmEngagementListItemDto(
+            .Select(e => new EngagementListItemDto(
                 e.EngagementId,
                 e.EngagementName,
                 e.ClientName,
@@ -208,7 +208,7 @@ public class EngagementService(
                 ReadinessScore: null))
             .ToList();
 
-        return new PmEngagementListResponse(items);
+        return new EngagementListResponse(items);
     }
     //assign
 
