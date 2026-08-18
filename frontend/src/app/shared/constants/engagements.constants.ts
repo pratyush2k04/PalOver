@@ -18,6 +18,7 @@ export const ENGAGEMENT_API_ENDPOINTS = {
   DOCUMENT_UPLOAD: '/api/documents/upload',
   DOCUMENT_DOWNLOAD: (id: number) => `/api/documents/${id}/download`,
   DOCUMENT_DELETE: (id: number) => `/api/documents/${id}`,
+  OPEN_ITEMS_SUMMARY: (id: number) => `/api/Engagements/${id}/open-items-summary`,
 } as const;
 
 export const ENGAGEMENT_CONSTANTS = {

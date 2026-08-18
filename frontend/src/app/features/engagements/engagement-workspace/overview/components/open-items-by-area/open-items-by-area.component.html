@@ -1,0 +1,39 @@
+<div class="open-items-card">
+  <div class="card-header">
+    <h3 class="section-title">Open items by area</h3>
+  </div>
+
+  <div class="cards-grid">
+    <div
+      class="item-card clickable"
+      [routerLink]="['/engagements', engagementId, 'workspace', 'checklist']"
+    >
+      <div class="count-value">{{ summary()?.checklistOpenCount ?? 0 }}</div>
+      <div class="count-label">Checklist open</div>
+    </div>
+
+    <div
+      class="item-card clickable"
+      [routerLink]="['/engagements', engagementId, 'workspace', 'technical-readiness']"
+    >
+      <div class="count-value">{{ summary()?.accessOpenCount ?? 0 }}</div>
+      <div class="count-label">Access open</div>
+    </div>
+
+    <div
+      class="item-card clickable"
+      [routerLink]="['/engagements', engagementId, 'workspace', 'risks']"
+    >
+      <div class="count-value">{{ summary()?.openRisksCount ?? 0 }}</div>
+      <div class="count-label">Open risks</div>
+    </div>
+
+    <div
+      class="item-card clickable"
+      [routerLink]="['/engagements', engagementId, 'workspace', 'resourcing']"
+    >
+      <div class="count-value">{{ summary()?.resourcingOpenCount ?? 0 }}</div>
+      <div class="count-label">Resourcing open</div>
+    </div>
+  </div>
+</div>
