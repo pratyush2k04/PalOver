@@ -15,7 +15,9 @@
   }
 
   <div class="requests-list">
-    @if (requests().length > 0) {
+    @if (isLoading()) {
+      <app-loading-spinner label="Loading resource requests..." />
+    } @else if (requests().length > 0) {
       @for (request of requests(); track request.id) {
         <div class="request-card">
           <div class="card-header">

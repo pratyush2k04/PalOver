@@ -7,6 +7,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { AlertComponent } from '@common/components/alert/alert';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { RESOURCE_REQUEST_CONSTANTS } from '@shared/constants/app.constants';
 import { ResourceAllocationItem, ResourceRequestItem } from '../../models/resource-request.model';
@@ -33,7 +34,14 @@ import {
 @Component({
   selector: 'app-resources',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, EmptyStateComponent, StatusBadgeComponent, AlertComponent],
+  imports: [
+    CommonModule,
+    ButtonComponent,
+    EmptyStateComponent,
+    StatusBadgeComponent,
+    AlertComponent,
+    LoadingSpinnerComponent,
+  ],
   templateUrl: './resources.component.html',
   styleUrl: './resources.component.scss',
 })
@@ -62,6 +70,7 @@ export class ResourcesComponent {
 
   requests = signal<ResourceRequestItem[]>([]);
   engagementInfo = signal<EngagementInfoDto | null>(null);
+  readonly isLoading = signal<boolean>(true);
 
   readonly unconfirmedCount = computed(
     () => this.requests().filter((r) => r.status !== 'Confirmed').length,
@@ -92,9 +101,16 @@ export class ResourcesComponent {
       error: () => this.engagementInfo.set(null),
     });
 
+    this.isLoading.set(true);
     this.resourceRequestService.getResourceRequests(engagementId).subscribe({
-      next: (data) => this.requests.set(data),
-      error: () => this.requests.set([]),
+      next: (data) => {
+        this.requests.set(data);
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.requests.set([]);
+        this.isLoading.set(false);
+      },
     });
   }
 
