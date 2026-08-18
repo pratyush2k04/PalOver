@@ -67,7 +67,7 @@
                 variant="icon"
                 class="current-draft__action-btn current-draft__action-btn--edit"
                 ariaLabel="Edit item"
-                title="Edit item"
+                [appTooltip]="'Edit item'"
                 (click)="onEditItem(item)"
               >
                 <span class="current-draft__action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
@@ -77,7 +77,7 @@
                 variant="icon"
                 class="current-draft__action-btn current-draft__action-btn--retire"
                 ariaLabel="Retire item"
-                title="Retire item"
+                [appTooltip]="'Retire item'"
                 (click)="onRetireItem(item)"
               >
                 <span class="current-draft__action-icon" [inlineSVG]="'assets/icons/archive.svg'"></span>
