@@ -116,6 +116,7 @@ public class ResourceRequestService(
         if (request.Status == ResourceRequestStatus.Raised)
         {
             request.Status = ResourceRequestStatus.Allocated;
+            await NotifyPmOfAllocationAsync(request);
         }
 
         await resourceRequestRepository.SaveChangesAsync();
@@ -172,6 +173,7 @@ public class ResourceRequestService(
         if (request.Status == ResourceRequestStatus.Confirmed)
         {
             request.Status = ResourceRequestStatus.Allocated;
+            await NotifyPmOfReopeningAsync(request);
         }
 
         await resourceRequestRepository.SaveChangesAsync();
@@ -205,6 +207,18 @@ public class ResourceRequestService(
         }
     }
 
+    private async Task NotifyPmOfAllocationAsync(ResourceRequest request)
+    {
+        var data = JsonSerializer.Serialize(
+            new ResourceRequestAllocatedMapper.ResourceRequestAllocatedData(request.Id, request.EngagementId));
+
+        await notificationService.CreateFromTemplateAsync(
+            "ResourceRequestAllocated",
+            request.RequestedById,
+            data,
+            DateTime.UtcNow);
+    }
+
     private async Task NotifyPmOfConfirmationAsync(ResourceRequest request)
     {
         var data = JsonSerializer.Serialize(
@@ -212,6 +226,18 @@ public class ResourceRequestService(
 
         await notificationService.CreateFromTemplateAsync(
             "ResourceRequestConfirmed",
+            request.RequestedById,
+            data,
+            DateTime.UtcNow);
+    }
+
+    private async Task NotifyPmOfReopeningAsync(ResourceRequest request)
+    {
+        var data = JsonSerializer.Serialize(
+            new ResourceRequestReopenedMapper.ResourceRequestReopenedData(request.Id, request.EngagementId));
+
+        await notificationService.CreateFromTemplateAsync(
+            "ResourceRequestReopened",
             request.RequestedById,
             data,
             DateTime.UtcNow);

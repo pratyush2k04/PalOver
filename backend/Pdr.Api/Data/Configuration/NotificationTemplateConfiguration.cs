@@ -163,6 +163,32 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",
                 IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 6,
+                Key = "ResourceRequestAllocated",
+                Title = "Resource Request Allocated — {EngagementName}",
+                Body = "Named resources have been allocated for your {RoleName} request on {EngagementName}.",
+                DefaultPriority = NotificationPriority.Medium,
+                LinkPattern = "/engagements/{EngagementId}/workspace/resources",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 11,
+                Key = "ResourceRequestReopened",
+                Title = "Resource Request Reopened — {EngagementName}",
+                Body = "A confirmed resource was removed from your {RoleName} request on {EngagementName}; it is now reopened for allocation.",
+                DefaultPriority = NotificationPriority.High,
+                LinkPattern = "/engagements/{EngagementId}/workspace/resources",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
             }
         );
     }
