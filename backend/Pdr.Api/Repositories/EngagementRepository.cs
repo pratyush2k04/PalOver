@@ -95,7 +95,6 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
         if (!isAssigned)
             return new EngagementOpenItemsSummaryDto
             {
-                EngagementId = engagementId,
                 ChecklistOpenCount = 0,
                 AccessOpenCount = 0,
                 OpenRisksCount = 0,
@@ -126,7 +125,6 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
 
         return new EngagementOpenItemsSummaryDto
         {
-            EngagementId = engagementId,
             ChecklistOpenCount = checklistOpenCount,
             AccessOpenCount = accessOpenCount,
             OpenRisksCount = openRisksCount,
