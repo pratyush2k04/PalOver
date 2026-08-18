@@ -30,9 +30,9 @@
     @if (isLoading()) {
       <app-loading-spinner label="Loading documents..." />
     } @else if (documents().length === 0) {
-      <app-empty-state message="No documents uploaded yet." />
+      <app-empty-state icon="assets/icons/empty-doc.svg" message="No documents uploaded yet." />
     } @else if (filteredDocuments().length === 0) {
-      <app-empty-state [message]="DOCUMENT_MESSAGES.NO_SEARCH_RESULTS" />
+      <app-empty-state icon="assets/icons/empty-doc.svg" [message]="DOCUMENT_MESSAGES.NO_SEARCH_RESULTS" />
     } @else {
       <div class="table-responsive">
         <table class="documents-table">
