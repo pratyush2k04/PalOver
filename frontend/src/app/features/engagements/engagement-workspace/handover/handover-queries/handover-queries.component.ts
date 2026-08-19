@@ -50,6 +50,7 @@ export class HandoverQueriesComponent {
   isError = signal(false);
 
   responseDrafts = signal<Record<number, string>>({});
+  pendingResolutionToggles = signal<ReadonlySet<number>>(new Set());
 
   isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
   isProjectManagement = computed(() => this.authService.hasRole('Project Management'));
@@ -121,13 +122,23 @@ export class HandoverQueriesComponent {
   }
 
   toggleResolve(query: HandoverQueryDto): void {
-    const id = this.engagementId();
+    if (this.pendingResolutionToggles().has(query.queryId)) return;
 
-    this.handoverQueryService.resolveQuery(id, query.queryId, !query.isResolved).subscribe({
+    const id = this.engagementId();
+    this.pendingResolutionToggles.update((s) => new Set(s).add(query.queryId));
+
+    this.handoverQueryService.toggleQueryResolution(id, query.queryId).subscribe({
       next: (updated) => {
         this.queries.update((qs) => qs.map((q) => (q.queryId === updated.queryId ? updated : q)));
       },
       error: (err) => this.showMessage(this.extractErrorMessage(err, 'Failed to update query.'), true),
+      complete: () => {
+        this.pendingResolutionToggles.update((s) => {
+          const next = new Set(s);
+          next.delete(query.queryId);
+          return next;
+        });
+      },
     });
   }
 

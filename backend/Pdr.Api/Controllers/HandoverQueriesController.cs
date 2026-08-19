@@ -116,23 +116,23 @@ public class HandoverQueriesController : ControllerBase
     }
 
     /// <summary>
-    /// Marks a handover query resolved or reopens it (Pre Sales or Project Manager).
+    /// Toggles a handover query between resolved and reopened (Pre Sales or Project Manager).
     /// </summary>
     /// <param name="engagementId">The unique identifier of the engagement.</param>
     /// <param name="queryId">The unique identifier of the query.</param>
-    /// <param name="request">The resolved state to set.</param>
     /// <returns>The updated query.</returns>
-    [HttpPut("{queryId:int}/resolve")]
-    [EndpointSummary("Resolve or reopen a handover query (Pre Sales or Project Manager)")]
+    [HttpPut("{queryId:int}/toggle-resolution")]
+    [EndpointSummary("Toggle resolved/reopened state of a handover query (Pre Sales or Project Manager)")]
     [ProducesResponseType(typeof(HandoverQueryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<HandoverQueryDto>> ResolveQuery(int engagementId, int queryId, [FromBody] ResolveHandoverQueryRequest request)
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<HandoverQueryDto>> ToggleResolution(int engagementId, int queryId)
     {
         await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId());
 
-        var dto = await _handoverQueriesService.ResolveQueryAsync(engagementId, queryId, request, _currentUserService.GetUserId().ToString());
+        var dto = await _handoverQueriesService.ToggleResolutionAsync(engagementId, queryId, _currentUserService.GetUserId().ToString());
         return Ok(dto);
     }
 }

@@ -20,6 +20,7 @@ public class HandoverQueryRepository(AppDbContext context) : IHandoverQueryRepos
         await context.HandoverQueries
             .Include(q => q.FieldSection)
             .Include(q => q.ResolvedByUser).ThenInclude(u => u!.Role)
+            .Include(q => q.Response)
             .FirstOrDefaultAsync(q => q.QueryId == queryId && q.HandoverId == handoverId);
 
     public async Task AddAsync(HandoverQuery query) =>

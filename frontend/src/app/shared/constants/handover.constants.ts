@@ -11,8 +11,8 @@ export const HANDOVER_API_ENDPOINTS = {
   HANDOVER_QUERIES: (id: number) => `/api/engagements/${id}/handover/queries`,
   HANDOVER_QUERY_RESPOND: (engagementId: number, queryId: number) =>
     `/api/engagements/${engagementId}/handover/queries/${queryId}/respond`,
-  HANDOVER_QUERY_RESOLVE: (engagementId: number, queryId: number) =>
-    `/api/engagements/${engagementId}/handover/queries/${queryId}/resolve`,
+  HANDOVER_QUERY_TOGGLE_RESOLUTION: (engagementId: number, queryId: number) =>
+    `/api/engagements/${engagementId}/handover/queries/${queryId}/toggle-resolution`,
 } as const;
 
 export const HANDOVER_MESSAGES = {

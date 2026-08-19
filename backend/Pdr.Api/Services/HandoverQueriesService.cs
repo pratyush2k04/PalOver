@@ -158,7 +158,7 @@ public class HandoverQueriesService : IHandoverQueriesService
         return await GetSingleDtoOrThrowAsync(engagementId, queryId);
     }
 
-    public async Task<HandoverQueryDto> ResolveQueryAsync(int engagementId, int queryId, ResolveHandoverQueryRequest request, string userIdStr)
+    public async Task<HandoverQueryDto> ToggleResolutionAsync(int engagementId, int queryId, string userIdStr)
     {
         var handover = await GetHandoverOrThrowAsync(engagementId);
 
@@ -166,16 +166,19 @@ public class HandoverQueriesService : IHandoverQueriesService
         if (query == null)
             throw new HandoverQueryNotFoundException(queryId);
 
-        var isNewlyResolved = request.IsResolved && !query.IsResolved;
+        var newIsResolved = !query.IsResolved;
 
-        query.IsResolved = request.IsResolved;
-        query.ResolvedByUserId = request.IsResolved ? int.Parse(userIdStr) : null;
-        query.ResolvedAt = request.IsResolved ? DateTime.UtcNow : null;
+        if (newIsResolved && query.Response == null)
+            throw new HandoverQueryNotYetRespondedException();
+
+        query.IsResolved = newIsResolved;
+        query.ResolvedByUserId = newIsResolved ? int.Parse(userIdStr) : null;
+        query.ResolvedAt = newIsResolved ? DateTime.UtcNow : null;
         query.UpdatedBy = userIdStr;
 
         await _queryRepository.SaveChangesAsync();
 
-        if (isNewlyResolved)
+        if (newIsResolved)
         {
             var actorUserId = int.Parse(userIdStr);
             await _auditLogService.LogAsync(

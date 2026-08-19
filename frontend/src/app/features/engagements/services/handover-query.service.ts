@@ -29,10 +29,10 @@ export class HandoverQueryService {
     );
   }
 
-  resolveQuery(engagementId: number, queryId: number, isResolved: boolean): Observable<HandoverQueryDto> {
+  toggleQueryResolution(engagementId: number, queryId: number): Observable<HandoverQueryDto> {
     return this.http.put<HandoverQueryDto>(
-      HANDOVER_API_ENDPOINTS.HANDOVER_QUERY_RESOLVE(engagementId, queryId),
-      { isResolved }
+      HANDOVER_API_ENDPOINTS.HANDOVER_QUERY_TOGGLE_RESOLUTION(engagementId, queryId),
+      {}
     );
   }
 }

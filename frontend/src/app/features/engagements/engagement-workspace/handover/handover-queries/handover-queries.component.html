@@ -49,7 +49,13 @@
       </ng-template>
 
       <div class="query-actions" *ngIf="isProjectManagement() || isPreSales()">
-        <app-button variant="stroked" size="sm" (click)="toggleResolve(query)">
+        <app-button
+          variant="stroked"
+          size="sm"
+          [disabled]="pendingResolutionToggles().has(query.queryId) || (!query.isResolved && !query.responseText)"
+          [title]="!query.isResolved && !query.responseText ? 'Awaiting a response before this can be resolved' : ''"
+          (click)="toggleResolve(query)"
+        >
           {{ query.isResolved ? 'Reopen' : 'Mark Resolved' }}
         </app-button>
       </div>
