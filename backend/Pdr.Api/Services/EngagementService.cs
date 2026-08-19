@@ -271,15 +271,26 @@ public class EngagementService(
         if (requiredRole == RoleEnum.ProjectManagement)
         {
             await notificationService.CreateFromTemplateAsync(
-                "PMAllocated",
+                NotificationConstants.TemplateKeys.PMAllocated,
                 engagementId,
                 RoleEnum.PreSales,
                 System.Text.Json.JsonSerializer.Serialize(new PMAllocatedMapper.PMAllocatedData(AssignedUserId: userId, EngagementId: engagementId)),
                 DateTime.UtcNow);
-        }
 
-        if (requiredRole == RoleEnum.TechLead)
+            await notificationService.CreateFromTemplateAsync(
+                NotificationConstants.TemplateKeys.PMAssigned,
+                userId,
+                System.Text.Json.JsonSerializer.Serialize(new PMAssignedMapper.PMAssignedPayload(EngagementId: engagementId)),
+                DateTime.UtcNow);
+        }
+        else if (requiredRole == RoleEnum.TechLead)
         {
+            await notificationService.CreateFromTemplateAsync(
+                NotificationConstants.TemplateKeys.TechLeadAssigned,
+                userId,
+                System.Text.Json.JsonSerializer.Serialize(new TechLeadAssignedMapper.TechLeadAssignedPayload(EngagementId: engagementId)),
+                DateTime.UtcNow);
+
             var accessItems = await db.AccessItems.Where(a => a.EngagementId == engagementId).ToListAsync();
             foreach (var item in accessItems)
             {
@@ -445,6 +456,11 @@ public class EngagementService(
             UpdatedAt = DateTime.UtcNow
         });
         await personRepository.SaveChangesAsync();
+        await notificationService.CreateFromTemplateAsync(
+            NotificationConstants.TemplateKeys.LeadershipAssigned,
+            userId,
+            System.Text.Json.JsonSerializer.Serialize(new LeadershipAssignedMapper.LeadershipAssignedPayload(EngagementId: engagementId)),
+            DateTime.UtcNow);
 
         return await GetLeadershipUsersAsync(engagementId);
     }

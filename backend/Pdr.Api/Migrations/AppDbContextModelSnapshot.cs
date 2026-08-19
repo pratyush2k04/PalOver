@@ -4046,6 +4046,58 @@ namespace Pdr.Api.Migrations
                             LinkPattern = "/engagements/{EngagementId}/workspace/handover",
                             Title = "Handover Submitted — {EngagementName}",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Body = "You have been assigned as Engagement Leader for {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 2,
+                            IsDeleted = false,
+                            Key = "LeadershipAssigned",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/overview",
+                            Title = "Assigned to Engagement — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Body = "You have been assigned as Project Manager for {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 2,
+                            IsDeleted = false,
+                            Key = "PMAssigned",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/overview",
+                            Title = "Assigned as Project Manager — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Body = "You have been assigned as Technical Lead for {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 2,
+                            IsDeleted = false,
+                            Key = "TechLeadAssigned",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/overview",
+                            Title = "Assigned as Technical Lead — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Body = "{UploaderName} uploaded {DocumentName} to {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 2,
+                            IsDeleted = false,
+                            Key = "DocumentUploaded",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/documents",
+                            Title = "New Document Uploaded — {DocumentName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
