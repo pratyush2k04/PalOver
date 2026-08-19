@@ -1,0 +1,20 @@
+<section class="hero-status-banner" [class.ready]="isAbleToStart()" [class.blocked]="!isAbleToStart()">
+  <div class="status-indicator-icon">
+    @if (isAbleToStart()) {
+      <span class="indicator-symbol">✓</span>
+    } @else {
+      <span class="indicator-symbol">!</span>
+    }
+  </div>
+  <div class="status-content">
+    <div class="status-headline">
+      <h2 class="status-title">
+        {{ isAbleToStart() ? 'ABLE TO START DAY-1' : 'NOT READY FOR DAY-1 - ACTION REQUIRED' }}
+      </h2>
+      <app-status-badge [tone]="statusTone()">
+        {{ isAbleToStart() ? 'Ready' : 'Blocked' }}
+      </app-status-badge>
+    </div>
+    <p class="status-description">{{ message() }}</p>
+  </div>
+</section>

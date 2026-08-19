@@ -52,6 +52,10 @@ export class EngagementService {
     return this.http.get<EngagementOwners>(ENGAGEMENT_API_ENDPOINTS.ENGAGEMENT_OWNERS(id));
   }
 
+  getEngagementUsers(id: number): Observable<any[]> {
+    return this.http.get<any[]>(ENGAGEMENT_API_ENDPOINTS.ENGAGEMENT_USERS(id));
+  }
+
   assignProjectManager(id: number, userId: number): Observable<EngagementOwners> {
     return this.http.put<EngagementOwners>(ENGAGEMENT_API_ENDPOINTS.ASSIGN_PROJECT_MANAGER(id), { userId });
   }

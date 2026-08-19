@@ -3,6 +3,7 @@ using Pdr.Api.DTOs.TechnicalSummary;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.AccessTracker;
 using Pdr.Api.Models.ArchitectureValidation;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.BrownField;
 using Pdr.Api.Models.Documents;
 using Pdr.Api.Models.EnvironmentTooling;
@@ -18,7 +19,8 @@ public class TechnicalSummaryService(
     IArchitectureValidationRepository architectureValidationRepository,
     IBrownfieldFindingRepository brownfieldFindingRepository,
     IDocumentRepository documentRepository,
-    ICurrentUserService currentUserService) : ITechnicalSummaryService
+    ICurrentUserService currentUserService,
+    IAuditLogService auditLogService) : ITechnicalSummaryService
 {
     public async Task<DayOneReadinessSummaryDto> GetDayOneSummaryAsync(int engagementId)
     {
@@ -160,8 +162,7 @@ public class TechnicalSummaryService(
         {
             generatedBy = "Tech Lead";
         }
-
-        return new DayOneReadinessSummaryDto
+        var summaryDto = new DayOneReadinessSummaryDto
         {
             EngagementId = engagement.EngagementId,
             EngagementName = engagement.EngagementName,
@@ -210,5 +211,17 @@ public class TechnicalSummaryService(
 
             OutstandingBlockers = blockers
         };
+
+        var actorUserId = currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            AuditActionEnum.DayOneSummaryGenerated,
+            new Dictionary<string, object?>
+            {
+                ["EngagementId"] = engagement.EngagementId,
+                ["ActorUserId"] = actorUserId
+            },
+            actingUserId: actorUserId > 0 ? actorUserId : null);
+
+        return summaryDto;
     }
 }

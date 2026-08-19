@@ -1,14 +1,18 @@
 using Pdr.Api.DTOs.People;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.People;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
 public class PersonService(
+    
     IPersonRepository personRepository,
-    IClientContactTransitionRepository transitionRepository) : IPersonService
+    IClientContactTransitionRepository transitionRepository,
+    IAuditLogService auditLogService,
+    ICurrentUserService currentUserService) : IPersonService
 {
     public async Task<IEnumerable<PersonDto>> GetPeopleByEngagementAsync(int engagementId)
     {
@@ -45,6 +49,20 @@ public class PersonService(
         await personRepository.AddAsync(person);
         await personRepository.SaveChangesAsync();
 
+        if (person.PersonType == PersonType.Client)
+        {
+            var actorUserId = int.TryParse(currentUserId, out var uid) ? uid : currentUserService.GetUserId();
+            await auditLogService.LogAsync(
+                AuditActionEnum.ClientContactDetailsChanged,
+                new Dictionary<string, object?>
+                {
+                    ["EngagementId"] = engagementId,
+                    ["ClientName"] = person.Name,
+                    ["ActorUserId"] = actorUserId
+                },
+                actingUserId: actorUserId > 0 ? actorUserId : null);
+        }
+
         return MapToDto(person);
     }
 
@@ -62,6 +80,10 @@ public class PersonService(
             throw new PersonNotFoundException(personId, engagementId);
         }
 
+        var oldName = person.Name;
+        var oldRole = person.Role;
+        var isClient = person.PersonType == PersonType.Client || dto.PersonType == PersonType.Client;
+
         person.Name = dto.Name.Trim();
         person.Role = dto.Role.Trim();
         person.PersonType = dto.PersonType;
@@ -70,6 +92,38 @@ public class PersonService(
 
         personRepository.Update(person);
         await personRepository.SaveChangesAsync();
+
+        if (isClient)
+        {
+            var actorUserId = int.TryParse(currentUserId, out var uid) ? uid : currentUserService.GetUserId();
+
+            if (!string.Equals(oldRole, person.Role, StringComparison.OrdinalIgnoreCase))
+            {
+                await auditLogService.LogAsync(
+                    AuditActionEnum.ClientPersonaChanged,
+                    new Dictionary<string, object?>
+                    {
+                        ["EngagementId"] = engagementId,
+                        ["ClientName"] = person.Name,
+                        ["Persona"] = person.Role,
+                        ["ActorUserId"] = actorUserId
+                    },
+                    actingUserId: actorUserId > 0 ? actorUserId : null);
+            }
+
+            if (!string.Equals(oldName, person.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                await auditLogService.LogAsync(
+                    AuditActionEnum.ClientContactDetailsChanged,
+                    new Dictionary<string, object?>
+                    {
+                        ["EngagementId"] = engagementId,
+                        ["ClientName"] = person.Name,
+                        ["ActorUserId"] = actorUserId
+                    },
+                    actingUserId: actorUserId > 0 ? actorUserId : null);
+            }
+        }
 
         return MapToDto(person);
     }

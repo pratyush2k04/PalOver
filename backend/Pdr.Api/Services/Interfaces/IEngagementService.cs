@@ -16,6 +16,7 @@ public interface IEngagementService
 
     Task<EngagementOwnersDto> AssignProjectManagerAsync(int engagementId, int userId);
     Task<EngagementOwnersDto> AssignTechLeadAsync(int engagementId, int userId);
+    Task<IEnumerable<Pdr.Api.DTOs.Users.UserListItemDto>> GetEngagementUsersAsync(int engagementId);
     Task<List<LeadershipUserDto>> GetLeadershipUsersAsync(int engagementId);
     Task<List<LeadershipUserDto>> AssignLeadershipUserAsync(int engagementId, int userId);
     Task<List<LeadershipUserDto>> AssignLeadershipUsersAsync(int engagementId, List<int> userIds);
