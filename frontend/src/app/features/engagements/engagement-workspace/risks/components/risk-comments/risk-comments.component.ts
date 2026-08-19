@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RiskCommentService } from '../../services/risk-comment.service';
 import { RiskComment, EngagementMember } from '../../models/risk.model';
+import { AccordionComponent } from '@common/components/accordion/accordion';
 import { AvatarComponent } from '@common/components/avatar/avatar';
 import { ButtonComponent } from '@common/components/button/button';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
@@ -19,6 +20,7 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
     CommonModule,
     FormsModule,
     InlineSVGModule,
+    AccordionComponent,
     AvatarComponent,
     ButtonComponent,
     EmptyStateComponent,
