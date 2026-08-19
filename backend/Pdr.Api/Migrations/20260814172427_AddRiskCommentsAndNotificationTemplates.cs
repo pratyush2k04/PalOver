@@ -69,7 +69,7 @@ namespace Pdr.Api.Migrations
             migrationBuilder.InsertData(
                 table: "notification_templates",
                 columns: new[] { "id", "body", "created_at", "created_by", "default_priority", "key", "link_pattern", "title", "updated_at", "updated_by" },
-                values: new object[] { 6, "{AuthorName} mentioned you in a comment on risk '{RiskTitle}'", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", 2, "RiskCommentMention", "/engagements/{EngagementId}/workspace/risks", "Mentioned in Risk — {RiskTitle}", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null });
+                values: new object[] { 15, "{AuthorName} mentioned you in a comment on risk '{RiskTitle}'", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", 2, "RiskCommentMention", "/engagements/{EngagementId}/workspace/risks", "Mentioned in Risk — {RiskTitle}", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null });
 
             migrationBuilder.CreateIndex(
                 name: "IX_risk_comments_author_id",
@@ -91,7 +91,7 @@ namespace Pdr.Api.Migrations
             migrationBuilder.DeleteData(
                 table: "notification_templates",
                 keyColumn: "id",
-                keyValue: 6);
+                keyValue: 15);
         }
     }
 }

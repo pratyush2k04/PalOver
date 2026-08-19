@@ -75,7 +75,7 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             },
             new NotificationTemplate
             {
-                Id = 6,
+                Id = 15,
                 Key = NotificationConstants.RiskCommentMention.TemplateKey,
                 Title = "Mentioned in Risk — {RiskTitle}",
                 Body = "{AuthorName} mentioned you in a comment on risk '{RiskTitle}'",
@@ -85,7 +85,7 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",
                 IsDeleted = false
-                },
+            },
             new NotificationTemplate
             {
                 Id = 7,
