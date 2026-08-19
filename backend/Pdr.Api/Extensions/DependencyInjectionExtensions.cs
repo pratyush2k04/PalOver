@@ -71,6 +71,8 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ISearchService, SearchService>();
         services.AddScoped<TemplateMapperResolver<INotificationTemplateMapper>>();
         services.AddScoped<TemplateMapperResolver<IAuditTemplateMapper>>();
+        services.AddScoped<ITechnicalSummaryService, TechnicalSummaryService>();
+        // services.AddScoped<TemplateMapperResolver>();
         services.AddSingleton<TemplateRenderer>();
 
         return services;
