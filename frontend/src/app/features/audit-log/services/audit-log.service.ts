@@ -10,10 +10,17 @@ import { AuditLogDto, CursorPagedResult } from '../models/audit-log.model';
 export class AuditLogService {
   private http = inject(HttpClient);
 
-  getAuditLogPage(cursor: number | null, limit: number): Observable<CursorPagedResult<AuditLogDto>> {
+  getAuditLogPage(
+    cursor: number | null,
+    limit: number,
+    engagementId?: number | null
+  ): Observable<CursorPagedResult<AuditLogDto>> {
     let params = new HttpParams().set('limit', limit);
     if (cursor != null) {
       params = params.set('cursor', cursor);
+    }
+    if (engagementId != null) {
+      params = params.set('engagementId', engagementId);
     }
     return this.http.get<CursorPagedResult<AuditLogDto>>(AUDIT_LOG_API_ENDPOINTS.LIST, { params });
   }

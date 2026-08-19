@@ -7,6 +7,7 @@ export interface AuditLogDto {
   action: AuditAction;
   details: string;
   createdAt: string;
+  engagementId?: number | null;
 }
 
 export interface AuditLogFilters {

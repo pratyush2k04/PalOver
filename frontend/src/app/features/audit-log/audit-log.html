@@ -46,7 +46,7 @@
       <tbody>
         @for (log of pagedLogs(); track log.id) {
           <tr>
-            <td class="col-date">{{ log.createdAt | date: 'medium' }}</td>
+            <td class="col-date" [title]="log.createdAt | date: 'full'">{{ log.createdAt | date: 'medium' }}</td>
             @if (showUserColumn) {
               <td class="col-user">{{ log.userName }}</td>
             }
@@ -57,7 +57,7 @@
           @if (!isLoading()) {
             <tr>
               <td [attr.colspan]="showUserColumn ? 4 : 3" class="empty-row">
-                <app-empty-state message="No audit log entries found." />
+                <app-empty-state [message]="emptyStateMessage" />
               </td>
             </tr>
           }
