@@ -24,6 +24,8 @@ public class PersonConfiguration : IEntityTypeConfiguration<Person>
             .HasConversion<string>()
             .HasMaxLength(50)
             .IsRequired();
+        builder.Property(p => p.UserId).HasColumnName("user_id");
+        builder.Property(p => p.SourceRoleId).HasColumnName("source_role_id");
 
         // BaseAuditableEntity Column Mappings
         builder.Property(p => p.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
