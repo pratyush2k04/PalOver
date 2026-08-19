@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -21,24 +20,23 @@ public class HandoverQueriesController : ControllerBase
 {
     private readonly IHandoverQueriesService _handoverQueriesService;
     private readonly IHandoverAccessService _handoverAccessService;
+    private readonly ICurrentUserService _currentUserService;
     private readonly IValidator<CreateHandoverQueryRequest> _createValidator;
     private readonly IValidator<RespondHandoverQueryRequest> _respondValidator;
 
     public HandoverQueriesController(
         IHandoverQueriesService handoverQueriesService,
         IHandoverAccessService handoverAccessService,
+        ICurrentUserService currentUserService,
         IValidator<CreateHandoverQueryRequest> createValidator,
         IValidator<RespondHandoverQueryRequest> respondValidator)
     {
         _handoverQueriesService = handoverQueriesService;
         _handoverAccessService = handoverAccessService;
+        _currentUserService = currentUserService;
         _createValidator = createValidator;
         _respondValidator = respondValidator;
     }
-
-    private int GetUserId() => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-
-    private string GetUserIdString() => User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
     /// <summary>
     /// Retrieves all queries raised against this engagement's handover.
@@ -53,7 +51,7 @@ public class HandoverQueriesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<List<HandoverQueryDto>>> GetQueries(int engagementId)
     {
-        await _handoverAccessService.CanAccessHandoverAsync(engagementId, GetUserId());
+        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId());
 
         var dtos = await _handoverQueriesService.GetQueriesAsync(engagementId);
         return Ok(dtos);
@@ -74,7 +72,7 @@ public class HandoverQueriesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<HandoverQueryDto>> RaiseQuery(int engagementId, [FromBody] CreateHandoverQueryRequest request)
     {
-        await _handoverAccessService.CanAccessHandoverAsync(engagementId, GetUserId(), RoleConstants.ProjectManagement);
+        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId(), RoleConstants.ProjectManagement);
 
         var validationResult = await _createValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
@@ -83,7 +81,7 @@ public class HandoverQueriesController : ControllerBase
             return BadRequest(new { message = firstError });
         }
 
-        var dto = await _handoverQueriesService.RaiseQueryAsync(engagementId, request, GetUserIdString());
+        var dto = await _handoverQueriesService.RaiseQueryAsync(engagementId, request, _currentUserService.GetUserId().ToString());
         return CreatedAtAction(nameof(GetQueries), new { engagementId }, dto);
     }
 
@@ -104,7 +102,7 @@ public class HandoverQueriesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<HandoverQueryDto>> RespondToQuery(int engagementId, int queryId, [FromBody] RespondHandoverQueryRequest request)
     {
-        await _handoverAccessService.CanAccessHandoverAsync(engagementId, GetUserId(), RoleConstants.PreSales);
+        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId(), RoleConstants.PreSales);
 
         var validationResult = await _respondValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
@@ -113,7 +111,7 @@ public class HandoverQueriesController : ControllerBase
             return BadRequest(new { message = firstError });
         }
 
-        var dto = await _handoverQueriesService.RespondToQueryAsync(engagementId, queryId, request, GetUserIdString());
+        var dto = await _handoverQueriesService.RespondToQueryAsync(engagementId, queryId, request, _currentUserService.GetUserId().ToString());
         return Ok(dto);
     }
 
@@ -132,9 +130,9 @@ public class HandoverQueriesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<HandoverQueryDto>> ResolveQuery(int engagementId, int queryId, [FromBody] ResolveHandoverQueryRequest request)
     {
-        await _handoverAccessService.CanAccessHandoverAsync(engagementId, GetUserId());
+        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId());
 
-        var dto = await _handoverQueriesService.ResolveQueryAsync(engagementId, queryId, request, GetUserIdString());
+        var dto = await _handoverQueriesService.ResolveQueryAsync(engagementId, queryId, request, _currentUserService.GetUserId().ToString());
         return Ok(dto);
     }
 }
