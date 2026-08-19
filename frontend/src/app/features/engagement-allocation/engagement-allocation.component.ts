@@ -128,6 +128,26 @@ export class EngagementAllocationComponent implements OnInit {
     this.filterMode.set(mode);
   }
 
+  getTypeTone(type: string): 'info' | 'neutral' | 'success' | 'danger' | 'warning' {
+    if (!type) return 'neutral';
+    const t = type.toLowerCase();
+    if (t.includes('greenfield') || t.includes('green')) return 'success';
+    if (t.includes('brownfield') || t.includes('brown')) return 'warning';
+    if (t.includes('fixed') || t.includes('fp')) return 'info';
+    if (t.includes('managed') || t.includes('ms')) return 'success';
+    if (t.includes('consulting') || t.includes('advisory')) return 'danger';
+    return 'neutral';
+  }
+
+  getStatusTone(status: string): 'info' | 'neutral' | 'success' | 'danger' | 'warning' {
+    if (!status) return 'neutral';
+    const s = status.toLowerCase();
+    if (s.includes('active') || s.includes('completed') || s.includes('ready')) return 'success';
+    if (s.includes('hold') || s.includes('pause') || s.includes('closed')) return 'danger';
+    if (s.includes('pending') || s.includes('progress') || s.includes('draft')) return 'warning';
+    return 'info';
+  }
+
   openAssignModal(engagement: EngagementAllocationItem): void {
     const dialogRef = this.dialog.open<AssignLeadershipDialogComponent, AssignLeadershipDialogData, LeadershipUserItem[]>(
       AssignLeadershipDialogComponent,
