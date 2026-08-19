@@ -132,30 +132,3 @@
   background-color: #f5a623;
   border: 1px solid #1e2a5e;
 }
-
-.sign-out {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  width: calc(100% - 1rem);
-  margin: auto 0.5rem 0;
-  padding: 0.625rem 0.25rem;
-  border-radius: 0.75rem;
-  cursor: pointer;
-  color: #aab3d6;
-  transition: background-color 0.2s ease, color 0.2s ease;
-
-  .label {
-    font-size: 0.6875rem;
-    font-weight: 600;
-    text-align: center;
-    line-height: 1.1;
-  }
-
-  &:hover {
-    background-color: #dc2626;
-    color: #ffffff;
-  }
-}

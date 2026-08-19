@@ -1,6 +1,6 @@
 using Pdr.Api.Models.Engagements;
 
-namespace Pdr.Api.Models;
+namespace Pdr.Api.Models.People;
 
 public class Person : BaseAuditableEntity
 {
@@ -15,4 +15,10 @@ public class Person : BaseAuditableEntity
     public string Role { get; set; } = string.Empty;
 
     public PersonType PersonType { get; set; }
+
+    // Set only for people synced from an internal engagement assignment
+    // (Leadership/PM/TechLead) - identifies the source User and their role.
+    public int? UserId { get; set; }
+
+    public int? SourceRoleId { get; set; }
 }

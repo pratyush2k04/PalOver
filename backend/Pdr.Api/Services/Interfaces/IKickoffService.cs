@@ -1,5 +1,6 @@
 using Pdr.Api.DTOs.Kickoff;
 using Pdr.Api.Models;
+using Pdr.Api.Models.Kickoff;
 
 namespace Pdr.Api.Services.Interfaces;
 

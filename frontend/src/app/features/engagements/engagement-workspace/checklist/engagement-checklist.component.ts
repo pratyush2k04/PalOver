@@ -10,8 +10,8 @@ import { DialogService } from '@common/services/dialog/dialog.service';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
-import { PersonService } from 'src/app/services/person.service';
-import { PersonDto } from 'src/app/models/person.model';
+import { CommunicationCadenceService } from '@features/engagements/services/communication-cadence.service';
+import { EngagementParticipant } from '@features/engagements/models/cadence.model';
 import {
   MarkNaDialogComponent,
   MarkNaDialogData,
@@ -40,7 +40,7 @@ export class EngagementChecklistComponent {
   private checklistService = inject(EngagementChecklistService);
   private authService = inject(AuthService);
   private dialog = inject(DialogService);
-  private personService = inject(PersonService);
+  private cadenceService = inject(CommunicationCadenceService);
 
   private paramMap = toSignal(this.route.parent!.paramMap);
 
@@ -53,7 +53,7 @@ export class EngagementChecklistComponent {
   isLoading = signal<boolean>(true);
   isUpdating = signal<boolean>(false);
   error = signal<string | null>(null);
-  people = signal<PersonDto[]>([]);
+  assignedUsers = signal<EngagementParticipant[]>([]);
 
   // Role permissions
   isProjectManager = computed(() => this.authService.hasRole('Project Management') || this.authService.isAdmin());
@@ -78,7 +78,7 @@ export class EngagementChecklistComponent {
       const id = this.engagementId();
       if (id) {
         this.loadChecklist(id);
-        this.loadPeople(id);
+        this.loadAssignedUsers(id);
       }
     });
   }
@@ -98,10 +98,10 @@ export class EngagementChecklistComponent {
     });
   }
 
-  private loadPeople(engagementId: number): void {
-    this.personService.getPeopleByEngagement(engagementId).subscribe({
-      next: (people) => this.people.set(people),
-      error: () => this.people.set([])
+  private loadAssignedUsers(engagementId: number): void {
+    this.cadenceService.getAssignedParticipants(engagementId).subscribe({
+      next: (users) => this.assignedUsers.set(users ?? []),
+      error: () => this.assignedUsers.set([])
     });
   }
 
@@ -249,7 +249,7 @@ export class EngagementChecklistComponent {
         data: {
           itemTitle: item.title,
           currentOwnerId: item.ownerId,
-          people: this.people()
+          assignedUsers: this.assignedUsers()
         }
       }
     );

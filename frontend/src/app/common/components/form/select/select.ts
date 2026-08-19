@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, effect } from '@angular/core';
 import { BaseControlComponent } from '../base-control';
 
 export interface SelectOption {
@@ -16,13 +16,38 @@ export class SelectComponent extends BaseControlComponent<unknown> {
   readonly id = input.required<string>();
   readonly label = input<string | null>(null);
   readonly options = input.required<SelectOption[]>();
+  readonly placeholder = input<string | null>(null);
 
   value: unknown = null;
   selectedIndex: number | null = null;
 
-  writeValue(value: unknown): void {
+  constructor() {
+    super();
+    effect(() => {
+      // Re-sync selectedIndex whenever options() changes
+      this.options();
+      this.syncSelectedIndex();
+    });
+  }
+
+  override writeValue(value: unknown): void {
     this.value = value;
-    const idx = this.options().findIndex((option) => option.value === value);
+    this.syncSelectedIndex();
+  }
+
+  private syncSelectedIndex(): void {
+    const opts = this.options();
+    if (!opts || opts.length === 0) {
+      this.selectedIndex = null;
+      return;
+    }
+
+    const val = this.value;
+    const idx = opts.findIndex((option) =>
+      option.value === val ||
+      (option.value != null && val != null && String(option.value) === String(val))
+    );
+
     this.selectedIndex = idx >= 0 ? idx : null;
   }
 

@@ -1,6 +1,7 @@
 using Pdr.Api.DTOs.Kickoff;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
+using Pdr.Api.Models.Kickoff;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 

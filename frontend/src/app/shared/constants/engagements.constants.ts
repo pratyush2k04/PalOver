@@ -18,6 +18,7 @@ export const ENGAGEMENT_API_ENDPOINTS = {
   DOCUMENT_UPLOAD: '/api/documents/upload',
   DOCUMENT_DOWNLOAD: (id: number) => `/api/documents/${id}/download`,
   DOCUMENT_DELETE: (id: number) => `/api/documents/${id}`,
+  OPEN_ITEMS_SUMMARY: (id: number) => `/api/Engagements/${id}/open-items-summary`,
 } as const;
 
 export const ENGAGEMENT_CONSTANTS = {
@@ -35,6 +36,11 @@ export const ENGAGEMENT_MESSAGES = {
   DELETE_DOCUMENT_ERROR: 'Failed to delete document. Please try again.',
   ASSIGNMENT_SUCCESS: (name: string, label: string) => `${name} assigned as ${label}.`,
   ASSIGNMENT_ERROR: 'Failed to save assignment. Please try again.',
+} as const;
+
+export const OPEN_ITEMS_ERROR_MESSAGES = {
+  ENGAGEMENT_NOT_FOUND: 'Engagement not found',
+  LOAD_FAILED: 'Failed to load open items'
 } as const;
 
 export const ENGAGEMENT_CHECKLIST_MESSAGES = {
