@@ -2,7 +2,7 @@ using Pdr.Api.DTOs.Handovers;
 
 namespace Pdr.Api.Services.Interfaces;
 
-public interface IHandoverQueryService
+public interface IHandoverQueriesService
 {
     Task<List<HandoverQueryDto>> GetQueriesAsync(int engagementId);
     Task<HandoverQueryDto> RaiseQueryAsync(int engagementId, CreateHandoverQueryRequest request, string userIdStr);

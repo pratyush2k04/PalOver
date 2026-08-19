@@ -11,7 +11,7 @@ using Pdr.Api.Services.Notifications.Mappers;
 
 namespace Pdr.Api.Services;
 
-public class HandoverQueryService : IHandoverQueryService
+public class HandoverQueriesService : IHandoverQueriesService
 {
     private readonly IHandoverRepository _handoverRepository;
     private readonly ICommitmentRepository _commitmentRepository;
@@ -22,7 +22,7 @@ public class HandoverQueryService : IHandoverQueryService
     private readonly IAuditLogService _auditLogService;
     private readonly INotificationService _notificationService;
 
-    public HandoverQueryService(
+    public HandoverQueriesService(
         IHandoverRepository handoverRepository,
         ICommitmentRepository commitmentRepository,
         IHandoverQueryRepository queryRepository,
