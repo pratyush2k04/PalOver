@@ -695,8 +695,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("ClientContactTransitionId");
 
-                    b.HasIndex("EngagementId")
-                        .IsUnique();
+                    b.HasIndex("EngagementId");
 
                     b.ToTable("client_contact_transitions", (string)null);
                 });
@@ -4399,8 +4398,8 @@ namespace Pdr.Api.Migrations
             modelBuilder.Entity("Pdr.Api.Models.ClientContactTransition", b =>
                 {
                     b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
-                        .WithOne()
-                        .HasForeignKey("Pdr.Api.Models.ClientContactTransition", "EngagementId")
+                        .WithMany()
+                        .HasForeignKey("EngagementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
