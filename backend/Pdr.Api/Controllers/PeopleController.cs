@@ -7,6 +7,7 @@ using Pdr.Api.Attributes;
 using Pdr.Api.DTOs.People;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Services.Interfaces;
+using Pdr.Api.Exceptions;
 
 namespace Pdr.Api.Controllers;
 
@@ -108,5 +109,23 @@ public class PeopleController(
     {
         await personService.DeletePersonAsync(engagementId, id, GetUserId());
         return NoContent();
+    }
+
+    /// <summary>
+    /// Imports handover contacts to the People Directory.
+    /// Adds incoming contact from latest transition, deletes all outgoing contacts.
+    /// </summary>
+    /// <param name="engagementId">The engagement ID.</param>
+    /// <returns>Import summary with counts of added, already present, and deleted contacts.</returns>
+    [HttpPost("import-from-handover")]
+    [EndpointSummary("Import contacts from handover")]
+    [ProducesResponseType(typeof(ImportHandoverContactsResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ImportHandoverContactsResponseDto>> ImportFromHandover(int engagementId)
+    {
+        var result = await personService.ImportHandoverContactsAsync(engagementId, GetUserId());
+        return Ok(result);
     }
 }

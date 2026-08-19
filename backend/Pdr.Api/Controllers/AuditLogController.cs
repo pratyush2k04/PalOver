@@ -8,7 +8,7 @@ using Pdr.Api.Services.Interfaces;
 namespace Pdr.Api.Controllers;
 
 /// <summary>
-/// Provides read access to the central audit trail.
+/// Provides read access to the central audit log.
 /// </summary>
 [ApiController]
 [Authorize]

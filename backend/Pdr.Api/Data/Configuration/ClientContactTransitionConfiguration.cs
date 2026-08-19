@@ -34,8 +34,8 @@ public class ClientContactTransitionConfiguration : IEntityTypeConfiguration<Cli
 
         // Foreign Key Relationship
         builder.HasOne(c => c.Engagement)
-            .WithOne()
-            .HasForeignKey<ClientContactTransition>(c => c.EngagementId)
+            .WithMany()
+            .HasForeignKey(c => c.EngagementId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
