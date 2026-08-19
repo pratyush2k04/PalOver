@@ -33,12 +33,12 @@
     white-space: nowrap;
   }
 
-  select {
-    padding: 0.35rem 0.6rem;
-    font-size: 0.8125rem;
-    border: 1px solid #d0d5dd;
-    border-radius: 6px;
-    background-color: #ffffff;
+  app-select {
+    min-width: 10rem;
+
+    ::ng-deep .app-field {
+      margin-bottom: 0;
+    }
   }
 }
 

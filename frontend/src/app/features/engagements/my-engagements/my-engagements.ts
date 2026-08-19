@@ -1,5 +1,6 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EngagementService } from '../services/engagement.service';
 import { EngagementSortBy, EngagementListItem } from '../models/engagement.model';
@@ -11,6 +12,7 @@ import { EmptyStateComponent } from '@common/components/empty-state/empty-state'
 import { ButtonComponent } from '@common/components/button/button';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { PaginatorComponent } from '@common/components/paginator/paginator';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 
 interface MyEngagementRow extends EngagementListItem {
   displayReadinessScore: number;
@@ -18,6 +20,11 @@ interface MyEngagementRow extends EngagementListItem {
 }
 
 type SortOption = 'kickoff' | 'readiness' | 'client';
+
+const SORT_OPTIONS: SelectOption[] = [
+  { value: 'kickoff', label: 'Kickoff date' },
+  { value: 'readiness', label: 'Readiness score' }
+];
 
 const PAGE_SIZE = 4;
 
@@ -31,7 +38,7 @@ const SAMPLE_READINESS_SCORES: Record<number, number> = {
 @Component({
   selector: 'app-my-engagements',
   standalone: true,
-  imports: [CommonModule, EngagementsComponent, AlertComponent, EmptyStateComponent, ButtonComponent, StatusBadgeComponent, PaginatorComponent],
+  imports: [CommonModule, FormsModule, EngagementsComponent, AlertComponent, EmptyStateComponent, ButtonComponent, StatusBadgeComponent, PaginatorComponent, SelectComponent],
   templateUrl: './my-engagements.html',
   styleUrl: './my-engagements.scss'
 })
@@ -41,6 +48,8 @@ export class MyEngagementsComponent implements OnInit {
   private router = inject(Router);
 
   readonly isPreSales = computed(() => this.appContext.user()?.role === USER_ROLES.PRE_SALES);
+
+  readonly sortOptions = SORT_OPTIONS;
 
   sortBy = signal<SortOption>('kickoff');
   isLoading = signal(false);
@@ -87,8 +96,8 @@ export class MyEngagementsComponent implements OnInit {
     });
   }
 
-  onSortChange(sortBy: SortOption): void {
-    this.sortBy.set(sortBy);
+  onSortChange(sortBy: unknown): void {
+    this.sortBy.set(sortBy as SortOption);
     this.loadEngagements();
   }
 
