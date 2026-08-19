@@ -89,7 +89,7 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             new NotificationTemplate
             {
                 Id = 7,
-                Key = "LeadershipAssigned",
+                Key = NotificationConstants.TemplateKeys.LeadershipAssigned,
                 Title = "Assigned to Engagement — {EngagementName}",
                 Body = "You have been assigned as Engagement Leader for {EngagementName}.",
                 DefaultPriority = NotificationPriority.Medium,
@@ -102,7 +102,7 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             new NotificationTemplate
             {
                 Id = 8,
-                Key = "PMAssigned",
+                Key = NotificationConstants.TemplateKeys.PMAssigned,
                 Title = "Assigned as Project Manager — {EngagementName}",
                 Body = "You have been assigned as Project Manager for {EngagementName}.",
                 DefaultPriority = NotificationPriority.Medium,
@@ -115,7 +115,7 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             new NotificationTemplate
             {
                 Id = 9,
-                Key = "TechLeadAssigned",
+                Key = NotificationConstants.TemplateKeys.TechLeadAssigned,
                 Title = "Assigned as Technical Lead — {EngagementName}",
                 Body = "You have been assigned as Technical Lead for {EngagementName}.",
                 DefaultPriority = NotificationPriority.Medium,
@@ -128,7 +128,7 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             new NotificationTemplate
             {
                 Id = 10,
-                Key = "DocumentUploaded",
+                Key = NotificationConstants.TemplateKeys.DocumentUploaded,
                 Title = "New Document Uploaded — {DocumentName}",
                 Body = "{UploaderName} uploaded {DocumentName} to {EngagementName}.",
                 DefaultPriority = NotificationPriority.Medium,
@@ -137,7 +137,6 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",
                 IsDeleted = false
-                
             }
         );
     }
