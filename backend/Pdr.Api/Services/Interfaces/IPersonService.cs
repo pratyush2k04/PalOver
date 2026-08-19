@@ -8,4 +8,5 @@ public interface IPersonService
     Task<PersonDto> CreatePersonAsync(int engagementId, PersonDto dto, string? currentUserId);
     Task<PersonDto> UpdatePersonAsync(int engagementId, int personId, PersonDto dto, string? currentUserId);
     Task DeletePersonAsync(int engagementId, int personId, string? currentUserId);
+    Task<ImportHandoverContactsResponseDto> ImportHandoverContactsAsync(int engagementId, string? currentUserId);
 }

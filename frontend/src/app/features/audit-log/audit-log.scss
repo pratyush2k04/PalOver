@@ -1,0 +1,82 @@
+:host {
+  display: block;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.audit-log {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.filter-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+
+  app-input {
+    flex: 1 1 16rem;
+  }
+}
+
+.table-card {
+  background: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.25rem 0.75rem #0000000f;
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead th {
+  text-align: left;
+  padding: 0.9rem 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #8b95a3;
+  text-transform: uppercase;
+  border-bottom: 1px solid #edf0f3;
+}
+
+tbody tr {
+  border-bottom: 1px solid #edf0f3;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+td {
+  padding: 0.85rem 1.5rem;
+  font-size: 0.875rem;
+  color: #333333;
+  vertical-align: middle;
+}
+
+.col-date {
+  white-space: nowrap;
+  color: #4a5568;
+}
+
+.col-user {
+  font-weight: 500;
+  color: #1e3a5f;
+}
+
+.empty-row {
+  padding: 1.5rem;
+  text-align: center;
+}
