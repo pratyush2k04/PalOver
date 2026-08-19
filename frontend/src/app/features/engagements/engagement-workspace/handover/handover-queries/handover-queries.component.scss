@@ -17,8 +17,22 @@
 
 .query-card {
   border: 1px solid $color-border-soft;
+  border-left-width: 4px;
   border-radius: $radius-md;
   padding: 1rem;
+}
+
+.query-card-resolved {
+  border-left-color: $color-success-border;
+}
+
+.query-card-open {
+  border-left-color: $color-danger-border;
+}
+
+.query-status-label {
+  font-size: 0.75rem;
+  color: $color-text-muted;
 }
 
 .query-card-header {

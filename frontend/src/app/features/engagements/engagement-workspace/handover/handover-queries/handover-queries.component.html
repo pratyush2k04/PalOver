@@ -8,14 +8,12 @@
   <app-empty-state *ngIf="!isLoading() && !loadError() && queries().length === 0" message="No queries raised yet" />
 
   <div class="query-cards" *ngIf="!loadError() && queries().length > 0">
-    <div class="query-card" *ngFor="let query of queries()">
+    <div class="query-card" [class.query-card-resolved]="query.isResolved" [class.query-card-open]="!query.isResolved" *ngFor="let query of queries()">
       <div class="query-card-header">
         <div class="query-field">
           <span class="query-field-label query-field-label-clickable" (click)="jumpToField(query)">{{ fieldSectionLabel(query) }}</span>
         </div>
-        <app-status-badge [tone]="query.isResolved ? 'success' : 'warning'">
-          {{ query.isResolved ? 'Resolved' : 'Open query' }}
-        </app-status-badge>
+        <span class="query-status-label">{{ query.isResolved ? 'Resolved' : 'Open query' }}</span>
       </div>
 
       <p class="query-question">{{ query.question }}</p>
