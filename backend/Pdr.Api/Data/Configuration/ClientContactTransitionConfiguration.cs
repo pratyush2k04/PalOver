@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pdr.Api.Models;
+using Pdr.Api.Models.Handover;
 
 namespace Pdr.Api.Data.Configuration;
 

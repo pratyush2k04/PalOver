@@ -1,17 +1,31 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../../services/auth';
 import { EngagementDetailComponent } from './components/engagement-detail/engagement-detail';
+import { OpenItemsByAreaComponent } from './components/open-items-by-area/open-items-by-area.component';
 
 @Component({
   selector: 'app-overview',
   standalone: true,
-  imports: [CommonModule, EngagementDetailComponent],
+  imports: [CommonModule, EngagementDetailComponent, OpenItemsByAreaComponent],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.scss'
 })
 export class OverviewComponent {
   private authService = inject(AuthService);
+  private route = inject(ActivatedRoute);
 
   readonly isLeadership = computed(() => this.authService.hasRole('Leadership'));
+  engagementId = signal<number | null>(null);
+
+  constructor() {
+    const parentParam = this.route.parent?.snapshot.paramMap.get('id');
+    const directParam = this.route.snapshot.paramMap.get('id');
+    const idStr = parentParam || directParam;
+
+    if (idStr) {
+      this.engagementId.set(+idStr);
+    }
+  }
 }

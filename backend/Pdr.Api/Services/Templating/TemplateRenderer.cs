@@ -1,4 +1,4 @@
-namespace Pdr.Api.Services.Notifications;
+namespace Pdr.Api.Services.Templating;
 
 public class TemplateRenderer
 {

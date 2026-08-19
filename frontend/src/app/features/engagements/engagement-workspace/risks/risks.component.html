@@ -78,9 +78,9 @@
               <!-- Linked Blocker Source Badge -->
               @if (risk.sourceTitle) {
                 <a
-                  [routerLink]="['/engagements', engagementId(), 'workspace', 'technical-readiness']"
+                  [routerLink]="getSourceRoute(risk.sourceType)"
                   class="source-link-badge clickable"
-                  title="Click to view linked blocker in Technical Readiness"
+                  [title]="'Click to view linked blocker in ' + (risk.sourceType === 'Checklist' ? 'Checklist' : 'Technical Readiness')"
                 >
                   <span class="link-title">{{ risk.sourceTitle }}</span>
                   <span class="link-type">({{ risk.sourceType }})</span>
@@ -131,9 +131,13 @@
               <div class="action-buttons">
                 @if (risk.status !== 'Closed') {
                   <app-button variant="stroked" size="sm" (click)="openEditModal(risk)">Edit</app-button>
-                  <app-button variant="danger" size="sm" (click)="openCloseModal(risk)">Close Risk</app-button>
+                  @if (!risk.sourceType) {
+                    <app-button variant="danger" size="sm" (click)="openCloseModal(risk)">Close Risk</app-button>
+                  }
                 } @else {
-                  <app-button variant="stroked" size="sm" (click)="reopenRisk(risk)">Reopen Risk</app-button>
+                  @if (!risk.sourceType) {
+                    <app-button variant="stroked" size="sm" (click)="reopenRisk(risk)">Reopen Risk</app-button>
+                  }
                 }
               </div>
             </div>
