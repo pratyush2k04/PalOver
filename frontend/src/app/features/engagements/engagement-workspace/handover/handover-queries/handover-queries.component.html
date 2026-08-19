@@ -48,7 +48,7 @@
         <p class="query-response-empty" *ngIf="!isPreSales()">Awaiting a response from Pre Sales.</p>
       </ng-template>
 
-      <div class="query-actions" *ngIf="isProjectManagement()">
+      <div class="query-actions" *ngIf="isProjectManagement() || isPreSales()">
         <app-button variant="stroked" size="sm" (click)="toggleResolve(query)">
           {{ query.isResolved ? 'Reopen' : 'Mark Resolved' }}
         </app-button>
