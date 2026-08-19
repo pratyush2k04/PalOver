@@ -27,6 +27,8 @@ import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confir
 import { ToastService } from '@common/services/toast/toast';
 import { RISK_MESSAGES } from '@shared/constants/app.constants';
 
+import { RiskCommentsComponent } from './components/risk-comments/risk-comments.component';
+
 @Component({
   selector: 'app-risks',
   standalone: true,
@@ -42,7 +44,8 @@ import { RISK_MESSAGES } from '@shared/constants/app.constants';
     EmptyStateComponent,
     InputComponent,
     SelectComponent,
-    TextareaComponent 
+    TextareaComponent,
+    RiskCommentsComponent
   ],
   templateUrl: './risks.component.html',
   styleUrl: './risks.component.scss'

@@ -47,3 +47,31 @@ export interface UpdateRiskRequest {
 export interface CloseRiskRequest {
   resolutionNote: string;
 }
+
+export interface RiskComment {
+  id: number;
+  riskId: number;
+  authorId: number;
+  authorName: string;
+  content: string;
+  isEdited: boolean;
+  canEdit: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateRiskCommentRequest {
+  content: string;
+  mentionedUserIds?: number[];
+}
+
+export interface UpdateRiskCommentRequest {
+  content: string;
+}
+
+export interface EngagementMember {
+  id: number;
+  fullName: string;
+  email: string;
+  roleName?: string;
+}
