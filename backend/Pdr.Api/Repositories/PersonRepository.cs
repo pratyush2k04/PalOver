@@ -37,6 +37,8 @@ public class PersonRepository(AppDbContext context) : IPersonRepository
     {
         return await context.People
             .FirstOrDefaultAsync(p => p.EngagementId == engagementId && p.UserId == userId && p.SourceRoleId == sourceRoleId);
+    }
+
     public async Task<Person?> GetByNameAndRoleAndEngagementAsync(int engagementId, string name, string role)
     {
         return await context.People
