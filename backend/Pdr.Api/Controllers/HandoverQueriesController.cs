@@ -77,7 +77,7 @@ public class HandoverQueriesController : ControllerBase
         var validationResult = await _createValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
-            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid handover query request.";
+            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? HandoverQueryConstants.InvalidRequest;
             return BadRequest(new { message = firstError });
         }
 
@@ -107,7 +107,7 @@ public class HandoverQueriesController : ControllerBase
         var validationResult = await _respondValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
-            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid response.";
+            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? HandoverQueryConstants.InvalidResponse;
             return BadRequest(new { message = firstError });
         }
 

@@ -139,7 +139,7 @@ public class CommitmentsController : ControllerBase
         var validationResult = await _createRealisticValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
-            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid realistic commitment request.";
+            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? CreateRealisticCommitmentRequestConstants.InvalidRequest;
             return BadRequest(new { message = firstError });
         }
 
@@ -168,7 +168,7 @@ public class CommitmentsController : ControllerBase
         var validationResult = await _updateRealisticValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
-            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? "Invalid realistic commitment request.";
+            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? CreateRealisticCommitmentRequestConstants.InvalidRequest;
             return BadRequest(new { message = firstError });
         }
 
