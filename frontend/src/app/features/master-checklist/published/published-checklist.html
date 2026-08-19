@@ -42,7 +42,7 @@
               <thead>
                 <tr>
                   <th class="col-item">ITEM</th>
-                  <th class="col-evidence">EVIDENCE REQUIRED</th>
+                  <th class="col-evidence">EVIDENCE</th>
                   <th class="col-status">STATUS</th>
                   <th class="col-actions" aria-label="expand"></th>
                 </tr>
@@ -63,9 +63,9 @@
 
                     <td class="cell-evidence">
                       @if (item.evidenceRequired) {
-                        <app-status-badge tone="success">Complete</app-status-badge>
+                        <app-status-badge tone="warning">Required</app-status-badge>
                       } @else {
-                        <span>-</span>
+                        <app-status-badge tone="neutral">Not Required</app-status-badge>
                       }
                     </td>
 
