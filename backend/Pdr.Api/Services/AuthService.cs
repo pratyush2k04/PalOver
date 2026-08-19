@@ -87,13 +87,11 @@ public class AuthService(
             };
         }
 
-        // Credentials valid -> Reset failed attempts and lockout
-        if (user.FailedAttemptCount > 0 || user.LockoutEnd.HasValue)
-        {
-            user.FailedAttemptCount = 0;
-            user.LockoutEnd = null;
-            await userRepository.UpdateAsync(user);
-        }
+        // Credentials valid -> Reset failed attempts and lockout, stamp last login
+        user.FailedAttemptCount = 0;
+        user.LockoutEnd = null;
+        user.LastLoginAt = DateTimeOffset.UtcNow;
+        await userRepository.UpdateAsync(user);
 
         var token = jwtTokenGenerator.GenerateToken(user);
 
