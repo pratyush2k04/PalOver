@@ -13,12 +13,10 @@ import {
 import { AlertComponent } from '@common/components/alert/alert';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
-import { ButtonComponent } from '@common/components/button/button';
 import { AvatarComponent } from '@common/components/avatar/avatar';
 import { BadgeComponent } from '@common/components/badge/badge';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { TabsComponent, TabItem } from '@common/components/tabs/tabs';
-import { BannerComponent } from '@common/components/banner/banner';
 
 @Component({
   selector: 'app-portfolio-dashboard',
@@ -29,12 +27,10 @@ import { BannerComponent } from '@common/components/banner/banner';
     AlertComponent,
     EmptyStateComponent,
     StatusBadgeComponent,
-    ButtonComponent,
     AvatarComponent,
     BadgeComponent,
     LoadingSpinnerComponent,
-    TabsComponent,
-    BannerComponent
+    TabsComponent
   ],
   templateUrl: './portfolio-dashboard.html',
   styleUrl: './portfolio-dashboard.scss'
@@ -127,16 +123,13 @@ export class PortfolioDashboardComponent implements OnInit {
   }
 
   getStatusBadgeTone(status: string): StatusBadgeTone {
-    switch (status) {
-      case PORTFOLIO_STATUS.KICKOFF_READY:
-        return 'success';
-      case PORTFOLIO_STATUS.IN_PROGRESS:
-        return 'info';
-      case PORTFOLIO_STATUS.AT_RISK:
-        return 'danger';
-      default:
-        return 'neutral';
-    }
+    if (!status) return 'neutral';
+    const s = status.toLowerCase();
+    if (s.includes('ready') || s.includes('completed')) return 'success';
+    if (s.includes('progress') || s.includes('active')) return 'info';
+    if (s.includes('risk') || s.includes('hold') || s.includes('blocked')) return 'danger';
+    if (s.includes('pending') || s.includes('draft') || s.includes('needing')) return 'warning';
+    return 'neutral';
   }
 
   getDaysLabel(daysToKickoff: number): string {
