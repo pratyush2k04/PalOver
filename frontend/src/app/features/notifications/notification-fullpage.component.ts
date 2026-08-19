@@ -129,8 +129,10 @@ export class NotificationFullpageComponent implements OnInit {
         const options: SelectOption[] = [
           { value: 'all', label: 'All Engagements' },
           ...res.engagements.map(e => ({
-            value: e.engagementId,
-            label: e.clientName ? `${e.clientName} (Engagement #${e.engagementId})` : `Engagement #${e.engagementId}`
+            value: e.id,
+            label: e.engagementName
+              ? `${e.engagementName}${e.clientName ? ` (${e.clientName})` : ''}`
+              : (e.clientName ? `${e.clientName} (Engagement #${e.id})` : `Engagement #${e.id}`)
           }))
         ];
         this.engagementFilterOptions.set(options);
