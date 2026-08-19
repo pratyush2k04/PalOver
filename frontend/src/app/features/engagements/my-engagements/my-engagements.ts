@@ -8,17 +8,18 @@ import { EngagementsComponent } from '../pages/createengagment/engagements';
 import { ENGAGEMENT_MESSAGES, USER_ROLES } from '@shared/constants/app.constants';
 import { AlertComponent } from '@common/components/alert/alert';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
-import { TabItem, TabsComponent } from '@common/components/tabs/tabs';
 import { ButtonComponent } from '@common/components/button/button';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
+import { PaginatorComponent } from '@common/components/paginator/paginator';
 
 interface MyEngagementRow extends EngagementListItem {
   displayReadinessScore: number;
   isOverdue: boolean;
 }
 
-type EngagementTab = 'active' | 'past';
 type SortOption = 'kickoff' | 'readiness' | 'client';
+
+const PAGE_SIZE = 4;
 
 // TODO: replace with real readiness data once checklist-based scoring is implemented
 const SAMPLE_READINESS_SCORES: Record<number, number> = {
@@ -30,7 +31,7 @@ const SAMPLE_READINESS_SCORES: Record<number, number> = {
 @Component({
   selector: 'app-my-engagements',
   standalone: true,
-  imports: [CommonModule, EngagementsComponent, AlertComponent, EmptyStateComponent, TabsComponent, ButtonComponent, StatusBadgeComponent],
+  imports: [CommonModule, EngagementsComponent, AlertComponent, EmptyStateComponent, ButtonComponent, StatusBadgeComponent, PaginatorComponent],
   templateUrl: './my-engagements.html',
   styleUrl: './my-engagements.scss'
 })
@@ -41,35 +42,18 @@ export class MyEngagementsComponent implements OnInit {
 
   readonly isPreSales = computed(() => this.appContext.user()?.role === USER_ROLES.PRE_SALES);
 
-  activeTab = signal<EngagementTab>('active');
   sortBy = signal<SortOption>('kickoff');
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
   engagements = signal<MyEngagementRow[]>([]);
-
-  // Past Engagements has no backing data yet - static placeholder until billing sign-off exists.
-  readonly pastEngagements: MyEngagementRow[] = [
-    {
-      id: 9001,
-      engagementName: 'Platform Modernization',
-      clientName: 'Aurora Retail Co.',
-      engagementTypeName: 'Greenfield',
-      commercialModelName: 'Fixed',
-      kickoffDate: '2026-05-12',
-      daysToKickoff: -81,
-      readinessScore: null,
-      displayReadinessScore: 100,
-      isOverdue: false
-    }
-  ];
+  currentPage = signal(1);
 
   activeCount = computed(() => this.engagements().length);
-  pastCount = computed(() => this.pastEngagements.length);
-
-  readonly tabItems = computed<TabItem[]>(() => [
-    { id: 'active', label: `Active (${this.activeCount()})` },
-    { id: 'past', label: `Past Engagements (${this.pastCount()})` }
-  ]);
+  totalPages = computed(() => Math.max(1, Math.ceil(this.activeCount() / PAGE_SIZE)));
+  pagedEngagements = computed(() => {
+    const start = (this.currentPage() - 1) * PAGE_SIZE;
+    return this.engagements().slice(start, start + PAGE_SIZE);
+  });
 
   ngOnInit(): void {
     this.loadEngagements();
@@ -94,6 +78,7 @@ export class MyEngagementsComponent implements OnInit {
         }
 
         this.engagements.set(rows);
+        this.currentPage.set(1);
       },
       error: () => {
         this.isLoading.set(false);
@@ -102,17 +87,13 @@ export class MyEngagementsComponent implements OnInit {
     });
   }
 
-  selectTab(tab: EngagementTab): void {
-    this.activeTab.set(tab);
-  }
-
-  onTabChange(tabId: string): void {
-    this.selectTab(tabId as EngagementTab);
-  }
-
   onSortChange(sortBy: SortOption): void {
     this.sortBy.set(sortBy);
     this.loadEngagements();
+  }
+
+  goToPage(page: number): void {
+    this.currentPage.set(Math.min(Math.max(1, page), this.totalPages()));
   }
 
   openEngagement(engagementId: number): void {
