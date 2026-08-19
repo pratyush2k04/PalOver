@@ -4,6 +4,7 @@ export const ENGAGEMENT_API_ENDPOINTS = {
   COMMERCIAL_MODELS: '/api/CommercialModels',
   ENGAGEMENT_INFO: (id: number) => `/api/Engagements/${id}`,
   ENGAGEMENT_OWNERS: (id: number) => `/api/Engagements/${id}/owners`,
+  ENGAGEMENT_USERS: (id: number) => `/api/Engagements/${id}/users`,
   ASSIGN_PROJECT_MANAGER: (id: number) => `/api/Engagements/${id}/project-manager`,
   ASSIGN_TECH_LEAD: (id: number) => `/api/Engagements/${id}/tech-lead`,
   MY_ENGAGEMENTS: '/api/Engagements/my-engagements',
@@ -18,6 +19,7 @@ export const ENGAGEMENT_API_ENDPOINTS = {
   DOCUMENT_UPLOAD: '/api/documents/upload',
   DOCUMENT_DOWNLOAD: (id: number) => `/api/documents/${id}/download`,
   DOCUMENT_DELETE: (id: number) => `/api/documents/${id}`,
+  OPEN_ITEMS_SUMMARY: (id: number) => `/api/Engagements/${id}/open-items-summary`,
 } as const;
 
 export const ENGAGEMENT_CONSTANTS = {
@@ -37,6 +39,11 @@ export const ENGAGEMENT_MESSAGES = {
   ASSIGNMENT_ERROR: 'Failed to save assignment. Please try again.',
 } as const;
 
+export const OPEN_ITEMS_ERROR_MESSAGES = {
+  ENGAGEMENT_NOT_FOUND: 'Engagement not found',
+  LOAD_FAILED: 'Failed to load open items'
+} as const;
+
 export const ENGAGEMENT_CHECKLIST_MESSAGES = {
   LOAD_FAILED: 'Failed to load the engagement checklist. Please try again.'
 } as const;
@@ -49,7 +56,7 @@ export const ENGAGEMENT_WORKSPACE_CONFIG = {
     { label: 'People', route: 'people', enabled: true },
     { label: 'Checklist', route: 'checklist', enabled: true },
     { label: 'Kickoff', route: 'kickoff', enabled: true },
-    { label: 'Resourcing', route: 'resourcing', enabled: false },
+    { label: 'Resources', route: 'resources', enabled: true },
     { label: 'Technical Readiness', route: 'technical-readiness', enabled: true },
     { label: 'Risks', route: 'risks', enabled: true },
     { label: 'Reporting', route: 'reporting', enabled: false }

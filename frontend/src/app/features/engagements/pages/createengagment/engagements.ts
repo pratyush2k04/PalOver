@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
@@ -43,6 +43,8 @@ export class EngagementsComponent implements OnInit {
   warnings = signal<string[]>([]);
   engagementTypes = signal<EngagementTypeOption[]>([]);
   commercialModels = signal<CommercialModelOption[]>([]);
+
+  engagementCreated = output<void>();
 
   engagementForm: FormGroup = this.fb.group(
     {
@@ -127,6 +129,7 @@ export class EngagementsComponent implements OnInit {
           this.isSubmitting.set(false);
           this.warnings.set(response.warnings);
           this.showModal.set(false);
+          this.engagementCreated.emit();
         },
         error: (err) => {
           this.isSubmitting.set(false);

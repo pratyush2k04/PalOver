@@ -7,8 +7,8 @@
     <div class="action-group">
       @if (isTechLead()) {
         <app-button variant="flat" (click)="openAddModal()">
-          <span [inlineSVG]="'assets/icons/plus.svg'"></span>
-          Add item
+          <span class="btn-icon" [inlineSVG]="'assets/icons/plus.svg'"></span>
+          <span>Add item</span>
         </app-button>
       }
     </div>
@@ -40,7 +40,14 @@
                 {{ item.name }}
               </td>
               <td class="owner-cell">
-                {{ item.ownerFullName || 'Unassigned' }}
+                <div class="owner-content">
+                  <span>{{ item.ownerFullName || 'Unassigned' }}</span>
+                  @if (isTechLead()) {
+                    <button class="edit-owner-btn" (click)="openEditOwnerModal(item)" [appTooltip]="'Change owner'">
+                      <span [inlineSVG]="'assets/icons/edit.svg'"></span>
+                    </button>
+                  }
+                </div>
               </td>
               <td class="status-cell">
                 <div class="cell-content">

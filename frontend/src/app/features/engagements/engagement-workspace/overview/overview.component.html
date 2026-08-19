@@ -2,4 +2,8 @@
   @if (isLeadership()) {
     <app-engagement-detail />
   }
+
+  @if (engagementId(); as id) {
+    <app-open-items-by-area [engagementId]="id" />
+  }
 </div>

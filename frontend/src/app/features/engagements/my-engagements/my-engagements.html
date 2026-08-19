@@ -2,21 +2,19 @@
   <div class="page-header">
     <h2>My Engagements</h2>
     @if (isPreSales()) {
-      <app-engagements />
+      <app-engagements (engagementCreated)="loadEngagements()" />
     }
   </div>
 
-  <div class="tabs-row">
-    <app-tabs [tabs]="tabItems()" [activeId]="activeTab()" (tabChange)="onTabChange($event)" />
-
-    <div class="sort-control">
+  <div class="toolbar-row">
+    <div class="sort-control" [class.presales-view]="isPreSales()">
       <label for="sortBy">Sort by</label>
-
-      <select id="sortBy" [value]="sortBy()" (change)="onSortChange($any($event.target).value)">
-        <option value="kickoff">Kickoff date</option>
-        <option value="readiness">Readiness score</option>
-        <option value="client">Client name</option>
-      </select>
+      <app-select
+        id="sortBy"
+        [options]="sortOptions"
+        [ngModel]="sortBy()"
+        (ngModelChange)="onSortChange($event)"
+      />
     </div>
   </div>
 
@@ -24,107 +22,62 @@
     <app-alert>{{ errorMessage() }}</app-alert>
   }
 
-  @if (activeTab() === 'active') {
-    @if (!isLoading() && engagements().length === 0) {
-      <app-empty-state message="You have no engagements yet. They appear here once assigned to you." />
-    } @else {
-      <div class="engagement-list">
-        @for (engagement of engagements(); track engagement.engagementId) {
-          <div class="engagement-row" (click)="openEngagement(engagement.engagementId)">
-            <div class="engagement-info">
-              <div class="engagement-title-line">
-                <span class="client-name">{{ engagement.clientName }}</span>
-                @if (engagement.isOverdue) {
-                  <app-status-badge tone="danger">Overdue</app-status-badge>
-                }
-              </div>
-              <div class="engagement-meta">
-                {{ engagement.engagementTypeName }} &middot; {{ engagement.commercialModelName }} &middot; Kickoff {{ formatKickoffDate(engagement.kickoffDate) }}
-              </div>
-            </div>
-
-            <div class="engagement-actions">
-              <div class="readiness-ring">
-                <svg width="52" height="52" viewBox="0 0 52 52">
-                  <circle cx="26" cy="26" r="20" fill="none" stroke="#e5e7eb" stroke-width="4" />
-                  <circle
-                    cx="26"
-                    cy="26"
-                    r="20"
-                    fill="none"
-                    [attr.stroke]="readinessColor(engagement.displayReadinessScore)"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                    [attr.stroke-dasharray]="2 * 3.14159 * 20"
-                    [attr.stroke-dashoffset]="ringOffset(engagement.displayReadinessScore)"
-                    transform="rotate(-90 26 26)"
-                  />
-                </svg>
-                <span class="readiness-value">{{ engagement.displayReadinessScore }}%</span>
-              </div>
-
-              <app-button
-                type="button"
-                variant="stroked"
-                (click)="$event.stopPropagation(); openEngagement(engagement.engagementId)"
-              >
-                Open
-              </app-button>
-            </div>
-          </div>
-        }
-      </div>
-    }
+  @if (!isLoading() && engagements().length === 0) {
+    <app-empty-state message="You have no engagements yet. They appear here once assigned to you." />
   } @else {
-    @if (pastEngagements.length === 0) {
-      <app-empty-state message="You have no engagements yet. They appear here once assigned to you." />
-    } @else {
-      <div class="engagement-list">
-        @for (engagement of pastEngagements; track engagement.engagementId) {
-          <div class="engagement-row" (click)="openEngagement(engagement.engagementId)">
-            <div class="engagement-info">
-              <div class="engagement-title-line">
-                <span class="client-name">{{ engagement.clientName }}</span>
-                @if (engagement.isOverdue) {
-                  <app-status-badge tone="danger">Overdue</app-status-badge>
-                }
-              </div>
-              <div class="engagement-meta">
-                {{ engagement.engagementTypeName }} &middot; {{ engagement.commercialModelName }} &middot; Kickoff {{ formatKickoffDate(engagement.kickoffDate) }}
-              </div>
+    <div class="engagement-list">
+      @for (engagement of pagedEngagements(); track engagement.id) {
+        <div class="engagement-row" (click)="openEngagement(engagement.id)">
+          <div class="engagement-info">
+            <div class="engagement-title-line">
+              <span class="client-name">{{ engagement.engagementName }}</span>
             </div>
-
-            <div class="engagement-actions">
-              <div class="readiness-ring">
-                <svg width="52" height="52" viewBox="0 0 52 52">
-                  <circle cx="26" cy="26" r="20" fill="none" stroke="#e5e7eb" stroke-width="4" />
-                  <circle
-                    cx="26"
-                    cy="26"
-                    r="20"
-                    fill="none"
-                    [attr.stroke]="readinessColor(engagement.displayReadinessScore)"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                    [attr.stroke-dasharray]="2 * 3.14159 * 20"
-                    [attr.stroke-dashoffset]="ringOffset(engagement.displayReadinessScore)"
-                    transform="rotate(-90 26 26)"
-                  />
-                </svg>
-                <span class="readiness-value">{{ engagement.displayReadinessScore }}%</span>
-              </div>
-
-              <app-button
-                type="button"
-                variant="stroked"
-                (click)="$event.stopPropagation(); openEngagement(engagement.engagementId)"
-              >
-                Open
-              </app-button>
+            <div class="engagement-meta">
+              {{ engagement.engagementTypeName }} &middot; {{ engagement.commercialModelName }} &middot; Kickoff {{ formatKickoffDate(engagement.kickoffDate) }}
+              @if (engagement.isOverdue) {
+                <app-status-badge tone="danger">Overdue</app-status-badge>
+              }
             </div>
           </div>
-        }
-      </div>
+
+          <div class="engagement-actions">
+            <div class="readiness-ring">
+              <svg width="52" height="52" viewBox="0 0 52 52">
+                <circle cx="26" cy="26" r="20" fill="none" stroke="#e5e7eb" stroke-width="4" />
+                <circle
+                  cx="26"
+                  cy="26"
+                  r="20"
+                  fill="none"
+                  [attr.stroke]="readinessColor(engagement.displayReadinessScore)"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  [attr.stroke-dasharray]="2 * 3.14159 * 20"
+                  [attr.stroke-dashoffset]="ringOffset(engagement.displayReadinessScore)"
+                  transform="rotate(-90 26 26)"
+                />
+              </svg>
+              <span class="readiness-value">{{ engagement.displayReadinessScore }}%</span>
+            </div>
+
+            <app-button
+              type="button"
+              variant="stroked"
+              (click)="$event.stopPropagation(); openEngagement(engagement.id)"
+            >
+              Open
+            </app-button>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (totalPages() > 1) {
+      <app-paginator
+        [page]="currentPage()"
+        [totalPages]="totalPages()"
+        (pageChange)="goToPage($event)"
+      />
     }
   }
 </div>

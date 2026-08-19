@@ -19,6 +19,7 @@ public class RiskService(
 {
     public async Task<List<RiskDto>> GetRisksByEngagementAsync(int engagementId, RiskStatus? status = null, int? ownerId = null)
     {
+        await SyncAutoCreatedRisksAsync(engagementId);
         var risks = await riskRepository.GetByEngagementIdAsync(engagementId, status, ownerId);
         return risks.Select(MapToDto).ToList();
     }
@@ -140,7 +141,7 @@ public class RiskService(
                 SourceItemId = a.Id,
                 Title = a.Name,
                 Reason = a.BlockReason ?? string.Empty,
-                OwnerId = a.OwnerId
+                OwnerId = (int?)a.OwnerId
             })
             .ToListAsync();
 
@@ -156,12 +157,31 @@ public class RiskService(
                 SourceItemId = e.Id,
                 Title = e.EnvironmentToolingDefinition != null ? e.EnvironmentToolingDefinition.Name : (e.CustomName ?? e.Name),
                 Reason = e.NotApplicableReason ?? string.Empty,
-                OwnerId = e.OwnerId
+                OwnerId = (int?)e.OwnerId
             })
             .ToListAsync();
 
-        // 3. Combine into a list of current active blockers
-        var currentBlockers = blockedAccessItems.Concat(notApplicableToolingItems).ToList();
+        // 3. Fetch active Blocked items from EngagementChecklist for this engagement
+        var blockedChecklistItems = await dbContext.EngagementChecklistItems
+            .Where(c => c.EngagementChecklist.EngagementId == engagementId &&
+                        c.Status == MasterChecklistConstants.ItemStatuses.Blocked &&
+                        c.IsApplicable &&
+                        !c.IsDeleted)
+            .Select(c => new
+            {
+                SourceType = RiskConstants.SourceTypes.Checklist,
+                SourceItemId = c.Id,
+                Title = c.Title,
+                Reason = c.BlockReason ?? string.Empty,
+                OwnerId = (int?)c.OwnerId
+            })
+            .ToListAsync();
+
+        // 4. Combine into a list of current active blockers
+        var currentBlockers = blockedAccessItems
+            .Concat(notApplicableToolingItems)
+            .Concat(blockedChecklistItems)
+            .ToList();
 
         // 4. Fetch all existing auto-created risks for this engagement
         var existingAutoRisks = await dbContext.Risks

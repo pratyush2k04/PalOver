@@ -123,4 +123,22 @@ public class AccessItemsController(IAccessTrackerService accessTrackerService) :
         var item = await accessTrackerService.UpdateAccessItemOwnerAsync(id, request);
         return Ok(item);
     }
+
+    /// <summary>
+    /// Soft-deletes an access item (Tech Lead only).
+    /// </summary>
+    /// <param name="id">The access item ID.</param>
+    /// <returns>204 No Content.</returns>
+    [HttpDelete("{id:int}")]
+    [AuthorizeRoles(RoleEnum.TechLead)]
+    [EndpointSummary("Delete access item (Tech Lead only)")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteAccessItem(int id)
+    {
+        await accessTrackerService.DeleteAccessItemAsync(id);
+        return NoContent();
+    }
 }

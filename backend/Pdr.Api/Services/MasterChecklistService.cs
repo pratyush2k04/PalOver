@@ -1,12 +1,16 @@
 using Pdr.Api.Constants;
 using Pdr.Api.DTOs.MasterChecklist;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.MasterChecklist;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class MasterChecklistService(IMasterChecklistRepository checklistRepository) : IMasterChecklistService
+public class MasterChecklistService(
+    IMasterChecklistRepository checklistRepository,
+    IAuditLogService auditLogService,
+    ICurrentUserService currentUserService) : IMasterChecklistService
 {
     public async Task<MasterChecklistVersionResponseDto?> GetCurrentDraftVersionAsync()
     {
@@ -222,6 +226,16 @@ public class MasterChecklistService(IMasterChecklistRepository checklistReposito
         };
 
         await checklistRepository.PublishVersionAsync(draftVersion, newDraftVersion);
+
+        var actorUserId = currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            AuditActionEnum.MasterChecklistPublished,
+            new Dictionary<string, object?>
+            {
+                ["Version"] = draftVersion.VersionNumber,
+                ["ActorUserId"] = actorUserId
+            },
+            actingUserId: actorUserId > 0 ? actorUserId : null);
 
         return ChecklistResultDto<MasterChecklistVersionResponseDto>.Success(MapVersion(draftVersion));
     }

@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { TECHNICAL_READINESS_ROUTES, MASTER_CHECKLIST_ROUTES } from '@shared/constants/app.constants';
+import { TECHNICAL_READINESS_ROUTES, MASTER_CHECKLIST_ROUTES, AUDIT_LOG_ROUTES } from '@shared/constants/app.constants';
 
 import { LoginComponent } from './components/login/login';
 import { MainLayoutComponent } from '@layouts/main-layout/main-layout';
@@ -19,6 +19,16 @@ export const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
+  },
+
+  // Layout-less Print Summary View
+  {
+    path: 'engagements/:engagementId/day-one-summary-print',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import(
+        './features/engagements/engagement-workspace/technical/day-one-summary-print/day-one-summary-print.component'
+      ).then((m) => m.DayOneSummaryPrintComponent),
   },
 
   // Protected
@@ -146,6 +156,14 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/notifications/notification-fullpage.routes').then(
             m => m.NOTIFICATION_FULLPAGE_ROUTES
+          ),
+        },
+      // Audit Log (own entries for all users; Leadership/Admin see everyone's)
+      {
+        path: AUDIT_LOG_ROUTES.BASE,
+        loadChildren: () =>
+          import('./features/audit-log/audit-log.routes').then(
+            m => m.AUDIT_LOG_ROUTE
           ),
       },
 

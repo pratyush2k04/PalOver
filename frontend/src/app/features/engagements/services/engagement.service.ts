@@ -10,10 +10,17 @@ import {
   GetEngagementTypesResponse,
   MarkSowSignedRequest,
   MarkSowSignedResponse,
-  PmEngagementListResponse,
+  EngagementListResponse,
   EngagementSortBy
 } from '../models/engagement.model';
 import { ENGAGEMENT_API_ENDPOINTS } from '@shared/constants/app.constants';
+
+export interface EngagementOpenItemsSummary {
+  checklistOpenCount: number;
+  accessOpenCount: number;
+  openRisksCount: number;
+  resourcingOpenCount: number;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -45,6 +52,10 @@ export class EngagementService {
     return this.http.get<EngagementOwners>(ENGAGEMENT_API_ENDPOINTS.ENGAGEMENT_OWNERS(id));
   }
 
+  getEngagementUsers(id: number): Observable<any[]> {
+    return this.http.get<any[]>(ENGAGEMENT_API_ENDPOINTS.ENGAGEMENT_USERS(id));
+  }
+
   assignProjectManager(id: number, userId: number): Observable<EngagementOwners> {
     return this.http.put<EngagementOwners>(ENGAGEMENT_API_ENDPOINTS.ASSIGN_PROJECT_MANAGER(id), { userId });
   }
@@ -53,9 +64,13 @@ export class EngagementService {
     return this.http.put<EngagementOwners>(ENGAGEMENT_API_ENDPOINTS.ASSIGN_TECH_LEAD(id), { userId });
   }
 
-  getMyEngagements(sortBy: EngagementSortBy = 'kickoff'): Observable<PmEngagementListResponse> {
-    return this.http.get<PmEngagementListResponse>(ENGAGEMENT_API_ENDPOINTS.MY_ENGAGEMENTS, {
+  getMyEngagements(sortBy: EngagementSortBy = 'kickoff'): Observable<EngagementListResponse> {
+    return this.http.get<EngagementListResponse>(ENGAGEMENT_API_ENDPOINTS.MY_ENGAGEMENTS, {
       params: { sortBy }
     });
+  }
+
+  getOpenItemsSummary(id: number): Observable<EngagementOpenItemsSummary> {
+    return this.http.get<EngagementOpenItemsSummary>(ENGAGEMENT_API_ENDPOINTS.OPEN_ITEMS_SUMMARY(id));
   }
 }

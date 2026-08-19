@@ -11,6 +11,30 @@
   &__content {
     width: 100%;
     box-sizing: border-box;
+    max-height: 36rem;
+    overflow-y: auto;
+    padding-right: $spacing-3;
+
+    /* Custom internal scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 6px;
+
+      &:hover {
+        background-color: #94a3b8;
+      }
+    }
   }
 
   &__group {

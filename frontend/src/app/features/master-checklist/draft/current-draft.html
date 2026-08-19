@@ -62,11 +62,25 @@
             </div>
 
             <div class="current-draft__row-actions">
-              <app-button type="button" variant="icon" ariaLabel="Edit item" (click)="onEditItem(item)">
-                &#9998;
+              <app-button
+                type="button"
+                variant="icon"
+                class="current-draft__action-btn current-draft__action-btn--edit"
+                ariaLabel="Edit item"
+                [appTooltip]="'Edit item'"
+                (click)="onEditItem(item)"
+              >
+                <span class="current-draft__action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
               </app-button>
-              <app-button type="button" variant="icon" ariaLabel="Retire item" (click)="onRetireItem(item)">
-                &#128451;
+              <app-button
+                type="button"
+                variant="icon"
+                class="current-draft__action-btn current-draft__action-btn--retire"
+                ariaLabel="Retire item"
+                [appTooltip]="'Retire item'"
+                (click)="onRetireItem(item)"
+              >
+                <span class="current-draft__action-icon" [inlineSVG]="'assets/icons/archive.svg'"></span>
               </app-button>
             </div>
           </div>

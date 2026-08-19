@@ -20,14 +20,20 @@ public static class RiskConstants
 
         public const string ResolutionNoteRequired = "Resolution note is required when closing a risk.";
         public const string ResolutionNoteMaxLength = "Resolution note must not exceed 2000 characters.";
+
+        public const string CommentContentRequired = "Comment content is required.";
+        public const string CommentContentMaxLength = "Comment content must not exceed 1000 characters.";
     }
 
     public static class Messages
     {
         public const string ResolutionNoteRequired = "A resolution note is required when closing a risk.";
         public const string RiskCloseAccessDenied = "Only a Project Manager or the assigned Risk Owner can close this risk.";
+        public const string CommentEditWindowExpired = "Comments can only be edited within 15 minutes of creation.";
+        public const string CommentEditForbidden = "You can only edit your own comments.";
 
         public static string NotFound(int id) => $"Risk with ID {id} was not found.";
+        public static string CommentNotFound(int id) => $"Risk comment with ID {id} was not found.";
         public static string AutoCreatedPrefix(string title) => $"Blocked: {title.Trim()}";
     }
 

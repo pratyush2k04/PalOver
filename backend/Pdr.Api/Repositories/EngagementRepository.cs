@@ -1,9 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
+using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Models;
-using Pdr.Api.Models.Engagements;
+using Pdr.Api.Models.AccessTracker;
 using Pdr.Api.Models.EngagementAssignment;
+using Pdr.Api.Models.EngagementChecklist;
+using Pdr.Api.Models.Engagements;
 using Pdr.Api.Models.LoginEntity;
+using Pdr.Api.Models.ResourceRequests;
+using Pdr.Api.Models.Risks;
 using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Repositories;
@@ -35,7 +40,9 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
             .ToListAsync();
 
     public async Task<Engagement?> GetByIdAsync(int engagementId) =>
-        await context.Engagements.FirstOrDefaultAsync(e => e.EngagementId == engagementId);
+        await context.Engagements
+            .Include(e => e.EngagementType)
+            .FirstOrDefaultAsync(e => e.EngagementId == engagementId);
 
     public async Task SaveChangesAsync() =>
         await context.SaveChangesAsync();
@@ -79,5 +86,42 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
             UserId = userId
         });
         await context.SaveChangesAsync();
+    }
+
+    public async Task<EngagementOpenItemsSummaryDto> GetOpenItemsSummaryAsync(int engagementId)
+    {
+        var checklistOpenCount = await context.Set<EngagementChecklistItem>()
+            .AsNoTracking()
+            .Where(i => i.EngagementChecklist.EngagementId == engagementId
+                        && i.IsMandatory
+                        && i.IsApplicable
+                        && i.Status == "Incomplete")
+            .CountAsync();
+
+        var accessOpenCount = await context.Set<AccessItem>()
+            .AsNoTracking()
+            .Where(a => a.EngagementId == engagementId
+                        && a.Status != AccessItemStatus.Granted)
+            .CountAsync();
+
+        var openRisksCount = await context.Set<Risk>()
+            .AsNoTracking()
+            .Where(r => r.EngagementId == engagementId
+                        && r.Status != RiskStatus.Closed)
+            .CountAsync();
+
+        var resourcingOpenCount = await context.Set<ResourceRequest>()
+            .AsNoTracking()
+            .Where(r => r.EngagementId == engagementId
+                        && r.Status != ResourceRequestStatus.Confirmed)
+            .CountAsync();
+
+        return new EngagementOpenItemsSummaryDto
+        {
+            ChecklistOpenCount = checklistOpenCount,
+            AccessOpenCount = accessOpenCount,
+            OpenRisksCount = openRisksCount,
+            ResourcingOpenCount = resourcingOpenCount
+        };
     }
 }

@@ -24,4 +24,14 @@ export class PersonService {
   deletePerson(engagementId: number, personId: number): Observable<void> {
     return this.http.delete<void>(`/api/engagements/${engagementId}/people/${personId}`);
   }
+
+  importFromHandover(engagementId: number): Observable<ImportResponse> {
+    return this.http.post<ImportResponse>(`/api/engagements/${engagementId}/people/import-from-handover`, {});
+  }
+}
+
+export interface ImportResponse {
+  added: number;
+  alreadyPresent: number;
+  deleted: number;
 }

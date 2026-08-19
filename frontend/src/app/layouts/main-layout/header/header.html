@@ -9,15 +9,31 @@
 
       <app-notifications-dropdown />
 
-      <div class="user-info">
-        <app-avatar [name]="currentUser.fullName" />
-        <div class="user-text">
-          <span class="user-name">{{ currentUser.fullName }}</span>
-          <span class="user-role">{{ currentUser.role }}</span>
+      <div class="user-menu-container">
+        <div class="user-info" (click)="toggleUserMenu()" [class.active]="isUserMenuOpen()">
+          <app-avatar [name]="currentUser.fullName" />
+          <div class="user-text">
+            <span class="user-name">{{ currentUser.fullName }}</span>
+            <span class="user-role">{{ currentUser.role }}</span>
+          </div>
+          <span class="chevron" [class.open]="isUserMenuOpen()">
+            <span [inlineSVG]="'assets/icons/chevron-down.svg'"></span>
+          </span>
         </div>
-        <span class="chevron">
-          <span [inlineSVG]="'assets/icons/chevron-down.svg'"></span>
-        </span>
+
+        @if (isUserMenuOpen()) {
+          <div class="user-dropdown">
+            <div class="user-dropdown-header">
+              <span class="user-dropdown-name">{{ currentUser.fullName }}</span>
+              <span class="user-dropdown-role">{{ currentUser.role }}</span>
+            </div>
+            <div class="user-dropdown-divider"></div>
+            <button type="button" class="user-dropdown-item sign-out-btn" (click)="onSignOut()">
+              <span class="dropdown-icon" [inlineSVG]="'assets/icons/log-out.svg'"></span>
+              <span>Sign Out</span>
+            </button>
+          </div>
+        }
       </div>
     </div>
   }

@@ -80,17 +80,6 @@ export class SidebarComponent {
       });
     }
 
-    // Profile: no route assigned
-    items.push(
-      { label: 'Profile', icon: 'user' }
-    );
-
     return items;
   });
-
-  onSignOut(): void {
-    this.authService.logout();
-    this.appContext.reset();
-    this.router.navigate([APP_ROUTES.LOGIN]);
-  }
 }

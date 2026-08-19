@@ -9,6 +9,8 @@ import { EnvironmentToolingItemDto, EnvironmentToolingReadinessResponse } from '
 import { EnvironmentToolingStatus } from '@features/engagements/models/environment-tooling/environment-tooling.enums';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
+import { ToastService } from '@common/services/toast/toast';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
 import { DialogService } from '@common/services/dialog/dialog.service';
@@ -21,11 +23,23 @@ import {
   NotApplicableReasonDialogData,
   NotApplicableReasonDialogResult
 } from './dialogs/not-applicable-reason-dialog/not-applicable-reason-dialog.component';
+import {
+  EditOwnerDialogComponent,
+  EditOwnerDialogData,
+  EditOwnerDialogResult
+} from '../dialogs/edit-owner-dialog/edit-owner-dialog.component';
 
 @Component({
   selector: 'app-environment-tooling',
   standalone: true,
-  imports: [CommonModule, FormsModule, InlineSVGModule, StatusBadgeComponent, ButtonComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    InlineSVGModule,
+    TooltipDirective,
+    StatusBadgeComponent,
+    ButtonComponent
+  ],
   templateUrl: './environment-tooling.component.html',
   styleUrl: './environment-tooling.component.scss'
 })
@@ -34,6 +48,7 @@ export class EnvironmentToolingComponent {
   itemsUpdated = output<EnvironmentToolingItemDto[]>();
 
   private service = inject(EnvironmentToolingService);
+  private toastService = inject(ToastService);
   private authService = inject(AuthService);
   private destroyRef = inject(DestroyRef);
   private dialog = inject(DialogService);
@@ -117,8 +132,10 @@ export class EnvironmentToolingComponent {
         );
         this.items.set(updatedList);
         this.itemsUpdated.emit(updatedList);
+        this.toastService.success(`Status updated for ${item.name}`);
       },
       error: (err) => {
+        this.toastService.error(`Failed to update status for ${item.name}`);
         console.warn('API update environment status failed, updating local state for testing', err);
         const updatedList = this.items().map(i => {
           if (i.id === item.id) {
@@ -175,10 +192,49 @@ export class EnvironmentToolingComponent {
     });
   }
 
+  openEditOwnerModal(item: EnvironmentToolingItemDto): void {
+    const dialogRef = this.dialog.open<EditOwnerDialogComponent, EditOwnerDialogData, EditOwnerDialogResult>(
+      EditOwnerDialogComponent,
+      { 
+        data: { 
+          itemName: item.name, 
+          engagementId: this.engagementId(),
+          currentOwnerId: item.ownerId 
+        } 
+      }
+    );
+
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+      this.updateOwner(item, result.ownerId);
+    });
+  }
+
+  private updateOwner(item: EnvironmentToolingItemDto, ownerId: number) {
+    this.service.updateOwner(item.id, { ownerId }).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (updatedItem) => {
+        const updatedList = this.items().map(i =>
+          i.id === updatedItem.id ? updatedItem : i
+        );
+        this.items.set(updatedList);
+        this.itemsUpdated.emit(updatedList);
+        this.toastService.success(`Owner updated for ${item.name}`);
+      },
+      error: (err) => {
+        this.toastService.error(`Failed to update owner for ${item.name}`);
+        console.error('API update owner failed', err);
+      }
+    });
+  }
+
   private submitAddItem(result: AddEnvironmentItemDialogResult) {
+    const currentUserId = this.authService.getUserId() ?? 1;
+    const currentUser = this.authService.currentUser();
     const requestData = {
       customName: result.name,
-      ownerId: 1 // Default to Rahul Verma (ID 1)
+      ownerId: currentUserId
     };
 
     this.service.addCustomItem(this.engagementId(), requestData).pipe(
@@ -188,6 +244,7 @@ export class EnvironmentToolingComponent {
         const updatedList = [...this.items(), newItem];
         this.items.set(updatedList);
         this.itemsUpdated.emit(updatedList);
+        this.toastService.success(`Environment item "${newItem.name}" added successfully`);
       },
       error: (err) => {
         console.warn('API add environment item failed, adding local item for testing', err);
@@ -196,8 +253,8 @@ export class EnvironmentToolingComponent {
           name: requestData.customName,
           customName: requestData.customName,
           engagementId: this.engagementId(),
-          ownerId: 1,
-          ownerFullName: 'Rahul Verma',
+          ownerId: currentUserId,
+          ownerFullName: currentUser?.fullName ?? 'Tech Lead',
           status: EnvironmentToolingStatus.NotReady
         };
         const updatedList = [...this.items(), localNewItem];

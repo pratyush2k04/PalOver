@@ -10,5 +10,7 @@ export * from './master-checklist.constants';
 export * from './risk.constants';
 export * from './portfolio.constants';
 export * from './notification.constants';
+export * from './audit-log.constants';
 export * from './search.constants';
+export * from './resource-request.constants';
 

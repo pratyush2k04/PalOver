@@ -27,9 +27,9 @@ public class EngagementsController(
     [HttpGet("my-engagements")]
     [Authorize]
     [EndpointSummary("Get my assigned engagements")]
-    [ProducesResponseType(typeof(PmEngagementListResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(EngagementListResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<PmEngagementListResponse>> GetMyEngagements([FromQuery] string sortBy = "kickoff")
+    public async Task<ActionResult<EngagementListResponse>> GetMyEngagements([FromQuery] string sortBy = "kickoff")
     {
         var result = await engagementService.GetMyEngagementsAsync(sortBy);
         return Ok(result);
@@ -125,6 +125,24 @@ public class EngagementsController(
     {
         var owners = await engagementService.GetEngagementOwnersAsync(id);
         return Ok(owners);
+    }
+
+    /// <summary>
+    /// Retrieves all system users assigned to an engagement.
+    /// </summary>
+    /// <param name="id">The engagement ID.</param>
+    /// <returns>A list of users assigned to the engagement.</returns>
+    [HttpGet("{id:int}/users")]
+    [Authorize]
+    [EndpointSummary("Get all assigned users")]
+    [ProducesResponseType(typeof(IEnumerable<Pdr.Api.DTOs.Users.UserListItemDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IEnumerable<Pdr.Api.DTOs.Users.UserListItemDto>>> GetEngagementUsers(int id)
+    {
+        var users = await engagementService.GetEngagementUsersAsync(id);
+        return Ok(users);
     }
 
     /// <summary>
@@ -269,5 +287,21 @@ public class EngagementsController(
     {
         var dashboard = await engagementService.GetLeadershipDashboardAsync();
         return Ok(dashboard);
+    }
+
+    /// <summary>
+    /// Retrieves open items summary for a specific engagement (checklist open, access open, open risks, resourcing open).
+    /// </summary>
+    /// <param name="id">The engagement ID.</param>
+    [HttpGet("{id:int}/open-items-summary")]
+    [Authorize]
+    [EndpointSummary("Get open items summary")]
+    [ProducesResponseType(typeof(EngagementOpenItemsSummaryDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<EngagementOpenItemsSummaryDto>> GetOpenItemsSummary(int id)
+    {
+        var summary = await engagementService.GetOpenItemsSummaryAsync(id);
+        return summary is null ? NotFound() : Ok(summary);
     }
 }
