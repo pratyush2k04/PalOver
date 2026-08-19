@@ -7,8 +7,8 @@
     <div class="action-group">
       @if (isTechLead()) {
         <app-button variant="flat" (click)="openAddModal()">
-          <span [inlineSVG]="'assets/icons/plus.svg'"></span>
-          Add item
+          <span class="btn-icon" [inlineSVG]="'assets/icons/plus.svg'"></span>
+          <span>Add item</span>
         </app-button>
       }
     </div>
@@ -35,6 +35,9 @@
             <th>CLIENT-SIDE</th>
             <th>DAYS TO BILLING</th>
             <th>STATUS</th>
+            @if (isTechLead()) {
+              <th>ACTIONS</th>
+            }
           </tr>
         </thead>
         <tbody>
@@ -44,7 +47,14 @@
                 {{ item.name }}
               </td>
               <td class="owner-cell">
-                {{ item.ownerFullName || 'Unassigned' }}
+                <div class="owner-content">
+                  <span>{{ item.ownerFullName || 'Unassigned' }}</span>
+                  @if (isTechLead()) {
+                    <button class="edit-owner-btn" (click)="openEditOwnerModal(item)" [appTooltip]="'Change owner'">
+                      <span [inlineSVG]="'assets/icons/edit.svg'"></span>
+                    </button>
+                  }
+                </div>
               </td>
               <td class="client-side-cell">
                 <div class="cell-content">
@@ -84,10 +94,21 @@
                   </app-status-badge>
                 }
               </td>
+              @if (isTechLead()) {
+                <td class="actions-cell">
+                  <button
+                    type="button"
+                    class="delete-item-btn"
+                    (click)="onDeleteItem(item)"
+                    [appTooltip]="'Delete access item'">
+                    <span [inlineSVG]="'assets/icons/trash.svg'"></span>
+                  </button>
+                </td>
+              }
             </tr>
           } @empty {
             <tr>
-              <td colspan="5" class="empty-cell">
+              <td [attr.colspan]="isTechLead() ? 6 : 5" class="empty-cell">
                 No access items found for this engagement.
               </td>
             </tr>
@@ -97,3 +118,16 @@
     </div>
   }
 </div>
+
+<!-- Delete Confirmation Dialog -->
+@if (itemToDelete(); as item) {
+  <app-confirm-dialog
+    title="Delete Access Item"
+    confirmLabel="Delete"
+    [isBusy]="isDeleting()"
+    [isDestructive]="true"
+    (confirmed)="confirmDelete()"
+    (cancelled)="cancelDelete()">
+    Are you sure you want to delete <strong>{{ item.name }}</strong>? This action cannot be undone.
+  </app-confirm-dialog>
+}

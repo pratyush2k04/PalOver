@@ -361,6 +361,90 @@ namespace Pdr.Api.Migrations
                             Id = 4,
                             Action = "UserDeleted",
                             Details = "User {userName} was deleted by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Action = "DocumentVersioned",
+                            Details = "Document {documentName} was versioned to {version} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Action = "DocumentUploaded",
+                            Details = "Document {documentName} uploaded under category {categoryName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Action = "UnauthorizedAccess",
+                            Details = "Unauthorized access attempt for email {email}"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Action = "AccountLockout",
+                            Details = "Account locked out for user {userName}"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Action = "ClientContactDetailsChanged",
+                            Details = "Contact details changed for client {clientName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Action = "ClientPersonaChanged",
+                            Details = "Client persona changed for {clientName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Action = "LeadershipAllocated",
+                            Details = "Leadership allocated for engagement {engagementName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Action = "UserRoleAllocated",
+                            Details = "Role {roleName} allocated to user {targetUserName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Action = "PmAndTlAssigned",
+                            Details = "PM and TL assigned for engagement {engagementName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Action = "PmAndTlReassigned",
+                            Details = "PM and TL reassigned for engagement {engagementName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Action = "DayOneSummaryGenerated",
+                            Details = "Day-One Summary generated for engagement {engagementName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Action = "MasterChecklistPublished",
+                            Details = "Master checklist version {version} published by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Action = "BrownfieldItemAdded",
+                            Details = "Brownfield finding {findingName} added to engagement {engagementName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Action = "DiscoveryItemAdded",
+                            Details = "Discovery item {itemName} added to engagement {engagementName} by {actorName}"
                         });
                 });
 
@@ -626,78 +710,6 @@ namespace Pdr.Api.Migrations
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             UpdatedBy = "2"
                         });
-                });
-
-            modelBuilder.Entity("Pdr.Api.Models.ClientContactTransition", b =>
-                {
-                    b.Property<int>("ClientContactTransitionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("client_contact_transition_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("ClientContactTransitionId"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("created_by");
-
-                    b.Property<int>("EngagementId")
-                        .HasColumnType("integer")
-                        .HasColumnName("engagement_id");
-
-                    b.Property<string>("IncomingContactName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("incoming_contact_name");
-
-                    b.Property<string>("IncomingContactRole")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("incoming_contact_role");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<string>("OutgoingContactName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("outgoing_contact_name");
-
-                    b.Property<string>("OutgoingContactRole")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("outgoing_contact_role");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("updated_by");
-
-                    b.HasKey("ClientContactTransitionId");
-
-                    b.HasIndex("EngagementId");
-
-                    b.ToTable("client_contact_transitions", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Documents.Document", b =>
@@ -2331,8 +2343,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("ClientContactTransitionId");
 
-                    b.HasIndex("EngagementId")
-                        .IsUnique();
+                    b.HasIndex("EngagementId");
 
                     b.ToTable("client_contact_transitions", (string)null);
                 });
@@ -4121,6 +4132,19 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
+                            Id = 4,
+                            Body = "{PeopleNeeded} {RoleName} requested for {EngagementName} by {RequiredByDate}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 3,
+                            IsDeleted = false,
+                            Key = "ResourceRequestRaised",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/resources",
+                            Title = "Resource Request Raised — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
                             Id = 15,
                             Body = "{AuthorName} mentioned you in a comment on risk '{RiskTitle}'",
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -4284,6 +4308,102 @@ namespace Pdr.Api.Migrations
                             Role = "Internal Technical Lead",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.ResourceRequests.ResourceRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer")
+                        .HasColumnName("engagement_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("JobDescription")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("job_description");
+
+                    b.Property<int>("PeopleNeeded")
+                        .HasColumnType("integer")
+                        .HasColumnName("people_needed");
+
+                    b.Property<int>("RequestedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("requested_by_id");
+
+                    b.Property<DateOnly>("RequiredByDate")
+                        .HasColumnType("date")
+                        .HasColumnName("required_by_date");
+
+                    b.Property<int>("StandardRole")
+                        .HasColumnType("integer")
+                        .HasColumnName("standard_role");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestedById");
+
+                    b.HasIndex("EngagementId", "Status");
+
+                    b.ToTable("resource_requests", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_resource_requests_job_description_min_length", "char_length(job_description) >= 15");
+
+                            t.HasCheckConstraint("ck_resource_requests_people_needed_positive", "people_needed > 0");
+                        });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.ResourceRequests.ResourceRequestSkill", b =>
+                {
+                    b.Property<int>("ResourceRequestId")
+                        .HasColumnType("integer")
+                        .HasColumnName("resource_request_id");
+
+                    b.Property<int>("Skill")
+                        .HasColumnType("integer")
+                        .HasColumnName("skill");
+
+                    b.HasKey("ResourceRequestId", "Skill");
+
+                    b.ToTable("resource_request_skills", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Risks.Risk", b =>
@@ -4555,17 +4675,6 @@ namespace Pdr.Api.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.ClientContactTransition", b =>
-                {
-                    b.HasOne("Pdr.Api.Models.Engagement", "Engagement")
-                        .WithMany()
-                        .HasForeignKey("EngagementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Engagement");
-                });
-
             modelBuilder.Entity("Pdr.Api.Models.Documents.Document", b =>
                 {
                     b.HasOne("Pdr.Api.Models.Documents.DocumentCategory", "Category")
@@ -4708,8 +4817,8 @@ namespace Pdr.Api.Migrations
             modelBuilder.Entity("Pdr.Api.Models.Handover.ClientContactTransition", b =>
                 {
                     b.HasOne("Pdr.Api.Models.Engagements.Engagement", "Engagement")
-                        .WithOne()
-                        .HasForeignKey("Pdr.Api.Models.Handover.ClientContactTransition", "EngagementId")
+                        .WithMany()
+                        .HasForeignKey("EngagementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -4850,6 +4959,32 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Engagement");
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.ResourceRequests.ResourceRequest", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Engagements.Engagement", null)
+                        .WithMany()
+                        .HasForeignKey("EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", null)
+                        .WithMany()
+                        .HasForeignKey("RequestedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.ResourceRequests.ResourceRequestSkill", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.ResourceRequests.ResourceRequest", "ResourceRequest")
+                        .WithMany("RequestSkills")
+                        .HasForeignKey("ResourceRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ResourceRequest");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Risks.Risk", b =>
                 {
                     b.HasOne("Pdr.Api.Models.Engagements.Engagement", null)
@@ -4959,6 +5094,11 @@ namespace Pdr.Api.Migrations
             modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.MasterChecklistVersion", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.ResourceRequests.ResourceRequest", b =>
+                {
+                    b.Navigation("RequestSkills");
                 });
 #pragma warning restore 612, 618
         }

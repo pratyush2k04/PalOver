@@ -41,6 +41,12 @@ public class NotificationRepository(AppDbContext context) : INotificationReposit
         await context.SaveChangesAsync();
     }
 
+    public async Task AddRangeAsync(IEnumerable<Notification> notifications)
+    {
+        context.Notifications.AddRange(notifications);
+        await context.SaveChangesAsync();
+    }
+
     public async Task SetReadAtAsync(int id, DateTime readAt)
     {
         var notification = await context.Notifications.FirstOrDefaultAsync(n => n.Id == id);

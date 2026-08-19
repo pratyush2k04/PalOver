@@ -3,7 +3,10 @@ export const TECHNICAL_READINESS_ROUTES = {
 } as const;
 
 export const TECHNICAL_READINESS_ROLES = {
-  TECH_LEAD: 'Tech Lead'
+  PRE_SALES: 'Pre Sales',
+  PROJECT_MANAGEMENT: 'Project Management',
+  TECH_LEAD: 'Tech Lead',
+  LEADERSHIP: 'Leadership'
 } as const;
 
 export const TECHNICAL_READINESS_ALERTS = {
@@ -12,6 +15,7 @@ export const TECHNICAL_READINESS_ALERTS = {
 
 export const TECHNICAL_READINESS_API_ENDPOINTS = {
   ACCESS_ITEMS: (engagementId: number) => `/api/engagements/${engagementId}/access-items`,
+  ACCESS_ITEM: (id: number) => `/api/access-items/${id}`,
   ACCESS_ITEM_STATUS: (id: number) => `/api/access-items/${id}/status`,
   ACCESS_ITEM_OWNER: (id: number) => `/api/access-items/${id}/owner`,
   ENVIRONMENT_TOOLING_ITEMS: (engagementId: number) => `/api/engagements/${engagementId}/environment-tooling`,
@@ -22,7 +26,8 @@ export const TECHNICAL_READINESS_API_ENDPOINTS = {
   BROWNFIELD_ITEM: (id: number) => `/api/brownfield-findings/${id}`,
   ARCHITECTURE_VALIDATION: (engagementId: number) => `/api/engagements/${engagementId}/architecture-validation`,
   ARCHITECTURE_VALIDATION_FEATURES: (engagementId: number) => `/api/engagements/${engagementId}/architecture-validation/features`,
-  ARCHITECTURE_VALIDATION_FEATURE_ITEM: (featureId: number) => `/api/architecture-validation/features/${featureId}`
+  ARCHITECTURE_VALIDATION_FEATURE_ITEM: (featureId: number) => `/api/architecture-validation/features/${featureId}`,
+  TECHNICAL_SUMMARY: (engagementId: number) => `/api/engagements/${engagementId}/technical-readiness/summary`
 } as const;
 
 export const TECHNICAL_READINESS_MESSAGES = {
@@ -30,6 +35,7 @@ export const TECHNICAL_READINESS_MESSAGES = {
   ADD_ACCESS_ITEM_ERROR: 'Failed to add custom access item.',
   UPDATE_ACCESS_STATUS_ERROR: 'Failed to update access item status.',
   UPDATE_ACCESS_OWNER_ERROR: 'Failed to update access item owner.',
+  DELETE_ACCESS_ITEM_ERROR: 'Failed to delete access item.',
   LOAD_TOOLING_ITEMS_ERROR: 'Failed to load environment and tooling items.',
   ADD_TOOLING_ITEM_ERROR: 'Failed to add custom environment/tooling item.',
   UPDATE_TOOLING_STATUS_ERROR: 'Failed to update environment/tooling status.',

@@ -12,6 +12,7 @@ export interface LoginResponse {
 }
 
 export interface User {
+  id?: number;
   fullName: string;
   email: string;
   role: string;
@@ -42,6 +43,26 @@ export class AuthService {
 
   getToken(): string | null {
     return localStorage.getItem(TOKEN_KEY);
+  }
+
+  getUserId(): number | null {
+    const token = this.getToken();
+    if (!token) {
+      return null;
+    }
+
+    const payload = this.decodeToken(token);
+    if (!payload) {
+      return null;
+    }
+
+    const idVal = payload['sub'] 
+      ?? payload['id'] 
+      ?? payload['userId'] 
+      ?? payload['nameid'] 
+      ?? payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
+
+    return idVal ? Number(idVal) : null;
   }
 
   clearToken(): void {
@@ -96,7 +117,14 @@ export class AuthService {
       return null;
     }
 
+    const idVal = payload['sub'] 
+      ?? payload['id'] 
+      ?? payload['userId'] 
+      ?? payload['nameid'] 
+      ?? payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
+
     return {
+      id: idVal ? Number(idVal) : undefined,
       fullName: (payload['fullName'] as string) ?? '',
       email: (payload['email'] as string) ?? '',
       role: (payload['role'] as string) ?? '',

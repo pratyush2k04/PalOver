@@ -75,6 +75,19 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             },
             new NotificationTemplate
             {
+                Id = 4,
+                Key = NotificationConstants.TemplateKeys.ResourceRequestRaised,
+                Title = "Resource Request Raised — {EngagementName}",
+                Body = "{PeopleNeeded} {RoleName} requested for {EngagementName} by {RequiredByDate}.",
+                DefaultPriority = NotificationPriority.High,
+                LinkPattern = "/engagements/{EngagementId}/workspace/resources",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            },
+            new NotificationTemplate
+            {
                 Id = 15,
                 Key = NotificationConstants.RiskCommentMention.TemplateKey,
                 Title = "Mentioned in Risk — {RiskTitle}",

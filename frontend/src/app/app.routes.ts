@@ -21,6 +21,16 @@ export const routes: Routes = [
     component: LoginComponent,
   },
 
+  // Layout-less Print Summary View
+  {
+    path: 'engagements/:engagementId/day-one-summary-print',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import(
+        './features/engagements/engagement-workspace/technical/day-one-summary-print/day-one-summary-print.component'
+      ).then((m) => m.DayOneSummaryPrintComponent),
+  },
+
   // Protected
   {
     path: '',
