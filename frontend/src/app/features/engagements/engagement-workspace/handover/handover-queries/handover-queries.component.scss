@@ -23,11 +23,11 @@
 }
 
 .query-card-resolved {
-  border-left-color: $color-primary;
+  border-left-color: $color-success-border;
 }
 
 .query-card-open {
-  border-left-color: $color-success-border;
+  border-left-color: $color-warning-border;
 }
 
 .query-status-label {
