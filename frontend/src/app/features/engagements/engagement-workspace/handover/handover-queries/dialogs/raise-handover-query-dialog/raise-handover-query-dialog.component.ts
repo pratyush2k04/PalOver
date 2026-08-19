@@ -17,6 +17,7 @@ export interface RaiseHandoverQueryDialogData {
 }
 
 const FIELD_SECTION_OPTIONS: SelectOption[] = [
+  { value: null, label: 'Select a field...' },
   { value: HandoverQueryFieldSection.ClientBackground, label: 'Client Background' },
   { value: HandoverQueryFieldSection.BusinessProblem, label: 'Business Problem' },
   { value: HandoverQueryFieldSection.ClientSentiment, label: 'Client Sentiment' },
@@ -37,9 +38,10 @@ export class RaiseHandoverQueryDialogComponent {
   readonly data = inject<RaiseHandoverQueryDialogData>(DIALOG_DATA);
 
   readonly fieldSectionOptions = FIELD_SECTION_OPTIONS;
-  readonly commitmentOptions = computed<SelectOption[]>(() =>
-    this.data.commitments.map((c) => ({ value: c.commitmentId, label: c.title }))
-  );
+  readonly commitmentOptions = computed<SelectOption[]>(() => [
+    { value: null, label: 'Select a commitment...' },
+    ...this.data.commitments.map((c) => ({ value: c.commitmentId, label: c.title })),
+  ]);
 
   fieldSection = signal<HandoverQueryFieldSection | null>(null);
   referenceId = signal<number | null>(null);

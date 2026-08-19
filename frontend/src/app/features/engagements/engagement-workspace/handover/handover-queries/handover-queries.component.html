@@ -11,8 +11,7 @@
     <div class="query-card" *ngFor="let query of queries()">
       <div class="query-card-header">
         <div class="query-field">
-          <span class="query-field-label">{{ fieldSectionLabel(query) }}</span>
-          <app-button variant="stroked" size="sm" (click)="jumpToField(query)">Jump to field</app-button>
+          <span class="query-field-label query-field-label-clickable" (click)="jumpToField(query)">{{ fieldSectionLabel(query) }}</span>
         </div>
         <app-status-badge [tone]="query.isResolved ? 'success' : 'warning'">
           {{ query.isResolved ? 'Resolved' : 'Open query' }}

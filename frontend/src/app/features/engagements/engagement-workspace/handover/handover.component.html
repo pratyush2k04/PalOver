@@ -36,38 +36,46 @@
     <div class="section client-context">
       <h3>Client Context</h3>
 
-      <app-textarea
-        id="clientBackground"
-        label="Client Background"
-        placeholder="Brief history and overview of the client..."
-        formControlName="clientBackground"
-        [maxLength]="maxFreeTextLength"
-      />
+      <div id="handover-client-background">
+        <app-textarea
+          id="clientBackground"
+          label="Client Background"
+          placeholder="Brief history and overview of the client..."
+          formControlName="clientBackground"
+          [maxLength]="maxFreeTextLength"
+        />
+      </div>
 
-      <app-textarea
-        id="businessProblem"
-        label="Business Problem (Required)"
-        placeholder="What core problem are we solving?"
-        formControlName="businessProblem"
-        [maxLength]="maxFreeTextLength"
-        [errorMessages]="{ required: 'Business Problem is required.' }"
-      />
+      <div id="handover-business-problem">
+        <app-textarea
+          id="businessProblem"
+          label="Business Problem (Required)"
+          placeholder="What core problem are we solving?"
+          formControlName="businessProblem"
+          [maxLength]="maxFreeTextLength"
+          [errorMessages]="{ required: 'Business Problem is required.' }"
+        />
+      </div>
 
-      <app-select
-        id="clientSentiment"
-        label="Client Sentiment (Required)"
-        formControlName="clientSentiment"
-        [options]="sentimentOptions"
-        [errorMessages]="{ required: 'Client Sentiment is required.' }"
-      />
+      <div id="handover-client-sentiment">
+        <app-select
+          id="clientSentiment"
+          label="Client Sentiment (Required)"
+          formControlName="clientSentiment"
+          [options]="sentimentOptions"
+          [errorMessages]="{ required: 'Client Sentiment is required.' }"
+        />
+      </div>
 
-      <app-input
-        id="dealOrigin"
-        label="Deal Origin"
-        placeholder="e.g. RFP, Direct Sales, Partner..."
-        formControlName="dealOrigin"
-        [maxLength]="maxFreeTextLength"
-      />
+      <div id="handover-deal-origin">
+        <app-input
+          id="dealOrigin"
+          label="Deal Origin"
+          placeholder="e.g. RFP, Direct Sales, Partner..."
+          formControlName="dealOrigin"
+          [maxLength]="maxFreeTextLength"
+        />
+      </div>
     </div>
   </form>
 
