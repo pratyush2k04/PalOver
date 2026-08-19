@@ -54,6 +54,9 @@
                 @if (item.isMandatory) {
                   <app-status-badge tone="info">Mandatory</app-status-badge>
                 }
+                @if (item.evidenceRequired) {
+                  <app-status-badge tone="success">Evidence: Complete</app-status-badge>
+                }
               </div>
               <div class="current-draft__row-meta">{{ item.categoryName }}</div>
               @if (item.description) {

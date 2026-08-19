@@ -22,6 +22,9 @@
                 @if (item.isMandatory) {
                   <app-status-badge tone="info">Mandatory</app-status-badge>
                 }
+                @if (item.evidenceRequired) {
+                  <app-status-badge tone="success">Evidence: Complete</app-status-badge>
+                }
                 @if (item.isRetired) {
                   <app-status-badge tone="danger">Retired</app-status-badge>
                 }
