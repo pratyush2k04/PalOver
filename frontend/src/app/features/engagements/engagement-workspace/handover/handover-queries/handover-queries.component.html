@@ -5,9 +5,9 @@
     {{ message() }}
   </app-alert>
 
-  <app-empty-state *ngIf="!isLoading() && queries().length === 0" message="No queries raised yet" />
+  <app-empty-state *ngIf="!isLoading() && !loadError() && queries().length === 0" message="No queries raised yet" />
 
-  <div class="query-cards" *ngIf="queries().length > 0">
+  <div class="query-cards" *ngIf="!loadError() && queries().length > 0">
     <div class="query-card" *ngFor="let query of queries()">
       <div class="query-card-header">
         <div class="query-field">
@@ -56,7 +56,7 @@
     </div>
   </div>
 
-  <div class="raise-query-actions" *ngIf="isProjectManagement()">
+  <div class="raise-query-actions" *ngIf="!loadError() && isProjectManagement()">
     <app-button variant="flat" (click)="openRaiseQueryDialog()">Raise another query</app-button>
   </div>
 </div>

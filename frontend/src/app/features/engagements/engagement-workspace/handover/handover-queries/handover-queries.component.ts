@@ -45,6 +45,7 @@ export class HandoverQueriesComponent {
 
   queries = signal<HandoverQueryDto[]>([]);
   isLoading = signal(true);
+  loadError = signal(false);
   message = signal('');
   isError = signal(false);
 
@@ -64,13 +65,17 @@ export class HandoverQueriesComponent {
 
   loadQueries(id: number): void {
     this.isLoading.set(true);
+    this.loadError.set(false);
     this.handoverQueryService.getQueries(id).subscribe({
       next: (data) => {
         this.queries.set(data);
         this.isLoading.set(false);
       },
-      error: () => {
+      error: (err) => {
         this.isLoading.set(false);
+        this.loadError.set(true);
+        this.message.set(this.extractErrorMessage(err, 'Failed to load handover queries.'));
+        this.isError.set(true);
       },
     });
   }
