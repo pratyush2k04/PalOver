@@ -11,6 +11,7 @@ import {
 } from '../../../models/handover-query.model';
 import { CommitmentDto } from '../../../models/handover.model';
 import { ButtonComponent } from '@common/components/button/button';
+import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { AlertComponent } from '@common/components/alert/alert';
@@ -30,7 +31,7 @@ const FIELD_SECTION_LABELS: Record<HandoverQueryFieldSection, string> = {
 @Component({
   selector: 'app-handover-queries',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, TextareaComponent, EmptyStateComponent, AlertComponent],
+  imports: [CommonModule, FormsModule, ButtonComponent, StatusBadgeComponent, TextareaComponent, EmptyStateComponent, AlertComponent],
   templateUrl: './handover-queries.component.html',
   styleUrl: './handover-queries.component.scss',
 })
@@ -53,6 +54,9 @@ export class HandoverQueriesComponent {
 
   isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
   isProjectManagement = computed(() => this.authService.hasRole('Project Management'));
+
+  openQueries = computed(() => this.queries().filter((q) => !q.isResolved));
+  resolvedQueries = computed(() => this.queries().filter((q) => q.isResolved));
 
   constructor() {
     effect(() => {
