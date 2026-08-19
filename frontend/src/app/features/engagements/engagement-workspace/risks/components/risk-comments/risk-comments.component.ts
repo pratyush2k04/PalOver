@@ -116,8 +116,46 @@ export class RiskCommentsComponent implements OnInit {
   }
 
   onInputTextChange(val: string): void {
-    this.newCommentText.set(val);
-    this.checkMentionTrigger(val);
+    const oldText = this.newCommentText();
+    let updatedVal = val;
+
+    if (val.length < oldText.length) {
+      updatedVal = this.handleMentionDeletion(oldText, val);
+    }
+
+    this.newCommentText.set(updatedVal);
+    this.checkMentionTrigger(updatedVal);
+  }
+
+  private handleMentionDeletion(oldText: string, newText: string): string {
+    if (newText.length >= oldText.length) {
+      return newText;
+    }
+
+    let resultText = newText;
+    const currentMembers = this.members();
+
+    for (const member of currentMembers) {
+      const fullMentionWithSpace = `@${member.fullName} `;
+      const fullMentionWithoutSpace = `@${member.fullName}`;
+
+      if (oldText.includes(fullMentionWithSpace) && !newText.includes(fullMentionWithSpace)) {
+        const mentionIndex = oldText.indexOf(fullMentionWithSpace);
+        resultText = oldText.substring(0, mentionIndex) + oldText.substring(mentionIndex + fullMentionWithSpace.length);
+        this.selectedMentionIds.update((ids) => ids.filter((id) => id !== member.id));
+        break;
+      } else if (oldText.includes(fullMentionWithoutSpace) && !newText.includes(fullMentionWithoutSpace)) {
+        const mentionIndex = oldText.indexOf(fullMentionWithoutSpace);
+        const hasTrailingSpace =
+          oldText.substring(mentionIndex + fullMentionWithoutSpace.length, mentionIndex + fullMentionWithSpace.length) === ' ';
+        const removeLength = hasTrailingSpace ? fullMentionWithSpace.length : fullMentionWithoutSpace.length;
+        resultText = oldText.substring(0, mentionIndex) + oldText.substring(mentionIndex + removeLength);
+        this.selectedMentionIds.update((ids) => ids.filter((id) => id !== member.id));
+        break;
+      }
+    }
+
+    return resultText;
   }
 
   private checkMentionTrigger(text: string): void {
