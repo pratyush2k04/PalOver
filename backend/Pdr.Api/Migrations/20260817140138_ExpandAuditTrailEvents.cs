@@ -37,6 +37,23 @@ namespace Pdr.Api.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql(
+                """
+                DO $$
+                DECLARE
+                    referenced_ids TEXT;
+                BEGIN
+                    SELECT string_agg(DISTINCT "AuditActionId"::TEXT, ', ' ORDER BY "AuditActionId"::TEXT)
+                    INTO referenced_ids
+                    FROM audit_logs
+                    WHERE "AuditActionId" IN (5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18);
+
+                    IF referenced_ids IS NOT NULL THEN
+                        RAISE EXCEPTION 'Cannot revert migration ExpandAuditTrailEvents: audit_actions Id(s) % are still referenced by existing audit_logs rows. Remove or reassign those audit_logs entries before rolling back this migration.', referenced_ids;
+                    END IF;
+                END $$;
+                """);
+
             migrationBuilder.DeleteData(
                 table: "audit_actions",
                 keyColumn: "Id",
