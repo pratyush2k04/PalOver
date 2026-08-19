@@ -23,34 +23,6 @@
   }
 }
 
-.warning-banner {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  background-color: #fff1f2;
-  border: 1px solid #fecdd3;
-  border-radius: $radius-lg;
-  padding: 0.875rem 1.25rem;
-  color: #9f1239;
-  font-size: 0.875rem;
-
-  .banner-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #e11d48;
-    flex-shrink: 0;
-  }
-
-  .banner-text {
-    line-height: 1.4;
-
-    strong {
-      font-weight: 700;
-    }
-  }
-}
-
 .requests-list {
   display: flex;
   flex-direction: column;
@@ -90,17 +62,6 @@
       color: $color-text;
     }
 
-    .urgent-badge {
-      display: inline-flex;
-      align-items: center;
-      background-color: #fee2e2;
-      color: #dc2626;
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 0.15rem 0.5rem;
-      border-radius: 0.25rem;
-    }
-
     .need-details {
       font-size: 0.875rem;
       color: $color-text-faint;
@@ -110,30 +71,6 @@
   .status-wrapper {
     display: flex;
     align-items: center;
-
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      font-size: 0.75rem;
-      font-weight: 500;
-      padding: 0.25rem 0.625rem;
-      border-radius: $radius-full;
-
-      &.status-raised {
-        background-color: #f1f5f9;
-        color: #475569;
-      }
-
-      &.status-allocated {
-        background-color: #e0f2fe;
-        color: #0369a1;
-      }
-
-      &.status-confirmed {
-        background-color: #f0fdf4;
-        color: #15803d;
-      }
-    }
   }
 
   .skills-row {
@@ -152,6 +89,62 @@
       padding: 0.25rem 0.625rem;
       border-radius: 0.375rem;
     }
+  }
+
+  .allocations-table {
+    margin-top: 0.875rem;
+    padding-top: 0.875rem;
+    border-top: 1px solid $color-border-soft;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .allocations-table--readonly .allocations-row {
+    grid-template-columns: 1fr 9rem 9rem;
+  }
+
+  .allocations-row {
+    display: grid;
+    grid-template-columns: 1fr 9rem 9rem 9rem;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid $color-border-soft;
+    }
+
+    &--header {
+      border-bottom: none;
+      padding-top: 0;
+      padding-bottom: 0.375rem;
+
+      span {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: $color-text-faint;
+      }
+    }
+
+    span {
+      font-size: 0.875rem;
+      color: $color-text;
+    }
+
+    .allocation-pending {
+      color: $color-text-faint;
+    }
+
+    .allocation-actions {
+      display: flex;
+      justify-content: flex-start;
+    }
+  }
+
+  .card-footer {
+    margin-top: 0.875rem;
   }
 }
 

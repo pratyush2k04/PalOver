@@ -72,6 +72,177 @@ public class ResourceRequestService(
         return requests.Select(MapToDto).ToList();
     }
 
+    public async Task<ResourceRequestDto> AllocateResourcesAsync(int engagementId, int id, AllocateResourcesDto dto)
+    {
+        var request = await GetOwnedRequestAsync(engagementId, id);
+
+        await EnsureLeadershipOrAdminAsync(engagementId);
+
+        if (request.Status == ResourceRequestStatus.Confirmed)
+        {
+            throw new ResourceRequestInvalidStateTransitionException(
+                "Cannot allocate resources for a request that is already Confirmed.");
+        }
+
+        if (dto.Names.Count != request.PeopleNeeded)
+        {
+            throw new ResourceAllocationCountMismatchException();
+        }
+
+        var activeAllocations = request.Allocations
+            .Where(a => a.RemovedAt == null)
+            .OrderBy(a => a.Id)
+            .ToList();
+
+        for (var position = 0; position < dto.Names.Count; position++)
+        {
+            var name = dto.Names[position].Trim();
+
+            if (position < activeAllocations.Count)
+            {
+                var existing = activeAllocations[position];
+                if (existing.ConfirmedDate == null)
+                {
+                    existing.Name = name;
+                }
+                // Confirmed positions are server-authoritative: the submitted name is ignored.
+            }
+            else
+            {
+                request.Allocations.Add(new ResourceAllocation { Name = name });
+            }
+        }
+
+        if (request.Status == ResourceRequestStatus.Raised)
+        {
+            request.Status = ResourceRequestStatus.Allocated;
+            await NotifyPmOfAllocationAsync(request);
+        }
+
+        await resourceRequestRepository.SaveChangesAsync();
+        return MapToDto(request);
+    }
+
+    public async Task<ResourceRequestDto> ConfirmAllocationAsync(int engagementId, int id, int allocationId, ConfirmAllocationDto dto)
+    {
+        var request = await GetOwnedRequestAsync(engagementId, id);
+
+        await EnsureLeadershipOrAdminAsync(engagementId);
+
+        var allocation = request.Allocations.FirstOrDefault(a => a.Id == allocationId && a.RemovedAt == null)
+            ?? throw new ResourceAllocationNotFoundException(allocationId);
+
+        if (allocation.ConfirmedDate != null)
+        {
+            throw new ResourceAllocationAlreadyConfirmedException();
+        }
+
+        allocation.ConfirmedDate = dto.ConfirmedDate;
+
+        var activeAllocations = request.Allocations.Where(a => a.RemovedAt == null).ToList();
+        var allConfirmed = activeAllocations.Count == request.PeopleNeeded
+            && activeAllocations.All(a => a.ConfirmedDate != null);
+
+        if (allConfirmed)
+        {
+            request.Status = ResourceRequestStatus.Confirmed;
+            await NotifyPmOfConfirmationAsync(request);
+        }
+
+        await resourceRequestRepository.SaveChangesAsync();
+        return MapToDto(request);
+    }
+
+    public async Task<ResourceRequestDto> RemoveAllocationAsync(int engagementId, int id, int allocationId, RemoveAllocationDto dto)
+    {
+        var request = await GetOwnedRequestAsync(engagementId, id);
+
+        await EnsureLeadershipOrAdminAsync(engagementId);
+
+        var allocation = request.Allocations.FirstOrDefault(a => a.Id == allocationId && a.RemovedAt == null)
+            ?? throw new ResourceAllocationNotFoundException(allocationId);
+
+        if (allocation.ConfirmedDate == null)
+        {
+            throw new ResourceAllocationNotConfirmedException();
+        }
+
+        allocation.RemovedAt = DateTime.UtcNow;
+        allocation.RemovalReason = dto.Reason.Trim();
+
+        if (request.Status == ResourceRequestStatus.Confirmed)
+        {
+            request.Status = ResourceRequestStatus.Allocated;
+            await NotifyPmOfReopeningAsync(request);
+        }
+
+        await resourceRequestRepository.SaveChangesAsync();
+        return MapToDto(request);
+    }
+
+    private async Task<ResourceRequest> GetOwnedRequestAsync(int engagementId, int id)
+    {
+        var request = await resourceRequestRepository.GetByIdAsync(id)
+            ?? throw new ResourceRequestNotFoundException(id);
+
+        if (request.EngagementId != engagementId)
+        {
+            throw new ResourceRequestNotFoundException(id);
+        }
+
+        return request;
+    }
+
+    private async Task EnsureLeadershipOrAdminAsync(int engagementId)
+    {
+        if (currentUserService.IsAdmin())
+        {
+            return;
+        }
+
+        var assignment = await resourceRequestRepository.GetUserEngagementAssignmentAsync(engagementId, currentUserService.GetUserId());
+        if (assignment == null || assignment.User.RoleId != (int)RoleEnum.Leadership)
+        {
+            throw new ResourceAllocationAccessDeniedException();
+        }
+    }
+
+    private async Task NotifyPmOfAllocationAsync(ResourceRequest request)
+    {
+        var data = JsonSerializer.Serialize(
+            new ResourceRequestAllocatedMapper.ResourceRequestAllocatedData(request.Id, request.EngagementId));
+
+        await notificationService.CreateFromTemplateAsync(
+            "ResourceRequestAllocated",
+            request.RequestedById,
+            data,
+            DateTime.UtcNow);
+    }
+
+    private async Task NotifyPmOfConfirmationAsync(ResourceRequest request)
+    {
+        var data = JsonSerializer.Serialize(
+            new ResourceRequestConfirmedMapper.ResourceRequestConfirmedData(request.Id, request.EngagementId));
+
+        await notificationService.CreateFromTemplateAsync(
+            "ResourceRequestConfirmed",
+            request.RequestedById,
+            data,
+            DateTime.UtcNow);
+    }
+
+    private async Task NotifyPmOfReopeningAsync(ResourceRequest request)
+    {
+        var data = JsonSerializer.Serialize(
+            new ResourceRequestReopenedMapper.ResourceRequestReopenedData(request.Id, request.EngagementId));
+
+        await notificationService.CreateFromTemplateAsync(
+            "ResourceRequestReopened",
+            request.RequestedById,
+            data,
+            DateTime.UtcNow);
+    }
+
     private async Task NotifyLeadershipAsync(int engagementId, int resourceRequestId)
     {
         var leadershipAssignments = await resourceRequestRepository.GetLeadershipAssignmentsAsync(engagementId);
@@ -125,6 +296,19 @@ public class ResourceRequestService(
             .Select(rs => ResourceRequestConstants.SkillDisplayNames.TryGetValue(rs.Skill, out var skName) ? skName : rs.Skill.ToString())
             .ToList();
 
+        var allocations = entity.Allocations
+            .Where(a => a.RemovedAt == null)
+            .OrderBy(a => a.Id)
+            .Select(a => new ResourceAllocationDto
+            {
+                Id = a.Id,
+                Name = a.Name,
+                AllocatedDate = DateOnly.FromDateTime(a.CreatedAt),
+                IsConfirmed = a.ConfirmedDate != null,
+                ConfirmedDate = a.ConfirmedDate
+            })
+            .ToList();
+
         return new ResourceRequestDto
         {
             Id = entity.Id,
@@ -136,7 +320,8 @@ public class ResourceRequestService(
             JobDescription = entity.JobDescription,
             Status = statusName,
             RequestedById = entity.RequestedById,
-            IsUrgent = CalculateIsUrgent(entity.RequiredByDate)
+            IsUrgent = CalculateIsUrgent(entity.RequiredByDate),
+            Allocations = allocations
         };
     }
 }

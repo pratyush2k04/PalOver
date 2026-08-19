@@ -14,4 +14,5 @@ public class ResourceRequestDto
     public string Status { get; set; } = string.Empty;
     public int RequestedById { get; set; }
     public bool IsUrgent { get; set; }
+    public List<ResourceAllocationDto> Allocations { get; set; } = [];
 }

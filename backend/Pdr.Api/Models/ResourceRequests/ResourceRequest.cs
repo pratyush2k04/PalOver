@@ -22,4 +22,6 @@ public class ResourceRequest : BaseAuditableEntity
 
     // Navigation properties
     public ICollection<ResourceRequestSkill> RequestSkills { get; set; } = new List<ResourceRequestSkill>();
+
+    public ICollection<ResourceAllocation> Allocations { get; set; } = new List<ResourceAllocation>();
 }
