@@ -159,7 +159,6 @@ export class HandoverQueriesComponent {
     dialogRef.afterClosed().subscribe((created) => {
       if (created) {
         this.queries.update((qs) => [...qs, created]);
-        this.showMessage('Query raised.', false);
       }
     });
   }
