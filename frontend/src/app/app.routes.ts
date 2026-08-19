@@ -141,6 +141,13 @@ export const routes: Routes = [
           ),
       },
 
+      // Profile (self-service)
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/profile/profile').then(m => m.ProfileComponent),
+      },
+
       // Portfolio (Leadership)
       {
         path: 'portfolio',

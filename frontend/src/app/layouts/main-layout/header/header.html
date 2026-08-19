@@ -28,6 +28,10 @@
               <span class="user-dropdown-role">{{ currentUser.role }}</span>
             </div>
             <div class="user-dropdown-divider"></div>
+            <button type="button" class="user-dropdown-item" (click)="onProfileClick()">
+              <span class="dropdown-icon" [inlineSVG]="'assets/icons/user.svg'"></span>
+              <span>Profile</span>
+            </button>
             <button type="button" class="user-dropdown-item sign-out-btn" (click)="onSignOut()">
               <span class="dropdown-icon" [inlineSVG]="'assets/icons/log-out.svg'"></span>
               <span>Sign Out</span>

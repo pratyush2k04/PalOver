@@ -1,0 +1,80 @@
+<div class="profile-page">
+  <div class="page-header">
+    <h2>My Profile</h2>
+  </div>
+
+  <div class="profile-cards">
+    <div class="profile-card">
+      <form [formGroup]="profileForm" (ngSubmit)="onSaveProfile()" novalidate>
+        @if (profileErrorMessage()) {
+          <app-alert>{{ profileErrorMessage() }}</app-alert>
+        }
+
+        <app-input
+          id="fullName"
+          label="Full name"
+          formControlName="fullName"
+          [errorMessages]="{ required: 'Full name is required.' }"
+        />
+
+        <app-input
+          id="email"
+          type="email"
+          label="Work email"
+          formControlName="email"
+          [errorMessages]="{ required: 'Enter a valid work email address.', email: 'Enter a valid work email address.' }"
+        />
+
+        <div class="app-field">
+          <label>Role</label>
+          <input type="text" [value]="role()" disabled />
+        </div>
+
+        <p class="field-note">Only an Admin can change your role.</p>
+
+        <app-button type="submit" variant="accent" [loading]="isSavingProfile()" [disabled]="isLoadingProfile()">
+          Save changes
+        </app-button>
+      </form>
+    </div>
+
+    <div class="profile-card">
+      <h3 class="card-title">Change Password</h3>
+
+      <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" novalidate>
+        @if (passwordErrorMessage()) {
+          <app-alert>{{ passwordErrorMessage() }}</app-alert>
+        }
+
+        <app-input
+          id="currentPassword"
+          type="password"
+          label="Current password"
+          formControlName="currentPassword"
+          [errorMessages]="{ required: 'Current password is required.' }"
+          [extraError]="currentPasswordError()"
+        />
+
+        <app-input
+          id="newPassword"
+          type="password"
+          label="New password"
+          formControlName="newPassword"
+          [errorMessages]="{ required: 'New password is required.' }"
+        />
+
+        <div class="strength-chips">
+          <span class="chip" [class.met]="hasMinLength()">10+ chars</span>
+          <span class="chip" [class.met]="hasUpper()">Upper</span>
+          <span class="chip" [class.met]="hasLower()">Lower</span>
+          <span class="chip" [class.met]="hasNumberChar()">Number</span>
+          <span class="chip" [class.met]="hasSymbolChar()">Symbol</span>
+        </div>
+
+        <app-button type="submit" variant="accent" [loading]="isChangingPassword()">
+          Change password
+        </app-button>
+      </form>
+    </div>
+  </div>
+</div>
