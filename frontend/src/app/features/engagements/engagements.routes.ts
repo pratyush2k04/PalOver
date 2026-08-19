@@ -76,6 +76,13 @@ export const ENGAGEMENTS_ROUTES: Routes = [
           ),
       },
       {
+        path: 'audits',
+        loadComponent: () =>
+          import(
+            './engagement-workspace/audits/engagement-audits/engagement-audits.component'
+          ).then((m) => m.EngagementAuditsComponent),
+      },
+      {
         path: '',
         redirectTo: 'overview',
         pathMatch: 'full',
