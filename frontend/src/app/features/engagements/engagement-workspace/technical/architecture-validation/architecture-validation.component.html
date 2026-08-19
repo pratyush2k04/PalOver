@@ -20,54 +20,73 @@
       </div>
 
       <div class="status-selector-row">
-        <div class="status-options">
-          <label
-            class="status-option-label"
-            [class.selected]="!isModified()"
-            [class.disabled]="!isTechLead()"
-            (click)="onStatusSelect(ArchitectureStatus.StillValid)">
-            <input
-              type="radio"
-              name="archStatus"
-              [value]="ArchitectureStatus.StillValid"
-              [checked]="!isModified()"
-              [disabled]="!isTechLead()"
-            />
-            <span class="radio-custom"></span>
-            <div class="option-text">
-              <strong>Still Valid</strong>
-              <span>Pre-sales architecture remains accurate</span>
-            </div>
-          </label>
+        @if (isTechLead()) {
+          <div class="status-options">
+            <label
+              class="status-option-label"
+              [class.selected]="!isModified()"
+              (click)="onStatusSelect(ArchitectureStatus.StillValid)">
+              <input
+                type="radio"
+                name="archStatus"
+                [value]="ArchitectureStatus.StillValid"
+                [checked]="!isModified()"
+              />
+              <span class="radio-custom"></span>
+              <div class="option-text">
+                <strong>Still Valid</strong>
+                <span>Pre-sales architecture remains accurate</span>
+              </div>
+            </label>
 
-          <label
-            class="status-option-label"
-            [class.selected]="isModified()"
-            [class.disabled]="!isTechLead()"
-            (click)="onStatusSelect(ArchitectureStatus.Modified)">
-            <input
-              type="radio"
-              name="archStatus"
-              [value]="ArchitectureStatus.Modified"
-              [checked]="isModified()"
-              [disabled]="!isTechLead()"
-            />
-            <span class="radio-custom"></span>
-            <div class="option-text">
-              <strong>Modified</strong>
-              <span>Architecture updated during discovery</span>
-            </div>
-          </label>
-        </div>
+            <label
+              class="status-option-label"
+              [class.selected]="isModified()"
+              (click)="onStatusSelect(ArchitectureStatus.Modified)">
+              <input
+                type="radio"
+                name="archStatus"
+                [value]="ArchitectureStatus.Modified"
+                [checked]="isModified()"
+              />
+              <span class="radio-custom"></span>
+              <div class="option-text">
+                <strong>Modified</strong>
+                <span>Architecture updated during discovery</span>
+              </div>
+            </label>
+          </div>
 
-        @if (isTechLead() && hasStatusChanged()) {
-          <div class="save-status-action">
-            <app-button
-              type="button"
-              variant="flat"
-              (click)="onSaveStatus()">
-              Save Status
-            </app-button>
+          @if (hasStatusChanged()) {
+            <div class="save-status-action">
+              <app-button
+                type="button"
+                variant="flat"
+                (click)="onSaveStatus()">
+                Save Status
+              </app-button>
+            </div>
+          }
+        } @else {
+          <!-- Read-only view for PM & Leadership: Displays only the selected status -->
+          <div class="status-readonly-display">
+            @if (!isModified()) {
+              <div class="status-readonly-card valid">
+                <div class="status-readonly-header">
+                  <span class="status-dot valid"></span>
+                  <strong>Still Valid</strong>
+                </div>
+                <span class="status-readonly-desc">Pre-sales architecture remains accurate</span>
+              </div>
+            } @else {
+              <div class="status-readonly-card modified">
+                <div class="status-readonly-header">
+                  <span class="status-dot modified"></span>
+                  <strong>Modified</strong>
+                </div>
+                <span class="status-readonly-desc">Architecture updated during discovery</span>
+              </div>
+            }
           </div>
         }
       </div>
@@ -136,15 +155,15 @@
       }
     </div>
 
-    <!-- SECTION 3: Discovery Feature Breakdown Table -->
-    <div class="section-container table-section">
-      <div class="section-header">
-        <div class="section-header-row">
-          <div class="section-title-text">
-            <h4>Discovery Feature Breakdown</h4>
-            <p class="section-desc">Individual feature scope breakdown sized into sprint deliverables.</p>
-          </div>
-          @if (isTechLead()) {
+    <!-- SECTION 3: Discovery Feature Breakdown Table (Tech Lead Only) -->
+    @if (isTechLead()) {
+      <div class="section-container table-section">
+        <div class="section-header">
+          <div class="section-header-row">
+            <div class="section-title-text">
+              <h4>Discovery Feature Breakdown</h4>
+              <p class="section-desc">Individual feature scope breakdown sized into sprint deliverables.</p>
+            </div>
             <app-button
               type="button"
               variant="flat"
@@ -152,41 +171,37 @@
               <span class="btn-icon" [inlineSVG]="'assets/icons/plus.svg'"></span>
               <span>Add Feature</span>
             </app-button>
-          }
+          </div>
         </div>
-      </div>
 
-      @if (features().length === 0) {
-        <div class="empty-state">
-          <p>No discovery feature items added yet.</p>
-          <p>Click the "Add Feature" button to get started.</p>
-        </div>
-      } @else {
-        <div class="table-responsive">
-          <table class="features-table">
-            <thead>
-              <tr>
-                <th>FEATURE NAME</th>
-                <th>ESTIMATE (WEEKS)</th>
-                <th>TARGET SPRINT</th>
-                @if (isTechLead()) {
-                  <th class="actions-col">ACTIONS</th>
-                }
-              </tr>
-            </thead>
-            <tbody>
-              @for (item of features(); track item.id) {
+        @if (features().length === 0) {
+          <div class="empty-state">
+            <p>No discovery feature items added yet.</p>
+            <p>Click the "Add Feature" button to get started.</p>
+          </div>
+        } @else {
+          <div class="table-responsive">
+            <table class="features-table">
+              <thead>
                 <tr>
-                  <td class="feature-name-cell">
-                    <strong>{{ item.featureName }}</strong>
-                  </td>
-                  <td class="estimate-cell">
-                    <span class="weeks-badge">{{ item.estimateWeeks }} wks</span>
-                  </td>
-                  <td class="sprint-cell">
-                    <span class="sprint-tag">{{ item.targetSprint }}</span>
-                  </td>
-                  @if (isTechLead()) {
+                  <th>FEATURE NAME</th>
+                  <th>ESTIMATE (WEEKS)</th>
+                  <th>TARGET SPRINT</th>
+                  <th class="actions-col">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of features(); track item.id) {
+                  <tr>
+                    <td class="feature-name-cell">
+                      <strong>{{ item.featureName }}</strong>
+                    </td>
+                    <td class="estimate-cell">
+                      <span class="weeks-badge">{{ item.estimateWeeks }} wks</span>
+                    </td>
+                    <td class="sprint-cell">
+                      <span class="sprint-tag">{{ item.targetSprint }}</span>
+                    </td>
                     <td class="actions-col">
                       <div class="action-btn-group">
                         <app-button
@@ -209,14 +224,14 @@
                         </app-button>
                       </div>
                     </td>
-                  }
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      }
-    </div>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    }
   }
 </div>
 

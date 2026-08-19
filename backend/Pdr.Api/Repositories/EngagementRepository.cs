@@ -39,7 +39,9 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
             .ToListAsync();
 
     public async Task<Engagement?> GetByIdAsync(int engagementId) =>
-        await context.Engagements.FirstOrDefaultAsync(e => e.EngagementId == engagementId);
+        await context.Engagements
+            .Include(e => e.EngagementType)
+            .FirstOrDefaultAsync(e => e.EngagementId == engagementId);
 
     public async Task SaveChangesAsync() =>
         await context.SaveChangesAsync();

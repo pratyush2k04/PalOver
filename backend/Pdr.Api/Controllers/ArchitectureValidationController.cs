@@ -27,7 +27,7 @@ public class ArchitectureValidationController(
     /// <param name="engagementId">The engagement ID.</param>
     /// <returns>The architecture validation details with sizing calculations and risk evaluation.</returns>
     [HttpGet]
-    [AuthorizeRoles(RoleEnum.TechLead, RoleEnum.ProjectManagement, RoleEnum.Leadership)]
+    [AuthorizeRoles(RoleEnum.TechLead, RoleEnum.ProjectManagement, RoleEnum.Leadership, RoleEnum.PreSales)]
     [EndpointSummary("Get architecture validation & discovery breakdown")]
     [ProducesResponseType(typeof(ArchitectureValidationDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

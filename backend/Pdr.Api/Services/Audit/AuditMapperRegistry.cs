@@ -12,6 +12,20 @@ public static class AuditMapperRegistry
         services.AddScoped<IAuditTemplateMapper, UserCreatedMapper>();
         services.AddScoped<IAuditTemplateMapper, UserUpdatedMapper>();
         services.AddScoped<IAuditTemplateMapper, UserDeletedMapper>();
+        services.AddScoped<IAuditTemplateMapper, UnauthorizedAccessMapper>();
+        services.AddScoped<IAuditTemplateMapper, AccountLockoutMapper>();
+        services.AddScoped<IAuditTemplateMapper, DocumentVersionedMapper>();
+        services.AddScoped<IAuditTemplateMapper, DocumentUploadedMapper>();
+        services.AddScoped<IAuditTemplateMapper, ClientContactDetailsChangedMapper>();
+        services.AddScoped<IAuditTemplateMapper, ClientPersonaChangedMapper>();
+        services.AddScoped<IAuditTemplateMapper, LeadershipAllocatedMapper>();
+        services.AddScoped<IAuditTemplateMapper, UserRoleAllocatedMapper>();
+        services.AddScoped<IAuditTemplateMapper, PmAndTlAssignedMapper>();
+        services.AddScoped<IAuditTemplateMapper, PmAndTlReassignedMapper>();
+        services.AddScoped<IAuditTemplateMapper, MasterChecklistPublishedMapper>();
+        services.AddScoped<IAuditTemplateMapper, DayOneSummaryGeneratedMapper>();
+        services.AddScoped<IAuditTemplateMapper, BrownfieldItemAddedMapper>();
+        services.AddScoped<IAuditTemplateMapper, DiscoveryItemAddedMapper>();
 
         // Add new mappers here when adding new audit action types.
 

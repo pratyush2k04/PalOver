@@ -171,6 +171,70 @@
     }
   }
 
+  .status-readonly-display {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .status-readonly-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    border: 1.5px solid #e5e7eb;
+    background-color: #ffffff;
+    min-width: 240px;
+
+    &.valid {
+      border-color: #bbf7d0;
+      background-color: #f0fdf4;
+      strong {
+        color: #166534;
+      }
+    }
+
+    &.modified {
+      border-color: #bfdbfe;
+      background-color: #eff6ff;
+      strong {
+        color: #1e40af;
+      }
+    }
+
+    .status-readonly-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      strong {
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+
+      &.valid {
+        background-color: #16a34a;
+      }
+
+      &.modified {
+        background-color: #2563eb;
+      }
+    }
+
+    .status-readonly-desc {
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+  }
+
   .rationale-container {
     margin-top: 0.75rem;
   }

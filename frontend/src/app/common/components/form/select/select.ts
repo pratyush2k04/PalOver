@@ -16,6 +16,7 @@ export class SelectComponent extends BaseControlComponent<unknown> {
   readonly id = input.required<string>();
   readonly label = input<string | null>(null);
   readonly options = input.required<SelectOption[]>();
+  readonly placeholder = input<string | null>(null);
 
   value: unknown = null;
   selectedIndex: number | null = null;

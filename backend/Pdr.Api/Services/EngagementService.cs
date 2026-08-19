@@ -6,7 +6,9 @@ using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
 using Pdr.Api.Models.Engagements;
 using Pdr.Api.Models.LoginEntity;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.EngagementAssignment;
+using Pdr.Api.Models.People;
 using Pdr.Api.Models.Risks;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
@@ -20,7 +22,9 @@ public class EngagementService(
     ICurrentUserService currentUserService,
     IEngagementChecklistService engagementChecklistService,
     INotificationService notificationService,
-    IKickoffReadinessService kickoffReadinessService) : IEngagementService
+    IKickoffReadinessService kickoffReadinessService,
+    IPersonRepository personRepository,
+    IAuditLogService auditLogService) : IEngagementService
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
 
@@ -96,6 +100,23 @@ public class EngagementService(
                         UserId = currentUserId
                     });
                     await db.SaveChangesAsync();
+
+                    var creator = await db.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == currentUserId);
+                    if (creator is not null && creator.RoleId == (int)RoleEnum.PreSales)
+                    {
+                        await personRepository.AddAsync(new Person
+                        {
+                            EngagementId = engagement.EngagementId,
+                            Name = creator.FullName,
+                            Role = RoleEnum.PreSales.ToRoleName(),
+                            PersonType = PersonType.Internal,
+                            UserId = creator.Id,
+                            SourceRoleId = (int)RoleEnum.PreSales,
+                            CreatedAt = DateTime.UtcNow,
+                            UpdatedAt = DateTime.UtcNow
+                        });
+                        await personRepository.SaveChangesAsync();
+                    }
                 }
             }
         }
@@ -256,6 +277,7 @@ public class EngagementService(
             throw new InvalidOwnerRoleException(userId, requiredRole.ToRoleName());
 
         var existingAssignment = await engagementRepository.GetAssignmentByRoleIdAsync(engagementId, (int)requiredRole);
+        var isReassignment = existingAssignment is not null;
         if (existingAssignment is not null)
         {
             if (existingAssignment.UserId == userId) return await GetEngagementOwnersAsync(engagementId);
@@ -263,6 +285,17 @@ public class EngagementService(
         }
 
         await engagementRepository.AddAssignmentAsync(engagementId, userId);
+        await SyncOwnerPersonAsync(engagementId, user, requiredRole);
+
+        var actorUserId = currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            isReassignment ? AuditActionEnum.PmAndTlReassigned : AuditActionEnum.PmAndTlAssigned,
+            new Dictionary<string, object?>
+            {
+                ["EngagementId"] = engagementId,
+                ["ActorUserId"] = actorUserId
+            },
+            actingUserId: actorUserId > 0 ? actorUserId : null);
 
         if (requiredRole == RoleEnum.ProjectManagement)
         {
@@ -303,6 +336,32 @@ public class EngagementService(
         }
 
         return await GetEngagementOwnersAsync(engagementId);
+    }
+
+    // Keeps the People Directory in sync with PM/TechLead assignments. The previous
+    // holder of the role (found by SourceRoleId, since they're a different UserId) is
+    // replaced by the newly assigned user.
+    private async Task SyncOwnerPersonAsync(int engagementId, User user, RoleEnum role)
+    {
+        var previousPerson = await personRepository.GetBySourceRoleAsync(engagementId, (int)role);
+        if (previousPerson is not null)
+        {
+            personRepository.Delete(previousPerson);
+        }
+
+        await personRepository.AddAsync(new Person
+        {
+            EngagementId = engagementId,
+            Name = user.FullName,
+            Role = role.ToRoleName(),
+            PersonType = PersonType.Internal,
+            UserId = user.Id,
+            SourceRoleId = (int)role,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+
+        await personRepository.SaveChangesAsync();
     }
 
     private async Task InitializeTechnicalReadinessItemsAsync(int engagementId)
@@ -414,11 +473,34 @@ public class EngagementService(
 
         await engagementRepository.AddAssignmentAsync(engagementId, userId);
 
+        await personRepository.AddAsync(new Person
+        {
+            EngagementId = engagementId,
+            Name = user.FullName,
+            Role = RoleEnum.Leadership.ToRoleName(),
+            PersonType = PersonType.Internal,
+            UserId = user.Id,
+            SourceRoleId = (int)RoleEnum.Leadership,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+        await personRepository.SaveChangesAsync();
         await notificationService.CreateFromTemplateAsync(
             NotificationConstants.TemplateKeys.LeadershipAssigned,
             userId,
             System.Text.Json.JsonSerializer.Serialize(new LeadershipAssignedMapper.LeadershipAssignedPayload(EngagementId: engagementId)),
             DateTime.UtcNow);
+
+
+        var actorUserId = currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            AuditActionEnum.LeadershipAllocated,
+            new Dictionary<string, object?>
+            {
+                ["EngagementId"] = engagementId,
+                ["ActorUserId"] = actorUserId
+            },
+            actingUserId: actorUserId > 0 ? actorUserId : null);
 
         return await GetLeadershipUsersAsync(engagementId);
     }
@@ -450,6 +532,14 @@ public class EngagementService(
             throw new LastLeadershipUserRequiredException();
 
         await engagementRepository.RemoveAssignmentAsync(assignmentToRemove);
+
+        var person = await personRepository.GetByUserAndSourceRoleAsync(engagementId, userId, (int)RoleEnum.Leadership);
+        if (person is not null)
+        {
+            personRepository.Delete(person);
+            await personRepository.SaveChangesAsync();
+        }
+
         return await GetLeadershipUsersAsync(engagementId);
     }
 

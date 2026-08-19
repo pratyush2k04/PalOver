@@ -1,13 +1,13 @@
 import { Component, inject, input, output, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonComponent } from '@common/components/button/button';
-import { AlertComponent } from '@common/components/alert/alert';
 
 import { ClientContactTransitionService } from '../../../services/client-contact-transition.service';
 import { TransitionResponse } from '../../../models/client-contact-transition.model';
 
 import { AuthService } from 'src/app/services/auth';
 import { DialogService } from '@common/services/dialog/dialog.service';
+import { ToastService } from '@common/services/toast/toast';
 import {
   FORM_LABELS,
   BUTTON_LABELS,
@@ -22,7 +22,6 @@ import { AddClientContactTransitionDialogComponent, AddClientContactTransitionDi
   imports: [
     CommonModule,
     ButtonComponent,
-    AlertComponent,
   ],
   templateUrl: './client-contact-transition-card.component.html',
   styleUrl: './client-contact-transition-card.component.scss',
@@ -35,6 +34,7 @@ export class ClientContactTransitionCardComponent {
   private transitionService = inject(ClientContactTransitionService);
   private authService = inject(AuthService);
   private dialog = inject(DialogService);
+  private toastService = inject(ToastService);
 
   formLabels = FORM_LABELS;
   buttonLabels = BUTTON_LABELS;
@@ -43,24 +43,8 @@ export class ClientContactTransitionCardComponent {
 
   transitions = signal<TransitionResponse[]>([]);
   isLoading = signal(false);
-  successMsg = signal('');
 
   isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
-
-  currentIncomingContact = computed(() => {
-    const trans = this.transitions();
-    if (trans.length > 0) {
-      const latest = trans[trans.length - 1];
-      return {
-        name: latest.incomingContactName,
-        role: latest.incomingContactRole,
-      };
-    }
-    return {
-      name: this.clientName(),
-      role: '',
-    };
-  });
 
   constructor() {
     effect(() => {
@@ -86,11 +70,8 @@ export class ClientContactTransitionCardComponent {
   }
 
   openAddTransitionDialog(): void {
-    const current = this.currentIncomingContact();
     const data: AddClientContactTransitionDialogData = {
       engagementId: this.engagementId(),
-      outgoingContactName: current.name,
-      outgoingContactRole: current.role,
     };
 
     const dialogRef = this.dialog.open<AddClientContactTransitionDialogComponent, AddClientContactTransitionDialogData, TransitionResponse>(
@@ -100,7 +81,7 @@ export class ClientContactTransitionCardComponent {
 
     dialogRef.closed$.subscribe((response) => {
       if (!response) return;
-      this.successMsg.set(this.statusMessages.SAVE_SUCCESS);
+      this.toastService.success(this.statusMessages.SAVE_SUCCESS);
       this.loadHistory();
       this.onSaved.emit();
     });
