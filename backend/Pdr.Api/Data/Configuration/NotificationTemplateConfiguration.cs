@@ -74,6 +74,19 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             },
             new NotificationTemplate
             {
+                Id = 4,
+                Key = "ResourceRequestRaised",
+                Title = "Resource Request Raised — {EngagementName}",
+                Body = "{PeopleNeeded} {RoleName} requested for {EngagementName} by {RequiredByDate}.",
+                DefaultPriority = NotificationPriority.High,
+                LinkPattern = "/engagements/{EngagementId}/workspace/resources",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            },
+            new NotificationTemplate
+            {
                 Id = 7,
                 Key = "LeadershipAssigned",
                 Title = "Assigned to Engagement — {EngagementName}",

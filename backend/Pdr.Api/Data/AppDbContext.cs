@@ -85,6 +85,10 @@ public class AppDbContext : DbContext
     public DbSet<Models.Audit.AuditAction> AuditActions => Set<Models.Audit.AuditAction>();
     public DbSet<Models.Audit.AuditLog> AuditLogs => Set<Models.Audit.AuditLog>();
 
+    // Resource Requests
+    public DbSet<Models.ResourceRequests.ResourceRequest> ResourceRequests => Set<Models.ResourceRequests.ResourceRequest>();
+    public DbSet<Models.ResourceRequests.ResourceRequestSkill> ResourceRequestSkills => Set<Models.ResourceRequests.ResourceRequestSkill>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
