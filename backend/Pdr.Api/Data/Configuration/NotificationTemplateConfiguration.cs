@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Pdr.Api.Constants;
 using Pdr.Api.Models.Notifications;
 
 namespace Pdr.Api.Data.Configuration;
@@ -75,7 +76,7 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             new NotificationTemplate
             {
                 Id = 4,
-                Key = "ResourceRequestRaised",
+                Key = NotificationConstants.TemplateKeys.ResourceRequestRaised,
                 Title = "Resource Request Raised — {EngagementName}",
                 Body = "{PeopleNeeded} {RoleName} requested for {EngagementName} by {RequiredByDate}.",
                 DefaultPriority = NotificationPriority.High,
@@ -87,8 +88,21 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             },
             new NotificationTemplate
             {
+                Id = 15,
+                Key = NotificationConstants.RiskCommentMention.TemplateKey,
+                Title = "Mentioned in Risk — {RiskTitle}",
+                Body = "{AuthorName} mentioned you in a comment on risk '{RiskTitle}'",
+                DefaultPriority = NotificationPriority.Medium,
+                LinkPattern = "/engagements/{EngagementId}/workspace/risks",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            },
+            new NotificationTemplate
+            {
                 Id = 7,
-                Key = "LeadershipAssigned",
+                Key = NotificationConstants.TemplateKeys.LeadershipAssigned,
                 Title = "Assigned to Engagement — {EngagementName}",
                 Body = "You have been assigned as Engagement Leader for {EngagementName}.",
                 DefaultPriority = NotificationPriority.Medium,
@@ -101,7 +115,7 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             new NotificationTemplate
             {
                 Id = 8,
-                Key = "PMAssigned",
+                Key = NotificationConstants.TemplateKeys.PMAssigned,
                 Title = "Assigned as Project Manager — {EngagementName}",
                 Body = "You have been assigned as Project Manager for {EngagementName}.",
                 DefaultPriority = NotificationPriority.Medium,
@@ -114,7 +128,7 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             new NotificationTemplate
             {
                 Id = 9,
-                Key = "TechLeadAssigned",
+                Key = NotificationConstants.TemplateKeys.TechLeadAssigned,
                 Title = "Assigned as Technical Lead — {EngagementName}",
                 Body = "You have been assigned as Technical Lead for {EngagementName}.",
                 DefaultPriority = NotificationPriority.Medium,
@@ -127,7 +141,7 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             new NotificationTemplate
             {
                 Id = 10,
-                Key = "DocumentUploaded",
+                Key = NotificationConstants.TemplateKeys.DocumentUploaded,
                 Title = "New Document Uploaded — {DocumentName}",
                 Body = "{UploaderName} uploaded {DocumentName} to {EngagementName}.",
                 DefaultPriority = NotificationPriority.Medium,

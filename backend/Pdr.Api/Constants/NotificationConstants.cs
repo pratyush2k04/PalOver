@@ -7,10 +7,23 @@ public static class NotificationConstants
         public const string AccessItemBlocked = "AccessItemBlocked";
         public const string PMAllocated = "PMAllocated";
         public const string HandoverSubmitted = "HandoverSubmitted";
+        public const string ResourceRequestRaised = "ResourceRequestRaised";
+        public const string RiskCommentMention = "RiskCommentMention";
         public const string LeadershipAssigned = "LeadershipAssigned";
         public const string PMAssigned = "PMAssigned";
         public const string TechLeadAssigned = "TechLeadAssigned";
         public const string DocumentUploaded = "DocumentUploaded";
+    }
+
+    public static class RiskCommentMention
+    {
+        public const string TemplateKey = "RiskCommentMention";
+        public const string ParseErrorMessage = "RiskCommentMention notification data could not be parsed.";
+        public const string RiskTitleKey = "RiskTitle";
+        public const string AuthorNameKey = "AuthorName";
+        public const string CommentSnippetKey = "CommentSnippet";
+        public const string DefaultRiskTitle = "Risk";
+        public const string DefaultAuthorName = "A team member";
     }
 
     public static class Messages

@@ -33,6 +33,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IPersonRepository, PersonRepository>();
         services.AddScoped<IClientContactTransitionRepository, ClientContactTransitionRepository>();
         services.AddScoped<IRiskRepository, RiskRepository>();
+        services.AddScoped<IRiskCommentRepository, RiskCommentRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
         services.AddScoped<IArchitectureValidationRepository, ArchitectureValidationRepository>();
@@ -62,6 +63,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IPersonService, PersonService>();
         services.AddScoped<IClientContactTransitionService, ClientContactTransitionService>();
         services.AddScoped<IRiskService, RiskService>();
+        services.AddScoped<IRiskCommentService, RiskCommentService>();
         services.AddScoped<IKickoffRepository, KickoffRepository>();
         services.AddScoped<IKickoffService, KickoffService>();
         services.AddScoped<INotificationService, NotificationService>();
