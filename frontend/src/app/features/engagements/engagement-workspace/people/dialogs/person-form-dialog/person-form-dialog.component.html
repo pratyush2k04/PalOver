@@ -4,17 +4,14 @@
     <app-button type="button" variant="icon" ariaLabel="Close" (click)="onCancel()">&times;</app-button>
   </div>
 
-  <form (ngSubmit)="onSubmit()">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="dialog-body">
       <div class="form-group">
         <app-input
           id="personName"
           label="Name"
           placeholder="e.g. John Doe"
-          [ngModel]="formName()"
-          (ngModelChange)="formName.set($event)"
-          name="name"
-          required
+          formControlName="name"
         />
       </div>
 
@@ -23,10 +20,7 @@
           id="personRole"
           label="Role"
           placeholder="e.g. Tech Lead / Sponsor"
-          [ngModel]="formRole()"
-          (ngModelChange)="formRole.set($event)"
-          name="role"
-          required
+          formControlName="role"
         />
       </div>
 

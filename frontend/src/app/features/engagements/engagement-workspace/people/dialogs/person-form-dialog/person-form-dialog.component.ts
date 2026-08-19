@@ -1,6 +1,6 @@
-import { Component, computed, inject, signal, ViewChild } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, NgForm } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
@@ -20,30 +20,32 @@ export interface PersonFormDialogResult {
 @Component({
   selector: 'app-person-form-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, InputComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, InputComponent],
   templateUrl: './person-form-dialog.component.html',
   styleUrl: './person-form-dialog.component.scss'
 })
 export class PersonFormDialogComponent {
-  @ViewChild(NgForm) form!: NgForm;
-
   private dialogRef = inject<DialogRef<PersonFormDialogResult>>(DialogRef);
+  private fb = inject(FormBuilder);
   readonly data = inject<PersonFormDialogData>(DIALOG_DATA);
 
-  formName = signal(this.data.person?.name ?? '');
-  formRole = signal(this.data.person?.role ?? '');
-
-  isFormDirty = computed(() => {
-    const person = this.data.person;
-    if (!person) return true;
-    return (
-      this.formName().trim() !== person.name ||
-      this.formRole().trim() !== person.role
-    );
+  form = this.fb.group({
+    name: ['', [Validators.required, Validators.maxLength(200)]],
+    role: ['', [Validators.required, Validators.maxLength(200)]],
   });
 
   get isEditing(): boolean {
     return !!this.data.person;
+  }
+
+  constructor() {
+    if (this.data.person) {
+      this.form.patchValue({
+        name: this.data.person.name,
+        role: this.data.person.role,
+      });
+      this.form.markAsPristine();
+    }
   }
 
   onCancel(): void {
@@ -51,22 +53,19 @@ export class PersonFormDialogComponent {
   }
 
   onSubmit(): void {
-    const name = this.formName().trim();
-    const role = this.formRole().trim();
-
-    if (!name || !role) {
-      this.form.control.markAllAsTouched();
+    if (!this.form.valid) {
+      this.form.markAllAsTouched();
       return;
     }
 
-    if (this.isEditing && !this.isFormDirty()) {
+    if (this.isEditing && !this.form.dirty) {
       this.dialogRef.close();
       return;
     }
 
     this.dialogRef.close({
-      name,
-      role,
+      name: this.form.value.name!.trim(),
+      role: this.form.value.role!.trim(),
       personType: PersonType.Client
     });
   }
