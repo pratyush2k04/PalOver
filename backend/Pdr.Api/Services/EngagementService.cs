@@ -6,6 +6,7 @@ using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
 using Pdr.Api.Models.Engagements;
 using Pdr.Api.Models.LoginEntity;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Models.People;
 using Pdr.Api.Models.Risks;
@@ -22,7 +23,8 @@ public class EngagementService(
     IEngagementChecklistService engagementChecklistService,
     INotificationService notificationService,
     IKickoffReadinessService kickoffReadinessService,
-    IPersonRepository personRepository) : IEngagementService
+    IPersonRepository personRepository,
+    IAuditLogService auditLogService) : IEngagementService
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
 
@@ -259,6 +261,7 @@ public class EngagementService(
             throw new InvalidOwnerRoleException(userId, requiredRole.ToRoleName());
 
         var existingAssignment = await engagementRepository.GetAssignmentByRoleIdAsync(engagementId, (int)requiredRole);
+        var isReassignment = existingAssignment is not null;
         if (existingAssignment is not null)
         {
             if (existingAssignment.UserId == userId) return await GetEngagementOwnersAsync(engagementId);
@@ -267,6 +270,16 @@ public class EngagementService(
 
         await engagementRepository.AddAssignmentAsync(engagementId, userId);
         await SyncOwnerPersonAsync(engagementId, user, requiredRole);
+
+        var actorUserId = currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            isReassignment ? AuditActionEnum.PmAndTlReassigned : AuditActionEnum.PmAndTlAssigned,
+            new Dictionary<string, object?>
+            {
+                ["EngagementId"] = engagementId,
+                ["ActorUserId"] = actorUserId
+            },
+            actingUserId: actorUserId > 0 ? actorUserId : null);
 
         if (requiredRole == RoleEnum.ProjectManagement)
         {
@@ -461,6 +474,17 @@ public class EngagementService(
             userId,
             System.Text.Json.JsonSerializer.Serialize(new LeadershipAssignedMapper.LeadershipAssignedPayload(EngagementId: engagementId)),
             DateTime.UtcNow);
+
+
+        var actorUserId = currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            AuditActionEnum.LeadershipAllocated,
+            new Dictionary<string, object?>
+            {
+                ["EngagementId"] = engagementId,
+                ["ActorUserId"] = actorUserId
+            },
+            actingUserId: actorUserId > 0 ? actorUserId : null);
 
         return await GetLeadershipUsersAsync(engagementId);
     }

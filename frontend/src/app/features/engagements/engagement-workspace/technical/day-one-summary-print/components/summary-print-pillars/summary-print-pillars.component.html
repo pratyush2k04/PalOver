@@ -1,0 +1,116 @@
+@if (summary(); as s) {
+  <section class="section-container">
+    <h3 class="section-title">Technical Readiness Pillars</h3>
+    <div class="pillars-grid">
+      <!-- Pillar 1: Access Readiness -->
+      <div class="pillar-card" [class.ready]="s.isAccessReady" [class.attention]="!s.isAccessReady">
+        <div class="pillar-header">
+          <h4>1. Access Readiness</h4>
+          <app-status-badge [tone]="accessStatusTone()">
+            {{ s.isAccessReady ? 'Ready' : (s.blockedAccessCount > 0 ? 'Blocked' : 'In Progress') }}
+          </app-status-badge>
+        </div>
+        <div class="pillar-metric">
+          <span class="metric-number">{{ s.accessPercentReady }}%</span>
+          <span class="metric-caption">{{ s.grantedAccessCount }} of {{ s.totalAccessCount }} granted</span>
+        </div>
+        <div class="pillar-details">
+          <div class="detail-row">
+            <span>In Progress:</span>
+            <span class="font-medium">{{ s.inProgressAccessCount }}</span>
+          </div>
+          <div class="detail-row">
+            <span>Blocked:</span>
+            <span class="font-medium" [class.text-danger]="s.blockedAccessCount > 0">{{ s.blockedAccessCount }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pillar 2: Environment & Tooling -->
+      <div class="pillar-card" [class.ready]="s.isToolingReady" [class.attention]="!s.isToolingReady">
+        <div class="pillar-header">
+          <h4>2. Environment & Tooling</h4>
+          <app-status-badge [tone]="toolingStatusTone()">
+            {{ s.isToolingReady ? 'Ready' : 'Pending' }}
+          </app-status-badge>
+        </div>
+        <div class="pillar-metric">
+          <span class="metric-number">{{ s.toolingPercentReady }}%</span>
+          <span class="metric-caption">{{ s.readyToolingCount }} of {{ s.applicableToolingCount }} ready</span>
+        </div>
+        <div class="pillar-details">
+          <div class="detail-row">
+            <span>Not Ready:</span>
+            <span class="font-medium" [class.text-danger]="s.notReadyToolingCount > 0">{{ s.notReadyToolingCount }}</span>
+          </div>
+          <div class="detail-row">
+            <span>N/A Excluded:</span>
+            <span class="font-medium">{{ s.notApplicableToolingCount }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pillar 3: Architecture & Scope -->
+      <div class="pillar-card" [class.ready]="s.isArchitectureReady" [class.attention]="!s.isArchitectureReady">
+        <div class="pillar-header">
+          <h4>3. Architecture Validation</h4>
+          <app-status-badge [tone]="architectureStatusTone()">
+            {{ s.isSizingRiskRaised ? 'Risk Raised' : 'Valid' }}
+          </app-status-badge>
+        </div>
+        <div class="pillar-metric">
+          <span class="metric-number" [class.text-danger]="s.isSizingRiskRaised">
+            {{ s.sizingDeltaPercentage > 0 ? '+' : '' }}{{ s.sizingDeltaPercentage }}%
+          </span>
+          <span class="metric-caption">Sizing Variance (Threshold: &lt;20%)</span>
+        </div>
+        <div class="pillar-details">
+          <div class="detail-row">
+            <span>Committed:</span>
+            <span class="font-medium">{{ s.committedTimelineWeeks }} wks</span>
+          </div>
+          <div class="detail-row">
+            <span>Estimated:</span>
+            <span class="font-medium">{{ s.totalEstimatedWeeks }} wks</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pillar 4: Brownfield Review -->
+      <div class="pillar-card" [class.ready]="s.isBrownfieldReady" [class.attention]="!s.isBrownfieldReady">
+        <div class="pillar-header">
+          <h4>4. Brownfield Review</h4>
+          <app-status-badge [tone]="brownfieldStatusTone()">
+            {{ !s.isBrownfieldApplicable ? 'N/A (Greenfield)' : (s.isBrownfieldReady ? 'Accepted' : 'Pending Review') }}
+          </app-status-badge>
+        </div>
+        <div class="pillar-metric">
+          @if (s.isBrownfieldApplicable) {
+            <span class="metric-number">{{ s.highSeverityAcceptedCount }}/{{ s.highSeverityFindingsCount }}</span>
+            <span class="metric-caption">High Severity Accepted</span>
+          } @else {
+            <span class="metric-number text-muted">N/A</span>
+            <span class="metric-caption">Greenfield Engagement</span>
+          }
+        </div>
+        <div class="pillar-details">
+          @if (s.isBrownfieldApplicable) {
+            <div class="detail-row">
+              <span>Total Findings:</span>
+              <span class="font-medium">{{ s.totalBrownfieldFindings }}</span>
+            </div>
+            <div class="detail-row">
+              <span>High Pending:</span>
+              <span class="font-medium" [class.text-danger]="s.highSeverityPendingCount > 0">{{ s.highSeverityPendingCount }}</span>
+            </div>
+          } @else {
+            <div class="detail-row">
+              <span>Legacy Codebase:</span>
+              <span class="font-medium">None</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+}

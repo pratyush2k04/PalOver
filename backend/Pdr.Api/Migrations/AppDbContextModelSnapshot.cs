@@ -361,6 +361,90 @@ namespace Pdr.Api.Migrations
                             Id = 4,
                             Action = "UserDeleted",
                             Details = "User {userName} was deleted by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Action = "DocumentVersioned",
+                            Details = "Document {documentName} was versioned to {version} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Action = "DocumentUploaded",
+                            Details = "Document {documentName} uploaded under category {categoryName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Action = "UnauthorizedAccess",
+                            Details = "Unauthorized access attempt for email {email}"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Action = "AccountLockout",
+                            Details = "Account locked out for user {userName}"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Action = "ClientContactDetailsChanged",
+                            Details = "Contact details changed for client {clientName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Action = "ClientPersonaChanged",
+                            Details = "Client persona changed for {clientName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Action = "LeadershipAllocated",
+                            Details = "Leadership allocated for engagement {engagementName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Action = "UserRoleAllocated",
+                            Details = "Role {roleName} allocated to user {targetUserName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Action = "PmAndTlAssigned",
+                            Details = "PM and TL assigned for engagement {engagementName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Action = "PmAndTlReassigned",
+                            Details = "PM and TL reassigned for engagement {engagementName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Action = "DayOneSummaryGenerated",
+                            Details = "Day-One Summary generated for engagement {engagementName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Action = "MasterChecklistPublished",
+                            Details = "Master checklist version {version} published by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Action = "BrownfieldItemAdded",
+                            Details = "Brownfield finding {findingName} added to engagement {engagementName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Action = "DiscoveryItemAdded",
+                            Details = "Discovery item {itemName} added to engagement {engagementName} by {actorName}"
                         });
                 });
 
