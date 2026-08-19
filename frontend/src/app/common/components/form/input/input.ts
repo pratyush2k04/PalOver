@@ -1,7 +1,7 @@
 import { Component, computed, input } from '@angular/core';
 import { BaseControlComponent } from '../base-control';
 
-export type InputType = 'text' | 'email' | 'password' | 'date';
+export type InputType = 'text' | 'email' | 'password' | 'date' | 'number';
 
 @Component({
   selector: 'app-input',
@@ -16,6 +16,7 @@ export class InputComponent extends BaseControlComponent<string> {
   readonly placeholder = input<string>('');
   readonly maxLength = input<number | null>(null);
   readonly dangerThreshold = input<number>(50);
+  readonly min = input<number | null>(null);
 
   value = '';
 

@@ -35,17 +35,17 @@
       </div>
 
       <div class="form-group">
-        <label for="number-of-people" class="form-label">{{ constants.LABEL_NUMBER_OF_PEOPLE }}</label>
-        <input
+        <app-input
           id="number-of-people"
+          [label]="constants.LABEL_NUMBER_OF_PEOPLE"
           type="number"
-          min="1"
-          class="form-input"
+          [min]="1"
           formControlName="peopleNeeded"
+          [errorMessages]="{
+            required: constants.MSG_PEOPLE_NEEDED_POSITIVE,
+            min: constants.MSG_PEOPLE_NEEDED_POSITIVE
+          }"
         />
-        @if (form.controls.peopleNeeded.invalid && form.controls.peopleNeeded.touched) {
-          <span class="app-field__error">{{ constants.MSG_PEOPLE_NEEDED_POSITIVE }}</span>
-        }
       </div>
 
       <div class="form-group">

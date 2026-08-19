@@ -75,16 +75,18 @@ public class ResourceRequestService(
     private async Task NotifyLeadershipAsync(int engagementId, int resourceRequestId)
     {
         var leadershipAssignments = await resourceRequestRepository.GetLeadershipAssignmentsAsync(engagementId);
+        if (leadershipAssignments.Count == 0)
+        {
+            return;
+        }
+
         var data = JsonSerializer.Serialize(new ResourceRequestRaisedMapper.ResourceRequestRaisedData(resourceRequestId, engagementId));
 
-        foreach (var assignment in leadershipAssignments)
-        {
-            await notificationService.CreateFromTemplateAsync(
-                "ResourceRequestRaised",
-                assignment.UserId,
-                data,
-                DateTime.UtcNow);
-        }
+        await notificationService.CreateFromTemplateAsync(
+            "ResourceRequestRaised",
+            leadershipAssignments.Select(a => a.UserId),
+            data,
+            DateTime.UtcNow);
     }
 
     private static bool CalculateIsUrgent(DateOnly requiredByDate)

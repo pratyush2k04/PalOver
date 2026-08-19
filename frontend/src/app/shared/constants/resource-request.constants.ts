@@ -1,3 +1,5 @@
+import { SelectOption } from '@common/components/form/select/select';
+
 export const RESOURCE_REQUEST_CONSTANTS = {
   // API Endpoint Paths
   API_ENGAGEMENT_RESOURCE_REQUESTS: (engagementId: number) =>
@@ -32,17 +34,7 @@ export const RESOURCE_REQUEST_CONSTANTS = {
   EMPTY_STATE_SUBTITLE: 'Structured resource requests raised for this engagement will appear here.',
 } as const;
 
-export interface RoleOption {
-  value: number;
-  label: string;
-}
-
-export interface SkillOption {
-  value: number;
-  label: string;
-}
-
-export const STANDARD_ROLE_OPTIONS: readonly RoleOption[] = [
+export const STANDARD_ROLE_OPTIONS: readonly SelectOption[] = [
   { value: 1, label: 'Senior Developer' },
   { value: 2, label: 'Developer' },
   { value: 3, label: 'QA Engineer' },
@@ -50,7 +42,7 @@ export const STANDARD_ROLE_OPTIONS: readonly RoleOption[] = [
   { value: 5, label: 'Business Analyst' },
 ] as const;
 
-export const SKILL_OPTIONS: readonly SkillOption[] = [
+export const SKILL_OPTIONS: readonly SelectOption[] = [
   { value: 1, label: 'React / Frontend' },
   { value: 2, label: 'Angular / Frontend' },
   { value: 3, label: 'Node.js / Backend' },
