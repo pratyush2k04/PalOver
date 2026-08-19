@@ -2,18 +2,7 @@
   <!-- Card Header -->
   <div class="card-header">
     <h3>{{ formLabels.CARD_TITLE }}</h3>
-  </div>
-
-  <!-- Success Message -->
-  @if (successMsg()) {
-    <app-alert [variant]="'neutral'" class="alert-container">
-      {{ successMsg() }}
-    </app-alert>
-  }
-
-  <!-- Add Button (Pre-Sales Only) -->
-  @if (isPreSales()) {
-    <div class="presales-actions">
+    @if (isPreSales()) {
       <app-button
         variant="flat"
         (click)="openAddTransitionDialog()"
@@ -21,8 +10,8 @@
       >
         {{ buttonLabels.ADD_TRANSITION }}
       </app-button>
-    </div>
-  }
+    }
+  </div>
 
   <!-- Card Content -->
   <div class="card-content">
@@ -35,7 +24,7 @@
         @if (transitions().length > 0) {
           <!-- History List -->
           <div class="history-list">
-            @for (t of transitions(); track t.id; let last = $last) {
+            @for (t of transitions(); track t.id) {
               <div class="transition-item">
                 <p class="transition-row">
                   <span class="label">{{ dialogLabels.OUTGOING }}</span>
@@ -45,9 +34,6 @@
                   <span class="label">{{ dialogLabels.INCOMING }}</span>
                   <span class="contact-info">{{ t.incomingContactName }} ({{ t.incomingContactRole }})</span>
                 </p>
-                @if (!last) {
-                  <hr class="divider" />
-                }
               </div>
             }
           </div>
