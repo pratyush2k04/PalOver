@@ -1,3 +1,4 @@
+@use '../../../../styles/tokens' as *;
 @use '../../../../styles/mixins' as *;
 
 :host {
@@ -6,22 +7,22 @@
 }
 
 .portfolio-dashboard {
-  padding: $spacing-6 $spacing-8;
-  width: 100%;
-  box-sizing: border-box;
-  @include flex-column($spacing-6);
+  padding: $spacing-8;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: $font-family-base;
+  color: $color-text;
 }
 
 .dashboard-header {
-  @include flex-between;
-  align-items: flex-start;
+  margin-bottom: $spacing-8;
 
   .header-titles {
     h1 {
-      font-size: $font-size-2xl;
+      font-size: 1.75rem;
       font-weight: $font-weight-bold;
       color: $color-text;
-      margin: 0 0 $spacing-1 0;
+      margin: 0 0 $spacing-2 0;
       letter-spacing: -0.02em;
     }
 
@@ -33,45 +34,28 @@
   }
 }
 
-/* KPI Cards Grid using mixins & tokens */
+/* KPI Cards Grid using tokens & mixins */
 .kpi-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: $spacing-4;
-
-  @include respond-to('sm') {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @include respond-to('lg') {
-    grid-template-columns: repeat(4, 1fr);
-  }
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: $spacing-5;
+  margin-bottom: $spacing-8;
 }
 
 .kpi-card {
-  @include card-surface($spacing-5, $radius-lg);
+  background: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-lg;
+  padding: $spacing-5 $spacing-6;
   display: flex;
   align-items: center;
-  gap: $spacing-4;
-  cursor: pointer;
-  transition: transform $transition-base, box-shadow $transition-base, border-color $transition-base;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: $shadow-card;
-    border-color: $color-border-input;
-  }
-
-  &--active {
-    border-color: $color-primary !important;
-    background: $color-surface-hover;
-    box-shadow: 0 0 0 2px $color-primary-focus-ring;
-  }
+  gap: $spacing-5;
+  box-shadow: $shadow-sm;
 
   .kpi-icon {
-    width: 2.75rem;
-    height: 2.75rem;
-    border-radius: $radius-lg;
+    width: 3rem;
+    height: 3rem;
+    border-radius: $radius-md;
     @include flex-center;
     flex-shrink: 0;
 
@@ -79,16 +63,16 @@
     ::ng-deep svg,
     svg {
       display: block;
-      width: 1.375rem;
-      height: 1.375rem;
+      width: 1.5rem;
+      height: 1.5rem;
     }
   }
 
   .kpi-content {
-    @include flex-column($spacing-1);
+    @include flex-column(0);
 
     .kpi-value {
-      font-size: $font-size-2xl;
+      font-size: 1.75rem;
       font-weight: $font-weight-bold;
       color: $color-text;
       line-height: 1.2;
@@ -96,16 +80,15 @@
 
     .kpi-label {
       font-size: $font-size-xs;
-      font-weight: $font-weight-semibold;
+      font-weight: $font-weight-medium;
       color: $color-text-faint;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
+      margin-top: $spacing-1;
     }
   }
 
   &--total .kpi-icon {
-    background: $color-bg;
-    color: $color-text-muted;
+    background: $color-primary-light;
+    color: $color-primary;
   }
 
   &--ready .kpi-icon {
@@ -133,6 +116,7 @@
   padding: $spacing-3 $spacing-5;
   border-radius: $radius-lg;
   border: 1px solid $color-border-soft;
+  margin-bottom: $spacing-6;
 }
 
 .filter-group {
@@ -144,37 +128,6 @@
     font-size: $font-size-sm;
     font-weight: $font-weight-semibold;
     color: $color-text-muted;
-  }
-}
-
-.pill-group {
-  display: flex;
-  gap: $spacing-1;
-  background: $color-bg;
-  padding: $spacing-1;
-  border-radius: $radius-md;
-}
-
-.pill-btn {
-  border: none;
-  background: transparent;
-  color: $color-text-faint;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-medium;
-  padding: $spacing-1 $spacing-3;
-  border-radius: $radius-sm;
-  cursor: pointer;
-  transition: all $transition-fast;
-
-  &:hover {
-    color: $color-text;
-  }
-
-  &--active {
-    background: $color-surface;
-    color: $color-text;
-    font-weight: $font-weight-semibold;
-    box-shadow: $shadow-sm;
   }
 }
 
@@ -191,55 +144,67 @@
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: $font-size-sm;
 
   th {
     background: $color-surface-hover;
     color: $color-text-muted;
-    font-weight: $font-weight-semibold;
+    font-weight: $font-weight-bold;
     font-size: $font-size-xs;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    padding: $spacing-3 $spacing-5;
+    padding: $spacing-4 $spacing-5;
     border-bottom: 1px solid $color-border-soft;
+    vertical-align: middle;
   }
 
   td {
     padding: $spacing-4 $spacing-5;
     border-bottom: 1px solid $color-border-soft;
     vertical-align: middle;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
   }
 
   .table-row {
     cursor: pointer;
     transition: background-color $transition-fast;
 
-    &:hover {
-      background-color: $color-surface-hover;
-    }
-
     &:last-child td {
       border-bottom: none;
+    }
+
+    &:hover {
+      td {
+        background-color: $color-surface-hover;
+      }
+
+      .engagement-name {
+        color: $color-primary;
+      }
+    }
+
+    &:active {
+      .engagement-name {
+        color: $color-primary-hover;
+      }
     }
   }
 
   .cell-primary {
     .engagement-name {
-      font-weight: $font-weight-semibold;
+      font-weight: $font-weight-medium;
       color: $color-text;
       font-size: $font-size-sm;
+      transition: color $transition-fast;
       @include text-truncate;
-
-      &:hover {
-        color: $color-primary;
-      }
     }
 
     .client-name {
       font-size: $font-size-xs;
       color: $color-text-faint;
-      margin-top: $spacing-1;
+      margin-top: 0.15rem;
       @include text-truncate;
+      font-weight: $font-weight-normal;
     }
   }
 
@@ -250,21 +215,22 @@
 
     .pm-name {
       color: $color-text;
-      font-weight: $font-weight-medium;
+      font-weight: $font-weight-normal;
     }
 
     .pm-unassigned {
       color: $color-text-fainter;
       font-style: italic;
+      font-weight: $font-weight-normal;
     }
   }
 
   .days-badge {
     display: inline-block;
     padding: $spacing-1 $spacing-3;
-    border-radius: $radius-md;
+    border-radius: $radius-sm;
     font-size: $font-size-xs;
-    font-weight: $font-weight-semibold;
+    font-weight: $font-weight-medium;
 
     &--urgent {
       background: $color-danger-bg;
@@ -306,7 +272,7 @@
     }
 
     .readiness-score {
-      font-weight: $font-weight-bold;
+      font-weight: $font-weight-medium;
       font-size: $font-size-xs;
       min-width: 2.25rem;
     }
@@ -351,9 +317,9 @@
   .blocker-badge {
     display: inline-block;
     padding: $spacing-1 $spacing-3;
-    border-radius: $radius-md;
+    border-radius: $radius-sm;
     font-size: $font-size-xs;
-    font-weight: $font-weight-semibold;
+    font-weight: $font-weight-medium;
 
     &--active {
       background: $color-danger-bg;
@@ -365,10 +331,6 @@
       background: $color-surface-hover;
       color: $color-text-faint;
     }
-  }
-
-  .text-right {
-    text-align: right;
   }
 }
 
