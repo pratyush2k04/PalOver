@@ -18,6 +18,7 @@ public class MasterChecklistItemConfiguration : IEntityTypeConfiguration<MasterC
         builder.Property(e => e.Description).HasColumnName("description");
         builder.Property(e => e.CategoryId).HasColumnName("category_id").IsRequired();
         builder.Property(e => e.IsMandatory).HasColumnName("is_mandatory").HasDefaultValue(true);
+        builder.Property(e => e.EvidenceRequired).HasColumnName("evidence_required").HasDefaultValue(false);
         builder.Property(e => e.DisplayOrder).HasColumnName("display_order").IsRequired();
         builder.Property(e => e.IsRetired).HasColumnName("is_retired").HasDefaultValue(false);
 
@@ -85,6 +86,7 @@ public class MasterChecklistItemConfiguration : IEntityTypeConfiguration<MasterC
                     Description = description,
                     CategoryId = categoryId,
                     IsMandatory = isMandatory,
+                    EvidenceRequired = false,
                     DisplayOrder = i + 1,
                     IsRetired = false,
                     CreatedAt = SeedTimestamp,
