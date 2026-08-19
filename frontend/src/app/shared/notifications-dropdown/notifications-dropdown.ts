@@ -9,7 +9,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { NotificationService } from '../services/notification.service';
 import { Notification } from '../models/notification.model';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 5;
 const UNREAD_COUNT_POLL_INTERVAL_MS = 30_000;
 
 @Component({
@@ -74,26 +74,30 @@ export class NotificationsDropdownComponent implements OnInit {
     }
   }
 
+  onViewAllClick(): void {
+    this.isOpen.set(false);
+    this.router.navigate(['/notifications']);
+  }
+
   markAllAsRead(): void {
     this.notificationService.markAllAsRead().subscribe(() => {
-      this.markLocallyRead(this.notifications().map(n => n.id));
+      this.notifications.set([]);
       this.unreadCount.set(0);
     });
   }
 
   private markLocallyRead(ids: number[]): void {
     const idSet = new Set(ids);
-    this.notifications.update(items =>
-      items.map(item => (idSet.has(item.id) ? { ...item, readAt: new Date().toISOString(), status: 'Read' } : item))
-    );
+    this.notifications.update(items => items.filter(item => !idSet.has(item.id)));
   }
 
   private loadNotifications(showLoading = true): void {
     if (showLoading) {
       this.loading.set(true);
     }
-    this.notificationService.getNotifications(1, PAGE_SIZE).subscribe(result => {
-      this.notifications.set(result.items);
+    this.notificationService.getNotifications(undefined, 1, 50).subscribe(result => {
+      const unreadRecent = result.items.filter(n => !n.readAt).slice(0, 5);
+      this.notifications.set(unreadRecent);
       this.loading.set(false);
     });
   }

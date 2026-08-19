@@ -23,6 +23,7 @@ export interface Risk {
   sourceType?: string | null;
   sourceItemId?: number | null;
   sourceTitle?: string | null;
+  currentEscalationLevel?: string;
 }
 
 export interface CreateRiskRequest {

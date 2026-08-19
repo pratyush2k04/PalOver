@@ -161,6 +161,7 @@
     .right-section {
       display: flex;
       align-items: center;
+      gap: $spacing-2;
 
       .open-days-badge {
         font-size: $font-size-xs;

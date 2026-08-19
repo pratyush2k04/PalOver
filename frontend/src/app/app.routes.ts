@@ -150,6 +150,14 @@ export const routes: Routes = [
           ),
       },
 
+      // Notifications
+      {
+        path: 'notifications',
+        loadChildren: () =>
+          import('./features/notifications/notification-fullpage.routes').then(
+            m => m.NOTIFICATION_FULLPAGE_ROUTES
+          ),
+        },
       // Audit Log (own entries for all users; Leadership/Admin see everyone's)
       {
         path: AUDIT_LOG_ROUTES.BASE,
