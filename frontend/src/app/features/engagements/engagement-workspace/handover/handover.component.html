@@ -7,7 +7,7 @@
         <span class="status-report-text">{{ handover()?.status || 'Not Started' }}</span>
       </div>
       <app-button *ngIf="isPreSales()" variant="stroked" [disabled]="isSaving() || isSubmitted()" (click)="saveDraft()">Save Draft</app-button>
-      <app-button variant="flat" [disabled]="isSaving() || isSubmitted()" (click)="submitHandover()">Submit Handover</app-button>
+      <app-button *ngIf="isPreSales()" variant="flat" [disabled]="isSaving() || isSubmitted()" (click)="submitHandover()">Submit Handover</app-button>
       <app-button
         *ngIf="isProjectManagement() && isSubmitted() && !handover()?.reviewedAt"
         variant="flat"
