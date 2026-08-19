@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Pdr.Api.Models;
 using Pdr.Api.Models.EngagementAssignment;
+using Pdr.Api.Models.Engagements;
 using Pdr.Api.Models.ResourceRequests;
 
 namespace Pdr.Api.Repositories.Interfaces;
