@@ -242,6 +242,22 @@ public class EngagementService(
         return BuildOwnersDto(assignments);
     }
     
+    public async Task<IEnumerable<Pdr.Api.DTOs.Users.UserListItemDto>> GetEngagementUsersAsync(int engagementId)
+    {
+        if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
+            throw new EngagementNotFoundException(engagementId);
+
+        var assignments = await engagementRepository.GetAssignmentsAsync(engagementId);
+        return assignments.Select(a => new Pdr.Api.DTOs.Users.UserListItemDto
+        {
+            Id = a.User.Id,
+            FullName = a.User.FullName,
+            Email = a.User.Email,
+            RoleId = a.User.RoleId,
+            RoleName = a.User.Role.Name
+        }).ToList();
+    }
+    
 
     public async Task<EngagementOwnersDto> AssignProjectManagerAsync(int engagementId, int userId) =>
         await AssignOwnerAsync(engagementId, userId, RoleEnum.ProjectManagement);

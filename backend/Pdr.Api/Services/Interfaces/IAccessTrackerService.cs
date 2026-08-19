@@ -8,6 +8,7 @@ public interface IAccessTrackerService
     Task<AccessItemDto> AddCustomAccessItemAsync(int engagementId, AddCustomAccessItemRequest request);
     Task<AccessItemDto> UpdateAccessItemStatusAsync(int accessItemId, UpdateAccessItemStatusRequest request);
     Task<AccessItemDto> UpdateAccessItemOwnerAsync(int accessItemId, UpdateAccessItemOwnerRequest request);
+    Task DeleteAccessItemAsync(int accessItemId);
 
     /// <summary>
     /// Evaluates the 2-day billing risk rule for all client-side access items

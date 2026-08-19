@@ -31,4 +31,8 @@ export class TechnicalReadinessService {
   getTechnicalSummary(engagementId: number): Observable<DayOneReadinessSummaryDto> {
     return this.http.get<DayOneReadinessSummaryDto>(TECHNICAL_READINESS_API_ENDPOINTS.TECHNICAL_SUMMARY(engagementId));
   }
+
+  deleteAccessItem(id: number): Observable<void> {
+    return this.http.delete<void>(TECHNICAL_READINESS_API_ENDPOINTS.ACCESS_ITEM(id));
+  }
 }

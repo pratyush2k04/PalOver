@@ -168,7 +168,8 @@
               type="button"
               variant="flat"
               (click)="onAddFeature()">
-              + Add Feature
+              <span class="btn-icon" [inlineSVG]="'assets/icons/plus.svg'"></span>
+              <span>Add Feature</span>
             </app-button>
           </div>
         </div>
@@ -208,7 +209,7 @@
                           variant="icon"
                           class="btn-action"
                           ariaLabel="Edit feature"
-                          title="Edit feature"
+                          [appTooltip]="'Edit feature'"
                           (click)="onEditFeature(item)">
                           <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
                         </app-button>
@@ -217,8 +218,8 @@
                           variant="icon"
                           class="btn-action btn-danger"
                           ariaLabel="Delete feature"
-                          title="Delete feature"
-                          (click)="onDeleteFeature(item.id)">
+                          [appTooltip]="'Delete feature'"
+                          (click)="onDeleteFeature(item)">
                           <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
                         </app-button>
                       </div>
@@ -233,3 +234,16 @@
     }
   }
 </div>
+
+<!-- Delete Confirmation Dialog -->
+@if (featureToDelete(); as feature) {
+  <app-confirm-dialog
+    title="Delete Feature"
+    confirmLabel="Delete"
+    [isBusy]="isDeleting()"
+    [isDestructive]="true"
+    (confirmed)="confirmDeleteFeature()"
+    (cancelled)="cancelDeleteFeature()">
+    Are you sure you want to delete <strong>{{ feature.featureName }}</strong>? This action cannot be undone.
+  </app-confirm-dialog>
+}

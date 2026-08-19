@@ -12,8 +12,11 @@ import { KickoffReadinessDto, KickoffReadinessService } from 'src/app/services/k
 import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
+import { ToastService } from '@common/services/toast/toast';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
+import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import {
   AddAccessItemDialogComponent,
@@ -24,6 +27,11 @@ import {
   BlockAccessItemDialogData,
   BlockAccessItemDialogResult
 } from './dialogs/block-access-item-dialog/block-access-item-dialog.component';
+import {
+  EditOwnerDialogComponent,
+  EditOwnerDialogData,
+  EditOwnerDialogResult
+} from '../dialogs/edit-owner-dialog/edit-owner-dialog.component';
 
 @Component({
   selector: 'app-access-tracker',
@@ -32,9 +40,11 @@ import {
     CommonModule,
     FormsModule,
     InlineSVGModule,
+    TooltipDirective,
     FlaggedItemsBannerComponent,
     StatusBadgeComponent,
-    ButtonComponent
+    ButtonComponent,
+    ConfirmDialogComponent
   ],
   templateUrl: './access-tracker.component.html',
   styleUrl: './access-tracker.component.scss'
@@ -44,6 +54,7 @@ export class AccessTrackerComponent {
   itemsUpdated = output<AccessItemDto[]>();
 
   private readinessService = inject(TechnicalReadinessService);
+  private toastService = inject(ToastService);
   private kickoffReadinessService = inject(KickoffReadinessService);
   private authService = inject(AuthService);
   private destroyRef = inject(DestroyRef);
@@ -52,6 +63,9 @@ export class AccessTrackerComponent {
   accessItems = signal<AccessItemDto[]>([]);
   isLoading = signal<boolean>(true);
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+
+  itemToDelete = signal<AccessItemDto | null>(null);
+  isDeleting = signal<boolean>(false);
 
   kickoffReadiness = signal<KickoffReadinessDto | null>(null);
   blockedItems = computed(() => this.accessItems().filter(i => i.status === 'Blocked'));
@@ -149,8 +163,10 @@ export class AccessTrackerComponent {
         );
         this.accessItems.set(updatedList);
         this.itemsUpdated.emit(updatedList);
+        this.toastService.success(`Status updated for ${item.name}`);
       },
       error: (err) => {
+        this.toastService.error(`Failed to update status for ${item.name}`);
         console.warn('API update status failed, updating local state for testing', err);
         const updatedList = this.accessItems().map(i => {
           if (i.id === item.id) {
@@ -211,12 +227,51 @@ export class AccessTrackerComponent {
     });
   }
 
+  openEditOwnerModal(item: AccessItemDto): void {
+    const dialogRef = this.dialog.open<EditOwnerDialogComponent, EditOwnerDialogData, EditOwnerDialogResult>(
+      EditOwnerDialogComponent,
+      { 
+        data: { 
+          itemName: item.name, 
+          engagementId: this.engagementId(),
+          currentOwnerId: item.ownerId 
+        } 
+      }
+    );
+
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+      this.updateOwner(item, result.ownerId);
+    });
+  }
+
+  private updateOwner(item: AccessItemDto, ownerId: number) {
+    this.readinessService.updateAccessItemOwner(item.id, { ownerId }).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (updatedItem) => {
+        const updatedList = this.accessItems().map(i =>
+          i.id === updatedItem.id ? updatedItem : i
+        );
+        this.accessItems.set(updatedList);
+        this.itemsUpdated.emit(updatedList);
+        this.toastService.success(`Owner updated for ${item.name}`);
+      },
+      error: (err) => {
+        this.toastService.error(`Failed to update owner for ${item.name}`);
+        console.error('API update owner failed', err);
+      }
+    });
+  }
+
   private submitAddItem(result: AddAccessItemDialogResult) {
+    const currentUserId = this.authService.getUserId() ?? 1;
+    const currentUser = this.authService.currentUser();
     const requestData = {
       name: result.name,
       isClientSide: result.isClientSide,
       timeZoneNote: result.timeZoneNote,
-      ownerId: 1 // Default to Rahul Verma (ID 1)
+      ownerId: currentUserId
     };
 
     this.readinessService.addCustomAccessItem(this.engagementId(), requestData).pipe(
@@ -226,6 +281,7 @@ export class AccessTrackerComponent {
         const updatedList = [...this.accessItems(), newItem];
         this.accessItems.set(updatedList);
         this.itemsUpdated.emit(updatedList);
+        this.toastService.success(`Access item "${newItem.name}" added successfully`);
       },
       error: (err) => {
         console.warn('API add item failed, adding item locally for testing', err);
@@ -233,8 +289,8 @@ export class AccessTrackerComponent {
           id: Date.now(),
           name: requestData.name,
           isClientSide: requestData.isClientSide,
-          ownerId: 1,
-          ownerFullName: 'Rahul Verma',
+          ownerId: currentUserId,
+          ownerFullName: currentUser?.fullName ?? 'Tech Lead',
           status: 'InProgress',
           timeZoneNote: requestData.timeZoneNote,
           daysUntilBillingDate: 5,
@@ -243,6 +299,39 @@ export class AccessTrackerComponent {
         const updatedList = [...this.accessItems(), localNewItem];
         this.accessItems.set(updatedList);
         this.itemsUpdated.emit(updatedList);
+      }
+    });
+  }
+
+  onDeleteItem(item: AccessItemDto): void {
+    if (!this.isTechLead()) return;
+    this.itemToDelete.set(item);
+  }
+
+  cancelDelete(): void {
+    this.itemToDelete.set(null);
+  }
+
+  confirmDelete(): void {
+    const item = this.itemToDelete();
+    if (!item) return;
+
+    this.isDeleting.set(true);
+    this.readinessService.deleteAccessItem(item.id).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: () => {
+        const updatedList = this.accessItems().filter(i => i.id !== item.id);
+        this.accessItems.set(updatedList);
+        this.itemsUpdated.emit(updatedList);
+        this.toastService.success(`Access item "${item.name}" deleted successfully`);
+        this.isDeleting.set(false);
+        this.itemToDelete.set(null);
+      },
+      error: (err) => {
+        this.toastService.error(`Failed to delete "${item.name}"`);
+        console.error('API delete access item failed', err);
+        this.isDeleting.set(false);
       }
     });
   }
