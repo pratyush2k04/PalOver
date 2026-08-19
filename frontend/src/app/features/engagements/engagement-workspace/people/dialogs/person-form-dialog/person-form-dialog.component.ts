@@ -1,11 +1,10 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
-import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { PersonDto, PersonType } from 'src/app/models/person.model';
 
 export interface PersonFormDialogData {
@@ -21,44 +20,32 @@ export interface PersonFormDialogResult {
 @Component({
   selector: 'app-person-form-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, InputComponent, SelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, InputComponent],
   templateUrl: './person-form-dialog.component.html',
   styleUrl: './person-form-dialog.component.scss'
 })
 export class PersonFormDialogComponent {
   private dialogRef = inject<DialogRef<PersonFormDialogResult>>(DialogRef);
+  private fb = inject(FormBuilder);
   readonly data = inject<PersonFormDialogData>(DIALOG_DATA);
 
-  readonly personTypeOptions: SelectOption[] = [
-    { value: PersonType.Internal, label: 'Internal' },
-    { value: PersonType.Client, label: 'Client' }
-  ];
-
-  private originalPersonType(): number {
-    const person = this.data.person;
-    if (!person) return PersonType.Internal;
-    const numType = Number(person.personType);
-    return numType === 2 || person.personType === 'Client' || person.personType === PersonType.Client
-      ? PersonType.Client
-      : PersonType.Internal;
-  }
-
-  formName = signal(this.data.person?.name ?? '');
-  formRole = signal(this.data.person?.role ?? '');
-  formPersonType = signal<number>(this.originalPersonType());
-
-  isFormDirty = computed(() => {
-    const person = this.data.person;
-    if (!person) return true;
-    return (
-      this.formName().trim() !== person.name ||
-      this.formRole().trim() !== person.role ||
-      this.formPersonType() !== this.originalPersonType()
-    );
+  form = this.fb.group({
+    name: ['', [Validators.required, Validators.maxLength(200)]],
+    role: ['', [Validators.required, Validators.maxLength(200)]],
   });
 
   get isEditing(): boolean {
     return !!this.data.person;
+  }
+
+  constructor() {
+    if (this.data.person) {
+      this.form.patchValue({
+        name: this.data.person.name,
+        role: this.data.person.role,
+      });
+      this.form.markAsPristine();
+    }
   }
 
   onCancel(): void {
@@ -66,17 +53,20 @@ export class PersonFormDialogComponent {
   }
 
   onSubmit(): void {
-    const name = this.formName().trim();
-    const role = this.formRole().trim();
+    if (!this.form.valid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
-    if (!name || !role) {
+    if (this.isEditing && !this.form.dirty) {
+      this.dialogRef.close();
       return;
     }
 
     this.dialogRef.close({
-      name,
-      role,
-      personType: Number(this.formPersonType())
+      name: this.form.value.name!.trim(),
+      role: this.form.value.role!.trim(),
+      personType: PersonType.Client
     });
   }
 }
