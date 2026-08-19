@@ -1,8 +1,5 @@
 <div class="engagements-page">
-  <div class="page-header">
-    <!-- <h2>Engagements</h2> -->
-    <app-button type="button" variant="accent" (click)="openModal()">+ Mark SOW Signed</app-button>
-  </div>
+    <app-button type="button" variant="accent" (click)="openModal()" class="mark-as-sow-btn">+ Mark SOW Signed</app-button>
 
   @if (warnings().length > 0) {
   <app-alert variant="warning">
@@ -105,5 +102,5 @@
       </form>
     </div>
   </div>
-  }
+    }
 </div>

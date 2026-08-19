@@ -7,7 +7,7 @@
   </div>
 
   <div class="toolbar-row">
-    <div class="sort-control">
+    <div class="sort-control" [class.presales-view]="isPreSales()">
       <label for="sortBy">Sort by</label>
       <app-select
         id="sortBy"
