@@ -13,4 +13,6 @@ public class AuditLogDto
     public string Details { get; set; } = string.Empty;
 
     public DateTime CreatedAt { get; set; }
+
+    public int? EngagementId { get; set; }
 }
