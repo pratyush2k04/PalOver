@@ -13,7 +13,7 @@ using Pdr.Api.Data;
 namespace Pdr.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260817153438_AddResourceAllocationModel")]
+    [Migration("20260819064321_AddResourceAllocationModel")]
     partial class AddResourceAllocationModel
     {
         /// <inheritdoc />
