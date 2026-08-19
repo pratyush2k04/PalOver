@@ -7,6 +7,7 @@ public static class NotificationConstants
         public const string AccessItemBlocked = "AccessItemBlocked";
         public const string PMAllocated = "PMAllocated";
         public const string HandoverSubmitted = "HandoverSubmitted";
+        public const string ResourceRequestRaised = "ResourceRequestRaised";
         public const string RiskCommentMention = "RiskCommentMention";
         public const string LeadershipAssigned = "LeadershipAssigned";
         public const string PMAssigned = "PMAssigned";
