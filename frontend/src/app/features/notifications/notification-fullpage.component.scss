@@ -8,46 +8,55 @@
 }
 
 .notifications-container {
-  max-width: 68rem;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: $spacing-8 $spacing-6 3rem;
+  padding: $spacing-8;
 }
 
-.notifications-header {
+.page-header {
   @include flex-between;
-  margin-bottom: $spacing-6;
+  margin-bottom: $spacing-8;
   flex-wrap: wrap;
   gap: $spacing-4;
-}
 
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-}
+  .header-titles {
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: $spacing-3;
+      margin-bottom: $spacing-2;
 
-.page-title {
-  font-size: $font-size-2xl;
-  font-weight: $font-weight-bold;
-  color: $color-text;
-  letter-spacing: -0.02em;
-  margin: 0;
-}
+      h1 {
+        font-size: 1.75rem;
+        font-weight: $font-weight-bold;
+        color: $color-text;
+        margin: 0;
+        letter-spacing: -0.02em;
+      }
 
-.unread-pill {
-  background-color: $color-primary-light;
-  color: $color-primary;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
-  padding: $spacing-1 $spacing-3;
-  border-radius: $radius-full;
-  border: 1px solid #bfdbfe;
-}
+      .unread-pill {
+        background-color: $color-primary-light;
+        color: $color-primary;
+        font-size: $font-size-xs;
+        font-weight: $font-weight-semibold;
+        padding: $spacing-1 $spacing-3;
+        border-radius: $radius-full;
+        border: 1px solid #bfdbfe;
+      }
+    }
 
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: $spacing-3;
+    .subtitle {
+      font-size: 0.95rem;
+      color: $color-text-faint;
+      margin: 0;
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+  }
 }
 
 .btn-icon {
@@ -64,7 +73,7 @@
 
 .controls-toolbar {
   @include flex-between;
-  margin-bottom: $spacing-5;
+  margin-bottom: $spacing-6;
   flex-wrap: wrap;
   gap: $spacing-4;
   background: $color-surface;
@@ -136,6 +145,7 @@
   padding: $spacing-4 $spacing-5;
   border-bottom: 1px solid $color-border-soft;
   background-color: $color-surface;
+  cursor: default;
   transition: background-color $transition-fast, transform $transition-fast;
 
   &:last-child {
@@ -153,7 +163,7 @@
   &.unread {
     background-color: $color-primary-light;
 
-    &:hover {
+    &.has-link:hover {
       background-color: #e6f0fa;
     }
   }
@@ -203,16 +213,16 @@
 }
 
 .notification-title {
-  font-size: $font-size-sm;
+  font-size: 0.95rem;
   font-weight: $font-weight-semibold;
-  color: $color-text;
+  color: #0f172a;
   margin: 0 0 $spacing-1 0;
   line-height: 1.35;
 }
 
 .notification-body {
-  font-size: $font-size-sm;
-  color: $color-text-muted;
+  font-size: 0.85rem;
+  color: $color-text-faint;
   margin: 0;
   line-height: 1.45;
   white-space: pre-wrap;

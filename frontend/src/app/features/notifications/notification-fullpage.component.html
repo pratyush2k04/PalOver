@@ -1,13 +1,16 @@
 <div class="notifications-container">
-  <header class="notifications-header">
-    <div class="header-left">
-      <h1 class="page-title">Notifications</h1>
-      @if (unreadCountInCurrentView() > 0) {
-        <span class="unread-pill">{{ unreadCountInCurrentView() }} unread</span>
-      }
+  <header class="page-header">
+    <div class="header-titles">
+      <div class="title-row">
+        <h1>Notifications</h1>
+        @if (unreadCountInCurrentView() > 0) {
+          <span class="unread-pill">{{ unreadCountInCurrentView() }} unread</span>
+        }
+      </div>
+      <p class="subtitle">View and manage system activities, task alerts, and engagement updates.</p>
     </div>
 
-    <div class="header-right">
+    <div class="header-actions">
       <app-button
         variant="stroked"
         [disabled]="unreadCountInCurrentView() === 0"
@@ -79,6 +82,7 @@
             class="notification-item"
             [class.unread]="!notification.readAt"
             [class.has-link]="!!notification.link"
+            [attr.title]="notification.link ? 'Click here to redirect' : null"
             (click)="onNotificationClick(notification)">
 
             @if (isAdmin()) {
@@ -123,7 +127,7 @@
 
             <div class="link-col">
               @if (notification.link) {
-                <span class="link-indicator" title="Open item">
+                <span class="link-indicator" title="Click here to redirect">
                   <span [inlineSVG]="'assets/icons/chevron-right.svg'"></span>
                 </span>
               }

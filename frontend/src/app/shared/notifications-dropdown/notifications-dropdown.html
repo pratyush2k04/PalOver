@@ -25,6 +25,8 @@
             <div
               class="notification-item"
               [class.unread]="!notification.readAt"
+              [class.has-link]="!!notification.link"
+              [attr.title]="notification.link ? 'Click here to redirect' : null"
               (click)="onNotificationClick(notification)"
             >
               <div class="notification-content">

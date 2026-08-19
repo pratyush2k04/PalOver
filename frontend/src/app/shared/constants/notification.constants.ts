@@ -13,5 +13,6 @@ export const NOTIFICATION_MESSAGES = {
   MARK_ALL_READ_SUCCESS: 'All notifications marked as read.',
   MARK_ALL_READ_ERROR: 'Failed to mark notifications as read.',
   DELETE_SUCCESS: 'Notification(s) deleted successfully.',
-  DELETE_ERROR: 'Failed to delete notification(s).'
+  DELETE_ERROR: 'Failed to delete notification(s).',
+  REDIRECT_TOOLTIP: 'Click here to redirect'
 } as const;
