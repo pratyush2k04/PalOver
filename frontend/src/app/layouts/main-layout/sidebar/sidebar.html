@@ -11,32 +11,7 @@
          [routerLink]="item.route"
          routerLinkActive="active">
         <div class="icon-wrapper">
-          @switch (item.icon) {
-            @case ('home') {
-              <span [inlineSVG]="'assets/icons/home.svg'"></span>
-            }
-            @case ('users') {
-              <span [inlineSVG]="'assets/icons/users.svg'"></span>
-            }
-            @case ('user-check') {
-              <span [inlineSVG]="'assets/icons/user-check.svg'"></span>
-            }
-            @case ('layers') {
-              <span [inlineSVG]="'assets/icons/layers.svg'"></span>
-            }
-            @case ('briefcase') {
-              <span [inlineSVG]="'assets/icons/briefcase.svg'"></span>
-            }
-            @case ('clipboard') {
-              <span [inlineSVG]="'assets/icons/clipboard.svg'"></span>
-            }
-            @case ('checklist') {
-              <span [inlineSVG]="'assets/icons/checklist.svg'"></span>
-            }
-            @case ('target') {
-              <span [inlineSVG]="'assets/icons/target.svg'"></span>
-            }
-          }
+          <span [inlineSVG]="'assets/icons/' + item.icon + '.svg'"></span>
         </div>
         <span class="label">{{ item.label }}</span>
       </a>
