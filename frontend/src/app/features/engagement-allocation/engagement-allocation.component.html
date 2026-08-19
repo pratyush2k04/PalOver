@@ -2,7 +2,7 @@
   <!-- Page Header -->
   <header class="page-header">
     <div class="header-titles">
-      <h1>Engagement Allocation</h1>
+      <h1>Leadership Allocation</h1>
       <p class="subtitle">Assign and manage Leadership contacts for all active engagements across the organization.</p>
     </div>
   </header>
@@ -19,7 +19,7 @@
       </div>
     </div>
 
-    <div class="metric-card warning" [class.active]="filterMode() === 'needing'" (click)="setFilterMode('needing')">
+    <div class="metric-card">
       <div class="metric-icon warning">
         <span [inlineSVG]="'assets/icons/alert-circle.svg'"></span>
       </div>
@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    <div class="metric-card success" [class.active]="filterMode() === 'all'" (click)="setFilterMode('all')">
+    <div class="metric-card">
       <div class="metric-icon success">
         <span [inlineSVG]="'assets/icons/check-circle.svg'"></span>
       </div>
@@ -81,7 +81,9 @@
   } @else {
     @if (filteredEngagements().length === 0) {
       <div class="empty-state">
-        <div class="empty-icon">📋</div>
+        <div class="empty-icon">
+          <span [inlineSVG]="'assets/icons/clipboard.svg'"></span>
+        </div>
         <h3>No engagements found</h3>
         <p>No engagements match your current search or filter criteria.</p>
       </div>
@@ -90,30 +92,24 @@
         <table class="engagements-table">
           <thead>
             <tr>
-              <th>Engagement & Client</th>
-              <th>Type / Model</th>
-              <th>Status</th>
-              <th>Assigned Leadership Contacts</th>
-              <th class="actions-col">Action</th>
+              <th class="col-engagement">Engagement & Client</th>
+              <th class="col-type">Type / Model</th>
+              <th class="col-contacts">Assigned Leadership Contacts</th>
+              <th class="col-actions">Action</th>
             </tr>
           </thead>
           <tbody>
             @for (eng of filteredEngagements(); track eng.engagementId) {
               <tr>
-                <td class="engagement-name-cell">
+                <td class="engagement-name-cell col-engagement">
                   <div class="eng-title">{{ eng.engagementName }}</div>
                   <div class="client-name">{{ eng.clientName }}</div>
                 </td>
-                <td>
-                  <app-status-badge tone="neutral">{{ eng.engagementType }}</app-status-badge>
+                <td class="type-cell col-type" [attr.data-type]="eng.engagementType">
+                  <app-status-badge [tone]="getTypeTone(eng.engagementType)">{{ eng.engagementType }}</app-status-badge>
                   <div class="model-sub">{{ eng.commercialModel }}</div>
                 </td>
-                <td>
-                  <app-status-badge [tone]="eng.isKickoffReady ? 'success' : 'warning'">
-                    {{ eng.status }}
-                  </app-status-badge>
-                </td>
-                <td>
+                <td class="col-contacts">
                   @if (eng.isLoadingLeadership) {
                     <span class="loading-text">Loading contacts...</span>
                   } @else {
@@ -128,7 +124,7 @@
                       </div>
                     } @else {
                       <app-status-badge tone="warning">
-                        ⚠️ Missing Leadership Contact
+                         Missing Leadership Contact
                       </app-status-badge>
                     }
                   }

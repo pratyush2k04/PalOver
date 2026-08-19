@@ -1,0 +1,76 @@
+<div class="audit-log">
+  <div class="header">
+    <h1>Audit Log</h1>
+    <app-button variant="stroked" (click)="exportCsv()">Export</app-button>
+  </div>
+
+  <div class="filter-bar">
+    <app-input
+      [id]="'audit-log-search'"
+      placeholder="Search audit log..."
+      [(ngModel)]="filterSearch"
+      (ngModelChange)="onFilterChange()"
+    />
+    <app-input
+      [id]="'audit-log-from-date'"
+      label="From"
+      type="date"
+      [(ngModel)]="filterFromDate"
+      (ngModelChange)="onFilterChange()"
+    />
+    <app-input
+      [id]="'audit-log-to-date'"
+      label="To"
+      type="date"
+      [(ngModel)]="filterToDate"
+      (ngModelChange)="onFilterChange()"
+    />
+  </div>
+
+  @if (errorMessage()) {
+    <app-alert>{{ errorMessage() }}</app-alert>
+  }
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-date">Date/Time</th>
+          @if (showUserColumn) {
+            <th class="col-user">User</th>
+          }
+          <th class="col-action">Action</th>
+          <th class="col-details">Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (log of pagedLogs(); track log.id) {
+          <tr>
+            <td class="col-date">{{ log.createdAt | date: 'medium' }}</td>
+            @if (showUserColumn) {
+              <td class="col-user">{{ log.userName }}</td>
+            }
+            <td class="col-action">{{ log.action }}</td>
+            <td class="col-details">{{ log.details }}</td>
+          </tr>
+        } @empty {
+          @if (!isLoading()) {
+            <tr>
+              <td [attr.colspan]="showUserColumn ? 4 : 3" class="empty-row">
+                <app-empty-state message="No audit log entries found." />
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+
+    @if (isLoading()) {
+      <app-loading-spinner label="Loading audit log..." />
+    }
+  </div>
+
+  @if (filteredLogs().length > 0) {
+    <app-paginator [page]="page()" [totalPages]="totalPages()" (pageChange)="goToPage($event)" />
+  }
+</div>

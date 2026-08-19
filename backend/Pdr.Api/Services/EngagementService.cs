@@ -190,14 +190,14 @@ public class EngagementService(
         return true;
     }
 
-    public async Task<PmEngagementListResponse> GetMyEngagementsAsync(string sortBy)
+    public async Task<EngagementListResponse> GetMyEngagementsAsync(string sortBy)
     {
         var userId = currentUserService.GetUserId();
         var engagements = await engagementRepository.GetEngagementsForUserAsync(userId, sortBy);
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
         var items = engagements
-            .Select(e => new PmEngagementListItemDto(
+            .Select(e => new EngagementListItemDto(
                 e.EngagementId,
                 e.EngagementName,
                 e.ClientName,
@@ -208,7 +208,7 @@ public class EngagementService(
                 ReadinessScore: null))
             .ToList();
 
-        return new PmEngagementListResponse(items);
+        return new EngagementListResponse(items);
     }
     //assign
 
@@ -251,15 +251,26 @@ public class EngagementService(
         if (requiredRole == RoleEnum.ProjectManagement)
         {
             await notificationService.CreateFromTemplateAsync(
-                "PMAllocated",
+                NotificationConstants.TemplateKeys.PMAllocated,
                 engagementId,
                 RoleEnum.PreSales,
                 System.Text.Json.JsonSerializer.Serialize(new PMAllocatedMapper.PMAllocatedData(AssignedUserId: userId, EngagementId: engagementId)),
                 DateTime.UtcNow);
-        }
 
-        if (requiredRole == RoleEnum.TechLead)
+            await notificationService.CreateFromTemplateAsync(
+                NotificationConstants.TemplateKeys.PMAssigned,
+                userId,
+                System.Text.Json.JsonSerializer.Serialize(new PMAssignedMapper.PMAssignedPayload(EngagementId: engagementId)),
+                DateTime.UtcNow);
+        }
+        else if (requiredRole == RoleEnum.TechLead)
         {
+            await notificationService.CreateFromTemplateAsync(
+                NotificationConstants.TemplateKeys.TechLeadAssigned,
+                userId,
+                System.Text.Json.JsonSerializer.Serialize(new TechLeadAssignedMapper.TechLeadAssignedPayload(EngagementId: engagementId)),
+                DateTime.UtcNow);
+
             var accessItems = await db.AccessItems.Where(a => a.EngagementId == engagementId).ToListAsync();
             foreach (var item in accessItems)
             {
@@ -386,6 +397,13 @@ public class EngagementService(
             throw new LeadershipUserAlreadyAssignedException();
 
         await engagementRepository.AddAssignmentAsync(engagementId, userId);
+
+        await notificationService.CreateFromTemplateAsync(
+            NotificationConstants.TemplateKeys.LeadershipAssigned,
+            userId,
+            System.Text.Json.JsonSerializer.Serialize(new LeadershipAssignedMapper.LeadershipAssignedPayload(EngagementId: engagementId)),
+            DateTime.UtcNow);
+
         return await GetLeadershipUsersAsync(engagementId);
     }
 
@@ -499,6 +517,22 @@ public class EngagementService(
 
         // Default sorted by soonest kickoff days (daysToKickoff ascending)
         return items.OrderBy(i => i.DaysToKickoff).ToList();
+    }
+
+    public async Task<EngagementOpenItemsSummaryDto?> GetOpenItemsSummaryAsync(int engagementId)
+    {
+        var exists = await db.Engagements.AnyAsync(e => e.EngagementId == engagementId);
+        if (!exists) return null;
+
+        var userId = currentUserService.GetUserId();
+        var isAssigned = await db.EngagementAssignments
+            .AsNoTracking()
+            .AnyAsync(a => a.EngagementId == engagementId && a.UserId == userId);
+
+        if (!isAssigned)
+            throw new UserNotAssignedToEngagementException(engagementId);
+
+        return await engagementRepository.GetOpenItemsSummaryAsync(engagementId);
     }
 }
 

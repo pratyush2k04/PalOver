@@ -11,6 +11,7 @@ export const APP_ROUTES = {
   USER_DIRECTORY: '/user-directory',
   ENGAGEMENT_ALLOCATION: '/engagement-allocation',
   ACCESS_DENIED: '/access-denied',
+  AUDIT_LOG: '/audit-log',
 } as const;
 
 export const API_ENDPOINTS = {

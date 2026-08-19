@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
-using Pdr.Api.Models;
+using Pdr.Api.Models.People;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Models.Engagements;
 
@@ -25,6 +25,22 @@ public class PersonRepository(AppDbContext context) : IPersonRepository
     {
         return await context.People
             .FirstOrDefaultAsync(p => p.PersonId == personId);
+    }
+
+    public async Task<Person?> GetByNameAndRoleAndEngagementAsync(int engagementId, string name, string role)
+    {
+        return await context.People
+            .FirstOrDefaultAsync(p => p.EngagementId == engagementId
+                && p.Name.ToLower() == name.ToLower()
+                && p.Role.ToLower() == role.ToLower());
+    }
+
+    public async Task<IEnumerable<Person>> GetByNamesAndEngagementAsync(int engagementId, IEnumerable<string> names)
+    {
+        var lowerNames = names.Select(n => n.ToLower()).ToList();
+        return await context.People
+            .Where(p => p.EngagementId == engagementId && lowerNames.Contains(p.Name.ToLower()))
+            .ToListAsync();
     }
 
     public async Task AddAsync(Person person)

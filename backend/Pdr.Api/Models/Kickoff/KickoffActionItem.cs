@@ -1,6 +1,7 @@
 using Pdr.Api.Models.LoginEntity;
+using Pdr.Api.Models.Engagements;
 
-namespace Pdr.Api.Models;
+namespace Pdr.Api.Models.Kickoff;
 
 public class KickoffActionItem : BaseAuditableEntity
 {

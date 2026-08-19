@@ -1,6 +1,6 @@
-# Audit Trail – Reference for Recording and Reading Audit Events
+# Audit Log – Reference for Recording and Reading Audit Events
 
-This guide explains how to use the central audit trail: seeding a new action type, logging an event from any service, and how reads resolve and render the final message.
+This guide explains how to use the central audit log: seeding a new action type, logging an event from any service, and how reads resolve and render the final message.
 
 You only need to touch **one file** to log an existing action from a new place, and **3 files + one migration** if you're introducing a brand-new action type (an enum value, a seed row, and a mapper class). Nothing else in the pipeline (pagination, rendering, the read endpoint) needs to change.
 
@@ -8,7 +8,7 @@ You only need to touch **one file** to log an existing action from a new place, 
 
 ## Overview
 
-The audit trail is a central, append-only log of significant actions taken by users (logging in, creating/updating/deleting entities, etc.). It is stored in two tables:
+The audit log is a central, append-only log of significant actions taken by users (logging in, creating/updating/deleting entities, etc.). It is stored in two tables:
 
 - `audit_actions` — a small, seeded lookup table of action *types* (e.g. `UserCreated`). Rarely changes.
 - `audit_logs` — one row per actual *event* (who did it, which action type, when, and a JSON payload of ids). Grows continuously.
@@ -206,9 +206,21 @@ There is nothing to add here for a new action type — as soon as your mapper is
 | I want to... | Then do this |
 |---|---|
 | Log an event using an **existing** action type | Inject `IAuditLogService`, call `LogAsync(existingEnumValue, idPayloadDict)`. Nothing else. |
-| Introduce a **brand-new** action type | Add an enum value to `AuditActionEnum`, seed a matching row in `AuditActionConfiguration`, add an `IAuditTemplateMapper` implementation and register it in `AuditMapperRegistry`, generate a migration, then call `LogAsync` as above. |
+| Introduce a **brand-new** action type | Add an enum value to `AuditActionEnum`, seed a matching row in `AuditActionConfiguration`, add an `IAuditTemplateMapper` implementation and register it in `AuditMapperRegistry`, generate a migration, then call `LogAsync` as above. **Also add the matching value to the frontend's `AuditAction` type** (see below). |
 | Read/display the audit log | Nothing to build — `GET /api/audit-logs` already exists; every authenticated user can call it, scoped to their own entries unless `Leadership`/`Admin`. |
 | Change who can read the full (unscoped) audit log, or which rows non-elevated users see | Edit the `isElevated`/`scopedUserId` logic in `AuditLogService.GetAuditLogsAsync`. |
+
+### Frontend: keep `AuditAction` in sync
+
+`AuditLogDto.Action` (`Pdr.Api/DTOs/Audit/AuditLogDto.cs`) is serialized as the enum's **string name** (e.g. `"UserLoggedIn"`), not a number — the CLR type is `string`, sourced from the seeded `AuditAction.Action` column (`AuditActionEnum.X.ToString()`), and no `JsonStringEnumConverter` is involved.
+
+The frontend mirrors this as a string literal union in `frontend/src/app/features/audit-log/models/audit-log.model.ts`:
+
+```ts
+export type AuditAction = 'UserLoggedIn' | 'UserCreated' | 'UserUpdated' | 'UserDeleted';
+```
+
+**Whenever you add a new value to `AuditActionEnum` on the backend, add the matching string literal to `AuditAction` on the frontend in the same change.** Do not model it as a numeric TS `enum` (unlike e.g. `CadenceTypeEnum`) — the wire value is always the string name, never the int.
 
 ---
 

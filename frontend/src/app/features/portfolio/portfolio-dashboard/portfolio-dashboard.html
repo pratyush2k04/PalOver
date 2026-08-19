@@ -3,7 +3,7 @@
   <header class="dashboard-header">
     <div class="header-titles">
       <h1>Portfolio Readiness Dashboard</h1>
-      <app-banner message="Overview of active engagements, readiness scores, open blockers, and kickoff timelines." />
+      <p class="subtitle">Overview of active engagements, readiness scores, open blockers, and kickoff timelines.</p>
     </div>
   </header>
 
@@ -14,9 +14,9 @@
     </app-alert>
   }
 
-  <!-- KPI Metric Cards -->
+  <!-- KPI Metric Cards (Non-clickable) -->
   <div class="kpi-grid">
-    <div class="kpi-card kpi-card--total" (click)="setStatusFilter(STATUS.ALL)" [class.kpi-card--active]="statusFilter() === STATUS.ALL">
+    <div class="kpi-card kpi-card--total">
       <div class="kpi-icon">
         <span [inlineSVG]="'assets/icons/briefcase.svg'"></span>
       </div>
@@ -26,7 +26,7 @@
       </div>
     </div>
 
-    <div class="kpi-card kpi-card--ready" (click)="setStatusFilter(STATUS.KICKOFF_READY)" [class.kpi-card--active]="statusFilter() === STATUS.KICKOFF_READY">
+    <div class="kpi-card kpi-card--ready">
       <div class="kpi-icon">
         <span [inlineSVG]="'assets/icons/check-circle.svg'"></span>
       </div>
@@ -36,7 +36,7 @@
       </div>
     </div>
 
-    <div class="kpi-card kpi-card--progress" (click)="setStatusFilter(STATUS.IN_PROGRESS)" [class.kpi-card--active]="statusFilter() === STATUS.IN_PROGRESS">
+    <div class="kpi-card kpi-card--progress">
       <div class="kpi-icon">
         <span [inlineSVG]="'assets/icons/clock.svg'"></span>
       </div>
@@ -46,7 +46,7 @@
       </div>
     </div>
 
-    <div class="kpi-card kpi-card--atrisk" (click)="setStatusFilter(STATUS.AT_RISK)" [class.kpi-card--active]="statusFilter() === STATUS.AT_RISK">
+    <div class="kpi-card kpi-card--atrisk">
       <div class="kpi-icon">
         <span [inlineSVG]="'assets/icons/alert-circle.svg'"></span>
       </div>
@@ -57,7 +57,7 @@
     </div>
   </div>
 
-  <!-- Filters Toolbar with Common TabsComponent -->
+  <!-- Filters Toolbar -->
   <div class="filter-toolbar">
     <div class="filter-group">
       <span class="filter-label">Status:</span>
@@ -98,7 +98,6 @@
             <th>Readiness Score</th>
             <th>Open Blockers</th>
             <th>Status</th>
-            <th class="text-right">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -147,7 +146,7 @@
               <!-- Open Blockers -->
               <td>
                 @if (item.openBlockerCount > 0) {
-                  <app-badge [text]="item.openBlockerCount + ' Open Blockers'" />
+                  <app-badge [text]="item.openBlockerCount + ' Blockers'" />
                 } @else {
                   <span class="blocker-badge blocker-badge--zero">0 Blockers</span>
                 }
@@ -158,17 +157,6 @@
                 <app-status-badge [tone]="getStatusBadgeTone(item.status)">
                   {{ item.status }}
                 </app-status-badge>
-              </td>
-
-              <!-- Action -->
-              <td class="text-right" (click)="$event.stopPropagation()">
-                <app-button
-                  variant="stroked"
-                  (click)="openWorkspace(item.engagementId)"
-                  title="Open Workspace"
-                >
-                  Workspace &rarr;
-                </app-button>
               </td>
             </tr>
           }

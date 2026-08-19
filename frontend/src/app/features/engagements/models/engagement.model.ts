@@ -76,8 +76,9 @@ export interface EngagementOwners {
   techLeadName?: string;
 }
 
-export interface PmEngagementListItem {
-  engagementId: number;
+export interface EngagementListItem {
+  id: number;
+  engagementName: string;
   clientName: string;
   engagementTypeName: string;
   commercialModelName: string;
@@ -86,8 +87,8 @@ export interface PmEngagementListItem {
   readinessScore: number | null;
 }
 
-export interface PmEngagementListResponse {
-  engagements: PmEngagementListItem[];
+export interface EngagementListResponse {
+  engagements: EngagementListItem[];
 }
 
 export type EngagementSortBy = 'kickoff' | 'readiness' | 'client';

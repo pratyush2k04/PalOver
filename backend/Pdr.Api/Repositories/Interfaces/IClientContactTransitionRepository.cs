@@ -1,4 +1,4 @@
-using Pdr.Api.Models;
+using Pdr.Api.Models.Handover;
 
 namespace Pdr.Api.Repositories.Interfaces;
 
