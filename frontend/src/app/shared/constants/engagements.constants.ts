@@ -62,6 +62,7 @@ export const ENGAGEMENT_WORKSPACE_CONFIG = {
     { label: 'Technical Readiness', route: ENGAGEMENT_ROUTES.TECHNICAL_READINESS, enabled: true },
     { label: 'Risks', route: ENGAGEMENT_ROUTES.RISKS, enabled: true },
     { label: 'Assumptions & Decisions', route: ENGAGEMENT_ROUTES.ASSUMPTIONS, enabled: true },
+    { label: 'Audits', route: ENGAGEMENT_ROUTES.AUDITS, enabled: true },
     { label: 'Reporting', route: 'reporting', enabled: false }
   ]
 } as const;

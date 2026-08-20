@@ -59,6 +59,7 @@ export const ENGAGEMENT_ROUTES = {
   TECHNICAL_READINESS: 'technical-readiness',
   RISKS: 'risks',
   ASSUMPTIONS: 'assumptions-and-decisions',
+  AUDITS: 'audits',
   DAY_ONE_SUMMARY_PRINT: 'day-one-summary-print',
 } as const;
 

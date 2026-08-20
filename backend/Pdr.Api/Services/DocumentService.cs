@@ -172,8 +172,9 @@ public class DocumentService(
                 ["DocumentId"] = reloaded.Id,
                 ["CategoryId"] = reloaded.CategoryId,
                 ["ActorUserId"] = actorUserId,
-                ["DocumentName"] = reloaded.FileName
+                ["DocumentName"] = reloaded.FileName,
             },
+            engagementId: dto.EngagementId,
             actingUserId: actorUserId);
 
         var uploaderNames = await GetUploaderNamesAsync([reloaded.CreatedBy]);
@@ -399,6 +400,7 @@ public class DocumentService(
                 ["ActorUserId"] = actorUserId,
                 ["DocumentName"] = reloaded.FileName
             },
+            engagementId: reloaded.EngagementId,
             actingUserId: actorUserId);
 
         var uploaderNames = await GetUploaderNamesAsync([reloaded.CreatedBy]);

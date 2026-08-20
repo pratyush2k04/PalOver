@@ -111,6 +111,7 @@ public class ArchitectureValidationService(
                 ["ItemName"] = item.FeatureName,
                 ["ActorUserId"] = actorUserId
             },
+            engagementId: engagementId,
             actingUserId: actorUserId > 0 ? actorUserId : null);
 
         return MapFeatureToDto(item);

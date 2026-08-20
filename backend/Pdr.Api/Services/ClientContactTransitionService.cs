@@ -54,6 +54,7 @@ public class ClientContactTransitionService(
                 ["ClientName"] = request.IncomingContactName.Trim(),
                 ["ActorUserId"] = actorUserId
             },
+            engagementId: engagementId,
             actingUserId: actorUserId > 0 ? actorUserId : null);
 
         return MapToDto(transition);
