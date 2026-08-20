@@ -8,6 +8,7 @@ import { LoadingSpinnerComponent } from '@common/components/loading-spinner/load
 import { ButtonComponent } from '@common/components/button/button';
 import { NotificationService } from '../services/notification.service';
 import { Notification } from '../models/notification.model';
+import { APP_ROUTES } from '@shared/constants/app.constants';
 
 const PAGE_SIZE = 5;
 const UNREAD_COUNT_POLL_INTERVAL_MS = 30_000;
@@ -76,7 +77,7 @@ export class NotificationsDropdownComponent implements OnInit {
 
   onViewAllClick(): void {
     this.isOpen.set(false);
-    this.router.navigate(['/notifications']);
+    this.router.navigate([APP_ROUTES.NOTIFICATIONS]);
   }
 
   markAllAsRead(): void {

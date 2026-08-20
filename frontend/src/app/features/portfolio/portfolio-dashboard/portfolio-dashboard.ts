@@ -8,7 +8,9 @@ import {
   PORTFOLIO_STATUS,
   PORTFOLIO_DAYS_FILTER,
   PORTFOLIO_MESSAGES,
-  PORTFOLIO_BADGE_CLASSES
+  PORTFOLIO_BADGE_CLASSES,
+  APP_ROUTES,
+  ENGAGEMENT_ROUTES
 } from '@shared/constants/app.constants';
 import { AlertComponent } from '@common/components/alert/alert';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
@@ -119,7 +121,7 @@ export class PortfolioDashboardComponent implements OnInit {
   }
 
   openWorkspace(engagementId: number): void {
-    this.router.navigate(['/engagements', engagementId, 'workspace']);
+    this.router.navigate([APP_ROUTES.ENGAGEMENTS, engagementId, ENGAGEMENT_ROUTES.WORKSPACE]);
   }
 
   getStatusBadgeTone(status: string): StatusBadgeTone {

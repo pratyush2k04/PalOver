@@ -6,7 +6,7 @@ import { EngagementService } from '../services/engagement.service';
 import { EngagementSortBy, EngagementListItem } from '../models/engagement.model';
 import { AppContextService } from 'src/app/services/app-context';
 import { EngagementsComponent } from '../pages/createengagment/engagements';
-import { ENGAGEMENT_MESSAGES, USER_ROLES } from '@shared/constants/app.constants';
+import { ENGAGEMENT_MESSAGES, USER_ROLES, APP_ROUTES, ENGAGEMENT_ROUTES } from '@shared/constants/app.constants';
 import { AlertComponent } from '@common/components/alert/alert';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { ButtonComponent } from '@common/components/button/button';
@@ -106,7 +106,7 @@ export class MyEngagementsComponent implements OnInit {
   }
 
   openEngagement(engagementId: number): void {
-    this.router.navigate(['/engagements', engagementId, 'workspace']);
+    this.router.navigate([APP_ROUTES.ENGAGEMENTS, engagementId, ENGAGEMENT_ROUTES.WORKSPACE]);
   }
 
   formatKickoffDate(kickoffDate: string): string {
