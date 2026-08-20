@@ -1,23 +1,27 @@
 <div class="workspace-container">
-  <div class="workspace-header" *ngIf="!isLoading() && engagement()">
-    <div class="header-info">
-      <h1>{{ engagement()!.engagementName }}</h1>
-      <p><strong>Type:</strong> {{ engagement()!.engagementType }}</p>
+  @if (!isLoading() && engagement(); as eng) {
+    <div class="workspace-header">
+      <div class="header-info">
+        <h1>{{ eng.engagementName }}</h1>
+        <p><strong>Type:</strong> {{ eng.engagementType }}</p>
+      </div>
+      <div class="header-metrics">
+        <p><strong>Kickoff Date:</strong> {{ eng.kickoffDate }}</p>
+        <p><strong>Billing Date:</strong> {{ eng.billingStartDate || '—' }}</p>
+        <p>
+          <strong>Readiness Score:</strong> {{ readiness()?.score ?? '—' }}
+          @if (eng.isKickoffReady) {
+            <span class="kickoff-ready-badge">Kickoff-ready</span>
+          }
+        </p>
+        <p><strong>Client Contact:</strong> {{ eng.clientName }}</p>
+      </div>
     </div>
-    <div class="header-metrics">
-      <p><strong>Kickoff Date:</strong> {{ engagement()!.kickoffDate }}</p>
-      <p><strong>Billing Date:</strong> {{ engagement()!.billingStartDate || '—' }}</p>
-      <p>
-        <strong>Readiness Score:</strong> {{ readiness()?.score ?? '—' }}
-        <span class="kickoff-ready-badge" *ngIf="engagement()!.isKickoffReady">Kickoff-ready</span>
-      </p>
-      <p><strong>Client Contact:</strong> {{ engagement()!.clientName }}</p>
+  } @else if (isLoading()) {
+    <div class="workspace-header">
+      <p>Loading engagement details...</p>
     </div>
-  </div>
-
-  <div class="workspace-header" *ngIf="isLoading()">
-    <p>Loading engagement details...</p>
-  </div>
+  }
 
   <app-tabs [tabs]="tabs()" [activeId]="activeTabId()" />
 
