@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
+import { PageHeaderComponent } from '@common/components/page-header/page-header';
 import { ToastService } from '@common/services/toast/toast';
 import { PROFILE_MESSAGES } from '@shared/constants/app.constants';
 import {
@@ -19,7 +20,7 @@ import { ProfileService } from './services/profile.service';
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, AlertComponent, ButtonComponent, InputComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, AlertComponent, ButtonComponent, InputComponent, PageHeaderComponent],
   providers: [DatePipe],
   templateUrl: './profile.html',
   styleUrl: './profile.scss'
