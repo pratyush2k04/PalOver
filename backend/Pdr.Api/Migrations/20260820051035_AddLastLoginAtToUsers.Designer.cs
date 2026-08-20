@@ -13,8 +13,8 @@ using Pdr.Api.Data;
 namespace Pdr.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260819145633_AddLastLoginAtAndProfileAuditActions")]
-    partial class AddLastLoginAtAndProfileAuditActions
+    [Migration("20260820051035_AddLastLoginAtToUsers")]
+    partial class AddLastLoginAtToUsers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -448,18 +448,6 @@ namespace Pdr.Api.Migrations
                             Id = 18,
                             Action = "DiscoveryItemAdded",
                             Details = "Discovery item {itemName} added to engagement {engagementName} by {actorName}"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Action = "UserProfileUpdated",
-                            Details = "Profile field {field} changed by {actorName}"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Action = "UserPasswordChanged",
-                            Details = "Password changed by {actorName}"
                         });
                 });
 
@@ -2957,7 +2945,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnName("is_deleted");
 
                     b.Property<DateTimeOffset?>("LastLoginAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_login_at");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone")
@@ -3150,6 +3139,12 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("display_order");
 
+                    b.Property<bool>("EvidenceRequired")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("evidence_required");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -3205,6 +3200,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Confirm the signed commercial contract is on file before kickoff.",
                             DisplayOrder = 1,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3219,6 +3215,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Verify the approved budget matches the statement of work.",
                             DisplayOrder = 2,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3233,6 +3230,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Agree invoicing milestones and payment terms with the client.",
                             DisplayOrder = 3,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3247,6 +3245,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Sales team walks delivery team through client history and expectations.",
                             DisplayOrder = 4,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3261,6 +3260,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Ensure delivery has access to all pre-sales notes and correspondence.",
                             DisplayOrder = 5,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3275,6 +3275,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Confirm delivery team has contact details for all client stakeholders.",
                             DisplayOrder = 6,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3289,6 +3290,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Capture in-scope and out-of-scope items in the kickoff scope document.",
                             DisplayOrder = 7,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3303,6 +3305,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "List and confirm all deliverables committed to the client.",
                             DisplayOrder = 8,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3317,6 +3320,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Record assumptions made during the sales cycle that affect scope.",
                             DisplayOrder = 9,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = false,
                             IsRetired = false,
@@ -3331,6 +3335,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Agree recurring status meetings and escalation paths.",
                             DisplayOrder = 10,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3345,6 +3350,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Identify decision-makers on both client and delivery sides.",
                             DisplayOrder = 11,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3359,6 +3365,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Agree how scope changes will be raised, approved, and tracked.",
                             DisplayOrder = 12,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3373,6 +3380,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Assign an owner to maintain the Risks, Assumptions, Issues, and Dependencies log.",
                             DisplayOrder = 13,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = false,
                             IsRetired = false,
@@ -3387,6 +3395,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Confirm named resources are assigned and available for the engagement.",
                             DisplayOrder = 14,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3401,6 +3410,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Check assigned resources have capacity for the engagement duration.",
                             DisplayOrder = 15,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3415,6 +3425,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Name backup resources in case of absence during the engagement.",
                             DisplayOrder = 16,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = false,
                             IsRetired = false,
@@ -3429,6 +3440,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Request and confirm access to required client systems and environments.",
                             DisplayOrder = 17,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3443,6 +3455,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Confirm client infrastructure and tooling meet engagement requirements.",
                             DisplayOrder = 18,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3457,6 +3470,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Ensure delivery team has access to repositories and pipelines.",
                             DisplayOrder = 19,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3471,6 +3485,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Review any client-specific security or compliance obligations.",
                             DisplayOrder = 20,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = false,
                             IsRetired = false,
@@ -3485,6 +3500,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Confirm the signed commercial contract is on file before kickoff.",
                             DisplayOrder = 1,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3499,6 +3515,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Verify the approved budget matches the statement of work.",
                             DisplayOrder = 2,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3513,6 +3530,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Agree invoicing milestones and payment terms with the client.",
                             DisplayOrder = 3,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3527,6 +3545,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Sales team walks delivery team through client history and expectations.",
                             DisplayOrder = 4,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3541,6 +3560,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Ensure delivery has access to all pre-sales notes and correspondence.",
                             DisplayOrder = 5,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3555,6 +3575,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Confirm delivery team has contact details for all client stakeholders.",
                             DisplayOrder = 6,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3569,6 +3590,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Capture in-scope and out-of-scope items in the kickoff scope document.",
                             DisplayOrder = 7,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3583,6 +3605,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "List and confirm all deliverables committed to the client.",
                             DisplayOrder = 8,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3597,6 +3620,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Record assumptions made during the sales cycle that affect scope.",
                             DisplayOrder = 9,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = false,
                             IsRetired = false,
@@ -3611,6 +3635,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Agree recurring status meetings and escalation paths.",
                             DisplayOrder = 10,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3625,6 +3650,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Identify decision-makers on both client and delivery sides.",
                             DisplayOrder = 11,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3639,6 +3665,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Agree how scope changes will be raised, approved, and tracked.",
                             DisplayOrder = 12,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3653,6 +3680,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Assign an owner to maintain the Risks, Assumptions, Issues, and Dependencies log.",
                             DisplayOrder = 13,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = false,
                             IsRetired = false,
@@ -3667,6 +3695,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Confirm named resources are assigned and available for the engagement.",
                             DisplayOrder = 14,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3681,6 +3710,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Check assigned resources have capacity for the engagement duration.",
                             DisplayOrder = 15,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3695,6 +3725,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Name backup resources in case of absence during the engagement.",
                             DisplayOrder = 16,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = false,
                             IsRetired = false,
@@ -3709,6 +3740,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Request and confirm access to required client systems and environments.",
                             DisplayOrder = 17,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3723,6 +3755,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Confirm client infrastructure and tooling meet engagement requirements.",
                             DisplayOrder = 18,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3737,6 +3770,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Ensure delivery team has access to repositories and pipelines.",
                             DisplayOrder = 19,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
                             IsRetired = false,
@@ -3751,6 +3785,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Review any client-specific security or compliance obligations.",
                             DisplayOrder = 20,
+                            EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = false,
                             IsRetired = false,

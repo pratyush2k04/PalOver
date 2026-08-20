@@ -32,6 +32,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("NOW()");
         builder.Property(u => u.CreatedBy).HasColumnName("created_by").HasMaxLength(100);
         builder.Property(u => u.UpdatedBy).HasColumnName("updated_by").HasMaxLength(100);
+        builder.Property(u => u.LastLoginAt).HasColumnName("last_login_at");
 
         // Global Query Filter for Soft Delete
         builder.HasQueryFilter(u => !u.IsDeleted);
