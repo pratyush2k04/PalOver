@@ -22,6 +22,8 @@ public class AppDbContext : DbContext
     public DbSet<EngagementStatus> EngagementStatuses => Set<EngagementStatus>();
     public DbSet<EngagementType> EngagementTypes => Set<EngagementType>();
     
+    public DbSet<Assumption> Assumptions => Set<Assumption>();
+
     // Handover entities
     public DbSet<HandoverInfo> HandoverInfos => Set<HandoverInfo>();
     public DbSet<Commitment> Commitments => Set<Commitment>();
