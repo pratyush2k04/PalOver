@@ -1,7 +1,11 @@
-<div class="audit-log">
-  <div class="header">
-    <h1>Audit Log</h1>
-    <app-button variant="stroked" (click)="exportCsv()">Export</app-button>
+<div class="audit-log-container">
+  <div class="audit-log-header">
+    <div class="audit-log-header-left">
+      <h1 class="audit-log-title">Audit Log</h1>
+    </div>
+    <div class="audit-log-header-right">
+      <app-button variant="stroked" (click)="exportCsv()">Export</app-button>
+    </div>
   </div>
 
   <div class="filter-bar">
