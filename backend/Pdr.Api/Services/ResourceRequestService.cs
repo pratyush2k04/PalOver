@@ -370,13 +370,13 @@ public class ResourceRequestService(
         {
             await auditLogService.LogAsync(
                 AuditActionEnum.ResourcingGapFlagRaised,
-                engagementId,
                 new Dictionary<string, object?>
                 {
                     ["EngagementId"] = engagementId,
                     ["UnconfirmedCount"] = after.UnconfirmedCount,
                     ["DaysToBilling"] = after.DaysToBilling ?? 0
-                });
+                },
+                engagementId: engagementId);
 
             var assignments = await resourceRequestRepository.GetPmAndLeadershipAssignmentsAsync(engagementId);
             var notifData = JsonSerializer.Serialize(
@@ -398,11 +398,11 @@ public class ResourceRequestService(
         {
             await auditLogService.LogAsync(
                 AuditActionEnum.ResourcingGapFlagCleared,
-                engagementId,
                 new Dictionary<string, object?>
                 {
                     ["EngagementId"] = engagementId
-                });
+                },
+                engagementId: engagementId);
         }
     }
 }

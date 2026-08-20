@@ -54,13 +54,13 @@ public class PersonService(
             var actorUserId = int.TryParse(currentUserId, out var uid) ? uid : currentUserService.GetUserId();
             await auditLogService.LogAsync(
                 AuditActionEnum.ClientContactDetailsChanged,
-                engagementId,
                 new Dictionary<string, object?>
                 {
                     ["EngagementId"] = engagementId,
                     ["ClientName"] = person.Name,
                     ["ActorUserId"] = actorUserId
                 },
+                engagementId: engagementId,
                 actingUserId: actorUserId > 0 ? actorUserId : null);
         }
 
@@ -102,7 +102,6 @@ public class PersonService(
             {
                 await auditLogService.LogAsync(
                     AuditActionEnum.ClientPersonaChanged,
-                    engagementId,
                     new Dictionary<string, object?>
                     {
                         ["EngagementId"] = engagementId,
@@ -110,6 +109,7 @@ public class PersonService(
                         ["Persona"] = person.Role,
                         ["ActorUserId"] = actorUserId
                     },
+                    engagementId: engagementId,
                     actingUserId: actorUserId > 0 ? actorUserId : null);
             }
 
@@ -117,13 +117,13 @@ public class PersonService(
             {
                 await auditLogService.LogAsync(
                     AuditActionEnum.ClientContactDetailsChanged,
-                    engagementId,
                     new Dictionary<string, object?>
                     {
                         ["EngagementId"] = engagementId,
                         ["ClientName"] = person.Name,
                         ["ActorUserId"] = actorUserId
                     },
+                    engagementId: engagementId,
                     actingUserId: actorUserId > 0 ? actorUserId : null);
             }
         }

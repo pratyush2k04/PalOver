@@ -291,12 +291,12 @@ public class EngagementService(
         var actorUserId = currentUserService.GetUserId();
         await auditLogService.LogAsync(
             isReassignment ? AuditActionEnum.PmAndTlReassigned : AuditActionEnum.PmAndTlAssigned,
-            engagementId,
             new Dictionary<string, object?>
             {
                 ["EngagementId"] = engagementId,
                 ["ActorUserId"] = actorUserId
             },
+            engagementId: engagementId,
             actingUserId: actorUserId > 0 ? actorUserId : null);
 
         if (requiredRole == RoleEnum.ProjectManagement)
@@ -497,12 +497,12 @@ public class EngagementService(
         var actorUserId = currentUserService.GetUserId();
         await auditLogService.LogAsync(
             AuditActionEnum.LeadershipAllocated,
-            engagementId,
             new Dictionary<string, object?>
             {
                 ["EngagementId"] = engagementId,
                 ["ActorUserId"] = actorUserId
             },
+            engagementId: engagementId,
             actingUserId: actorUserId > 0 ? actorUserId : null);
 
         return await GetLeadershipUsersAsync(engagementId);

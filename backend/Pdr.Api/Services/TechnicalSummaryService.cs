@@ -215,12 +215,12 @@ public class TechnicalSummaryService(
         var actorUserId = currentUserService.GetUserId();
         await auditLogService.LogAsync(
             AuditActionEnum.DayOneSummaryGenerated,
-            engagement.EngagementId,
             new Dictionary<string, object?>
             {
                 ["EngagementId"] = engagement.EngagementId,
                 ["ActorUserId"] = actorUserId
             },
+            engagementId: engagement.EngagementId,
             actingUserId: actorUserId > 0 ? actorUserId : null);
 
         return summaryDto;

@@ -233,7 +233,6 @@ public class MasterChecklistService(
         var actorUserId = currentUserService.GetUserId();
         await auditLogService.LogAsync(
             AuditActionEnum.MasterChecklistPublished,
-            null,
             new Dictionary<string, object?>
             {
                 ["Version"] = draftVersion.VersionNumber,

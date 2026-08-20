@@ -64,13 +64,13 @@ public class BrownfieldFindingService(
         var actorUserId = currentUserService.GetUserId();
         await auditLogService.LogAsync(
             AuditActionEnum.BrownfieldItemAdded,
-            engagementId,
             new Dictionary<string, object?>
             {
                 ["EngagementId"] = engagementId,
                 ["FindingName"] = finding.Title,
                 ["ActorUserId"] = actorUserId
             },
+            engagementId: engagementId,
             actingUserId: actorUserId > 0 ? actorUserId : null);
 
         return MapToDto(created!);

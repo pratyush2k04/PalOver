@@ -105,13 +105,13 @@ public class ArchitectureValidationService(
         var actorUserId = currentUserService.GetUserId();
         await auditLogService.LogAsync(
             AuditActionEnum.DiscoveryItemAdded,
-            engagementId,
             new Dictionary<string, object?>
             {
                 ["EngagementId"] = engagementId,
                 ["ItemName"] = item.FeatureName,
                 ["ActorUserId"] = actorUserId
             },
+            engagementId: engagementId,
             actingUserId: actorUserId > 0 ? actorUserId : null);
 
         return MapFeatureToDto(item);
