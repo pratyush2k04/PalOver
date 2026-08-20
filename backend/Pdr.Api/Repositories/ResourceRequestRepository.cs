@@ -64,6 +64,17 @@ public class ResourceRequestRepository(AppDbContext context) : IResourceRequestR
             .ToListAsync();
     }
 
+    public async Task<List<EngagementAssignment>> GetPmAndLeadershipAssignmentsAsync(int engagementId)
+    {
+        return await context.EngagementAssignments
+            .AsNoTracking()
+            .Include(a => a.User).ThenInclude(u => u.Role)
+            .Where(a => a.EngagementId == engagementId && 
+                        (a.User.RoleId == (int)RoleEnum.Leadership || a.User.RoleId == (int)RoleEnum.ProjectManagement) &&
+                        !a.User.IsDeleted)
+            .ToListAsync();
+    }
+
     public async Task SaveChangesAsync()
     {
         await context.SaveChangesAsync();

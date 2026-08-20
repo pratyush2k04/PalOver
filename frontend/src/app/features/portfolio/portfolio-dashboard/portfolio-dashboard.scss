@@ -89,11 +89,10 @@
 
 /* Filter Toolbar */
 .filter-toolbar {
-  @include flex-between;
+  display: flex;
+  align-items: flex-end;
   flex-wrap: wrap;
-  gap: $spacing-4;
-  background: $color-surface;
-  padding: $spacing-3 $spacing-5;
+  gap: $spacing-5;
   border-radius: $radius-lg;
   border: 1px solid $color-border-soft;
   margin-bottom: $spacing-6;
@@ -101,13 +100,15 @@
 
 .filter-group {
   display: flex;
-  align-items: center;
-  gap: $spacing-3;
+  flex-direction: column;
+  gap: $spacing-1;
 
-  .filter-label {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-semibold;
-    color: $color-text-muted;
+  app-select {
+    min-width: 180px;
+
+    ::ng-deep .app-field {
+      margin-bottom: 0;
+    }
   }
 }
 
@@ -186,22 +187,19 @@
       @include text-truncate;
       font-weight: $font-weight-normal;
     }
-  }
 
-  .pm-info {
-    display: flex;
-    align-items: center;
-    gap: $spacing-2;
-
-    .pm-name {
-      color: $color-text;
-      font-weight: $font-weight-normal;
-    }
-
-    .pm-unassigned {
-      color: $color-text-fainter;
-      font-style: italic;
-      font-weight: $font-weight-normal;
+    .resourcing-gap-flag {
+      display: inline-flex;
+      align-items: center;
+      gap: $spacing-1;
+      font-size: 0.7rem;
+      font-weight: $font-weight-medium;
+      color: $color-warning-text;
+      background: $color-warning-bg;
+      border: 1px solid $color-warning-border;
+      border-radius: $radius-sm;
+      padding: 0.1rem $spacing-2;
+      margin-top: $spacing-1;
     }
   }
 
@@ -228,6 +226,11 @@
       background: $color-bg;
       color: $color-text-muted;
       border: 1px solid $color-border-soft;
+    }
+
+    &--none {
+      color: $color-text-fainter;
+      font-style: italic;
     }
   }
 

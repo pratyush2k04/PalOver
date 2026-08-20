@@ -1,9 +1,10 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { PortfolioService } from '../services/portfolio.service';
-import { LeadershipEngagementListItem, StatusFilterType, DaysFilterType } from '../models/portfolio.model';
+import { LeadershipEngagementListItem, StatusFilterType, DaysFilterType, ResourcingFilterType } from '../models/portfolio.model';
 import {
   PORTFOLIO_STATUS,
   PORTFOLIO_DAYS_FILTER,
@@ -15,26 +16,25 @@ import {
 import { AlertComponent } from '@common/components/alert/alert';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
-import { AvatarComponent } from '@common/components/avatar/avatar';
 import { BadgeComponent } from '@common/components/badge/badge';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
-import { TabsComponent, TabItem } from '@common/components/tabs/tabs';
 import { PageHeaderComponent } from '@common/components/page-header/page-header';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 
 @Component({
   selector: 'app-portfolio-dashboard',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     InlineSVGModule,
     AlertComponent,
     EmptyStateComponent,
     StatusBadgeComponent,
-    AvatarComponent,
     BadgeComponent,
     LoadingSpinnerComponent,
-    TabsComponent,
-    PageHeaderComponent
+    PageHeaderComponent,
+    SelectComponent
   ],
   templateUrl: './portfolio-dashboard.html',
   styleUrl: './portfolio-dashboard.scss'
@@ -47,18 +47,23 @@ export class PortfolioDashboardComponent implements OnInit {
   readonly DAYS = PORTFOLIO_DAYS_FILTER;
   readonly MESSAGES = PORTFOLIO_MESSAGES;
 
-  readonly statusTabs: TabItem[] = [
-    { id: PORTFOLIO_STATUS.ALL, label: 'All' },
-    { id: PORTFOLIO_STATUS.KICKOFF_READY, label: 'Kickoff Ready' },
-    { id: PORTFOLIO_STATUS.IN_PROGRESS, label: 'In Progress' },
-    { id: PORTFOLIO_STATUS.AT_RISK, label: 'At Risk' }
+  readonly statusOptions: SelectOption[] = [
+    { value: PORTFOLIO_STATUS.ALL, label: 'All' },
+    { value: PORTFOLIO_STATUS.KICKOFF_READY, label: 'Kickoff Ready' },
+    { value: PORTFOLIO_STATUS.IN_PROGRESS, label: 'In Progress' },
+    { value: PORTFOLIO_STATUS.AT_RISK, label: 'At Risk' }
   ];
 
-  readonly daysTabs: TabItem[] = [
-    { id: PORTFOLIO_DAYS_FILTER.ALL, label: 'All' },
-    { id: PORTFOLIO_DAYS_FILTER.DAYS_7, label: '≤ 7 Days' },
-    { id: PORTFOLIO_DAYS_FILTER.DAYS_14, label: '≤ 14 Days' },
-    { id: PORTFOLIO_DAYS_FILTER.DAYS_30, label: '≤ 30 Days' }
+  readonly daysOptions: SelectOption[] = [
+    { value: PORTFOLIO_DAYS_FILTER.ALL, label: 'All' },
+    { value: PORTFOLIO_DAYS_FILTER.DAYS_7, label: '≤ 7 Days' },
+    { value: PORTFOLIO_DAYS_FILTER.DAYS_14, label: '≤ 14 Days' },
+    { value: PORTFOLIO_DAYS_FILTER.DAYS_30, label: '≤ 30 Days' }
+  ];
+
+  readonly resourcingOptions: SelectOption[] = [
+    { value: 'ALL', label: 'All' },
+    { value: 'FLAGGED', label: 'Resourcing Flagged' }
   ];
 
   isLoading = signal<boolean>(true);
@@ -67,6 +72,7 @@ export class PortfolioDashboardComponent implements OnInit {
 
   statusFilter = signal<StatusFilterType>(PORTFOLIO_STATUS.ALL);
   daysFilter = signal<DaysFilterType>(PORTFOLIO_DAYS_FILTER.ALL);
+  resourcingFilter = signal<ResourcingFilterType>('ALL');
 
   // Summary KPI Metrics
   totalCount = computed(() => this.engagements().length);
@@ -79,6 +85,7 @@ export class PortfolioDashboardComponent implements OnInit {
     const list = this.engagements();
     const status = this.statusFilter();
     const days = this.daysFilter();
+    const resourcing = this.resourcingFilter();
 
     return list.filter(item => {
       if (status !== PORTFOLIO_STATUS.ALL && item.status !== status) {
@@ -89,6 +96,9 @@ export class PortfolioDashboardComponent implements OnInit {
         if (item.daysToKickoff > maxDays) {
           return false;
         }
+      }
+      if (resourcing === 'FLAGGED' && !item.hasResourcingGap) {
+        return false;
       }
       return true;
     });
@@ -114,12 +124,16 @@ export class PortfolioDashboardComponent implements OnInit {
     });
   }
 
-  setStatusFilter(statusId: string): void {
-    this.statusFilter.set(statusId as StatusFilterType);
+  setStatusFilter(statusVal: unknown): void {
+    this.statusFilter.set((statusVal as StatusFilterType) || PORTFOLIO_STATUS.ALL);
   }
 
-  setDaysFilter(daysId: string): void {
-    this.daysFilter.set(daysId as DaysFilterType);
+  setDaysFilter(daysVal: unknown): void {
+    this.daysFilter.set((daysVal as DaysFilterType) || PORTFOLIO_DAYS_FILTER.ALL);
+  }
+
+  setResourcingFilter(resourcingVal: unknown): void {
+    this.resourcingFilter.set((resourcingVal as ResourcingFilterType) || 'ALL');
   }
 
   openWorkspace(engagementId: number): void {
