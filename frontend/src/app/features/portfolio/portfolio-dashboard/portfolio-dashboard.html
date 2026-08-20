@@ -108,6 +108,7 @@
             <th>Days to Billing</th>
             <th>Days to Kickoff</th>
             <th>Readiness Score</th>
+            <th>Day-1 Sign-Off</th>
             <th>Open Blockers</th>
             <th>Status</th>
           </tr>
@@ -158,6 +159,18 @@
                     {{ item.readinessScore }}%
                   </span>
                 </div>
+              </td>
+
+              <!-- Day-1 Sign-Off -->
+              <td>
+                @if (item.isDayOneSignedOff) {
+                  <span class="day-one-status-badge" [class.day-one-status-badge--exception]="item.dayOneSignOffIsException">
+                    <span>{{ item.dayOneSignOffIsException ? '⚠' : '✓' }}</span>
+                    <span>{{ item.dayOneSignOffIsException ? 'Signed (Exception)' : 'Signed Off' }}</span>
+                  </span>
+                } @else {
+                  <span class="day-one-status-badge day-one-status-badge--pending">Pending</span>
+                }
               </td>
 
               <!-- Open Blockers -->
