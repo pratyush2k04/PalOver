@@ -6,6 +6,7 @@ using Pdr.Api.Exceptions;
 using Pdr.Api.Models.AccessTracker;
 using Pdr.Api.Models.EnvironmentTooling;
 using Pdr.Api.Models.LoginEntity;
+using Pdr.Api.Models.ResourceRequests;
 using Pdr.Api.Models.Risks;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
@@ -177,13 +178,53 @@ public class RiskService(
             })
             .ToListAsync();
 
-        // 4. Combine into a list of current active blockers
+        // 4. Fetch active unconfirmed ResourceRequests within billing threshold
+        var engagement = await dbContext.Engagements
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.EngagementId == engagementId && !e.IsDeleted);
+
+        var resourceRequestBlockers = new List<(string SourceType, int SourceItemId, string Title, string Reason, int? OwnerId)>();
+        if (engagement?.BillingStartDate != null)
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            var daysToBilling = engagement.BillingStartDate.Value.DayNumber - today.DayNumber;
+
+            if (daysToBilling <= ResourceRequestConstants.BillingGapThresholdDays)
+            {
+                var unconfirmedCount = await dbContext.ResourceRequests
+                    .Where(r => r.EngagementId == engagementId &&
+                                r.Status != ResourceRequestStatus.Confirmed &&
+                                !r.IsDeleted)
+                    .CountAsync();
+
+                if (unconfirmedCount > 0)
+                {
+                    resourceRequestBlockers.Add((
+                        RiskConstants.SourceTypes.ResourceRequest,
+                        engagementId,
+                        "Resources not confirmed",
+                        $"{unconfirmedCount} resource request(s) not confirmed with {daysToBilling} day(s) until billing starts ({engagement.BillingStartDate.Value:dd MMM yyyy}).",
+                        null
+                    ));
+                }
+            }
+        }
+
+        // 5. Combine into a list of current active blockers
         var currentBlockers = blockedAccessItems
             .Concat(notApplicableToolingItems)
             .Concat(blockedChecklistItems)
+            .Concat(resourceRequestBlockers.Select(b => new
+            {
+                SourceType = b.SourceType,
+                SourceItemId = b.SourceItemId,
+                Title = b.Title,
+                Reason = b.Reason,
+                OwnerId = b.OwnerId
+            }))
             .ToList();
 
-        // 4. Fetch all existing auto-created risks for this engagement
+        // 6. Fetch all existing auto-created risks for this engagement
         var existingAutoRisks = await dbContext.Risks
             .Where(r => r.EngagementId == engagementId &&
                         r.SourceType != null &&
