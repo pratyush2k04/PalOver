@@ -16,22 +16,26 @@ public class AuditLogService(
     TemplateMapperResolver<IAuditTemplateMapper> mapperResolver,
     TemplateRenderer templateRenderer) : IAuditLogService
 {
-    public async Task LogAsync(AuditActionEnum action, IDictionary<string, object?> payload, int? actingUserId = null)
+    public async Task LogAsync(AuditActionEnum action, IDictionary<string, object?> payload, int? engagementId = null, int? actingUserId = null)
     {
         var userId = actingUserId ?? currentUserService.GetUserId();
 
         var auditAction = await repository.GetAuditActionByIdAsync((int)action)
             ?? throw new InvalidOperationException($"No AuditAction row found for {action}.");
 
+        var payloadJson = JsonSerializer.Serialize(payload);
+
         await repository.AddAsync(new AuditLog
         {
             UserId = userId,
             AuditActionId = auditAction.Id,
-            PayloadJson = JsonSerializer.Serialize(payload)
+            PayloadJson = payloadJson,
+            EngagementId = engagementId
         });
 
         await repository.SaveChangesAsync();
     }
+
 
     public async Task<CursorPagedResult<AuditLogDto>> GetAuditLogsAsync(int? cursor, int limit)
     {
@@ -57,6 +61,75 @@ public class AuditLogService(
         };
     }
 
+    /// <summary>
+    /// Retrieves a cursor-paginated page of audit log entries for a specific engagement.
+    /// The database efficiently filters by EngagementId, so we can fetch exactly one batch.
+    /// </summary>
+    public async Task<CursorPagedResult<EngagementAuditLogDto>> GetEngagementAuditLogsAsync(int engagementId, int? cursor, int limit)
+    {
+        var items = new List<EngagementAuditLogDto>();
+        
+        // Make exactly 1 database call
+        var batch = await repository.GetPageAsync(cursor, limit, userId: null, engagementId: engagementId);
+
+        var hasMore = batch.Count > limit;
+        var examined = hasMore ? batch.Take(limit).ToList() : batch;
+
+        if (examined.Count == 0)
+        {
+            return new CursorPagedResult<EngagementAuditLogDto>
+            {
+                Items = items,
+                NextCursor = null,
+                HasMore = false
+            };
+        }
+
+        foreach (var log in examined)
+        {
+            var actionString = log.AuditAction?.Action ?? string.Empty;
+            if (!Enum.TryParse<AuditActionEnum>(actionString, out var actionEnum))
+            {
+                continue;
+            }
+
+            if (!EngagementAuditActionVisibilityRegistry.Entries.TryGetValue(actionEnum, out var visibility))
+            {
+                continue;
+            }
+
+            var roles = visibility.VisibleToRoles;
+            if (roles == null || roles.Length == 0)
+            {
+                continue;
+            }
+
+            bool hasAccess = currentUserService.IsAdmin() || roles.Any(r => currentUserService.IsInRole(r));
+            if (!hasAccess)
+            {
+                continue;
+            }
+
+            var dto = await MapToDtoAsync(log);
+            items.Add(new EngagementAuditLogDto
+            {
+                Id = dto.Id,
+                UserId = dto.UserId,
+                UserName = dto.UserName,
+                Action = dto.Action,
+                Details = dto.Details,
+                CreatedAt = dto.CreatedAt
+            });
+        }
+
+        return new CursorPagedResult<EngagementAuditLogDto>
+        {
+            Items = items,
+            NextCursor = hasMore ? examined[^1].Id : null,
+            HasMore = hasMore
+        };
+    }
+
     private async Task<AuditLogDto> MapToDtoAsync(AuditLog auditLog)
     {
         var actionKey = auditLog.AuditAction?.Action ?? string.Empty;
@@ -68,12 +141,14 @@ public class AuditLogService(
 
         return new AuditLogDto
         {
-            AuditLogId = auditLog.Id,
+            Id = auditLog.Id,
             UserId = auditLog.UserId,
             UserName = auditLog.User?.FullName ?? string.Empty,
             Action = actionKey,
             Details = templateRenderer.Render(auditLog.AuditAction?.Details ?? string.Empty, values),
-            CreatedAt = auditLog.CreatedAt
+            CreatedAt = auditLog.CreatedAt,
+            EngagementId = auditLog.EngagementId
         };
     }
+
 }

@@ -1,7 +1,11 @@
-<div class="audit-log">
-  <div class="header">
-    <h1>Audit Log</h1>
-    <app-button variant="stroked" (click)="exportCsv()">Export</app-button>
+<div class="audit-log-container">
+  <div class="audit-log-header">
+    <div class="audit-log-header-left">
+      <h1 class="audit-log-title">Audit Log</h1>
+    </div>
+    <div class="audit-log-header-right">
+      <app-button variant="stroked" (click)="exportCsv()">Export</app-button>
+    </div>
   </div>
 
   <div class="filter-bar">
@@ -46,7 +50,7 @@
       <tbody>
         @for (log of pagedLogs(); track log.id) {
           <tr>
-            <td class="col-date">{{ log.createdAt | date: 'medium' }}</td>
+            <td class="col-date" [title]="log.createdAt | date: 'full'">{{ log.createdAt | date: 'medium' }}</td>
             @if (showUserColumn) {
               <td class="col-user">{{ log.userName }}</td>
             }
@@ -57,7 +61,7 @@
           @if (!isLoading()) {
             <tr>
               <td [attr.colspan]="showUserColumn ? 4 : 3" class="empty-row">
-                <app-empty-state message="No audit log entries found." />
+                <app-empty-state [message]="emptyStateMessage" />
               </td>
             </tr>
           }
