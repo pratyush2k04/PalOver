@@ -15,6 +15,7 @@
     </div>
   </app-page-header>
 
+  <!-- Controls Row (Search & Role Filter) -->
   <div class="controls-row">
     <div class="search-box">
       <span class="search-icon" [inlineSVG]="'assets/icons/search.svg'"></span>
@@ -63,9 +64,11 @@
           <tbody>
             @for (user of filteredUsers(); track user.id) {
               <tr>
-                <td class="user-name-cell">
-                  <app-avatar [name]="user.fullName" size="sm" />
-                  <span class="name">{{ user.fullName }}</span>
+                <td>
+                  <div class="user-name-cell">
+                    <app-avatar [name]="user.fullName" size="sm" />
+                    <span class="name">{{ user.fullName }}</span>
+                  </div>
                 </td>
                 <td class="col-email">{{ user.email }}</td>
                 <td class="col-role" [attr.data-role]="user.roleName">

@@ -19,7 +19,7 @@
 
   app-page-header {
     display: block;
-    margin-bottom: $spacing-2;
+    margin-bottom: 0;
   }
 
   /* Header Controls & Cards */
@@ -28,7 +28,6 @@
     align-items: center;
     gap: $spacing-4;
     flex-wrap: wrap;
-    margin-top: -$spacing-5;
     margin-bottom: $spacing-4;
 
     .search-box {
@@ -132,7 +131,7 @@
 
       th {
         background: $color-surface-hover;
-        padding: $spacing-4 $spacing-5;
+        padding: 0.65rem $spacing-5;
         font-size: $font-size-xs;
         font-weight: $font-weight-bold;
         text-transform: uppercase;
@@ -142,11 +141,15 @@
       }
 
       td {
-        padding: $spacing-4 $spacing-5;
+        padding: 0.65rem $spacing-5;
         border-bottom: 1px solid $color-border-soft;
         vertical-align: middle;
         font-size: $font-size-sm;
         font-weight: $font-weight-medium;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
       }
 
       tr:hover td {
@@ -179,7 +182,7 @@
           select {
             font-weight: $font-weight-semibold;
             border-radius: $radius-lg;
-            padding: 0.5rem 1.85rem 0.5rem 0.85rem;
+            padding: 0.4rem 1.85rem 0.4rem 0.85rem;
             width: 100%;
             transition: border-color $transition-fast, background-color $transition-fast, color $transition-fast;
           }
@@ -225,7 +228,7 @@
     .table-footer {
       @include flex-between;
       align-items: center;
-      padding: $spacing-4 $spacing-5;
+      padding: 0.65rem $spacing-5;
       background: $color-surface;
       border-top: 1px solid $color-border-soft;
 
