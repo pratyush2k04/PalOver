@@ -16,17 +16,20 @@ namespace Pdr.Api.Controllers;
 public class SearchController(ISearchService searchService) : ControllerBase
 {
     /// <summary>
-    /// Searches across engagements, documents, people, and checklist items the current user can access.
+    /// Searches across engagements, documents, people, checklist items, and decisions the current user can access.
     /// </summary>
     /// <param name="q">The search term.</param>
+    /// <param name="types">Optional content types to filter by (e.g. engagement, document, person, checklist, decision).</param>
     /// <returns>Grouped search results with per-group counts.</returns>
     [HttpGet]
-    [EndpointSummary("Global search across engagements, documents, people, and checklist items")]
+    [EndpointSummary("Global search across engagements, documents, people, checklist items, and decisions")]
     [ProducesResponseType(typeof(GlobalSearchResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<GlobalSearchResponseDto>> GetSearch([FromQuery] string? q)
+    public async Task<ActionResult<GlobalSearchResponseDto>> GetSearch(
+        [FromQuery] string? q,
+        [FromQuery] string[]? types)
     {
-        var result = await searchService.SearchAsync(q);
+        var result = await searchService.SearchAsync(q, types);
         return Ok(result);
     }
 }
