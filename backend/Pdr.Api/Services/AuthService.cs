@@ -19,6 +19,7 @@ public class AuthService(
         {
             await auditLogService.LogAsync(
                 AuditActionEnum.UnauthorizedAccess,
+                null,
                 new Dictionary<string, object?> { ["Email"] = request.Email, ["UserId"] = null },
                 actingUserId: null);
 
@@ -34,6 +35,7 @@ public class AuthService(
         {
             await auditLogService.LogAsync(
                 AuditActionEnum.UnauthorizedAccess,
+                null,
                 new Dictionary<string, object?> { ["Email"] = request.Email, ["UserId"] = user.Id },
                 actingUserId: user.Id);
 
@@ -57,11 +59,13 @@ public class AuthService(
 
                 await auditLogService.LogAsync(
                     AuditActionEnum.AccountLockout,
+                    null,
                     new Dictionary<string, object?> { ["UserId"] = user.Id },
                     actingUserId: user.Id);
 
                 await auditLogService.LogAsync(
                     AuditActionEnum.UnauthorizedAccess,
+                    null,
                     new Dictionary<string, object?> { ["Email"] = request.Email, ["UserId"] = user.Id },
                     actingUserId: user.Id);
 
@@ -77,6 +81,7 @@ public class AuthService(
 
             await auditLogService.LogAsync(
                 AuditActionEnum.UnauthorizedAccess,
+                null,
                 new Dictionary<string, object?> { ["Email"] = request.Email, ["UserId"] = user.Id },
                 actingUserId: user.Id);
 
@@ -97,6 +102,7 @@ public class AuthService(
 
         await auditLogService.LogAsync(
             AuditActionEnum.UserLoggedIn,
+            null,
             new Dictionary<string, object?> { ["UserId"] = user.Id },
             actingUserId: user.Id);
 

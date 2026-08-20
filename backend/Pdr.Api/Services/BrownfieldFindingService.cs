@@ -64,6 +64,7 @@ public class BrownfieldFindingService(
         var actorUserId = currentUserService.GetUserId();
         await auditLogService.LogAsync(
             AuditActionEnum.BrownfieldItemAdded,
+            engagementId,
             new Dictionary<string, object?>
             {
                 ["EngagementId"] = engagementId,

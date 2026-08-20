@@ -16,7 +16,7 @@ public class AuditLogService(
     TemplateMapperResolver<IAuditTemplateMapper> mapperResolver,
     TemplateRenderer templateRenderer) : IAuditLogService
 {
-    public async Task LogAsync(AuditActionEnum action, IDictionary<string, object?> payload, int? actingUserId = null)
+    public async Task LogAsync(AuditActionEnum action, int? engagementId, IDictionary<string, object?> payload, int? actingUserId = null)
     {
         var userId = actingUserId ?? currentUserService.GetUserId();
 
@@ -30,7 +30,7 @@ public class AuditLogService(
             UserId = userId,
             AuditActionId = auditAction.Id,
             PayloadJson = payloadJson,
-            EngagementId = ExtractEngagementId(payloadJson)
+            EngagementId = engagementId
         });
 
         await repository.SaveChangesAsync();
@@ -151,28 +151,4 @@ public class AuditLogService(
         };
     }
 
-    private static int? ExtractEngagementId(string payloadJson)
-    {
-        using var document = JsonDocument.Parse(payloadJson);
-
-        foreach (var property in document.RootElement.EnumerateObject())
-        {
-            if (!string.Equals(property.Name, "EngagementId", StringComparison.OrdinalIgnoreCase))
-            {
-                continue;
-            }
-
-            if (property.Value.ValueKind == JsonValueKind.Number && property.Value.TryGetInt32(out var numeric))
-            {
-                return numeric;
-            }
-
-            if (property.Value.ValueKind == JsonValueKind.String && int.TryParse(property.Value.GetString(), out var parsed))
-            {
-                return parsed;
-            }
-        }
-
-        return null;
-    }
 }

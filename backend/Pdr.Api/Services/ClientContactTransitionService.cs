@@ -48,6 +48,7 @@ public class ClientContactTransitionService(
         var actorUserId = int.TryParse(currentUserId, out var uid) ? uid : currentUserService.GetUserId();
         await auditLogService.LogAsync(
             AuditActionEnum.ClientContactDetailsChanged,
+            engagementId,
             new Dictionary<string, object?>
             {
                 ["EngagementId"] = engagementId,

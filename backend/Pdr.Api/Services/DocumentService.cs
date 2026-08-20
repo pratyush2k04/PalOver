@@ -167,12 +167,13 @@ public class DocumentService(
         var actorUserId = currentUserService.GetUserId();
         await auditLogService.LogAsync(
             AuditActionEnum.DocumentUploaded,
+            dto.EngagementId,
             new Dictionary<string, object?>
             {
                 ["DocumentId"] = reloaded.Id,
                 ["CategoryId"] = reloaded.CategoryId,
                 ["ActorUserId"] = actorUserId,
-                ["DocumentName"] = reloaded.FileName
+                ["DocumentName"] = reloaded.FileName,
             },
             actingUserId: actorUserId);
 
@@ -392,6 +393,7 @@ public class DocumentService(
         var actorUserId = currentUserService.GetUserId();
         await auditLogService.LogAsync(
             AuditActionEnum.DocumentVersioned,
+            reloaded.EngagementId,
             new Dictionary<string, object?>
             {
                 ["DocumentId"] = reloaded.Id,

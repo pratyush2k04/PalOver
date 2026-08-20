@@ -370,6 +370,7 @@ public class ResourceRequestService(
         {
             await auditLogService.LogAsync(
                 AuditActionEnum.ResourcingGapFlagRaised,
+                engagementId,
                 new Dictionary<string, object?>
                 {
                     ["EngagementId"] = engagementId,
@@ -397,6 +398,7 @@ public class ResourceRequestService(
         {
             await auditLogService.LogAsync(
                 AuditActionEnum.ResourcingGapFlagCleared,
+                engagementId,
                 new Dictionary<string, object?>
                 {
                     ["EngagementId"] = engagementId

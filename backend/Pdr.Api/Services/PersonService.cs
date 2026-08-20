@@ -54,6 +54,7 @@ public class PersonService(
             var actorUserId = int.TryParse(currentUserId, out var uid) ? uid : currentUserService.GetUserId();
             await auditLogService.LogAsync(
                 AuditActionEnum.ClientContactDetailsChanged,
+                engagementId,
                 new Dictionary<string, object?>
                 {
                     ["EngagementId"] = engagementId,
@@ -101,6 +102,7 @@ public class PersonService(
             {
                 await auditLogService.LogAsync(
                     AuditActionEnum.ClientPersonaChanged,
+                    engagementId,
                     new Dictionary<string, object?>
                     {
                         ["EngagementId"] = engagementId,
@@ -115,6 +117,7 @@ public class PersonService(
             {
                 await auditLogService.LogAsync(
                     AuditActionEnum.ClientContactDetailsChanged,
+                    engagementId,
                     new Dictionary<string, object?>
                     {
                         ["EngagementId"] = engagementId,

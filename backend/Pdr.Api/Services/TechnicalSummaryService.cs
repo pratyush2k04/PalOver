@@ -215,6 +215,7 @@ public class TechnicalSummaryService(
         var actorUserId = currentUserService.GetUserId();
         await auditLogService.LogAsync(
             AuditActionEnum.DayOneSummaryGenerated,
+            engagement.EngagementId,
             new Dictionary<string, object?>
             {
                 ["EngagementId"] = engagement.EngagementId,

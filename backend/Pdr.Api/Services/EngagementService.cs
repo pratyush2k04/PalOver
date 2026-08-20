@@ -291,6 +291,7 @@ public class EngagementService(
         var actorUserId = currentUserService.GetUserId();
         await auditLogService.LogAsync(
             isReassignment ? AuditActionEnum.PmAndTlReassigned : AuditActionEnum.PmAndTlAssigned,
+            engagementId,
             new Dictionary<string, object?>
             {
                 ["EngagementId"] = engagementId,
@@ -496,6 +497,7 @@ public class EngagementService(
         var actorUserId = currentUserService.GetUserId();
         await auditLogService.LogAsync(
             AuditActionEnum.LeadershipAllocated,
+            engagementId,
             new Dictionary<string, object?>
             {
                 ["EngagementId"] = engagementId,

@@ -41,7 +41,7 @@ public class UserManagementService(
             user.Role = newRole;
             await userRepository.UpdateAsync(user);
 
-            await auditLogService.LogAsync(AuditActionEnum.UserRoleAllocated, new Dictionary<string, object?>
+            await auditLogService.LogAsync(AuditActionEnum.UserRoleAllocated, null, new Dictionary<string, object?>
             {
                 ["TargetUserId"] = user.Id,
                 ["RoleId"] = newRole.Id,
