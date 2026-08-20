@@ -13,6 +13,7 @@ export const APP_ROUTES = {
   ACCESS_DENIED: '/access-denied',
   NOTIFICATIONS: '/notifications',
   AUDIT_LOG: '/audit-log',
+  PROFILE: '/profile',
 } as const;
 
 export const API_ENDPOINTS = {

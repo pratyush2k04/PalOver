@@ -13,4 +13,5 @@ export * from './notification.constants';
 export * from './audit-log.constants';
 export * from './search.constants';
 export * from './resource-request.constants';
+export * from './profile.constants';
 

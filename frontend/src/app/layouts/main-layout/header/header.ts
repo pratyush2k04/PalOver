@@ -36,6 +36,11 @@ export class HeaderComponent {
     }
   }
 
+  onProfileClick(): void {
+    this.isUserMenuOpen.set(false);
+    this.router.navigate([APP_ROUTES.PROFILE]);
+  }
+
   onSignOut(): void {
     this.isUserMenuOpen.set(false);
     this.authService.logout();
