@@ -477,6 +477,9 @@ namespace Pdr.Api.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
+                    b.Property<int?>("EngagementId")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -496,6 +499,8 @@ namespace Pdr.Api.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AuditActionId");
+
+                    b.HasIndex("EngagementId");
 
                     b.HasIndex("UserId");
 

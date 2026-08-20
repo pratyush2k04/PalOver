@@ -2,7 +2,7 @@ namespace Pdr.Api.DTOs.Audit;
 
 public class AuditLogDto
 {
-    public int AuditLogId { get; set; }
+    public int Id { get; set; }
 
     public int UserId { get; set; }
 
@@ -13,4 +13,6 @@ public class AuditLogDto
     public string Details { get; set; } = string.Empty;
 
     public DateTime CreatedAt { get; set; }
+
+    public int? EngagementId { get; set; }
 }

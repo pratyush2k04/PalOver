@@ -60,6 +60,7 @@ public class PersonService(
                     ["ClientName"] = person.Name,
                     ["ActorUserId"] = actorUserId
                 },
+                engagementId: engagementId,
                 actingUserId: actorUserId > 0 ? actorUserId : null);
         }
 
@@ -108,6 +109,7 @@ public class PersonService(
                         ["Persona"] = person.Role,
                         ["ActorUserId"] = actorUserId
                     },
+                    engagementId: engagementId,
                     actingUserId: actorUserId > 0 ? actorUserId : null);
             }
 
@@ -121,6 +123,7 @@ public class PersonService(
                         ["ClientName"] = person.Name,
                         ["ActorUserId"] = actorUserId
                     },
+                    engagementId: engagementId,
                     actingUserId: actorUserId > 0 ? actorUserId : null);
             }
         }
