@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { PortfolioService } from '../services/portfolio.service';
-import { LeadershipEngagementListItem, StatusFilterType, DaysFilterType } from '../models/portfolio.model';
+import { LeadershipEngagementListItem, StatusFilterType, DaysFilterType, ResourcingFilterType } from '../models/portfolio.model';
 import {
   PORTFOLIO_STATUS,
   PORTFOLIO_DAYS_FILTER,
@@ -59,12 +59,18 @@ export class PortfolioDashboardComponent implements OnInit {
     { id: PORTFOLIO_DAYS_FILTER.DAYS_30, label: '≤ 30 Days' }
   ];
 
+  readonly resourcingTabs: TabItem[] = [
+    { id: 'ALL', label: 'All' },
+    { id: 'FLAGGED', label: 'Resourcing Flagged' }
+  ];
+
   isLoading = signal<boolean>(true);
   errorMessage = signal<string | null>(null);
   engagements = signal<LeadershipEngagementListItem[]>([]);
 
   statusFilter = signal<StatusFilterType>(PORTFOLIO_STATUS.ALL);
   daysFilter = signal<DaysFilterType>(PORTFOLIO_DAYS_FILTER.ALL);
+  resourcingFilter = signal<ResourcingFilterType>('ALL');
 
   // Summary KPI Metrics
   totalCount = computed(() => this.engagements().length);
@@ -77,6 +83,7 @@ export class PortfolioDashboardComponent implements OnInit {
     const list = this.engagements();
     const status = this.statusFilter();
     const days = this.daysFilter();
+    const resourcing = this.resourcingFilter();
 
     return list.filter(item => {
       if (status !== PORTFOLIO_STATUS.ALL && item.status !== status) {
@@ -87,6 +94,9 @@ export class PortfolioDashboardComponent implements OnInit {
         if (item.daysToKickoff > maxDays) {
           return false;
         }
+      }
+      if (resourcing === 'FLAGGED' && !item.hasResourcingGap) {
+        return false;
       }
       return true;
     });
@@ -118,6 +128,10 @@ export class PortfolioDashboardComponent implements OnInit {
 
   setDaysFilter(daysId: string): void {
     this.daysFilter.set(daysId as DaysFilterType);
+  }
+
+  setResourcingFilter(resourcingId: string): void {
+    this.resourcingFilter.set(resourcingId as ResourcingFilterType);
   }
 
   openWorkspace(engagementId: number): void {

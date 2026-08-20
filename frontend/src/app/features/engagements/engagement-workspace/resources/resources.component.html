@@ -10,7 +10,7 @@
 
   @if (showWarningBanner()) {
     <app-alert variant="warning">
-      <strong>Resources not confirmed</strong> — billing starts {{ formattedBillingDate() }}. {{ unconfirmedCount() }} request(s) still open.
+      <strong>Resources not confirmed</strong> — billing starts {{ formattedBillingDate() }}. {{ unconfirmedCount() }} request(s) still open ({{ daysToBilling() }} day(s) to billing).
     </app-alert>
   }
 

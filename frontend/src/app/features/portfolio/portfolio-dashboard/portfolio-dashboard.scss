@@ -206,6 +206,20 @@
       @include text-truncate;
       font-weight: $font-weight-normal;
     }
+
+    .resourcing-gap-flag {
+      display: inline-flex;
+      align-items: center;
+      gap: $spacing-1;
+      font-size: 0.7rem;
+      font-weight: $font-weight-medium;
+      color: $color-warning-text;
+      background: $color-warning-bg;
+      border: 1px solid $color-warning-border;
+      border-radius: $radius-sm;
+      padding: 0.1rem $spacing-2;
+      margin-top: $spacing-1;
+    }
   }
 
   .pm-info {

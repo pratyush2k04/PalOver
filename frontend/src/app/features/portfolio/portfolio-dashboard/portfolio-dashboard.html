@@ -76,6 +76,15 @@
         (tabChange)="setDaysFilter($event)"
       />
     </div>
+
+    <div class="filter-group">
+      <span class="filter-label">Resourcing:</span>
+      <app-tabs
+        [tabs]="resourcingTabs"
+        [activeId]="resourcingFilter()"
+        (tabChange)="setResourcingFilter($event)"
+      />
+    </div>
   </div>
 
   <!-- Table Listing / Loading / Empty -->
@@ -107,6 +116,12 @@
               <td class="cell-primary">
                 <div class="engagement-name">{{ item.engagementName }}</div>
                 <div class="client-name">{{ item.clientName }}</div>
+                @if (item.hasResourcingGap) {
+                  <div class="resourcing-gap-flag" [title]="item.unconfirmedResourceCount + ' unconfirmed resource(s), ' + item.daysToBilling + ' day(s) to billing'">
+                    <span>⚑</span>
+                    <span>{{ item.unconfirmedResourceCount }} unconfirmed · {{ item.daysToBilling }}d to billing</span>
+                  </div>
+                }
               </td>
 
               <!-- Project Manager with Avatar -->
