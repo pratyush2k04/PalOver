@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuditLogService } from './services/audit-log.service';
-import { AuditLogDto, AuditLogFilters } from './models/audit-log.model';
+import { AuditLogDto, AuditLogFilters, EngagementAuditLogDto } from './models/audit-log.model';
 import { AUDIT_LOG_MESSAGES, USER_ROLES } from '@shared/constants/app.constants';
 import { AuthService } from 'src/app/services/auth';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
@@ -39,7 +39,7 @@ export class AuditLogComponent implements OnInit {
       : 'No audit log entries found.';
   }
 
-  allLogs = signal<AuditLogDto[]>([]);
+  allLogs = signal<(AuditLogDto | EngagementAuditLogDto)[]>([]);
   isLoading = signal(true);
   errorMessage = signal<string | null>(null);
 
@@ -110,15 +110,20 @@ export class AuditLogComponent implements OnInit {
     downloadCsv(dataRows, header, 'audit-log-export');
   }
 
-  private matchesSearch(log: AuditLogDto, term: string): boolean {
+  private matchesSearch(log: AuditLogDto | EngagementAuditLogDto, term: string): boolean {
     return log.userName.toLowerCase().includes(term)
       || log.action.toLowerCase().includes(term)
       || log.details.toLowerCase().includes(term);
   }
 
-  private loadAllLogs(cursor: number | null = null, accumulated: AuditLogDto[] = []): void {
+  private loadAllLogs(cursor: number | null = null, accumulated: (AuditLogDto | EngagementAuditLogDto)[] = []): void {
     this.isLoading.set(true);
-    this.auditLogService.getAuditLogPage(cursor, 100, this.engagementId).subscribe({
+
+    const request$ = this.engagementId != null
+      ? this.auditLogService.getEngagementAuditLogPage(this.engagementId, cursor, 100)
+      : this.auditLogService.getAuditLogPage(cursor, 100);
+
+    request$.subscribe({
       next: (result) => {
         const combined = [...accumulated, ...result.items];
         if (result.hasMore && result.nextCursor != null) {

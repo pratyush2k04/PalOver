@@ -12,16 +12,24 @@ export class AuditLogService {
 
   getAuditLogPage(
     cursor: number | null,
-    limit: number,
-    engagementId?: number | null
+    limit: number
   ): Observable<CursorPagedResult<AuditLogDto>> {
     let params = new HttpParams().set('limit', limit);
     if (cursor != null) {
       params = params.set('cursor', cursor);
     }
-    if (engagementId != null) {
-      params = params.set('engagementId', engagementId);
-    }
     return this.http.get<CursorPagedResult<AuditLogDto>>(AUDIT_LOG_API_ENDPOINTS.LIST, { params });
+  }
+
+  getEngagementAuditLogPage(
+    engagementId: number,
+    cursor: number | null,
+    limit: number
+  ): Observable<CursorPagedResult<EngagementAuditLogDto>> {
+    let params = new HttpParams().set('engagementId', engagementId).set('limit', limit);
+    if (cursor != null) {
+      params = params.set('cursor', cursor);
+    }
+    return this.http.get<CursorPagedResult<EngagementAuditLogDto>>(AUDIT_LOG_API_ENDPOINTS.ENGAGEMENT_LIST, { params });
   }
 }

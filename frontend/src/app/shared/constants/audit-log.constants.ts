@@ -4,6 +4,7 @@ export const AUDIT_LOG_ROUTES = {
 
 export const AUDIT_LOG_API_ENDPOINTS = {
   LIST: '/api/audit-logs',
+  ENGAGEMENT_LIST: '/api/engagementaudits',
 } as const;
 
 export const AUDIT_LOG_MESSAGES = {

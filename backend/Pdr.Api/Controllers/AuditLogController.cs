@@ -20,15 +20,14 @@ public class AuditLogController(IAuditLogService auditLogService) : ControllerBa
     /// Retrieves a cursor-paginated page of audit log entries, newest first. Leadership/Admin
     /// callers see every user's entries; everyone else sees only their own.
     /// </summary>
-    /// <param name="cursor">The AuditLogId to page backward from. Omit for the most recent entries.</param>
+    /// <param name="cursor">The Id to page backward from. Omit for the most recent entries.</param>
     /// <param name="limit">Maximum number of entries to return.</param>
-    /// <param name="engagementId">When provided, restricts results to entries logged against this engagement.</param>
     [HttpGet]
     [ProducesResponseType(typeof(CursorPagedResult<AuditLogDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> GetAuditLogs([FromQuery] int? cursor, [FromQuery] int limit = 50, [FromQuery] int? engagementId = null)
+    public async Task<IActionResult> GetAuditLogs([FromQuery] int? cursor, [FromQuery] int limit = 50)
     {
-        var result = await auditLogService.GetAuditLogsAsync(cursor, limit, engagementId);
+        var result = await auditLogService.GetAuditLogsAsync(cursor, limit);
         return Ok(result);
     }
 }

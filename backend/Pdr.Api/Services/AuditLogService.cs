@@ -35,33 +35,28 @@ public class AuditLogService(
 
     private const int MaxScanRows = 500;
 
-    public async Task<CursorPagedResult<AuditLogDto>> GetAuditLogsAsync(int? cursor, int limit, int? engagementId = null)
+    public async Task<CursorPagedResult<AuditLogDto>> GetAuditLogsAsync(int? cursor, int limit)
     {
         var isElevated = currentUserService.IsInRole(RoleEnum.Leadership) || currentUserService.IsAdmin();
         var scopedUserId = isElevated ? (int?)null : currentUserService.GetUserId();
 
-        if (engagementId == null)
+        var logs = await repository.GetPageAsync(cursor, limit, scopedUserId);
+
+        var hasMore = logs.Count > limit;
+        var pageLogs = hasMore ? logs.Take(limit).ToList() : logs;
+
+        var items = new List<AuditLogDto>();
+        foreach (var log in pageLogs)
         {
-            var logs = await repository.GetPageAsync(cursor, limit, scopedUserId);
-
-            var hasMore = logs.Count > limit;
-            var pageLogs = hasMore ? logs.Take(limit).ToList() : logs;
-
-            var items = new List<AuditLogDto>();
-            foreach (var log in pageLogs)
-            {
-                items.Add(await MapToDtoAsync(log));
-            }
-
-            return new CursorPagedResult<AuditLogDto>
-            {
-                Items = items,
-                NextCursor = hasMore ? pageLogs[^1].Id : null,
-                HasMore = hasMore
-            };
+            items.Add(await MapToDtoAsync(log));
         }
 
-        return await GetEngagementScopedPageAsync(cursor, limit, scopedUserId, engagementId.Value);
+        return new CursorPagedResult<AuditLogDto>
+        {
+            Items = items,
+            NextCursor = hasMore ? pageLogs[^1].Id : null,
+            HasMore = hasMore
+        };
     }
 
     /// <summary>
@@ -71,9 +66,10 @@ public class AuditLogService(
     /// matches) so a follow-up request resumes scanning rather than re-checking old rows. Bounded by
     /// MaxScanRows so a request can't scan the entire table in one call.
     /// </summary>
-    private async Task<CursorPagedResult<AuditLogDto>> GetEngagementScopedPageAsync(int? cursor, int limit, int? scopedUserId, int engagementId)
+    public async Task<CursorPagedResult<EngagementAuditLogDto>> GetEngagementAuditLogsAsync(int engagementId, int? cursor, int limit)
     {
-        var items = new List<AuditLogDto>();
+        int? scopedUserId = null; // irrespective of who the actor was
+        var items = new List<EngagementAuditLogDto>();
         var currentCursor = cursor;
         var rowsScanned = 0;
         var hasMore = false;
@@ -97,7 +93,15 @@ public class AuditLogService(
                 var dto = await MapToDtoAsync(log);
                 if (dto.EngagementId == engagementId)
                 {
-                    items.Add(dto);
+                    items.Add(new EngagementAuditLogDto
+                    {
+                        Id = dto.Id,
+                        UserId = dto.UserId,
+                        UserName = dto.UserName,
+                        Action = dto.Action,
+                        Details = dto.Details,
+                        CreatedAt = dto.CreatedAt
+                    });
                     if (items.Count == limit)
                     {
                         hasMore = true;
@@ -123,7 +127,7 @@ public class AuditLogService(
             hasMore = rowsScanned >= MaxScanRows;
         }
 
-        return new CursorPagedResult<AuditLogDto>
+        return new CursorPagedResult<EngagementAuditLogDto>
         {
             Items = items,
             NextCursor = hasMore ? currentCursor : null,
@@ -142,7 +146,7 @@ public class AuditLogService(
 
         return new AuditLogDto
         {
-            AuditLogId = auditLog.Id,
+            Id = auditLog.Id,
             UserId = auditLog.UserId,
             UserName = auditLog.User?.FullName ?? string.Empty,
             Action = actionKey,

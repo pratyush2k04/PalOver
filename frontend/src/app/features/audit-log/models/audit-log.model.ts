@@ -27,6 +27,15 @@ export interface AuditLogDto {
   engagementId?: number | null;
 }
 
+export interface EngagementAuditLogDto {
+  id: number;
+  userId: number;
+  userName: string;
+  action: AuditAction;
+  details: string;
+  createdAt: string;
+}
+
 export interface AuditLogFilters {
   search: string;
   fromDate: string | null;
