@@ -10,6 +10,8 @@ export interface LeadershipEngagementListItem {
   hasResourcingGap: boolean;
   unconfirmedResourceCount: number;
   daysToBilling: number | null;
+  isDayOneSignedOff: boolean;
+  dayOneSignOffIsException: boolean;
 }
 
 export type StatusFilterType = 'ALL' | 'Kickoff-ready' | 'In progress' | 'At risk';
