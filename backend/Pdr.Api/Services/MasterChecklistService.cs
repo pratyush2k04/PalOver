@@ -72,6 +72,7 @@ public class MasterChecklistService(
             Description = request.Description,
             CategoryId = request.CategoryId,
             IsMandatory = request.IsMandatory,
+            EvidenceRequired = request.EvidenceRequired,
             DisplayOrder = request.DisplayOrder,
             IsRetired = false
         };
@@ -105,6 +106,7 @@ public class MasterChecklistService(
         item.Description = request.Description;
         item.CategoryId = request.CategoryId;
         item.IsMandatory = request.IsMandatory;
+        item.EvidenceRequired = request.EvidenceRequired;
 
         await checklistRepository.UpdateChecklistItemAsync(item);
 
@@ -219,6 +221,7 @@ public class MasterChecklistService(
                     CategoryId = i.CategoryId,
                     Category = i.Category,
                     IsMandatory = i.IsMandatory,
+                    EvidenceRequired = i.EvidenceRequired,
                     DisplayOrder = i.DisplayOrder,
                     IsRetired = false
                 })
@@ -277,6 +280,7 @@ public class MasterChecklistService(
             CategoryId = item.CategoryId,
             CategoryName = item.Category.CategoryName,
             IsMandatory = item.IsMandatory,
+            EvidenceRequired = item.EvidenceRequired,
             DisplayOrder = item.DisplayOrder,
             IsRetired = item.IsRetired
         };

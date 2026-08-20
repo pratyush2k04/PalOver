@@ -92,6 +92,7 @@ export class CurrentDraftComponent implements OnInit {
           description: result.description,
           categoryId: result.categoryId,
           isMandatory: result.isMandatory,
+          evidenceRequired: result.evidenceRequired,
           displayOrder: nextDisplayOrder,
         })
         .subscribe({
@@ -147,6 +148,7 @@ export class CurrentDraftComponent implements OnInit {
           description: result.description,
           categoryId: result.categoryId,
           isMandatory: result.isMandatory,
+          evidenceRequired: result.evidenceRequired,
         })
         .subscribe({
           next: () => {
