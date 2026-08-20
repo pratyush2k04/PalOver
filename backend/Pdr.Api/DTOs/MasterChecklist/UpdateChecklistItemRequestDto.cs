@@ -9,4 +9,5 @@ public class UpdateChecklistItemRequestDto
     public int CategoryId { get; set; }
 
     public bool IsMandatory { get; set; } = true;
+    public bool EvidenceRequired { get; set; } = false;
 }

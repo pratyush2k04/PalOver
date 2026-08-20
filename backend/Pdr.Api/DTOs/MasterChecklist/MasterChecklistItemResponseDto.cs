@@ -15,6 +15,7 @@ public class MasterChecklistItemResponseDto
     public required string CategoryName { get; set; }
 
     public bool IsMandatory { get; set; }
+    public bool EvidenceRequired { get; set; }
 
     public int DisplayOrder { get; set; }
 
