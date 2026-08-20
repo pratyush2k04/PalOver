@@ -6,7 +6,7 @@ import {
   APP_ROUTES,
 } from '@shared/constants/app.constants';
 
-import { LoginComponent } from './components/login/login';
+import { LoginComponent } from './features/login/login';
 import { MainLayoutComponent } from '@layouts/main-layout/main-layout';
 
 import { authGuard } from './guards/auth.guard';
