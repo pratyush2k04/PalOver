@@ -2,7 +2,6 @@ import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TECHNICAL_READINESS_ROUTES } from '@shared/constants/technical-readiness.constants';
 import { filter, map } from 'rxjs';
 import { EngagementService } from '../services/engagement.service';
 import { KickoffReadinessDto, KickoffReadinessService } from '@shared/services/kickoff-readiness.service';

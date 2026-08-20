@@ -16,7 +16,7 @@ namespace Pdr.Api.Controllers;
 /// </summary>
 [ApiController]
 [Authorize]
-[Route("api/engagements/{engagementId:int}/kickoff")]
+[Route("api/engagements/{engagementId:int}/workspace/kickoff")]
 [Produces("application/json")]
 public class KickoffController(
     IKickoffService kickoffService,

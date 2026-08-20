@@ -7,6 +7,7 @@ public static class ResourceRequestConstants
     public const int MinJobDescriptionLength = 15;
     public const int MaxJobDescriptionLength = 500;
     public const int UrgentThresholdWorkingDays = 5;
+    public const int BillingGapThresholdDays = 3;
 
     public static class ValidationMessages
     {

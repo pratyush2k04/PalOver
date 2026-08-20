@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '@shared/services/auth';
+import { APP_ROUTES } from '@shared/constants/app.constants';
 
 export const adminGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
@@ -11,9 +12,9 @@ export const adminGuard: CanActivateFn = () => {
   }
 
   if (!authService.isLoggedIn()) {
-    router.navigate(['/login']);
+    router.navigate([APP_ROUTES.LOGIN]);
   } else {
-    router.navigate(['/access-denied']);
+    router.navigate([APP_ROUTES.ACCESS_DENIED]);
   }
 
   return false;

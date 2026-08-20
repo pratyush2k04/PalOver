@@ -1,21 +1,3 @@
-export const APP_ROUTES = {
-  LOGIN: 'login',
-  DASHBOARD: 'dashboard',
-  USERS: 'admin/users',
-  ENGAGEMENTS: 'engagements',
-  MY_ENGAGEMENTS: 'my-engagements',
-  MY_HANDOVERS: 'my-handovers',
-  TECHNICAL_READINESS: 'technical-readiness',
-  PORTFOLIO: 'portfolio',
-  PORTFOLIO_DASHBOARD: 'portfolio-dashboard',
-  USER_DIRECTORY: 'user-directory',
-  ENGAGEMENT_ALLOCATION: 'engagement-allocation',
-  ACCESS_DENIED: 'access-denied',
-  NOTIFICATIONS: 'notifications',
-  AUDIT_LOG: 'audit-log',
-  PROFILE: 'profile',
-} as const;
-
 export const API_ENDPOINTS = {
   USERS: '/api/users',
   ROLES: '/api/roles',
