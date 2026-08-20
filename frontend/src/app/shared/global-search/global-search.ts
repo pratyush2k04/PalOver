@@ -8,7 +8,6 @@ import { SEARCH_CONFIG, SEARCH_MESSAGES } from '@shared/constants/search.constan
 import {
   GlobalSearchResponse,
   SearchChecklistItemResult,
-  SearchDecisionResult,
   SearchDocumentResult,
   SearchEngagementResult,
   SearchPersonResult,
@@ -41,7 +40,6 @@ export class GlobalSearchComponent {
     { type: 'document', label: 'Documents' },
     { type: 'person', label: 'People' },
     { type: 'checklist', label: 'Checklist Items' },
-    { type: 'decision', label: 'Decisions' },
   ];
 
   readonly searchTerm = signal('');
@@ -139,8 +137,6 @@ export class GlobalSearchComponent {
         return res.people?.count ?? 0;
       case 'checklist':
         return res.checklistItems?.count ?? 0;
-      case 'decision':
-        return res.decisions?.count ?? 0;
     }
   }
 
@@ -181,11 +177,6 @@ export class GlobalSearchComponent {
   selectChecklistItem(item: SearchChecklistItemResult): void {
     this.close();
     this.router.navigate(['/engagements', item.engagementId, 'workspace', 'checklist']);
-  }
-
-  selectDecision(item: SearchDecisionResult): void {
-    this.close();
-    this.router.navigate(['/engagements', item.engagementId, 'workspace', 'assumptions-decisions']);
   }
 
   private runSearch(term: string, types?: SearchType[]): void {

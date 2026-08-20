@@ -43,7 +43,6 @@ public class SearchService(
         var shouldSearchDocuments = !isFiltered || filterTypes.Contains("document") || filterTypes.Contains("documents");
         var shouldSearchPeople = !isFiltered || filterTypes.Contains("person") || filterTypes.Contains("people");
         var shouldSearchChecklists = !isFiltered || filterTypes.Contains("checklist") || filterTypes.Contains("checklistitem") || filterTypes.Contains("checklistitems") || filterTypes.Contains("checklist-item");
-        var shouldSearchDecisions = !isFiltered || filterTypes.Contains("decision") || filterTypes.Contains("decisions");
 
         var isAdmin = currentUserService.IsAdmin();
         var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
@@ -67,13 +66,10 @@ public class SearchService(
             ? await searchRepository.SearchChecklistItemsAsync(engagementIds, term, cap)
             : (0, []);
 
-        var decisionCount = 0;
-        var decisionItems = new List<SearchDecisionResultDto>();
-
         return new GlobalSearchResponseDto
         {
             Query = term,
-            TotalCount = engagementCount + documentCount + peopleCount + checklistCount + decisionCount,
+            TotalCount = engagementCount + documentCount + peopleCount + checklistCount,
             Engagements = new SearchResultGroupDto<SearchEngagementResultDto>
             {
                 Count = engagementCount,
@@ -120,11 +116,6 @@ public class SearchService(
                     EngagementName = i.EngagementChecklist.Engagement.EngagementName,
                     CategoryName = i.Category.CategoryName
                 }).ToList()
-            },
-            Decisions = new SearchResultGroupDto<SearchDecisionResultDto>
-            {
-                Count = decisionCount,
-                Items = decisionItems
             }
         };
     }

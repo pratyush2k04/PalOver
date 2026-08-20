@@ -112,17 +112,6 @@
               }
             </div>
           }
-          @if (response.decisions && response.decisions.count > 0) {
-            <div class="global-search__group">
-              <div class="global-search__group-header">Decisions ({{ response.decisions.count }})</div>
-              @for (item of response.decisions.items; track item.decisionId) {
-                <div class="global-search__row" (click)="selectDecision(item)">
-                  <span class="global-search__row-title">{{ item.title }}</span>
-                  <span class="global-search__row-subtitle">{{ item.engagementName }} · {{ item.status }}</span>
-                </div>
-              }
-            </div>
-          }
         }
       }
     }

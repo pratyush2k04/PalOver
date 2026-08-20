@@ -13,8 +13,6 @@ public class GlobalSearchResponseDto
     public SearchResultGroupDto<SearchPersonResultDto> People { get; set; } = new();
 
     public SearchResultGroupDto<SearchChecklistItemResultDto> ChecklistItems { get; set; } = new();
-
-    public SearchResultGroupDto<SearchDecisionResultDto> Decisions { get; set; } = new();
 }
 
 public class SearchResultGroupDto<T>
@@ -72,17 +70,4 @@ public class SearchChecklistItemResultDto
     public string EngagementName { get; set; } = string.Empty;
 
     public string CategoryName { get; set; } = string.Empty;
-}
-
-public class SearchDecisionResultDto
-{
-    public int DecisionId { get; set; }
-
-    public string Title { get; set; } = string.Empty;
-
-    public string Status { get; set; } = string.Empty;
-
-    public int EngagementId { get; set; }
-
-    public string EngagementName { get; set; } = string.Empty;
 }
