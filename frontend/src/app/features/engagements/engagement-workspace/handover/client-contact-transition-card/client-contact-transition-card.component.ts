@@ -5,7 +5,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { ClientContactTransitionService } from '../../../services/client-contact-transition.service';
 import { TransitionResponse } from '../../../models/client-contact-transition.model';
 
-import { AuthService } from 'src/app/services/auth';
+import { AuthService } from '@shared/services/auth';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { ToastService } from '@common/services/toast/toast';
 import {

@@ -13,13 +13,13 @@ import {
   ACCESS_DENIED_ROUTES,
 } from '@shared/constants/app.constants';
 
-import { LoginComponent } from './components/login/login';
+import { LoginComponent } from './features/login/login';
 import { MainLayoutComponent } from '@layouts/main-layout/main-layout';
 
-import { authGuard } from './guards/auth.guard';
-import { adminGuard } from './guards/admin.guard';
-import { workspaceGuard } from './guards/workspace.guard';
-import { workspaceRedirectGuard } from './guards/workspace-redirect.guard';
+import { authGuard } from '@shared/guards/auth.guard';
+import { adminGuard } from '@shared/guards/admin.guard';
+import { workspaceGuard } from '@shared/guards/workspace.guard';
+import { workspaceRedirectGuard } from '@shared/guards/workspace-redirect.guard';
 // import { engagementAccessGuard } from './core/guards/engagement-access.guard';
 
 export const routes: Routes = [

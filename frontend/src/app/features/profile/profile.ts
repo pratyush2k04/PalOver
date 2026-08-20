@@ -13,7 +13,7 @@ import {
   hasUpperCase,
   passwordStrengthValidator
 } from '@shared/utils/utils';
-import { AppContextService } from '../../services/app-context';
+import { AppContextService } from '@shared/services/app-context';
 import { ProfileService } from './services/profile.service';
 
 @Component({

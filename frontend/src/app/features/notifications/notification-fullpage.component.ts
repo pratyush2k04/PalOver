@@ -6,7 +6,7 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
 import { NotificationService } from '@shared/services/notification.service';
 import { Notification, NotificationPriority } from '@shared/models/notification.model';
 import { EngagementService } from '../engagements/services/engagement.service';
-import { AuthService } from 'src/app/services/auth';
+import { AuthService } from '@shared/services/auth';
 import { ToastService } from '@common/services/toast/toast';
 import { NOTIFICATION_MESSAGES } from '@shared/constants/app.constants';
 

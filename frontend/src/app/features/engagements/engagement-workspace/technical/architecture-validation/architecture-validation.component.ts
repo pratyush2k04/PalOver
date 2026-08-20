@@ -10,7 +10,7 @@ import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status
 import { ButtonComponent } from '@common/components/button/button';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { DialogService } from '@common/services/dialog/dialog.service';
-import { AuthService } from 'src/app/services/auth';
+import { AuthService } from '@shared/services/auth';
 import { TECHNICAL_READINESS_ROLES } from '@shared/constants/technical-readiness.constants';
 import {
   ArchitectureValidationDto,

@@ -5,10 +5,10 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { GovernanceProcessComponent } from './components/governance-process/governance-process.component';
 import { ChangeRequestsComponent } from './components/change-requests/change-requests.component';
 import { MeetingRecordComponent } from './components/meeting-record/meeting-record.component';
-import { AuthService } from '../../../../services/auth';
+import { AuthService } from '@shared/services/auth';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { EngagementService } from '../../services/engagement.service';
-import { KickoffReadinessDto, KickoffReadinessService } from '../../../../services/kickoff-readiness.service';
+import { KickoffReadinessDto, KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
 import {
   OverrideKickoffReadyDialogComponent,
   OverrideKickoffReadyDialogData,
