@@ -1,3 +1,5 @@
+using System;
+
 namespace Pdr.Api.DTOs.Engagements;
 
 public record EngagementInfoDto(
@@ -10,4 +12,10 @@ public record EngagementInfoDto(
     DateOnly KickoffDate,
     DateOnly? BillingStartDate,
     string Status,
-    bool IsKickoffReady);
+    bool IsKickoffReady,
+    bool IsDayOneSignedOff = false,
+    bool DayOneSignOffIsException = false,
+    string? DayOneSignOffSignerName = null,
+    DateTime? DayOneSignedOffAt = null,
+    DateOnly? DayOneSignOffBillingDate = null,
+    string? DayOneSignOffExceptionJustification = null);
