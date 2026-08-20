@@ -21,6 +21,16 @@ export const routes: Routes = [
     component: LoginComponent,
   },
 
+  // Layout-less Print Summary View
+  {
+    path: 'engagements/:engagementId/day-one-summary-print',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import(
+        './features/engagements/engagement-workspace/technical/day-one-summary-print/day-one-summary-print.component'
+      ).then((m) => m.DayOneSummaryPrintComponent),
+  },
+
   // Protected
   {
     path: '',
@@ -140,6 +150,14 @@ export const routes: Routes = [
           ),
       },
 
+      // Notifications
+      {
+        path: 'notifications',
+        loadChildren: () =>
+          import('./features/notifications/notification-fullpage.routes').then(
+            m => m.NOTIFICATION_FULLPAGE_ROUTES
+          ),
+        },
       // Audit Log (own entries for all users; Leadership/Admin see everyone's)
       {
         path: AUDIT_LOG_ROUTES.BASE,

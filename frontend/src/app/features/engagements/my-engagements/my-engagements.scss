@@ -1,5 +1,5 @@
 .my-engagements-page {
-  padding: 2rem;
+  padding: 1.5rem 2rem 1.25rem;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 
   h2 {
     margin: 0;
@@ -16,31 +16,39 @@
   }
 }
 
-.tabs-row {
+.toolbar-row {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
+  justify-content: flex-end;
+  margin-bottom: 0.75rem;
 }
 
 .sort-control {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-left: auto;
-  padding-bottom: 0.5rem;
+
+  &.presales-view {
+    margin-right: 175px;
+  }
 
   label {
     font-size: 0.8125rem;
     color: #6b7280;
+    white-space: nowrap;
   }
 
-  select {
-    padding: 0.4rem 0.6rem;
-    font-size: 0.85rem;
-    border: 1px solid #cccccc;
-    border-radius: 4px;
+  app-select {
+    min-width: 10rem;
+
+    ::ng-deep .app-field {
+      margin-bottom: 0;
+    }
   }
+}
+
+app-paginator {
+  display: block;
+  margin-top: 1.25rem;
 }
 
 .engagement-list {
@@ -54,7 +62,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.25rem 1.5rem;
+  padding: 0.9rem 1.5rem;
   cursor: pointer;
   transition: background-color 0.15s ease;
 
@@ -81,6 +89,9 @@
 
 
 .engagement-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   margin-top: 0.25rem;
   font-size: 0.8125rem;
   color: #6b7280;

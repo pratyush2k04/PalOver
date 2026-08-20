@@ -16,7 +16,6 @@ namespace Pdr.Api.Controllers;
 /// </summary>
 [ApiController]
 [Authorize]
-[AuthorizeRoles(RoleEnum.PreSales, RoleEnum.ProjectManagement, RoleEnum.TechLead)]
 [Route("api/engagements/{engagementId:int}/people")]
 [Produces("application/json")]
 public class PeopleController(

@@ -1,0 +1,44 @@
+<div class="dialog-container">
+  <div class="modal-header">
+    <h3 class="modal-title">{{ constants.MODAL_TITLE_CONFIRM }}</h3>
+    <app-button type="button" variant="icon" ariaLabel="Close" (click)="onCancel()">
+      <span class="close-icon" [inlineSVG]="'assets/icons/close.svg'"></span>
+    </app-button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="modal-form">
+    <div class="modal-body">
+      @if (errorMessage()) {
+        <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+      }
+
+      <p class="confirmation-text">
+        Confirm <strong>{{ data.allocationName }}</strong> for this role.
+      </p>
+
+      <div class="form-group">
+        <app-input
+          id="confirmed-date"
+          [label]="constants.LABEL_CONFIRMED_DATE"
+          type="date"
+          formControlName="confirmedDate"
+          [errorMessages]="{ futureDate: constants.MSG_FUTURE_CONFIRMED_DATE }"
+        />
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <app-button type="button" variant="stroked" (click)="onCancel()" [disabled]="isSubmitting()">
+        {{ constants.BTN_CANCEL }}
+      </app-button>
+      <app-button
+        type="submit"
+        variant="accent"
+        [disabled]="isSubmitting() || form.invalid"
+        [loading]="isSubmitting()"
+      >
+        {{ constants.BTN_CONFIRM }}
+      </app-button>
+    </div>
+  </form>
+</div>

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Pdr.Api.Constants;
 using Pdr.Api.Models.Notifications;
 
 namespace Pdr.Api.Data.Configuration;
@@ -74,8 +75,34 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             },
             new NotificationTemplate
             {
+                Id = 4,
+                Key = NotificationConstants.TemplateKeys.ResourceRequestRaised,
+                Title = "Resource Request Raised — {EngagementName}",
+                Body = "{PeopleNeeded} {RoleName} requested for {EngagementName} by {RequiredByDate}.",
+                DefaultPriority = NotificationPriority.High,
+                LinkPattern = "/engagements/{EngagementId}/workspace/resources",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 15,
+                Key = NotificationConstants.RiskCommentMention.TemplateKey,
+                Title = "Mentioned in Risk — {RiskTitle}",
+                Body = "{AuthorName} mentioned you in a comment on risk '{RiskTitle}'",
+                DefaultPriority = NotificationPriority.Medium,
+                LinkPattern = "/engagements/{EngagementId}/workspace/risks",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            },
+            new NotificationTemplate
+            {
                 Id = 7,
-                Key = "LeadershipAssigned",
+                Key = NotificationConstants.TemplateKeys.LeadershipAssigned,
                 Title = "Assigned to Engagement — {EngagementName}",
                 Body = "You have been assigned as Engagement Leader for {EngagementName}.",
                 DefaultPriority = NotificationPriority.Medium,
@@ -88,7 +115,7 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             new NotificationTemplate
             {
                 Id = 8,
-                Key = "PMAssigned",
+                Key = NotificationConstants.TemplateKeys.PMAssigned,
                 Title = "Assigned as Project Manager — {EngagementName}",
                 Body = "You have been assigned as Project Manager for {EngagementName}.",
                 DefaultPriority = NotificationPriority.Medium,
@@ -101,7 +128,7 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             new NotificationTemplate
             {
                 Id = 9,
-                Key = "TechLeadAssigned",
+                Key = NotificationConstants.TemplateKeys.TechLeadAssigned,
                 Title = "Assigned as Technical Lead — {EngagementName}",
                 Body = "You have been assigned as Technical Lead for {EngagementName}.",
                 DefaultPriority = NotificationPriority.Medium,
@@ -114,11 +141,50 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             new NotificationTemplate
             {
                 Id = 10,
-                Key = "DocumentUploaded",
+                Key = NotificationConstants.TemplateKeys.DocumentUploaded,
                 Title = "New Document Uploaded — {DocumentName}",
                 Body = "{UploaderName} uploaded {DocumentName} to {EngagementName}.",
                 DefaultPriority = NotificationPriority.Medium,
                 LinkPattern = "/engagements/{EngagementId}/workspace/documents",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 5,
+                Key = "ResourceRequestConfirmed",
+                Title = "Resource Request Confirmed — {EngagementName}",
+                Body = "All named resources for {RoleName} on {EngagementName} are now confirmed.",
+                DefaultPriority = NotificationPriority.High,
+                LinkPattern = "/engagements/{EngagementId}/workspace/resources",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 6,
+                Key = "ResourceRequestAllocated",
+                Title = "Resource Request Allocated — {EngagementName}",
+                Body = "Named resources have been allocated for your {RoleName} request on {EngagementName}.",
+                DefaultPriority = NotificationPriority.Medium,
+                LinkPattern = "/engagements/{EngagementId}/workspace/resources",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 11,
+                Key = "ResourceRequestReopened",
+                Title = "Resource Request Reopened — {EngagementName}",
+                Body = "A confirmed resource was removed from your {RoleName} request on {EngagementName}; it is now reopened for allocation.",
+                DefaultPriority = NotificationPriority.High,
+                LinkPattern = "/engagements/{EngagementId}/workspace/resources",
                 CreatedAt = seedTimestamp,
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",

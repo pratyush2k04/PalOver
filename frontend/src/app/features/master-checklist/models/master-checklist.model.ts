@@ -6,6 +6,7 @@ export interface MasterChecklistItem {
   categoryId: number;
   categoryName: string;
   isMandatory: boolean;
+  evidenceRequired: boolean;
   displayOrder: number;
   isRetired: boolean;
 }
@@ -38,6 +39,7 @@ export interface CreateMasterChecklistItemRequest {
   description: string | null;
   categoryId: number;
   isMandatory: boolean;
+  evidenceRequired: boolean;
   displayOrder: number;
 }
 
@@ -46,6 +48,7 @@ export interface UpdateMasterChecklistItemRequest {
   description: string | null;
   categoryId: number;
   isMandatory: boolean;
+  evidenceRequired: boolean;
 }
 
 export interface MasterChecklistItemOrder {

@@ -1,0 +1,98 @@
+<div class="resources-container">
+  <div class="resources-header">
+    <h2 class="page-title">{{ constants.PAGE_TITLE }}</h2>
+    @if (isProjectManager()) {
+      <app-button variant="accent" (click)="openRaiseModal()">
+        {{ constants.BTN_RAISE_REQUEST }}
+      </app-button>
+    }
+  </div>
+
+  @if (showWarningBanner()) {
+    <app-alert variant="warning">
+      <strong>Resources not confirmed</strong> — billing starts {{ formattedBillingDate() }}. {{ unconfirmedCount() }} request(s) still open.
+    </app-alert>
+  }
+
+  <div class="requests-list">
+    @if (isLoading()) {
+      <app-loading-spinner label="Loading resource requests..." />
+    } @else if (requests().length > 0) {
+      @for (request of requests(); track request.id) {
+        <div class="request-card">
+          <div class="card-header">
+            <div class="role-info">
+              <span class="role-title">{{ request.standardRole }}</span>
+              @if (request.isUrgent) {
+                <app-status-badge tone="danger">Urgent</app-status-badge>
+              }
+              <span class="need-details">
+                {{ request.peopleNeeded }} needed by {{ formatDisplayDate(request.requiredByDate) }}
+              </span>
+            </div>
+            <div class="status-wrapper">
+              <app-status-badge [tone]="statusTone(request.status)">{{ request.status }}</app-status-badge>
+            </div>
+          </div>
+
+          <div class="skills-row">
+            @for (skill of request.skills; track skill) {
+              <span class="skill-tag">{{ skill }}</span>
+            }
+          </div>
+
+          @if (request.status !== 'Raised') {
+            <div class="allocations-table" [class.allocations-table--readonly]="!isLeadershipOrAdmin()">
+              <div class="allocations-row allocations-row--header">
+                <span>Resource name</span>
+                <span>Allocated on</span>
+                <span>Confirmed on</span>
+                @if (isLeadershipOrAdmin()) {
+                  <span>Actions</span>
+                }
+              </div>
+              @for (allocation of request.allocations; track allocation.id; let i = $index) {
+                <div class="allocations-row">
+                  <span class="allocation-name">{{ i + 1 }}. {{ allocation.name }}</span>
+                  <span>{{ formatDisplayDate(allocation.allocatedDate) }}</span>
+                  <span>
+                    @if (allocation.isConfirmed) {
+                      {{ formatDisplayDate(allocation.confirmedDate ?? '') }}
+                    } @else {
+                      <span class="allocation-pending">{{ constants.PENDING_CONFIRMATION }}</span>
+                    }
+                  </span>
+                  @if (isLeadershipOrAdmin()) {
+                    <span class="allocation-actions">
+                      @if (!allocation.isConfirmed) {
+                        <app-button variant="flat" size="sm" (click)="openConfirmDialog(request, allocation)">
+                          {{ constants.BTN_CONFIRM }}
+                        </app-button>
+                      } @else {
+                        <app-button variant="danger" size="sm" (click)="openRemoveDialog(request, allocation)">
+                          {{ constants.BTN_REMOVE }}
+                        </app-button>
+                      }
+                    </span>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          @if (isLeadershipOrAdmin() && request.status !== 'Confirmed') {
+            <div class="card-footer">
+              <app-button variant="stroked" size="sm" (click)="openAllocateModal(request)">
+                {{ constants.BTN_ALLOCATE }}
+              </app-button>
+            </div>
+          }
+        </div>
+      }
+    } @else {
+      <div class="empty-state-wrapper">
+        <app-empty-state [message]="constants.EMPTY_STATE_SUBTITLE" />
+      </div>
+    }
+  </div>
+</div>

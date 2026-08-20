@@ -128,6 +128,24 @@ public class EngagementsController(
     }
 
     /// <summary>
+    /// Retrieves all system users assigned to an engagement.
+    /// </summary>
+    /// <param name="id">The engagement ID.</param>
+    /// <returns>A list of users assigned to the engagement.</returns>
+    [HttpGet("{id:int}/users")]
+    [Authorize]
+    [EndpointSummary("Get all assigned users")]
+    [ProducesResponseType(typeof(IEnumerable<Pdr.Api.DTOs.Users.UserListItemDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IEnumerable<Pdr.Api.DTOs.Users.UserListItemDto>>> GetEngagementUsers(int id)
+    {
+        var users = await engagementService.GetEngagementUsersAsync(id);
+        return Ok(users);
+    }
+
+    /// <summary>
     /// Assigns a Project Manager to an engagement (Leadership only).
     /// </summary>
     /// <param name="id">The engagement ID.</param>

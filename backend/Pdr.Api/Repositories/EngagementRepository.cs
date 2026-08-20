@@ -7,6 +7,7 @@ using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Models.EngagementChecklist;
 using Pdr.Api.Models.Engagements;
 using Pdr.Api.Models.LoginEntity;
+using Pdr.Api.Models.ResourceRequests;
 using Pdr.Api.Models.Risks;
 using Pdr.Api.Repositories.Interfaces;
 
@@ -39,7 +40,9 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
             .ToListAsync();
 
     public async Task<Engagement?> GetByIdAsync(int engagementId) =>
-        await context.Engagements.FirstOrDefaultAsync(e => e.EngagementId == engagementId);
+        await context.Engagements
+            .Include(e => e.EngagementType)
+            .FirstOrDefaultAsync(e => e.EngagementId == engagementId);
 
     public async Task SaveChangesAsync() =>
         await context.SaveChangesAsync();
@@ -107,7 +110,11 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
                         && r.Status != RiskStatus.Closed)
             .CountAsync();
 
-        var resourcingOpenCount = 0;
+        var resourcingOpenCount = await context.Set<ResourceRequest>()
+            .AsNoTracking()
+            .Where(r => r.EngagementId == engagementId
+                        && r.Status != ResourceRequestStatus.Confirmed)
+            .CountAsync();
 
         return new EngagementOpenItemsSummaryDto
         {

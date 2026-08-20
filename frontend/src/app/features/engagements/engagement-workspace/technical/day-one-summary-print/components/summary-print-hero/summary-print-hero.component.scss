@@ -1,0 +1,66 @@
+:host {
+  display: block;
+}
+
+.hero-status-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  border: 0.0625rem solid #e2e8f0;
+
+  &.ready {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    .status-indicator-icon { background: #16a34a; color: #fff; }
+    .status-title { color: #166534; }
+    .status-description { color: #15803d; }
+  }
+
+  &.blocked {
+    background: #fff1f2;
+    border-color: #fecdd3;
+    .status-indicator-icon { background: #e11d48; color: #fff; }
+    .status-title { color: #9f1239; }
+    .status-description { color: #be123c; }
+  }
+}
+
+.status-indicator-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.status-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.status-headline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.status-title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.status-description {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}

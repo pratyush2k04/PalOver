@@ -86,18 +86,22 @@
   display: flex;
   padding: 0.75rem 1rem;
   border-bottom: 1px solid #f4f6f9;
-  cursor: pointer;
+  cursor: default;
   transition: background-color 0.15s ease;
 
-  &:hover {
-    background-color: #f4f6f9;
+  &.has-link {
+    cursor: pointer;
+
+    &:hover {
+      background-color: #f4f6f9;
+    }
   }
 
   &.unread {
     background-color: #eff6ff;
     border-left: 3px solid #2563eb;
 
-    &:hover {
+    &.has-link:hover {
       background-color: #dbeafe;
     }
   }
@@ -124,4 +128,17 @@
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+}
+
+.dropdown-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-top: 1px solid #e5e9ef;
+  background: #f8fafc;
+
+  app-button {
+    width: 100%;
+  }
 }

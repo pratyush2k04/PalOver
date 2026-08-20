@@ -68,6 +68,11 @@
               </div>
 
               <div class="right-section">
+                @if (risk.currentEscalationLevel && risk.currentEscalationLevel !== 'None') {
+                  <app-status-badge [tone]="risk.currentEscalationLevel === 'Leadership' ? 'danger' : 'warning'">
+                    Escalated ({{ risk.currentEscalationLevel }})
+                  </app-status-badge>
+                }
                 <span class="open-days-badge">Open for {{ risk.openForDays }} day(s)</span>
               </div>
             </div>
@@ -123,6 +128,14 @@
                   <strong>Resolution Note:</strong>
                   <p>{{ risk.resolutionNote }}</p>
                 </div>
+              }
+
+              <!-- Risk Comments Discussion Component -->
+              @if (engagementId()) {
+                <app-risk-comments
+                  [engagementId]="engagementId()!"
+                  [riskId]="risk.id"
+                />
               }
             </div>
 

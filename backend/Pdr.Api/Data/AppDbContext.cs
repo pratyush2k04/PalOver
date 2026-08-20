@@ -72,7 +72,8 @@ public class AppDbContext : DbContext
     public DbSet<Models.ArchitectureValidation.DiscoveryFeatureItem> DiscoveryFeatureItems => Set<Models.ArchitectureValidation.DiscoveryFeatureItem>();
     public DbSet<Pdr.Api.Models.ChangeRequest.ChangeRequest> ChangeRequests => Set<Pdr.Api.Models.ChangeRequest.ChangeRequest>();
     public DbSet<Risk> Risks => Set<Risk>();
-   
+    public DbSet<RiskComment> RiskComments => Set<RiskComment>();
+
 
  
 
@@ -84,6 +85,11 @@ public class AppDbContext : DbContext
     // Audit Log
     public DbSet<Models.Audit.AuditAction> AuditActions => Set<Models.Audit.AuditAction>();
     public DbSet<Models.Audit.AuditLog> AuditLogs => Set<Models.Audit.AuditLog>();
+
+    // Resource Requests
+    public DbSet<Models.ResourceRequests.ResourceRequest> ResourceRequests => Set<Models.ResourceRequests.ResourceRequest>();
+    public DbSet<Models.ResourceRequests.ResourceRequestSkill> ResourceRequestSkills => Set<Models.ResourceRequests.ResourceRequestSkill>();
+    public DbSet<Models.ResourceRequests.ResourceAllocation> ResourceAllocations => Set<Models.ResourceRequests.ResourceAllocation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
