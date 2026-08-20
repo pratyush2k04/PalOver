@@ -15,8 +15,8 @@ public class AuditLogConfiguration : IEntityTypeConfiguration<AuditLog>
         builder.HasQueryFilter(x => !x.IsDeleted);
 
         builder.HasIndex(x => x.UserId);
-
         builder.HasIndex(x => x.AuditActionId);
+        builder.HasIndex(x => x.EngagementId);
 
         builder.Property(x => x.PayloadJson)
             .IsRequired();

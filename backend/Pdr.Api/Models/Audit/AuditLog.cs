@@ -18,4 +18,6 @@ public class AuditLog : BaseAuditableEntity
     public AuditAction? AuditAction { get; set; }
 
     public string PayloadJson { get; set; } = "{}";
+
+    public int? EngagementId { get; set; }
 }

@@ -58,6 +58,7 @@ export const ENGAGEMENT_ROUTES = {
   RESOURCES: 'resources',
   TECHNICAL_READINESS: 'technical-readiness',
   RISKS: 'risks',
+  AUDITS: 'audits',
   DAY_ONE_SUMMARY_PRINT: 'day-one-summary-print',
 } as const;
 
