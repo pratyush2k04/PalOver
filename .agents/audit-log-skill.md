@@ -66,15 +66,15 @@ builder.HasData(
 
 **You also need to declare engagement-scope and role visibility for the new action.** Whether an action is engagement-scoped, and who may see it in an engagement's Audits feed, is not optional metadata — it's easy to forget and easy to get wrong (silently invisible, or over-exposed to roles that shouldn't see it), so it must be declared explicitly alongside the enum value, seed row, and mapper.
 
-**File:** `Pdr.Api/Models/Audit/AuditActionVisibility.cs`
+**File:** `Pdr.Api/Models/Audit/EngagementAuditActionVisibility.cs`
 
-Add a matching entry to `AuditActionVisibilityRegistry.Entries`:
+Add a matching entry to `EngagementAuditActionVisibilityRegistry.Entries`:
 
 ```csharp
-[AuditActionEnum.EngagementArchived] = new(VisibleToRoles: ["ProjectManagement", "Leadership"]),
+[AuditActionEnum.EngagementArchived] = new(VisibleToRoles: [RoleEnum.ProjectManagement, RoleEnum.Leadership]),
 ```
 
-If the action is *not* engagement-scoped content (e.g. an account-level action like `UserLoggedIn`), use `VisibleToRoles: null` instead — this is what signals "not engagement content, the role-matrix doesn't apply." For an engagement-scoped action, default to the most restrictive role set that still makes sense and widen deliberately, not by omission. Role strings must match the `USER_ROLES` values already defined on the frontend (`frontend/src/app/shared/constants/app.constants.ts`) so the two sides can't drift. Nothing reads this registry yet — it exists so the decision is captured in one typed place, ready for the engagement Audits tab's visibility matrix to consume later.
+If the action is *not* engagement-scoped content (e.g. an account-level action like `UserLoggedIn`), use `VisibleToRoles: null` instead — this is what signals "not engagement content, the role-matrix doesn't apply." For an engagement-scoped action, explicitly list all the `RoleEnum` values that are allowed to see it. If everyone can see it, use the `AllRoles` array constant. The `AuditLogService` actively enforces these matrix rules on the engagement audits endpoint. Admins will naturally bypass these restrictions automatically.
 
 Once you've added the enum value, seed row, mapper, and visibility registry entry, generate a migration (this is schema-layer work):
 
@@ -218,10 +218,10 @@ There is nothing to add here for a new action type — as soon as your mapper is
 | I want to... | Then do this |
 |---|---|
 | Log an event using an **existing** action type | Inject `IAuditLogService`, call `LogAsync(existingEnumValue, idPayloadDict)`. Nothing else. |
-| Introduce a **brand-new** action type | Add an enum value to `AuditActionEnum`, seed a matching row in `AuditActionConfiguration`, add an `IAuditTemplateMapper` implementation and register it in `AuditMapperRegistry`, **declare its engagement-scope and role visibility in `AuditActionVisibilityRegistry`**, generate a migration, then call `LogAsync` as above. **Also add the matching value to the frontend's `AuditAction` type** (see below). |
+| Introduce a **brand-new** action type | Add an enum value to `AuditActionEnum`, seed a matching row in `AuditActionConfiguration`, add an `IAuditTemplateMapper` implementation and register it in `AuditMapperRegistry`, **declare its engagement-scope and role visibility in `EngagementAuditActionVisibilityRegistry`**, generate a migration, then call `LogAsync` as above. **Also add the matching value to the frontend's `AuditAction` type** (see below). |
 | Read/display the audit log | Nothing to build — `GET /api/audit-logs` already exists; every authenticated user can call it, scoped to their own entries unless `Leadership`/`Admin`. Pass `engagementId` to scope to one engagement (see engineering note below). |
 | Change who can read the full (unscoped) audit log, or which rows non-elevated users see | Edit the `isElevated`/`scopedUserId` logic in `AuditLogService.GetAuditLogsAsync`. |
-| Declare who may see an action in an engagement's Audits feed | Add/update its entry in `AuditActionVisibilityRegistry.Entries` (`Pdr.Api/Models/Audit/AuditActionVisibility.cs`). |
+| Declare who may see an action in an engagement's Audits feed | Add/update its entry in `EngagementAuditActionVisibilityRegistry.Entries` (`Pdr.Api/Models/Audit/EngagementAuditActionVisibility.cs`). |
 
 **Engineering note — `engagementId` filtering isn't indexed.** `GetAuditLogsAsync`'s optional `engagementId` parameter filters on a value extracted from `PayloadJson` at read time (see `MapToDtoAsync`/`ExtractEngagementId`), not a database column. There's no index to push the filter into SQL, so a scoped request scans batches of rows (bounded by `MaxScanRows`) rather than doing a `WHERE` on an indexed column. This is deliberate — see the engagement Audits tab's plan for why a schema change was ruled out — but means very high audit-log volumes could see a scoped request return `HasMore: true` without finding `limit` matches, requiring the client to keep paging.
 

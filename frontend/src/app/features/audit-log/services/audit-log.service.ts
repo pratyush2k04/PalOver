@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AUDIT_LOG_API_ENDPOINTS } from '@shared/constants/app.constants';
-import { AuditLogDto, CursorPagedResult } from '../models/audit-log.model';
+import { AuditLogDto, EngagementAuditLogDto, CursorPagedResult } from '../models/audit-log.model';
 
 @Injectable({
   providedIn: 'root'

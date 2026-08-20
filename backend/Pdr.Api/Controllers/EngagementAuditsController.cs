@@ -24,7 +24,7 @@ public class EngagementAuditsController(IAuditLogService auditLogService) : Cont
     /// <param name="cursor">The Id to page backward from. Omit for the most recent entries.</param>
     /// <param name="limit">Maximum number of entries to return.</param>
     [HttpGet]
-    [ProducesResponseType(typeof(CursorPagedResult<AuditLogDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(CursorPagedResult<EngagementAuditLogDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetEngagementAuditLogs([FromQuery] int engagementId, [FromQuery] int? cursor, [FromQuery] int limit = 50)
     {

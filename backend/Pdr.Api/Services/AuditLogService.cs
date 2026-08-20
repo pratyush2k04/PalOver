@@ -90,8 +90,36 @@ public class AuditLogService(
             foreach (var log in examined)
             {
                 rowsScanned++;
+                var actionString = log.AuditAction?.Action ?? string.Empty;
+                if (!Enum.TryParse<AuditActionEnum>(actionString, out var actionEnum))
+                {
+                    continue;
+                }
+
+                if (!EngagementAuditActionVisibilityRegistry.Entries.TryGetValue(actionEnum, out var visibility))
+                {
+                    continue;
+                }
+
+                var roles = visibility.VisibleToRoles;
+                if (roles == null || roles.Length == 0)
+                {
+                    continue;
+                }
+
+                bool hasAccess = currentUserService.IsAdmin() || roles.Any(r => currentUserService.IsInRole(r));
+                if (!hasAccess)
+                {
+                    continue;
+                }
+
+                var logEngagementId = ExtractEngagementId(log.PayloadJson);
+                if (logEngagementId != engagementId)
+                {
+                    continue;
+                }
+
                 var dto = await MapToDtoAsync(log);
-                if (dto.EngagementId == engagementId)
                 {
                     items.Add(new EngagementAuditLogDto
                     {
