@@ -1,3 +1,4 @@
+@use '../../../../styles/tokens' as *;
 @use '../../../../styles/mixins' as *;
 
 :host {
@@ -6,10 +7,14 @@
 }
 
 .current-draft {
-  padding: $spacing-4;
+  padding: 0;
 
-  @include respond-to('sm') {
-    padding: $spacing-6;
+  &__card {
+    background-color: $color-surface;
+    border: 1px solid $color-border-soft;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+    overflow: hidden;
   }
 
   &__header {
@@ -18,7 +23,8 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: $spacing-3;
-    margin-bottom: $spacing-4;
+    padding: $spacing-5 $spacing-6;
+    background-color: $color-surface;
 
     @include respond-to('sm') {
       flex-direction: row;
@@ -28,22 +34,22 @@
 
     h1 {
       color: $color-text;
-      font-size: $font-size-xl;
-      font-weight: $font-weight-semibold;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-bold;
       margin: 0 0 $spacing-1;
     }
   }
 
   &__header-title {
     display: flex;
-    align-items: center;
-    gap: $spacing-3;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
   }
 
   &__actions {
     display: flex;
-    gap: $spacing-2;
+    gap: $spacing-3;
     width: 100%;
     flex-wrap: wrap;
 
@@ -53,23 +59,18 @@
     }
   }
 
-  &__list-wrapper {
-    background-color: $color-surface;
-    border: 1px solid $color-border-soft;
-    border-radius: $radius-lg;
-    overflow: hidden;
-    box-shadow: $shadow-sm;
-  }
-
   &__list-header {
     @include flex-between;
-    padding: $spacing-3 $spacing-4;
-    background-color: $color-surface-hover;
+    padding: $spacing-3 $spacing-6;
+    background-color: $color-surface;
+    border-top: 1px solid $color-border-soft;
+    border-bottom: 1px solid $color-border-soft;
     color: $color-text;
     font-size: $font-size-sm;
-    font-weight: $font-weight-semibold;
+    font-weight: $font-weight-bold;
 
     &--retired {
+      background-color: $color-surface-hover;
       border-top: 1px solid $color-border-soft;
     }
   }
@@ -83,8 +84,8 @@
   &__row {
     display: flex;
     align-items: flex-start;
-    gap: $spacing-3;
-    padding: $spacing-3 $spacing-4;
+    gap: $spacing-4;
+    padding: $spacing-4 $spacing-6;
     border-bottom: 1px solid $color-border-soft;
     background-color: $color-surface;
     transition: opacity $transition-fast, background-color $transition-fast;

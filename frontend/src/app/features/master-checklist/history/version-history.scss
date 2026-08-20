@@ -6,11 +6,7 @@
 }
 
 .version-history {
-  padding: $spacing-4;
-
-  @include respond-to('sm') {
-    padding: $spacing-6;
-  }
+  padding: 0;
 
   h1 {
     color: $color-text;

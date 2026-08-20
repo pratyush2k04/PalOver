@@ -1,18 +1,33 @@
+@use '../../../../styles/tokens' as *;
 @use '../../../../styles/mixins' as *;
 
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: $font-family-base;
+  color: $color-text;
+}
+
 .workspace-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  box-sizing: border-box;
   padding: $spacing-8;
   max-width: 1400px;
   margin: 0 auto;
   font-family: $font-family-base;
+  color: $color-text;
+
+  app-page-header {
+    display: block;
+    margin-bottom: $spacing-6;
+  }
+
+  app-tabs {
+    display: block;
+    margin-bottom: $spacing-6;
+  }
 }
 
 .workspace-content {
-  flex-grow: 1;
-  padding: 0;
-  background-color: $color-bg;
-  overflow-y: auto;
+  width: 100%;
 }
