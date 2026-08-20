@@ -189,6 +189,19 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",
                 IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 12,
+                Key = NotificationConstants.TemplateKeys.ResourcingGapFlagRaised,
+                Title = "Resources Not Confirmed — {EngagementName}",
+                Body = "{UnconfirmedCount} resource request(s) for {EngagementName} remain unconfirmed with {DaysToBilling} day(s) until billing starts ({BillingDate}).",
+                DefaultPriority = NotificationPriority.High,
+                LinkPattern = "/engagements/{EngagementId}/workspace/resources",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
             }
         );
     }

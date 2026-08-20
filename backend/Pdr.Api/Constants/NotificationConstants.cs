@@ -13,6 +13,7 @@ public static class NotificationConstants
         public const string PMAssigned = "PMAssigned";
         public const string TechLeadAssigned = "TechLeadAssigned";
         public const string DocumentUploaded = "DocumentUploaded";
+        public const string ResourcingGapFlagRaised = "ResourcingGapFlagRaised";
     }
 
     public static class RiskCommentMention

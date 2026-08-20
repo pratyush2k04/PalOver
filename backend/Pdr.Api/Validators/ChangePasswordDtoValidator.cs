@@ -1,5 +1,5 @@
 using FluentValidation;
-using Pdr.Api.DTOs.Me;
+using Pdr.Api.DTOs.Profile;
 
 namespace Pdr.Api.Validators;
 

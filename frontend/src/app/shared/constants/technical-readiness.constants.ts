@@ -1,7 +1,3 @@
-export const TECHNICAL_READINESS_ROUTES = {
-  BASE: 'technical-readiness'
-} as const;
-
 export const TECHNICAL_READINESS_ROLES = {
   PRE_SALES: 'Pre Sales',
   PROJECT_MANAGEMENT: 'Project Management',

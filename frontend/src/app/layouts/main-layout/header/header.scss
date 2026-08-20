@@ -107,28 +107,6 @@
   }
 }
 
-.user-dropdown-header {
-  @include flex-column(0.125rem);
-  padding: $spacing-2 $spacing-3;
-}
-
-.user-dropdown-name {
-  font-size: $font-size-sm;
-  font-weight: $font-weight-semibold;
-  color: $color-text;
-}
-
-.user-dropdown-role {
-  font-size: $font-size-xs;
-  color: $color-text-fainter;
-}
-
-.user-dropdown-divider {
-  height: 1px;
-  background-color: $color-border-soft;
-  margin: 0.375rem 0;
-}
-
 .user-dropdown-item {
   display: flex;
   align-items: center;

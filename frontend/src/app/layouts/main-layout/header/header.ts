@@ -1,8 +1,8 @@
 import { Component, ElementRef, HostListener, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { InlineSVGModule } from 'ng-inline-svg-2';
-import { AppContextService } from '../../../services/app-context';
-import { AuthService } from '../../../services/auth';
+import { AppContextService } from '@shared/services/app-context';
+import { AuthService } from '@shared/services/auth';
 import { APP_ROUTES } from '@shared/constants/app.constants';
 import { AvatarComponent } from '@common/components/avatar/avatar';
 import { NotificationsDropdownComponent } from '../../../shared/notifications-dropdown/notifications-dropdown';
@@ -34,6 +34,11 @@ export class HeaderComponent {
     if (this.isUserMenuOpen() && !this.elementRef.nativeElement.contains(event.target)) {
       this.isUserMenuOpen.set(false);
     }
+  }
+
+  onProfileClick(): void {
+    this.isUserMenuOpen.set(false);
+    this.router.navigate([APP_ROUTES.PROFILE]);
   }
 
   onSignOut(): void {

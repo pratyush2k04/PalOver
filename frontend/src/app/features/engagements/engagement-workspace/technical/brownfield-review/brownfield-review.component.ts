@@ -7,7 +7,7 @@ import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confir
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
 import { DialogService } from '@common/services/dialog/dialog.service';
-import { AuthService } from 'src/app/services/auth';
+import { AuthService } from '@shared/services/auth';
 import { TECHNICAL_READINESS_ROLES } from '@shared/constants/technical-readiness.constants';
 import { BrownfieldFindingDto, BrownfieldReadinessResponse } from '@features/engagements/models/brownfield-review/brownfield-review.dtos';
 import { BrownfieldSeverity, ClientDecision } from '@features/engagements/models/brownfield-review/brownfield-review.enums';

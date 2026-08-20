@@ -1,3 +1,5 @@
+import { ENGAGEMENT_ROUTES } from './routes.constants';
+
 export const ENGAGEMENT_API_ENDPOINTS = {
   MARK_SOW_SIGNED: '/api/Engagements/mark-sow-signed',
   ENGAGEMENT_TYPES: '/api/EngagementTypes',
@@ -50,16 +52,16 @@ export const ENGAGEMENT_CHECKLIST_MESSAGES = {
 
 export const ENGAGEMENT_WORKSPACE_CONFIG = {
   DEFAULT_TABS: [
-    { label: 'Overview', route: 'overview', enabled: true },
-    { label: 'Handover', route: 'handover', enabled: true },
-    { label: 'Documents', route: 'documents', enabled: true },
-    { label: 'People', route: 'people', enabled: true },
-    { label: 'Checklist', route: 'checklist', enabled: true },
-    { label: 'Kickoff', route: 'kickoff', enabled: true },
-    { label: 'Resources', route: 'resources', enabled: true },
-    { label: 'Technical Readiness', route: 'technical-readiness', enabled: true },
-    { label: 'Risks', route: 'risks', enabled: true },
-    { label: 'Audits', route: 'audits', enabled: true },
+    { label: 'Overview', route: ENGAGEMENT_ROUTES.OVERVIEW, enabled: true },
+    { label: 'Handover', route: ENGAGEMENT_ROUTES.HANDOVER, enabled: true },
+    { label: 'Documents', route: ENGAGEMENT_ROUTES.DOCUMENTS, enabled: true },
+    { label: 'People', route: ENGAGEMENT_ROUTES.PEOPLE, enabled: true },
+    { label: 'Checklist', route: ENGAGEMENT_ROUTES.CHECKLIST, enabled: true },
+    { label: 'Kickoff', route: ENGAGEMENT_ROUTES.KICKOFF, enabled: true },
+    { label: 'Resources', route: ENGAGEMENT_ROUTES.RESOURCES, enabled: true },
+    { label: 'Technical Readiness', route: ENGAGEMENT_ROUTES.TECHNICAL_READINESS, enabled: true },
+    { label: 'Risks', route: ENGAGEMENT_ROUTES.RISKS, enabled: true },
+    { label: 'Audits', route: ENGAGEMENT_ROUTES.AUDITS, enabled: true },
     { label: 'Reporting', route: 'reporting', enabled: false }
   ]
 } as const;
