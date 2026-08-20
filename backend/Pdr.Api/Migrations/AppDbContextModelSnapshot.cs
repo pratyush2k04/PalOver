@@ -457,6 +457,12 @@ namespace Pdr.Api.Migrations
                             Id = 20,
                             Action = "ResourcingGapFlagCleared",
                             Details = "Resourcing gap flag cleared for engagement {engagementName}: all requested resources confirmed"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Action = "ChecklistItemEvidenceUpdated",
+                            Details = "Evidence updated for checklist item '{itemTitle}' on engagement '{engagementName}' by {actorName}"
                         });
                 });
 
@@ -1135,6 +1141,30 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("engagement_checklist_id");
 
+                    b.Property<string>("EvidenceLink")
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)")
+                        .HasColumnName("evidence_link");
+
+                    b.Property<string>("EvidenceNote")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("evidence_note");
+
+                    b.Property<bool>("EvidenceRequired")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("evidence_required");
+
+                    b.Property<DateTime?>("EvidenceSubmittedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("evidence_submitted_at");
+
+                    b.Property<int?>("EvidenceSubmittedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("evidence_submitted_by_id");
+
                     b.Property<string>("ExemptionRejectionReason")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)")
@@ -1224,6 +1254,8 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("EngagementChecklistId");
 
+                    b.HasIndex("EvidenceSubmittedById");
+
                     b.HasIndex("OwnerId");
 
                     b.ToTable("engagement_checklist_items", (string)null);
@@ -1237,6 +1269,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 1,
                             EngagementChecklistId = 1,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1253,6 +1286,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 2,
                             EngagementChecklistId = 1,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1269,6 +1303,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 3,
                             EngagementChecklistId = 1,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1285,6 +1320,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 4,
                             EngagementChecklistId = 1,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1301,6 +1337,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 5,
                             EngagementChecklistId = 1,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1317,6 +1354,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 6,
                             EngagementChecklistId = 1,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1333,6 +1371,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 7,
                             EngagementChecklistId = 1,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1349,6 +1388,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 8,
                             EngagementChecklistId = 1,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1365,6 +1405,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 9,
                             EngagementChecklistId = 1,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -1381,6 +1422,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 10,
                             EngagementChecklistId = 1,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1397,6 +1439,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 11,
                             EngagementChecklistId = 1,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1413,6 +1456,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 12,
                             EngagementChecklistId = 1,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1429,6 +1473,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 13,
                             EngagementChecklistId = 1,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -1445,6 +1490,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 14,
                             EngagementChecklistId = 1,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1461,6 +1507,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 15,
                             EngagementChecklistId = 1,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1477,6 +1524,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 16,
                             EngagementChecklistId = 1,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -1493,6 +1541,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 17,
                             EngagementChecklistId = 1,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1509,6 +1558,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 18,
                             EngagementChecklistId = 1,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1525,6 +1575,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 19,
                             EngagementChecklistId = 1,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1541,6 +1592,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 20,
                             EngagementChecklistId = 1,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -1557,6 +1609,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 1,
                             EngagementChecklistId = 2,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1573,6 +1626,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 2,
                             EngagementChecklistId = 2,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1589,6 +1643,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 3,
                             EngagementChecklistId = 2,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1605,6 +1660,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 4,
                             EngagementChecklistId = 2,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1621,6 +1677,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 5,
                             EngagementChecklistId = 2,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1637,6 +1694,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 6,
                             EngagementChecklistId = 2,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1653,6 +1711,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 7,
                             EngagementChecklistId = 2,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1669,6 +1728,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 8,
                             EngagementChecklistId = 2,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1685,6 +1745,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 9,
                             EngagementChecklistId = 2,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -1701,6 +1762,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 10,
                             EngagementChecklistId = 2,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1717,6 +1779,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 11,
                             EngagementChecklistId = 2,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1733,6 +1796,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 12,
                             EngagementChecklistId = 2,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1749,6 +1813,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 13,
                             EngagementChecklistId = 2,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -1765,6 +1830,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 14,
                             EngagementChecklistId = 2,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1781,6 +1847,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 15,
                             EngagementChecklistId = 2,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1797,6 +1864,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 16,
                             EngagementChecklistId = 2,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -1813,6 +1881,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 17,
                             EngagementChecklistId = 2,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1829,6 +1898,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 18,
                             EngagementChecklistId = 2,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1845,6 +1915,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 19,
                             EngagementChecklistId = 2,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -1861,6 +1932,7 @@ namespace Pdr.Api.Migrations
                             CreatedBy = "System",
                             DisplayOrder = 20,
                             EngagementChecklistId = 2,
+                            EvidenceRequired = true,
                             IsApplicable = true,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -5009,6 +5081,11 @@ namespace Pdr.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "EvidenceSubmittedBy")
+                        .WithMany()
+                        .HasForeignKey("EvidenceSubmittedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Pdr.Api.Models.LoginEntity.User", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId")
@@ -5017,6 +5094,8 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("EngagementChecklist");
+
+                    b.Navigation("EvidenceSubmittedBy");
 
                     b.Navigation("Owner");
                 });
