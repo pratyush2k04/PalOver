@@ -1,7 +1,3 @@
-export const AUDIT_LOG_ROUTES = {
-  BASE: 'audit-log',
-} as const;
-
 export const AUDIT_LOG_API_ENDPOINTS = {
   LIST: '/api/audit-logs',
 } as const;
