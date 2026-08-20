@@ -1,5 +1,22 @@
-export type AuditAction = 'UserLoggedIn' | 'UserCreated' | 'UserUpdated' | 'UserDeleted';
-
+export type AuditAction = 
+  | 'UserLoggedIn' 
+  | 'UserCreated' 
+  | 'UserUpdated' 
+  | 'UserDeleted' 
+  | 'DocumentVersioned' 
+  | 'DocumentUploaded' 
+  | 'UnauthorizedAccess' 
+  | 'AccountLockout' 
+  | 'ClientContactDetailsChanged' 
+  | 'ClientPersonaChanged' 
+  | 'LeadershipAllocated' 
+  | 'UserRoleAllocated' 
+  | 'PmAndTlAssigned' 
+  | 'PmAndTlReassigned' 
+  | 'DayOneSummaryGenerated' 
+  | 'MasterChecklistPublished' 
+  | 'BrownfieldItemAdded' 
+  | 'DiscoveryItemAdded';
 export interface AuditLogDto {
   id: number;
   userId: number;
