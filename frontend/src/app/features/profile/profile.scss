@@ -1,11 +1,11 @@
-@use '../../../styles/tokens' as *;
+@use '../../../styles/mixins' as *;
 
 .profile-page {
   padding: 1.5rem 2rem 1.25rem;
 }
 
 .page-header {
-  margin-bottom: 1rem;
+  margin-bottom: $spacing-4;
 
   h2 {
     margin: 0;
@@ -16,7 +16,7 @@
 
 .profile-cards {
   display: flex;
-  gap: 1.5rem;
+  gap: $spacing-6;
   align-items: flex-start;
   flex-wrap: wrap;
 }
@@ -24,14 +24,12 @@
 .profile-card {
   flex: 1 1 22.5rem;
   min-width: 20rem;
-  background: $color-surface;
-  border-radius: $radius-lg;
+  @include card-surface($padding: $spacing-6, $radius: $radius-lg);
   box-shadow: $shadow-sm;
-  padding: 1.5rem;
 }
 
 .card-title {
-  margin: 0 0 1rem;
+  margin: 0 0 $spacing-4;
   font-size: 0.8125rem;
   font-weight: $font-weight-bold;
   letter-spacing: 0.04em;
@@ -40,7 +38,7 @@
 }
 
 .field-note {
-  margin: -0.25rem 0 0.75rem;
+  margin: -$spacing-1 0 $spacing-3;
   font-size: 0.8125rem;
   color: $color-text-faint;
 }
@@ -48,22 +46,22 @@
 .strength-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1.25rem;
+  gap: $spacing-2;
+  margin-bottom: $spacing-5;
 }
 
 .chip {
   font-size: $font-size-xs;
   font-weight: $font-weight-medium;
-  padding: 0.25rem 0.625rem;
+  padding: $spacing-1 0.625rem;
   border-radius: $radius-full;
   background: #f3f4f6;
   color: $color-text-faint;
   border: 1px solid $color-border-soft;
 
   &.met {
-    background: #ecfdf5;
-    color: #059669;
-    border-color: #a7f3d0;
+    background: $color-success-bg;
+    color: $color-success;
+    border-color: $color-success-border;
   }
 }
