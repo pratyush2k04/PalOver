@@ -134,18 +134,6 @@ public class AuditActionConfiguration : IEntityTypeConfiguration<AuditAction>
                 Id = (int)AuditActionEnum.DiscoveryItemAdded,
                 Action = AuditActionEnum.DiscoveryItemAdded.ToString(),
                 Details = "Discovery item {itemName} added to engagement {engagementName} by {actorName}"
-            },
-            new AuditAction
-            {
-                Id = (int)AuditActionEnum.UserProfileUpdated,
-                Action = AuditActionEnum.UserProfileUpdated.ToString(),
-                Details = "Profile field {field} changed by {actorName}"
-            },
-            new AuditAction
-            {
-                Id = (int)AuditActionEnum.UserPasswordChanged,
-                Action = AuditActionEnum.UserPasswordChanged.ToString(),
-                Details = "Password changed by {actorName}"
             });
     }
 }

@@ -19,7 +19,5 @@ public enum AuditActionEnum
     DayOneSummaryGenerated = 15,
     MasterChecklistPublished = 16,
     BrownfieldItemAdded = 17,
-    DiscoveryItemAdded = 18,
-    UserProfileUpdated = 19,
-    UserPasswordChanged = 20
+    DiscoveryItemAdded = 18
 }

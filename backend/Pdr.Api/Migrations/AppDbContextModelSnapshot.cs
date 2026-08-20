@@ -445,18 +445,6 @@ namespace Pdr.Api.Migrations
                             Id = 18,
                             Action = "DiscoveryItemAdded",
                             Details = "Discovery item {itemName} added to engagement {engagementName} by {actorName}"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Action = "UserProfileUpdated",
-                            Details = "Profile field {field} changed by {actorName}"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Action = "UserPasswordChanged",
-                            Details = "Password changed by {actorName}"
                         });
                 });
 

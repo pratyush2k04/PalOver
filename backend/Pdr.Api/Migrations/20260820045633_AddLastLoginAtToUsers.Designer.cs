@@ -13,8 +13,8 @@ using Pdr.Api.Data;
 namespace Pdr.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260819145633_AddLastLoginAtAndProfileAuditActions")]
-    partial class AddLastLoginAtAndProfileAuditActions
+    [Migration("20260820045633_AddLastLoginAtToUsers")]
+    partial class AddLastLoginAtToUsers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -448,18 +448,6 @@ namespace Pdr.Api.Migrations
                             Id = 18,
                             Action = "DiscoveryItemAdded",
                             Details = "Discovery item {itemName} added to engagement {engagementName} by {actorName}"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Action = "UserProfileUpdated",
-                            Details = "Profile field {field} changed by {actorName}"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Action = "UserPasswordChanged",
-                            Details = "Password changed by {actorName}"
                         });
                 });
 
