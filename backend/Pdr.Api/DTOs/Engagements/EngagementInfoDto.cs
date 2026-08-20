@@ -13,9 +13,4 @@ public record EngagementInfoDto(
     DateOnly? BillingStartDate,
     string Status,
     bool IsKickoffReady,
-    bool IsDayOneSignedOff = false,
-    bool DayOneSignOffIsException = false,
-    string? DayOneSignOffSignerName = null,
-    DateTime? DayOneSignedOffAt = null,
-    DateOnly? DayOneSignOffBillingDate = null,
-    string? DayOneSignOffExceptionJustification = null);
+    DayOneSignOffDto? DayOneSignOff = null);

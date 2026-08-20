@@ -162,12 +162,15 @@ public class EngagementService(
                 e.BillingStartDate,
                 e.Status.StatusName,
                 e.IsKickoffReady,
-                e.DayOneSignOffRecord != null,
-                e.DayOneSignOffRecord != null && e.DayOneSignOffRecord.IsException,
-                e.DayOneSignOffRecord != null ? e.DayOneSignOffRecord.SignedOffByUser.FullName : null,
-                e.DayOneSignOffRecord != null ? e.DayOneSignOffRecord.SignedOffAt : null,
-                e.DayOneSignOffRecord != null ? e.DayOneSignOffRecord.BillingStartDate : null,
-                e.DayOneSignOffRecord != null ? e.DayOneSignOffRecord.ExceptionJustification : null))
+                e.DayOneSignOffRecord != null
+                    ? new DayOneSignOffDto(
+                        e.DayOneSignOffRecord.SignedOffByUserId,
+                        e.DayOneSignOffRecord.SignedOffByUser.FullName,
+                        e.DayOneSignOffRecord.BillingStartDate,
+                        e.DayOneSignOffRecord.SignedOffAt,
+                        e.DayOneSignOffRecord.IsException,
+                        e.DayOneSignOffRecord.ExceptionJustification)
+                    : null))
             .FirstOrDefaultAsync();
 
     public async Task<IEnumerable<EngagementInfoDto>> GetAllEngagementsAsync() =>
@@ -184,12 +187,15 @@ public class EngagementService(
                 e.BillingStartDate,
                 e.Status.StatusName,
                 e.IsKickoffReady,
-                e.DayOneSignOffRecord != null,
-                e.DayOneSignOffRecord != null && e.DayOneSignOffRecord.IsException,
-                e.DayOneSignOffRecord != null ? e.DayOneSignOffRecord.SignedOffByUser.FullName : null,
-                e.DayOneSignOffRecord != null ? e.DayOneSignOffRecord.SignedOffAt : null,
-                e.DayOneSignOffRecord != null ? e.DayOneSignOffRecord.BillingStartDate : null,
-                e.DayOneSignOffRecord != null ? e.DayOneSignOffRecord.ExceptionJustification : null))
+                e.DayOneSignOffRecord != null
+                    ? new DayOneSignOffDto(
+                        e.DayOneSignOffRecord.SignedOffByUserId,
+                        e.DayOneSignOffRecord.SignedOffByUser.FullName,
+                        e.DayOneSignOffRecord.BillingStartDate,
+                        e.DayOneSignOffRecord.SignedOffAt,
+                        e.DayOneSignOffRecord.IsException,
+                        e.DayOneSignOffRecord.ExceptionJustification)
+                    : null))
             .ToListAsync();
     
 
@@ -678,7 +684,7 @@ public class EngagementService(
         return await engagementRepository.GetOpenItemsSummaryAsync(engagementId);
     }
 
-    public async Task<DayOneSignOffResponseDto> SignOffDayOneAsync(int engagementId, DayOneSignOffRequest request)
+    public async Task<DayOneSignOffDto> SignOffDayOneAsync(int engagementId, DayOneSignOffRequest request)
     {
         var engagement = await db.Engagements
             .Include(e => e.DayOneSignOffRecord)
@@ -736,8 +742,7 @@ public class EngagementService(
 
         await db.SaveChangesAsync();
 
-        return new DayOneSignOffResponseDto(
-            engagementId,
+        return new DayOneSignOffDto(
             currentUserId,
             currentUser.FullName,
             signOffRecord.BillingStartDate,

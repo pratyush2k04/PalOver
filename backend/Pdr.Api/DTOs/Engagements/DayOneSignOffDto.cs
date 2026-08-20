@@ -2,8 +2,7 @@ using System;
 
 namespace Pdr.Api.DTOs.Engagements;
 
-public record DayOneSignOffResponseDto(
-    int EngagementId,
+public record DayOneSignOffDto(
     int SignedOffByUserId,
     string SignerName,
     DateOnly BillingStartDate,

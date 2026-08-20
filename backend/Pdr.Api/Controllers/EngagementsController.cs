@@ -314,12 +314,12 @@ public class EngagementsController(
     [HttpPost("{id:int}/day-one-sign-off")]
     [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.Leadership)]
     [EndpointSummary("Sign off Day-1 readiness for billing")]
-    [ProducesResponseType(typeof(DayOneSignOffResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(DayOneSignOffDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<DayOneSignOffResponseDto>> SignOffDayOne(int id, [FromBody] DayOneSignOffRequest request)
+    public async Task<ActionResult<DayOneSignOffDto>> SignOffDayOne(int id, [FromBody] DayOneSignOffRequest request)
     {
         var result = await engagementService.SignOffDayOneAsync(id, request);
         return Ok(result);
