@@ -53,10 +53,4 @@ public class AssumptionRepository(AppDbContext context) : IAssumptionRepository
         return await context.Assumptions
             .CountAsync(a => a.EngagementId == engagementId && a.Status == AssumptionStatus.Invalid && a.LinkedRiskId == null);
     }
-    
-    public async Task<int> GetTotalCountByEngagementIdAsync(int engagementId)
-    {
-        return await context.Assumptions
-            .CountAsync(a => a.EngagementId == engagementId);
-    }
 }

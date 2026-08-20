@@ -11,5 +11,4 @@ public interface IAssumptionRepository
     Task DeleteAsync(Assumption assumption);
     Task<int> GetUnvalidatedCountByEngagementIdAsync(int engagementId);
     Task<int> GetInvalidWithoutRiskCountByEngagementIdAsync(int engagementId);
-    Task<int> GetTotalCountByEngagementIdAsync(int engagementId);
 }

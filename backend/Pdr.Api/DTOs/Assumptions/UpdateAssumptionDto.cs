@@ -1,8 +1,7 @@
-namespace Pdr.Api.DTOs.Assumptions;
+namespace Pdr.Api.DTOs.Engagements.Assumptions;
 
 public class UpdateAssumptionDto
 {
     public string Description { get; set; } = string.Empty;
     public string Rationale { get; set; } = string.Empty;
-    public string? Reason { get; set; }
 }
