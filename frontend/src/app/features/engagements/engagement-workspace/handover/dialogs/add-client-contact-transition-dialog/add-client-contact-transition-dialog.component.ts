@@ -9,7 +9,7 @@ import { InputComponent } from '@common/components/form/input/input';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { ClientContactTransitionService } from '@features/engagements/services/client-contact-transition.service';
 import { TransitionResponse } from '@features/engagements/models/client-contact-transition.model';
-import { PersonService } from 'src/app/services/person.service';
+import { PersonService } from '@shared/services/person.service';
 import { PersonType } from '@shared/models/person.model';
 import {
   FORM_LABELS,

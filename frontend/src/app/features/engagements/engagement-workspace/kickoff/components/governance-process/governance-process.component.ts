@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CommunicationCadenceService } from '../../../../services/communication-cadence.service';
-import { AuthService } from '../../../../../../services/auth';
+import { AuthService } from '@shared/services/auth';
 import { CommunicationCadence, EngagementParticipant } from '../../../../models/cadence.model';
 import { CADENCE_CONSTANTS } from '@shared/constants/cadence.constants';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';

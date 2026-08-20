@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { AppContextService } from '../../services/app-context';
+import { AppContextService } from '@shared/services/app-context';
 
 export const workspaceRedirectGuard: CanActivateFn = () => {
   const appContext = inject(AppContextService);
