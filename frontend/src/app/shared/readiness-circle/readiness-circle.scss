@@ -1,0 +1,81 @@
+@use '../../../styles/mixins' as *;
+@use '../../../styles/tokens' as *;
+
+:host {
+  display: inline-block;
+}
+
+.readiness-circle {
+  position: relative;
+  @include flex-center;
+
+  &--sm {
+    width: 3.25rem; // 52px
+    height: 3.25rem;
+
+    .ring-text {
+      font-size: $font-size-xs;
+    }
+  }
+
+  &--md {
+    width: 4.5rem; // 72px
+    height: 4.5rem;
+
+    .ring-text {
+      font-size: $font-size-lg;
+    }
+  }
+
+  &--lg {
+    width: 5rem; // 80px
+    height: 5rem;
+
+    .ring-text {
+      font-size: $font-size-xl;
+    }
+  }
+
+  .ring-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+
+  .ring-track {
+    fill: none;
+    stroke: $color-surface-hover;
+    stroke-width: 8;
+  }
+
+  .ring-progress {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke 0.4s ease, stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &--danger {
+    .ring-progress {
+      stroke: $color-danger;
+    }
+  }
+
+  &--warning {
+    .ring-progress {
+      stroke: $color-accent-amber;
+    }
+  }
+
+  &--success {
+    .ring-progress {
+      stroke: $color-success;
+    }
+  }
+
+  .ring-text {
+    position: absolute;
+    font-weight: $font-weight-bold;
+    color: $color-text;
+  }
+}

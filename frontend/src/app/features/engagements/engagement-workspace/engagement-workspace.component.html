@@ -60,21 +60,7 @@
       <div class="header-divider"></div>
 
       <div class="header-readiness-status">
-        <div class="readiness-ring">
-          <svg viewBox="0 0 100 100" class="ring-svg">
-            <circle cx="50" cy="50" r="40" class="ring-track" />
-            <circle
-              cx="50"
-              cy="50"
-              r="40"
-              class="ring-progress"
-              [style.stroke]="ringColor()"
-              [style.strokeDasharray]="251.3"
-              [style.strokeDashoffset]="251.3 - (251.3 * scorePercent() / 100)"
-            />
-          </svg>
-          <span class="ring-text">{{ scorePercent() }}%</span>
-        </div>
+        <app-readiness-circle [score]="scorePercent()" size="lg" />
 
         <div class="readiness-details">
           <span class="readiness-label">Readiness</span>

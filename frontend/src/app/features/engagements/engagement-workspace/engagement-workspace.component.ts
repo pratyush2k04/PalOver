@@ -9,11 +9,12 @@ import { ENGAGEMENT_WORKSPACE_CONFIG } from '@shared/constants/engagements.const
 import { EngagementInfoDto, EngagementOwners } from '../models/engagement.model';
 import { TabItem, TabsComponent } from '@common/components/tabs/tabs';
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { ReadinessCircleComponent } from '@shared/readiness-circle/readiness-circle';
 
 @Component({
   selector: 'app-engagement-workspace',
   standalone: true,
-  imports: [CommonModule, DatePipe, RouterOutlet, TabsComponent, InlineSVGModule],
+  imports: [CommonModule, DatePipe, RouterOutlet, TabsComponent, InlineSVGModule, ReadinessCircleComponent],
   templateUrl: './engagement-workspace.component.html',
   styleUrl: './engagement-workspace.component.scss'
 })
@@ -63,13 +64,6 @@ export class EngagementWorkspaceComponent {
   readonly isGreenfield = computed(() =>
     (this.engagement()?.engagementType ?? '').toLowerCase().includes('green')
   );
-
-  readonly ringColor = computed(() => {
-    const score = this.scorePercent();
-    if (score < 10) return '#dc2626'; // red ($color-danger)
-    if (score > 90) return '#16a34a'; // green ($color-success)
-    return '#f59e0b'; // orange ($color-accent-amber)
-  });
 
   readonly isFullyReady = computed(() => {
     return this.scorePercent() === 100;
