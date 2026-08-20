@@ -88,7 +88,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("AccessItems");
+                    b.ToTable("AccessItems", (string)null);
 
                     b.HasData(
                         new
@@ -199,7 +199,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AccessItemDefinitions");
+                    b.ToTable("AccessItemDefinitions", (string)null);
 
                     b.HasData(
                         new
@@ -465,9 +465,6 @@ namespace Pdr.Api.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
-                    b.Property<int?>("EngagementId")
-                        .HasColumnType("integer");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -487,8 +484,6 @@ namespace Pdr.Api.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AuditActionId");
-
-                    b.HasIndex("EngagementId");
 
                     b.HasIndex("UserId");
 
@@ -2116,7 +2111,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EnvironmentToolingDefinitions");
+                    b.ToTable("EnvironmentToolingDefinitions", (string)null);
 
                     b.HasData(
                         new
@@ -2204,7 +2199,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("EnvironmentToolingItems");
+                    b.ToTable("EnvironmentToolingItems", (string)null);
 
                     b.HasData(
                         new
