@@ -1,5 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Pdr.Api.Constants;
 using Pdr.Api.Data;
+using Pdr.Api.Models.AccessTracker;
+using Pdr.Api.Models.EnvironmentTooling;
+using Pdr.Api.Models.ResourceRequests;
 using Pdr.Api.Models.Risks;
 using Pdr.Api.Repositories.Interfaces;
 
@@ -52,5 +60,103 @@ public class RiskRepository(AppDbContext context) : IRiskRepository
     public async Task SaveChangesAsync()
     {
         await context.SaveChangesAsync();
+    }
+
+    public async Task<List<RiskBlockerSourceItem>> GetActiveAccessBlockersAsync(int engagementId)
+    {
+        return await context.AccessItems
+            .AsNoTracking()
+            .Where(a => a.EngagementId == engagementId &&
+                        a.Status == AccessItemStatus.Blocked &&
+                        !a.IsDeleted)
+            .Select(a => new RiskBlockerSourceItem(
+                RiskConstants.SourceTypes.AccessTracker,
+                a.Id,
+                a.Name,
+                a.BlockReason ?? string.Empty,
+                (int?)a.OwnerId))
+            .ToListAsync();
+    }
+
+    public async Task<List<RiskBlockerSourceItem>> GetActiveToolingBlockersAsync(int engagementId)
+    {
+        return await context.EnvironmentToolingItems
+            .AsNoTracking()
+            .Include(e => e.EnvironmentToolingDefinition)
+            .Where(e => e.EngagementId == engagementId &&
+                        e.Status == EnvironmentToolingStatus.NotApplicable &&
+                        !e.IsDeleted)
+            .Select(e => new RiskBlockerSourceItem(
+                RiskConstants.SourceTypes.EnvironmentTooling,
+                e.Id,
+                e.EnvironmentToolingDefinition != null ? e.EnvironmentToolingDefinition.Name : (e.CustomName ?? e.Name),
+                e.NotApplicableReason ?? string.Empty,
+                (int?)e.OwnerId))
+            .ToListAsync();
+    }
+
+    public async Task<List<RiskBlockerSourceItem>> GetActiveChecklistBlockersAsync(int engagementId)
+    {
+        return await context.EngagementChecklistItems
+            .AsNoTracking()
+            .Where(c => c.EngagementChecklist.EngagementId == engagementId &&
+                        c.Status == MasterChecklistConstants.ItemStatuses.Blocked &&
+                        c.IsApplicable &&
+                        !c.IsDeleted)
+            .Select(c => new RiskBlockerSourceItem(
+                RiskConstants.SourceTypes.Checklist,
+                c.Id,
+                c.Title,
+                c.BlockReason ?? string.Empty,
+                (int?)c.OwnerId))
+            .ToListAsync();
+    }
+
+    public async Task<RiskBlockerSourceItem?> GetActiveResourceGapBlockerAsync(int engagementId, int thresholdDays)
+    {
+        var engagement = await context.Engagements
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.EngagementId == engagementId && !e.IsDeleted);
+
+        if (engagement?.BillingStartDate == null)
+        {
+            return null;
+        }
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var daysToBilling = engagement.BillingStartDate.Value.DayNumber - today.DayNumber;
+
+        if (daysToBilling > thresholdDays)
+        {
+            return null;
+        }
+
+        var unconfirmedCount = await context.ResourceRequests
+            .AsNoTracking()
+            .Where(r => r.EngagementId == engagementId &&
+                        r.Status != ResourceRequestStatus.Confirmed &&
+                        !r.IsDeleted)
+            .CountAsync();
+
+        if (unconfirmedCount == 0)
+        {
+            return null;
+        }
+
+        return new RiskBlockerSourceItem(
+            RiskConstants.SourceTypes.ResourceRequest,
+            engagementId,
+            "Resources not confirmed",
+            $"{unconfirmedCount} resource request(s) not confirmed with {daysToBilling} day(s) until billing starts ({engagement.BillingStartDate.Value:dd MMM yyyy}).",
+            null);
+    }
+
+    public async Task<List<Risk>> GetAutoCreatedRisksAsync(int engagementId)
+    {
+        return await context.Risks
+            .Where(r => r.EngagementId == engagementId &&
+                        r.SourceType != null &&
+                        r.SourceItemId != null)
+            .ToListAsync();
     }
 }
