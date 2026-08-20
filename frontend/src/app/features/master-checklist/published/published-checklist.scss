@@ -1,45 +1,50 @@
+@use '../../../../styles/tokens' as *;
 @use '../../../../styles/mixins' as *;
 
 :host {
   display: block;
   font-family: $font-family-base;
-  height: 100%;
 }
 
 .published-checklist {
+  padding: 0;
+
+  &__card {
+    background-color: $color-surface;
+    border: 1px solid $color-border-soft;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+    overflow: hidden;
+    padding: 0;
+  }
+
   &__header {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: $spacing-2;
-    margin-bottom: $spacing-4;
-    padding: 0;
-
-    @include respond-to('sm') {
-      flex-direction: row;
-      align-items: center;
-      gap: $spacing-3;
-      padding: 0;
-    }
+    justify-content: space-between;
+    align-items: center;
+    gap: $spacing-4;
+    padding: $spacing-5 $spacing-6;
+    background-color: $color-surface;
 
     h1 {
       color: $color-text;
-      font-size: $font-size-xl;
-      font-weight: $font-weight-semibold;
-      margin: 0;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-bold;
+      margin: 0 0 $spacing-1;
     }
+  }
+
+  &__header-title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
   }
 
   &__toolbar {
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     gap: $spacing-4;
-    margin-bottom: $spacing-4;
-    padding: 0;
-
-    @include respond-to('sm') {
-      padding: 0;
-    }
   }
 
   &__field {
@@ -81,7 +86,6 @@
 .checklist-container {
   display: flex;
   flex-direction: column;
-  gap: $spacing-5;
   padding: 0;
   background: transparent;
   min-height: auto;
@@ -89,14 +93,18 @@
 
 // Category cards
 .category-card {
-  @include card-surface($padding: 0, $radius: $radius-lg);
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
   overflow: hidden;
 }
 
 .category-header {
   @include flex-between;
-  padding: $spacing-3 $spacing-5;
+  padding: $spacing-3 $spacing-6;
   background: $color-surface-hover;
+  border-top: 1px solid $color-border-soft;
   border-bottom: 1px solid $color-border-soft;
 }
 
@@ -130,7 +138,7 @@
   }
 
   th {
-    padding: $spacing-2 $spacing-5;
+    padding: $spacing-3 $spacing-6;
     font-size: $font-size-xs;
     font-weight: $font-weight-semibold;
     color: $color-text-fainter;
