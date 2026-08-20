@@ -243,7 +243,7 @@
 
                         <!-- Leadership Exemption Review -->
                         @if (isLeadership() && item.exemptionStatus === 'Pending') {
-                          <app-button type="button" variant="accent" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
+                          <app-button type="button" variant="flat" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
                             Review Request
                           </app-button>
                         }
@@ -314,7 +314,7 @@
                       }
 
                       @if (isLeadership() && item.exemptionStatus === 'Pending') {
-                        <app-button type="button" variant="accent" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
+                        <app-button type="button" variant="flat" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
                           Review Request
                         </app-button>
                       }
