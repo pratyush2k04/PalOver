@@ -32,6 +32,11 @@
 
         <p class="field-note">Only an Admin can change your role.</p>
 
+        <div class="app-field">
+          <label>Last sign-in</label>
+          <input type="text" [value]="lastLoginAt() ? (lastLoginAt() | date: 'medium') : '—'" disabled />
+        </div>
+
         <app-button type="submit" variant="accent" [loading]="isSavingProfile()" [disabled]="isLoadingProfile()">
           Save changes
         </app-button>
