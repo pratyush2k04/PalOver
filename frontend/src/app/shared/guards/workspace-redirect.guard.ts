@@ -1,18 +1,15 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { AppContextService } from '../services/app-context';
+import { AppContextService } from '../../services/app-context';
 
-export const workspaceGuard: CanActivateFn = (route) => {
+export const workspaceRedirectGuard: CanActivateFn = () => {
   const appContext = inject(AppContextService);
   const router = inject(Router);
 
   const workspace = appContext.workspace();
-  const requestedPath = `/${route.routeConfig?.path ?? ''}`;
-
-  if (workspace && workspace.route !== requestedPath) {
+  if (workspace) {
     router.navigateByUrl(workspace.route);
-    return false;
   }
 
-  return true;
+  return false;
 };
