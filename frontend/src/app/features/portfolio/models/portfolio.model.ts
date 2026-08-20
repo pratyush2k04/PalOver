@@ -7,7 +7,11 @@ export interface LeadershipEngagementListItem {
   openBlockerCount: number;
   daysToKickoff: number;
   status: 'Kickoff-ready' | 'In progress' | 'At risk' | string;
+  hasResourcingGap: boolean;
+  unconfirmedResourceCount: number;
+  daysToBilling: number | null;
 }
 
 export type StatusFilterType = 'ALL' | 'Kickoff-ready' | 'In progress' | 'At risk';
 export type DaysFilterType = 'ALL' | '7' | '14' | '30';
+export type ResourcingFilterType = 'ALL' | 'FLAGGED';

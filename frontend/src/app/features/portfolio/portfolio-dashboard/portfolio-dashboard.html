@@ -60,20 +60,32 @@
   <!-- Filters Toolbar -->
   <div class="filter-toolbar">
     <div class="filter-group">
-      <span class="filter-label">Status:</span>
-      <app-tabs
-        [tabs]="statusTabs"
-        [activeId]="statusFilter()"
-        (tabChange)="setStatusFilter($event)"
+      <app-select
+        id="statusFilter"
+        label="Status"
+        [options]="statusOptions"
+        [ngModel]="statusFilter()"
+        (ngModelChange)="setStatusFilter($event)"
       />
     </div>
 
     <div class="filter-group">
-      <span class="filter-label">Days to Kickoff:</span>
-      <app-tabs
-        [tabs]="daysTabs"
-        [activeId]="daysFilter()"
-        (tabChange)="setDaysFilter($event)"
+      <app-select
+        id="daysFilter"
+        label="Days to Kickoff"
+        [options]="daysOptions"
+        [ngModel]="daysFilter()"
+        (ngModelChange)="setDaysFilter($event)"
+      />
+    </div>
+
+    <div class="filter-group">
+      <app-select
+        id="resourcingFilter"
+        label="Resourcing"
+        [options]="resourcingOptions"
+        [ngModel]="resourcingFilter()"
+        (ngModelChange)="setResourcingFilter($event)"
       />
     </div>
   </div>
@@ -93,7 +105,7 @@
         <thead>
           <tr>
             <th>Engagement / Client</th>
-            <th>Project Manager</th>
+            <th>Days to Billing</th>
             <th>Days to Kickoff</th>
             <th>Readiness Score</th>
             <th>Open Blockers</th>
@@ -107,18 +119,23 @@
               <td class="cell-primary">
                 <div class="engagement-name">{{ item.engagementName }}</div>
                 <div class="client-name">{{ item.clientName }}</div>
+                @if (item.hasResourcingGap) {
+                  <div class="resourcing-gap-flag" [title]="item.unconfirmedResourceCount + ' unconfirmed resource' + (item.unconfirmedResourceCount === 1 ? '' : 's')">
+                    <span>⚑</span>
+                    <span>{{ item.unconfirmedResourceCount }} unconfirmed resource{{ item.unconfirmedResourceCount === 1 ? '' : 's' }}</span>
+                  </div>
+                }
               </td>
 
-              <!-- Project Manager with Avatar -->
+              <!-- Days to Billing -->
               <td>
-                <div class="pm-info">
-                  @if (item.pmName) {
-                    <app-avatar [name]="item.pmName" size="sm" />
-                    <span class="pm-name">{{ item.pmName }}</span>
-                  } @else {
-                    <span class="pm-unassigned">{{ MESSAGES.UNASSIGNED_PM }}</span>
-                  }
-                </div>
+                @if (item.daysToBilling !== null) {
+                  <span class="days-badge" [ngClass]="getDaysBadgeClass(item.daysToBilling)">
+                    {{ getDaysLabel(item.daysToBilling) }}
+                  </span>
+                } @else {
+                  <span class="days-badge days-badge--none">—</span>
+                }
               </td>
 
               <!-- Days to Kickoff -->
