@@ -1,0 +1,62 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2>{{ dialogTitle }}</h2>
+    <app-button type="button" variant="icon" ariaLabel="Close dialog" (click)="onCancel()">&times;</app-button>
+  </div>
+
+  <div class="dialog-body">
+    <div class="item-title-preview">
+      <strong>Item:</strong> {{ data.item.title }}
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <app-textarea
+          id="evidence-note"
+          label="Note"
+          formControlName="note"
+          [rows]="4"
+          [maxLength]="500"
+          placeholder="Provide details or summary of evidence..."
+          [errorMessages]="{
+            required: 'Evidence note is required.',
+            maxlength: 'Evidence note cannot exceed 500 characters.'
+          }"
+        />
+        <div class="char-counter" [class.limit-reached]="noteLength >= 500">
+          {{ noteLength }} / 500
+        </div>
+      </div>
+
+      <div class="form-group">
+        <app-input
+          id="evidence-link"
+          label="Link (optional)"
+          formControlName="link"
+          placeholder="https://..."
+          [errorMessages]="{
+            maxlength: 'Link cannot exceed 2048 characters.',
+            invalidUrl: 'Please enter a valid URL (e.g. https://...).'
+          }"
+        />
+      </div>
+
+      @if (data.item.evidenceSubmittedByName && data.item.evidenceSubmittedAt) {
+        <div class="submitted-metadata">
+          <span>Submitted by <strong>{{ data.item.evidenceSubmittedByName }}</strong> on {{ data.item.evidenceSubmittedAt | date:'mediumDate' }}</span>
+        </div>
+      }
+
+      <div class="dialog-actions">
+        @if (isReadOnly) {
+          <app-button type="button" variant="stroked" (click)="onCancel()">Close</app-button>
+        } @else {
+          <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+          <app-button type="submit" variant="accent" [disabled]="form.invalid">
+            {{ submitButtonText }}
+          </app-button>
+        }
+      </div>
+    </form>
+  </div>
+</div>
