@@ -1,11 +1,11 @@
 using FluentValidation;
-using Pdr.Api.DTOs.Me;
+using Pdr.Api.DTOs.Profile;
 
 namespace Pdr.Api.Validators;
 
-public class UpdateMeDtoValidator : AbstractValidator<UpdateMeDto>
+public class UpdateProfileDtoValidator : AbstractValidator<UpdateProfileDto>
 {
-    public UpdateMeDtoValidator()
+    public UpdateProfileDtoValidator()
     {
         RuleFor(x => x.FullName)
             .NotEmpty().WithMessage("Full name is required.")
