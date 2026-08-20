@@ -1,4 +1,4 @@
-using Pdr.Api.DTOs.Me;
+using Pdr.Api.DTOs.Profile;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
@@ -6,17 +6,17 @@ using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class MeService(
+public class ProfileService(
     IUserRepository userRepository,
-    ICurrentUserService currentUserService) : IMeService
+    ICurrentUserService currentUserService) : IProfileService
 {
-    public async Task<MeDto> GetMeAsync()
+    public async Task<ProfileDto> GetProfileAsync()
     {
         var user = await GetCurrentUserAsync();
         return ToDto(user);
     }
 
-    public async Task<MeDto> UpdateMeAsync(UpdateMeDto request)
+    public async Task<ProfileDto> UpdateProfileAsync(UpdateProfileDto request)
     {
         var user = await GetCurrentUserAsync();
 
@@ -48,7 +48,7 @@ public class MeService(
             ?? throw new UserNotFoundException(userId);
     }
 
-    private static MeDto ToDto(User user) => new()
+    private static ProfileDto ToDto(User user) => new()
     {
         FullName = user.FullName,
         Email = user.Email,
