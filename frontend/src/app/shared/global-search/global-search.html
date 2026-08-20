@@ -14,57 +14,115 @@
   <div class="global-search__panel">
     @if (searchTerm().trim().length < minQueryLength) {
       <div class="global-search__hint">{{ messages.MIN_LENGTH_HINT }}</div>
-    } @else if (isLoading()) {
-      <app-loading-spinner label="Searching..." />
-    } @else if (hasError()) {
-      <app-alert variant="danger">{{ messages.SEARCH_FAILED }}</app-alert>
-    } @else if (results(); as response) {
-      @if (response.totalCount === 0) {
-        <app-empty-state [message]="noResultsMessage" />
-      } @else {
-        @if (response.engagements.count > 0) {
-          <div class="global-search__group">
-            <div class="global-search__group-header">Engagements ({{ response.engagements.count }})</div>
-            @for (item of response.engagements.items; track item.engagementId) {
-              <div class="global-search__row" (click)="selectEngagement(item)">
-                <span class="global-search__row-title">{{ item.engagementName }}</span>
-                <span class="global-search__row-subtitle">{{ item.clientName }}</span>
-              </div>
+    } @else {
+      <!-- Content Type Filter Bar -->
+      <div class="global-search__filters">
+        <span class="global-search__filters-label">Filter:</span>
+        @for (filter of contentTypes; track filter.type) {
+          <button
+            type="button"
+            class="global-search__filter-btn"
+            [class.global-search__filter-btn--active]="isFilterActive(filter.type)"
+            (click)="toggleFilter(filter.type)"
+          >
+            {{ filter.label }}
+            @if (results()) {
+              <span class="global-search__filter-count">({{ getTypeCount(filter.type) }})</span>
             }
-          </div>
+          </button>
         }
-        @if (response.documents.count > 0) {
-          <div class="global-search__group">
-            <div class="global-search__group-header">Documents ({{ response.documents.count }})</div>
-            @for (item of response.documents.items; track item.documentId) {
-              <div class="global-search__row" (click)="selectDocument(item)">
-                <span class="global-search__row-title">{{ item.fileName }}</span>
-                <span class="global-search__row-subtitle">{{ item.engagementName }} · {{ item.categoryName }}</span>
-              </div>
-            }
-          </div>
-        }
-        @if (response.people.count > 0) {
-          <div class="global-search__group">
-            <div class="global-search__group-header">People ({{ response.people.count }})</div>
-            @for (item of response.people.items; track item.personId) {
-              <div class="global-search__row" (click)="selectPerson(item)">
-                <span class="global-search__row-title">{{ item.name }}</span>
-                <span class="global-search__row-subtitle">{{ item.role }} · {{ item.engagementName }}</span>
-              </div>
-            }
-          </div>
-        }
-        @if (response.checklistItems.count > 0) {
-          <div class="global-search__group">
-            <div class="global-search__group-header">Checklist Items ({{ response.checklistItems.count }})</div>
-            @for (item of response.checklistItems.items; track item.itemId) {
-              <div class="global-search__row" (click)="selectChecklistItem(item)">
-                <span class="global-search__row-title">{{ item.title }}</span>
-                <span class="global-search__row-subtitle">{{ item.engagementName }} · {{ item.categoryName }}</span>
-              </div>
-            }
-          </div>
+      </div>
+
+      <!-- Active Filter Chips -->
+      @if (hasActiveFilters()) {
+        <div class="global-search__active-chips">
+          <span class="global-search__active-label">Active:</span>
+          @for (type of activeFilterList(); track type) {
+            <span class="global-search__chip">
+              {{ getTypeLabel(type) }}
+              <button
+                type="button"
+                class="global-search__chip-remove"
+                aria-label="Remove filter"
+                (click)="removeFilter(type)"
+              >
+                ✕
+              </button>
+            </span>
+          }
+          <button
+            type="button"
+            class="global-search__clear-all-btn"
+            (click)="clearAllFilters()"
+          >
+            Clear all
+          </button>
+        </div>
+      }
+
+      @if (isLoading()) {
+        <app-loading-spinner label="Searching..." />
+      } @else if (hasError()) {
+        <app-alert variant="danger">{{ messages.SEARCH_FAILED }}</app-alert>
+      } @else if (results(); as response) {
+        @if (response.totalCount === 0) {
+          <app-empty-state [message]="noResultsMessage" />
+        } @else {
+          @if (response.engagements && response.engagements.count > 0) {
+            <div class="global-search__group">
+              <div class="global-search__group-header">Engagements ({{ response.engagements.count }})</div>
+              @for (item of response.engagements.items; track item.engagementId) {
+                <div class="global-search__row" (click)="selectEngagement(item)">
+                  <span class="global-search__row-title">{{ item.engagementName }}</span>
+                  <span class="global-search__row-subtitle">{{ item.clientName }}</span>
+                </div>
+              }
+            </div>
+          }
+          @if (response.documents && response.documents.count > 0) {
+            <div class="global-search__group">
+              <div class="global-search__group-header">Documents ({{ response.documents.count }})</div>
+              @for (item of response.documents.items; track item.documentId) {
+                <div class="global-search__row" (click)="selectDocument(item)">
+                  <span class="global-search__row-title">{{ item.fileName }}</span>
+                  <span class="global-search__row-subtitle">{{ item.engagementName }} · {{ item.categoryName }}</span>
+                </div>
+              }
+            </div>
+          }
+          @if (response.people && response.people.count > 0) {
+            <div class="global-search__group">
+              <div class="global-search__group-header">People ({{ response.people.count }})</div>
+              @for (item of response.people.items; track item.personId) {
+                <div class="global-search__row" (click)="selectPerson(item)">
+                  <span class="global-search__row-title">{{ item.name }}</span>
+                  <span class="global-search__row-subtitle">{{ item.role }} · {{ item.engagementName }}</span>
+                </div>
+              }
+            </div>
+          }
+          @if (response.checklistItems && response.checklistItems.count > 0) {
+            <div class="global-search__group">
+              <div class="global-search__group-header">Checklist Items ({{ response.checklistItems.count }})</div>
+              @for (item of response.checklistItems.items; track item.itemId) {
+                <div class="global-search__row" (click)="selectChecklistItem(item)">
+                  <span class="global-search__row-title">{{ item.title }}</span>
+                  <span class="global-search__row-subtitle">{{ item.engagementName }} · {{ item.categoryName }}</span>
+                </div>
+              }
+            </div>
+          }
+          @if (response.decisions && response.decisions.count > 0) {
+            <div class="global-search__group">
+              <div class="global-search__group-header">Decisions ({{ response.decisions.count }})</div>
+              @for (item of response.decisions.items; track item.decisionId) {
+                <div class="global-search__row" (click)="selectDecision(item)">
+                  <span class="global-search__row-title">{{ item.title }}</span>
+                  <span class="global-search__row-subtitle">{{ item.engagementName }} · {{ item.status }}</span>
+                </div>
+              }
+            </div>
+          }
         }
       }
     }

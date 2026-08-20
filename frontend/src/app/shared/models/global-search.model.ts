@@ -1,3 +1,5 @@
+export type SearchType = 'engagement' | 'document' | 'person' | 'checklist' | 'decision';
+
 export interface SearchResultGroup<T> {
   count: number;
   items: T[];
@@ -34,6 +36,14 @@ export interface SearchChecklistItemResult {
   categoryName: string;
 }
 
+export interface SearchDecisionResult {
+  decisionId: number;
+  title: string;
+  status: string;
+  engagementId: number;
+  engagementName: string;
+}
+
 export interface GlobalSearchResponse {
   query: string;
   totalCount: number;
@@ -41,4 +51,5 @@ export interface GlobalSearchResponse {
   documents: SearchResultGroup<SearchDocumentResult>;
   people: SearchResultGroup<SearchPersonResult>;
   checklistItems: SearchResultGroup<SearchChecklistItemResult>;
+  decisions: SearchResultGroup<SearchDecisionResult>;
 }
