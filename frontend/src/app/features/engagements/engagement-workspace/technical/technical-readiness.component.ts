@@ -2,7 +2,7 @@ import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { AuthService } from 'src/app/services/auth';
+import { AuthService } from '@shared/services/auth';
 import { TECHNICAL_READINESS_ROLES } from '@shared/constants/technical-readiness.constants';
 import { AccessItemDto } from '@features/engagements/models/access-tracker/access-tracker.dtos';
 import { AccessItemStatus } from '@features/engagements/models/access-tracker/access-tracker.enums';

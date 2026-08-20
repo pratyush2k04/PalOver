@@ -5,10 +5,10 @@ import { FormsModule } from '@angular/forms';
 import { catchError, of } from 'rxjs';
 import { TECHNICAL_READINESS_ROLES } from '@shared/constants/app.constants';
 import { TechnicalReadinessService } from '@features/engagements/services/technical-readiness.service';
-import { AuthService } from 'src/app/services/auth';
+import { AuthService } from '@shared/services/auth';
 import { AccessItemDto } from '@features/engagements/models/access-tracker/access-tracker.dtos';
 import { AccessItemStatus } from '@features/engagements/models/access-tracker/access-tracker.enums';
-import { KickoffReadinessDto, KickoffReadinessService } from 'src/app/services/kickoff-readiness.service';
+import { KickoffReadinessDto, KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
 import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';

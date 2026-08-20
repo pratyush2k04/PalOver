@@ -1,8 +1,9 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { catchError, map, of } from 'rxjs';
-import { AuthService } from 'src/app/services/auth';
-import { HandoverService } from '../../features/engagements/services/handover.service';
+import { AuthService } from '@shared/services/auth';
+import { HandoverService } from '@features/engagements/services/handover.service';
+import { APP_ROUTES } from '@shared/constants/app.constants';
 
 export const engagementAccessGuard: CanActivateFn = (route) => {
   const authService = inject(AuthService);
@@ -10,7 +11,7 @@ export const engagementAccessGuard: CanActivateFn = (route) => {
   const router = inject(Router);
 
   if (!authService.isLoggedIn()) {
-    router.navigate(['/login']);
+    router.navigate([APP_ROUTES.LOGIN]);
     return of(false);
   }
 
@@ -19,7 +20,7 @@ export const engagementAccessGuard: CanActivateFn = (route) => {
   return handoverService.getHandover(engagementId).pipe(
     map(() => true),
     catchError(() => {
-      router.navigate(['/dashboard']);
+      router.navigate([APP_ROUTES.DASHBOARD]);
       return of(false);
     })
   );

@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { AuthService } from '../../../../services/auth';
+import { AuthService } from '@shared/services/auth';
 import { EngagementDetailComponent } from './components/engagement-detail/engagement-detail';
 import { OpenItemsByAreaComponent } from './components/open-items-by-area/open-items-by-area.component';
 

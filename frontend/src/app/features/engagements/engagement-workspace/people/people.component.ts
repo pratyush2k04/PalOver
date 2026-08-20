@@ -4,15 +4,15 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { InlineSVGModule } from 'ng-inline-svg-2';
-import { PersonService } from '../../../../services/person.service';
-import { PersonDto, PersonType } from '../../../../models/person.model';
-import { LoaderService } from '@core/loading/loader.service';
+import { PersonService } from '@shared/services/person.service';
+import { PersonDto, PersonType } from '@shared/models/person.model';
+import { LoaderService } from '@shared/services/loader.service';
 import { ToastService } from '@common/services/toast/toast';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { ButtonComponent } from '@common/components/button/button';
 import { DialogService } from '@common/services/dialog/dialog.service';
-import { AuthService } from '../../../../services/auth';
-import { USER_ROLES } from '../../../../shared/constants/users.constants';
+import { AuthService } from '@shared/services/auth';
+import { USER_ROLES } from '@shared/constants/app.constants';
 import {
   PersonFormDialogComponent,
   PersonFormDialogData,

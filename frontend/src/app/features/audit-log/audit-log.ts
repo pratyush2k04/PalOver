@@ -5,7 +5,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AuditLogService } from './services/audit-log.service';
 import { AuditLogDto, AuditLogFilters } from './models/audit-log.model';
 import { AUDIT_LOG_MESSAGES, USER_ROLES } from '@shared/constants/app.constants';
-import { AuthService } from 'src/app/services/auth';
+import { AuthService } from '@shared/services/auth';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { AlertComponent } from '@common/components/alert/alert';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';

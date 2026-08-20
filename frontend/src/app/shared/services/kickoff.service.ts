@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { KickoffRecord, KickoffActionItem, KickoffActionItemStatus } from '../models/kickoff.model';
-import { KICKOFF_API_ENDPOINTS } from '../shared/constants/kickoff.constants';
+import { KickoffRecord, KickoffActionItem, KickoffActionItemStatus } from '@shared/models/kickoff.model';
+import { KICKOFF_API_ENDPOINTS } from '@shared/constants/kickoff.constants';
 
 @Injectable({
   providedIn: 'root'

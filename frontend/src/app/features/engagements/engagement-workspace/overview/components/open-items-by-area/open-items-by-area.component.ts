@@ -5,6 +5,7 @@ import { AlertComponent } from '@common/components/alert/alert';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { EngagementService, EngagementOpenItemsSummary } from '../../../../services/engagement.service';
 import { OPEN_ITEMS_ERROR_MESSAGES } from '@shared/constants/engagements.constants';
+import { APP_ROUTES, ENGAGEMENT_ROUTES, TECHNICAL_READINESS_ROUTES, RISK_ROUTES } from '@shared/constants/app.constants';
 
 @Component({
   selector: 'app-open-items-by-area',
@@ -15,6 +16,11 @@ import { OPEN_ITEMS_ERROR_MESSAGES } from '@shared/constants/engagements.constan
 })
 export class OpenItemsByAreaComponent implements OnChanges {
   @Input() engagementId?: number;
+
+  readonly APP_ROUTES = APP_ROUTES;
+  readonly ENGAGEMENT_ROUTES = ENGAGEMENT_ROUTES;
+  readonly TECHNICAL_READINESS_ROUTES = TECHNICAL_READINESS_ROUTES;
+  readonly RISK_ROUTES = RISK_ROUTES;
 
   private engagementService = inject(EngagementService);
 

@@ -134,6 +134,18 @@ public class AuditActionConfiguration : IEntityTypeConfiguration<AuditAction>
                 Id = (int)AuditActionEnum.DiscoveryItemAdded,
                 Action = AuditActionEnum.DiscoveryItemAdded.ToString(),
                 Details = "Discovery item {itemName} added to engagement {engagementName} by {actorName}"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.ResourcingGapFlagRaised,
+                Action = AuditActionEnum.ResourcingGapFlagRaised.ToString(),
+                Details = "Resourcing gap flag raised for engagement {engagementName}: {unconfirmedCount} request(s) open, {daysToBilling} day(s) until billing"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.ResourcingGapFlagCleared,
+                Action = AuditActionEnum.ResourcingGapFlagCleared.ToString(),
+                Details = "Resourcing gap flag cleared for engagement {engagementName}: all requested resources confirmed"
             });
     }
 }

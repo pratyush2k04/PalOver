@@ -13,10 +13,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { HandoverService } from '../../services/handover.service';
 import { EngagementService } from '../../services/engagement.service';
 import { catchError, of } from 'rxjs';
-import { AuthService } from 'src/app/services/auth';
-import { KickoffReadinessDto, KickoffReadinessService } from 'src/app/services/kickoff-readiness.service';
+import { AuthService } from '@shared/services/auth';
+import { KickoffReadinessDto, KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
 import { EngagementInfoDto } from '../../models/engagement.model';
 import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
+import { ENGAGEMENT_ROUTES } from '@shared/constants/app.constants';
 import {
   HandoverInfoDto,
   SaveHandoverDraftRequest,
@@ -290,7 +291,7 @@ export class HandoverComponent {
 
         if (errorMessage === HandoverComponent.KICKOFF_NOT_READY_MESSAGE) {
           setTimeout(() => {
-            this.router.navigate(['../kickoff'], { relativeTo: this.route });
+            this.router.navigate(['../', ENGAGEMENT_ROUTES.KICKOFF], { relativeTo: this.route });
           }, 1500);
         }
       }

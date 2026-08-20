@@ -445,6 +445,18 @@ namespace Pdr.Api.Migrations
                             Id = 18,
                             Action = "DiscoveryItemAdded",
                             Details = "Discovery item {itemName} added to engagement {engagementName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Action = "ResourcingGapFlagRaised",
+                            Details = "Resourcing gap flag raised for engagement {engagementName}: {unconfirmedCount} request(s) open, {daysToBilling} day(s) until billing"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Action = "ResourcingGapFlagCleared",
+                            Details = "Resourcing gap flag cleared for engagement {engagementName}: all requested resources confirmed"
                         });
                 });
 
@@ -4295,6 +4307,19 @@ namespace Pdr.Api.Migrations
                             Key = "ResourceRequestReopened",
                             LinkPattern = "/engagements/{EngagementId}/workspace/resources",
                             Title = "Resource Request Reopened — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Body = "{UnconfirmedCount} resource request(s) for {EngagementName} remain unconfirmed with {DaysToBilling} day(s) until billing starts ({BillingDate}).",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 3,
+                            IsDeleted = false,
+                            Key = "ResourcingGapFlagRaised",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/resources",
+                            Title = "Resources Not Confirmed — {EngagementName}",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
