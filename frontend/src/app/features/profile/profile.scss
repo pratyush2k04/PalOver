@@ -39,29 +39,8 @@
   color: #1e3a8a;
 }
 
-.app-field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 12px;
-
-  label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #374151;
-  }
-
-  input {
-    border: 1px solid #d0d5dd;
-    border-radius: 6px;
-    padding: 8px 12px;
-    color: #6b7280;
-    background: #f9fafb;
-  }
-}
-
 .field-note {
-  margin: -0.25rem 0 1rem;
+  margin: -0.25rem 0 0.75rem;
   font-size: 0.8125rem;
   color: #6b7280;
 }

@@ -25,17 +25,23 @@
           [errorMessages]="{ required: 'Enter a valid work email address.', email: 'Enter a valid work email address.' }"
         />
 
-        <div class="app-field">
-          <label>Role</label>
-          <input type="text" [value]="role()" disabled />
-        </div>
+        <app-input
+          id="role"
+          label="Role"
+          [ngModel]="role()"
+          [ngModelOptions]="{ standalone: true }"
+          [disabled]="true"
+        />
 
         <p class="field-note">Only an Admin can change your role.</p>
 
-        <div class="app-field">
-          <label>Last sign-in</label>
-          <input type="text" [value]="lastLoginAt() ? (lastLoginAt() | date: 'medium') : '—'" disabled />
-        </div>
+        <app-input
+          id="lastSignIn"
+          label="Last sign-in"
+          [ngModel]="lastLoginDisplay()"
+          [ngModelOptions]="{ standalone: true }"
+          [disabled]="true"
+        />
 
         <app-button type="submit" variant="accent" [loading]="isSavingProfile()" [disabled]="isLoadingProfile()">
           Save changes

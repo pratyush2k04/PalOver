@@ -1,47 +1,26 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { CommonModule, DatePipe } from '@angular/common';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
 import { ToastService } from '@common/services/toast/toast';
 import { PROFILE_MESSAGES } from '@shared/constants/app.constants';
+import {
+  hasLowerCase,
+  hasNumber,
+  hasSymbol,
+  hasUpperCase,
+  passwordStrengthValidator
+} from '@shared/utils/utils';
 import { AppContextService } from '../../services/app-context';
 import { ProfileService } from './services/profile.service';
-
-function hasUpperCase(value: string): boolean {
-  return /[A-Z]/.test(value);
-}
-
-function hasLowerCase(value: string): boolean {
-  return /[a-z]/.test(value);
-}
-
-function hasNumber(value: string): boolean {
-  return /[0-9]/.test(value);
-}
-
-function hasSymbol(value: string): boolean {
-  return /[^A-Za-z0-9]/.test(value);
-}
-
-function passwordStrengthValidator(control: { value: string }): ValidationErrors | null {
-  const value = control.value ?? '';
-  const errors: ValidationErrors = {};
-
-  if (value.length < 10) errors['minlength'] = true;
-  if (!hasUpperCase(value)) errors['upper'] = true;
-  if (!hasLowerCase(value)) errors['lower'] = true;
-  if (!hasNumber(value)) errors['number'] = true;
-  if (!hasSymbol(value)) errors['symbol'] = true;
-
-  return Object.keys(errors).length ? errors : null;
-}
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AlertComponent, ButtonComponent, InputComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, AlertComponent, ButtonComponent, InputComponent],
+  providers: [DatePipe],
   templateUrl: './profile.html',
   styleUrl: './profile.scss'
 })
@@ -50,9 +29,16 @@ export class ProfileComponent implements OnInit {
   private profileService = inject(ProfileService);
   private toastService = inject(ToastService);
   private appContext = inject(AppContextService);
+  private datePipe = inject(DatePipe);
 
   readonly role = signal<string>('');
   readonly lastLoginAt = signal<string | null>(null);
+
+  readonly lastLoginDisplay = computed(() => {
+    const raw = this.lastLoginAt();
+    if (!raw) return '—';
+    return this.datePipe.transform(raw, 'medium') ?? '—';
+  });
 
   readonly isLoadingProfile = signal(true);
   readonly isSavingProfile = signal(false);
