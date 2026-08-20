@@ -65,7 +65,21 @@
   font-size: $font-size-sm;
 
   .badge-icon {
-    font-weight: $font-weight-bold;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.125rem;
+    height: 1.125rem;
+    flex-shrink: 0;
+
+    ::ng-deep span,
+    ::ng-deep svg,
+    svg {
+      display: block;
+      width: 1.125rem;
+      height: 1.125rem;
+      stroke-width: 2.25;
+    }
   }
 
   .badge-content {

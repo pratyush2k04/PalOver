@@ -13,6 +13,7 @@ import { USER_ROLES } from '@shared/constants/users.constants';
 import { DayOneSignOffRequest, EngagementInfoDto } from '../models/engagement.model';
 import { TabItem, TabsComponent } from '@common/components/tabs/tabs';
 import { ButtonComponent } from '@common/components/button/button';
+import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DayOneSignOffDialogComponent } from './components/day-one-sign-off-dialog/day-one-sign-off-dialog.component';
 
 @Component({
@@ -23,6 +24,7 @@ import { DayOneSignOffDialogComponent } from './components/day-one-sign-off-dial
     RouterOutlet,
     TabsComponent,
     ButtonComponent,
+    InlineSVGModule,
     DayOneSignOffDialogComponent
   ],
   templateUrl: './engagement-workspace.component.html',

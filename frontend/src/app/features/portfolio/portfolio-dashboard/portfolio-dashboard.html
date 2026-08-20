@@ -165,7 +165,10 @@
               <td>
                 @if (item.isDayOneSignedOff) {
                   <span class="day-one-status-badge" [class.day-one-status-badge--exception]="item.dayOneSignOffIsException">
-                    <span>{{ item.dayOneSignOffIsException ? '⚠' : '✓' }}</span>
+                    <span
+                      class="badge-icon"
+                      [inlineSVG]="item.dayOneSignOffIsException ? 'assets/icons/alert-circle.svg' : 'assets/icons/check-circle.svg'"
+                    ></span>
                     <span>{{ item.dayOneSignOffIsException ? 'Signed (Exception)' : 'Signed Off' }}</span>
                   </span>
                 } @else {

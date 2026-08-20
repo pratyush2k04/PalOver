@@ -20,7 +20,10 @@
       <div class="header-actions">
         @if (eng.dayOneSignOff) {
           <div class="day-one-signed-badge" [class.exception-badge]="eng.dayOneSignOff.isException">
-            <span class="badge-icon">{{ eng.dayOneSignOff.isException ? '⚠' : '✓' }}</span>
+            <span
+              class="badge-icon"
+              [inlineSVG]="eng.dayOneSignOff.isException ? 'assets/icons/alert-circle.svg' : 'assets/icons/check-circle.svg'"
+            ></span>
             <div class="badge-content">
               <strong>Day-1 Signed Off</strong>
               @if (eng.dayOneSignOff.isException) {

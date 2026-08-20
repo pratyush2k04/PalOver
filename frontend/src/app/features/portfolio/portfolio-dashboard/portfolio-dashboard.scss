@@ -329,6 +329,24 @@
     color: $color-success-text;
     border: 1px solid $color-success-border;
 
+    .badge-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 0.875rem;
+      height: 0.875rem;
+      flex-shrink: 0;
+
+      ::ng-deep span,
+      ::ng-deep svg,
+      svg {
+        display: block;
+        width: 0.875rem;
+        height: 0.875rem;
+        stroke-width: 2.25;
+      }
+    }
+
     &--exception {
       background: $color-warning-bg;
       color: $color-warning-text;
