@@ -20,6 +20,10 @@
   app-page-header {
     display: block;
     margin-bottom: 0;
+
+    ::ng-deep .page-header {
+      margin-bottom: -0.75rem;
+    }
   }
 
   /* Header Controls & Cards */
