@@ -42,5 +42,6 @@ public static class RiskConstants
         public const string Checklist = "Checklist";
         public const string AccessTracker = "AccessTracker";
         public const string EnvironmentTooling = "EnvironmentTooling";
+        public const string ResourceRequest = "ResourceRequest";
     }
 }
