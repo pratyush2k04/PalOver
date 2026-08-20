@@ -56,6 +56,23 @@ export class DayOneSignOffDialogComponent {
     });
 
     effect(() => {
+      const isBlockedAndNotLeadership = !this.isAbleToStartDayOne() && !this.isLeadership();
+      const busy = this.isBusy();
+
+      if (busy || isBlockedAndNotLeadership) {
+        this.form.get('billingStartDate')?.disable({ emitEvent: false });
+      } else {
+        this.form.get('billingStartDate')?.enable({ emitEvent: false });
+      }
+
+      if (busy) {
+        this.form.get('exceptionJustification')?.disable({ emitEvent: false });
+      } else {
+        this.form.get('exceptionJustification')?.enable({ emitEvent: false });
+      }
+    });
+
+    effect(() => {
       const exception = this.isException();
       const justificationCtrl = this.form.get('exceptionJustification');
       if (justificationCtrl) {
@@ -82,7 +99,7 @@ export class DayOneSignOffDialogComponent {
   onSubmit(): void {
     if (!this.canSubmit()) return;
 
-    const val = this.form.value;
+    const val = this.form.getRawValue();
     const request: DayOneSignOffRequest = {
       billingStartDate: val.billingStartDate,
       isException: this.isException(),

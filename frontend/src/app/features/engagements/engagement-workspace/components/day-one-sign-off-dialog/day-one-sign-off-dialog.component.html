@@ -29,7 +29,6 @@
             type="date"
             class="form-control"
             formControlName="billingStartDate"
-            [disabled]="isBusy() || (!isAbleToStartDayOne() && !isLeadership())"
           />
           @if (form.get('billingStartDate')?.invalid && (form.get('billingStartDate')?.touched || form.get('billingStartDate')?.dirty)) {
             <span class="error-text">Billing start date is required.</span>
@@ -45,7 +44,6 @@
               rows="3"
               placeholder="State the rationale and risk mitigation plan for signing off with blockers (min 20 characters)..."
               formControlName="exceptionJustification"
-              [disabled]="isBusy()"
             ></textarea>
             <div class="field-hint">
               <span>Minimum 20 characters required.</span>

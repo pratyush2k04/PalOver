@@ -9,6 +9,7 @@ import { KickoffReadinessDto, KickoffReadinessService } from '@shared/services/k
 import { AuthService } from '@shared/services/auth';
 import { ToastService } from '@common/services/toast/toast';
 import { ENGAGEMENT_WORKSPACE_CONFIG } from '@shared/constants/engagements.constants';
+import { USER_ROLES } from '@shared/constants/users.constants';
 import { DayOneSignOffRequest, EngagementInfoDto } from '../models/engagement.model';
 import { TabItem, TabsComponent } from '@common/components/tabs/tabs';
 import { ButtonComponent } from '@common/components/button/button';
@@ -55,11 +56,21 @@ export class EngagementWorkspaceComponent {
   readonly isAuthorizedForSignOff = computed(() => {
     const user = this.authService.currentUser();
     if (!user) return false;
-    return user.role === 'Leadership' || user.role === 'ProjectManagement';
+    return (
+      this.authService.hasRole(USER_ROLES.LEADERSHIP) ||
+      this.authService.hasRole(USER_ROLES.PROJECT_MANAGEMENT) ||
+      this.authService.hasRole('Leadership') ||
+      this.authService.hasRole('ProjectManagement')
+    );
   });
 
   readonly isLeadership = computed(() => {
-    return this.authService.currentUser()?.role === 'Leadership';
+    const user = this.authService.currentUser();
+    if (!user) return false;
+    return (
+      this.authService.hasRole(USER_ROLES.LEADERSHIP) ||
+      this.authService.hasRole('Leadership')
+    );
   });
 
   readonly tabs = signal<TabItem[]>(
