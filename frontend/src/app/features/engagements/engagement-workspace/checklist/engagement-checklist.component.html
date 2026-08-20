@@ -188,7 +188,7 @@
               <th class="col-item">ITEM</th>
               <th class="col-category">CATEGORY</th>
               <th class="col-reason">REASON</th>
-              @if (canChangeApplicability() || isLeadership()) {
+              @if (canPerformNaAction()) {
                 <th class="col-actions">ACTIONS</th>
               }
             </tr>
@@ -220,7 +220,7 @@
                   }
                 </td>
 
-                @if (canChangeApplicability() || isLeadership()) {
+                @if (canPerformNaAction()) {
                   <td class="cell-actions">
                     <div class="actions-group">
                       @if (canChangeApplicability()) {
