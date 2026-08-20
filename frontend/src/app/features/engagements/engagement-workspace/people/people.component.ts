@@ -5,7 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { PersonService } from '../../../../services/person.service';
-import { PersonDto, PersonType } from '../../../../models/person.model';
+import { PersonDto, PersonType } from '@shared/models/person.model';
 import { LoaderService } from '@shared/services/loader.service';
 import { ToastService } from '@common/services/toast/toast';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';

@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { KickoffService } from '../../../../../../services/kickoff.service';
-import { KickoffActionItem, KickoffActionItemStatus } from '../../../../../../models/kickoff.model';
+import { KickoffActionItem, KickoffActionItemStatus } from '@shared/models/kickoff.model';
 import { AuthService } from '../../../../../../services/auth';
 import { KICKOFF_MESSAGES } from '@shared/constants/kickoff.constants';
 import { ButtonComponent } from '@common/components/button/button';
