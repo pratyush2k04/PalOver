@@ -5,7 +5,7 @@ import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
-import { PersonDto, PersonType } from 'src/app/models/person.model';
+import { PersonDto, PersonType } from '@shared/models/person.model';
 
 export interface PersonFormDialogData {
   person: PersonDto | null;

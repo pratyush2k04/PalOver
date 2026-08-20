@@ -1,5 +1,14 @@
 export const SEARCH_API_ENDPOINTS = {
-  GLOBAL: (query: string) => `/api/search?q=${encodeURIComponent(query)}`
+  GLOBAL: (query: string, types?: string[]) => {
+    const params = new URLSearchParams();
+    params.set('q', query);
+    if (types && types.length > 0) {
+      for (const t of types) {
+        params.append('types', t);
+      }
+    }
+    return `/api/search?${params.toString()}`;
+  }
 } as const;
 
 export const SEARCH_CONFIG = {

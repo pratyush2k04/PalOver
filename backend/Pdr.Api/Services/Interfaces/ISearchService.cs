@@ -4,5 +4,5 @@ namespace Pdr.Api.Services.Interfaces;
 
 public interface ISearchService
 {
-    Task<GlobalSearchResponseDto> SearchAsync(string? query);
+    Task<GlobalSearchResponseDto> SearchAsync(string? query, string[]? types = null);
 }

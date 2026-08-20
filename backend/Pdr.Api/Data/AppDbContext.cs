@@ -21,6 +21,7 @@ public class AppDbContext : DbContext
     public DbSet<Engagement> Engagements => Set<Engagement>();
     public DbSet<EngagementStatus> EngagementStatuses => Set<EngagementStatus>();
     public DbSet<EngagementType> EngagementTypes => Set<EngagementType>();
+    public DbSet<DayOneSignOffRecord> DayOneSignOffRecords => Set<DayOneSignOffRecord>();
     
     public DbSet<Assumption> Assumptions => Set<Assumption>();
 

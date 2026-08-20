@@ -1903,6 +1903,80 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.Engagements.DayOneSignOffRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly>("BillingStartDate")
+                        .HasColumnType("date")
+                        .HasColumnName("billing_start_date");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer")
+                        .HasColumnName("engagement_id");
+
+                    b.Property<string>("ExceptionJustification")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("exception_justification");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsException")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_exception");
+
+                    b.Property<DateTime>("SignedOffAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("signed_off_at");
+
+                    b.Property<int>("SignedOffByUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("signed_off_by_user_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EngagementId")
+                        .IsUnique();
+
+                    b.HasIndex("SignedOffByUserId");
+
+                    b.ToTable("day_one_sign_off_records", (string)null);
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Engagements.Engagement", b =>
                 {
                     b.Property<int>("EngagementId")
@@ -4942,6 +5016,25 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Owner");
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.Engagements.DayOneSignOffRecord", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Engagements.Engagement", "Engagement")
+                        .WithOne("DayOneSignOffRecord")
+                        .HasForeignKey("Pdr.Api.Models.Engagements.DayOneSignOffRecord", "EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "SignedOffByUser")
+                        .WithMany()
+                        .HasForeignKey("SignedOffByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Engagement");
+
+                    b.Navigation("SignedOffByUser");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Engagements.Engagement", b =>
                 {
                     b.HasOne("Pdr.Api.Models.Engagements.CommercialModel", "CommercialModel")
@@ -5240,6 +5333,8 @@ namespace Pdr.Api.Migrations
                     b.Navigation("AccessItems");
 
                     b.Navigation("Checklist");
+
+                    b.Navigation("DayOneSignOffRecord");
 
                     b.Navigation("EngagementAssignments");
 

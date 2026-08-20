@@ -17,7 +17,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DocumentService } from '../../../services/document.service';
 import { DocumentCategory, DocumentItem, DocumentVisibility } from '../../../models/document.model';
-import { AuthService } from 'src/app/services/auth';
+import { AuthService } from '@shared/services/auth';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import {
   UploadDocumentDialogComponent,

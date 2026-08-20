@@ -1,4 +1,11 @@
-export type AuditAction = 'UserLoggedIn' | 'UserCreated' | 'UserUpdated' | 'UserDeleted';
+export type AuditAction =
+  | 'UserLoggedIn'
+  | 'UserCreated'
+  | 'UserUpdated'
+  | 'UserDeleted'
+  | 'ResourcingGapFlagRaised'
+  | 'ResourcingGapFlagCleared'
+  | string;
 
 export interface AuditLogDto {
   id: number;

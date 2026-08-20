@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ChangeRequestService } from '@features/engagements/services/change-request.service';
-import { AuthService } from 'src/app/services/auth';
+import { AuthService } from '@shared/services/auth';
 import { ChangeRequest } from '@features/engagements/models/change-request.model';
 import { CHANGE_REQUEST_CONSTANTS } from '@shared/constants/change-request.constants';
 import { InlineSVGModule } from 'ng-inline-svg-2';

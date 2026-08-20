@@ -2,7 +2,7 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { AuthService } from 'src/app/services/auth';
+import { AuthService } from '@shared/services/auth';
 import { ButtonComponent } from '@common/components/button/button';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
@@ -77,9 +77,23 @@ export class ResourcesComponent {
   );
   readonly hasUnconfirmedRequests = computed(() => this.unconfirmedCount() > 0);
   readonly billingStartDate = computed(() => this.engagementInfo()?.billingStartDate ?? null);
-  readonly showWarningBanner = computed(
-    () => this.hasUnconfirmedRequests() && !!this.billingStartDate(),
-  );
+
+  readonly daysToBilling = computed<number | null>(() => {
+    const billingDateStr = this.billingStartDate();
+    if (!billingDateStr) return null;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const [year, month, day] = billingDateStr.split('-').map(Number);
+    const billingDate = new Date(Date.UTC(year, month - 1, day));
+    const utcToday = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+    const diffMs = billingDate.getTime() - utcToday.getTime();
+    return Math.round(diffMs / (1000 * 60 * 60 * 24));
+  });
+
+  readonly showWarningBanner = computed(() => {
+    const days = this.daysToBilling();
+    return days !== null && days <= 3 && this.hasUnconfirmedRequests();
+  });
 
   readonly formattedBillingDate = computed(() => {
     const date = this.billingStartDate();

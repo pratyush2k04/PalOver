@@ -64,3 +64,9 @@ export interface ConfirmAllocationPayload {
 export interface RemoveAllocationPayload {
   reason: string;
 }
+
+export interface ResourcingGapDto {
+  hasGap: boolean;
+  unconfirmedCount: number;
+  daysToBilling: number | null;
+}
