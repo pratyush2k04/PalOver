@@ -8,6 +8,9 @@ import {
   ENGAGEMENT_ROUTES,
   PORTFOLIO_ROUTES,
   NOTIFICATION_ROUTES,
+  PROFILE_ROUTES,
+  AUTH_ROUTES,
+  ACCESS_DENIED_ROUTES,
 } from '@shared/constants/app.constants';
 
 import { LoginComponent } from './components/login/login';
@@ -22,7 +25,7 @@ import { workspaceRedirectGuard } from './guards/workspace-redirect.guard';
 export const routes: Routes = [
   // Public
   {
-    path: 'login',
+    path: AUTH_ROUTES.LOGIN,
     component: LoginComponent,
   },
 
@@ -31,9 +34,9 @@ export const routes: Routes = [
     path: `${ENGAGEMENT_ROUTES.BASE}/:engagementId/${ENGAGEMENT_ROUTES.DAY_ONE_SUMMARY_PRINT}`,
     canActivate: [authGuard],
     loadComponent: () =>
-      import(
-        './features/engagements/engagement-workspace/technical/day-one-summary-print/day-one-summary-print.component'
-      ).then((m) => m.DayOneSummaryPrintComponent),
+      import('./features/engagements/engagement-workspace/technical/day-one-summary-print/day-one-summary-print.component').then(
+        (m) => m.DayOneSummaryPrintComponent,
+      ),
   },
 
   // Protected
@@ -60,8 +63,7 @@ export const routes: Routes = [
       // Role dashboards (Home feature)
       {
         path: '',
-        loadChildren: () =>
-          import('./features/home/home.routes').then(m => m.HOME_ROUTES),
+        loadChildren: () => import('./features/home/home.routes').then((m) => m.HOME_ROUTES),
       },
 
       // Public/Non-admin Checklist (Read-only)
@@ -72,10 +74,10 @@ export const routes: Routes = [
             path: MASTER_CHECKLIST_ROUTES.PUBLISHED,
             loadComponent: () =>
               import('./features/master-checklist/published/published-checklist').then(
-                m => m.PublishedChecklistComponent
+                (m) => m.PublishedChecklistComponent,
               ),
           },
-          { path: '', redirectTo: MASTER_CHECKLIST_ROUTES.PUBLISHED, pathMatch: 'full' }
+          { path: '', redirectTo: MASTER_CHECKLIST_ROUTES.PUBLISHED, pathMatch: 'full' },
         ],
       },
 
@@ -85,28 +87,28 @@ export const routes: Routes = [
         canActivate: [adminGuard],
         loadComponent: () =>
           import('./features/master-checklist/master-checklist-shell/master-checklist-shell.component').then(
-            m => m.MasterChecklistShellComponent
+            (m) => m.MasterChecklistShellComponent,
           ),
         children: [
           {
             path: MASTER_CHECKLIST_ROUTES.DRAFT,
             loadComponent: () =>
               import('./features/master-checklist/draft/current-draft').then(
-                m => m.CurrentDraftComponent
+                (m) => m.CurrentDraftComponent,
               ),
           },
           {
             path: MASTER_CHECKLIST_ROUTES.PUBLISHED,
             loadComponent: () =>
               import('./features/master-checklist/published/published-checklist').then(
-                m => m.PublishedChecklistComponent
+                (m) => m.PublishedChecklistComponent,
               ),
           },
           {
             path: MASTER_CHECKLIST_ROUTES.HISTORY,
             loadComponent: () =>
               import('./features/master-checklist/history/version-history').then(
-                m => m.VersionHistoryComponent
+                (m) => m.VersionHistoryComponent,
               ),
           },
           { path: '', redirectTo: MASTER_CHECKLIST_ROUTES.DRAFT, pathMatch: 'full' },
@@ -116,17 +118,14 @@ export const routes: Routes = [
       // Admin
       {
         path: USERS_ROUTES.BASE,
-        loadChildren: () =>
-          import('./features/users/users.routes').then(
-            m => m.USERS_ROUTES
-          ),
+        loadChildren: () => import('./features/users/users.routes').then((m) => m.USERS_ROUTES),
       },
       {
         path: ENGAGEMENT_ALLOCATION_ROUTES.BASE,
         canActivate: [adminGuard],
         loadChildren: () =>
           import('./features/engagement-allocation/engagement-allocation.routes').then(
-            m => m.ENGAGEMENT_ALLOCATION_ROUTES
+            (m) => m.ENGAGEMENT_ALLOCATION_ROUTES,
           ),
       },
 
@@ -134,25 +133,27 @@ export const routes: Routes = [
       {
         path: ENGAGEMENT_ROUTES.BASE,
         loadChildren: () =>
-          import('./features/engagements/engagements.routes').then(
-            m => m.ENGAGEMENTS_ROUTES
-          ),
+          import('./features/engagements/engagements.routes').then((m) => m.ENGAGEMENTS_ROUTES),
       },
       {
         path: ENGAGEMENT_ROUTES.MY_ENGAGEMENTS,
         loadComponent: () =>
           import('./features/engagements/my-engagements/my-engagements').then(
-            m => m.MyEngagementsComponent
+            (m) => m.MyEngagementsComponent,
           ),
+      },
+
+      // Profile (self-service)
+      {
+        path: PROFILE_ROUTES.BASE,
+        loadComponent: () => import('./features/profile/profile').then((m) => m.ProfileComponent),
       },
 
       // Portfolio (Leadership)
       {
         path: PORTFOLIO_ROUTES.BASE,
         loadChildren: () =>
-          import('./features/portfolio/portfolio.routes').then(
-            m => m.PORTFOLIO_ROUTES
-          ),
+          import('./features/portfolio/portfolio.routes').then((m) => m.PORTFOLIO_ROUTES),
       },
 
       // Notifications
@@ -160,25 +161,21 @@ export const routes: Routes = [
         path: NOTIFICATION_ROUTES.BASE,
         loadChildren: () =>
           import('./features/notifications/notification-fullpage.routes').then(
-            m => m.NOTIFICATION_FULLPAGE_ROUTES
+            (m) => m.NOTIFICATION_FULLPAGE_ROUTES,
           ),
-        },
+      },
       // Audit Log (own entries for all users; Leadership/Admin see everyone's)
       {
         path: AUDIT_LOG_ROUTES.BASE,
         loadChildren: () =>
-          import('./features/audit-log/audit-log.routes').then(
-            m => m.AUDIT_LOG_ROUTE
-          ),
+          import('./features/audit-log/audit-log.routes').then((m) => m.AUDIT_LOG_ROUTE),
       },
 
       // Access denied
       {
-        path: 'access-denied',
+        path: ACCESS_DENIED_ROUTES.BASE,
         loadComponent: () =>
-          import('./shared/access-denied/access-denied').then(
-            m => m.AccessDeniedComponent
-          ),
+          import('./shared/access-denied/access-denied').then((m) => m.AccessDeniedComponent),
       },
     ],
   },
@@ -186,6 +183,6 @@ export const routes: Routes = [
   // Fallback
   {
     path: '**',
-    redirectTo: 'login',
+    redirectTo: AUTH_ROUTES.LOGIN,
   },
 ];

@@ -14,6 +14,19 @@ export const APP_ROUTES = {
   NOTIFICATIONS: '/notifications',
   AUDIT_LOG: '/audit-log',
   MASTER_CHECKLIST: '/master-checklist',
+  PROFILE: '/profile',
+} as const;
+
+export const AUTH_ROUTES = {
+  LOGIN: 'login',
+} as const;
+
+export const PROFILE_ROUTES = {
+  BASE: 'profile',
+} as const;
+
+export const ACCESS_DENIED_ROUTES = {
+  BASE: 'access-denied',
 } as const;
 
 export const USERS_ROUTES = {
