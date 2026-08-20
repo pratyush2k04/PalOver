@@ -12,5 +12,9 @@ public class AssumptionConfiguration : IEntityTypeConfiguration<Assumption>
             .WithMany()
             .HasForeignKey(a => a.OwnerId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(a => a.Status)
+            .HasDefaultValue(AssumptionStatus.Unvalidated)
+            .IsRequired();
     }
 }

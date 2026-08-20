@@ -1,4 +1,4 @@
-namespace Pdr.Api.DTOs.Engagements.Assumptions;
+namespace Pdr.Api.DTOs.Assumptions;
 
 public class UpdateAssumptionDto
 {
