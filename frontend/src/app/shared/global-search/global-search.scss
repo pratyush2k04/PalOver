@@ -79,7 +79,7 @@
 .global-search__filters-label {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #64748b;
+  color: #334155;
   margin-right: 0.25rem;
 }
 
@@ -193,12 +193,12 @@
 }
 
 .global-search__group-header {
-  padding: 0.5rem 1rem 0.25rem;
+  padding: 0.625rem 1rem 0.25rem;
   font-size: 0.75rem;
-  font-weight: 600;
-  color: #8b95a3;
+  font-weight: 700;
+  color: #0f172a;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
 }
 
 .global-search__row {
@@ -209,17 +209,22 @@
   transition: background-color 0.15s ease;
 
   &:hover {
-    background-color: #f4f6f9;
+    background-color: #f8fafc;
+
+    .global-search__row-title {
+      color: #0f172a;
+    }
   }
 }
 
 .global-search__row-title {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #1a1a1a;
+  color: #475569;
+  transition: color 0.15s ease;
 }
 
 .global-search__row-subtitle {
   font-size: 0.75rem;
-  color: #8b95a3;
+  color: #94a3b8;
 }
