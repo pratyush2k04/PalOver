@@ -116,7 +116,8 @@ public class AssumptionService(
                 Title = $"Invalid Assumption: {new string(assumption.Description.Take(50).ToArray())}...",
                 Description = $"Assumption: {assumption.Description}\nRationale: {assumption.Rationale}",
                 Impact = RiskImpact.Medium,
-                Likelihood = RiskLikelihood.High
+                Likelihood = RiskLikelihood.Low,
+                OwnerId = assumption.OwnerId
             };
 
             var createdRisk = await riskService.CreateRiskAsync(engagementId, riskDto);
