@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ME_API_ENDPOINTS } from '@shared/constants/app.constants';
-import { ChangePasswordRequest, MeResponse, UpdateMeRequest } from '../models/profile.model';
+import { PROFILE_API_ENDPOINTS } from '@shared/constants/app.constants';
+import { ChangePasswordRequest, ProfileResponse, UpdateProfileRequest } from '../models/profile.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,15 +10,23 @@ import { ChangePasswordRequest, MeResponse, UpdateMeRequest } from '../models/pr
 export class ProfileService {
   private http = inject(HttpClient);
 
-  getMe(): Observable<MeResponse> {
-    return this.http.get<MeResponse>(ME_API_ENDPOINTS.GET_ME);
+  getProfile(): Observable<ProfileResponse> {
+    return this.http.get<ProfileResponse>(PROFILE_API_ENDPOINTS.GET_PROFILE);
   }
 
-  updateMe(request: UpdateMeRequest): Observable<MeResponse> {
-    return this.http.put<MeResponse>(ME_API_ENDPOINTS.UPDATE_ME, request);
+  updateProfile(request: UpdateProfileRequest): Observable<ProfileResponse> {
+    return this.http.put<ProfileResponse>(PROFILE_API_ENDPOINTS.UPDATE_PROFILE, request);
   }
 
   changePassword(request: ChangePasswordRequest): Observable<void> {
-    return this.http.post<void>(ME_API_ENDPOINTS.CHANGE_PASSWORD, request);
+    return this.http.post<void>(PROFILE_API_ENDPOINTS.CHANGE_PASSWORD, request);
+  }
+
+  getMe(): Observable<ProfileResponse> {
+    return this.getProfile();
+  }
+
+  updateMe(request: UpdateProfileRequest): Observable<ProfileResponse> {
+    return this.updateProfile(request);
   }
 }

@@ -1,7 +1,13 @@
+export const PROFILE_API_ENDPOINTS = {
+  GET_PROFILE: '/api/profile',
+  UPDATE_PROFILE: '/api/profile',
+  CHANGE_PASSWORD: '/api/profile/change-password',
+} as const;
+
 export const ME_API_ENDPOINTS = {
-  GET_ME: '/api/me',
-  UPDATE_ME: '/api/me',
-  CHANGE_PASSWORD: '/api/me/change-password',
+  GET_ME: '/api/profile',
+  UPDATE_ME: '/api/profile',
+  CHANGE_PASSWORD: '/api/profile/change-password',
 } as const;
 
 export const PROFILE_MESSAGES = {
