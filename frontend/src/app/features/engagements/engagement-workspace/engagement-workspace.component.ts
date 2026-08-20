@@ -4,7 +4,7 @@ import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/ro
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
 import { EngagementService } from '../services/engagement.service';
-import { KickoffReadinessDto, KickoffReadinessService } from 'src/app/services/kickoff-readiness.service';
+import { KickoffReadinessDto, KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
 import { ENGAGEMENT_WORKSPACE_CONFIG } from '@shared/constants/engagements.constants';
 import { EngagementInfoDto } from '../models/engagement.model';
 import { TabItem, TabsComponent } from '@common/components/tabs/tabs';
