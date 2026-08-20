@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EngagementService } from '../services/engagement.service';
 import { EngagementSortBy, EngagementListItem } from '../models/engagement.model';
-import { AppContextService } from 'src/app/services/app-context';
+import { AppContextService } from '@shared/services/app-context';
 import { EngagementsComponent } from '../pages/createengagment/engagements';
 import { ENGAGEMENT_MESSAGES, USER_ROLES, APP_ROUTES, ENGAGEMENT_ROUTES } from '@shared/constants/app.constants';
 import { AlertComponent } from '@common/components/alert/alert';

@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { AppContext, HomeResponse } from '../models/app-context.model';
+import { AppContext, HomeResponse } from '@shared/models/app-context.model';
 
 @Injectable({
   providedIn: 'root'

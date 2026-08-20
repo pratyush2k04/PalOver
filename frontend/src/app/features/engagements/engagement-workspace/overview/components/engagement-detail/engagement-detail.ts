@@ -6,7 +6,7 @@ import { EngagementService } from '../../../../services/engagement.service';
 import { EngagementInfo, EngagementOwners, OwnerChange, OwnerKind } from '../../../../models/engagement.model';
 import { UserDirectoryService } from '@features/users/services/user.service';
 import { UserListItem } from '@features/users/models/user.model';
-import { AuthService } from 'src/app/services/auth';
+import { AuthService } from '@shared/services/auth';
 import { ToastService } from '@common/services/toast/toast';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { AlertComponent } from '@common/components/alert/alert';
