@@ -23,17 +23,19 @@ public class AuditLogService(
         var auditAction = await repository.GetAuditActionByIdAsync((int)action)
             ?? throw new InvalidOperationException($"No AuditAction row found for {action}.");
 
+        var payloadJson = JsonSerializer.Serialize(payload);
+
         await repository.AddAsync(new AuditLog
         {
             UserId = userId,
             AuditActionId = auditAction.Id,
-            PayloadJson = JsonSerializer.Serialize(payload)
+            PayloadJson = payloadJson,
+            EngagementId = ExtractEngagementId(payloadJson)
         });
 
         await repository.SaveChangesAsync();
     }
 
-    private const int MaxScanRows = 500;
 
     public async Task<CursorPagedResult<AuditLogDto>> GetAuditLogsAsync(int? cursor, int limit)
     {
@@ -60,105 +62,70 @@ public class AuditLogService(
     }
 
     /// <summary>
-    /// EngagementId isn't an indexed column (it's read out of PayloadJson, see MapToDtoAsync), so
-    /// this can't be pushed down as a SQL WHERE clause. Instead it scans batches of rows newest-first,
-    /// filtering after deserialization, advancing the cursor past every row examined (not just
-    /// matches) so a follow-up request resumes scanning rather than re-checking old rows. Bounded by
-    /// MaxScanRows so a request can't scan the entire table in one call.
+    /// Retrieves a cursor-paginated page of audit log entries for a specific engagement.
+    /// The database efficiently filters by EngagementId, so we can fetch exactly one batch.
     /// </summary>
     public async Task<CursorPagedResult<EngagementAuditLogDto>> GetEngagementAuditLogsAsync(int engagementId, int? cursor, int limit)
     {
-        int? scopedUserId = null; // irrespective of who the actor was
         var items = new List<EngagementAuditLogDto>();
-        var currentCursor = cursor;
-        var rowsScanned = 0;
-        var hasMore = false;
+        
+        // Make exactly 1 database call
+        var batch = await repository.GetPageAsync(cursor, limit, userId: null, engagementId: engagementId);
 
-        while (items.Count < limit && rowsScanned < MaxScanRows)
+        var hasMore = batch.Count > limit;
+        var examined = hasMore ? batch.Take(limit).ToList() : batch;
+
+        if (examined.Count == 0)
         {
-            var batchSize = Math.Min(limit, MaxScanRows - rowsScanned);
-            var batch = await repository.GetPageAsync(currentCursor, batchSize, scopedUserId);
-
-            if (batch.Count == 0)
+            return new CursorPagedResult<EngagementAuditLogDto>
             {
-                break;
+                Items = items,
+                NextCursor = null,
+                HasMore = false
+            };
+        }
+
+        foreach (var log in examined)
+        {
+            var actionString = log.AuditAction?.Action ?? string.Empty;
+            if (!Enum.TryParse<AuditActionEnum>(actionString, out var actionEnum))
+            {
+                continue;
             }
 
-            var batchHasMore = batch.Count > batchSize;
-            var examined = batchHasMore ? batch.Take(batchSize).ToList() : batch;
-
-            foreach (var log in examined)
+            if (!EngagementAuditActionVisibilityRegistry.Entries.TryGetValue(actionEnum, out var visibility))
             {
-                rowsScanned++;
-                var actionString = log.AuditAction?.Action ?? string.Empty;
-                if (!Enum.TryParse<AuditActionEnum>(actionString, out var actionEnum))
-                {
-                    continue;
-                }
-
-                if (!EngagementAuditActionVisibilityRegistry.Entries.TryGetValue(actionEnum, out var visibility))
-                {
-                    continue;
-                }
-
-                var roles = visibility.VisibleToRoles;
-                if (roles == null || roles.Length == 0)
-                {
-                    continue;
-                }
-
-                bool hasAccess = currentUserService.IsAdmin() || roles.Any(r => currentUserService.IsInRole(r));
-                if (!hasAccess)
-                {
-                    continue;
-                }
-
-                var logEngagementId = ExtractEngagementId(log.PayloadJson);
-                if (logEngagementId != engagementId)
-                {
-                    continue;
-                }
-
-                var dto = await MapToDtoAsync(log);
-                {
-                    items.Add(new EngagementAuditLogDto
-                    {
-                        Id = dto.Id,
-                        UserId = dto.UserId,
-                        UserName = dto.UserName,
-                        Action = dto.Action,
-                        Details = dto.Details,
-                        CreatedAt = dto.CreatedAt
-                    });
-                    if (items.Count == limit)
-                    {
-                        hasMore = true;
-                        break;
-                    }
-                }
+                continue;
             }
 
-            currentCursor = examined[^1].Id;
-
-            if (items.Count == limit)
+            var roles = visibility.VisibleToRoles;
+            if (roles == null || roles.Length == 0)
             {
-                hasMore = true;
-                break;
+                continue;
             }
 
-            if (!batchHasMore)
+            bool hasAccess = currentUserService.IsAdmin() || roles.Any(r => currentUserService.IsInRole(r));
+            if (!hasAccess)
             {
-                hasMore = false;
-                break;
+                continue;
             }
 
-            hasMore = rowsScanned >= MaxScanRows;
+            var dto = await MapToDtoAsync(log);
+            items.Add(new EngagementAuditLogDto
+            {
+                Id = dto.Id,
+                UserId = dto.UserId,
+                UserName = dto.UserName,
+                Action = dto.Action,
+                Details = dto.Details,
+                CreatedAt = dto.CreatedAt
+            });
         }
 
         return new CursorPagedResult<EngagementAuditLogDto>
         {
             Items = items,
-            NextCursor = hasMore ? currentCursor : null,
+            NextCursor = hasMore ? examined[^1].Id : null,
             HasMore = hasMore
         };
     }
@@ -180,7 +147,7 @@ public class AuditLogService(
             Action = actionKey,
             Details = templateRenderer.Render(auditLog.AuditAction?.Details ?? string.Empty, values),
             CreatedAt = auditLog.CreatedAt,
-            EngagementId = ExtractEngagementId(auditLog.PayloadJson)
+            EngagementId = auditLog.EngagementId
         };
     }
 

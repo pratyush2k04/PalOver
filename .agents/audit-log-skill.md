@@ -219,11 +219,10 @@ There is nothing to add here for a new action type — as soon as your mapper is
 |---|---|
 | Log an event using an **existing** action type | Inject `IAuditLogService`, call `LogAsync(existingEnumValue, idPayloadDict)`. Nothing else. |
 | Introduce a **brand-new** action type | Add an enum value to `AuditActionEnum`, seed a matching row in `AuditActionConfiguration`, add an `IAuditTemplateMapper` implementation and register it in `AuditMapperRegistry`, **declare its engagement-scope and role visibility in `EngagementAuditActionVisibilityRegistry`**, generate a migration, then call `LogAsync` as above. **Also add the matching value to the frontend's `AuditAction` type** (see below). |
-| Read/display the audit log | Nothing to build — `GET /api/audit-logs` already exists; every authenticated user can call it, scoped to their own entries unless `Leadership`/`Admin`. Pass `engagementId` to scope to one engagement (see engineering note below). |
+| Read/display the global audit log | Nothing to build — `GET /api/audit-logs` already exists; every authenticated user can call it, scoped to their own entries unless `Leadership`/`Admin`. |
+| Read/display an engagement's audit log | Nothing to build — `GET /api/engagementaudits` already exists; it efficiently scopes to a specific engagement using an indexed database column. |
 | Change who can read the full (unscoped) audit log, or which rows non-elevated users see | Edit the `isElevated`/`scopedUserId` logic in `AuditLogService.GetAuditLogsAsync`. |
 | Declare who may see an action in an engagement's Audits feed | Add/update its entry in `EngagementAuditActionVisibilityRegistry.Entries` (`Pdr.Api/Models/Audit/EngagementAuditActionVisibility.cs`). |
-
-**Engineering note — `engagementId` filtering isn't indexed.** `GetAuditLogsAsync`'s optional `engagementId` parameter filters on a value extracted from `PayloadJson` at read time (see `MapToDtoAsync`/`ExtractEngagementId`), not a database column. There's no index to push the filter into SQL, so a scoped request scans batches of rows (bounded by `MaxScanRows`) rather than doing a `WHERE` on an indexed column. This is deliberate — see the engagement Audits tab's plan for why a schema change was ruled out — but means very high audit-log volumes could see a scoped request return `HasMore: true` without finding `limit` matches, requiring the client to keep paging.
 
 ### Frontend: keep `AuditAction` in sync
 
