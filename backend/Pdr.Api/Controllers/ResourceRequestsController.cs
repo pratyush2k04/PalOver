@@ -17,7 +17,9 @@ namespace Pdr.Api.Controllers;
 [Authorize]
 [Route("api/engagements/{engagementId:int}/resource-requests")]
 [Produces("application/json")]
-public class ResourceRequestsController(IResourceRequestService resourceRequestService) : ControllerBase
+public class ResourceRequestsController(
+    IResourceRequestService resourceRequestService,
+    IRiskService riskService) : ControllerBase
 {
     /// <summary>
     /// Retrieves all resource requests for a given engagement.
@@ -32,6 +34,22 @@ public class ResourceRequestsController(IResourceRequestService resourceRequestS
     public async Task<ActionResult<List<ResourceRequestDto>>> GetResourceRequests(int engagementId)
     {
         var result = await resourceRequestService.GetForEngagementAsync(engagementId);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Evaluates whether an engagement has an active resourcing gap before billing starts.
+    /// </summary>
+    /// <param name="engagementId">The ID of the engagement.</param>
+    /// <returns>The resourcing gap status, unconfirmed count, and days to billing.</returns>
+    [HttpGet("gap")]
+    [EndpointSummary("Get resourcing gap status for an engagement")]
+    [ProducesResponseType(typeof(ResourcingGapDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ResourcingGapDto>> GetResourcingGap(int engagementId)
+    {
+        var result = await resourceRequestService.GetResourcingGapAsync(engagementId);
         return Ok(result);
     }
 
@@ -54,6 +72,7 @@ public class ResourceRequestsController(IResourceRequestService resourceRequestS
         [FromBody] CreateResourceRequestDto request)
     {
         var result = await resourceRequestService.CreateResourceRequestAsync(engagementId, request);
+        await riskService.SyncAutoCreatedRisksAsync(engagementId);
         return CreatedAtAction(nameof(GetResourceRequests), new { engagementId }, result);
     }
 
@@ -102,6 +121,7 @@ public class ResourceRequestsController(IResourceRequestService resourceRequestS
         [FromBody] ConfirmAllocationDto request)
     {
         var result = await resourceRequestService.ConfirmAllocationAsync(engagementId, id, allocationId, request);
+        await riskService.SyncAutoCreatedRisksAsync(engagementId);
         return Ok(result);
     }
 
@@ -127,6 +147,7 @@ public class ResourceRequestsController(IResourceRequestService resourceRequestS
         [FromBody] RemoveAllocationDto request)
     {
         var result = await resourceRequestService.RemoveAllocationAsync(engagementId, id, allocationId, request);
+        await riskService.SyncAutoCreatedRisksAsync(engagementId);
         return Ok(result);
     }
 }

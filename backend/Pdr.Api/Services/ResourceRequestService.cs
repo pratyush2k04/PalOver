@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Pdr.Api.Constants;
 using Pdr.Api.DTOs.ResourceRequests;
 using Pdr.Api.Exceptions;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.ResourceRequests;
 using Pdr.Api.Repositories.Interfaces;
@@ -17,7 +18,8 @@ namespace Pdr.Api.Services;
 public class ResourceRequestService(
     IResourceRequestRepository resourceRequestRepository,
     ICurrentUserService currentUserService,
-    INotificationService notificationService) : IResourceRequestService
+    INotificationService notificationService,
+    IAuditLogService auditLogService) : IResourceRequestService
 {
     public async Task<ResourceRequestDto> CreateResourceRequestAsync(int engagementId, CreateResourceRequestDto dto)
     {
@@ -41,6 +43,8 @@ public class ResourceRequestService(
             throw new ResourceRequestAfterBillingDateException();
         }
 
+        var gapBefore = await GetResourcingGapAsync(engagementId);
+
         var entity = new ResourceRequest
         {
             EngagementId = engagementId,
@@ -59,6 +63,9 @@ public class ResourceRequestService(
         var created = await resourceRequestRepository.AddAsync(entity);
 
         await NotifyLeadershipAsync(engagementId, created.Id);
+
+        var gapAfter = await GetResourcingGapAsync(engagementId);
+        await CheckAndHandleGapTransitionAsync(engagementId, gapBefore, gapAfter);
 
         return MapToDto(created);
     }
@@ -137,6 +144,8 @@ public class ResourceRequestService(
             throw new ResourceAllocationAlreadyConfirmedException();
         }
 
+        var gapBefore = await GetResourcingGapAsync(engagementId);
+
         allocation.ConfirmedDate = dto.ConfirmedDate;
 
         var activeAllocations = request.Allocations.Where(a => a.RemovedAt == null).ToList();
@@ -150,6 +159,10 @@ public class ResourceRequestService(
         }
 
         await resourceRequestRepository.SaveChangesAsync();
+
+        var gapAfter = await GetResourcingGapAsync(engagementId);
+        await CheckAndHandleGapTransitionAsync(engagementId, gapBefore, gapAfter);
+
         return MapToDto(request);
     }
 
@@ -167,6 +180,8 @@ public class ResourceRequestService(
             throw new ResourceAllocationNotConfirmedException();
         }
 
+        var gapBefore = await GetResourcingGapAsync(engagementId);
+
         allocation.RemovedAt = DateTime.UtcNow;
         allocation.RemovalReason = dto.Reason.Trim();
 
@@ -177,6 +192,10 @@ public class ResourceRequestService(
         }
 
         await resourceRequestRepository.SaveChangesAsync();
+
+        var gapAfter = await GetResourcingGapAsync(engagementId);
+        await CheckAndHandleGapTransitionAsync(engagementId, gapBefore, gapAfter);
+
         return MapToDto(request);
     }
 
@@ -323,5 +342,65 @@ public class ResourceRequestService(
             IsUrgent = CalculateIsUrgent(entity.RequiredByDate),
             Allocations = allocations
         };
+    }
+
+    public async Task<ResourcingGapDto> GetResourcingGapAsync(int engagementId)
+    {
+        var engagement = await resourceRequestRepository.GetEngagementAsync(engagementId)
+            ?? throw new EngagementNotFoundException(engagementId);
+
+        var requests = await resourceRequestRepository.GetByEngagementIdAsync(engagementId);
+        var unconfirmedCount = requests.Count(r => r.Status != ResourceRequestStatus.Confirmed);
+
+        if (engagement.BillingStartDate == null)
+        {
+            return new ResourcingGapDto(false, unconfirmedCount, null);
+        }
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var daysToBilling = engagement.BillingStartDate.Value.DayNumber - today.DayNumber;
+        var hasGap = daysToBilling <= ResourceRequestConstants.BillingGapThresholdDays && unconfirmedCount > 0;
+
+        return new ResourcingGapDto(hasGap, unconfirmedCount, daysToBilling);
+    }
+
+    private async Task CheckAndHandleGapTransitionAsync(int engagementId, ResourcingGapDto before, ResourcingGapDto after)
+    {
+        if (!before.HasGap && after.HasGap)
+        {
+            await auditLogService.LogAsync(
+                AuditActionEnum.ResourcingGapFlagRaised,
+                new Dictionary<string, object?>
+                {
+                    ["EngagementId"] = engagementId,
+                    ["UnconfirmedCount"] = after.UnconfirmedCount,
+                    ["DaysToBilling"] = after.DaysToBilling ?? 0
+                });
+
+            var assignments = await resourceRequestRepository.GetPmAndLeadershipAssignmentsAsync(engagementId);
+            var notifData = JsonSerializer.Serialize(
+                new ResourcingGapFlaggedNotificationMapper.ResourcingGapFlaggedNotificationData(
+                    engagementId,
+                    after.UnconfirmedCount,
+                    after.DaysToBilling ?? 0));
+
+            foreach (var assignment in assignments)
+            {
+                await notificationService.CreateFromTemplateAsync(
+                    NotificationConstants.TemplateKeys.ResourcingGapFlagRaised,
+                    assignment.UserId,
+                    notifData,
+                    DateTime.UtcNow);
+            }
+        }
+        else if (before.HasGap && !after.HasGap)
+        {
+            await auditLogService.LogAsync(
+                AuditActionEnum.ResourcingGapFlagCleared,
+                new Dictionary<string, object?>
+                {
+                    ["EngagementId"] = engagementId
+                });
+        }
     }
 }
