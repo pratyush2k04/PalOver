@@ -1,5 +1,14 @@
 import { Routes } from '@angular/router';
-import { TECHNICAL_READINESS_ROUTES, MASTER_CHECKLIST_ROUTES, AUDIT_LOG_ROUTES } from '@shared/constants/app.constants';
+import {
+  TECHNICAL_READINESS_ROUTES,
+  MASTER_CHECKLIST_ROUTES,
+  AUDIT_LOG_ROUTES,
+  USERS_ROUTES,
+  ENGAGEMENT_ALLOCATION_ROUTES,
+  ENGAGEMENT_ROUTES,
+  PORTFOLIO_ROUTES,
+  NOTIFICATION_ROUTES,
+} from '@shared/constants/app.constants';
 
 import { LoginComponent } from './components/login/login';
 import { MainLayoutComponent } from '@layouts/main-layout/main-layout';
@@ -10,10 +19,6 @@ import { workspaceGuard } from './guards/workspace.guard';
 import { workspaceRedirectGuard } from './guards/workspace-redirect.guard';
 // import { engagementAccessGuard } from './core/guards/engagement-access.guard';
 
-
-
-
-
 export const routes: Routes = [
   // Public
   {
@@ -23,7 +28,7 @@ export const routes: Routes = [
 
   // Layout-less Print Summary View
   {
-    path: 'engagements/:engagementId/day-one-summary-print',
+    path: `${ENGAGEMENT_ROUTES.BASE}/:engagementId/${ENGAGEMENT_ROUTES.DAY_ONE_SUMMARY_PRINT}`,
     canActivate: [authGuard],
     loadComponent: () =>
       import(
@@ -110,14 +115,14 @@ export const routes: Routes = [
 
       // Admin
       {
-        path: 'admin/users',
+        path: USERS_ROUTES.BASE,
         loadChildren: () =>
           import('./features/users/users.routes').then(
             m => m.USERS_ROUTES
           ),
       },
       {
-        path: 'engagement-allocation',
+        path: ENGAGEMENT_ALLOCATION_ROUTES.BASE,
         canActivate: [adminGuard],
         loadChildren: () =>
           import('./features/engagement-allocation/engagement-allocation.routes').then(
@@ -127,14 +132,14 @@ export const routes: Routes = [
 
       // Engagements
       {
-        path: 'engagements',
+        path: ENGAGEMENT_ROUTES.BASE,
         loadChildren: () =>
           import('./features/engagements/engagements.routes').then(
             m => m.ENGAGEMENTS_ROUTES
           ),
       },
       {
-        path: 'my-engagements',
+        path: ENGAGEMENT_ROUTES.MY_ENGAGEMENTS,
         loadComponent: () =>
           import('./features/engagements/my-engagements/my-engagements').then(
             m => m.MyEngagementsComponent
@@ -143,7 +148,7 @@ export const routes: Routes = [
 
       // Portfolio (Leadership)
       {
-        path: 'portfolio',
+        path: PORTFOLIO_ROUTES.BASE,
         loadChildren: () =>
           import('./features/portfolio/portfolio.routes').then(
             m => m.PORTFOLIO_ROUTES
@@ -152,7 +157,7 @@ export const routes: Routes = [
 
       // Notifications
       {
-        path: 'notifications',
+        path: NOTIFICATION_ROUTES.BASE,
         loadChildren: () =>
           import('./features/notifications/notification-fullpage.routes').then(
             m => m.NOTIFICATION_FULLPAGE_ROUTES

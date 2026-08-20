@@ -23,6 +23,7 @@ import { EmptyStateComponent } from '@common/components/empty-state/empty-state'
 import { InputComponent } from '@common/components/form/input/input';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
+import { APP_ROUTES, ENGAGEMENT_ROUTES, TECHNICAL_READINESS_ROUTES } from '@shared/constants/app.constants';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { ToastService } from '@common/services/toast/toast';
 import { RISK_MESSAGES } from '@shared/constants/app.constants';
@@ -115,9 +116,9 @@ export class RisksComponent implements OnInit {
     const id = this.engagementId();
     if (!id) return [];
     if (sourceType === 'Checklist') {
-      return ['/engagements', id.toString(), 'workspace', 'checklist'];
+      return [APP_ROUTES.ENGAGEMENTS, id.toString(), ENGAGEMENT_ROUTES.WORKSPACE, ENGAGEMENT_ROUTES.CHECKLIST];
     }
-    return ['/engagements', id.toString(), 'workspace', 'technical-readiness'];
+    return [APP_ROUTES.ENGAGEMENTS, id.toString(), ENGAGEMENT_ROUTES.WORKSPACE, TECHNICAL_READINESS_ROUTES.BASE];
   }
 
   onStatusFilterSelect(val: unknown): void {

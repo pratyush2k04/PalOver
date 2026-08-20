@@ -5,6 +5,7 @@ import { AlertComponent } from '@common/components/alert/alert';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { SEARCH_CONFIG, SEARCH_MESSAGES } from '@shared/constants/search.constants';
+import { APP_ROUTES, ENGAGEMENT_ROUTES } from '@shared/constants/app.constants';
 import {
   GlobalSearchResponse,
   SearchChecklistItemResult,
@@ -74,22 +75,22 @@ export class GlobalSearchComponent {
 
   selectEngagement(item: SearchEngagementResult): void {
     this.close();
-    this.router.navigate(['/engagements', item.engagementId, 'workspace']);
+    this.router.navigate([APP_ROUTES.ENGAGEMENTS, item.engagementId, ENGAGEMENT_ROUTES.WORKSPACE]);
   }
 
   selectDocument(item: SearchDocumentResult): void {
     this.close();
-    this.router.navigate(['/engagements', item.engagementId, 'workspace', 'documents']);
+    this.router.navigate([APP_ROUTES.ENGAGEMENTS, item.engagementId, ENGAGEMENT_ROUTES.WORKSPACE, ENGAGEMENT_ROUTES.DOCUMENTS]);
   }
 
   selectPerson(item: SearchPersonResult): void {
     this.close();
-    this.router.navigate(['/engagements', item.engagementId, 'workspace', 'people']);
+    this.router.navigate([APP_ROUTES.ENGAGEMENTS, item.engagementId, ENGAGEMENT_ROUTES.WORKSPACE, ENGAGEMENT_ROUTES.PEOPLE]);
   }
 
   selectChecklistItem(item: SearchChecklistItemResult): void {
     this.close();
-    this.router.navigate(['/engagements', item.engagementId, 'workspace', 'checklist']);
+    this.router.navigate([APP_ROUTES.ENGAGEMENTS, item.engagementId, ENGAGEMENT_ROUTES.WORKSPACE, ENGAGEMENT_ROUTES.CHECKLIST]);
   }
 
   private runSearch(term: string): void {

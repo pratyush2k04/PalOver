@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { RISK_ROUTES } from '@shared/constants/app.constants';
+import { ENGAGEMENT_ROUTES, TECHNICAL_READINESS_ROUTES, RISK_ROUTES } from '@shared/constants/app.constants';
 
 export const ENGAGEMENTS_ROUTES: Routes = [
   {
@@ -9,67 +9,67 @@ export const ENGAGEMENTS_ROUTES: Routes = [
   },
   {
     path: ':id',
-    redirectTo: ':id/workspace/overview',
+    redirectTo: `:id/${ENGAGEMENT_ROUTES.WORKSPACE}/${ENGAGEMENT_ROUTES.OVERVIEW}`,
     pathMatch: 'full',
   },
   {
-    path: ':id/workspace',
+    path: `:id/${ENGAGEMENT_ROUTES.WORKSPACE}`,
     loadComponent: () =>
       import(
         './engagement-workspace/engagement-workspace.component'
       ).then((m) => m.EngagementWorkspaceComponent),
     children: [
       {
-        path: 'overview',
+        path: ENGAGEMENT_ROUTES.OVERVIEW,
         loadComponent: () =>
           import(
             './engagement-workspace/overview/overview.component'
           ).then((m) => m.OverviewComponent),
       },
       {
-        path: 'handover',
+        path: ENGAGEMENT_ROUTES.HANDOVER,
         loadComponent: () =>
           import('./engagement-workspace/handover/handover.component').then(
             (m) => m.HandoverComponent
           ),
       },
       {
-        path: 'documents',
+        path: ENGAGEMENT_ROUTES.DOCUMENTS,
         loadComponent: () =>
           import(
             './engagement-workspace/documents/engagement-documents/engagement-documents.component'
           ).then((m) => m.EngagementDocumentsComponent),
       },
       {
-        path: 'people',
+        path: ENGAGEMENT_ROUTES.PEOPLE,
         loadComponent: () =>
           import('./engagement-workspace/people/people.component').then(
             (m) => m.PeopleComponent
           ),
       },
       {
-        path: 'checklist',
+        path: ENGAGEMENT_ROUTES.CHECKLIST,
         loadComponent: () =>
           import(
             './engagement-workspace/checklist/engagement-checklist.component'
           ).then((m) => m.EngagementChecklistComponent),
       },
       {
-        path: 'kickoff',
+        path: ENGAGEMENT_ROUTES.KICKOFF,
         loadComponent: () =>
           import('./engagement-workspace/kickoff/kickoff.component').then(
             (m) => m.KickoffComponent
           ),
       },
       {
-        path: 'resources',
+        path: ENGAGEMENT_ROUTES.RESOURCES,
         loadComponent: () =>
           import('./engagement-workspace/resources/resources.component').then(
             (m) => m.ResourcesComponent
           ),
       },
       {
-        path: 'technical-readiness',
+        path: TECHNICAL_READINESS_ROUTES.BASE,
         loadComponent: () =>
           import('./engagement-workspace/technical/technical-readiness.component').then(
             (m) => m.TechnicalReadinessComponent
@@ -84,7 +84,7 @@ export const ENGAGEMENTS_ROUTES: Routes = [
       },
       {
         path: '',
-        redirectTo: 'overview',
+        redirectTo: ENGAGEMENT_ROUTES.OVERVIEW,
         pathMatch: 'full',
       },
     ],

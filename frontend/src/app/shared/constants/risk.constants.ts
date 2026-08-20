@@ -1,7 +1,3 @@
-export const RISK_ROUTES = {
-  BASE: 'risks'
-} as const;
-
 export const RISK_API_ENDPOINTS = {
   GET_RISKS: (engagementId: number) => `/api/engagements/${engagementId}/workspace/risks`,
   CREATE_RISK: (engagementId: number) => `/api/engagements/${engagementId}/workspace/risks`,
