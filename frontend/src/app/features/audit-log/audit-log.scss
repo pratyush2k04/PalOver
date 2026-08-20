@@ -1,19 +1,19 @@
+@use '../../../styles/tokens' as *;
+
 :host {
   display: block;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: $font-family-base;
+  color: $color-text;
 }
 
 .audit-log {
-  max-width: 60rem;
+  padding: $spacing-8;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.25rem;
+  font-family: $font-family-base;
+  color: $color-text;
 }
 
 .filter-bar {

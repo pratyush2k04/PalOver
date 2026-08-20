@@ -19,6 +19,7 @@ import { AvatarComponent } from '@common/components/avatar/avatar';
 import { BadgeComponent } from '@common/components/badge/badge';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { TabsComponent, TabItem } from '@common/components/tabs/tabs';
+import { PageHeaderComponent } from '@common/components/page-header/page-header';
 
 @Component({
   selector: 'app-portfolio-dashboard',
@@ -32,7 +33,8 @@ import { TabsComponent, TabItem } from '@common/components/tabs/tabs';
     AvatarComponent,
     BadgeComponent,
     LoadingSpinnerComponent,
-    TabsComponent
+    TabsComponent,
+    PageHeaderComponent
   ],
   templateUrl: './portfolio-dashboard.html',
   styleUrl: './portfolio-dashboard.scss'

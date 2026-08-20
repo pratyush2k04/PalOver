@@ -1,10 +1,9 @@
 <div class="my-engagements-page">
-  <div class="page-header">
-    <h2>My Engagements</h2>
+  <app-page-header title="My Engagements">
     @if (isPreSales()) {
       <app-engagements (engagementCreated)="loadEngagements()" />
     }
-  </div>
+  </app-page-header>
 
   <div class="toolbar-row">
     <div class="sort-control" [class.presales-view]="isPreSales()">

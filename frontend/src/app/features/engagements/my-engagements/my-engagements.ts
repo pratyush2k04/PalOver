@@ -13,6 +13,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { PaginatorComponent } from '@common/components/paginator/paginator';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
+import { PageHeaderComponent } from '@common/components/page-header/page-header';
 
 interface MyEngagementRow extends EngagementListItem {
   displayReadinessScore: number;
@@ -38,7 +39,7 @@ const SAMPLE_READINESS_SCORES: Record<number, number> = {
 @Component({
   selector: 'app-my-engagements',
   standalone: true,
-  imports: [CommonModule, FormsModule, EngagementsComponent, AlertComponent, EmptyStateComponent, ButtonComponent, StatusBadgeComponent, PaginatorComponent, SelectComponent],
+  imports: [CommonModule, FormsModule, EngagementsComponent, AlertComponent, EmptyStateComponent, ButtonComponent, StatusBadgeComponent, PaginatorComponent, SelectComponent, PageHeaderComponent],
   templateUrl: './my-engagements.html',
   styleUrl: './my-engagements.scss'
 })

@@ -1,8 +1,10 @@
 <div class="audit-log">
-  <div class="header">
-    <h1>Audit Log</h1>
+  <app-page-header
+    title="Audit Log"
+    description="Track system activities, access events, and administrative changes across the platform."
+  >
     <app-button variant="stroked" (click)="exportCsv()">Export</app-button>
-  </div>
+  </app-page-header>
 
   <div class="filter-bar">
     <app-input
