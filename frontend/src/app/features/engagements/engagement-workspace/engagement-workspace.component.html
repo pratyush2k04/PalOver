@@ -16,6 +16,29 @@
         </p>
         <p><strong>Client Contact:</strong> {{ eng.clientName }}</p>
       </div>
+
+      <div class="header-actions">
+        @if (eng.dayOneSignOff) {
+          <div class="day-one-signed-badge" [class.exception-badge]="eng.dayOneSignOff.isException">
+            <span class="badge-icon">{{ eng.dayOneSignOff.isException ? '⚠' : '✓' }}</span>
+            <div class="badge-content">
+              <strong>Day-1 Signed Off</strong>
+              @if (eng.dayOneSignOff.isException) {
+                <span class="exception-tag" [title]="eng.dayOneSignOff.exceptionJustification || 'Signed off with exception'">Exception</span>
+              }
+            </div>
+          </div>
+        } @else if (isAuthorizedForSignOff()) {
+          <app-button
+            variant="flat"
+            [disabled]="!eng.isKickoffReady"
+            [title]="!eng.isKickoffReady ? 'Kickoff must be completed before Day-1 sign-off' : 'Sign off Day-1 readiness'"
+            (click)="openSignOffDialog()"
+          >
+            Sign Off Day-1
+          </app-button>
+        }
+      </div>
     </div>
   } @else if (isLoading()) {
     <div class="workspace-header">
@@ -28,4 +51,15 @@
   <div class="workspace-content">
     <router-outlet></router-outlet>
   </div>
+
+  @if (isSignOffDialogOpen()) {
+    <app-day-one-sign-off-dialog
+      [isAbleToStartDayOne]="isAbleToStartDayOne()"
+      [isLeadership]="isLeadership()"
+      [initialBillingStartDate]="engagement()?.billingStartDate || ''"
+      [isBusy]="isSigningOff()"
+      (confirmed)="onSignOffConfirmed($event)"
+      (cancelled)="onSignOffCancelled()"
+    />
+  }
 </div>
