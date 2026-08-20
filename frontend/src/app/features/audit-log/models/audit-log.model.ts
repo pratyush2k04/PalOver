@@ -16,7 +16,9 @@ export type AuditAction =
   | 'DayOneSummaryGenerated' 
   | 'MasterChecklistPublished' 
   | 'BrownfieldItemAdded' 
-  | 'DiscoveryItemAdded';
+  | 'DiscoveryItemAdded'
+  | 'ResourcingGapFlagRaised'
+  | 'ResourcingGapFlagCleared';
 export interface AuditLogDto {
   id: number;
   userId: number;

@@ -9,6 +9,7 @@ using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Models.People;
+using Pdr.Api.Models.ResourceRequests;
 using Pdr.Api.Models.Risks;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
@@ -610,6 +611,20 @@ public class EngagementService(
                 status = LeadershipDashboardConstants.Statuses.InProgress;
             }
 
+            int? daysToBilling = engagement.BillingStartDate.HasValue
+                ? engagement.BillingStartDate.Value.DayNumber - today.DayNumber
+                : null;
+
+            int unconfirmedResourceCount = await db.ResourceRequests
+                .AsNoTracking()
+                .CountAsync(r => r.EngagementId == engagement.EngagementId &&
+                                 r.Status != ResourceRequestStatus.Confirmed &&
+                                 !r.IsDeleted);
+
+            bool hasResourcingGap = daysToBilling.HasValue &&
+                                   daysToBilling.Value <= ResourceRequestConstants.BillingGapThresholdDays &&
+                                   unconfirmedResourceCount > 0;
+
             items.Add(new LeadershipEngagementListItemDto(
                 engagement.EngagementId,
                 engagement.EngagementName,
@@ -618,7 +633,10 @@ public class EngagementService(
                 readinessScore,
                 openBlockerCount,
                 daysToKickoff,
-                status));
+                status,
+                hasResourcingGap,
+                unconfirmedResourceCount,
+                daysToBilling));
         }
 
         // Default sorted by soonest kickoff days (daysToKickoff ascending)
