@@ -23,7 +23,6 @@ public static class AuditActionCategoryRegistry
         [AuditActionEnum.PmAndTlReassigned] = AuditCategoryEnum.ResourceAllocation,
         [AuditActionEnum.DayOneSummaryGenerated] = AuditCategoryEnum.TechnicalReadiness,
         [AuditActionEnum.BrownfieldItemAdded] = AuditCategoryEnum.TechnicalReadiness,
-        [AuditActionEnum.DiscoveryItemAdded] = AuditCategoryEnum.TechnicalReadiness,
-        [AuditActionEnum.EvidenceSnapshotCreated] = AuditCategoryEnum.Checklist
+        [AuditActionEnum.DiscoveryItemAdded] = AuditCategoryEnum.TechnicalReadiness
     };
 }
