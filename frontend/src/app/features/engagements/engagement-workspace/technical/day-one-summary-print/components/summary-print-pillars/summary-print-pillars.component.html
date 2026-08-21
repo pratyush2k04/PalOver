@@ -111,6 +111,29 @@
           }
         </div>
       </div>
+      <!-- Pillar 5: Dependency Spikes -->
+      <div class="pillar-card" [class.ready]="s.isDependencySpikesReady" [class.attention]="!s.isDependencySpikesReady">
+        <div class="pillar-header">
+          <h4>5. Dependency Spikes</h4>
+          <app-status-badge [tone]="dependencySpikesStatusTone()">
+            {{ s.totalDependencySpikes === 0 ? 'N/A' : (s.failedDependencySpikes > 0 ? 'Failed' : (s.isDependencySpikesReady ? 'Passed' : 'In Progress')) }}
+          </app-status-badge>
+        </div>
+        <div class="pillar-metric">
+          <span class="metric-number">{{ s.passedDependencySpikes }}/{{ s.totalDependencySpikes }}</span>
+          <span class="metric-caption">Spikes Passed</span>
+        </div>
+        <div class="pillar-details">
+          <div class="detail-row">
+            <span>In Progress:</span>
+            <span class="font-medium" [class.text-warning]="s.inProgressDependencySpikes > 0">{{ s.inProgressDependencySpikes }}</span>
+          </div>
+          <div class="detail-row">
+            <span>Failed (Blocked):</span>
+            <span class="font-medium" [class.text-danger]="s.failedDependencySpikes > 0">{{ s.failedDependencySpikes }}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 }
