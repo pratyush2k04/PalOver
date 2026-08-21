@@ -150,40 +150,41 @@
               align-items: center;
               gap: 0.35rem;
             }
+          }
 
-            .btn-action {
-              ::ng-deep .btn {
-                color: #6b7280;
-                transition: color 0.15s ease, background-color 0.15s ease;
+          .btn-action {
+            ::ng-deep .btn {
+              color: #6b7280;
+              transition: color 0.15s ease, background-color 0.15s ease;
 
-                &:hover {
-                  color: #2563eb;
-                  background-color: #eff6ff;
-                }
-              }
-
-              &.btn-danger {
-                ::ng-deep .btn {
-                  &:hover {
-                    color: #dc2626;
-                    background-color: #fee2e2;
-                  }
-                }
+              &:hover {
+                color: #2563eb;
+                background-color: #eff6ff;
               }
             }
 
-            .action-icon {
-              display: inline-flex;
-              align-items: center;
-              justify-content: center;
+            &.btn-danger {
+              ::ng-deep .btn {
+                &:hover {
+                  color: #dc2626;
+                  background-color: #fee2e2;
+                }
+              }
+            }
+          }
+
+          .action-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+
+            ::ng-deep svg,
+            svg {
               width: 16px;
               height: 16px;
-
-              ::ng-deep svg,
-              svg {
-                width: 16px;
-                height: 16px;
-              }
+              display: block;
             }
           }
         }
