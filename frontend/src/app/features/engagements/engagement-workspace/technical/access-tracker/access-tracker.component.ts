@@ -210,6 +210,21 @@ export class AccessTrackerComponent {
     }
   }
 
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'Granted':
+      case '2':
+        return 'Granted';
+      case 'Blocked':
+      case '3':
+        return 'Blocked';
+      case 'InProgress':
+      case '1':
+      default:
+        return 'In Progress';
+    }
+  }
+
   getStatusNumericValue(status: string): number {
     if (status === 'Granted' || status === '2') return AccessItemStatus.Granted;
     if (status === 'Blocked' || status === '3') return AccessItemStatus.Blocked;

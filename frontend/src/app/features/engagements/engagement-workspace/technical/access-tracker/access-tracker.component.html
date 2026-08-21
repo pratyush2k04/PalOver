@@ -96,7 +96,7 @@
                   </select>
                 } @else {
                   <app-status-badge [tone]="getStatusTone(item.status)">
-                    {{ item.status }}
+                    {{ getStatusLabel(item.status) }}
                   </app-status-badge>
                 }
               </td>
