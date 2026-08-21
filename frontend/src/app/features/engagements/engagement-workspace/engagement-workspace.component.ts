@@ -64,19 +64,14 @@ export class EngagementWorkspaceComponent {
     if (!user) return false;
     return (
       this.authService.hasRole(USER_ROLES.LEADERSHIP) ||
-      this.authService.hasRole(USER_ROLES.PROJECT_MANAGEMENT) ||
-      this.authService.hasRole('Leadership') ||
-      this.authService.hasRole('ProjectManagement')
+      this.authService.hasRole(USER_ROLES.PROJECT_MANAGEMENT)
     );
   });
 
   readonly isLeadership = computed(() => {
     const user = this.authService.currentUser();
     if (!user) return false;
-    return (
-      this.authService.hasRole(USER_ROLES.LEADERSHIP) ||
-      this.authService.hasRole('Leadership')
-    );
+    return this.authService.hasRole(USER_ROLES.LEADERSHIP);
   });
 
   readonly tabs = computed<TabItem[]>(() => {
