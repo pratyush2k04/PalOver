@@ -152,7 +152,8 @@ export class ArchitectureValidationComponent {
     if (!this.isTechLead()) return;
 
     const dialogRef = this.dialog.open<DiscoveryFeatureDialogComponent, DiscoveryFeatureDialogData, CreateDiscoveryFeatureItemRequest>(
-      DiscoveryFeatureDialogComponent
+      DiscoveryFeatureDialogComponent,
+      { disableClose: true }
     );
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -170,7 +171,7 @@ export class ArchitectureValidationComponent {
 
     const dialogRef = this.dialog.open<DiscoveryFeatureDialogComponent, DiscoveryFeatureDialogData, UpdateDiscoveryFeatureItemRequest>(
       DiscoveryFeatureDialogComponent,
-      { data: { feature } }
+      { data: { feature }, disableClose: true }
     );
 
     dialogRef.afterClosed().subscribe((result) => {

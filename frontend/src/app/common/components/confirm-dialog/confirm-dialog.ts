@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { ButtonComponent } from '../button/button';
 
 @Component({
@@ -15,12 +15,22 @@ export class ConfirmDialogComponent {
   @Input() cancelLabel = 'Cancel';
   @Input() isBusy = false;
   @Input() isDestructive = true;
+  @Input() disableBackdropClose = true;
 
   @Output() confirmed = new EventEmitter<void>();
   @Output() cancelled = new EventEmitter<void>();
 
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (!this.isBusy) {
+      this.cancelled.emit();
+    }
+  }
+
   onBackdropClick(): void {
-    this.cancelled.emit();
+    if (!this.disableBackdropClose) {
+      this.cancelled.emit();
+    }
   }
 
   onDialogClick(event: MouseEvent): void {

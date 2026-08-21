@@ -76,7 +76,7 @@ export class BrownfieldReviewComponent {
   onAddFinding(): void {
     const dialogRef = this.dialog.open<AddFindingDialogComponent, AddFindingDialogData, AddFindingDialogResult>(
       AddFindingDialogComponent,
-      { data: { engagementId: this.engagementId() } }
+      { data: { engagementId: this.engagementId() }, disableClose: true }
     );
 
     dialogRef.afterClosed().subscribe((result: AddFindingDialogResult | undefined) => {

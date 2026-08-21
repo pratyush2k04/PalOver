@@ -133,7 +133,7 @@ export class AccessTrackerComponent {
   private openBlockDialog(item: AccessItemDto): void {
     const dialogRef = this.dialog.open<BlockAccessItemDialogComponent, BlockAccessItemDialogData, BlockAccessItemDialogResult>(
       BlockAccessItemDialogComponent,
-      { data: { itemName: item.name, currentReason: item.blockReason } }
+      { data: { itemName: item.name, currentReason: item.blockReason }, disableClose: true }
     );
 
     dialogRef.closed$.subscribe((result) => {
@@ -233,7 +233,8 @@ export class AccessTrackerComponent {
 
   openAddModal(): void {
     const dialogRef = this.dialog.open<AddAccessItemDialogComponent, undefined, AddAccessItemDialogResult>(
-      AddAccessItemDialogComponent
+      AddAccessItemDialogComponent,
+      { disableClose: true }
     );
 
     dialogRef.closed$.subscribe((result) => {
@@ -250,7 +251,8 @@ export class AccessTrackerComponent {
           itemName: item.name, 
           engagementId: this.engagementId(),
           currentOwnerId: item.ownerId 
-        } 
+        },
+        disableClose: true
       }
     );
 

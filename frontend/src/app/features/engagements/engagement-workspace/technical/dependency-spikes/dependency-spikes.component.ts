@@ -91,7 +91,8 @@ export class DependencySpikesComponent implements OnInit {
       {
         data: {
           engagementId: this.engagementId()
-        }
+        },
+        disableClose: true
       }
     );
 
@@ -109,7 +110,8 @@ export class DependencySpikesComponent implements OnInit {
         data: {
           engagementId: this.engagementId(),
           spike
-        }
+        },
+        disableClose: true
       }
     );
 
@@ -130,7 +132,8 @@ export class DependencySpikesComponent implements OnInit {
           itemName: spike.dependencyName,
           engagementId: this.engagementId(),
           currentOwnerId: spike.ownerId ?? undefined
-        }
+        },
+        disableClose: true
       }
     );
 
