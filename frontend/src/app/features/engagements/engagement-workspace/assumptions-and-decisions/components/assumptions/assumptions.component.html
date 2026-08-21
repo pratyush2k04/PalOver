@@ -1,0 +1,55 @@
+<div class="page-layout">
+  <div class="banner-alert" *ngIf="unvalidatedCount() > 0">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+    <span>{{ unvalidatedCount() }} assumption(s) still unvalidated</span>
+  </div>
+
+  <div class="cards-layout">
+    <div class="panel-card">
+      <div class="panel-header">
+    <div class="title-section">
+      <h2>Assumptions</h2>
+    </div>
+    <app-button class="btn-add" variant="stroked" (click)="openAssumptionDialog()">+ Add</app-button>
+  </div>
+
+  <app-loading-spinner *ngIf="isLoading()"></app-loading-spinner>
+
+  <div *ngIf="!isLoading()" class="panel-content">
+    <div *ngIf="assumptions().length === 0">
+      <app-empty-state title="No Assumptions Found" message="Click '+ Add' to create your first assumption."></app-empty-state>
+    </div>
+
+    <div *ngIf="assumptions().length > 0" class="list-container">
+      <div *ngFor="let item of assumptions()" class="list-item" [ngClass]="'status-' + AssumptionStatus[item.status].toLowerCase()">
+        
+        <div class="item-main">
+          <div class="item-text">
+            <span class="description">{{ item.description }}</span>
+            <app-status-badge [tone]="getStatusTone(item.status)">{{ getStatusLabel(item.status) }}</app-status-badge>
+          </div>
+          
+          <div class="item-meta" *ngIf="item.rationale">
+            <span class="rationale">{{ item.rationale }}</span>
+          </div>
+        </div>
+
+        <div class="item-right">
+          <div class="owner-container" *ngIf="item.ownerName">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            {{ item.ownerName }}
+          </div>
+          
+          <div class="item-actions">
+            <app-button class="btn-edit" variant="stroked" (click)="openAssumptionDialog(item)">Edit</app-button>
+            <app-button *ngIf="item.status === AssumptionStatus.Unvalidated" class="btn-validate" variant="stroked" (click)="validateAssumption(item.id, AssumptionStatus.Validated)">Validate</app-button>
+            <app-button *ngIf="item.status === AssumptionStatus.Unvalidated" variant="danger" (click)="markInvalid(item.id)">Mark invalid</app-button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  
+</div>
+</div>

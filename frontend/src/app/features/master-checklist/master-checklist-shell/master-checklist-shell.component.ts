@@ -4,11 +4,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
 import { MASTER_CHECKLIST_ROUTES } from '@shared/constants/app.constants';
 import { TabItem, TabsComponent } from '@common/components/tabs/tabs';
+import { PageHeaderComponent } from '@common/components/page-header/page-header';
 
 @Component({
   selector: 'app-master-checklist-shell',
   standalone: true,
-  imports: [RouterOutlet, TabsComponent],
+  imports: [RouterOutlet, TabsComponent, PageHeaderComponent],
   templateUrl: './master-checklist-shell.component.html',
   styleUrl: './master-checklist-shell.component.scss'
 })

@@ -159,4 +159,33 @@ public class RiskRepository(AppDbContext context) : IRiskRepository
                         r.SourceItemId != null)
             .ToListAsync();
     }
+
+    public async Task<List<Risk>> GetOpenRisksAsync()
+    {
+        return await context.Risks
+            .Where(r => r.Status != RiskStatus.Closed && !r.IsDeleted)
+            .ToListAsync();
+    }
+
+    public async Task<List<RiskEscalationHistory>> GetEscalationHistoriesByRiskIdsAsync(IEnumerable<int> riskIds)
+    {
+        return await context.RiskEscalationHistories
+            .Where(h => riskIds.Contains(h.RiskId) && !h.IsDeleted)
+            .OrderByDescending(h => h.EscalatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<List<RiskEscalationHistory>> GetEscalationHistoryByRiskIdAsync(int riskId)
+    {
+        return await context.RiskEscalationHistories
+            .Include(h => h.EscalatedToUser)
+            .Where(h => h.RiskId == riskId && !h.IsDeleted)
+            .OrderByDescending(h => h.EscalatedAt)
+            .ToListAsync();
+    }
+
+    public async Task AddEscalationHistoryAsync(RiskEscalationHistory history)
+    {
+        await context.RiskEscalationHistories.AddAsync(history);
+    }
 }

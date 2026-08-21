@@ -304,4 +304,24 @@ public class EngagementsController(
         var summary = await engagementService.GetOpenItemsSummaryAsync(id);
         return summary is null ? NotFound() : Ok(summary);
     }
+
+    /// <summary>
+    /// Records Day-1 readiness sign-off for an engagement against a billing date (Project Management and Leadership only).
+    /// </summary>
+    /// <param name="id">The engagement ID.</param>
+    /// <param name="request">Sign-off payload referencing the billing start date and optional leadership exception.</param>
+    /// <returns>The recorded Day-1 sign-off details.</returns>
+    [HttpPost("{id:int}/day-one-sign-off")]
+    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.Leadership)]
+    [EndpointSummary("Sign off Day-1 readiness for billing")]
+    [ProducesResponseType(typeof(DayOneSignOffDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<DayOneSignOffDto>> SignOffDayOne(int id, [FromBody] DayOneSignOffRequest request)
+    {
+        var result = await engagementService.SignOffDayOneAsync(id, request);
+        return Ok(result);
+    }
 }

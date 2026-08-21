@@ -1,12 +1,10 @@
-<div class="audit-log-container">
-  <div class="audit-log-header">
-    <div class="audit-log-header-left">
-      <h1 class="audit-log-title">Audit Log</h1>
-    </div>
-    <div class="audit-log-header-right">
-      <app-button variant="stroked" (click)="exportCsv()">Export</app-button>
-    </div>
-  </div>
+<div class="audit-log">
+  <app-page-header
+    title="Audit Log"
+    description="Track system activities, access events, and administrative changes across the platform."
+  >
+    <app-button variant="stroked" (click)="exportCsv()">Export</app-button>
+  </app-page-header>
 
   <div class="filter-bar">
     @if (engagementId == null) {
