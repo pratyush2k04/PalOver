@@ -1,3 +1,6 @@
+@use '../../../../../../../styles/tokens' as *;
+@use '../../../../../../../styles/mixins' as *;
+
 :host {
   display: block;
   width: 100%;
@@ -6,12 +9,8 @@
 
 .panel-card {
   width: 100%;
-  background: var(--surface-default, #ffffff);
-  border: 1px solid var(--border-light, #eaecf0);
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
+  @include card-surface(0, 12px);
+  @include flex-column;
   height: 100%;
   max-height: 100%;
 
@@ -35,9 +34,7 @@
   }
 
   .panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    @include flex-between;
     padding: 1.25rem 1.5rem;
     background-color: var(--color-header-bg, #f8f9fb);
     border-bottom: 1px solid var(--border-light, #eaecf0);
@@ -46,7 +43,7 @@
       display: flex;
       align-items: center;
       gap: 1rem;
-      
+
       h2 {
         margin: 0;
         font-size: 1.125rem;
@@ -61,7 +58,10 @@
         background-color: #eff6ff !important;
         border-color: #bfdbfe !important;
         color: #1d4ed8 !important;
-        &:hover { background-color: #dbeafe !important; }
+
+        &:hover {
+          background-color: #dbeafe !important;
+        }
       }
     }
   }
@@ -74,14 +74,11 @@
   }
 
   .list-container {
-    display: flex;
-    flex-direction: column;
+    @include flex-column;
   }
 
   .list-item {
-    display: flex;
-    flex-direction: row; 
-    justify-content: space-between;
+    @include flex-between;
     align-items: flex-start;
     padding: 0.5rem 1rem;
     border-bottom: 1px solid var(--border-light, #eaecf0);
@@ -90,14 +87,13 @@
     &:last-child {
       border-bottom: none;
     }
-    
+
     &:hover {
       background-color: var(--surface-hover, #f9fafb);
     }
 
     .item-main {
-      display: flex;
-      flex-direction: column;
+      @include flex-column;
       flex: 1;
 
       .item-text {
@@ -123,9 +119,7 @@
       }
 
       .item-meta {
-        display: flex;
-        flex-direction: column;
-        gap: 0.15rem;
+        @include flex-column(0.15rem);
 
         .rationale {
           font-size: 0.8rem;
@@ -136,8 +130,7 @@
     }
 
     .item-right {
-      display: flex;
-      flex-direction: column;
+      @include flex-column;
       align-items: flex-end;
       gap: 0.35rem;
       margin-left: 1rem;
@@ -161,7 +154,7 @@
       app-button {
         display: block;
         min-width: 80px;
-        
+
         ::ng-deep button {
           width: 100%;
           justify-content: center;
@@ -176,7 +169,10 @@
           background-color: #f8fafc !important;
           border-color: #e2e8f0 !important;
           color: #334155 !important;
-          &:hover { background-color: #f1f5f9 !important; }
+
+          &:hover {
+            background-color: #f1f5f9 !important;
+          }
         }
       }
 
@@ -185,7 +181,10 @@
           background-color: #f0fdf4 !important;
           border-color: #bbf7d0 !important;
           color: #166534 !important;
-          &:hover { background-color: #dcfce7 !important; }
+
+          &:hover {
+            background-color: #dcfce7 !important;
+          }
         }
       }
     }
