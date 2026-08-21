@@ -1,5 +1,5 @@
 <div class="my-engagements-page">
-  <app-page-header title="My Engagements">
+  <app-page-header title="My Engagements" description="Track kickoff readiness and manage your assigned engagements.">
     @if (isPreSales()) {
       <app-engagements (engagementCreated)="loadEngagements()" />
     }

@@ -45,6 +45,7 @@ const PAGE_SIZE = 4;
     StatusBadgeComponent,
     PaginatorComponent,
     SelectComponent,
+    PageHeaderComponent,
     ReadinessCircleComponent
   ],
   templateUrl: './my-engagements.html',
