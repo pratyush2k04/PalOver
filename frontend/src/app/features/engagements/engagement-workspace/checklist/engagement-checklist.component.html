@@ -6,7 +6,7 @@
 <!-- Error State -->
 @if (!isLoading() && error()) {
   <div class="checklist-error">
-    <span class="error-icon">⚠</span>
+    <span class="error-icon" [inlineSVG]="'assets/icons/alert-circle.svg'"></span>
     <p>{{ error() }}</p>
   </div>
 }
@@ -22,10 +22,29 @@
       </span>
     </app-section-header>
 
+    <!-- Pending Exemption Requests Callout -->
+    @if (checklist()!.pendingExemptionsCount > 0) {
+      <div class="callout callout-gate callout-exemption">
+        <span class="callout-icon" [inlineSVG]="'assets/icons/clock.svg'"></span>
+        <div class="callout-body">
+          <h2 class="callout-headline exemption-headline">
+            {{ checklist()!.pendingExemptionsCount === 1 ? '1 Exemption Request Pending Leadership Review' : checklist()!.pendingExemptionsCount + ' Exemption Requests Pending Leadership Review' }}
+          </h2>
+          <p class="callout-text">
+            @if (isLeadership()) {
+              A Project Manager has requested to mark mandatory checklist item(s) as Not Applicable. Please review and approve or reject the request(s) in the table below.
+            } @else {
+              Exemption request(s) have been submitted and are awaiting Leadership review.
+            }
+          </p>
+        </div>
+      </div>
+    }
+
     <!-- Kickoff Readiness Gate Callout -->
     @if (checklist()!.incompleteMandatoryItems.length > 0) {
       <div class="callout callout-gate callout-warning">
-        <div class="callout-icon">🚩</div>
+        <span class="callout-icon" [inlineSVG]="'assets/icons/alert-circle.svg'"></span>
         <div class="callout-body">
           <h2 class="callout-headline">Clear these to go kickoff-ready</h2>
           <ul class="gate-incomplete-list">
@@ -41,7 +60,7 @@
       </div>
     } @else {
       <div class="callout callout-gate callout-success">
-        <div class="callout-icon">🎉</div>
+        <span class="callout-icon" [inlineSVG]="'assets/icons/check-circle.svg'"></span>
         <div class="callout-body">
           <h2 class="callout-headline success-headline">All mandatory items completed!</h2>
           <p class="callout-text">This engagement has satisfied all mandatory kickoff readiness criteria.</p>
@@ -69,6 +88,7 @@
         <option value="Incomplete">Incomplete</option>
         <option value="Complete">Complete</option>
         <option value="Blocked">Blocked</option>
+        <option value="Pending">Pending Approval</option>
       </select>
       <select class="filter-select" [ngModel]="selectedEvidenceFilter()" (ngModelChange)="selectedEvidenceFilter.set($event)">
         <option value="all">All Evidence</option>
@@ -139,6 +159,12 @@
                     @if (item.blockReason) {
                       <div class="item-reason-note">
                         <span class="reason-label">Blocked:</span> {{ item.blockReason }}
+                      </div>
+                    }
+
+                    @if (item.exemptionStatus === 'Rejected' && item.exemptionRejectionReason) {
+                      <div class="item-reason-note">
+                        <span class="reason-label">Exemption Rejected:</span> {{ item.exemptionRejectionReason }}
                       </div>
                     }
                   </td>
@@ -293,7 +319,7 @@
                 <td class="cell-reason">
                   @if (item.notApplicableReason) {
                     <span class="reason-label">Reason:</span> {{ item.notApplicableReason }}
-                    @if (item.exemptionRejectionReason) {
+                    @if (item.exemptionStatus === 'Rejected' && item.exemptionRejectionReason) {
                       <span class="rejection-note">(Rejected: {{ item.exemptionRejectionReason }})</span>
                     }
                   }
