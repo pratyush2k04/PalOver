@@ -166,6 +166,12 @@
                         <span class="reason-label">Blocked:</span> {{ item.blockReason }}
                       </div>
                     }
+
+                    @if (item.exemptionStatus === 'Rejected' && item.exemptionRejectionReason) {
+                      <div class="item-reason-note">
+                        <span class="reason-label">Exemption Rejected:</span> {{ item.exemptionRejectionReason }}
+                      </div>
+                    }
                   </td>
 
                   <td class="cell-owner">
@@ -318,7 +324,7 @@
                 <td class="cell-reason">
                   @if (item.notApplicableReason) {
                     <span class="reason-label">Reason:</span> {{ item.notApplicableReason }}
-                    @if (item.exemptionRejectionReason) {
+                    @if (item.exemptionStatus === 'Rejected' && item.exemptionRejectionReason) {
                       <span class="rejection-note">(Rejected: {{ item.exemptionRejectionReason }})</span>
                     }
                   }
