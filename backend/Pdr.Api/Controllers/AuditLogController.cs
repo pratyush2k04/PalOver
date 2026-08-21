@@ -20,8 +20,8 @@ public class AuditLogController(IAuditLogService auditLogService) : ControllerBa
     /// Retrieves a cursor-paginated page of audit log entries, newest first. Leadership/Admin
     /// callers see every user's entries; everyone else sees only their own.
     /// </summary>
-    /// <param name="cursor">The Id to page backward from. Omit for the most recent entries.</param>
-    /// <param name="limit">Maximum number of entries to return.</param>
+    /// <param name="page">Page number</param>
+    /// <param name="pageSize">Number of items per page</param>
     [HttpGet]
     [ProducesResponseType(typeof(PagedResult<AuditLogDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

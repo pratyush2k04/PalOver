@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuditLogService } from './services/audit-log.service';
-import { AuditLogDto, AuditLogFilters, EngagementAuditLogDto, AuditCategory, SimpleUserDto } from './models/audit-log.model';
+import { AuditLogDto, EngagementAuditLogDto, AuditCategory, SimpleUserDto } from './models/audit-log.model';
 import { AUDIT_LOG_MESSAGES, USER_ROLES } from '@shared/constants/app.constants';
 import { AuthService } from '@shared/services/auth';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
@@ -12,7 +12,7 @@ import { EmptyStateComponent } from '@common/components/empty-state/empty-state'
 import { PaginatorComponent } from '@common/components/paginator/paginator';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
-import { SelectComponent } from '@common/components/form/select/select';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { downloadCsv } from '@shared/utils/csv.util';
 
 @Component({
@@ -49,19 +49,33 @@ export class AuditLogComponent implements OnInit {
   filterToDate: string | null = null;
   
   filterUserId: number | null = null;
-  filterCategories: AuditCategory[] = [];
+  filterCategory: AuditCategory | null = null;
   
   availableUsers = signal<SimpleUserDto[]>([]);
+
+  userOptions = computed<SelectOption[]>(() => {
+    const opts: SelectOption[] = [{ value: null, label: 'All Users' }];
+    for (const u of this.availableUsers()) {
+      opts.push({ value: u.id, label: u.name });
+    }
+    return opts;
+  });
+
+  categoryOptions: SelectOption[] = [
+    { value: null, label: 'All Event Types' },
+    { value: 'Document', label: 'Document' },
+    { value: 'Checklist', label: 'Checklist' },
+    { value: 'Risk', label: 'Risk' },
+    { value: 'Access', label: 'Access' },
+    { value: 'Handover', label: 'Handover' },
+    { value: 'Escalation', label: 'Escalation' }
+  ];
 
   page = signal(1);
   readonly pageSize = 20;
   totalCount = signal(0);
   totalPages = computed(() => Math.max(1, Math.ceil(this.totalCount() / this.pageSize)));
 
-  // For global in-memory filtering fallback if engagementId == null
-  // We keep this because global audits still fetch all via API offset pagination?
-  // Wait, the plan was to remove cursor traces for EVERYTHING. So global audits should also just fetch the page.
-  
   ngOnInit(): void {
     if (this.engagementId != null) {
       this.auditLogService.getEngagementAuditUsers(this.engagementId).subscribe({
@@ -91,7 +105,7 @@ export class AuditLogComponent implements OnInit {
     const dataRows = rows.map((log) => {
       const fields = [new Date(log.createdAt).toLocaleString()];
       if (this.showUserColumn) {
-        fields.push(log.userName);
+        fields.push((log as EngagementAuditLogDto).userName || '');
       }
       fields.push(log.action, log.details);
       return fields;
@@ -103,16 +117,16 @@ export class AuditLogComponent implements OnInit {
   private loadPage(): void {
     this.isLoading.set(true);
 
+    const categories = this.filterCategory ? [this.filterCategory] : undefined;
+
     const request$ = this.engagementId != null
-      ? this.auditLogService.getEngagementAuditLogPage(this.engagementId, this.page(), this.pageSize, this.filterUserId, this.filterCategories)
+      ? this.auditLogService.getEngagementAuditLogPage(this.engagementId, this.page(), this.pageSize, this.filterUserId, categories)
       : this.auditLogService.getAuditLogPage(this.page(), this.pageSize);
 
     request$.subscribe({
       next: (result) => {
         let items = result.items;
         
-        // If global audits, still apply in-memory text/date filtering to the *current page* 
-        // (Since global backend API doesn't support text/date filters yet)
         if (this.engagementId == null) {
           const term = this.filterSearch.trim().toLowerCase();
           items = items
@@ -134,7 +148,8 @@ export class AuditLogComponent implements OnInit {
   }
 
   private matchesSearch(log: AuditLogDto | EngagementAuditLogDto, term: string): boolean {
-    return log.userName.toLowerCase().includes(term)
+    const userName = 'userName' in log ? log.userName : '';
+    return userName.toLowerCase().includes(term)
       || log.action.toLowerCase().includes(term)
       || log.details.toLowerCase().includes(term);
   }

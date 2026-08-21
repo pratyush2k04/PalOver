@@ -70,7 +70,7 @@ public class AuditLogRepository(AppDbContext context) : IAuditLogRepository
             .Select(u => new SimpleUserDto
             {
                 Id = u.Id,
-                Name = u.FirstName + " " + u.LastName
+                Name = u.FullName
             })
             .OrderBy(u => u.Name)
             .ToListAsync();

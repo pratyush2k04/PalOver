@@ -34,29 +34,18 @@
       <app-select
         [id]="'audit-user-select'"
         label="User"
+        [options]="userOptions()"
         [(ngModel)]="filterUserId"
         (ngModelChange)="onFilterChange()"
-      >
-        <option [ngValue]="null">All Users</option>
-        @for (user of availableUsers(); track user.id) {
-          <option [ngValue]="user.id">{{ user.name }}</option>
-        }
-      </app-select>
+      ></app-select>
 
       <app-select
         [id]="'audit-category-select'"
         label="Event Type"
-        [(ngModel)]="filterCategories"
+        [options]="categoryOptions"
+        [(ngModel)]="filterCategory"
         (ngModelChange)="onFilterChange()"
-        [multiple]="true"
-      >
-        <option value="Document">Document</option>
-        <option value="Checklist">Checklist</option>
-        <option value="Risk">Risk</option>
-        <option value="Access">Access</option>
-        <option value="Handover">Handover</option>
-        <option value="Escalation">Escalation</option>
-      </app-select>
+      ></app-select>
     }
   </div>
 
@@ -81,7 +70,7 @@
           <tr>
             <td class="col-date" [title]="log.createdAt | date: 'full'">{{ log.createdAt | date: 'medium' }}</td>
             @if (showUserColumn) {
-              <td class="col-user">{{ log.userName }}</td>
+              <td class="col-user">{{ log.userName || '' }}</td>
             }
             <td class="col-action">{{ log.action }}</td>
             <td class="col-details">{{ log.details }}</td>
@@ -103,7 +92,7 @@
     }
   </div>
 
-  @if (filteredLogs().length > 0) {
+  @if (pagedLogs().length > 0) {
     <app-paginator [page]="page()" [totalPages]="totalPages()" (pageChange)="goToPage($event)" />
   }
 </div>

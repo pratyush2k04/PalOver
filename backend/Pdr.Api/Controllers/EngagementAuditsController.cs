@@ -22,8 +22,10 @@ public class EngagementAuditsController(IAuditLogService auditLogService) : Cont
     /// Returns entries irrespective of who the actor was.
     /// </summary>
     /// <param name="engagementId">The engagement ID.</param>
-    /// <param name="cursor">The Id to page backward from. Omit for the most recent entries.</param>
-    /// <param name="limit">Maximum number of entries to return.</param>
+    /// <param name="page">Page number</param>
+    /// <param name="pageSize">Number of items per page</param>
+    /// <param name="userId">Optional user ID filter</param>
+    /// <param name="categories">Optional category filter</param>
     [HttpGet]
     [ProducesResponseType(typeof(PagedResult<EngagementAuditLogDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
