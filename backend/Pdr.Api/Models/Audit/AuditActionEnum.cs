@@ -21,5 +21,6 @@ public enum AuditActionEnum
     BrownfieldItemAdded = 17,
     DiscoveryItemAdded = 18,
     ResourcingGapFlagRaised = 19,
-    ResourcingGapFlagCleared = 20
+    ResourcingGapFlagCleared = 20,
+    ChecklistItemEvidenceUpdated = 21
 }
