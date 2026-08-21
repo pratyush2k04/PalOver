@@ -1,45 +1,19 @@
+@use '../../../styles/tokens' as *;
+
 :host {
   display: block;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: $font-family-base;
+  color: $color-text;
 }
 
-// Variables
-$color-bg: #f8f9fb;
-$color-text-primary: #1a1d23;
-
-.audit-log-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 24px;
-  min-height: 100%;
-}
-
-.audit-log-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.audit-log-header-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.audit-log-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: $color-text-primary;
-  margin: 0;
-  letter-spacing: -0.3px;
-}
-
-.audit-log-header-right {
-  display: flex;
-  align-items: center;
+.audit-log {
+  padding: $spacing-8;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: $font-family-base;
+  color: $color-text;
 }
 
 .filter-bar {

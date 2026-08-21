@@ -8,6 +8,7 @@ import { ToastService } from '@common/services/toast/toast';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
+import { PageHeaderComponent } from '@common/components/page-header/page-header';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import {
   AssignLeadershipDialogComponent,
@@ -23,7 +24,8 @@ import {
     LoadingSpinnerComponent,
     InlineSVGModule,
     StatusBadgeComponent,
-    ButtonComponent
+    ButtonComponent,
+    PageHeaderComponent
   ],
   templateUrl: './engagement-allocation.component.html',
   styleUrl: './engagement-allocation.component.scss'

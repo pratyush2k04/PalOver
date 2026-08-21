@@ -1,40 +1,33 @@
+@use '../../../../styles/tokens' as *;
 @use '../../../../styles/mixins' as *;
 
-.workspace-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
   font-family: $font-family-base;
+  color: $color-text;
 }
 
-.workspace-header {
-  display: flex;
-  justify-content: space-between;
-  padding: $spacing-4 $spacing-4;
-  background-color: $color-surface;
-  border-bottom: 1px solid $color-border-soft;
+.workspace-container {
+  box-sizing: border-box;
+  padding: $spacing-8;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: $font-family-base;
+  color: $color-text;
 
-  @include respond-to('sm') {
-    padding: $spacing-4 $spacing-6;
+  app-page-header {
+    display: block;
+    margin-bottom: $spacing-6;
+  }
+
+  app-tabs {
+    display: block;
+    margin-bottom: $spacing-6;
   }
 }
 
-.header-info h1 {
-  margin: 0 0 $spacing-2 0;
-  font-size: $font-size-2xl;
-  color: $color-text;
-  font-weight: $font-weight-semibold;
-}
-
-.header-info p {
-  margin: $spacing-1 0;
-  font-size: $font-size-sm;
-  color: $color-text-muted;
-}
-
 .workspace-content {
-  flex-grow: 1;
-  padding: 0;
-  background-color: $color-bg;
-  overflow-y: auto;
+  width: 100%;
 }

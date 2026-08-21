@@ -11,6 +11,8 @@ import { ToastService } from '@common/services/toast/toast';
 import { NOTIFICATION_MESSAGES } from '@shared/constants/app.constants';
 
 // Reusable Common Components
+import { PageHeaderComponent } from '@common/components/page-header/page-header';
+import { BadgeComponent } from '@common/components/badge/badge';
 import { TabsComponent, TabItem } from '@common/components/tabs/tabs';
 import { ButtonComponent } from '@common/components/button/button';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
@@ -28,6 +30,8 @@ import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confir
     FormsModule,
     InlineSVGModule,
     DatePipe,
+    PageHeaderComponent,
+    BadgeComponent,
     TabsComponent,
     ButtonComponent,
     SelectComponent,
