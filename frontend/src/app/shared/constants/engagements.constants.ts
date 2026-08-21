@@ -24,6 +24,7 @@ export const ENGAGEMENT_API_ENDPOINTS = {
   DOCUMENT_DELETE: (id: number) => `/api/documents/${id}`,
   OPEN_ITEMS_SUMMARY: (id: number) => `/api/Engagements/${id}/open-items-summary`,
   DAY_ONE_SIGN_OFF: (id: number) => `/api/Engagements/${id}/day-one-sign-off`,
+  EVIDENCE_SNAPSHOT: (id: number) => `/api/Engagements/${id}/evidence-snapshot`,
 } as const;
 
 export const ENGAGEMENT_CONSTANTS = {
