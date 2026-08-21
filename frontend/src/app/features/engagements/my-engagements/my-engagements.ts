@@ -15,6 +15,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { PaginatorComponent } from '@common/components/paginator/paginator';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
+import { PageHeaderComponent } from '@common/components/page-header/page-header';
 import { ReadinessCircleComponent } from '@shared/readiness-circle/readiness-circle';
 
 interface MyEngagementRow extends EngagementListItem {
@@ -44,6 +45,7 @@ const PAGE_SIZE = 4;
     StatusBadgeComponent,
     PaginatorComponent,
     SelectComponent,
+    PageHeaderComponent,
     ReadinessCircleComponent
   ],
   templateUrl: './my-engagements.html',

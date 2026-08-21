@@ -1,11 +1,9 @@
 <div class="portfolio-dashboard">
   <!-- Dashboard Header -->
-  <header class="dashboard-header">
-    <div class="header-titles">
-      <h1>Portfolio Readiness Dashboard</h1>
-      <p class="subtitle">Overview of active engagements, readiness scores, open blockers, and kickoff timelines.</p>
-    </div>
-  </header>
+  <app-page-header
+    title="Portfolio Readiness Dashboard"
+    description="Overview of active engagements, readiness scores, open blockers, and kickoff timelines."
+  />
 
   <!-- Error Alert -->
   @if (errorMessage()) {

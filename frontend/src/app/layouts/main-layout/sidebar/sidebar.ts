@@ -39,12 +39,13 @@ export class SidebarComponent {
       { label: 'Home', icon: 'home', route: homeRoute }
     ];
 
-    // Users, Engagement Allocation and Master Checklist links: visible ONLY to Admin
+    // Users, Engagement Allocation, Master Checklist and Audit Log links: visible ONLY to Admin
     const isAdminUser = currentUser.isAdmin || currentUser.role === USER_ROLES.ADMIN || this.authService.isAdmin();
     if (isAdminUser) {
       items.push({ label: 'Users', icon: 'users', route: APP_ROUTES.USERS });
       items.push({ label: 'Engagement Allocation', icon: 'user-check', route: APP_ROUTES.ENGAGEMENT_ALLOCATION });
       items.push({ label: 'Master Checklist', icon: 'checklist', route: '/' + MASTER_CHECKLIST_ROUTES.BASE });
+      items.push({ label: 'Audit Log', icon: 'shield', route: APP_ROUTES.AUDIT_LOG });
     }
 
 

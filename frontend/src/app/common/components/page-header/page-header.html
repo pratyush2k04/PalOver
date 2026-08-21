@@ -1,0 +1,12 @@
+<header class="page-header">
+  <div class="header-titles">
+    <h1>{{ title() }}</h1>
+    @if (activeSubtitle()) {
+      <p class="subtitle">{{ activeSubtitle() }}</p>
+    }
+  </div>
+
+  <div class="header-actions">
+    <ng-content></ng-content>
+  </div>
+</header>
