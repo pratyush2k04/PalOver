@@ -14,6 +14,8 @@ import { ToastService } from '@common/services/toast/toast';
 import { AssumptionFormDialogComponent, AssumptionFormDialogResult } from './dialogs/assumption-form-dialog/assumption-form-dialog.component';
 import { ASSUMPTION_MESSAGES } from '@shared/constants/app.constants';
 
+import { InlineSVGModule } from 'ng-inline-svg-2';
+
 @Component({
   selector: 'app-assumptions',
   standalone: true,
@@ -23,7 +25,8 @@ import { ASSUMPTION_MESSAGES } from '@shared/constants/app.constants';
     LoadingSpinnerComponent,
     ButtonComponent,
     StatusBadgeComponent,
-    EmptyStateComponent
+    EmptyStateComponent,
+    InlineSVGModule
   ],
   templateUrl: './assumptions.component.html',
   styleUrl: './assumptions.component.scss'
