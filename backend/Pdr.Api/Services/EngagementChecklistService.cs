@@ -159,6 +159,7 @@ public class EngagementChecklistService(
                 item.IsApplicable = false;
                 item.NotApplicableReason = trimmedReason;
                 item.ExemptionStatus = MasterChecklistConstants.ExemptionStatuses.None;
+                item.ExemptionRejectionReason = null;
             }
             else
             {
@@ -166,6 +167,7 @@ public class EngagementChecklistService(
                 item.NotApplicableReason = trimmedReason;
                 item.ExemptionRequestedById = currentUserId;
                 item.ExemptionRequestedAt = DateTime.UtcNow;
+                item.ExemptionRejectionReason = null;
                 // Mandatory item stays IsApplicable = true until approved by Leadership
             }
         }
@@ -200,6 +202,7 @@ public class EngagementChecklistService(
             item.ExemptionStatus = MasterChecklistConstants.ExemptionStatuses.Approved;
             item.ExemptionReviewedById = currentUserId;
             item.ExemptionReviewedAt = DateTime.UtcNow;
+            item.ExemptionRejectionReason = null;
         }
         else
         {
@@ -214,6 +217,7 @@ public class EngagementChecklistService(
         item.UpdatedBy = currentUserId.ToString();
 
         await checklistRepository.SaveChangesAsync();
+        await riskService.SyncAutoCreatedRisksAsync(engagementId);
 
         var updated = await checklistRepository.GetByEngagementIdAsync(engagementId)
             ?? throw new InvalidOperationException(MasterChecklistConstants.Messages.FailedToUpdateChecklist);

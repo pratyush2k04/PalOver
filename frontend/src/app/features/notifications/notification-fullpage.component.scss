@@ -1,3 +1,4 @@
+@use '../../../styles/tokens' as *;
 @use '../../../styles/mixins' as *;
 
 :host {
@@ -130,7 +131,7 @@
     background-color: $color-primary-light;
 
     &.has-link:hover {
-      background-color: #e6f0fa;
+      background-color: $color-primary-light;
     }
   }
 }
@@ -179,15 +180,15 @@
 }
 
 .notification-title {
-  font-size: 0.95rem;
+  font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
-  color: #0f172a;
+  color: $color-text;
   margin: 0 0 $spacing-1 0;
   line-height: 1.35;
 }
 
 .notification-body {
-  font-size: 0.85rem;
+  font-size: $font-size-xs;
   color: $color-text-faint;
   margin: 0;
   line-height: 1.45;

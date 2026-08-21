@@ -5,6 +5,7 @@ export const DIALOG_DATA = new InjectionToken<unknown>('DIALOG_DATA');
 
 export interface DialogConfig<D> {
   data?: D;
+  disableClose?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -45,14 +46,14 @@ export class DialogService {
     this.applicationRef.attachView(componentRef.hostView);
 
     const onBackdropClick = (event: MouseEvent) => {
-      if (event.target === backdrop) {
+      if (event.target === backdrop && !config.disableClose) {
         dialogRef.close();
       }
     };
     backdrop.addEventListener('click', onBackdropClick);
 
     const onKeydown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === 'Escape' ) {
         dialogRef.close();
       }
     };

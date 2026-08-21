@@ -41,7 +41,6 @@ const PAGE_SIZE = 4;
     EngagementsComponent,
     AlertComponent,
     EmptyStateComponent,
-    ButtonComponent,
     StatusBadgeComponent,
     PaginatorComponent,
     SelectComponent,

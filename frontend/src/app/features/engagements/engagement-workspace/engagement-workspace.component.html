@@ -115,17 +115,6 @@
   <div class="workspace-content">
     <router-outlet></router-outlet>
   </div>
-
-  @if (isSignOffDialogOpen()) {
-    <app-day-one-sign-off-dialog
-      [isAbleToStartDayOne]="isAbleToStartDayOne()"
-      [isLeadership]="isLeadership()"
-      [initialBillingStartDate]="engagement()?.billingStartDate || ''"
-      [isBusy]="isSigningOff()"
-      (confirmed)="onSignOffConfirmed($event)"
-      (cancelled)="onSignOffCancelled()"
-    />
-  }
 </div>
 
 

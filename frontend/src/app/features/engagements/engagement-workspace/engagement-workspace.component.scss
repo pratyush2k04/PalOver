@@ -3,7 +3,7 @@
 
 .workspace-container {
   @include flex-column($spacing-5);
-  padding: $spacing-6;
+  padding: $spacing-6 $spacing-8;
   background-color: $color-bg;
   min-height: 100%;
   box-sizing: border-box;

@@ -1,4 +1,4 @@
-import { Directive, Input, inject, input } from '@angular/core';
+import { Directive, inject, input, model } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
 import { resolveErrorMessage, shouldShowError } from './error-messages';
 
@@ -10,7 +10,7 @@ export abstract class BaseControlComponent<T> implements ControlValueAccessor {
   readonly extraError = input<string | null>(null);
 
   abstract value: T;
-  @Input() disabled = false;
+  readonly disabled = model<boolean>(false);
 
   protected onChange: (value: T) => void = () => {};
   protected onTouched: () => void = () => {};
@@ -32,7 +32,7 @@ export abstract class BaseControlComponent<T> implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this.disabled.set(isDisabled);
   }
 
   markTouched(): void {

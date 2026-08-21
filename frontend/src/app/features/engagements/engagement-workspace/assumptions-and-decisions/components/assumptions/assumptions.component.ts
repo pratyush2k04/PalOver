@@ -2,8 +2,8 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { AssumptionService } from '../../services/assumption.service';
-import { AssumptionDto, AssumptionStatus } from '../../models/assumption.model';
+import { AssumptionService } from '../../../../services/assumption.service';
+import { AssumptionDto, AssumptionStatus } from '../../../../models/assumption.model';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { ButtonComponent } from '@common/components/button/button';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
@@ -14,6 +14,8 @@ import { ToastService } from '@common/services/toast/toast';
 import { AssumptionFormDialogComponent, AssumptionFormDialogResult } from './dialogs/assumption-form-dialog/assumption-form-dialog.component';
 import { ASSUMPTION_MESSAGES } from '@shared/constants/app.constants';
 
+import { InlineSVGModule } from 'ng-inline-svg-2';
+
 @Component({
   selector: 'app-assumptions',
   standalone: true,
@@ -23,7 +25,8 @@ import { ASSUMPTION_MESSAGES } from '@shared/constants/app.constants';
     LoadingSpinnerComponent,
     ButtonComponent,
     StatusBadgeComponent,
-    EmptyStateComponent
+    EmptyStateComponent,
+    InlineSVGModule
   ],
   templateUrl: './assumptions.component.html',
   styleUrl: './assumptions.component.scss'
@@ -92,7 +95,10 @@ export class AssumptionsComponent implements OnInit {
   openAssumptionDialog(assumption?: AssumptionDto) {
     const dialogRef = this.dialogService.open<AssumptionFormDialogComponent, any, AssumptionFormDialogResult>(
       AssumptionFormDialogComponent,
-      { data: { assumption } }
+      { 
+        data: { assumption },
+        disableClose: true
+      }
     );
 
     dialogRef.closed$.subscribe((result: AssumptionFormDialogResult | undefined) => {

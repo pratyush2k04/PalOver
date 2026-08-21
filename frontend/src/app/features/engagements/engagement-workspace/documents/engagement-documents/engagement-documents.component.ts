@@ -2,7 +2,7 @@ import {
   Component,
   DestroyRef,
   OnInit,
-  ViewChild,
+  viewChild,
   ElementRef,
   inject,
   signal,
@@ -41,6 +41,7 @@ import {
 } from '../version-history-dialog/version-history-dialog.component';
 
 import { DOCUMENT_CONFIG, DOCUMENT_MESSAGES } from '@shared/constants/document.constants';
+import { SectionHeaderComponent } from '@common/components/section-header/section-header';
 import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
@@ -54,6 +55,7 @@ import { StatusBadgeComponent } from '@common/components/status-badge/status-bad
     DatePipe,
     FormsModule,
     InlineSVGModule,
+    SectionHeaderComponent,
     AlertComponent,
     ButtonComponent,
     LoadingSpinnerComponent,
@@ -70,7 +72,7 @@ export class EngagementDocumentsComponent {
   private destroyRef = inject(DestroyRef);
   private dialog = inject(DialogService);
 
-  @ViewChild('versionFileInput') versionFileInput!: ElementRef<HTMLInputElement>;
+  readonly versionFileInput = viewChild<ElementRef<HTMLInputElement>>('versionFileInput');
   private pendingVersionDocId: number | null = null;
 
   readonly DOCUMENT_MESSAGES = DOCUMENT_MESSAGES;
@@ -254,7 +256,7 @@ export class EngagementDocumentsComponent {
 
   triggerVersionUpload(doc: DocumentItem): void {
     this.pendingVersionDocId = doc.id;
-    this.versionFileInput.nativeElement.click();
+    this.versionFileInput()?.nativeElement.click();
   }
 
   onVersionFileSelected(event: Event): void {
