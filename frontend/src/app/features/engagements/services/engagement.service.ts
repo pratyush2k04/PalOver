@@ -11,7 +11,8 @@ import {
   MarkSowSignedRequest,
   MarkSowSignedResponse,
   EngagementListResponse,
-  EngagementSortBy
+  EngagementSortBy,
+  DayOneSignOffRequest
 } from '../models/engagement.model';
 import { ENGAGEMENT_API_ENDPOINTS } from '@shared/constants/app.constants';
 
@@ -72,5 +73,9 @@ export class EngagementService {
 
   getOpenItemsSummary(id: number): Observable<EngagementOpenItemsSummary> {
     return this.http.get<EngagementOpenItemsSummary>(ENGAGEMENT_API_ENDPOINTS.OPEN_ITEMS_SUMMARY(id));
+  }
+
+  signOffDayOne(id: number, request: DayOneSignOffRequest): Observable<EngagementInfo> {
+    return this.http.post<EngagementInfo>(ENGAGEMENT_API_ENDPOINTS.DAY_ONE_SIGN_OFF(id), request);
   }
 }

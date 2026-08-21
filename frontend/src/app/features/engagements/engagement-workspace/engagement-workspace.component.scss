@@ -12,11 +12,13 @@
 
 .workspace-header-card {
   @include flex-between;
+  align-items: center;
   padding: $spacing-6 $spacing-8;
   background-color: $color-surface;
   border: 1px solid $color-border-soft;
   border-radius: $radius-xl;
   box-shadow: $shadow-sm;
+  gap: 1.5rem;
 }
 
 .header-main-info {
@@ -202,4 +204,65 @@
 .workspace-content {
   flex-grow: 1;
   padding-top: $spacing-2;
+}
+
+.header-day-one-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.day-one-signed-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-3;
+  padding: $spacing-2 $spacing-4;
+  background-color: $color-success-bg;
+  border: 1px solid $color-success-border;
+  border-radius: $radius-lg;
+  color: $color-success-text;
+  font-size: $font-size-sm;
+
+  .badge-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.125rem;
+    height: 1.125rem;
+    flex-shrink: 0;
+
+    ::ng-deep span,
+    ::ng-deep svg,
+    svg {
+      display: block;
+      width: 1.125rem;
+      height: 1.125rem;
+      stroke-width: 2.25;
+    }
+  }
+
+  .badge-content {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+
+    strong {
+      font-weight: $font-weight-bold;
+    }
+  }
+
+  &.exception-badge {
+    background-color: $color-warning-bg;
+    border-color: $color-warning-border;
+    color: $color-warning-text;
+  }
+}
+
+.exception-tag {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-warning-text;
+  cursor: help;
 }
