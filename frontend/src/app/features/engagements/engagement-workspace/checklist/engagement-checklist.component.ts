@@ -28,6 +28,7 @@ import {
   BlockItemDialogData,
   BlockItemDialogResult
 } from './dialogs/block-item-dialog/block-item-dialog.component';
+import { SectionHeaderComponent } from '@common/components/section-header/section-header';
 import {
   AttachEvidenceDialogComponent,
   AttachEvidenceDialogData,
@@ -37,7 +38,7 @@ import {
 @Component({
   selector: 'app-engagement-checklist',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, StatusBadgeComponent, ButtonComponent],
+  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, StatusBadgeComponent, ButtonComponent, SectionHeaderComponent],
   templateUrl: './engagement-checklist.component.html',
   styleUrl: './engagement-checklist.component.scss'
 })
