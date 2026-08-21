@@ -102,7 +102,7 @@ public class DependencyService(
         var currentUserId = currentUserService.GetUserId();
         var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
 
-        if (dependency.OwnerId != currentUserId && !isPm)
+        if (dependency.Owner?.UserId != currentUserId && !isPm)
             throw new DependencyUnauthorizedException();
 
         dependency.Description = dto.Description;
@@ -182,7 +182,7 @@ public class DependencyService(
             Impact = RiskImpact.Medium,
             Likelihood = RiskLikelihood.Medium,
             Status = RiskStatus.Open,
-            OwnerId = dependency.OwnerId
+            OwnerId = dependency.Owner?.UserId
         };
 
         await riskRepository.AddAsync(risk);

@@ -14,7 +14,7 @@ public class Dependency : BaseAuditableEntity
     
     public DependencyType Type { get; set; }
     
-    public int? OwnerId { get; set; }
+    public int OwnerId { get; set; }
     public Person? Owner { get; set; }
 
     public DateTime NeededByDate { get; set; }
