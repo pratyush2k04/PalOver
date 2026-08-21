@@ -20,7 +20,19 @@ public class RiskService(
     {
         await SyncAutoCreatedRisksAsync(engagementId);
         var risks = await riskRepository.GetByEngagementIdAsync(engagementId, status, ownerId);
-        return risks.Select(MapToDto).ToList();
+        if (!risks.Any())
+        {
+            return new List<RiskDto>();
+        }
+
+        var riskIds = risks.Select(r => r.Id).ToList();
+        var histories = await riskRepository.GetEscalationHistoriesByRiskIdsAsync(riskIds);
+
+        var escalationMap = histories
+            .GroupBy(h => h.RiskId)
+            .ToDictionary(g => g.Key, g => g.First().EscalationLevel.ToString());
+
+        return risks.Select(r => MapToDto(r, escalationMap.GetValueOrDefault(r.Id, "None"))).ToList();
     }
 
     public async Task<RiskDto> CreateRiskAsync(int engagementId, CreateRiskDto dto)
@@ -200,7 +212,7 @@ public class RiskService(
         await riskRepository.SaveChangesAsync();
     }
 
-    private static RiskDto MapToDto(Risk risk)
+    private static RiskDto MapToDto(Risk risk, string escalationLevel = "None")
     {
         var openForDays = (DateTime.UtcNow - risk.CreatedAt).Days;
 
@@ -219,7 +231,8 @@ public class RiskService(
             OpenForDays = openForDays,
             SourceType = risk.SourceType,
             SourceItemId = risk.SourceItemId,
-            SourceTitle = risk.SourceTitle
+            SourceTitle = risk.SourceTitle,
+            CurrentEscalationLevel = escalationLevel
         };
     }
 }
