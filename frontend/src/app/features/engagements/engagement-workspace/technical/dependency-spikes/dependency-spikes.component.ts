@@ -13,12 +13,18 @@ import { TECHNICAL_READINESS_ROLES } from '@shared/constants/technical-readiness
 import { DependencySpikeService } from '../../../services/dependency-spike.service';
 import {
   DependencySpikeDto,
-  DependencySpikeStatus
+  DependencySpikeStatus,
+  UpdateDependencySpikeRequest
 } from '../../../models/dependency-spikes/dependency-spike.model';
 import {
   DependencySpikeFormDialogComponent,
   DependencySpikeDialogData
 } from '../dialogs/dependency-spike-form-dialog/dependency-spike-form-dialog.component';
+import {
+  EditOwnerDialogComponent,
+  EditOwnerDialogData,
+  EditOwnerDialogResult
+} from '../dialogs/edit-owner-dialog/edit-owner-dialog.component';
 
 @Component({
   selector: 'app-dependency-spikes',
@@ -113,6 +119,44 @@ export class DependencySpikesComponent implements OnInit {
           list.map((s) => (s.id === updatedSpike.id ? updatedSpike : s))
         );
       }
+    });
+  }
+
+  openEditOwnerModal(spike: DependencySpikeDto): void {
+    const dialogRef = this.dialog.open<EditOwnerDialogComponent, EditOwnerDialogData, EditOwnerDialogResult>(
+      EditOwnerDialogComponent,
+      {
+        data: {
+          itemName: spike.dependencyName,
+          engagementId: this.engagementId(),
+          currentOwnerId: spike.ownerId ?? undefined
+        }
+      }
+    );
+
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+      this.updateOwner(spike, result.ownerId);
+    });
+  }
+
+  private updateOwner(spike: DependencySpikeDto, ownerId: number): void {
+    const req: UpdateDependencySpikeRequest = {
+      dependencyName: spike.dependencyName,
+      objective: spike.objective,
+      status: Number(spike.status) as DependencySpikeStatus,
+      ownerId: ownerId,
+      outcomeFindings: spike.outcomeFindings
+    };
+
+    this.spikeService.updateSpike(this.engagementId(), spike.id, req).subscribe({
+      next: (updatedSpike) => {
+        this.toastService.success('Owner updated successfully');
+        this.spikes.update((list) =>
+          list.map((s) => (s.id === updatedSpike.id ? updatedSpike : s))
+        );
+      },
+      error: () => this.toastService.error('Failed to update owner')
     });
   }
 

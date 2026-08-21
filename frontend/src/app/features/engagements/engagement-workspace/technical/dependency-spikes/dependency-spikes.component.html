@@ -53,7 +53,20 @@
                   <span class="objective-text">{{ spike.objective }}</span>
                 </td>
                 <td class="owner-cell">
-                  <span>{{ spike.ownerName || 'Tech Lead' }}</span>
+                  <div class="owner-content">
+                    <span>{{ spike.ownerName || 'Unassigned' }}</span>
+                    @if (isTechLead()) {
+                      <app-button
+                        type="button"
+                        variant="icon"
+                        class="btn-action"
+                        ariaLabel="Change owner"
+                        [appTooltip]="'Change owner'"
+                        (click)="openEditOwnerModal(spike)">
+                        <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                      </app-button>
+                    }
+                  </div>
                 </td>
                 <td class="findings-cell">
                   @if (spike.outcomeFindings) {
