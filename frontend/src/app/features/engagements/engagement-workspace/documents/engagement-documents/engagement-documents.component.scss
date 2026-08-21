@@ -1,35 +1,22 @@
+@use '../../../../../../../styles/tokens' as *;
+@use '../../../../../../../styles/mixins' as *;
+
 .documents-container {
-  padding: 1.25rem 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  padding: $spacing-2 0;
+  font-family: $font-family-base;
 }
 
-.documents-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.25rem;
+.upload-icon {
+  width: $font-size-base;
+  height: $font-size-base;
+  @include flex-center;
 
-  .title {
-    margin: 0;
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: #1e293b;
+  ::ng-deep svg,
+  svg {
+    width: $font-size-base;
+    height: $font-size-base;
   }
-
-    .upload-icon {
-      width: 16px;
-      height: 16px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-
-      ::ng-deep svg,
-      svg {
-        width: 16px;
-        height: 16px;
-      }
-    }
-  }
+}
 
 .documents-filters {
   display: flex;
