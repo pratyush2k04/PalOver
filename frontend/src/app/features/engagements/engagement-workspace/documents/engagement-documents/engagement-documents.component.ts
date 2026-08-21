@@ -2,7 +2,7 @@ import {
   Component,
   DestroyRef,
   OnInit,
-  ViewChild,
+  viewChild,
   ElementRef,
   inject,
   signal,
@@ -72,7 +72,7 @@ export class EngagementDocumentsComponent {
   private destroyRef = inject(DestroyRef);
   private dialog = inject(DialogService);
 
-  @ViewChild('versionFileInput') versionFileInput!: ElementRef<HTMLInputElement>;
+  readonly versionFileInput = viewChild<ElementRef<HTMLInputElement>>('versionFileInput');
   private pendingVersionDocId: number | null = null;
 
   readonly DOCUMENT_MESSAGES = DOCUMENT_MESSAGES;
@@ -256,7 +256,7 @@ export class EngagementDocumentsComponent {
 
   triggerVersionUpload(doc: DocumentItem): void {
     this.pendingVersionDocId = doc.id;
-    this.versionFileInput.nativeElement.click();
+    this.versionFileInput()?.nativeElement.click();
   }
 
   onVersionFileSelected(event: Event): void {

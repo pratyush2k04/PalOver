@@ -24,4 +24,5 @@ public interface IEngagementService
     Task<List<LeadershipEngagementListItemDto>> GetLeadershipDashboardAsync();
     Task<EngagementOpenItemsSummaryDto?> GetOpenItemsSummaryAsync(int engagementId);
     Task<DayOneSignOffDto> SignOffDayOneAsync(int engagementId, DayOneSignOffRequest request);
+    Task<EvidenceSnapshotDto> GetEvidenceSnapshotAsync(int engagementId);
 }

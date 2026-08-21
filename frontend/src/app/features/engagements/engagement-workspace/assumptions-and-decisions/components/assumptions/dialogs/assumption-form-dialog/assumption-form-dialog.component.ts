@@ -5,7 +5,7 @@ import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
-import { AssumptionDto } from '../../../../models/assumption.model';
+import { AssumptionDto } from '../../../../../../models/assumption.model';
 
 export interface AssumptionFormDialogData {
   assumption: AssumptionDto | null;

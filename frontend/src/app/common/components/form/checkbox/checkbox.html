@@ -2,7 +2,7 @@
   <input
     type="checkbox"
     [checked]="value"
-    [disabled]="disabled"
+    [disabled]="disabled()"
     (change)="onCheckboxChange($any($event.target).checked)"
   />
   {{ label() }}

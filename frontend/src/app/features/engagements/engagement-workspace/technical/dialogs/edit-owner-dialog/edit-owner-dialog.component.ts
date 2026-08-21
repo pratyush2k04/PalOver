@@ -1,3 +1,4 @@
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -19,7 +20,7 @@ export interface EditOwnerDialogResult {
 @Component({
   selector: 'app-edit-owner-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent],
+  imports: [CommonModule, FormsModule, ButtonComponent, LoadingSpinnerComponent],
   templateUrl: './edit-owner-dialog.component.html',
   styleUrl: './edit-owner-dialog.component.scss'
 })

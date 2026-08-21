@@ -15,4 +15,5 @@ export * from './search.constants';
 export * from './resource-request.constants';
 export * from './profile.constants';
 export * from './assumption.constants';
+export * from './dependency.constants';
 

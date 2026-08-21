@@ -1,3 +1,4 @@
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { Component, inject, input, output, signal, computed, effect, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -28,6 +29,7 @@ import { DiscoveryFeatureDialogComponent, DiscoveryFeatureDialogData } from './d
   selector: 'app-architecture-validation',
   standalone: true,
   imports: [
+    LoadingSpinnerComponent,
     CommonModule,
     FormsModule,
     InlineSVGModule,
@@ -69,14 +71,6 @@ export class ArchitectureValidationComponent {
   isRiskRaised = computed(() => this.validation()?.isRiskRaised ?? false);
   riskSummary = computed(() => this.validation()?.riskSummary ?? null);
   isModified = computed(() => +this.selectedStatus() === ArchitectureStatus.Modified);
-
-  statusBadgeLabel = computed(() =>
-    +this.selectedStatus() === ArchitectureStatus.StillValid ? 'Complete' : 'In Progress'
-  );
-
-  statusBadgeTone = computed<StatusBadgeTone>(() =>
-    +this.selectedStatus() === ArchitectureStatus.StillValid ? 'success' : 'info'
-  );
 
   deltaBadgeTone = computed<StatusBadgeTone>(() => {
     if (this.isRiskRaised()) return 'danger';
@@ -160,7 +154,8 @@ export class ArchitectureValidationComponent {
     if (!this.isTechLead()) return;
 
     const dialogRef = this.dialog.open<DiscoveryFeatureDialogComponent, DiscoveryFeatureDialogData, CreateDiscoveryFeatureItemRequest>(
-      DiscoveryFeatureDialogComponent
+      DiscoveryFeatureDialogComponent,
+      { disableClose: true }
     );
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -178,7 +173,7 @@ export class ArchitectureValidationComponent {
 
     const dialogRef = this.dialog.open<DiscoveryFeatureDialogComponent, DiscoveryFeatureDialogData, UpdateDiscoveryFeatureItemRequest>(
       DiscoveryFeatureDialogComponent,
-      { data: { feature } }
+      { data: { feature }, disableClose: true }
     );
 
     dialogRef.afterClosed().subscribe((result) => {

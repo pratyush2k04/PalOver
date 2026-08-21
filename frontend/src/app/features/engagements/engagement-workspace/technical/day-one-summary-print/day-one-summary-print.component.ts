@@ -1,3 +1,4 @@
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { Component, inject, signal, computed, effect, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
@@ -16,6 +17,7 @@ import { SummaryPrintBlockersComponent } from './components/summary-print-blocke
   selector: 'app-day-one-summary-print',
   standalone: true,
   imports: [
+    LoadingSpinnerComponent,
     CommonModule,
     InlineSVGModule,
     ButtonComponent,

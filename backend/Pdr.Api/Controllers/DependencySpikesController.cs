@@ -23,7 +23,7 @@ public class DependencySpikesController(IDependencySpikeService service) : Contr
     /// <param name="engagementId">The engagement ID.</param>
     /// <returns>List of dependency spikes.</returns>
     [HttpGet]
-    [AuthorizeRoles(RoleEnum.TechLead, RoleEnum.ProjectManagement, RoleEnum.Leadership, RoleEnum.PreSales)]
+    [AuthorizeRoles(RoleEnum.TechLead, RoleEnum.ProjectManagement, RoleEnum.Leadership)]
     [EndpointSummary("Get all dependency spikes for an engagement")]
     [ProducesResponseType(typeof(List<DependencySpikeDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

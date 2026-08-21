@@ -324,4 +324,21 @@ public class EngagementsController(
         var result = await engagementService.SignOffDayOneAsync(id, request);
         return Ok(result);
     }
+
+    /// <summary>
+    /// Retrieves the read-only evidence snapshot captured at Day-1 sign-off for an engagement.
+    /// </summary>
+    /// <param name="id">The engagement ID.</param>
+    /// <returns>The immutable evidence snapshot, including every evidence-required checklist item's status at sign-off.</returns>
+    [HttpGet("{id:int}/evidence-snapshot")]
+    [Authorize]
+    [EndpointSummary("Get the Day-1 sign-off evidence snapshot")]
+    [ProducesResponseType(typeof(EvidenceSnapshotDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<EvidenceSnapshotDto>> GetEvidenceSnapshot(int id)
+    {
+        var result = await engagementService.GetEvidenceSnapshotAsync(id);
+        return Ok(result);
+    }
 }
