@@ -1,8 +1,6 @@
 <div class="engagement-detail-page">
   @if (engagement(); as info) {
-    <div class="page-header">
-      <h2>{{ info.engagementName }}</h2>
-    </div>
+    
 
     <div class="team-card">
       <div class="team-card-header">
@@ -24,7 +22,7 @@
       </div>
 
       <div class="team-row">
-        <span class="team-role">Tech / Delivery Lead</span>
+        <span class="team-role">Tech Lead</span>
         @if (owners()?.techLeadName; as name) {
           <span class="team-owner">{{ name }}</span>
         } @else {
