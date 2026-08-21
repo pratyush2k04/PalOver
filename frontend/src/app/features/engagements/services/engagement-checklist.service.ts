@@ -9,7 +9,8 @@ import {
   UpdateItemApplicabilityRequest,
   ReviewExemptionRequest,
   UpdateItemOwnerRequest,
-  BlockChecklistItemRequest
+  BlockChecklistItemRequest,
+  SaveChecklistItemEvidenceRequest
 } from '../models/engagement-checklist.model';
 
 @Injectable({ providedIn: 'root' })
@@ -81,6 +82,17 @@ export class EngagementChecklistService {
     return this.http.post<EngagementChecklist>(
       `/api/engagements/${engagementId}/workspace/checklist/items/${itemId}/unblock`,
       {}
+    );
+  }
+
+  saveItemEvidence(
+    engagementId: number,
+    itemId: number,
+    request: SaveChecklistItemEvidenceRequest
+  ): Observable<EngagementChecklist> {
+    return this.http.put<EngagementChecklist>(
+      ENGAGEMENT_API_ENDPOINTS.CHECKLIST_ITEM_EVIDENCE(engagementId, itemId),
+      request
     );
   }
 }

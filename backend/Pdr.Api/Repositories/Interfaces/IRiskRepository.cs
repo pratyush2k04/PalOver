@@ -15,4 +15,9 @@ public interface IRiskRepository
     Task<List<RiskBlockerSourceItem>> GetActiveChecklistBlockersAsync(int engagementId);
     Task<RiskBlockerSourceItem?> GetActiveResourceGapBlockerAsync(int engagementId, int thresholdDays);
     Task<List<Risk>> GetAutoCreatedRisksAsync(int engagementId);
+
+    Task<List<Risk>> GetOpenRisksAsync();
+    Task<List<RiskEscalationHistory>> GetEscalationHistoriesByRiskIdsAsync(IEnumerable<int> riskIds);
+    Task<List<RiskEscalationHistory>> GetEscalationHistoryByRiskIdAsync(int riskId);
+    Task AddEscalationHistoryAsync(RiskEscalationHistory history);
 }

@@ -28,6 +28,7 @@ public static class AuditMapperRegistry
         services.AddScoped<IAuditTemplateMapper, DiscoveryItemAddedMapper>();
         services.AddScoped<IAuditTemplateMapper, ResourcingGapFlagRaisedMapper>();
         services.AddScoped<IAuditTemplateMapper, ResourcingGapFlagClearedMapper>();
+        services.AddScoped<IAuditTemplateMapper, ChecklistItemEvidenceUpdatedMapper>();
 
         // Add new mappers here when adding new audit action types.
 

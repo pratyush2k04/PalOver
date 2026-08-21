@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Pdr.Api.Constants;
 using Pdr.Api.Data;
 using Pdr.Api.DTOs.EngagementChecklist;
 using Pdr.Api.Exceptions;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.EngagementChecklist;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
@@ -14,7 +16,9 @@ public class EngagementChecklistService(
     IMasterChecklistRepository masterChecklistRepository,
     AppDbContext dbContext,
     ICurrentUserService currentUserService,
-    IRiskService riskService) : IEngagementChecklistService
+    IRiskService riskService,
+    IAuditLogService auditLogService,
+    ILogger<EngagementChecklistService> logger) : IEngagementChecklistService
 {
     public async Task<EngagementChecklistResponseDto?> GetByEngagementIdAsync(int engagementId)
     {
@@ -50,6 +54,7 @@ public class EngagementChecklistService(
                     Description = i.Description,
                     CategoryId = i.CategoryId,
                     IsMandatory = i.IsMandatory,
+                    EvidenceRequired = i.EvidenceRequired,
                     DisplayOrder = i.DisplayOrder,
                     IsApplicable = true,
                     Status = MasterChecklistConstants.ItemStatuses.Incomplete,
@@ -88,6 +93,15 @@ public class EngagementChecklistService(
         if (item.Status == "Blocked")
         {
             throw new CannotUpdateBlockedItemException(itemId);
+        }
+
+        if (normalizedStatus == MasterChecklistConstants.ItemStatuses.Complete && item.EvidenceRequired)
+        {
+            var hasEvidence = !string.IsNullOrWhiteSpace(item.EvidenceNote) || !string.IsNullOrWhiteSpace(item.EvidenceLink);
+            if (!hasEvidence)
+            {
+                throw new ChecklistItemEvidenceRequiredException(itemId);
+            }
         }
 
         var currentUserId = currentUserService.GetUserId();
@@ -294,6 +308,50 @@ public class EngagementChecklistService(
         return MapToDto(updated);
     }
 
+    public async Task<EngagementChecklistResponseDto> SaveItemEvidenceAsync(int engagementId, int itemId, SaveChecklistItemEvidenceRequestDto dto)
+    {
+        var item = await checklistRepository.GetItemByIdAsync(engagementId, itemId)
+            ?? throw new EngagementChecklistItemNotFoundException(itemId);
+
+        if (!item.IsApplicable)
+        {
+            throw new CannotUpdateNonApplicableItemException(itemId);
+        }
+
+        var currentUserId = currentUserService.GetUserId();
+        item.EvidenceNote = dto.Note?.Trim();
+        item.EvidenceLink = string.IsNullOrWhiteSpace(dto.Link) ? null : dto.Link.Trim();
+        item.EvidenceSubmittedAt = DateTime.UtcNow;
+        item.EvidenceSubmittedById = currentUserId;
+        item.UpdatedAt = DateTime.UtcNow;
+        item.UpdatedBy = currentUserId.ToString();
+
+        if (dto.MarkComplete == true && item.Status != MasterChecklistConstants.ItemStatuses.Blocked)
+        {
+            item.Status = MasterChecklistConstants.ItemStatuses.Complete;
+        }
+
+        await checklistRepository.SaveChangesAsync();
+        await riskService.SyncAutoCreatedRisksAsync(engagementId);
+
+        await auditLogService.LogAsync(
+            AuditActionEnum.ChecklistItemEvidenceUpdated,
+            new Dictionary<string, object?>
+            {
+                ["EngagementId"] = engagementId,
+                ["ChecklistItemId"] = item.Id,
+                ["ActorUserId"] = currentUserId
+            },
+            engagementId: engagementId);
+
+        logger.LogInformation("Saved evidence for checklist item {ItemId} on engagement {EngagementId} by user {UserId}", itemId, engagementId, currentUserId);
+
+        var updated = await checklistRepository.GetByEngagementIdAsync(engagementId)
+            ?? throw new InvalidOperationException("Failed to retrieve updated checklist.");
+
+        return MapToDto(updated);
+    }
+
     private async Task EnsureUserBelongsToEngagementAsync(int engagementId, int personId)
     {
         var isAssigned = await dbContext.EngagementAssignments
@@ -351,7 +409,13 @@ public class EngagementChecklistService(
                      i.ExemptionRejectionReason,
                      i.OwnerId,
                      i.Owner != null ? i.Owner.FullName : null,
-                     i.BlockReason))
+                     i.BlockReason,
+                     i.EvidenceRequired,
+                     i.EvidenceNote,
+                     i.EvidenceLink,
+                     i.EvidenceSubmittedAt,
+                     i.EvidenceSubmittedById,
+                     i.EvidenceSubmittedBy != null ? i.EvidenceSubmittedBy.FullName : null))
                  .ToList()))
             .ToList();
 

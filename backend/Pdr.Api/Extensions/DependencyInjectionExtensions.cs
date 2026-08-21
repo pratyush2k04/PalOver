@@ -70,6 +70,8 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IKickoffRepository, KickoffRepository>();
         services.AddScoped<IKickoffService, KickoffService>();
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IBlockerEscalationService, BlockerEscalationService>();
+        services.AddHostedService<BlockerEscalationBackgroundService>();
         services.AddScoped<IAuditLogService, AuditLogService>();
         services.AddScoped<IArchitectureValidationService, ArchitectureValidationService>();
         services.AddScoped<ISearchService, SearchService>();

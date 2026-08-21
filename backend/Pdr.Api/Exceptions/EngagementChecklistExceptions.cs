@@ -26,3 +26,6 @@ public class CannotUpdateBlockedItemException(int itemId)
 
 public class ItemNotBlockedException(int itemId)
     : AppException(MasterChecklistConstants.Messages.ItemNotBlocked(itemId), StatusCodes.Status400BadRequest);
+
+public class ChecklistItemEvidenceRequiredException(int itemId)
+    : AppException(MasterChecklistConstants.Messages.EvidenceRequiredToComplete(itemId), StatusCodes.Status400BadRequest);

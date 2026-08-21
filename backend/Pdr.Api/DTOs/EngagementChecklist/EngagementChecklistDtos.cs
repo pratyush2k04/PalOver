@@ -44,7 +44,19 @@ public record EngagementChecklistItemDto(
     string? ExemptionRejectionReason,
     int? OwnerId,
     string? OwnerName,
-    string? BlockReason
+    string? BlockReason,
+    bool EvidenceRequired,
+    string? EvidenceNote,
+    string? EvidenceLink,
+    DateTime? EvidenceSubmittedAt,
+    int? EvidenceSubmittedById,
+    string? EvidenceSubmittedByName
+);
+
+public record SaveChecklistItemEvidenceRequestDto(
+    string Note,
+    string? Link,
+    bool? MarkComplete = false
 );
 
 public record UpdateItemStatusRequestDto(
