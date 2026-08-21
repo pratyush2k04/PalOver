@@ -85,8 +85,8 @@ export const ENGAGEMENTS_ROUTES: Routes = [
       {
         path: ENGAGEMENT_ROUTES.ASSUMPTIONS,
         loadComponent: () =>
-          import('./engagement-workspace/assumptions-and-decisions/components/assumptions/assumptions.component').then(
-            (m) => m.AssumptionsComponent
+          import('./engagement-workspace/assumptions-and-decisions/assumptions-and-decisions.component').then(
+            (m) => m.AssumptionsAndDecisionsComponent
           ),
       },
       {
