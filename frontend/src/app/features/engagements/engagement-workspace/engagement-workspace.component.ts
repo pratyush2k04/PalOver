@@ -11,6 +11,7 @@ import { ToastService } from '@common/services/toast/toast';
 import { ENGAGEMENT_WORKSPACE_CONFIG } from '@shared/constants/engagements.constants';
 import { USER_ROLES } from '@shared/constants/users.constants';
 import { DayOneSignOffRequest, EngagementInfoDto, EngagementOwners } from '../models/engagement.model';
+import { ENGAGEMENT_ROUTES } from '@shared/constants/routes.constants';
 import { TabItem, TabsComponent } from '@common/components/tabs/tabs';
 import { ReadinessCircleComponent } from '@shared/readiness-circle/readiness-circle';
 import { ButtonComponent } from '@common/components/button/button';
@@ -78,9 +79,16 @@ export class EngagementWorkspaceComponent {
     );
   });
 
-  readonly tabs = signal<TabItem[]>(
-    ENGAGEMENT_WORKSPACE_CONFIG.DEFAULT_TABS.map((tab) => ({ id: tab.route, ...tab }))
-  );
+  readonly tabs = computed<TabItem[]>(() => {
+    const isSignedOff = !!this.engagement()?.dayOneSignOff;
+    return ENGAGEMENT_WORKSPACE_CONFIG.DEFAULT_TABS.map((tab) => {
+      let enabled = tab.enabled;
+      if (tab.route === ENGAGEMENT_ROUTES.SIGN_OFF) {
+        enabled = isSignedOff;
+      }
+      return { id: tab.route, ...tab, enabled };
+    });
+  });
 
   readonly currentUrl = toSignal(
     this.router.events.pipe(

@@ -74,7 +74,7 @@
           @if (isAuthorizedForSignOff()) {
             <app-button
               variant="flat"
-              [disabled]="!engagement()!.isKickoffReady && !isLeadership()"
+              [disabled]="!isFullyReady()"
               (click)="openSignOffDialog()">
               Sign Off Day-1
             </app-button>
