@@ -184,51 +184,53 @@ export class AccessTrackerComponent {
     });
   }
 
-  getStatusBadgeClass(status: string): string {
-    switch (status) {
-      case 'Granted':
-      case '2':
-        return 'badge-granted';
-      case 'Blocked':
-      case '3':
-        return 'badge-blocked';
-      default:
-        return 'badge-inprogress';
+  getStatusNumericValue(status: AccessItemStatus | string | number): AccessItemStatus {
+    if (status === AccessItemStatus.Granted || status === 'Granted' || +status === AccessItemStatus.Granted) {
+      return AccessItemStatus.Granted;
     }
+    if (status === AccessItemStatus.Blocked || status === 'Blocked' || +status === AccessItemStatus.Blocked) {
+      return AccessItemStatus.Blocked;
+    }
+    return AccessItemStatus.InProgress;
   }
 
-  getStatusTone(status: string): StatusBadgeTone {
-    switch (status) {
-      case 'Granted':
-      case '2':
-        return 'success';
-      case 'Blocked':
-      case '3':
-        return 'danger';
-      default:
-        return 'info';
-    }
-  }
-
-  getStatusLabel(status: string): string {
-    switch (status) {
-      case 'Granted':
-      case '2':
+  getStatusLabel(status: AccessItemStatus | string | number): string {
+    const num = this.getStatusNumericValue(status);
+    switch (num) {
+      case AccessItemStatus.Granted:
         return 'Granted';
-      case 'Blocked':
-      case '3':
+      case AccessItemStatus.Blocked:
         return 'Blocked';
-      case 'InProgress':
-      case '1':
+      case AccessItemStatus.InProgress:
       default:
         return 'In Progress';
     }
   }
 
-  getStatusNumericValue(status: string): number {
-    if (status === 'Granted' || status === '2') return AccessItemStatus.Granted;
-    if (status === 'Blocked' || status === '3') return AccessItemStatus.Blocked;
-    return AccessItemStatus.InProgress;
+  getStatusTone(status: AccessItemStatus | string | number): StatusBadgeTone {
+    const num = this.getStatusNumericValue(status);
+    switch (num) {
+      case AccessItemStatus.Granted:
+        return 'success';
+      case AccessItemStatus.Blocked:
+        return 'danger';
+      case AccessItemStatus.InProgress:
+      default:
+        return 'info';
+    }
+  }
+
+  getStatusBadgeClass(status: AccessItemStatus | string | number): string {
+    const num = this.getStatusNumericValue(status);
+    switch (num) {
+      case AccessItemStatus.Granted:
+        return 'badge-granted';
+      case AccessItemStatus.Blocked:
+        return 'badge-blocked';
+      case AccessItemStatus.InProgress:
+      default:
+        return 'badge-inprogress';
+    }
   }
 
   openAddModal(): void {
