@@ -1,6 +1,5 @@
 <div class="handover-container" *ngIf="!isLoading()">
-  <div class="header">
-    <h2>Pre-Sales to Delivery Handover</h2>
+  <app-section-header title="Pre-Sales to Delivery Handover">
     <div class="header-status-group">
       <div class="status-report" [ngClass]="{'submitted': isSubmitted(), 'draft': !isSubmitted()}">
         <span class="status-report-dot"></span>
@@ -9,7 +8,7 @@
       <app-button *ngIf="isPreSales()" variant="stroked" [disabled]="isSaving() || isSubmitted()" (click)="saveDraft()">Save Draft</app-button>
       <app-button variant="flat" [disabled]="isSaving() || isSubmitted()" (click)="submitHandover()">Submit Handover</app-button>
     </div>
-  </div>
+  </app-section-header>
 
   <app-alert *ngIf="message()" [variant]="isError() ? 'danger' : 'neutral'">
     {{ message() }}
