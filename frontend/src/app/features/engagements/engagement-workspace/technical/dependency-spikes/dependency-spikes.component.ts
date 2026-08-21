@@ -49,8 +49,7 @@ export class DependencySpikesComponent implements OnInit {
   isDeleting = signal<boolean>(false);
 
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
-  isPM = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.PROJECT_MANAGEMENT));
-  canManage = computed(() => this.isTechLead() || this.isPM());
+  canManage = computed(() => this.isTechLead());
 
   constructor() {
     effect(() => {
