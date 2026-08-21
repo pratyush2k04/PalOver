@@ -1,51 +1,50 @@
 <div class="audit-log" [class.workspace-tab]="engagementId != null">
   @if (engagementId != null) {
     <app-section-header title="Audit Log">
-      <app-button variant="stroked" (click)="exportCsv()">Export</app-button>
+      <div class="header-actions-group">
+        <app-select
+          [id]="'audit-user-select'"
+          [options]="userOptions()"
+          [(ngModel)]="filterUserId"
+          (ngModelChange)="onFilterChange()"
+        ></app-select>
+        <app-select
+          [id]="'audit-category-select'"
+          [options]="categoryOptions"
+          [(ngModel)]="filterCategory"
+          (ngModelChange)="onFilterChange()"
+        ></app-select>
+        <app-button variant="stroked" (click)="exportCsv()">Export</app-button>
+      </div>
     </app-section-header>
   } @else {
     <app-page-header
       title="Audit Log"
       description="Track system activities, access events, and administrative changes across the platform."
     >
-      <app-button variant="stroked" (click)="exportCsv()">Export</app-button>
+      <div class="header-actions-group">
+        <app-input
+          [id]="'audit-log-from-date'"
+          type="date"
+          [(ngModel)]="filterFromDate"
+          (ngModelChange)="onFilterChange()"
+        />
+        <app-input
+          [id]="'audit-log-to-date'"
+          type="date"
+          [(ngModel)]="filterToDate"
+          (ngModelChange)="onFilterChange()"
+        />
+        <app-select
+          [id]="'audit-category-select'"
+          [options]="categoryOptions"
+          [(ngModel)]="filterCategory"
+          (ngModelChange)="onFilterChange()"
+        ></app-select>
+        <app-button variant="stroked" (click)="exportCsv()">Export</app-button>
+      </div>
     </app-page-header>
   }
-
-  <div class="filter-bar">
-    @if (engagementId == null) {
-      <app-input
-        [id]="'audit-log-from-date'"
-        label="From"
-        type="date"
-        [(ngModel)]="filterFromDate"
-        (ngModelChange)="onFilterChange()"
-      />
-      <app-input
-        [id]="'audit-log-to-date'"
-        label="To"
-        type="date"
-        [(ngModel)]="filterToDate"
-        (ngModelChange)="onFilterChange()"
-      />
-    } @else {
-      <app-select
-        [id]="'audit-user-select'"
-        label="User"
-        [options]="userOptions()"
-        [(ngModel)]="filterUserId"
-        (ngModelChange)="onFilterChange()"
-      ></app-select>
-    }
-
-    <app-select
-      [id]="'audit-category-select'"
-      label="Event Type"
-      [options]="categoryOptions"
-      [(ngModel)]="filterCategory"
-      (ngModelChange)="onFilterChange()"
-    ></app-select>
-  </div>
 
   @if (errorMessage()) {
     <app-alert>{{ errorMessage() }}</app-alert>
