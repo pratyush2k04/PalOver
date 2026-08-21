@@ -1,16 +1,12 @@
 <div class="notifications-container">
-  <header class="page-header">
-    <div class="header-titles">
-      <div class="title-row">
-        <h1>Notifications</h1>
-        @if (unreadCountInCurrentView() > 0) {
-          <span class="unread-pill">{{ unreadCountInCurrentView() }} unread</span>
-        }
-      </div>
-      <p class="subtitle">View and manage system activities, task alerts, and engagement updates.</p>
-    </div>
-
-    <div class="header-actions">
+  <app-page-header
+    title="Notifications"
+    description="View and manage system activities, task alerts, and engagement updates."
+  >
+    <div class="header-actions-group">
+      @if (unreadCountInCurrentView() > 0) {
+        <app-badge [text]="unreadCountInCurrentView() + ' unread'" />
+      }
       <app-button
         variant="stroked"
         [disabled]="unreadCountInCurrentView() === 0"
@@ -19,7 +15,7 @@
         Mark all as read
       </app-button>
     </div>
-  </header>
+  </app-page-header>
 
   <!-- Filter & Controls Toolbar -->
   <div class="controls-toolbar">

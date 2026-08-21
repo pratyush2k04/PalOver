@@ -23,6 +23,8 @@ public class AppDbContext : DbContext
     public DbSet<EngagementType> EngagementTypes => Set<EngagementType>();
     public DbSet<DayOneSignOffRecord> DayOneSignOffRecords => Set<DayOneSignOffRecord>();
     
+    public DbSet<Assumption> Assumptions => Set<Assumption>();
+
     // Handover entities
     public DbSet<HandoverInfo> HandoverInfos => Set<HandoverInfo>();
     public DbSet<Commitment> Commitments => Set<Commitment>();

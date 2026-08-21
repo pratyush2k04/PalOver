@@ -1,27 +1,4 @@
 <div class="published-checklist">
-  <div class="published-checklist__header">
-    <h1>Published Checklist</h1>
-    @if (version(); as v) {
-      <app-badge [text]="'Active: v' + v.versionNumber + ', published ' + (v.updatedAt | date:'mediumDate')" />
-    }
-  </div>
-
-  <div class="published-checklist__toolbar">
-    <div class="published-checklist__field published-checklist__category">
-      <label for="category-select">Category</label>
-      <select
-        id="category-select"
-        [ngModel]="selectedCategory()"
-        (ngModelChange)="selectedCategory.set($event)"
-      >
-        <option value="all">All Categories</option>
-        @for (category of categories(); track category) {
-          <option [value]="category">{{ category }}</option>
-        }
-      </select>
-    </div>
-  </div>
-
   @if (loading()) {
     <app-loading-spinner label="Loading published checklist..." />
   } @else if (notFound()) {
@@ -29,6 +6,31 @@
   } @else if (error()) {
     <app-alert variant="danger">{{ error() }}</app-alert>
   } @else {
+    <div class="published-checklist__card">
+      <div class="published-checklist__header">
+        <div class="published-checklist__header-title">
+          <h1>Published Checklist</h1>
+          @if (version(); as v) {
+            <app-badge [text]="'Active: v' + v.versionNumber + ', published ' + (v.updatedAt | date:'mediumDate')" />
+          }
+        </div>
+
+        <div class="published-checklist__toolbar">
+          <div class="published-checklist__field published-checklist__category">
+            <label for="category-select">Category</label>
+            <select
+              id="category-select"
+              [ngModel]="selectedCategory()"
+              (ngModelChange)="selectedCategory.set($event)"
+            >
+              <option value="all">All Categories</option>
+              @for (category of categories(); track category) {
+                <option [value]="category">{{ category }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      </div>
     <div class="checklist-container">
       @for (category of groupedCategories(); track category.categoryId) {
         <div class="category-card">
@@ -111,5 +113,6 @@
         </div>
       }
     </div>
-  }
+  </div>
+}
 </div>

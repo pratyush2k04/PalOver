@@ -1,10 +1,8 @@
 <div class="workspace-container">
-  <div class="workspace-header">
-    <div class="header-info">
-      <h1>Master Checklist</h1>
-      <p>Manage the central checklist template for all engagements.</p>
-    </div>
-  </div>
+  <app-page-header
+    title="Master Checklist"
+    description="Manage the central checklist template for all engagements."
+  />
 
   <app-tabs [tabs]="tabs()" [activeId]="activeTabId()" />
 

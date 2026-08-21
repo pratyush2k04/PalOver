@@ -12,7 +12,7 @@
     placeholder="Outcomes and notes..."
     [ngModel]="outcomes()"
     (ngModelChange)="outcomes.set($event)"
-    (blur)="saveOutcomes()"
+    (focusout)="saveOutcomes()"
     [disabled]="!isProjectManager()"
   />
 

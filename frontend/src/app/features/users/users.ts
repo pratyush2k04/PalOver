@@ -15,6 +15,7 @@ import { PaginatorComponent } from '@common/components/paginator/paginator';
 import { InputComponent } from '@common/components/form/input/input';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
+import { PageHeaderComponent } from '@common/components/page-header/page-header';
 
 interface PendingRoleChange {
   user: UserListItem;
@@ -36,7 +37,8 @@ interface PendingRoleChange {
     PaginatorComponent,
     InputComponent,
     SelectComponent,
-    EmptyStateComponent
+    EmptyStateComponent,
+    PageHeaderComponent
   ],
   templateUrl: './users.html',
   styleUrl: './users.scss'

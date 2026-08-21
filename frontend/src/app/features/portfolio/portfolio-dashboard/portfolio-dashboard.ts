@@ -18,6 +18,7 @@ import { EmptyStateComponent } from '@common/components/empty-state/empty-state'
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { BadgeComponent } from '@common/components/badge/badge';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
+import { PageHeaderComponent } from '@common/components/page-header/page-header';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 
 @Component({
@@ -32,6 +33,7 @@ import { SelectComponent, SelectOption } from '@common/components/form/select/se
     StatusBadgeComponent,
     BadgeComponent,
     LoadingSpinnerComponent,
+    PageHeaderComponent,
     SelectComponent
   ],
   templateUrl: './portfolio-dashboard.html',

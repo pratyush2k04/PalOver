@@ -164,9 +164,10 @@ export const routes: Routes = [
             (m) => m.NOTIFICATION_FULLPAGE_ROUTES,
           ),
       },
-      // Audit Log (own entries for all users; Leadership/Admin see everyone's)
+      // Audit Log (Admin only)
       {
         path: AUDIT_LOG_ROUTES.BASE,
+        canActivate: [adminGuard],
         loadChildren: () =>
           import('./features/audit-log/audit-log.routes').then((m) => m.AUDIT_LOG_ROUTE),
       },
