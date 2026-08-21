@@ -139,8 +139,8 @@
                             }
 
                             @if (item.status !== 'Blocked') {
-                              <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openBlockDialog(item)" title="Flag as Blocked">
-                                🚩
+                              <app-button type="button" variant="icon" class="btn-flag-icon" [disabled]="isUpdating()" (click)="openBlockDialog(item)" title="Flag as Blocked">
+                                <span [inlineSVG]="'assets/icons/flag.svg'"></span>
                               </app-button>
                             }
                           }
@@ -148,7 +148,7 @@
                           <!-- Applicability Actions (PM only) -->
                           @if (canChangeApplicability() && item.exemptionStatus !== 'Pending') {
                             <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openMarkNaDialog(item)" title="Mark Not Applicable">
-                              ✕
+                              <span [inlineSVG]="'assets/icons/close.svg'"></span>
                             </app-button>
                           }
 

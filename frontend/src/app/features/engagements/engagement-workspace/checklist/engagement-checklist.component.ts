@@ -6,6 +6,7 @@ import { AuthService } from '@shared/services/auth';
 import { EngagementChecklistService } from '@features/engagements/services/engagement-checklist.service';
 import { EngagementChecklist, EngagementChecklistItem } from '../../models/engagement-checklist.model';
 import { ENGAGEMENT_CHECKLIST_MESSAGES } from '@shared/constants/engagements.constants';
+import { USER_ROLES } from '@shared/constants/app.constants';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
@@ -13,6 +14,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { SectionHeaderComponent } from '@common/components/section-header/section-header';
 import { CommunicationCadenceService } from '@features/engagements/services/communication-cadence.service';
 import { EngagementParticipant } from '@features/engagements/models/cadence.model';
+import { InlineSVGModule } from 'ng-inline-svg-2';
 import {
   MarkNaDialogComponent,
   MarkNaDialogData,
@@ -32,7 +34,7 @@ import {
 @Component({
   selector: 'app-engagement-checklist',
   standalone: true,
-  imports: [CommonModule, LoadingSpinnerComponent, StatusBadgeComponent, ButtonComponent, SectionHeaderComponent],
+  imports: [CommonModule, InlineSVGModule, LoadingSpinnerComponent, StatusBadgeComponent, ButtonComponent, SectionHeaderComponent],
   templateUrl: './engagement-checklist.component.html',
   styleUrl: './engagement-checklist.component.scss'
 })
@@ -57,13 +59,13 @@ export class EngagementChecklistComponent {
   assignedUsers = signal<EngagementParticipant[]>([]);
 
   // Role permissions
-  isProjectManager = computed(() => this.authService.hasRole('Project Management') || this.authService.isAdmin());
-  isLeadership = computed(() => this.authService.hasRole('Leadership') || this.authService.isAdmin());
-  isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
-  isTechLead = computed(() => this.authService.hasRole('Tech Lead'));
+  isProjectManager = computed(() => this.authService.hasRole(USER_ROLES.PROJECT_MANAGEMENT) || this.authService.isAdmin());
+  isLeadership = computed(() => this.authService.hasRole(USER_ROLES.LEADERSHIP) || this.authService.isAdmin());
+  isPreSales = computed(() => this.authService.hasRole(USER_ROLES.PRE_SALES));
+  isTechLead = computed(() => this.authService.hasRole(USER_ROLES.TECH_LEAD));
 
-  canToggleStatus = computed(() => this.isProjectManager() || this.isTechLead());
-  canChangeApplicability = computed(() => this.isProjectManager());
+  canToggleStatus = computed(() => this.isProjectManager() || this.isTechLead() || this.isPreSales() || this.authService.isAdmin());
+  canChangeApplicability = computed(() => this.isProjectManager() || this.isTechLead() || this.authService.isAdmin());
   canPerformAnyAction = computed(() => this.canToggleStatus() || this.canChangeApplicability() || this.isLeadership());
 
   notApplicableItems = computed(() => {

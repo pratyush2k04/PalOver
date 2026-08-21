@@ -160,7 +160,6 @@
       <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <h3>{{ isEditMode() ? 'Edit Risk' : 'Record New Risk' }}</h3>
-          <button type="button" class="close-btn" (click)="closeFormModal()">&times;</button>
         </div>
 
         <form [formGroup]="riskForm" (ngSubmit)="saveRisk()">
@@ -251,7 +250,6 @@
       <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <h3>Close Risk: {{ closingRisk()?.title }}</h3>
-          <button type="button" class="close-btn" (click)="closeCloseModal()">&times;</button>
         </div>
 
         <form [formGroup]="closeForm" (ngSubmit)="submitCloseRisk()">
