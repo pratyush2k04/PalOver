@@ -23,6 +23,8 @@ public class AppDbContext : DbContext
     public DbSet<EngagementType> EngagementTypes => Set<EngagementType>();
     public DbSet<DayOneSignOffRecord> DayOneSignOffRecords => Set<DayOneSignOffRecord>();
     
+    public DbSet<Assumption> Assumptions => Set<Assumption>();
+
     // Handover entities
     public DbSet<HandoverInfo> HandoverInfos => Set<HandoverInfo>();
     public DbSet<Commitment> Commitments => Set<Commitment>();
@@ -73,6 +75,8 @@ public class AppDbContext : DbContext
     public DbSet<Models.ArchitectureValidation.DiscoveryFeatureItem> DiscoveryFeatureItems => Set<Models.ArchitectureValidation.DiscoveryFeatureItem>();
     public DbSet<Pdr.Api.Models.ChangeRequest.ChangeRequest> ChangeRequests => Set<Pdr.Api.Models.ChangeRequest.ChangeRequest>();
     public DbSet<Risk> Risks => Set<Risk>();
+    public DbSet<RiskEscalationHistory> RiskEscalationHistories => Set<RiskEscalationHistory>();
+   
     public DbSet<RiskComment> RiskComments => Set<RiskComment>();
 
 

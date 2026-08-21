@@ -153,6 +153,32 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             },
             new NotificationTemplate
             {
+                Id = 16,
+                Key = NotificationConstants.TemplateKeys.BlockerEscalatedPM,
+                Title = "Escalation: {EngagementName}",
+                Body = "{ItemTitle} blocked {UnresolvedDays} days — now at PM level.",
+                DefaultPriority = NotificationPriority.High,
+                LinkPattern = "/engagements/{EngagementId}/workspace/risks",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 17,
+                Key = NotificationConstants.TemplateKeys.BlockerEscalatedLeadership,
+                Title = "Escalation: {EngagementName}",
+                Body = "{ItemTitle} blocked {UnresolvedDays} days — now at Leadership level.",
+                DefaultPriority = NotificationPriority.High,
+                LinkPattern = "/engagements/{EngagementId}/workspace/risks",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            },
+            new NotificationTemplate
+            {
                 Id = 5,
                 Key = "ResourceRequestConfirmed",
                 Title = "Resource Request Confirmed — {EngagementName}",
