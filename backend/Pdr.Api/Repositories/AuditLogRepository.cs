@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
 using Pdr.Api.Models.Audit;
 using Pdr.Api.Repositories.Interfaces;
+using Pdr.Api.DTOs.Common;
 
 namespace Pdr.Api.Repositories;
 
@@ -56,5 +57,22 @@ public class AuditLogRepository(AppDbContext context) : IAuditLogRepository
             .ToListAsync();
 
         return (items, totalCount);
+    }
+
+    public async Task<List<SimpleUserDto>> GetEngagementAuditUsersAsync(int engagementId)
+    {
+        return await context.AuditLogs
+            .AsNoTracking()
+            .Include(x => x.User)
+            .Where(x => x.EngagementId == engagementId)
+            .Select(x => x.User)
+            .Distinct()
+            .Select(u => new SimpleUserDto
+            {
+                Id = u.Id,
+                Name = u.FirstName + " " + u.LastName
+            })
+            .OrderBy(u => u.Name)
+            .ToListAsync();
     }
 }

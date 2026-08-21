@@ -32,4 +32,18 @@ public class EngagementAuditsController(IAuditLogService auditLogService) : Cont
         var result = await auditLogService.GetEngagementAuditLogsAsync(engagementId, page, pageSize, userId, categories);
         return Ok(result);
     }
+
+    /// <summary>
+    /// Retrieves a list of distinct users who have an entry in the audit log for a specific engagement.
+    /// This list only includes users that performed actions the current user is authorized to view.
+    /// </summary>
+    /// <param name="engagementId">The engagement ID.</param>
+    [HttpGet("users")]
+    [ProducesResponseType(typeof(List<SimpleUserDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetEngagementAuditUsers([FromQuery] int engagementId)
+    {
+        var result = await auditLogService.GetEngagementAuditUsersAsync(engagementId);
+        return Ok(result);
+    }
 }

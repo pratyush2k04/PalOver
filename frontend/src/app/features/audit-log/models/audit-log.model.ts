@@ -40,6 +40,11 @@ export interface EngagementAuditLogDto {
 
 export type AuditCategory = 'Document' | 'Checklist' | 'Risk' | 'Access' | 'Handover' | 'Escalation';
 
+export interface SimpleUserDto {
+  id: number;
+  name: string;
+}
+
 export interface AuditLogFilters {
   search: string;
   fromDate: string | null;

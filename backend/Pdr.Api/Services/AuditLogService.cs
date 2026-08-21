@@ -103,6 +103,11 @@ public class AuditLogService(
         };
     }
 
+    public async Task<List<SimpleUserDto>> GetEngagementAuditUsersAsync(int engagementId)
+    {
+        return await repository.GetEngagementAuditUsersAsync(engagementId);
+    }
+
     private async Task<AuditLogDto> MapToDtoAsync(AuditLog auditLog)
     {
         var actionKey = auditLog.AuditAction?.Action ?? string.Empty;

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuditLogService } from './services/audit-log.service';
-import { AuditLogDto, AuditLogFilters, EngagementAuditLogDto, AuditCategory } from './models/audit-log.model';
+import { AuditLogDto, AuditLogFilters, EngagementAuditLogDto, AuditCategory, SimpleUserDto } from './models/audit-log.model';
 import { AUDIT_LOG_MESSAGES, USER_ROLES } from '@shared/constants/app.constants';
 import { AuthService } from '@shared/services/auth';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
@@ -50,6 +50,8 @@ export class AuditLogComponent implements OnInit {
   
   filterUserId: number | null = null;
   filterCategories: AuditCategory[] = [];
+  
+  availableUsers = signal<SimpleUserDto[]>([]);
 
   page = signal(1);
   readonly pageSize = 20;
@@ -62,8 +64,9 @@ export class AuditLogComponent implements OnInit {
   
   ngOnInit(): void {
     if (this.engagementId != null) {
-      // Don't auto-set dates for backend filtered view unless needed by business logic
-      // Removing the 30-day default for engagement as backend doesn't filter by date yet
+      this.auditLogService.getEngagementAuditUsers(this.engagementId).subscribe({
+        next: (users) => this.availableUsers.set(users)
+      });
     }
     this.loadPage();
   }

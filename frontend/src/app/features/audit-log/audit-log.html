@@ -31,10 +31,18 @@
         (ngModelChange)="onFilterChange()"
       />
     } @else {
-      <!-- Engagement specific filters -->
-      <!-- Add User select if possible. For now, numeric ID input as placeholder if we don't have user list. -->
-      <!-- Wait, the plan says dropdowns for user. Does the component have a list of users? No, it doesn't. 
-           I will just add category dropdown for now, since categories are known enums. -->
+      <app-select
+        [id]="'audit-user-select'"
+        label="User"
+        [(ngModel)]="filterUserId"
+        (ngModelChange)="onFilterChange()"
+      >
+        <option [ngValue]="null">All Users</option>
+        @for (user of availableUsers(); track user.id) {
+          <option [ngValue]="user.id">{{ user.name }}</option>
+        }
+      </app-select>
+
       <app-select
         [id]="'audit-category-select'"
         label="Event Type"
