@@ -12,7 +12,20 @@
   margin: $spacing-6;
   color: $color-danger;
 
-  .error-icon { font-size: $font-size-xl; }
+  .error-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    ::ng-deep svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      stroke: $color-danger;
+    }
+  }
   p { margin: 0; font-size: $font-size-sm; }
 }
 
@@ -143,18 +156,30 @@
     background: $color-danger-bg;
     border: 1px solid $color-danger-border;
     border-left: 5px solid $color-danger;
+
+    .callout-icon ::ng-deep svg {
+      stroke: $color-danger;
+    }
   }
 
   &.callout-success {
     background: $color-success-bg;
     border: 1px solid $color-success-border;
     border-left: 5px solid $color-success;
+
+    .callout-icon ::ng-deep svg {
+      stroke: $color-success;
+    }
   }
 
   &.callout-exemption {
     background: $color-warning-bg;
     border: 1px solid $color-warning-border;
     border-left: 5px solid $color-warning;
+
+    .callout-icon ::ng-deep svg {
+      stroke: $color-warning;
+    }
 
     .callout-text {
       color: $color-warning-text;
@@ -163,9 +188,18 @@
 }
 
 .callout-icon {
-  font-size: $font-size-base;
+  width: 1.25rem;
+  height: 1.25rem;
   flex-shrink: 0;
-  line-height: 1.4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+
+  ::ng-deep svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 }
 
 .callout-body {

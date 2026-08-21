@@ -6,7 +6,7 @@
 <!-- Error State -->
 @if (!isLoading() && error()) {
   <div class="checklist-error">
-    <span class="error-icon">⚠</span>
+    <span class="error-icon" [inlineSVG]="'assets/icons/alert-circle.svg'"></span>
     <p>{{ error() }}</p>
   </div>
 }
@@ -30,7 +30,7 @@
     <!-- Pending Exemption Requests Callout -->
     @if (checklist()!.pendingExemptionsCount > 0) {
       <div class="callout callout-gate callout-exemption">
-        <div class="callout-icon">⚖️</div>
+        <span class="callout-icon" [inlineSVG]="'assets/icons/clock.svg'"></span>
         <div class="callout-body">
           <h2 class="callout-headline exemption-headline">
             {{ checklist()!.pendingExemptionsCount === 1 ? '1 Exemption Request Pending Leadership Review' : checklist()!.pendingExemptionsCount + ' Exemption Requests Pending Leadership Review' }}
@@ -49,7 +49,7 @@
     <!-- Kickoff Readiness Gate Callout -->
     @if (checklist()!.incompleteMandatoryItems.length > 0) {
       <div class="callout callout-gate callout-warning">
-        <div class="callout-icon">🚩</div>
+        <span class="callout-icon" [inlineSVG]="'assets/icons/alert-circle.svg'"></span>
         <div class="callout-body">
           <h2 class="callout-headline">Clear these to go kickoff-ready</h2>
           <ul class="gate-incomplete-list">
@@ -65,7 +65,7 @@
       </div>
     } @else {
       <div class="callout callout-gate callout-success">
-        <div class="callout-icon">🎉</div>
+        <span class="callout-icon" [inlineSVG]="'assets/icons/check-circle.svg'"></span>
         <div class="callout-body">
           <h2 class="callout-headline success-headline">All mandatory items completed!</h2>
           <p class="callout-text">This engagement has satisfied all mandatory kickoff readiness criteria.</p>

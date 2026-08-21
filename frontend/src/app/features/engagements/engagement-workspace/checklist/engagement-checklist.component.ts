@@ -34,10 +34,12 @@ import {
   AttachEvidenceDialogResult
 } from './dialogs/attach-evidence-dialog/attach-evidence-dialog.component';
 
+import { InlineSVGModule } from 'ng-inline-svg-2';
+
 @Component({
   selector: 'app-engagement-checklist',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, StatusBadgeComponent, ButtonComponent],
+  imports: [CommonModule, FormsModule, InlineSVGModule, LoadingSpinnerComponent, StatusBadgeComponent, ButtonComponent],
   templateUrl: './engagement-checklist.component.html',
   styleUrl: './engagement-checklist.component.scss'
 })
