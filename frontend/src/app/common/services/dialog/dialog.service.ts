@@ -53,7 +53,7 @@ export class DialogService {
     backdrop.addEventListener('click', onBackdropClick);
 
     const onKeydown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !config.disableClose) {
+      if (event.key === 'Escape' ) {
         dialogRef.close();
       }
     };
