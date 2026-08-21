@@ -27,6 +27,12 @@ export interface EngagementChecklistItem {
   ownerId: number | null;
   ownerName: string | null;
   blockReason: string | null;
+  evidenceRequired: boolean;
+  evidenceNote: string | null;
+  evidenceLink: string | null;
+  evidenceSubmittedAt: string | null;
+  evidenceSubmittedById: number | null;
+  evidenceSubmittedByName: string | null;
 }
 
 export interface EngagementChecklistCategoryGroup {
@@ -66,4 +72,10 @@ export interface UpdateItemOwnerRequest {
 export interface BlockChecklistItemRequest {
   reason: string;
   personId: number;
+}
+
+export interface SaveChecklistItemEvidenceRequest {
+  note: string;
+  link?: string;
+  markComplete?: boolean;
 }
