@@ -6,6 +6,6 @@ public class CreateDependencyDto
 {
     public string Description { get; set; } = string.Empty;
     public DependencyType Type { get; set; }
-    public int? OwnerId { get; set; }
+    public int OwnerId { get; set; }
     public DateTime NeededByDate { get; set; }
 }
