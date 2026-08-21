@@ -44,12 +44,6 @@ namespace Pdr.Api.Migrations
                 type: "integer",
                 nullable: true);
 
-            migrationBuilder.AddColumn<int>(
-                name: "EngagementId",
-                table: "audit_logs",
-                type: "integer",
-                nullable: true);
-
             migrationBuilder.InsertData(
                 table: "audit_actions",
                 columns: new[] { "Id", "Action", "Details" },
@@ -340,11 +334,6 @@ namespace Pdr.Api.Migrations
                 table: "engagement_checklist_items",
                 column: "evidence_submitted_by_id");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_audit_logs_EngagementId",
-                table: "audit_logs",
-                column: "EngagementId");
-
             migrationBuilder.AddForeignKey(
                 name: "FK_engagement_checklist_items_users_evidence_submitted_by_id",
                 table: "engagement_checklist_items",
@@ -364,10 +353,6 @@ namespace Pdr.Api.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_engagement_checklist_items_evidence_submitted_by_id",
                 table: "engagement_checklist_items");
-
-            migrationBuilder.DropIndex(
-                name: "IX_audit_logs_EngagementId",
-                table: "audit_logs");
 
             migrationBuilder.DeleteData(
                 table: "audit_actions",
@@ -393,10 +378,6 @@ namespace Pdr.Api.Migrations
             migrationBuilder.DropColumn(
                 name: "evidence_submitted_by_id",
                 table: "engagement_checklist_items");
-
-            migrationBuilder.DropColumn(
-                name: "EngagementId",
-                table: "audit_logs");
         }
     }
 }
