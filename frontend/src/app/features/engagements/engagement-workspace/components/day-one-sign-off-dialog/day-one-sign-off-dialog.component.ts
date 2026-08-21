@@ -105,8 +105,9 @@ export class DayOneSignOffDialogComponent {
         this.toastService.success('Day-1 successfully signed off!');
         this.dialogRef.close(true);
       },
-      error: () => {
+      error: (err) => {
         this.isBusy.set(false);
+        this.toastService.error(err.error?.message || 'Failed to sign off Day-1 readiness.');
       }
     });
   }
