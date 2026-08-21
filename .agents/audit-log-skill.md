@@ -76,7 +76,17 @@ Add a matching entry to `EngagementAuditActionVisibilityRegistry.Entries`:
 
 If the action is *not* engagement-scoped content (e.g. an account-level action like `UserLoggedIn`), use `VisibleToRoles: null` instead — this is what signals "not engagement content, the role-matrix doesn't apply." For an engagement-scoped action, explicitly list all the `RoleEnum` values that are allowed to see it. If everyone can see it, use the `AllRoles` array constant. The `AuditLogService` actively enforces these matrix rules on the engagement audits endpoint. Admins will naturally bypass these restrictions automatically.
 
-Once you've added the enum value, seed row, mapper, and visibility registry entry, generate a migration (this is schema-layer work):
+**You also need to assign a category to the new action.** Every action must belong to an `AuditCategoryEnum` (e.g., `Document`, `Checklist`, `Access`, `Escalation`, `Handover`, `ResourceAllocation`, `TechnicalReadiness`). This category drives filtering on both the global and engagement views.
+
+**File:** `Pdr.Api/Models/Audit/AuditActionCategoryRegistry.cs`
+
+Add a matching entry to `AuditActionCategoryRegistry.Entries`:
+
+```csharp
+[AuditActionEnum.EngagementArchived] = AuditCategoryEnum.Document,
+```
+
+Once you've added the enum value, seed row, mapper, visibility registry entry, and category assignment, generate a migration (this is schema-layer work):
 
 ```bash
 dotnet ef migrations add Add<YourActionName>AuditAction
@@ -218,7 +228,7 @@ There is nothing to add here for a new action type — as soon as your mapper is
 | I want to... | Then do this |
 |---|---|
 | Log an event using an **existing** action type | Inject `IAuditLogService`, call `LogAsync(existingEnumValue, idPayloadDict)`. Nothing else. |
-| Introduce a **brand-new** action type | Add an enum value to `AuditActionEnum`, seed a matching row in `AuditActionConfiguration`, add an `IAuditTemplateMapper` implementation and register it in `AuditMapperRegistry`, **declare its engagement-scope and role visibility in `EngagementAuditActionVisibilityRegistry`**, generate a migration, then call `LogAsync` as above. **Also add the matching value to the frontend's `AuditAction` type** (see below). |
+| Introduce a **brand-new** action type | Add an enum value to `AuditActionEnum`, seed a matching row in `AuditActionConfiguration`, add an `IAuditTemplateMapper` implementation and register it in `AuditMapperRegistry`, declare its engagement-scope and role visibility in `EngagementAuditActionVisibilityRegistry`, **assign a category in `AuditActionCategoryRegistry`**, generate a migration, then call `LogAsync` as above. **Also add the matching value to the frontend's `AuditAction` type and `actionCategoryMap`** (see below). |
 | Read/display the global audit log | Nothing to build — `GET /api/audit-logs` already exists; every authenticated user can call it, scoped to their own entries unless `Leadership`/`Admin`. |
 | Read/display an engagement's audit log | Nothing to build — `GET /api/engagementaudits` already exists; it efficiently scopes to a specific engagement using an indexed database column. |
 | Change who can read the full (unscoped) audit log, or which rows non-elevated users see | Edit the `isElevated`/`scopedUserId` logic in `AuditLogService.GetAuditLogsAsync`. |
@@ -234,7 +244,9 @@ The frontend mirrors this as a string literal union in `frontend/src/app/feature
 export type AuditAction = 'UserLoggedIn' | 'UserCreated' | 'UserUpdated' | 'UserDeleted';
 ```
 
-**Whenever you add a new value to `AuditActionEnum` on the backend, add the matching string literal to `AuditAction` on the frontend in the same change.** Do not model it as a numeric TS `enum` (unlike e.g. `CadenceTypeEnum`) — the wire value is always the string name, never the int.
+**Whenever you add a new value to `AuditActionEnum` on the backend, you must:**
+1. **Add the matching string literal to `AuditAction` in `audit-log.model.ts`**
+2. **Add a mapping to `actionCategoryMap` in `audit-log.ts` so it renders the correct category label.**
 
 ---
 
