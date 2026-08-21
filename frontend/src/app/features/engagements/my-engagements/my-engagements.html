@@ -1,6 +1,23 @@
 <div class="my-engagements-page">
   <app-page-header title="My Engagements" description="Track kickoff readiness and manage your assigned engagements." />
 
+  <div class="tabs-control">
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab() === 'Active'" 
+      (click)="setTab('Active')"
+    >
+      Active ({{ activeEngagementsCount() }})
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab() === 'Past'" 
+      (click)="setTab('Past')"
+    >
+      Past Engagements ({{ pastEngagementsCount() }})
+    </button>
+  </div>
+
   <div class="toolbar-row">
     @if (isPreSales()) {
       <app-engagements (engagementCreated)="loadEngagements()" />

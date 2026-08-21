@@ -16,19 +16,29 @@ public static class ApplicationInitializationExtensions
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             db.Database.Migrate();
 
-            if (!db.EngagementTypes.Any())
+            var existingTypes = db.EngagementTypes.Select(t => t.Name).ToList();
+            var missingTypes = Enum.GetValues<EngagementTypeEnum>()
+                .Select(t => t.ToString())
+                .Where(t => !existingTypes.Contains(t))
+                .Select(t => new EngagementType { Name = t })
+                .ToList();
+
+            if (missingTypes.Any())
             {
-                db.EngagementTypes.AddRange(
-                    Enum.GetValues<EngagementTypeEnum>()
-                        .Select(t => new EngagementType { Name = t.ToString() }));
+                db.EngagementTypes.AddRange(missingTypes);
                 db.SaveChanges();
             }
 
-            if (!db.EngagementStatuses.Any())
+            var existingStatuses = db.EngagementStatuses.Select(s => s.StatusName).ToList();
+            var missingStatuses = Enum.GetValues<EngagementStatusEnum>()
+                .Select(s => s.ToString())
+                .Where(s => !existingStatuses.Contains(s))
+                .Select(s => new EngagementStatus { StatusName = s })
+                .ToList();
+
+            if (missingStatuses.Any())
             {
-                db.EngagementStatuses.AddRange(
-                    Enum.GetValues<EngagementStatusEnum>()
-                        .Select(s => new EngagementStatus { StatusName = s.ToString() }));
+                db.EngagementStatuses.AddRange(missingStatuses);
                 db.SaveChanges();
             }
         }

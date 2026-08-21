@@ -21,6 +21,7 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
             .AsNoTracking()
             .Include(e => e.EngagementType)
             .Include(e => e.CommercialModel)
+            .Include(e => e.DayOneSignOffRecord)
             .Where(e => e.EngagementAssignments.Any(a => a.UserId == userId));
 
         query = sortBy switch

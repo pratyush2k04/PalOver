@@ -20,8 +20,46 @@
   align-items: center;
   justify-content: flex-end;
   gap: $spacing-4;
-  margin-top: -$spacing-8;
+  margin-top: $spacing-4;
   margin-bottom: $spacing-3;
+}
+
+.tabs-control {
+  display: flex;
+  gap: $spacing-6;
+  border-bottom: 1px solid $color-border-soft;
+  margin-bottom: $spacing-6;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: $font-size-base;
+  color: $color-text-faint;
+  padding: $spacing-3 $spacing-2;
+  cursor: pointer;
+  position: relative;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-text-muted;
+  }
+
+  &.active {
+    color: #1e3a8a; // Darker blue matching the screenshot
+    font-weight: $font-weight-medium;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background-color: $color-accent-orange;
+    }
+  }
 }
 
 .sort-control {
