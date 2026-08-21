@@ -34,10 +34,12 @@ import {
   AttachEvidenceDialogResult
 } from './dialogs/attach-evidence-dialog/attach-evidence-dialog.component';
 
+import { InlineSVGModule } from 'ng-inline-svg-2';
+
 @Component({
   selector: 'app-engagement-checklist',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, StatusBadgeComponent, ButtonComponent],
+  imports: [CommonModule, FormsModule, InlineSVGModule, LoadingSpinnerComponent, StatusBadgeComponent, ButtonComponent],
   templateUrl: './engagement-checklist.component.html',
   styleUrl: './engagement-checklist.component.scss'
 })
@@ -76,7 +78,7 @@ export class EngagementChecklistComponent {
 
   canToggleStatus = computed(() => this.isProjectManager() || this.isTechLead());
   canChangeApplicability = computed(() => this.isProjectManager());
-  canPerformAnyAction = computed(() => this.canToggleStatus() || this.canChangeApplicability());
+  canPerformAnyAction = computed(() => this.canToggleStatus() || this.canChangeApplicability() || this.isLeadership());
   canLeadershipReview = computed(() => this.isLeadership() && (this.checklist()?.pendingExemptionsCount ?? 0) > 0);
   canPerformNaAction = computed(() => this.canChangeApplicability() || this.canLeadershipReview());
 
@@ -119,7 +121,11 @@ export class EngagementChecklistComponent {
 
           // Status filter
           if (status !== 'all') {
-            if (item.status !== status) return false;
+            if (status === 'Pending') {
+              if (item.exemptionStatus !== 'Pending') return false;
+            } else if (item.status !== status) {
+              return false;
+            }
           }
 
           // Evidence filter
