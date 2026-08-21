@@ -5,6 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { AlertComponent } from '@common/components/alert/alert';
 import { BadgeComponent } from '@common/components/badge/badge';
+import { ButtonComponent } from '@common/components/button/button';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { EngagementService } from '@features/engagements/services/engagement.service';
 import { EvidenceSnapshot, EvidenceSnapshotItemStatus } from '@features/engagements/models/evidence-snapshot.model';
@@ -12,7 +13,7 @@ import { EvidenceSnapshot, EvidenceSnapshotItemStatus } from '@features/engageme
 @Component({
   selector: 'app-sign-off',
   standalone: true,
-  imports: [CommonModule, InlineSVGModule, AlertComponent, BadgeComponent, StatusBadgeComponent],
+  imports: [CommonModule, InlineSVGModule, AlertComponent, BadgeComponent, ButtonComponent, StatusBadgeComponent],
   templateUrl: './sign-off.component.html',
   styleUrl: './sign-off.component.scss'
 })

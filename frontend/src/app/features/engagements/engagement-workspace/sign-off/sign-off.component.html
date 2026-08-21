@@ -27,10 +27,10 @@
         <p class="evidence-empty">No checklist items required evidence for this engagement.</p>
       }
 
-      <button type="button" class="export-btn" (click)="exportSnapshot()">
-        <span [inlineSVG]="'assets/icons/share.svg'"></span>
+      <app-button variant="stroked" (click)="exportSnapshot()">
+        <span class="export-btn-icon" [inlineSVG]="'assets/icons/share.svg'"></span>
         Export snapshot
-      </button>
+      </app-button>
     </div>
   }
 </div>
