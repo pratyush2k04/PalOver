@@ -152,30 +152,6 @@ public class AuditActionConfiguration : IEntityTypeConfiguration<AuditAction>
                 Id = (int)AuditActionEnum.ChecklistItemEvidenceUpdated,
                 Action = AuditActionEnum.ChecklistItemEvidenceUpdated.ToString(),
                 Details = "Evidence updated for checklist item '{itemTitle}' on engagement '{engagementName}' by {actorName}"
-            },
-            new AuditAction
-            {
-                Id = (int)AuditActionEnum.DependencyCreated,
-                Action = AuditActionEnum.DependencyCreated.ToString(),
-                Details = "Dependency '{dependencyDescription}' created on engagement '{engagementName}' by {actorName}"
-            },
-            new AuditAction
-            {
-                Id = (int)AuditActionEnum.DependencyUpdated,
-                Action = AuditActionEnum.DependencyUpdated.ToString(),
-                Details = "Dependency '{dependencyDescription}' updated on engagement '{engagementName}' by {actorName}"
-            },
-            new AuditAction
-            {
-                Id = (int)AuditActionEnum.DependencyDeleted,
-                Action = AuditActionEnum.DependencyDeleted.ToString(),
-                Details = "Dependency '{dependencyDescription}' deleted on engagement '{engagementName}' by {actorName}"
-            },
-            new AuditAction
-            {
-                Id = (int)AuditActionEnum.DependencyEscalated,
-                Action = AuditActionEnum.DependencyEscalated.ToString(),
-                Details = "Dependency '{dependencyDescription}' escalated on engagement '{engagementName}' by {actorName}"
             });
     }
 }

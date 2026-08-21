@@ -463,30 +463,6 @@ namespace Pdr.Api.Migrations
                             Id = 21,
                             Action = "ChecklistItemEvidenceUpdated",
                             Details = "Evidence updated for checklist item '{itemTitle}' on engagement '{engagementName}' by {actorName}"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            Action = "DependencyCreated",
-                            Details = "Dependency '{dependencyDescription}' created on engagement '{engagementName}' by {actorName}"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            Action = "DependencyUpdated",
-                            Details = "Dependency '{dependencyDescription}' updated on engagement '{engagementName}' by {actorName}"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            Action = "DependencyDeleted",
-                            Details = "Dependency '{dependencyDescription}' deleted on engagement '{engagementName}' by {actorName}"
-                        },
-                        new
-                        {
-                            Id = 25,
-                            Action = "DependencyEscalated",
-                            Details = "Dependency '{dependencyDescription}' escalated on engagement '{engagementName}' by {actorName}"
                         });
                 });
 
