@@ -1,10 +1,16 @@
-<div class="audit-log">
-  <app-page-header
-    title="Audit Log"
-    description="Track system activities, access events, and administrative changes across the platform."
-  >
-    <app-button variant="stroked" (click)="exportCsv()">Export</app-button>
-  </app-page-header>
+<div class="audit-log" [class.workspace-tab]="engagementId != null">
+  @if (engagementId != null) {
+    <app-section-header title="Audit Log">
+      <app-button variant="stroked" (click)="exportCsv()">Export</app-button>
+    </app-section-header>
+  } @else {
+    <app-page-header
+      title="Audit Log"
+      description="Track system activities, access events, and administrative changes across the platform."
+    >
+      <app-button variant="stroked" (click)="exportCsv()">Export</app-button>
+    </app-page-header>
+  }
 
   <div class="filter-bar">
     <app-input

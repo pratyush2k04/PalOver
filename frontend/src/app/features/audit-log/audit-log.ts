@@ -13,12 +13,13 @@ import { PaginatorComponent } from '@common/components/paginator/paginator';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
 import { PageHeaderComponent } from '@common/components/page-header/page-header';
+import { SectionHeaderComponent } from '@common/components/section-header/section-header';
 import { downloadCsv } from '@shared/utils/csv.util';
 
 @Component({
   selector: 'app-audit-log',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, AlertComponent, EmptyStateComponent, PaginatorComponent, ButtonComponent, InputComponent, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, AlertComponent, EmptyStateComponent, PaginatorComponent, ButtonComponent, InputComponent, PageHeaderComponent, SectionHeaderComponent],
   templateUrl: './audit-log.html',
   styleUrl: './audit-log.scss'
 })
