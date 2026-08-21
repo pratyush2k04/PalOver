@@ -70,14 +70,6 @@ export class ArchitectureValidationComponent {
   riskSummary = computed(() => this.validation()?.riskSummary ?? null);
   isModified = computed(() => +this.selectedStatus() === ArchitectureStatus.Modified);
 
-  statusBadgeLabel = computed(() =>
-    +this.selectedStatus() === ArchitectureStatus.StillValid ? 'Complete' : 'In Progress'
-  );
-
-  statusBadgeTone = computed<StatusBadgeTone>(() =>
-    +this.selectedStatus() === ArchitectureStatus.StillValid ? 'success' : 'info'
-  );
-
   deltaBadgeTone = computed<StatusBadgeTone>(() => {
     if (this.isRiskRaised()) return 'danger';
     if (this.sizingDeltaWeeks() <= 0) return 'success';
