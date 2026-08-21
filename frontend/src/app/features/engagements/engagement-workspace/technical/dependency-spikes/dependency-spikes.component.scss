@@ -1,0 +1,190 @@
+@use '../../../../../../styles/tokens' as *;
+@use '../../../../../../styles/mixins' as *;
+
+.dependency-spikes-card {
+  background-color: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  padding: $spacing-6;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+
+    .title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+
+      h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #111827;
+        margin: 0;
+      }
+
+      .subtitle {
+        font-size: 0.8125rem;
+        color: $color-text-faint;
+      }
+    }
+
+    .action-group {
+      display: flex;
+      gap: 0.5rem;
+
+      .btn-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1rem;
+        height: 1rem;
+        margin-right: 0.375rem;
+
+        ::ng-deep svg {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+  }
+
+  .loading-container {
+    padding: 2rem;
+    text-align: center;
+    color: $color-text-faint;
+    font-size: 0.875rem;
+  }
+
+  .empty-state-wrapper {
+    padding: 1.5rem 0;
+  }
+
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+
+    .spikes-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+
+      thead {
+        background-color: #f8fafc;
+        border-bottom: 1px solid $color-border-soft;
+
+        th {
+          padding: 0.75rem 1rem;
+          text-align: left;
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: #475569;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          white-space: nowrap;
+        }
+      }
+
+      tbody {
+        tr {
+          border-bottom: 1px solid #f1f5f9;
+          transition: background-color 0.15s ease;
+
+          &:hover {
+            background-color: #f8fafc;
+          }
+
+          td {
+            padding: 0.875rem 1rem;
+            vertical-align: middle;
+            color: #1e293b;
+          }
+
+          .dependency-cell {
+            font-weight: 600;
+            color: #0f172a;
+            white-space: nowrap;
+          }
+
+          .objective-cell {
+            max-width: 280px;
+            color: #334155;
+            line-height: 1.4;
+          }
+
+          .findings-cell {
+            max-width: 320px;
+            color: #475569;
+            font-size: 0.8125rem;
+            line-height: 1.4;
+          }
+
+          .owner-cell {
+            white-space: nowrap;
+            color: #475569;
+          }
+
+          .status-cell {
+            white-space: nowrap;
+          }
+
+          .actions-cell {
+            white-space: nowrap;
+            width: 80px;
+
+            .action-buttons {
+              display: flex;
+              align-items: center;
+              gap: 0.375rem;
+
+              .action-icon-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 1.75rem;
+                height: 1.75rem;
+                border-radius: 0.25rem;
+                border: 1px solid transparent;
+                background: transparent;
+                color: #64748b;
+                cursor: pointer;
+                transition: all 0.15s ease;
+
+                &:hover {
+                  background-color: #f1f5f9;
+                  color: #0f172a;
+                }
+
+                &.delete-btn:hover {
+                  background-color: #fee2e2;
+                  color: #dc2626;
+                }
+
+                span {
+                  display: inline-flex;
+                  width: 0.875rem;
+                  height: 0.875rem;
+
+                  ::ng-deep svg {
+                    width: 100%;
+                    height: 100%;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .text-muted {
+    color: #94a3b8;
+  }
+}

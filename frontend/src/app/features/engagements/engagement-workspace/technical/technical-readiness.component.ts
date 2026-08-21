@@ -16,6 +16,7 @@ import { AccessTrackerComponent } from './access-tracker/access-tracker.componen
 import { EnvironmentToolingComponent } from './environment-tooling/environment-tooling.component';
 import { BrownfieldReviewComponent } from './brownfield-review/brownfield-review.component';
 import { ArchitectureValidationComponent } from './architecture-validation/architecture-validation.component';
+import { DependencySpikesComponent } from './dependency-spikes/dependency-spikes.component';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 
@@ -28,7 +29,8 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
     AccessTrackerComponent,
     EnvironmentToolingComponent,
     BrownfieldReviewComponent,
-    ArchitectureValidationComponent
+    ArchitectureValidationComponent,
+    DependencySpikesComponent
   ],
   templateUrl: './technical-readiness.component.html',
   styleUrl: './technical-readiness.component.scss'
@@ -48,6 +50,7 @@ export class TechnicalReadinessComponent {
   canViewEnvironmentTooling = computed(() => !this.isPreSales());
   canViewArchitectureValidation = computed(() => true);
   canViewBrownfieldReview = computed(() => !this.isPreSales() && this.isBrownfield());
+  canViewDependencySpikes = computed(() => true);
 
   engagementId = computed(() => {
     const idStr = this.parentParamMap()?.get('id');
