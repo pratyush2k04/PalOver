@@ -152,6 +152,12 @@ public class AuditActionConfiguration : IEntityTypeConfiguration<AuditAction>
                 Id = (int)AuditActionEnum.ChecklistItemEvidenceUpdated,
                 Action = AuditActionEnum.ChecklistItemEvidenceUpdated.ToString(),
                 Details = "Evidence updated for checklist item '{itemTitle}' on engagement '{engagementName}' by {actorName}"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.EvidenceSnapshotCreated,
+                Action = AuditActionEnum.EvidenceSnapshotCreated.ToString(),
+                Details = "Evidence snapshot captured for engagement '{engagementName}' at Day-1 sign-off by {actorName}"
             });
     }
 }

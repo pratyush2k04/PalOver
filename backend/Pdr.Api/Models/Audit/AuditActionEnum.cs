@@ -26,6 +26,7 @@ public enum AuditActionEnum
     DependencyCreated = 22,
     DependencyUpdated = 23,
     DependencyDeleted = 24,
-    DependencyEscalated = 25
-    
+    DependencyEscalated = 25,
+    EvidenceSnapshotCreated = 26
+
 }
