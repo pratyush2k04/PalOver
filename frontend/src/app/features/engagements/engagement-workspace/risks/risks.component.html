@@ -1,16 +1,10 @@
 <div class="risks-container">
   <!-- Header / Action Bar -->
-  <div class="risks-header">
-    <div class="header-title">
-      <h2>Risk Register</h2>
-      <p class="subtitle">Identify, track, and mitigate project risks to ensure delivery readiness.</p>
-    </div>
-    <div class="header-actions">
-      <app-button variant="flat" (click)="openCreateModal()">
-        + Record Risk
-      </app-button>
-    </div>
-  </div>
+  <app-section-header title="Risk Register">
+    <app-button variant="flat" (click)="openCreateModal()">
+      + Record Risk
+    </app-button>
+  </app-section-header>
 
   <!-- Priority Banner -->
   @if (topPriorityCount() > 0) {
