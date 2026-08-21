@@ -1,0 +1,196 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.panel-card {
+  width: 100%;
+  background: var(--surface-default, #ffffff);
+  border: 1px solid var(--border-light, #eaecf0);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100%;
+
+  .banner-alert {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background-color: #fee4e2;
+    color: #912018;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-light, #eaecf0);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    font-weight: 500;
+    font-size: 0.95rem;
+
+    &.danger {
+      background-color: #fef2f2;
+      color: #991b1b;
+    }
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    background-color: var(--color-header-bg, #f8f9fb);
+    border-bottom: 1px solid var(--border-light, #eaecf0);
+
+    .title-section {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      
+      h2 {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary, #101828);
+        letter-spacing: -0.3px;
+      }
+    }
+
+    .btn-add {
+      ::ng-deep button {
+        background-color: #eff6ff !important;
+        border-color: #bfdbfe !important;
+        color: #1d4ed8 !important;
+        &:hover { background-color: #dbeafe !important; }
+      }
+    }
+  }
+
+  .panel-content {
+    padding: 0;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .list-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .list-item {
+    display: flex;
+    flex-direction: row; 
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-light, #eaecf0);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    &:hover {
+      background-color: var(--surface-hover, #f9fafb);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    .item-main {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+
+      .item-text {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+
+        .description {
+          font-size: 0.95rem;
+          color: var(--text-primary, #101828);
+          font-weight: 600;
+        }
+
+        .type-badge {
+          font-size: 0.75rem;
+          background: #f1f5f9;
+          color: #475569;
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-weight: 500;
+        }
+      }
+
+      .item-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+
+        .rationale {
+          font-size: 0.8rem;
+          color: var(--text-secondary, #667085);
+          line-height: 1.3;
+        }
+      }
+    }
+
+    .item-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.35rem;
+      margin-left: 1rem;
+    }
+
+    .owner-container {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary, #667085);
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 0.35rem;
+      align-items: center;
+      flex-shrink: 0;
+      margin-left: 1rem;
+
+      app-button {
+        display: block;
+        min-width: 80px;
+        
+        ::ng-deep button {
+          width: 100%;
+          justify-content: center;
+          padding: 0.35rem 0.5rem;
+          min-height: 28px;
+          font-size: 0.8rem;
+        }
+      }
+
+      .btn-edit {
+        ::ng-deep button {
+          background-color: #f8fafc !important;
+          border-color: #e2e8f0 !important;
+          color: #334155 !important;
+          &:hover { background-color: #f1f5f9 !important; }
+        }
+      }
+
+      .btn-met {
+        ::ng-deep button {
+          background-color: #f0fdf4 !important;
+          border-color: #bbf7d0 !important;
+          color: #166534 !important;
+          &:hover { background-color: #dcfce7 !important; }
+        }
+      }
+    }
+  }
+}

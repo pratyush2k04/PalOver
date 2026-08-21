@@ -2,8 +2,8 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { AssumptionService } from '../../services/assumption.service';
-import { AssumptionDto, AssumptionStatus } from '../../models/assumption.model';
+import { AssumptionService } from '../../../../services/assumption.service';
+import { AssumptionDto, AssumptionStatus } from '../../../../models/assumption.model';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { ButtonComponent } from '@common/components/button/button';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
@@ -92,7 +92,10 @@ export class AssumptionsComponent implements OnInit {
   openAssumptionDialog(assumption?: AssumptionDto) {
     const dialogRef = this.dialogService.open<AssumptionFormDialogComponent, any, AssumptionFormDialogResult>(
       AssumptionFormDialogComponent,
-      { data: { assumption } }
+      { 
+        data: { assumption },
+        disableClose: true
+      }
     );
 
     dialogRef.closed$.subscribe((result: AssumptionFormDialogResult | undefined) => {
