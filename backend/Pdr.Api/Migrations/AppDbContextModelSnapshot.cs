@@ -1871,6 +1871,62 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.Engagements.Assumption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("LinkedRiskId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Rationale")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EngagementId");
+
+                    b.HasIndex("LinkedRiskId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Assumptions");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Engagements.CommercialModel", b =>
                 {
                     b.Property<int>("Id")
@@ -5017,6 +5073,31 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("EngagementChecklist");
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Engagements.Assumption", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Engagements.Engagement", "Engagement")
+                        .WithMany()
+                        .HasForeignKey("EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.Risks.Risk", "LinkedRisk")
+                        .WithMany()
+                        .HasForeignKey("LinkedRiskId");
+
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Engagement");
+
+                    b.Navigation("LinkedRisk");
 
                     b.Navigation("Owner");
                 });
