@@ -88,7 +88,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("AccessItems");
+                    b.ToTable("AccessItems", (string)null);
 
                     b.HasData(
                         new
@@ -199,7 +199,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AccessItemDefinitions");
+                    b.ToTable("AccessItemDefinitions", (string)null);
 
                     b.HasData(
                         new
@@ -463,30 +463,6 @@ namespace Pdr.Api.Migrations
                             Id = 21,
                             Action = "ChecklistItemEvidenceUpdated",
                             Details = "Evidence updated for checklist item '{itemTitle}' on engagement '{engagementName}' by {actorName}"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            Action = "DependencyCreated",
-                            Details = "Dependency {dependencyDescription} ({dependencyType}) created for engagement {engagementName}"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            Action = "DependencyUpdated",
-                            Details = "Dependency {dependencyDescription} updated to status {dependencyStatus} for engagement {engagementName}"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            Action = "DependencyDeleted",
-                            Details = "Dependency {dependencyDescription} deleted from engagement {engagementName}"
-                        },
-                        new
-                        {
-                            Id = 25,
-                            Action = "DependencyEscalated",
-                            Details = "Dependency {dependencyDescription} escalated to risk {riskTitle} for engagement {engagementName}"
                         });
                 });
 
@@ -2075,7 +2051,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Assumptions");
+                    b.ToTable("Assumptions", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Engagements.CommercialModel", b =>
@@ -2247,7 +2223,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Dependencies");
+                    b.ToTable("Dependencies", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Engagements.Engagement", b =>
@@ -2470,7 +2446,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EnvironmentToolingDefinitions");
+                    b.ToTable("EnvironmentToolingDefinitions", (string)null);
 
                     b.HasData(
                         new
@@ -2558,7 +2534,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("EnvironmentToolingItems");
+                    b.ToTable("EnvironmentToolingItems", (string)null);
 
                     b.HasData(
                         new
