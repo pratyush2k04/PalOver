@@ -40,6 +40,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ISearchRepository, SearchRepository>();
         services.AddScoped<IResourceRequestRepository, ResourceRequestRepository>();
         services.AddScoped<IAssumptionRepository, AssumptionRepository>();
+        services.AddScoped<IDependencySpikeRepository, DependencySpikeRepository>();
 
         // Services
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
@@ -77,6 +78,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IResourceRequestService, ResourceRequestService>();
         services.AddScoped<ITechnicalSummaryService, TechnicalSummaryService>();
         services.AddScoped<IAssumptionService, AssumptionService>();
+        services.AddScoped<IDependencySpikeService, DependencySpikeService>();
         services.AddScoped<TemplateMapperResolver<INotificationTemplateMapper>>();
         services.AddScoped<TemplateMapperResolver<IAuditTemplateMapper>>();
         services.AddSingleton<TemplateRenderer>();
