@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,9 +14,7 @@ namespace Pdr.Api.Controllers;
 [Authorize]
 [Route("api/engagements/{engagementId:int}/client-contact-transition")]
 [Produces("application/json")]
-public class ClientContactTransitionsController(
-    IClientContactTransitionService transitionService,
-    IValidator<SaveClientContactTransitionRequest> validator) : ControllerBase
+public class ClientContactTransitionsController(IClientContactTransitionService transitionService) : ControllerBase
 {
     private string? GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -64,13 +61,6 @@ public class ClientContactTransitionsController(
         int engagementId,
         [FromBody] SaveClientContactTransitionRequest request)
     {
-        var validationResult = await validator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
-            return BadRequest(new { errors });
-        }
-
         var result = await transitionService.SaveTransitionAsync(engagementId, request, GetUserId());
         return Ok(result);
     }
