@@ -1,5 +1,36 @@
 <div class="sign-off-container">
-  <h2>Day-1 Sign Off Workspace</h2>
-  <p>This workspace is dedicated to activities following the Day-1 Sign Off.</p>
-  <p class="placeholder-note">Development in progress by another team member...</p>
+  @if (snapshot(); as s) {
+    <app-alert variant="success">
+      Day-1 readiness signed off by <strong>{{ s.signedOffByUserName }}</strong> on {{ s.signedOffAt | date: 'dd MMM yyyy' }}
+    </app-alert>
+
+    <div class="evidence-snapshot-card">
+      <div class="evidence-snapshot-header">
+        <h3>Evidence Snapshot</h3>
+        <app-badge text="FTR-050" />
+        <app-badge text="US-087" />
+      </div>
+      <p class="evidence-snapshot-meta">
+        Taken {{ s.signedOffAt | date: 'dd MMM yyyy' }} &middot; Billing date referenced: {{ s.billingStartDate | date: 'dd MMM yyyy' }}
+      </p>
+
+      @if (s.items.length) {
+        <ul class="evidence-item-list">
+          @for (item of s.items; track item.title) {
+            <li class="evidence-item-row">
+              <span class="evidence-item-title">{{ item.title }}</span>
+              <app-status-badge [tone]="statusTone(item.statusAtSignOff)">{{ statusLabel(item.statusAtSignOff) }}</app-status-badge>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="evidence-empty">No checklist items required evidence for this engagement.</p>
+      }
+
+      <button type="button" class="export-btn" (click)="exportSnapshot()">
+        <span [inlineSVG]="'assets/icons/share.svg'"></span>
+        Export snapshot
+      </button>
+    </div>
+  }
 </div>
