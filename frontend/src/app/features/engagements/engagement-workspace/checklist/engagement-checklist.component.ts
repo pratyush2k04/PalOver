@@ -10,6 +10,7 @@ import { DialogService } from '@common/services/dialog/dialog.service';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
+import { SectionHeaderComponent } from '@common/components/section-header/section-header';
 import { CommunicationCadenceService } from '@features/engagements/services/communication-cadence.service';
 import { EngagementParticipant } from '@features/engagements/models/cadence.model';
 import {
@@ -31,7 +32,7 @@ import {
 @Component({
   selector: 'app-engagement-checklist',
   standalone: true,
-  imports: [CommonModule, LoadingSpinnerComponent, StatusBadgeComponent, ButtonComponent],
+  imports: [CommonModule, LoadingSpinnerComponent, StatusBadgeComponent, ButtonComponent, SectionHeaderComponent],
   templateUrl: './engagement-checklist.component.html',
   styleUrl: './engagement-checklist.component.scss'
 })

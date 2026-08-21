@@ -11,6 +11,7 @@
 .section-header {
   @include flex-between;
   align-items: center;
+  min-height: 2.25rem;
   gap: $spacing-4;
   flex-wrap: wrap;
   padding-left: $spacing-2;
