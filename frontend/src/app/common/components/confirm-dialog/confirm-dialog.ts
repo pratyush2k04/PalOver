@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, HostListener, input, output } from '@angular/core';
 import { ButtonComponent } from '../button/button';
 
 @Component({
@@ -9,18 +9,28 @@ import { ButtonComponent } from '../button/button';
   styleUrl: './confirm-dialog.scss'
 })
 export class ConfirmDialogComponent {
-  @Input() title = 'Please confirm';
-  @Input() message = '';
-  @Input() confirmLabel = 'Confirm';
-  @Input() cancelLabel = 'Cancel';
-  @Input() isBusy = false;
-  @Input() isDestructive = true;
+  readonly title = input<string>('Please confirm');
+  readonly message = input<string>('');
+  readonly confirmLabel = input<string>('Confirm');
+  readonly cancelLabel = input<string>('Cancel');
+  readonly isBusy = input<boolean>(false);
+  readonly isDestructive = input<boolean>(true);
+  readonly disableBackdropClose = input<boolean>(true);
 
-  @Output() confirmed = new EventEmitter<void>();
-  @Output() cancelled = new EventEmitter<void>();
+  readonly confirmed = output<void>();
+  readonly cancelled = output<void>();
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (!this.isBusy()) {
+      this.cancelled.emit();
+    }
+  }
 
   onBackdropClick(): void {
-    this.cancelled.emit();
+    if (!this.disableBackdropClose()) {
+      this.cancelled.emit();
+    }
   }
 
   onDialogClick(event: MouseEvent): void {

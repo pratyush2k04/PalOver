@@ -3,14 +3,11 @@
   <div class="card-header">
     <div class="title-group">
       <h3>Architecture Validation & Discovery</h3>
-      <app-status-badge [tone]="statusBadgeTone()">
-        {{ statusBadgeLabel() }}
-      </app-status-badge>
     </div>
   </div>
 
   @if (isLoading()) {
-    <div class="loading-state">Loading architecture validation details...</div>
+    <app-loading-spinner label="Loading architecture validation details..." />
   } @else {
     <!-- SECTION 1: Pre-sales Proposed Architecture Status -->
     <div class="section-container status-section">

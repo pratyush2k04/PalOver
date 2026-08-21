@@ -14,9 +14,10 @@ import { DayOneSignOffRequest, EngagementInfoDto, EngagementOwners } from '../mo
 import { ENGAGEMENT_ROUTES } from '@shared/constants/routes.constants';
 import { TabItem, TabsComponent } from '@common/components/tabs/tabs';
 import { ReadinessCircleComponent } from '@shared/readiness-circle/readiness-circle';
+import { DayOneSignOffDialogComponent } from './components/day-one-sign-off-dialog/day-one-sign-off-dialog.component';
 import { ButtonComponent } from '@common/components/button/button';
 import { InlineSVGModule } from 'ng-inline-svg-2';
-import { DayOneSignOffDialogComponent } from './components/day-one-sign-off-dialog/day-one-sign-off-dialog.component';
+import { DialogService } from '@common/services/dialog/dialog.service';
 
 @Component({
   selector: 'app-engagement-workspace',
@@ -28,8 +29,8 @@ import { DayOneSignOffDialogComponent } from './components/day-one-sign-off-dial
     TabsComponent,
     ButtonComponent,
     InlineSVGModule,
-    DayOneSignOffDialogComponent
-  , InlineSVGModule, ReadinessCircleComponent],
+    ReadinessCircleComponent
+  ],
   templateUrl: './engagement-workspace.component.html',
   styleUrl: './engagement-workspace.component.scss'
 })
@@ -41,6 +42,7 @@ export class EngagementWorkspaceComponent {
   private kickoffReadinessService = inject(KickoffReadinessService);
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
+  private dialogService = inject(DialogService);
 
   private paramMap = toSignal(this.route.paramMap);
 
@@ -53,11 +55,6 @@ export class EngagementWorkspaceComponent {
   readiness = signal<KickoffReadinessDto | null>(null);
   owners = signal<EngagementOwners | null>(null);
   isLoading = signal<boolean>(true);
-
-  // Day-1 Sign-off state
-  readonly isSignOffDialogOpen = signal<boolean>(false);
-  readonly isSigningOff = signal<boolean>(false);
-  readonly isAbleToStartDayOne = signal<boolean>(true);
 
   readonly isAuthorizedForSignOff = computed(() => {
     const user = this.authService.currentUser();
@@ -156,36 +153,29 @@ export class EngagementWorkspaceComponent {
 
     this.technicalReadinessService.getTechnicalSummary(id).subscribe({
       next: (summary) => {
-        this.isAbleToStartDayOne.set(summary.isAbleToStartDayOne);
-        this.isSignOffDialogOpen.set(true);
+        this.launchSignOffDialog(id, summary.isAbleToStartDayOne);
       },
       error: () => {
-        this.isAbleToStartDayOne.set(false);
-        this.isSignOffDialogOpen.set(true);
+        this.launchSignOffDialog(id, false);
       }
     });
   }
 
-  onSignOffConfirmed(payload: DayOneSignOffRequest): void {
-    const id = this.engagementId();
-    if (!id) return;
-
-    this.isSigningOff.set(true);
-    this.engagementService.signOffDayOne(id, payload).subscribe({
-      next: () => {
-        this.isSigningOff.set(false);
-        this.isSignOffDialogOpen.set(false);
-        this.toastService.success('Day-1 successfully signed off!');
-        this.loadEngagement(id);
-      },
-      error: () => {
-        this.isSigningOff.set(false);
+  private launchSignOffDialog(engagementId: number, isAbleToStartDayOne: boolean): void {
+    const dialogRef = this.dialogService.open(DayOneSignOffDialogComponent, {
+      data: {
+        engagementId,
+        isAbleToStartDayOne,
+        isLeadership: this.isLeadership(),
+        initialBillingStartDate: this.engagement()?.billingStartDate || ''
       }
     });
-  }
 
-  onSignOffCancelled(): void {
-    this.isSignOffDialogOpen.set(false);
+    dialogRef.closed$.subscribe((success) => {
+      if (success) {
+        this.loadEngagement(engagementId);
+      }
+    });
   }
 }
 

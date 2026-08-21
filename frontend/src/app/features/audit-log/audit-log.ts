@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -28,19 +28,19 @@ export class AuditLogComponent implements OnInit {
   private auditLogService = inject(AuditLogService);
   private authService = inject(AuthService);
 
-  @Input() engagementId: number | null = null;
+  readonly engagementId = input<number | null>(null);
 
-  get showUserColumn(): boolean {
-    return this.engagementId != null
+  readonly showUserColumn = computed(() => {
+    return this.engagementId() != null
       || this.authService.hasRole(USER_ROLES.LEADERSHIP)
       || this.authService.isAdmin();
-  }
+  });
 
-  get emptyStateMessage(): string {
-    return this.engagementId != null
+  readonly emptyStateMessage = computed(() => {
+    return this.engagementId() != null
       ? 'No activity in the last 30 days.'
       : 'No audit log entries found.';
-  }
+  });
 
   pagedLogs = signal<(AuditLogDto | EngagementAuditLogDto)[]>([]);
   isLoading = signal(true);
@@ -80,8 +80,9 @@ export class AuditLogComponent implements OnInit {
   totalPages = computed(() => Math.max(1, Math.ceil(this.totalCount() / this.pageSize)));
 
   ngOnInit(): void {
-    if (this.engagementId != null) {
-      this.auditLogService.getEngagementAuditUsers(this.engagementId).subscribe({
+    const eid = this.engagementId();
+    if (eid != null) {
+      this.auditLogService.getEngagementAuditUsers(eid).subscribe({
         next: (users) => this.availableUsers.set(users)
       });
     }
@@ -130,11 +131,12 @@ export class AuditLogComponent implements OnInit {
 
   exportCsv(): void {
     const rows = this.pagedLogs();
-    const header = this.showUserColumn ? ['Date/Time', 'User', 'Event Type', 'Details'] : ['Date/Time', 'Event Type', 'Details'];
+    const isUserColVisible = this.showUserColumn();
+    const header = isUserColVisible ? ['Date/Time', 'User', 'Event Type', 'Details'] : ['Date/Time', 'Event Type', 'Details'];
 
     const dataRows = rows.map((log) => {
       const fields = [new Date(log.createdAt).toLocaleString()];
-      if (this.showUserColumn) {
+      if (isUserColVisible) {
         fields.push((log as EngagementAuditLogDto).userName || '');
       }
       fields.push(this.getEventCategory(log.action), log.details);
@@ -148,16 +150,17 @@ export class AuditLogComponent implements OnInit {
     this.isLoading.set(true);
 
     const categories = this.filterCategory ? [this.filterCategory] : undefined;
+    const eid = this.engagementId();
 
-    const request$ = this.engagementId != null
-      ? this.auditLogService.getEngagementAuditLogPage(this.engagementId, this.page(), this.pageSize, this.filterUserId, categories)
+    const request$ = eid != null
+      ? this.auditLogService.getEngagementAuditLogPage(eid, this.page(), this.pageSize, this.filterUserId, categories)
       : this.auditLogService.getAuditLogPage(this.page(), this.pageSize, categories);
 
     request$.subscribe({
       next: (result) => {
         let items = result.items;
         
-        if (this.engagementId == null) {
+        if (eid == null) {
           items = items
             .filter(log => !this.filterFromDate || log.createdAt >= this.filterFromDate)
             .filter(log => !this.filterToDate || log.createdAt <= this.filterToDate);

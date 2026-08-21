@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, input, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RiskCommentService } from '../../services/risk-comment.service';
@@ -31,8 +31,8 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
   styleUrl: './risk-comments.component.scss'
 })
 export class RiskCommentsComponent implements OnInit {
-  @Input({ required: true }) engagementId!: number;
-  @Input({ required: true }) riskId!: number;
+  readonly engagementId = input.required<number>();
+  readonly riskId = input.required<number>();
 
   readonly constants = RISK_COMMENT_CONSTANTS;
 
@@ -65,7 +65,7 @@ export class RiskCommentsComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    if (this.engagementId && this.riskId) {
+    if (this.engagementId() && this.riskId()) {
       this.loadComments();
       this.loadMembers();
     }
@@ -95,7 +95,7 @@ export class RiskCommentsComponent implements OnInit {
 
   loadComments(): void {
     this.isLoading.set(true);
-    this.commentService.getComments(this.engagementId, this.riskId).subscribe({
+    this.commentService.getComments(this.engagementId(), this.riskId()).subscribe({
       next: (data) => {
         this.comments.set(data);
         this.isLoading.set(false);
@@ -109,7 +109,7 @@ export class RiskCommentsComponent implements OnInit {
   }
 
   loadMembers(): void {
-    this.commentService.getEngagementMembers(this.engagementId).subscribe({
+    this.commentService.getEngagementMembers(this.engagementId()).subscribe({
       next: (data) => this.members.set(data),
       error: (err) => console.error(RISK_COMMENT_MESSAGES.MEMBERS_LOAD_ERROR, err)
     });
@@ -205,7 +205,7 @@ export class RiskCommentsComponent implements OnInit {
     }
 
     this.isSubmitting.set(true);
-    this.commentService.addComment(this.engagementId, this.riskId, {
+    this.commentService.addComment(this.engagementId(), this.riskId(), {
       content,
       mentionedUserIds: this.selectedMentionIds()
     }).subscribe({
@@ -248,7 +248,7 @@ export class RiskCommentsComponent implements OnInit {
       return;
     }
 
-    this.commentService.updateComment(this.engagementId, this.riskId, commentId, { content }).subscribe({
+    this.commentService.updateComment(this.engagementId(), this.riskId(), commentId, { content }).subscribe({
       next: (updated) => {
         this.comments.update((list) => list.map((c) => (c.id === commentId ? updated : c)));
         this.cancelEditing();

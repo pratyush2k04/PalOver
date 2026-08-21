@@ -140,6 +140,22 @@
           display: flex;
           align-items: center;
           gap: 0.35rem;
+
+          .btn-accept {
+            ::ng-deep .btn:hover:not(:disabled) {
+              background-color: #ecfdf5;
+              color: #047857;
+              border-color: #a7f3d0;
+            }
+          }
+
+          .btn-defer {
+            ::ng-deep .btn:hover:not(:disabled) {
+              background-color: #fff7ed;
+              color: #c2410c;
+              border-color: #fed7aa;
+            }
+          }
         }
       }
 

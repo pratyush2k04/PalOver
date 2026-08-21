@@ -21,9 +21,7 @@
 
   <!-- Loading state -->
   @if (isLoading()) {
-    <div class="loading-container">
-      <p>Loading access items...</p>
-    </div>
+    <app-loading-spinner label="Loading access items..." />
   } @else {
     <!-- Table -->
     <div class="table-responsive">
@@ -50,9 +48,15 @@
                 <div class="owner-content">
                   <span>{{ item.ownerFullName || 'Unassigned' }}</span>
                   @if (isTechLead()) {
-                    <button class="edit-owner-btn" (click)="openEditOwnerModal(item)" [appTooltip]="'Change owner'">
-                      <span [inlineSVG]="'assets/icons/edit.svg'"></span>
-                    </button>
+                    <app-button
+                      type="button"
+                      variant="icon"
+                      class="btn-action"
+                      ariaLabel="Change owner"
+                      [appTooltip]="'Change owner'"
+                      (click)="openEditOwnerModal(item)">
+                      <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                    </app-button>
                   }
                 </div>
               </td>
@@ -90,19 +94,23 @@
                   </select>
                 } @else {
                   <app-status-badge [tone]="getStatusTone(item.status)">
-                    {{ item.status }}
+                    {{ getStatusLabel(item.status) }}
                   </app-status-badge>
                 }
               </td>
               @if (isTechLead()) {
                 <td class="actions-cell">
-                  <button
-                    type="button"
-                    class="delete-item-btn"
-                    (click)="onDeleteItem(item)"
-                    [appTooltip]="'Delete access item'">
-                    <span [inlineSVG]="'assets/icons/trash.svg'"></span>
-                  </button>
+                  <div class="action-btn-group">
+                    <app-button
+                      type="button"
+                      variant="icon"
+                      class="btn-action btn-danger"
+                      ariaLabel="Delete access item"
+                      [appTooltip]="'Delete access item'"
+                      (click)="onDeleteItem(item)">
+                      <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
+                    </app-button>
+                  </div>
                 </td>
               }
             </tr>
