@@ -22,7 +22,16 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: $spacing-4;
+    gap: $spacing-3;
+
+    .filter-bar {
+      margin-top: -$spacing-6;
+      margin-bottom: 0;
+
+      ::ng-deep .app-field {
+        margin-bottom: 0;
+      }
+    }
   }
 }
 
