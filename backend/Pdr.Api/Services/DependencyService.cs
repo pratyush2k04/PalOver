@@ -159,12 +159,19 @@ public class DependencyService(
         if (dependency.OwnerId != currentUserId && !isPm)
             throw new DependencyUnauthorizedException();
 
+        var dependencyDescription = dependency.Description;
+
         dependencyRepository.Delete(dependency);
         await dependencyRepository.SaveChangesAsync();
 
         await auditLogService.LogAsync(
             AuditActionEnum.DependencyDeleted,
-            new Dictionary<string, object?> { { "DependencyId", id } },
+            new Dictionary<string, object?>
+            {
+                { "DependencyId", id },
+                { "EngagementId", engagementId },
+                { "Description", dependencyDescription }
+            },
             engagementId,
             currentUserService.GetUserId()
         );

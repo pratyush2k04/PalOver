@@ -23,6 +23,11 @@ public static class AuditActionCategoryRegistry
         [AuditActionEnum.PmAndTlReassigned] = AuditCategoryEnum.ResourceAllocation,
         [AuditActionEnum.DayOneSummaryGenerated] = AuditCategoryEnum.TechnicalReadiness,
         [AuditActionEnum.BrownfieldItemAdded] = AuditCategoryEnum.TechnicalReadiness,
-        [AuditActionEnum.DiscoveryItemAdded] = AuditCategoryEnum.TechnicalReadiness
+        [AuditActionEnum.DiscoveryItemAdded] = AuditCategoryEnum.TechnicalReadiness,
+        [AuditActionEnum.ChecklistItemEvidenceUpdated] = AuditCategoryEnum.Checklist,
+        [AuditActionEnum.DependencyCreated] = AuditCategoryEnum.Risk,
+        [AuditActionEnum.DependencyUpdated] = AuditCategoryEnum.Risk,
+        [AuditActionEnum.DependencyDeleted] = AuditCategoryEnum.Risk,
+        [AuditActionEnum.DependencyEscalated] = AuditCategoryEnum.Escalation
     };
 }
