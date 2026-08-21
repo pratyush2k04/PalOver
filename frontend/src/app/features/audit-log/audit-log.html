@@ -1,5 +1,5 @@
-<div class="audit-log" [class.workspace-tab]="engagementId != null">
-  @if (engagementId != null) {
+<div class="audit-log" [class.workspace-tab]="engagementId() != null">
+  @if (engagementId() != null) {
     <app-section-header title="Audit Log">
       <div class="header-actions-group">
         <app-select
@@ -55,7 +55,7 @@
       <thead>
         <tr>
           <th class="col-date">Date/Time</th>
-          @if (showUserColumn) {
+          @if (showUserColumn()) {
             <th class="col-user">User</th>
           }
           <th class="col-action">Event Type</th>
@@ -66,7 +66,7 @@
         @for (log of pagedLogs(); track log.id) {
           <tr>
             <td class="col-date" [title]="log.createdAt | date: 'full'">{{ log.createdAt | date: 'medium' }}</td>
-            @if (showUserColumn) {
+            @if (showUserColumn()) {
               <td class="col-user">{{ log.userName || '' }}</td>
             }
             <td class="col-action">{{ getEventCategory(log.action) }}</td>
@@ -75,8 +75,8 @@
         } @empty {
           @if (!isLoading()) {
             <tr>
-              <td [attr.colspan]="showUserColumn ? 4 : 3" class="empty-row">
-                <app-empty-state [message]="emptyStateMessage" />
+              <td [attr.colspan]="showUserColumn() ? 4 : 3" class="empty-row">
+                <app-empty-state [message]="emptyStateMessage()" />
               </td>
             </tr>
           }

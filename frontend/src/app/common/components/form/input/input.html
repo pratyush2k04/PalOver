@@ -9,7 +9,7 @@
     [attr.maxlength]="maxLength()"
     [attr.min]="min()"
     [value]="value"
-    [disabled]="disabled"
+    [disabled]="disabled()"
     [class.is-invalid]="showError"
     (input)="onInput($any($event.target).value)"
     (blur)="markTouched()"
