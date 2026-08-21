@@ -16,6 +16,7 @@ export const ENGAGEMENT_API_ENDPOINTS = {
   LEADERSHIP_ROLE_USERS: '/api/Roles/4/users',
   DELETE_LEADERSHIP_USER: (id: number, userId: number) => `/api/Engagements/${id}/leadership-users/${userId}`,
   ENGAGEMENT_CHECKLIST: (id: number) => `/api/engagements/${id}/workspace/checklist`,
+  CHECKLIST_ITEM_EVIDENCE: (engagementId: number, itemId: number) => `/api/engagements/${engagementId}/workspace/checklist/items/${itemId}/evidence`,
   ENGAGEMENT_DOCUMENTS: (id: number) => `/api/documents/engagement/${id}`,
   DOCUMENT_CATEGORIES: '/api/documents/categories',
   DOCUMENT_UPLOAD: '/api/documents/upload',
@@ -48,7 +49,8 @@ export const OPEN_ITEMS_ERROR_MESSAGES = {
 } as const;
 
 export const ENGAGEMENT_CHECKLIST_MESSAGES = {
-  LOAD_FAILED: 'Failed to load the engagement checklist. Please try again.'
+  LOAD_FAILED: 'Failed to load the engagement checklist. Please try again.',
+  EVIDENCE_SAVED_SUCCESS: 'Evidence saved successfully.'
 } as const;
 
 export const ENGAGEMENT_WORKSPACE_CONFIG = {

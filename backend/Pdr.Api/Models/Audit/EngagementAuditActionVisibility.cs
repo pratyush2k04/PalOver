@@ -40,6 +40,9 @@ public static class EngagementAuditActionVisibilityRegistry
         [AuditActionEnum.DiscoveryItemAdded] = new(VisibleToRoles: AllRoles),
         [AuditActionEnum.LeadershipAllocated] = new(VisibleToRoles: AllRoles),
         [AuditActionEnum.PmAndTlAssigned] = new(VisibleToRoles: AllRoles),
-        [AuditActionEnum.PmAndTlReassigned] = new(VisibleToRoles: AllRoles)
+        [AuditActionEnum.PmAndTlReassigned] = new(VisibleToRoles: AllRoles),
+        [AuditActionEnum.ResourcingGapFlagRaised] = new(VisibleToRoles: AllRoles),
+        [AuditActionEnum.ResourcingGapFlagCleared] = new(VisibleToRoles: AllRoles),
+        [AuditActionEnum.ChecklistItemEvidenceUpdated] = new(VisibleToRoles: AllRoles)
     };
 }

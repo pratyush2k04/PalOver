@@ -18,7 +18,8 @@ export type AuditAction =
   | 'BrownfieldItemAdded' 
   | 'DiscoveryItemAdded'
   | 'ResourcingGapFlagRaised'
-  | 'ResourcingGapFlagCleared';
+  | 'ResourcingGapFlagCleared'
+  | 'ChecklistItemEvidenceUpdated';
 export interface AuditLogDto {
   id: number;
   userId: number;
