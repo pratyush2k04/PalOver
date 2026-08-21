@@ -9,6 +9,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { EngagementService } from '@features/engagements/services/engagement.service';
 import { EvidenceSnapshot, EvidenceSnapshotItemStatus } from '@features/engagements/models/evidence-snapshot.model';
+import { ENGAGEMENT_ROUTES } from '@shared/constants/routes.constants';
 
 @Component({
   selector: 'app-sign-off',
@@ -55,6 +56,6 @@ export class SignOffComponent {
   exportSnapshot(): void {
     const id = this.engagementId();
     if (!id) return;
-    window.open(`/engagements/${id}/evidence-snapshot-print`, '_blank');
+    window.open(`/${ENGAGEMENT_ROUTES.BASE}/${id}/${ENGAGEMENT_ROUTES.EVIDENCE_SNAPSHOT_PRINT}`, '_blank');
   }
 }
