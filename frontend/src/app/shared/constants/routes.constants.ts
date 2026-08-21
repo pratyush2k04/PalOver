@@ -61,6 +61,7 @@ export const ENGAGEMENT_ROUTES = {
   ASSUMPTIONS: 'assumptions-and-decisions',
   AUDITS: 'audits',
   DAY_ONE_SUMMARY_PRINT: 'day-one-summary-print',
+  SIGN_OFF: 'sign-off',
 } as const;
 
 export const MASTER_CHECKLIST_ROUTES = {

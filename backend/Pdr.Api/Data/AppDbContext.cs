@@ -13,6 +13,7 @@ using Pdr.Api.Models.Cadence;
 using Pdr.Api.Models.Risks;
 using Pdr.Api.Models.Kickoff;
 using Pdr.Api.Models.People;
+using Pdr.Api.Models.DependencySpikes;
 
 namespace Pdr.Api.Data;
 
@@ -73,6 +74,7 @@ public class AppDbContext : DbContext
     public DbSet<Models.BrownField.BrownfieldFinding> BrownfieldFindings => Set<Models.BrownField.BrownfieldFinding>();
     public DbSet<Models.ArchitectureValidation.ArchitectureValidation> ArchitectureValidations => Set<Models.ArchitectureValidation.ArchitectureValidation>();
     public DbSet<Models.ArchitectureValidation.DiscoveryFeatureItem> DiscoveryFeatureItems => Set<Models.ArchitectureValidation.DiscoveryFeatureItem>();
+    public DbSet<DependencySpike> DependencySpikes => Set<DependencySpike>();
     public DbSet<Pdr.Api.Models.ChangeRequest.ChangeRequest> ChangeRequests => Set<Pdr.Api.Models.ChangeRequest.ChangeRequest>();
     public DbSet<Risk> Risks => Set<Risk>();
     public DbSet<RiskEscalationHistory> RiskEscalationHistories => Set<RiskEscalationHistory>();
@@ -95,6 +97,9 @@ public class AppDbContext : DbContext
     public DbSet<Models.ResourceRequests.ResourceRequest> ResourceRequests => Set<Models.ResourceRequests.ResourceRequest>();
     public DbSet<Models.ResourceRequests.ResourceRequestSkill> ResourceRequestSkills => Set<Models.ResourceRequests.ResourceRequestSkill>();
     public DbSet<Models.ResourceRequests.ResourceAllocation> ResourceAllocations => Set<Models.ResourceRequests.ResourceAllocation>();
+
+    // Dependencies
+    public DbSet<Models.Engagements.Dependencies.Dependency> Dependencies => Set<Models.Engagements.Dependencies.Dependency>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
