@@ -7,5 +7,7 @@ public enum AuditCategoryEnum
     Risk = 3,
     Access = 4,
     Handover = 5,
-    Escalation = 6
+    Escalation = 6,
+    ResourceAllocation = 7,
+    TechnicalReadiness = 8
 }

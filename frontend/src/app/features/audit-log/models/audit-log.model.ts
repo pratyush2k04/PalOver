@@ -38,7 +38,7 @@ export interface EngagementAuditLogDto {
   createdAt: string;
 }
 
-export type AuditCategory = 'Document' | 'Checklist' | 'Risk' | 'Access' | 'Handover' | 'Escalation';
+export type AuditCategory = 'Document' | 'Checklist' | 'Risk' | 'Access' | 'Handover' | 'Escalation' | 'ResourceAllocation' | 'TechnicalReadiness';
 
 export interface SimpleUserDto {
   id: number;

@@ -44,7 +44,6 @@ export class AuditLogComponent implements OnInit {
   isLoading = signal(true);
   errorMessage = signal<string | null>(null);
 
-  filterSearch = '';
   filterFromDate: string | null = null;
   filterToDate: string | null = null;
   
@@ -68,7 +67,9 @@ export class AuditLogComponent implements OnInit {
     { value: 'Risk', label: 'Risk' },
     { value: 'Access', label: 'Access' },
     { value: 'Handover', label: 'Handover' },
-    { value: 'Escalation', label: 'Escalation' }
+    { value: 'Escalation', label: 'Escalation' },
+    { value: 'ResourceAllocation', label: 'Resource Allocation' },
+    { value: 'TechnicalReadiness', label: 'Technical Readiness' }
   ];
 
   page = signal(1);
@@ -98,16 +99,39 @@ export class AuditLogComponent implements OnInit {
     this.loadPage();
   }
 
+  private readonly actionCategoryMap: Record<string, string> = {
+    DocumentVersioned: 'Document',
+    DocumentUploaded: 'Document',
+    MasterChecklistPublished: 'Checklist',
+    UnauthorizedAccess: 'Access',
+    AccountLockout: 'Access',
+    ResourcingGapFlagRaised: 'Escalation',
+    ResourcingGapFlagCleared: 'Escalation',
+    ClientContactDetailsChanged: 'Handover',
+    ClientPersonaChanged: 'Handover',
+    LeadershipAllocated: 'Resource Allocation',
+    UserRoleAllocated: 'Resource Allocation',
+    PmAndTlAssigned: 'Resource Allocation',
+    PmAndTlReassigned: 'Resource Allocation',
+    DayOneSummaryGenerated: 'Technical Readiness',
+    BrownfieldItemAdded: 'Technical Readiness',
+    DiscoveryItemAdded: 'Technical Readiness'
+  };
+
+  getEventCategory(action: string): string {
+    return this.actionCategoryMap[action] || action;
+  }
+
   exportCsv(): void {
     const rows = this.pagedLogs();
-    const header = this.showUserColumn ? ['Date/Time', 'User', 'Action', 'Details'] : ['Date/Time', 'Action', 'Details'];
+    const header = this.showUserColumn ? ['Date/Time', 'User', 'Event Type', 'Details'] : ['Date/Time', 'Event Type', 'Details'];
 
     const dataRows = rows.map((log) => {
       const fields = [new Date(log.createdAt).toLocaleString()];
       if (this.showUserColumn) {
         fields.push((log as EngagementAuditLogDto).userName || '');
       }
-      fields.push(log.action, log.details);
+      fields.push(this.getEventCategory(log.action), log.details);
       return fields;
     });
 
@@ -128,11 +152,9 @@ export class AuditLogComponent implements OnInit {
         let items = result.items;
         
         if (this.engagementId == null) {
-          const term = this.filterSearch.trim().toLowerCase();
           items = items
             .filter(log => !this.filterFromDate || log.createdAt >= this.filterFromDate)
-            .filter(log => !this.filterToDate || log.createdAt <= this.filterToDate)
-            .filter(log => !term || this.matchesSearch(log, term));
+            .filter(log => !this.filterToDate || log.createdAt <= this.filterToDate);
         }
         
         this.pagedLogs.set(items);
@@ -145,12 +167,5 @@ export class AuditLogComponent implements OnInit {
         this.isLoading.set(false);
       }
     });
-  }
-
-  private matchesSearch(log: AuditLogDto | EngagementAuditLogDto, term: string): boolean {
-    const userName = 'userName' in log ? log.userName : '';
-    return userName.toLowerCase().includes(term)
-      || log.action.toLowerCase().includes(term)
-      || log.details.toLowerCase().includes(term);
   }
 }

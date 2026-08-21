@@ -11,12 +11,6 @@
   <div class="filter-bar">
     @if (engagementId == null) {
       <app-input
-        [id]="'audit-log-search'"
-        placeholder="Search audit log..."
-        [(ngModel)]="filterSearch"
-        (ngModelChange)="onFilterChange()"
-      />
-      <app-input
         [id]="'audit-log-from-date'"
         label="From"
         type="date"
@@ -61,7 +55,7 @@
           @if (showUserColumn) {
             <th class="col-user">User</th>
           }
-          <th class="col-action">Action</th>
+          <th class="col-action">Event Type</th>
           <th class="col-details">Details</th>
         </tr>
       </thead>
@@ -72,7 +66,7 @@
             @if (showUserColumn) {
               <td class="col-user">{{ log.userName || '' }}</td>
             }
-            <td class="col-action">{{ log.action }}</td>
+            <td class="col-action">{{ getEventCategory(log.action) }}</td>
             <td class="col-details">{{ log.details }}</td>
           </tr>
         } @empty {
