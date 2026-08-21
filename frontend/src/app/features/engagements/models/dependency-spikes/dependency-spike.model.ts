@@ -9,8 +9,9 @@ export interface DependencySpikeDto {
   engagementId: number;
   dependencyName: string;
   objective: string;
-  status: DependencySpikeStatus | string;
+  status: DependencySpikeStatus | number | string;
   ownerId?: number | null;
+  ownerName?: string | null;
   ownerFullName?: string | null;
   outcomeFindings?: string | null;
   createdAt: string;
