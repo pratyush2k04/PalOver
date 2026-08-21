@@ -32,15 +32,15 @@
         [(ngModel)]="filterUserId"
         (ngModelChange)="onFilterChange()"
       ></app-select>
-
-      <app-select
-        [id]="'audit-category-select'"
-        label="Event Type"
-        [options]="categoryOptions"
-        [(ngModel)]="filterCategory"
-        (ngModelChange)="onFilterChange()"
-      ></app-select>
     }
+
+    <app-select
+      [id]="'audit-category-select'"
+      label="Event Type"
+      [options]="categoryOptions"
+      [(ngModel)]="filterCategory"
+      (ngModelChange)="onFilterChange()"
+    ></app-select>
   </div>
 
   @if (errorMessage()) {

@@ -12,9 +12,13 @@ export class AuditLogService {
 
   getAuditLogPage(
     page: number,
-    pageSize: number
+    pageSize: number,
+    categories: AuditCategory[] = []
   ): Observable<PagedResult<AuditLogDto>> {
     let params = new HttpParams().set('page', page).set('pageSize', pageSize);
+    categories.forEach(cat => {
+      params = params.append('categories', cat);
+    });
     return this.http.get<PagedResult<AuditLogDto>>(AUDIT_LOG_API_ENDPOINTS.LIST, { params });
   }
 

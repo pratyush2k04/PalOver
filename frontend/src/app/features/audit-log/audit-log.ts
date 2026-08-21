@@ -145,7 +145,7 @@ export class AuditLogComponent implements OnInit {
 
     const request$ = this.engagementId != null
       ? this.auditLogService.getEngagementAuditLogPage(this.engagementId, this.page(), this.pageSize, this.filterUserId, categories)
-      : this.auditLogService.getAuditLogPage(this.page(), this.pageSize);
+      : this.auditLogService.getAuditLogPage(this.page(), this.pageSize, categories);
 
     request$.subscribe({
       next: (result) => {

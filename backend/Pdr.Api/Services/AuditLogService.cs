@@ -37,12 +37,21 @@ public class AuditLogService(
     }
 
 
-    public async Task<PagedResult<AuditLogDto>> GetAuditLogsAsync(int page, int pageSize)
+    public async Task<PagedResult<AuditLogDto>> GetAuditLogsAsync(int page, int pageSize, List<AuditCategoryEnum>? categories = null)
     {
         var isElevated = currentUserService.IsInRole(RoleEnum.Leadership) || currentUserService.IsAdmin();
         var scopedUserId = isElevated ? (int?)null : currentUserService.GetUserId();
 
-        var (items, count) = await repository.GetPageAsync(page, pageSize, scopedUserId);
+        List<int>? validActionIds = null;
+        if (categories != null && categories.Any())
+        {
+            validActionIds = AuditActionCategoryRegistry.Entries
+                .Where(actionToCategory => categories.Contains(actionToCategory.Value))
+                .Select(actionToCategory => (int)actionToCategory.Key)
+                .ToList();
+        }
+
+        var (items, count) = await repository.GetPageAsync(page, pageSize, scopedUserId, validActionIds: validActionIds);
 
         var dtos = new List<AuditLogDto>();
         foreach (var log in items)
