@@ -76,25 +76,20 @@
         </div>
       </div>
 
-      <!-- Pillar 4: Brownfield Review -->
-      <div class="pillar-card" [class.ready]="s.isBrownfieldReady" [class.attention]="!s.isBrownfieldReady">
-        <div class="pillar-header">
-          <h4>4. Brownfield Review</h4>
-          <app-status-badge [tone]="brownfieldStatusTone()">
-            {{ !s.isBrownfieldApplicable ? 'N/A (Greenfield)' : (s.isBrownfieldReady ? 'Accepted' : 'Pending Review') }}
-          </app-status-badge>
-        </div>
-        <div class="pillar-metric">
-          @if (s.isBrownfieldApplicable) {
+      @if (s.isBrownfieldApplicable) {
+        <!-- Pillar 4: Brownfield Review -->
+        <div class="pillar-card" [class.ready]="s.isBrownfieldReady" [class.attention]="!s.isBrownfieldReady">
+          <div class="pillar-header">
+            <h4>4. Brownfield Review</h4>
+            <app-status-badge [tone]="brownfieldStatusTone()">
+              {{ s.isBrownfieldReady ? 'Accepted' : 'Pending Review' }}
+            </app-status-badge>
+          </div>
+          <div class="pillar-metric">
             <span class="metric-number">{{ s.highSeverityAcceptedCount }}/{{ s.highSeverityFindingsCount }}</span>
             <span class="metric-caption">High Severity Accepted</span>
-          } @else {
-            <span class="metric-number text-muted">N/A</span>
-            <span class="metric-caption">Greenfield Engagement</span>
-          }
-        </div>
-        <div class="pillar-details">
-          @if (s.isBrownfieldApplicable) {
+          </div>
+          <div class="pillar-details">
             <div class="detail-row">
               <span>Total Findings:</span>
               <span class="font-medium">{{ s.totalBrownfieldFindings }}</span>
@@ -103,18 +98,14 @@
               <span>High Pending:</span>
               <span class="font-medium" [class.text-danger]="s.highSeverityPendingCount > 0">{{ s.highSeverityPendingCount }}</span>
             </div>
-          } @else {
-            <div class="detail-row">
-              <span>Legacy Codebase:</span>
-              <span class="font-medium">None</span>
-            </div>
-          }
+          </div>
         </div>
-      </div>
-      <!-- Pillar 5: Dependency Spikes -->
+      }
+
+      <!-- Pillar: Dependency Spikes -->
       <div class="pillar-card" [class.ready]="s.isDependencySpikesReady" [class.attention]="!s.isDependencySpikesReady">
         <div class="pillar-header">
-          <h4>5. Dependency Spikes</h4>
+          <h4>{{ s.isBrownfieldApplicable ? '5. Dependency Spikes' : '4. Dependency Spikes' }}</h4>
           <app-status-badge [tone]="dependencySpikesStatusTone()">
             {{ s.totalDependencySpikes === 0 ? 'N/A' : (s.failedDependencySpikes > 0 ? 'Failed' : (s.isDependencySpikesReady ? 'Passed' : 'In Progress')) }}
           </app-status-badge>
