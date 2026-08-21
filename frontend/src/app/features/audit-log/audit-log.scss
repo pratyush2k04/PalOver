@@ -1,4 +1,5 @@
 @use '../../../styles/tokens' as *;
+@use '../../../styles/mixins' as *;
 
 :host {
   display: block;
@@ -19,8 +20,8 @@
 .filter-bar {
   display: flex;
   align-items: flex-end;
-  gap: 1rem;
-  margin-bottom: 1.25rem;
+  gap: $spacing-4;
+  margin-bottom: $spacing-5;
   flex-wrap: wrap;
 
   app-input {
@@ -29,9 +30,10 @@
 }
 
 .table-card {
-  background: #ffffff;
-  border-radius: 0.5rem;
-  box-shadow: 0 0.25rem 0.75rem #0000000f;
+  background: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
   overflow: hidden;
 }
 
@@ -42,41 +44,46 @@ table {
 
 thead th {
   text-align: left;
-  padding: 0.9rem 1.5rem;
-  font-size: 0.75rem;
-  font-weight: 600;
+  padding: $spacing-4 $spacing-6;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
   letter-spacing: 0.04em;
-  color: #8b95a3;
+  color: $color-text-muted;
   text-transform: uppercase;
-  border-bottom: 1px solid #edf0f3;
+  background: $color-surface-hover;
+  border-bottom: 1px solid $color-border-soft;
 }
 
 tbody tr {
-  border-bottom: 1px solid #edf0f3;
+  border-bottom: 1px solid $color-border-soft;
 
   &:last-child {
     border-bottom: none;
   }
+
+  &:hover {
+    background-color: $color-surface-hover;
+  }
 }
 
 td {
-  padding: 0.85rem 1.5rem;
-  font-size: 0.875rem;
-  color: #333333;
+  padding: $spacing-4 $spacing-6;
+  font-size: $font-size-sm;
+  color: $color-text-muted;
   vertical-align: middle;
 }
 
 .col-date {
   white-space: nowrap;
-  color: #4a5568;
+  color: $color-text-faint;
 }
 
 .col-user {
-  font-weight: 500;
-  color: #1e3a5f;
+  font-weight: $font-weight-medium;
+  color: $color-text;
 }
 
 .empty-row {
-  padding: 1.5rem;
+  padding: $spacing-6;
   text-align: center;
 }

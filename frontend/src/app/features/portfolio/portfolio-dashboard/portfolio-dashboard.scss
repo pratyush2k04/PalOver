@@ -17,7 +17,7 @@
 /* KPI Cards Grid using tokens & mixins */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(16.25rem, 1fr));
   gap: $spacing-5;
   margin-bottom: $spacing-8;
 }
@@ -104,7 +104,7 @@
   gap: $spacing-1;
 
   app-select {
-    min-width: 180px;
+    min-width: 11.25rem;
 
     ::ng-deep .app-field {
       margin-bottom: 0;

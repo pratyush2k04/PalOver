@@ -12,7 +12,7 @@
 /* Summary Metrics */
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(16.25rem, 1fr));
   gap: $spacing-5;
   margin-bottom: $spacing-8;
 
@@ -82,8 +82,8 @@
   .search-box {
     position: relative;
     flex: 1;
-    min-width: 300px;
-    max-width: 480px;
+    min-width: 18.75rem;
+    max-width: 30rem;
 
     .search-icon {
       position: absolute;
@@ -247,8 +247,8 @@
 
         ::ng-deep svg,
         svg {
-          width: 14px;
-          height: 14px;
+          width: $font-size-xs;
+          height: $font-size-xs;
         }
       }
     }
@@ -276,8 +276,8 @@
 
       ::ng-deep svg,
       svg {
-        width: 16px;
-        height: 16px;
+        width: $font-size-sm;
+        height: $font-size-sm;
       }
     }
   }
@@ -304,8 +304,8 @@
 
     ::ng-deep svg,
     svg {
-      width: 48px;
-      height: 48px;
+      width: 3rem;
+      height: 3rem;
     }
   }
 }
