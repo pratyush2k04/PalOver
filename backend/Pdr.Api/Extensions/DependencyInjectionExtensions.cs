@@ -39,6 +39,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IArchitectureValidationRepository, ArchitectureValidationRepository>();
         services.AddScoped<ISearchRepository, SearchRepository>();
         services.AddScoped<IResourceRequestRepository, ResourceRequestRepository>();
+        services.AddScoped<IDependencyRepository, DependencyRepository>();
         services.AddScoped<IAssumptionRepository, AssumptionRepository>();
         services.AddScoped<IDependencySpikeRepository, DependencySpikeRepository>();
 
@@ -77,6 +78,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ISearchService, SearchService>();
         services.AddScoped<IResourceRequestService, ResourceRequestService>();
         services.AddScoped<ITechnicalSummaryService, TechnicalSummaryService>();
+        services.AddScoped<IDependencyService, DependencyService>();
         services.AddScoped<IAssumptionService, AssumptionService>();
         services.AddScoped<IDependencySpikeService, DependencySpikeService>();
         services.AddScoped<TemplateMapperResolver<INotificationTemplateMapper>>();
