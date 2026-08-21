@@ -37,81 +37,62 @@ public class AuditLogService(
     }
 
 
-    public async Task<CursorPagedResult<AuditLogDto>> GetAuditLogsAsync(int? cursor, int limit)
+    public async Task<PagedResult<AuditLogDto>> GetAuditLogsAsync(int page, int pageSize, List<AuditCategoryEnum>? categories = null)
     {
         var isElevated = currentUserService.IsInRole(RoleEnum.Leadership) || currentUserService.IsAdmin();
         var scopedUserId = isElevated ? (int?)null : currentUserService.GetUserId();
 
-        var logs = await repository.GetPageAsync(cursor, limit, scopedUserId);
-
-        var hasMore = logs.Count > limit;
-        var pageLogs = hasMore ? logs.Take(limit).ToList() : logs;
-
-        var items = new List<AuditLogDto>();
-        foreach (var log in pageLogs)
+        List<int>? validActionIds = null;
+        if (categories != null && categories.Any())
         {
-            items.Add(await MapToDtoAsync(log));
+            validActionIds = AuditActionCategoryRegistry.Entries
+                .Where(actionToCategory => categories.Contains(actionToCategory.Value))
+                .Select(actionToCategory => (int)actionToCategory.Key)
+                .ToList();
         }
 
-        return new CursorPagedResult<AuditLogDto>
+        var (items, count) = await repository.GetPageAsync(page, pageSize, scopedUserId, validActionIds: validActionIds);
+
+        var dtos = new List<AuditLogDto>();
+        foreach (var log in items)
         {
-            Items = items,
-            NextCursor = hasMore ? pageLogs[^1].Id : null,
-            HasMore = hasMore
+            dtos.Add(await MapToDtoAsync(log));
+        }
+
+        return new PagedResult<AuditLogDto>
+        {
+            Items = dtos,
+            TotalCount = count,
+            Page = page,
+            PageSize = pageSize
         };
     }
 
-    /// <summary>
-    /// Retrieves a cursor-paginated page of audit log entries for a specific engagement.
-    /// The database efficiently filters by EngagementId, so we can fetch exactly one batch.
-    /// </summary>
-    public async Task<CursorPagedResult<EngagementAuditLogDto>> GetEngagementAuditLogsAsync(int engagementId, int? cursor, int limit)
+    public async Task<PagedResult<EngagementAuditLogDto>> GetEngagementAuditLogsAsync(int engagementId, int page, int pageSize, int? userId = null, List<AuditCategoryEnum>? categories = null)
     {
-        var items = new List<EngagementAuditLogDto>();
-        
-        // Make exactly 1 database call
-        var batch = await repository.GetPageAsync(cursor, limit, userId: null, engagementId: engagementId);
+        var validActionIds = EngagementAuditActionVisibilityRegistry.Entries
+            .Where(actionToVisibility => currentUserService.IsAdmin() || (actionToVisibility.Value.VisibleToRoles?.Any(r => currentUserService.IsInRole(r)) ?? false))
+            .Select(actionToVisibility => (int)actionToVisibility.Key)
+            .ToList();
 
-        var hasMore = batch.Count > limit;
-        var examined = hasMore ? batch.Take(limit).ToList() : batch;
-
-        if (examined.Count == 0)
+        if (categories != null && categories.Any())
         {
-            return new CursorPagedResult<EngagementAuditLogDto>
-            {
-                Items = items,
-                NextCursor = null,
-                HasMore = false
-            };
+            var categoryActionIds = AuditActionCategoryRegistry.Entries
+                .Where(actionToCategory => categories.Contains(actionToCategory.Value))
+                .Select(actionToCategory => (int)actionToCategory.Key)
+                .ToList();
+
+            validActionIds = validActionIds.Intersect(categoryActionIds).ToList();
         }
 
-        foreach (var log in examined)
+        var (items, count) = await repository.GetPageAsync(page, pageSize, userId, engagementId, validActionIds);
+
+        var dtos = new List<EngagementAuditLogDto>();
+
+        foreach (var log in items)
         {
-            var actionString = log.AuditAction?.Action ?? string.Empty;
-            if (!Enum.TryParse<AuditActionEnum>(actionString, out var actionEnum))
-            {
-                continue;
-            }
-
-            if (!EngagementAuditActionVisibilityRegistry.Entries.TryGetValue(actionEnum, out var visibility))
-            {
-                continue;
-            }
-
-            var roles = visibility.VisibleToRoles;
-            if (roles == null || roles.Length == 0)
-            {
-                continue;
-            }
-
-            bool hasAccess = currentUserService.IsAdmin() || roles.Any(r => currentUserService.IsInRole(r));
-            if (!hasAccess)
-            {
-                continue;
-            }
-
             var dto = await MapToDtoAsync(log);
-            items.Add(new EngagementAuditLogDto
+            dtos.Add(new EngagementAuditLogDto
             {
                 Id = dto.Id,
                 UserId = dto.UserId,
@@ -122,12 +103,18 @@ public class AuditLogService(
             });
         }
 
-        return new CursorPagedResult<EngagementAuditLogDto>
+        return new PagedResult<EngagementAuditLogDto>
         {
-            Items = items,
-            NextCursor = hasMore ? examined[^1].Id : null,
-            HasMore = hasMore
+            Items = dtos,
+            TotalCount = count,
+            Page = page,
+            PageSize = pageSize
         };
+    }
+
+    public async Task<List<SimpleUserDto>> GetEngagementAuditUsersAsync(int engagementId)
+    {
+        return await repository.GetEngagementAuditUsersAsync(engagementId);
     }
 
     private async Task<AuditLogDto> MapToDtoAsync(AuditLog auditLog)
