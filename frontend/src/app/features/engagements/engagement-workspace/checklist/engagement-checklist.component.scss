@@ -33,38 +33,8 @@
 .checklist-container {
   display: flex;
   flex-direction: column;
-  gap: $spacing-5;
-  padding: $spacing-6;
-  background: $color-bg;
-  min-height: 100%;
-}
-
-// Header
-.checklist-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: $spacing-3;
-}
-
-.checklist-header-left {
-  display: flex;
-  align-items: center;
-  gap: $spacing-2;
-}
-
-.checklist-title {
-  font-size: $font-size-xl;
-  font-weight: $font-weight-bold;
-  color: $color-text;
-  margin: 0;
-  letter-spacing: -0.3px;
-}
-
-.checklist-header-right {
-  display: flex;
-  align-items: center;
+  gap: $spacing-4;
+  font-family: $font-family-base;
 }
 
 .checklist-version {

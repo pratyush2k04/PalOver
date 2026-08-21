@@ -66,7 +66,6 @@ export const ENGAGEMENT_WORKSPACE_CONFIG = {
     { label: 'Risks', route: ENGAGEMENT_ROUTES.RISKS, enabled: true },
     { label: 'Assumptions & Decisions', route: ENGAGEMENT_ROUTES.ASSUMPTIONS, enabled: true },
     { label: 'Audits', route: ENGAGEMENT_ROUTES.AUDITS, enabled: true },
-    { label: 'Reporting', route: 'reporting', enabled: false },
     { label: 'Sign Off', route: ENGAGEMENT_ROUTES.SIGN_OFF, enabled: false }
   ]
 } as const;

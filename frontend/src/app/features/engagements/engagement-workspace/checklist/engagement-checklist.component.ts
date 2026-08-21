@@ -28,6 +28,7 @@ import {
   BlockItemDialogData,
   BlockItemDialogResult
 } from './dialogs/block-item-dialog/block-item-dialog.component';
+import { SectionHeaderComponent } from '@common/components/section-header/section-header';
 import {
   AttachEvidenceDialogComponent,
   AttachEvidenceDialogData,
@@ -39,7 +40,15 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
 @Component({
   selector: 'app-engagement-checklist',
   standalone: true,
-  imports: [CommonModule, FormsModule, InlineSVGModule, LoadingSpinnerComponent, StatusBadgeComponent, ButtonComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    InlineSVGModule,
+    LoadingSpinnerComponent,
+    StatusBadgeComponent,
+    ButtonComponent,
+    SectionHeaderComponent,
+  ],
   templateUrl: './engagement-checklist.component.html',
   styleUrl: './engagement-checklist.component.scss'
 })

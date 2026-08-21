@@ -1,31 +1,9 @@
+@use '../../../../../styles/tokens' as *;
 @use '../../../../../styles/mixins' as *;
 
 .risks-container {
-  padding: $spacing-6;
-  @include flex-column($spacing-6);
-}
-
-.risks-header {
-  @include flex-between;
-  align-items: flex-start;
-  gap: $spacing-4;
-
-  .header-title {
-    h2 {
-      margin: 0 0 $spacing-1 0;
-      font-family: $font-family-base;
-      font-size: 1.25rem;
-      font-weight: 700;
-      line-height: 1.25;
-      letter-spacing: -0.3px;
-      color: #1a1d23;
-    }
-    .subtitle {
-      margin: 0;
-      font-size: $font-size-sm;
-      color: $color-text-faint;
-    }
-  }
+  padding: 0;
+  @include flex-column($spacing-4);
 }
 
 .priority-banner {

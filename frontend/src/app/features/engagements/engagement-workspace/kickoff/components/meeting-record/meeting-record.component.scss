@@ -1,11 +1,12 @@
 @use '../../../../../../../styles/tokens' as *;
+@use '../../../../../../../styles/mixins' as *;
 
 .meeting-record-card {
   background: $color-surface;
   border: 1px solid $color-border-soft;
-  border-radius: $radius-sm;
-  padding: 1.5rem;
-  box-shadow: $shadow-card;
+  border-radius: $radius-lg;
+  padding: $spacing-6;
+  box-shadow: $shadow-sm;
 }
 
 .title {

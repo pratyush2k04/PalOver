@@ -30,6 +30,7 @@ import {
   RemoveAllocationDialogComponent,
   RemoveAllocationDialogData,
 } from './remove-allocation-dialog/remove-allocation-dialog.component';
+import { SectionHeaderComponent } from '@common/components/section-header/section-header';
 
 @Component({
   selector: 'app-resources',
@@ -41,6 +42,7 @@ import {
     StatusBadgeComponent,
     AlertComponent,
     LoadingSpinnerComponent,
+    SectionHeaderComponent,
   ],
   templateUrl: './resources.component.html',
   styleUrl: './resources.component.scss',
