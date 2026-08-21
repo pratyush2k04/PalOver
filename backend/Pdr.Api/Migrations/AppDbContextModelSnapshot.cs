@@ -4402,6 +4402,32 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
+                            Id = 16,
+                            Body = "{ItemTitle} blocked {UnresolvedDays} days — now at PM level.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 3,
+                            IsDeleted = false,
+                            Key = "BlockerEscalatedPM",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/risks",
+                            Title = "Escalation: {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Body = "{ItemTitle} blocked {UnresolvedDays} days — now at Leadership level.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 3,
+                            IsDeleted = false,
+                            Key = "BlockerEscalatedLeadership",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/risks",
+                            Title = "Escalation: {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
                             Id = 5,
                             Body = "All named resources for {RoleName} on {EngagementName} are now confirmed.",
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -4885,6 +4911,82 @@ namespace Pdr.Api.Migrations
                     b.HasIndex("RiskId");
 
                     b.ToTable("risk_comments", (string)null);
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Risks.RiskEscalationHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime>("EscalatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("escalated_at");
+
+                    b.Property<string>("EscalatedToRole")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("escalated_to_role");
+
+                    b.Property<int?>("EscalatedToUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("escalated_to_user_id");
+
+                    b.Property<string>("EscalationLevel")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("escalation_level");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("reason");
+
+                    b.Property<int>("RiskId")
+                        .HasColumnType("integer")
+                        .HasColumnName("risk_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EscalatedToUserId");
+
+                    b.HasIndex("RiskId");
+
+                    b.ToTable("risk_escalation_histories", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItem", b =>
@@ -5382,6 +5484,24 @@ namespace Pdr.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Risks.RiskEscalationHistory", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "EscalatedToUser")
+                        .WithMany()
+                        .HasForeignKey("EscalatedToUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Pdr.Api.Models.Risks.Risk", "Risk")
+                        .WithMany()
+                        .HasForeignKey("RiskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EscalatedToUser");
+
+                    b.Navigation("Risk");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.AccessTracker.AccessItemDefinition", b =>

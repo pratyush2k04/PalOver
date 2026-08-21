@@ -47,7 +47,7 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
     public async Task SaveChangesAsync() =>
         await context.SaveChangesAsync();
 
-        //for assigning
+    //for assigning
     public async Task<List<EngagementAssignment>> GetAssignmentsAsync(int engagementId) =>
         await context.EngagementAssignments
             .AsNoTracking()
@@ -124,4 +124,9 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
             ResourcingOpenCount = resourcingOpenCount
         };
     }
+
+    public async Task<Dictionary<int, Engagement>> GetByIdsAsync(IEnumerable<int> engagementIds) =>
+        await context.Engagements
+            .Where(e => engagementIds.Contains(e.EngagementId) && !e.IsDeleted)
+            .ToDictionaryAsync(e => e.EngagementId);
 }

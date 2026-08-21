@@ -21,4 +21,6 @@ public class RiskDto
     public string? SourceType { get; set; }
     public int? SourceItemId { get; set; }
     public string? SourceTitle { get; set; }
+
+    public string CurrentEscalationLevel { get; set; } = "None";
 }
