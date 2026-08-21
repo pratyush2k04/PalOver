@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.DTOs.Audit;
 using Pdr.Api.DTOs.Common;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Controllers;
@@ -24,11 +25,11 @@ public class EngagementAuditsController(IAuditLogService auditLogService) : Cont
     /// <param name="cursor">The Id to page backward from. Omit for the most recent entries.</param>
     /// <param name="limit">Maximum number of entries to return.</param>
     [HttpGet]
-    [ProducesResponseType(typeof(CursorPagedResult<EngagementAuditLogDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PagedResult<EngagementAuditLogDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> GetEngagementAuditLogs([FromQuery] int engagementId, [FromQuery] int? cursor, [FromQuery] int limit = 50)
+    public async Task<IActionResult> GetEngagementAuditLogs([FromQuery] int engagementId, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, [FromQuery] int? userId = null, [FromQuery] List<AuditCategoryEnum>? categories = null)
     {
-        var result = await auditLogService.GetEngagementAuditLogsAsync(engagementId, cursor, limit);
+        var result = await auditLogService.GetEngagementAuditLogsAsync(engagementId, page, pageSize, userId, categories);
         return Ok(result);
     }
 }

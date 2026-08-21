@@ -8,6 +8,6 @@ public interface IAuditLogService
 {
     Task LogAsync(AuditActionEnum action, IDictionary<string, object?> payload, int? engagementId = null, int? actingUserId = null);
 
-    Task<CursorPagedResult<AuditLogDto>> GetAuditLogsAsync(int? cursor, int limit);
-    Task<CursorPagedResult<EngagementAuditLogDto>> GetEngagementAuditLogsAsync(int engagementId, int? cursor, int limit);
+    Task<PagedResult<AuditLogDto>> GetAuditLogsAsync(int page, int pageSize);
+    Task<PagedResult<EngagementAuditLogDto>> GetEngagementAuditLogsAsync(int engagementId, int page, int pageSize, int? userId = null, List<AuditCategoryEnum>? categories = null);
 }

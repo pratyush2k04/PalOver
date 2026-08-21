@@ -23,11 +23,11 @@ public class AuditLogController(IAuditLogService auditLogService) : ControllerBa
     /// <param name="cursor">The Id to page backward from. Omit for the most recent entries.</param>
     /// <param name="limit">Maximum number of entries to return.</param>
     [HttpGet]
-    [ProducesResponseType(typeof(CursorPagedResult<AuditLogDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PagedResult<AuditLogDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> GetAuditLogs([FromQuery] int? cursor, [FromQuery] int limit = 50)
+    public async Task<IActionResult> GetAuditLogs([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
     {
-        var result = await auditLogService.GetAuditLogsAsync(cursor, limit);
+        var result = await auditLogService.GetAuditLogsAsync(page, pageSize);
         return Ok(result);
     }
 }
