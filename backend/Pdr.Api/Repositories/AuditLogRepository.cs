@@ -24,7 +24,7 @@ public class AuditLogRepository(AppDbContext context) : IAuditLogRepository
         await context.SaveChangesAsync();
     }
 
-    public async Task<List<AuditLog>> GetPageAsync(int? cursor, int limit, int? userId)
+    public async Task<List<AuditLog>> GetPageAsync(int? cursor, int limit, int? userId, int? engagementId = null)
     {
         return await context.AuditLogs
             .AsNoTracking()
@@ -32,6 +32,7 @@ public class AuditLogRepository(AppDbContext context) : IAuditLogRepository
             .Include(x => x.AuditAction)
             .Where(x => cursor == null || x.Id < cursor)
             .Where(x => userId == null || x.UserId == userId)
+            .Where(x => engagementId == null || x.EngagementId == engagementId)
             .OrderByDescending(x => x.Id)
             .Take(limit + 1)
             .ToListAsync();

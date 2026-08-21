@@ -1,13 +1,35 @@
-export type AuditAction =
-  | 'UserLoggedIn'
-  | 'UserCreated'
-  | 'UserUpdated'
-  | 'UserDeleted'
+export type AuditAction = 
+  | 'UserLoggedIn' 
+  | 'UserCreated' 
+  | 'UserUpdated' 
+  | 'UserDeleted' 
+  | 'DocumentVersioned' 
+  | 'DocumentUploaded' 
+  | 'UnauthorizedAccess' 
+  | 'AccountLockout' 
+  | 'ClientContactDetailsChanged' 
+  | 'ClientPersonaChanged' 
+  | 'LeadershipAllocated' 
+  | 'UserRoleAllocated' 
+  | 'PmAndTlAssigned' 
+  | 'PmAndTlReassigned' 
+  | 'DayOneSummaryGenerated' 
+  | 'MasterChecklistPublished' 
+  | 'BrownfieldItemAdded' 
+  | 'DiscoveryItemAdded'
   | 'ResourcingGapFlagRaised'
-  | 'ResourcingGapFlagCleared'
-  | string;
-
+  | 'ResourcingGapFlagCleared';
 export interface AuditLogDto {
+  id: number;
+  userId: number;
+  userName: string;
+  action: AuditAction;
+  details: string;
+  createdAt: string;
+  engagementId?: number | null;
+}
+
+export interface EngagementAuditLogDto {
   id: number;
   userId: number;
   userName: string;

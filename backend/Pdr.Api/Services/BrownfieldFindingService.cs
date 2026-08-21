@@ -70,6 +70,7 @@ public class BrownfieldFindingService(
                 ["FindingName"] = finding.Title,
                 ["ActorUserId"] = actorUserId
             },
+            engagementId: engagementId,
             actingUserId: actorUserId > 0 ? actorUserId : null);
 
         return MapToDto(created!);

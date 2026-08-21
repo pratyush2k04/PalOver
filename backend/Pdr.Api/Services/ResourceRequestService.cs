@@ -375,7 +375,8 @@ public class ResourceRequestService(
                     ["EngagementId"] = engagementId,
                     ["UnconfirmedCount"] = after.UnconfirmedCount,
                     ["DaysToBilling"] = after.DaysToBilling ?? 0
-                });
+                },
+                engagementId: engagementId);
 
             var assignments = await resourceRequestRepository.GetPmAndLeadershipAssignmentsAsync(engagementId);
             var notifData = JsonSerializer.Serialize(
@@ -400,7 +401,8 @@ public class ResourceRequestService(
                 new Dictionary<string, object?>
                 {
                     ["EngagementId"] = engagementId
-                });
+                },
+                engagementId: engagementId);
         }
     }
 }

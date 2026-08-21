@@ -1,9 +1,9 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, Input, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuditLogService } from './services/audit-log.service';
-import { AuditLogDto, AuditLogFilters } from './models/audit-log.model';
+import { AuditLogDto, AuditLogFilters, EngagementAuditLogDto } from './models/audit-log.model';
 import { AUDIT_LOG_MESSAGES, USER_ROLES } from '@shared/constants/app.constants';
 import { AuthService } from '@shared/services/auth';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
@@ -25,9 +25,21 @@ export class AuditLogComponent implements OnInit {
   private auditLogService = inject(AuditLogService);
   private authService = inject(AuthService);
 
-  readonly showUserColumn = this.authService.hasRole(USER_ROLES.LEADERSHIP) || this.authService.isAdmin();
+  @Input() engagementId: number | null = null;
 
-  allLogs = signal<AuditLogDto[]>([]);
+  get showUserColumn(): boolean {
+    return this.engagementId != null
+      || this.authService.hasRole(USER_ROLES.LEADERSHIP)
+      || this.authService.isAdmin();
+  }
+
+  get emptyStateMessage(): string {
+    return this.engagementId != null
+      ? 'No activity in the last 30 days.'
+      : 'No audit log entries found.';
+  }
+
+  allLogs = signal<(AuditLogDto | EngagementAuditLogDto)[]>([]);
   isLoading = signal(true);
   errorMessage = signal<string | null>(null);
 
@@ -57,6 +69,12 @@ export class AuditLogComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    if (this.engagementId != null) {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      this.filterFromDate = thirtyDaysAgo.toISOString().slice(0, 10);
+      this.onFilterChange();
+    }
     this.loadAllLogs();
   }
 
@@ -92,15 +110,20 @@ export class AuditLogComponent implements OnInit {
     downloadCsv(dataRows, header, 'audit-log-export');
   }
 
-  private matchesSearch(log: AuditLogDto, term: string): boolean {
+  private matchesSearch(log: AuditLogDto | EngagementAuditLogDto, term: string): boolean {
     return log.userName.toLowerCase().includes(term)
       || log.action.toLowerCase().includes(term)
       || log.details.toLowerCase().includes(term);
   }
 
-  private loadAllLogs(cursor: number | null = null, accumulated: AuditLogDto[] = []): void {
+  private loadAllLogs(cursor: number | null = null, accumulated: (AuditLogDto | EngagementAuditLogDto)[] = []): void {
     this.isLoading.set(true);
-    this.auditLogService.getAuditLogPage(cursor, 100).subscribe({
+
+    const request$ = this.engagementId != null
+      ? this.auditLogService.getEngagementAuditLogPage(this.engagementId, cursor, 100)
+      : this.auditLogService.getAuditLogPage(cursor, 100);
+
+    request$.subscribe({
       next: (result) => {
         const combined = [...accumulated, ...result.items];
         if (result.hasMore && result.nextCursor != null) {

@@ -220,6 +220,7 @@ public class TechnicalSummaryService(
                 ["EngagementId"] = engagement.EngagementId,
                 ["ActorUserId"] = actorUserId
             },
+            engagementId: engagement.EngagementId,
             actingUserId: actorUserId > 0 ? actorUserId : null);
 
         return summaryDto;

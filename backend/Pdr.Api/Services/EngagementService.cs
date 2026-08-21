@@ -315,6 +315,7 @@ public class EngagementService(
                 ["EngagementId"] = engagementId,
                 ["ActorUserId"] = actorUserId
             },
+            engagementId: engagementId,
             actingUserId: actorUserId > 0 ? actorUserId : null);
 
         if (requiredRole == RoleEnum.ProjectManagement)
@@ -520,6 +521,7 @@ public class EngagementService(
                 ["EngagementId"] = engagementId,
                 ["ActorUserId"] = actorUserId
             },
+            engagementId: engagementId,
             actingUserId: actorUserId > 0 ? actorUserId : null);
 
         return await GetLeadershipUsersAsync(engagementId);
