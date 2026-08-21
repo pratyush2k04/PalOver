@@ -39,14 +39,24 @@ export interface EngagementAuditLogDto {
   createdAt: string;
 }
 
+export type AuditCategory = 'Document' | 'Checklist' | 'Risk' | 'Access' | 'Handover' | 'Escalation' | 'ResourceAllocation' | 'TechnicalReadiness';
+
+export interface SimpleUserDto {
+  id: number;
+  name: string;
+}
+
 export interface AuditLogFilters {
   search: string;
   fromDate: string | null;
   toDate: string | null;
+  userId: number | null;
+  categories: AuditCategory[];
 }
 
-export interface CursorPagedResult<T> {
+export interface PagedResult<T> {
   items: T[];
-  nextCursor: number | null;
-  hasMore: boolean;
+  totalCount: number;
+  page: number;
+  pageSize: number;
 }

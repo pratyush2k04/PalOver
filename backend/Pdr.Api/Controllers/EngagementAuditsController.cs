@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.DTOs.Audit;
 using Pdr.Api.DTOs.Common;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Controllers;
@@ -21,14 +22,30 @@ public class EngagementAuditsController(IAuditLogService auditLogService) : Cont
     /// Returns entries irrespective of who the actor was.
     /// </summary>
     /// <param name="engagementId">The engagement ID.</param>
-    /// <param name="cursor">The Id to page backward from. Omit for the most recent entries.</param>
-    /// <param name="limit">Maximum number of entries to return.</param>
+    /// <param name="page">Page number</param>
+    /// <param name="pageSize">Number of items per page</param>
+    /// <param name="userId">Optional user ID filter</param>
+    /// <param name="categories">Optional category filter</param>
     [HttpGet]
-    [ProducesResponseType(typeof(CursorPagedResult<EngagementAuditLogDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PagedResult<EngagementAuditLogDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> GetEngagementAuditLogs([FromQuery] int engagementId, [FromQuery] int? cursor, [FromQuery] int limit = 50)
+    public async Task<IActionResult> GetEngagementAuditLogs([FromQuery] int engagementId, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, [FromQuery] int? userId = null, [FromQuery] List<AuditCategoryEnum>? categories = null)
     {
-        var result = await auditLogService.GetEngagementAuditLogsAsync(engagementId, cursor, limit);
+        var result = await auditLogService.GetEngagementAuditLogsAsync(engagementId, page, pageSize, userId, categories);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Retrieves a list of distinct users who have an entry in the audit log for a specific engagement.
+    /// This list only includes users that performed actions the current user is authorized to view.
+    /// </summary>
+    /// <param name="engagementId">The engagement ID.</param>
+    [HttpGet("users")]
+    [ProducesResponseType(typeof(List<SimpleUserDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetEngagementAuditUsers([FromQuery] int engagementId)
+    {
+        var result = await auditLogService.GetEngagementAuditUsersAsync(engagementId);
         return Ok(result);
     }
 }
