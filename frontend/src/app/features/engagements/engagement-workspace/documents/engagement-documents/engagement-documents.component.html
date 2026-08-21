@@ -1,6 +1,7 @@
 <div class="documents-container">
-  <app-section-header title="Documents">
-    <app-button type="button" variant="accent" (click)="openUploadModal()">
+  <div class="documents-header">
+    <h3 class="title">Documents</h3>
+    <app-button type="button" variant="flat" (click)="openUploadModal()">
       <span class="upload-icon" [inlineSVG]="'assets/icons/upload.svg'"></span>
       Upload
     </app-button>
