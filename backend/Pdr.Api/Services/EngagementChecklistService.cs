@@ -214,6 +214,7 @@ public class EngagementChecklistService(
         item.UpdatedBy = currentUserId.ToString();
 
         await checklistRepository.SaveChangesAsync();
+        await riskService.SyncAutoCreatedRisksAsync(engagementId);
 
         var updated = await checklistRepository.GetByEngagementIdAsync(engagementId)
             ?? throw new InvalidOperationException(MasterChecklistConstants.Messages.FailedToUpdateChecklist);
