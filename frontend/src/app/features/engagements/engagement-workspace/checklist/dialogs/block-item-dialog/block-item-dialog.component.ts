@@ -7,7 +7,6 @@ import { EngagementParticipant } from '@features/engagements/models/cadence.mode
 import { ButtonComponent } from '@common/components/button/button';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
-import { AuthService } from '@shared/services/auth';
 
 export interface BlockItemDialogData {
   itemTitle: string;
@@ -30,37 +29,22 @@ export interface BlockItemDialogResult {
 export class BlockItemDialogComponent {
   private fb = inject(FormBuilder);
   private dialogRef = inject<DialogRef<BlockItemDialogResult>>(DialogRef);
-  private authService = inject(AuthService);
   readonly data = inject<BlockItemDialogData>(DIALOG_DATA);
 
-  private get effectiveUsers(): { userId: number; fullName: string }[] {
-    const list = (this.data.assignedUsers || []).map((u) => ({
-      userId: Number(u.userId),
-      fullName: u.fullName
-    }));
-
-    const currentUser = this.authService.currentUser();
-    if (currentUser?.id && !list.some((u) => u.userId === currentUser.id)) {
-      list.unshift({
-        userId: currentUser.id,
-        fullName: `${currentUser.fullName} (You)`
-      });
-    }
-
-    return list;
-  }
-
-  readonly ownerOptions: SelectOption[] = this.effectiveUsers.map((user) => ({
-    value: user.userId,
-    label: user.fullName
-  }));
+  readonly ownerOptions: SelectOption[] = [
+    { value: null, label: '-- Select Owner --' },
+    ...(this.data.assignedUsers || []).map((user) => ({
+      value: Number(user.userId),
+      label: user.fullName
+    }))
+  ];
 
   readonly form = this.fb.group({
     reason: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
     personId: [
-      this.data.currentOwnerId != null && this.effectiveUsers.some((u) => u.userId === Number(this.data.currentOwnerId))
+      this.data.currentOwnerId != null
         ? Number(this.data.currentOwnerId)
-        : (this.effectiveUsers[0]?.userId ?? null),
+        : (this.data.assignedUsers?.[0]?.userId != null ? Number(this.data.assignedUsers[0].userId) : null),
       [Validators.required]
     ]
   });
@@ -89,9 +73,6 @@ export class BlockItemDialogComponent {
 
     const reason = (this.reasonControl.value || '').trim();
     const personId = Number(this.personIdControl.value);
-    if (!personId) {
-      return;
-    }
     this.dialogRef.close({ reason, personId });
   }
 }

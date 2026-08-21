@@ -1,9 +1,9 @@
-@use '../../../../../styles/tokens' as *;
 @use '../../../../../styles/mixins' as *;
 
 // Loading & Error states
 .checklist-error {
-  @include flex-center;
+  display: flex;
+  align-items: center;
   gap: $spacing-3;
   padding: $spacing-5 $spacing-6;
   background: $color-danger-bg;
@@ -12,22 +12,124 @@
   margin: $spacing-6;
   color: $color-danger;
 
-  .error-icon { font-size: $font-size-lg; }
+  .error-icon { font-size: $font-size-xl; }
   p { margin: 0; font-size: $font-size-sm; }
 }
 
+// Container
 .checklist-container {
   display: flex;
   flex-direction: column;
-  gap: $spacing-4;
-  padding: 0;
+  gap: $spacing-5;
+  padding: $spacing-6;
+  background: $color-bg;
   min-height: 100%;
+}
+
+// Header
+.checklist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: $spacing-3;
+}
+
+.checklist-header-left {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+}
+
+.checklist-title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.checklist-header-right {
+  display: flex;
+  align-items: center;
 }
 
 .checklist-version {
   font-size: $font-size-xs;
   color: $color-text-faint;
   font-weight: $font-weight-semibold;
+}
+
+// Filters Toolbar
+.checklist-filters {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  flex-wrap: wrap;
+
+  .search-input {
+    flex: 1;
+    min-width: 200px;
+    max-width: 280px;
+    border: 1px solid $color-border-input;
+    border-radius: $radius-md;
+    padding: $spacing-2 $spacing-3;
+    font-size: $font-size-sm;
+    color: $color-text;
+    background-color: $color-surface;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &::placeholder {
+      color: $color-text-fainter;
+    }
+
+    &:hover {
+      border-color: $color-border;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+    }
+  }
+
+  .filter-select {
+    min-width: 140px;
+    border: 1px solid $color-border-input;
+    border-radius: $radius-md;
+    padding: $spacing-2 $spacing-3;
+    font-size: $font-size-sm;
+    color: $color-text;
+    background-color: $color-surface;
+    cursor: pointer;
+    transition: border-color 0.15s;
+
+    &:hover {
+      border-color: $color-border;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+    }
+  }
+}
+
+.empty-filter-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-3;
+  padding: $spacing-8;
+  background: $color-surface;
+  border: 1px dashed $color-border-soft;
+  border-radius: $radius-lg;
+  color: $color-text-faint;
+  font-size: $font-size-sm;
+  text-align: center;
 }
 
 // Callout Gate Banner
@@ -51,13 +153,15 @@
 }
 
 .callout-icon {
-  font-size: $font-size-xl;
+  font-size: $font-size-2xl;
   flex-shrink: 0;
-  margin-top: $spacing-1;
+  margin-top: 2px;
 }
 
 .callout-body {
-  @include flex-column($spacing-2);
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
   flex: 1;
 }
 
@@ -80,8 +184,10 @@
 
 .gate-incomplete-list {
   margin: $spacing-1 0 $spacing-3 0;
-  padding-left: $spacing-5;
-  @include flex-column($spacing-1);
+  padding-left: $spacing-4;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
 
   li {
     font-size: $font-size-sm;
@@ -94,8 +200,8 @@
   }
 
   .gate-item-status-separator {
-    margin: 0 $spacing-2;
-    color: $color-danger-border;
+    margin: 0 $spacing-1;
+    color: #f87171;
   }
 
   .gate-item-status {
@@ -104,82 +210,69 @@
   }
 }
 
-// Main Card Wrapper
-.checklist-main-card {
-  background-color: $color-surface;
+// Category cards
+.category-card {
+  background: $color-surface;
   border: 1px solid $color-border-soft;
   border-radius: $radius-lg;
-  box-shadow: $shadow-sm;
   overflow: hidden;
-  padding: $spacing-6;
-  @include flex-column($spacing-6);
-}
-
-// Category sections
-.category-section,
-.category-card {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-2;
+  box-shadow: $shadow-card;
 }
 
 .category-header {
-  @include flex-between;
-  padding: $spacing-1 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-3 $spacing-5;
+  background: $color-surface-hover;
+  border-bottom: 1px solid $color-border-soft;
 }
 
 .category-name {
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
   color: $color-text;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.8px;
 }
 
 .category-count {
   font-size: $font-size-xs;
-  color: $color-text-faint;
+  color: $color-text-fainter;
 }
 
 // Table
 .checklist-table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  background: $color-surface;
-  border: 1px solid $color-border-soft;
-  border-radius: $radius-lg;
-  overflow: hidden;
-  box-shadow: $shadow-sm;
+  border-collapse: collapse;
 
   thead tr {
-    background-color: $color-surface;
     border-bottom: 1px solid $color-border-soft;
   }
 
   th {
-    padding: $spacing-3 $spacing-5;
+    padding: $spacing-2 $spacing-5;
     font-size: $font-size-xs;
     font-weight: $font-weight-semibold;
-    color: $color-text-faint;
-    letter-spacing: 0.05em;
+    color: $color-text-fainter;
+    letter-spacing: 0.5px;
     text-align: left;
     background: $color-surface;
   }
 
   tbody tr {
     border-bottom: 1px solid $color-border-soft;
-    transition: background-color $transition-fast;
+    transition: background 0.15s ease;
 
     &:last-child { border-bottom: none; }
-    &:hover { background-color: $color-surface-hover; }
+    &:hover { background: $color-bg; }
 
     &.row-not-applicable {
-      background-color: $color-surface;
+      background: $color-bg;
       opacity: 0.85;
     }
 
     &.row-blocked {
-      background-color: $color-danger-bg;
+      background: $color-danger-bg;
     }
   }
 
@@ -189,12 +282,13 @@
   }
 }
 
-.col-item { width: 48%; }
+.col-item { width: 36%; }
+.col-owner { width: 16%; }
+.col-evidence { width: 18%; }
 .col-status { width: 14%; }
-.col-owner { width: 20%; }
+.col-actions { width: 16%; }
 .col-category { width: 20%; }
 .col-reason { width: 30%; }
-.col-actions { width: 18%; }
 
 .cell-item {
   font-size: $font-size-sm;
@@ -214,7 +308,7 @@
 
   &.text-strikethrough {
     text-decoration: line-through;
-    color: $color-text-faint;
+    color: $color-text-fainter;
   }
 }
 
@@ -226,21 +320,76 @@
 
   .reason-label {
     font-weight: $font-weight-semibold;
-    color: $color-text-muted;
+    color: $color-text;
   }
 
   .rejection-note {
     color: $color-danger;
-    margin-left: $spacing-2;
+    margin-left: $spacing-1;
   }
 }
 
 .cell-status,
 .cell-owner,
+.cell-evidence,
 .cell-category,
 .cell-reason,
 .cell-actions {
   font-size: $font-size-sm;
+}
+
+.cell-evidence {
+  .evidence-required-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-2;
+  }
+
+  .btn-evidence-view {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-1;
+    padding: $spacing-1 $spacing-2;
+    background: $color-primary-light;
+    color: $color-primary;
+    border: 1px solid #bfdbfe;
+    border-radius: $radius-sm;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+    max-width: 170px;
+    text-decoration: none;
+
+    .evidence-icon {
+      font-size: 11px;
+    }
+
+    .evidence-text {
+      @include text-truncate;
+    }
+
+    &:hover {
+      background: #dbeafe;
+      color: $color-primary-hover;
+    }
+  }
+
+  .btn-evidence-add {
+    padding: $spacing-1 $spacing-2;
+    background: transparent;
+    border: 1px dashed $color-border-input;
+    border-radius: $radius-sm;
+    color: $color-text-faint;
+    font-size: $font-size-xs;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover {
+      border-color: $color-primary;
+      color: $color-primary;
+      background: $color-primary-light;
+    }
+  }
 }
 
 .cell-category {
@@ -253,25 +402,25 @@
 
   .reason-label {
     font-weight: $font-weight-semibold;
-    color: $color-text-muted;
+    color: $color-text;
     font-style: normal;
   }
 
   .rejection-note {
     color: $color-danger;
-    margin-left: $spacing-2;
+    margin-left: $spacing-1;
   }
 }
 
 .owner-select {
   width: 100%;
-  max-width: 11.25rem;
+  max-width: 180px;
   padding: $spacing-1 $spacing-2;
   font-size: $font-size-xs;
   color: $color-text;
   background: $color-surface;
-  border: 1px solid $color-border-soft;
-  border-radius: $radius-md;
+  border: 1px solid $color-border-input;
+  border-radius: $radius-sm;
   cursor: pointer;
 
   &:disabled {
@@ -282,10 +431,11 @@
   &:focus {
     outline: none;
     border-color: $color-primary;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
   }
 }
 
+// Actions Group
 .actions-group {
   display: flex;
   align-items: center;
@@ -293,52 +443,13 @@
   gap: $spacing-2;
 }
 
-.actions-group {
-  ::ng-deep app-button[variant="icon"] .btn--icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.75rem;
-    height: 1.75rem;
-
-    span, svg {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 14px;
-      height: 14px;
-
-      svg {
-        width: 14px;
-        height: 14px;
-      }
-    }
-  }
-}
-
-.btn-flag-icon {
-  ::ng-deep .btn--icon {
-    color: #ef4444;
-
-    span, svg {
-      width: 12px;
-      height: 12px;
-
-      svg {
-        width: 12px;
-        height: 12px;
-      }
-    }
-
-    &:hover:not(:disabled) {
-      background-color: #fef2f2;
-      color: #dc2626;
-    }
-  }
-}
-
+// Consolidated Not Applicable section
 .not-applicable-section {
   .category-header {
-    background: transparent;
+    background: $color-surface-hover;
   }
+}
+
+.text-faint {
+  color: $color-text-fainter;
 }
