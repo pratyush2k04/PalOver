@@ -150,6 +150,16 @@
     border: 1px solid $color-success-border;
     border-left: 5px solid $color-success;
   }
+
+  &.callout-exemption {
+    background: $color-warning-bg;
+    border: 1px solid $color-warning-border;
+    border-left: 5px solid $color-warning;
+
+    .callout-text {
+      color: $color-warning-text;
+    }
+  }
 }
 
 .callout-icon {
@@ -173,6 +183,10 @@
 
   &.success-headline {
     color: $color-success-text;
+  }
+
+  &.exemption-headline {
+    color: $color-warning-text;
   }
 }
 

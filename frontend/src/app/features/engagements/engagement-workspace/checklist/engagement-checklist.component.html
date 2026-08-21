@@ -27,6 +27,25 @@
       </div>
     </div>
 
+    <!-- Pending Exemption Requests Callout -->
+    @if (checklist()!.pendingExemptionsCount > 0) {
+      <div class="callout callout-gate callout-exemption">
+        <div class="callout-icon">⚖️</div>
+        <div class="callout-body">
+          <h2 class="callout-headline exemption-headline">
+            {{ checklist()!.pendingExemptionsCount === 1 ? '1 Exemption Request Pending Leadership Review' : checklist()!.pendingExemptionsCount + ' Exemption Requests Pending Leadership Review' }}
+          </h2>
+          <p class="callout-text">
+            @if (isLeadership()) {
+              A Project Manager has requested to mark mandatory checklist item(s) as Not Applicable. Please review and approve or reject the request(s) in the table below.
+            } @else {
+              Exemption request(s) have been submitted and are awaiting Leadership review.
+            }
+          </p>
+        </div>
+      </div>
+    }
+
     <!-- Kickoff Readiness Gate Callout -->
     @if (checklist()!.incompleteMandatoryItems.length > 0) {
       <div class="callout callout-gate callout-warning">
@@ -74,6 +93,7 @@
         <option value="Incomplete">Incomplete</option>
         <option value="Complete">Complete</option>
         <option value="Blocked">Blocked</option>
+        <option value="Pending">Pending Approval</option>
       </select>
       <select class="filter-select" [ngModel]="selectedEvidenceFilter()" (ngModelChange)="selectedEvidenceFilter.set($event)">
         <option value="all">All Evidence</option>
