@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
@@ -10,8 +10,9 @@ import { AuthService } from '@shared/services/auth';
 import { ToastService } from '@common/services/toast/toast';
 import { ENGAGEMENT_WORKSPACE_CONFIG } from '@shared/constants/engagements.constants';
 import { USER_ROLES } from '@shared/constants/users.constants';
-import { DayOneSignOffRequest, EngagementInfoDto } from '../models/engagement.model';
+import { DayOneSignOffRequest, EngagementInfoDto, EngagementOwners } from '../models/engagement.model';
 import { TabItem, TabsComponent } from '@common/components/tabs/tabs';
+import { ReadinessCircleComponent } from '@shared/readiness-circle/readiness-circle';
 import { ButtonComponent } from '@common/components/button/button';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DayOneSignOffDialogComponent } from './components/day-one-sign-off-dialog/day-one-sign-off-dialog.component';
@@ -21,12 +22,13 @@ import { DayOneSignOffDialogComponent } from './components/day-one-sign-off-dial
   standalone: true,
   imports: [
     CommonModule,
+    DatePipe, 
     RouterOutlet,
     TabsComponent,
     ButtonComponent,
     InlineSVGModule,
     DayOneSignOffDialogComponent
-  ],
+  , InlineSVGModule, ReadinessCircleComponent],
   templateUrl: './engagement-workspace.component.html',
   styleUrl: './engagement-workspace.component.scss'
 })
@@ -48,6 +50,7 @@ export class EngagementWorkspaceComponent {
 
   engagement = signal<EngagementInfoDto | null>(null);
   readiness = signal<KickoffReadinessDto | null>(null);
+  owners = signal<EngagementOwners | null>(null);
   isLoading = signal<boolean>(true);
 
   // Day-1 Sign-off state
@@ -90,6 +93,25 @@ export class EngagementWorkspaceComponent {
   readonly activeTabId = computed(
     () => this.tabs().find((tab) => this.currentUrl().includes(`/${tab.route}`))?.id ?? null
   );
+
+  readonly scorePercent = computed(() => {
+    const r = this.readiness();
+    return r ? Math.round(r.score) : 0;
+  });
+
+  readonly isBrownfield = computed(() =>
+    (this.engagement()?.engagementType ?? '').toLowerCase().includes('brown')
+  );
+
+  readonly isGreenfield = computed(() =>
+    (this.engagement()?.engagementType ?? '').toLowerCase().includes('green')
+  );
+
+  readonly isFullyReady = computed(() => {
+    return this.scorePercent() === 100;
+  });
+
+
 
   constructor() {
     effect(() => {
@@ -158,3 +180,4 @@ export class EngagementWorkspaceComponent {
     this.isSignOffDialogOpen.set(false);
   }
 }
+

@@ -1,112 +1,208 @@
+@use '../../../../styles/mixins' as *;
 @use '../../../../styles/tokens' as *;
 @use '../../../../styles/mixins' as *;
 
 .workspace-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  @include flex-column($spacing-5);
+  padding: $spacing-6;
+  background-color: $color-bg;
+  min-height: 100%;
+  box-sizing: border-box;
   font-family: $font-family-base;
 }
 
-.workspace-header {
-  display: flex;
-  justify-content: space-between;
+.workspace-header-card {
+  @include flex-between;
   align-items: center;
-  padding: 1rem 1.5rem;
+  padding: $spacing-6 $spacing-8;
   background-color: $color-surface;
-  border-bottom: 1px solid $color-border-soft;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-sm;
   gap: 1.5rem;
 }
 
-.header-info h1 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.5rem;
-  color: $color-text;
-}
-
-.header-info p,
-.header-metrics p {
-  margin: 0.25rem 0;
-  font-size: 0.875rem;
-  color: $color-text-muted;
-}
-
-.placeholder {
-  color: $color-text-fainter;
-  font-style: italic;
-}
-
-.kickoff-ready-badge {
-  margin-left: 0.5rem;
-  padding: 0.125rem 0.5rem;
-  border-radius: $radius-full;
-  background-color: $color-success-bg;
-  color: $color-success-text;
-  border: 1px solid $color-success-border;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
-}
-
-.header-actions {
+.header-main-info {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: $spacing-6;
+  flex: 1;
+  min-width: 0;
 }
 
-.day-one-signed-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.375rem 0.75rem;
-  border-radius: $radius-md;
-  background-color: $color-success-bg;
-  border: 1px solid $color-success-border;
-  color: $color-success-text;
-  font-size: $font-size-sm;
+.briefcase-icon-box {
+  @include flex-center;
+  width: 3.75rem;
+  height: 3.75rem;
+  background-color: $color-primary-light;
+  border-radius: $radius-xl;
+  flex-shrink: 0;
 
-  .badge-icon {
+  .briefcase-icon {
+    @include flex-center;
+    width: 2rem;
+    height: 2rem;
+    color: $color-primary;
+
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+  }
+}
+
+.title-and-metadata {
+  @include flex-column($spacing-3);
+  min-width: 0;
+
+  .title-with-badge {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    flex-wrap: wrap;
+    margin-bottom: $spacing-1;
+
+    .engagement-title {
+      margin: 0;
+      font-size: $font-size-2xl;
+      font-weight: $font-weight-bold;
+      color: $color-text;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+    }
+
+    .type-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: $spacing-1 $spacing-3;
+      background-color: $color-surface-hover;
+      color: $color-text-muted;
+      border: 1px solid $color-border-soft;
+      border-radius: $radius-full;
+      font-size: $font-size-xs;
+      font-weight: $font-weight-semibold;
+      line-height: 1.2;
+
+      &--brownfield {
+        background-color: $color-warning-bg;
+        color: $color-warning-text;
+        border-color: $color-warning-border;
+      }
+
+      &--greenfield {
+        background-color: $color-success-bg;
+        color: $color-success-text;
+        border-color: $color-success-border;
+      }
+    }
+  }
+}
+
+.metadata-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $spacing-3;
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+
+  .meta-item {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    width: 1.125rem;
-    height: 1.125rem;
-    flex-shrink: 0;
+    gap: $spacing-1;
 
-    ::ng-deep span,
-    ::ng-deep svg,
-    svg {
-      display: block;
+    .meta-icon {
+      @include flex-center;
       width: 1.125rem;
       height: 1.125rem;
-      stroke-width: 2.25;
+      color: $color-text-faint;
+      flex-shrink: 0;
+
+      svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+    }
+
+    .meta-label {
+      font-weight: $font-weight-medium;
+      color: $color-text-muted;
+    }
+
+    .meta-val {
+      font-weight: $font-weight-normal;
+      color: $color-text;
     }
   }
 
-  .badge-content {
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
+  .meta-dot {
+    color: $color-border-soft;
+    font-weight: $font-weight-bold;
+    user-select: none;
   }
 
-  &.exception-badge {
-    background-color: $color-warning-bg;
-    border-color: $color-warning-border;
-    color: $color-warning-text;
+  &--owners {
+    gap: $spacing-8;
+    margin-top: $spacing-1;
   }
+}
 
-  .exception-tag {
-    font-size: $font-size-xs;
-    padding: 0.1rem 0.35rem;
-    border-radius: $radius-sm;
-    background-color: #fef08a;
-    color: #854d0e;
+.header-divider {
+  width: 1px;
+  height: 4rem;
+  background-color: $color-border-soft;
+  margin: 0 $spacing-8;
+  flex-shrink: 0;
+}
+
+.header-readiness-status {
+  display: flex;
+  align-items: center;
+  gap: $spacing-5;
+  flex-shrink: 0;
+}
+
+.readiness-details {
+  @include flex-column($spacing-1);
+
+  .readiness-label {
+    font-size: $font-size-sm;
     font-weight: $font-weight-semibold;
+    color: $color-text-muted;
   }
+
+  .status-badge {
+    @include status-badge($color-danger-bg, $color-danger-text);
+    font-size: $font-size-xs;
+    padding: $spacing-1 $spacing-3;
+
+    &--not-ready {
+      background-color: $color-danger-bg;
+      color: $color-danger-text;
+    }
+
+    &--ready {
+      background-color: $color-success-bg;
+      color: $color-success-text;
+    }
+  }
+}
+
+.workspace-header-skeleton {
+  padding: $spacing-6 $spacing-8;
+  background-color: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-xl;
+  color: $color-text-muted;
+}
+
+.workspace-tabs-wrapper {
+  margin-top: $spacing-1;
 }
 
 .workspace-content {
   flex-grow: 1;
-  padding: 1.5rem;
-  background-color: $color-bg;
-  overflow-y: auto;
+  padding-top: $spacing-2;
 }

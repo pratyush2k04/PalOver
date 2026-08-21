@@ -103,23 +103,4 @@ app-paginator {
   gap: 1.5rem;
 }
 
-.readiness-ring {
-  position: relative;
-  width: 52px;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  svg circle {
-    transition: stroke-dashoffset 0.3s ease;
-  }
-}
-
-.readiness-value {
-  position: absolute;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #1a1a1a;
-}
 

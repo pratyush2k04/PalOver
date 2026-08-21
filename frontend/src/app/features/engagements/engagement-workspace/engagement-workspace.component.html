@@ -1,55 +1,91 @@
 <div class="workspace-container">
-  @if (!isLoading() && engagement(); as eng) {
-    <div class="workspace-header">
-      <div class="header-info">
-        <h1>{{ eng.engagementName }}</h1>
-        <p><strong>Type:</strong> {{ eng.engagementType }}</p>
-      </div>
-      <div class="header-metrics">
-        <p><strong>Kickoff Date:</strong> {{ eng.kickoffDate }}</p>
-        <p><strong>Billing Date:</strong> {{ eng.billingStartDate || '—' }}</p>
-        <p>
-          <strong>Readiness Score:</strong> {{ readiness()?.score ?? '—' }}
-          @if (eng.isKickoffReady) {
-            <span class="kickoff-ready-badge">Kickoff-ready</span>
-          }
-        </p>
-        <p><strong>Client Contact:</strong> {{ eng.clientName }}</p>
+  @if (!isLoading() && engagement()) {
+    <div class="workspace-header-card">
+      <div class="header-main-info">
+        <div class="briefcase-icon-box">
+          <span class="briefcase-icon" [inlineSVG]="'assets/icons/briefcase.svg'"></span>
+        </div>
+
+        <div class="title-and-metadata">
+          <div class="title-with-badge">
+            <h1 class="engagement-title">{{ engagement()!.engagementName }}</h1>
+            <span
+              class="type-badge"
+              [class.type-badge--brownfield]="isBrownfield()"
+              [class.type-badge--greenfield]="isGreenfield()"
+            >
+              {{ engagement()!.engagementType }}
+            </span>
+          </div>
+
+          <div class="metadata-row">
+            <span class="meta-item">
+              <span class="meta-icon" [inlineSVG]="'assets/icons/user.svg'"></span>
+              <span class="meta-label">Client:</span>
+              <span class="meta-val">{{ engagement()!.clientName }}</span>
+            </span>
+            <span class="meta-dot">·</span>
+            <span class="meta-item">
+              <span class="meta-icon" [inlineSVG]="'assets/icons/calendar.svg'"></span>
+              <span class="meta-label">Kickoff:</span>
+              <span class="meta-val">{{ engagement()!.kickoffDate | date: 'dd MMM yyyy' }}</span>
+            </span>
+            @if (engagement()!.billingStartDate) {
+              <span class="meta-dot">·</span>
+              <span class="meta-item">
+                <span class="meta-icon" [inlineSVG]="'assets/icons/calendar.svg'"></span>
+                <span class="meta-label">Billing:</span>
+                <span class="meta-val">{{ engagement()!.billingStartDate | date: 'dd MMM yyyy' }}</span>
+              </span>
+            }
+          </div>
+
+          <div class="metadata-row metadata-row--owners">
+            <span class="meta-item">
+              <span class="meta-icon" [inlineSVG]="'assets/icons/user.svg'"></span>
+              <span class="meta-label">PM:</span>
+              <span class="meta-val">{{ owners()?.projectManagerName || 'Unassigned' }}</span>
+            </span>
+            <span class="meta-item">
+              <span class="meta-icon" [inlineSVG]="'assets/icons/user.svg'"></span>
+              <span class="meta-label">TL:</span>
+              <span class="meta-val">{{ owners()?.techLeadName || 'Unassigned' }}</span>
+            </span>
+          </div>
+
+
+        </div>
       </div>
 
-      <div class="header-actions">
-        @if (eng.dayOneSignOff) {
-          <div class="day-one-signed-badge" [class.exception-badge]="eng.dayOneSignOff.isException">
-            <span
-              class="badge-icon"
-              [inlineSVG]="eng.dayOneSignOff.isException ? 'assets/icons/alert-circle.svg' : 'assets/icons/check-circle.svg'"
-            ></span>
-            <div class="badge-content">
-              <strong>Day-1 Signed Off</strong>
-              @if (eng.dayOneSignOff.isException) {
-                <span class="exception-tag" [title]="eng.dayOneSignOff.exceptionJustification || 'Signed off with exception'">Exception</span>
-              }
-            </div>
-          </div>
-        } @else if (isAuthorizedForSignOff()) {
-          <app-button
-            variant="flat"
-            [disabled]="!eng.isKickoffReady"
-            [title]="!eng.isKickoffReady ? 'Kickoff must be completed before Day-1 sign-off' : 'Sign off Day-1 readiness'"
-            (click)="openSignOffDialog()"
+      <div class="header-divider"></div>
+
+      <div class="header-readiness-status">
+        <app-readiness-circle [score]="scorePercent()" size="lg" />
+
+        <div class="readiness-details">
+          <span class="readiness-label">Readiness</span>
+          <span
+            class="status-badge"
+            [class.status-badge--ready]="isFullyReady()"
+            [class.status-badge--not-ready]="!isFullyReady()"
           >
-            Sign Off Day-1
-          </app-button>
-        }
+            {{ isFullyReady() ? 'Kickoff ready' : 'Not ready' }}
+          </span>
+        </div>
       </div>
     </div>
-  } @else if (isLoading()) {
-    <div class="workspace-header">
+  }
+
+
+  @if (isLoading()) {
+    <div class="workspace-header-skeleton">
       <p>Loading engagement details...</p>
     </div>
   }
 
-  <app-tabs [tabs]="tabs()" [activeId]="activeTabId()" />
+  <div class="workspace-tabs-wrapper">
+    <app-tabs [tabs]="tabs()" [activeId]="activeTabId()" />
+  </div>
 
   <div class="workspace-content">
     <router-outlet></router-outlet>
@@ -66,3 +102,5 @@
     />
   }
 </div>
+
+

@@ -41,24 +41,7 @@
           </div>
 
           <div class="engagement-actions">
-            <div class="readiness-ring">
-              <svg width="52" height="52" viewBox="0 0 52 52">
-                <circle cx="26" cy="26" r="20" fill="none" stroke="#e5e7eb" stroke-width="4" />
-                <circle
-                  cx="26"
-                  cy="26"
-                  r="20"
-                  fill="none"
-                  [attr.stroke]="readinessColor(engagement.displayReadinessScore)"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  [attr.stroke-dasharray]="2 * 3.14159 * 20"
-                  [attr.stroke-dashoffset]="ringOffset(engagement.displayReadinessScore)"
-                  transform="rotate(-90 26 26)"
-                />
-              </svg>
-              <span class="readiness-value">{{ engagement.displayReadinessScore }}%</span>
-            </div>
+            <app-readiness-circle [score]="engagement.displayReadinessScore" size="sm" />
 
             <app-button
               type="button"
