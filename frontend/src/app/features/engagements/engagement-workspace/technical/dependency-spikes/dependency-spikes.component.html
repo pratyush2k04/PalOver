@@ -69,23 +69,25 @@
                 </td>
                 @if (canManage()) {
                   <td class="actions-cell">
-                    <div class="action-buttons">
-                      <button
+                    <div class="action-btn-group">
+                      <app-button
                         type="button"
-                        class="action-icon-btn"
-                        (click)="openEditDialog(spike)"
+                        variant="icon"
+                        class="btn-action"
+                        ariaLabel="Edit spike"
                         [appTooltip]="'Edit spike'"
-                      >
-                        <span [inlineSVG]="'assets/icons/edit.svg'"></span>
-                      </button>
-                      <button
+                        (click)="openEditDialog(spike)">
+                        <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                      </app-button>
+                      <app-button
                         type="button"
-                        class="action-icon-btn delete-btn"
-                        (click)="onDeleteSpike(spike)"
+                        variant="icon"
+                        class="btn-action btn-danger"
+                        ariaLabel="Delete spike"
                         [appTooltip]="'Delete spike'"
-                      >
-                        <span [inlineSVG]="'assets/icons/trash.svg'"></span>
-                      </button>
+                        (click)="onDeleteSpike(spike)">
+                        <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
+                      </app-button>
                     </div>
                   </td>
                 }
