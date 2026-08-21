@@ -41,14 +41,6 @@
 
           <div class="engagement-actions">
             <app-readiness-circle [score]="engagement.displayReadinessScore" size="sm" />
-
-            <app-button
-              type="button"
-              variant="stroked"
-              (click)="$event.stopPropagation(); openEngagement(engagement.id)"
-            >
-              Open
-            </app-button>
           </div>
         </div>
       }

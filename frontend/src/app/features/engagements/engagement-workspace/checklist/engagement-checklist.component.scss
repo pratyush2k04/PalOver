@@ -1,46 +1,61 @@
-@use '../../../../styles/tokens' as *;
-@use '../../../../styles/mixins' as *;
+// Variables
+$color-bg: #f8f9fb;
+$color-card-bg: #ffffff;
+$color-border: #e8eaed;
+$color-header-bg: #f1f3f6;
+$color-text-primary: #1a1d23;
+$color-text-secondary: #6b7280;
+$color-text-muted: #9ca3af;
+
+$color-incomplete-border: #d1d5db;
 
 // Loading & Error states
 .checklist-error {
-  @include flex-center;
-  gap: $spacing-3;
-  padding: $spacing-5 $spacing-6;
-  background: $color-danger-bg;
-  border: 1px solid $color-danger-border;
-  border-radius: $radius-lg;
-  margin: $spacing-6;
-  color: $color-danger;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  margin: 24px;
+  color: #dc2626;
 
-  .error-icon { font-size: 1.25rem; }
-  p { margin: 0; font-size: $font-size-sm; }
+  .error-icon { font-size: 20px; }
+  p { margin: 0; font-size: 14px; }
 }
 
 // Container
 .checklist-container {
-  @include flex-column($spacing-5);
-  padding: $spacing-6;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
   background: $color-bg;
   min-height: 100%;
 }
 
 // Header
 .checklist-header {
-  @include flex-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
-  gap: $spacing-3;
+  gap: 12px;
 }
 
 .checklist-header-left {
-  @include flex-center;
-  gap: $spacing-2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .checklist-title {
-  font-size: $font-size-xl;
-  font-weight: $font-weight-bold;
-  color: $color-text;
+  font-size: 20px;
+  font-weight: 700;
+  color: $color-text-primary;
   margin: 0;
+  letter-spacing: -0.3px;
 }
 
 .checklist-header-right {
@@ -49,111 +64,117 @@
 }
 
 .checklist-version {
-  font-size: $font-size-xs;
-  color: $color-text-faint;
-  font-weight: $font-weight-semibold;
+  font-size: 12px;
+  color: $color-text-muted;
+  font-weight: 600;
 }
 
-// Callout Gate Banner
+// Callout Gate Banner (Image 2 style)
 .callout {
   display: flex;
-  gap: $spacing-4;
-  padding: $spacing-5 $spacing-6;
-  border-radius: $radius-xl;
+  gap: 16px;
+  padding: 20px 24px;
+  border-radius: 12px;
 
   &.callout-warning {
-    background: $color-danger-bg;
-    border: 1px solid $color-danger-border;
-    border-left: 5px solid $color-danger;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-left: 5px solid #dc2626;
   }
 
   &.callout-success {
-    background: $color-success-bg;
-    border: 1px solid $color-success-border;
-    border-left: 5px solid $color-success;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-left: 5px solid #16a34a;
   }
 }
 
 .callout-icon {
-  font-size: 1.5rem;
+  font-size: 24px;
   flex-shrink: 0;
-  margin-top: 0.125rem;
+  margin-top: 2px;
 }
 
 .callout-body {
-  @include flex-column($spacing-2);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   flex: 1;
 }
 
 .callout-headline {
-  font-size: $font-size-sm;
-  font-weight: $font-weight-bold;
-  color: $color-danger-text;
+  font-size: 15px;
+  font-weight: 700;
+  color: #991b1b;
   margin: 0;
 
   &.success-headline {
-    color: $color-success-text;
+    color: #166534;
   }
 }
 
 .callout-text {
-  font-size: $font-size-xs;
-  color: $color-success-text;
+  font-size: 13px;
+  color: #166534;
   margin: 0;
 }
 
 .gate-incomplete-list {
-  margin: $spacing-1 0 $spacing-3 0;
-  padding-left: 1.125rem;
-  @include flex-column($spacing-1);
+  margin: 4px 0 12px 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 
   li {
-    font-size: $font-size-xs;
-    color: $color-danger-text;
+    font-size: 13px;
+    color: #7f1d1d;
     line-height: 1.4;
   }
 
   .gate-item-title {
-    font-weight: $font-weight-semibold;
+    font-weight: 600;
   }
 
   .gate-item-status-separator {
-    margin: 0 $spacing-1;
-    color: $color-danger-border;
+    margin: 0 6px;
+    color: #f87171;
   }
 
   .gate-item-status {
-    color: $color-danger;
-    font-weight: $font-weight-medium;
+    color: #dc2626;
+    font-weight: 500;
   }
 }
 
 // Category cards
 .category-card {
-  background: $color-surface;
-  border: 1px solid $color-border-soft;
-  border-radius: $radius-lg;
+  background: $color-card-bg;
+  border: 1px solid $color-border;
+  border-radius: 10px;
   overflow: hidden;
-  box-shadow: $shadow-sm;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 
 .category-header {
-  @include flex-between;
-  padding: $spacing-3 $spacing-5;
-  background: $color-surface-hover;
-  border-bottom: 1px solid $color-border-soft;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: $color-header-bg;
+  border-bottom: 1px solid $color-border;
 }
 
 .category-name {
-  font-size: $font-size-xs;
-  font-weight: $font-weight-bold;
-  color: $color-text;
-  letter-spacing: 0.05em;
+  font-size: 12px;
+  font-weight: 700;
+  color: $color-text-primary;
+  letter-spacing: 0.8px;
 }
 
 .category-count {
-  font-size: $font-size-xs;
-  color: $color-text-faint;
+  font-size: 11px;
+  color: $color-text-muted;
 }
 
 // Table
@@ -162,38 +183,38 @@
   border-collapse: collapse;
 
   thead tr {
-    border-bottom: 1px solid $color-border-soft;
+    border-bottom: 1px solid $color-border;
   }
 
   th {
-    padding: $spacing-3 $spacing-5;
-    font-size: $font-size-xs;
-    font-weight: $font-weight-semibold;
+    padding: 10px 20px;
+    font-size: 11px;
+    font-weight: 600;
     color: $color-text-muted;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.5px;
     text-align: left;
-    background: $color-surface;
+    background: $color-card-bg;
   }
 
   tbody tr {
-    border-bottom: 1px solid $color-border-soft;
-    transition: background $transition-fast;
+    border-bottom: 1px solid $color-border;
+    transition: background 0.15s ease;
 
     &:last-child { border-bottom: none; }
-    &:hover { background: $color-surface-hover; }
+    &:hover { background: $color-bg; }
 
     &.row-not-applicable {
-      background: $color-surface;
+      background: #fdfdfd;
       opacity: 0.85;
     }
 
     &.row-blocked {
-      background: $color-danger-bg;
+      background: #fef2f2;
     }
   }
 
   td {
-    padding: $spacing-3 $spacing-5;
+    padding: 13px 20px;
     vertical-align: middle;
   }
 }
@@ -206,41 +227,41 @@
 .col-actions { width: 18%; }
 
 .cell-item {
-  font-size: $font-size-xs;
-  color: $color-text;
+  font-size: 13px;
+  color: $color-text-primary;
   line-height: 1.4;
 }
 
 .item-title-wrapper {
   display: flex;
   align-items: center;
-  gap: $spacing-2;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
 .item-title {
-  font-weight: $font-weight-medium;
+  font-weight: 500;
 
   &.text-strikethrough {
     text-decoration: line-through;
-    color: $color-text-faint;
+    color: $color-text-muted;
   }
 }
 
 .item-reason-note {
-  font-size: $font-size-xs;
-  color: $color-text-faint;
-  margin-top: $spacing-1;
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
   font-style: italic;
 
   .reason-label {
-    font-weight: $font-weight-semibold;
-    color: $color-text-muted;
+    font-weight: 600;
+    color: #475569;
   }
 
   .rejection-note {
-    color: $color-danger;
-    margin-left: $spacing-1;
+    color: #dc2626;
+    margin-left: 6px;
   }
 }
 
@@ -249,38 +270,38 @@
 .cell-category,
 .cell-reason,
 .cell-actions {
-  font-size: $font-size-xs;
+  font-size: 13px;
 }
 
 .cell-category {
-  color: $color-text-faint;
+  color: $color-text-secondary;
 }
 
 .cell-reason {
-  color: $color-text-faint;
+  color: #64748b;
   font-style: italic;
 
   .reason-label {
-    font-weight: $font-weight-semibold;
-    color: $color-text-muted;
+    font-weight: 600;
+    color: #475569;
     font-style: normal;
   }
 
   .rejection-note {
-    color: $color-danger;
-    margin-left: $spacing-1;
+    color: #dc2626;
+    margin-left: 6px;
   }
 }
 
 .owner-select {
   width: 100%;
-  max-width: 11.25rem;
-  padding: $spacing-1 $spacing-2;
-  font-size: $font-size-xs;
-  color: $color-text;
-  background: $color-surface;
-  border: 1px solid $color-border-input;
-  border-radius: $radius-md;
+  max-width: 180px;
+  padding: 5px 8px;
+  font-size: 12px;
+  color: $color-text-primary;
+  background: #ffffff;
+  border: 1px solid $color-incomplete-border;
+  border-radius: 6px;
   cursor: pointer;
 
   &:disabled {
@@ -290,8 +311,8 @@
 
   &:focus {
     outline: none;
-    border-color: $color-primary;
-    box-shadow: 0 0 0 2px $color-primary-focus-ring;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
   }
 }
 
@@ -300,13 +321,13 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: $spacing-2;
+  gap: 8px;
 }
 
 // Consolidated Not Applicable section
 .not-applicable-section {
   .category-header {
-    background: $color-surface-hover;
+    background: #f8fafc;
   }
 }
 

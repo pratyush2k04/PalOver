@@ -18,8 +18,8 @@
 .toolbar-row {
   display: flex;
   justify-content: flex-end;
-  margin-top: -$spacing-6;
-  margin-bottom: $spacing-1;
+  margin-top: -$spacing-8;
+  margin-bottom: $spacing-2;
 }
 
 .sort-control {
@@ -59,7 +59,7 @@ app-paginator {
 
 .engagement-row {
   @include flex-between;
-  padding: $spacing-3 $spacing-6;
+  padding: $spacing-5 $spacing-6;
   cursor: pointer;
   transition: background-color $transition-fast;
 
