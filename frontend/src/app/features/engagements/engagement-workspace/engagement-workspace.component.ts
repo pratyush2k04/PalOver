@@ -140,6 +140,11 @@ export class EngagementWorkspaceComponent {
       next: (data) => this.readiness.set(data),
       error: () => this.readiness.set(null)
     });
+
+    this.engagementService.getEngagementOwners(id).subscribe({
+      next: (owners) => this.owners.set(owners),
+      error: () => this.owners.set(null)
+    });
   }
 
   openSignOffDialog(): void {
