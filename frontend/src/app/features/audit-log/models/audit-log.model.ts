@@ -19,11 +19,7 @@ export type AuditAction =
   | 'DiscoveryItemAdded'
   | 'ResourcingGapFlagRaised'
   | 'ResourcingGapFlagCleared'
-  | 'ChecklistItemEvidenceUpdated'
-  | 'DependencyCreated'
-  | 'DependencyUpdated'
-  | 'DependencyDeleted'
-  | 'DependencyEscalated';
+  | 'ChecklistItemEvidenceUpdated';
 export interface AuditLogDto {
   id: number;
   userId: number;

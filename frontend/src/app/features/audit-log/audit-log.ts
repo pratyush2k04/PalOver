@@ -121,11 +121,7 @@ export class AuditLogComponent implements OnInit {
     PmAndTlReassigned: 'Resource Allocation',
     DayOneSummaryGenerated: 'Technical Readiness',
     BrownfieldItemAdded: 'Technical Readiness',
-    DiscoveryItemAdded: 'Technical Readiness',
-    DependencyCreated: 'Risk',
-    DependencyUpdated: 'Risk',
-    DependencyDeleted: 'Risk',
-    DependencyEscalated: 'Escalation'
+    DiscoveryItemAdded: 'Technical Readiness'
   };
 
   getEventCategory(action: string): string {
