@@ -16,7 +16,12 @@ public class KickoffService(IKickoffRepository repository) : IKickoffService
         var record = await repository.GetByEngagementIdAsync(engagementId);
         if (record is null)
         {
-            throw new KickoffRecordNotFoundException(engagementId);
+            return new KickoffRecordDto
+            {
+                EngagementId = engagementId,
+                Outcomes = string.Empty,
+                ActionItems = new List<KickoffActionItemDto>()
+            };
         }
 
         return MapToDto(record);
