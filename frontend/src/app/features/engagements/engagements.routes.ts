@@ -85,16 +85,23 @@ export const ENGAGEMENTS_ROUTES: Routes = [
       {
         path: ENGAGEMENT_ROUTES.ASSUMPTIONS,
         loadComponent: () =>
-          import('./engagement-workspace/assumptions-and-decisions/assumptions-and-decisions.component').then(
-            (m) => m.AssumptionsAndDecisionsComponent
-          )
+          import('./engagement-workspace/assumptions-and-decisions/components/assumptions/assumptions.component').then(
+            (m) => m.AssumptionsComponent
+          ),
       },
       {
-        path: 'audits',
+        path: ENGAGEMENT_ROUTES.AUDITS,
         loadComponent: () =>
           import(
             './engagement-workspace/audits/engagement-audits/engagement-audits.component'
           ).then((m) => m.EngagementAuditsComponent),
+      },
+      {
+        path: ENGAGEMENT_ROUTES.SIGN_OFF,
+        loadComponent: () =>
+          import(
+            './engagement-workspace/sign-off/sign-off.component'
+          ).then((m) => m.SignOffComponent),
       },
       {
         path: '',

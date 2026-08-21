@@ -5,7 +5,7 @@ import { AppContextService } from '@shared/services/app-context';
 import { AuthService } from '@shared/services/auth';
 import { APP_ROUTES } from '@shared/constants/app.constants';
 import { AvatarComponent } from '@common/components/avatar/avatar';
-import { NotificationsDropdownComponent } from '../../../shared/notifications-dropdown/notifications-dropdown';
+import { NotificationsDropdownComponent } from '@shared/notifications-dropdown/notifications-dropdown';
 import { GlobalSearchComponent } from '@shared/global-search/global-search';
 
 @Component({

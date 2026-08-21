@@ -1,74 +1,67 @@
-@use '../../../styles/tokens' as *;
 @use '../../../styles/mixins' as *;
 
-:host {
-  display: block;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  color: #1e293b;
+.profile-page {
+  padding: 1.5rem 2rem 1.25rem;
 }
 
-.profile-page {
-  padding: 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  color: #1e293b;
+.page-header {
+  margin-bottom: $spacing-4;
 
-  app-page-header {
-    display: block;
-    margin-bottom: 1.5rem;
+  h2 {
+    margin: 0;
+    font-size: $font-size-2xl;
+    color: $color-text;
   }
 }
 
 .profile-cards {
   display: flex;
-  gap: 1.5rem;
+  gap: $spacing-6;
   align-items: flex-start;
   flex-wrap: wrap;
 }
 
 .profile-card {
-  flex: 1 1 360px;
-  min-width: 320px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  padding: 1.5rem;
+  flex: 1 1 22.5rem;
+  min-width: 20rem;
+  @include card-surface($padding: $spacing-6, $radius: $radius-lg);
+  box-shadow: $shadow-sm;
 }
 
 .card-title {
-  margin: 0 0 1.25rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #0f172a;
+  margin: 0 0 $spacing-4;
+  font-size: 0.8125rem;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #1e3a8a;
 }
 
 .field-note {
-  margin: -0.25rem 0 0.75rem;
+  margin: -$spacing-1 0 $spacing-3;
   font-size: 0.8125rem;
-  color: #64748b;
+  color: $color-text-faint;
 }
 
 .strength-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1.25rem;
+  gap: $spacing-2;
+  margin-bottom: $spacing-5;
 }
 
 .chip {
-  font-size: 0.75rem;
-  font-weight: 500;
-  padding: 0.25rem 0.625rem;
-  border-radius: 9999px;
-  background: #f1f5f9;
-  color: #64748b;
-  border: 1px solid #e2e8f0;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  padding: $spacing-1 0.625rem;
+  border-radius: $radius-full;
+  background: #f3f4f6;
+  color: $color-text-faint;
+  border: 1px solid $color-border-soft;
 
   &.met {
-    background: #f0fdf4;
-    color: #16a34a;
-    border-color: #bbf7d0;
+    background: $color-success-bg;
+    color: $color-success;
+    border-color: $color-success-border;
   }
 }

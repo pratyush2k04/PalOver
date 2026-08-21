@@ -4,6 +4,8 @@ public static class NotificationConstants
 {
     public static class TemplateKeys
     {
+        public const string BlockerEscalatedPM = "BlockerEscalatedPM";
+        public const string BlockerEscalatedLeadership = "BlockerEscalatedLeadership";
         public const string AccessItemBlocked = "AccessItemBlocked";
         public const string PMAllocated = "PMAllocated";
         public const string HandoverSubmitted = "HandoverSubmitted";
@@ -33,6 +35,7 @@ public static class NotificationConstants
         public static string AccessDenied(int id) => $"You do not have access to notification with id {id}.";
         public static string TemplateNotFound(string key) => $"No notification template registered for key '{key}'.";
         public static string NotYetScheduled(int id) => $"Notification with id {id} cannot be marked as read before its scheduled time.";
+        public static string InvalidPayloadData(string key) => $"Notification data for '{key}' could not be parsed.";
         public static string ParsePayloadFailed(string templateKey) => $"{templateKey} notification data could not be parsed.";
     }
 }

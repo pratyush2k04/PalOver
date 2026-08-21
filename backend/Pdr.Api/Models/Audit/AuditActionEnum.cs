@@ -22,8 +22,10 @@ public enum AuditActionEnum
     DiscoveryItemAdded = 18,
     ResourcingGapFlagRaised = 19,
     ResourcingGapFlagCleared = 20,
-    DependencyCreated = 21,
-    DependencyUpdated = 22,
-    DependencyDeleted = 23,
-    DependencyEscalated = 24
+    ChecklistItemEvidenceUpdated = 21,
+    DependencyCreated = 22,
+    DependencyUpdated = 23,
+    DependencyDeleted = 24,
+    DependencyEscalated = 25
+    
 }

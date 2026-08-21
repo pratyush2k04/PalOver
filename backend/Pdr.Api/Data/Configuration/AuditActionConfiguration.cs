@@ -146,6 +146,12 @@ public class AuditActionConfiguration : IEntityTypeConfiguration<AuditAction>
                 Id = (int)AuditActionEnum.ResourcingGapFlagCleared,
                 Action = AuditActionEnum.ResourcingGapFlagCleared.ToString(),
                 Details = "Resourcing gap flag cleared for engagement {engagementName}: all requested resources confirmed"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.ChecklistItemEvidenceUpdated,
+                Action = AuditActionEnum.ChecklistItemEvidenceUpdated.ToString(),
+                Details = "Evidence updated for checklist item '{itemTitle}' on engagement '{engagementName}' by {actorName}"
             });
     }
 }

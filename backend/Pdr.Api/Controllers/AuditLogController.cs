@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.DTOs.Audit;
 using Pdr.Api.DTOs.Common;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Controllers;
@@ -20,14 +21,14 @@ public class AuditLogController(IAuditLogService auditLogService) : ControllerBa
     /// Retrieves a cursor-paginated page of audit log entries, newest first. Leadership/Admin
     /// callers see every user's entries; everyone else sees only their own.
     /// </summary>
-    /// <param name="cursor">The Id to page backward from. Omit for the most recent entries.</param>
-    /// <param name="limit">Maximum number of entries to return.</param>
+    /// <param name="page">Page number</param>
+    /// <param name="pageSize">Number of items per page</param>
     [HttpGet]
-    [ProducesResponseType(typeof(CursorPagedResult<AuditLogDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PagedResult<AuditLogDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> GetAuditLogs([FromQuery] int? cursor, [FromQuery] int limit = 50)
+    public async Task<IActionResult> GetAuditLogs([FromQuery] int page = 1, [FromQuery] int pageSize = 20, [FromQuery] List<AuditCategoryEnum>? categories = null)
     {
-        var result = await auditLogService.GetAuditLogsAsync(cursor, limit);
+        var result = await auditLogService.GetAuditLogsAsync(page, pageSize, categories);
         return Ok(result);
     }
 }

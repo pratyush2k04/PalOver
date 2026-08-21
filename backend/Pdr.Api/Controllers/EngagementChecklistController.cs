@@ -137,4 +137,28 @@ public class EngagementChecklistController(IEngagementChecklistService engagemen
         var result = await engagementChecklistService.UnblockItemAsync(engagementId, itemId);
         return Ok(result);
     }
+
+    /// <summary>
+    /// Attaches or updates evidence on a checklist item and optionally marks it Complete.
+    /// </summary>
+    /// <param name="engagementId">The engagement ID.</param>
+    /// <param name="itemId">The checklist item ID.</param>
+    /// <param name="dto">The evidence payload.</param>
+    /// <returns>The updated engagement checklist.</returns>
+    [HttpPut("items/{itemId:int}/evidence")]
+    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead)]
+    [EndpointSummary("Attach or update checklist item evidence")]
+    [ProducesResponseType(typeof(EngagementChecklistResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<EngagementChecklistResponseDto>> SaveItemEvidence(
+        int engagementId,
+        int itemId,
+        [FromBody] SaveChecklistItemEvidenceRequestDto dto)
+    {
+        var result = await engagementChecklistService.SaveItemEvidenceAsync(engagementId, itemId, dto);
+        return Ok(result);
+    }
 }

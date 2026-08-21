@@ -54,8 +54,59 @@
       </div>
     }
 
+    <!-- Filters Toolbar -->
+    <div class="checklist-filters">
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search checklist items..."
+        [ngModel]="searchTerm()"
+        (ngModelChange)="searchTerm.set($event)"
+      />
+      <select class="filter-select" [ngModel]="selectedCategoryId()" (ngModelChange)="selectedCategoryId.set($event)">
+        <option [ngValue]="'all'">All Categories</option>
+        @for (cat of categoriesList(); track cat.id) {
+          <option [ngValue]="cat.id">{{ cat.name }}</option>
+        }
+      </select>
+      <select class="filter-select" [ngModel]="selectedStatus()" (ngModelChange)="selectedStatus.set($event)">
+        <option value="all">All Statuses</option>
+        <option value="Incomplete">Incomplete</option>
+        <option value="Complete">Complete</option>
+        <option value="Blocked">Blocked</option>
+      </select>
+      <select class="filter-select" [ngModel]="selectedEvidenceFilter()" (ngModelChange)="selectedEvidenceFilter.set($event)">
+        <option value="all">All Evidence</option>
+        <option value="required">Evidence Required</option>
+        <option value="attached">Evidence Attached</option>
+        <option value="missing">Evidence Missing</option>
+      </select>
+      <select class="filter-select" [ngModel]="selectedOwnerId()" (ngModelChange)="selectedOwnerId.set($event)">
+        <option [ngValue]="'all'">All Owners</option>
+        <option [ngValue]="'unassigned'">Unassigned</option>
+        @for (user of assignedUsers(); track user.userId) {
+          <option [ngValue]="user.userId">{{ user.fullName }}</option>
+        }
+      </select>
+      @if (hasActiveFilters()) {
+        <app-button type="button" variant="stroked" (click)="clearFilters()">
+          Clear Filters
+        </app-button>
+      }
+    </div>
+
+    <!-- Empty filtered state -->
+    @if (filteredCategories().length === 0) {
+      <div class="empty-filter-state">
+        <p>No checklist items match the selected filter criteria.</p>
+        <app-button type="button" variant="stroked" (click)="clearFilters()">
+          Clear Filters
+        </app-button>
+      </div>
+    }
+
     <!-- Category Cards -->
-    @for (category of checklist()!.categories; track category.categoryId) {
+    @for (category of filteredCategories(); track category.categoryId) {
       <div class="category-card">
         <div class="category-header">
           <span class="category-name">{{ category.categoryName | uppercase }}</span>
@@ -67,6 +118,7 @@
             <tr>
               <th class="col-item">ITEM</th>
               <th class="col-owner">OWNER</th>
+              <th class="col-evidence">EVIDENCE</th>
               <th class="col-status">STATUS</th>
               @if (canPerformAnyAction()) {
                 <th class="col-actions">ACTIONS</th>
@@ -109,6 +161,38 @@
                       </select>
                     } @else {
                       {{ item.ownerName || 'Unassigned' }}
+                    }
+                  </td>
+
+                  <td class="cell-evidence">
+                    @if (item.evidenceNote || item.evidenceLink) {
+                      <button
+                        type="button"
+                        class="btn-evidence-view"
+                        (click)="openAttachEvidenceDialog(item, false)"
+                        [title]="item.evidenceNote || item.evidenceLink || 'View Evidence'">
+                        <span class="evidence-icon">📎</span>
+                        <span class="evidence-text">{{ item.evidenceNote ? (item.evidenceNote | slice:0:20) + (item.evidenceNote.length > 20 ? '...' : '') : 'View Link' }}</span>
+                      </button>
+                    } @else if (item.evidenceRequired) {
+                      <div class="evidence-required-wrapper">
+                        <app-status-badge tone="warning" title="Evidence is required to complete this item">
+                          Required
+                        </app-status-badge>
+                        @if (canToggleStatus()) {
+                          <button type="button" class="btn-evidence-add" (click)="openAttachEvidenceDialog(item, false)">
+                            + Attach
+                          </button>
+                        }
+                      </div>
+                    } @else {
+                      @if (canToggleStatus()) {
+                        <button type="button" class="btn-evidence-add" (click)="openAttachEvidenceDialog(item, false)">
+                          + Add
+                        </button>
+                      } @else {
+                        <span class="text-faint">&mdash;</span>
+                      }
                     }
                   </td>
 
@@ -159,7 +243,7 @@
 
                         <!-- Leadership Exemption Review -->
                         @if (isLeadership() && item.exemptionStatus === 'Pending') {
-                          <app-button type="button" variant="accent" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
+                          <app-button type="button" variant="flat" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
                             Review Request
                           </app-button>
                         }
@@ -188,7 +272,7 @@
               <th class="col-item">ITEM</th>
               <th class="col-category">CATEGORY</th>
               <th class="col-reason">REASON</th>
-              @if (canChangeApplicability() || isLeadership()) {
+              @if (canPerformNaAction()) {
                 <th class="col-actions">ACTIONS</th>
               }
             </tr>
@@ -220,7 +304,7 @@
                   }
                 </td>
 
-                @if (canChangeApplicability() || isLeadership()) {
+                @if (canPerformNaAction()) {
                   <td class="cell-actions">
                     <div class="actions-group">
                       @if (canChangeApplicability()) {
@@ -230,7 +314,7 @@
                       }
 
                       @if (isLeadership() && item.exemptionStatus === 'Pending') {
-                        <app-button type="button" variant="accent" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
+                        <app-button type="button" variant="flat" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
                           Review Request
                         </app-button>
                       }

@@ -16,12 +16,14 @@ export const ENGAGEMENT_API_ENDPOINTS = {
   LEADERSHIP_ROLE_USERS: '/api/Roles/4/users',
   DELETE_LEADERSHIP_USER: (id: number, userId: number) => `/api/Engagements/${id}/leadership-users/${userId}`,
   ENGAGEMENT_CHECKLIST: (id: number) => `/api/engagements/${id}/workspace/checklist`,
+  CHECKLIST_ITEM_EVIDENCE: (engagementId: number, itemId: number) => `/api/engagements/${engagementId}/workspace/checklist/items/${itemId}/evidence`,
   ENGAGEMENT_DOCUMENTS: (id: number) => `/api/documents/engagement/${id}`,
   DOCUMENT_CATEGORIES: '/api/documents/categories',
   DOCUMENT_UPLOAD: '/api/documents/upload',
   DOCUMENT_DOWNLOAD: (id: number) => `/api/documents/${id}/download`,
   DOCUMENT_DELETE: (id: number) => `/api/documents/${id}`,
   OPEN_ITEMS_SUMMARY: (id: number) => `/api/Engagements/${id}/open-items-summary`,
+  DAY_ONE_SIGN_OFF: (id: number) => `/api/Engagements/${id}/day-one-sign-off`,
 } as const;
 
 export const ENGAGEMENT_CONSTANTS = {
@@ -47,7 +49,8 @@ export const OPEN_ITEMS_ERROR_MESSAGES = {
 } as const;
 
 export const ENGAGEMENT_CHECKLIST_MESSAGES = {
-  LOAD_FAILED: 'Failed to load the engagement checklist. Please try again.'
+  LOAD_FAILED: 'Failed to load the engagement checklist. Please try again.',
+  EVIDENCE_SAVED_SUCCESS: 'Evidence saved successfully.'
 } as const;
 
 export const ENGAGEMENT_WORKSPACE_CONFIG = {
@@ -63,6 +66,7 @@ export const ENGAGEMENT_WORKSPACE_CONFIG = {
     { label: 'Risks', route: ENGAGEMENT_ROUTES.RISKS, enabled: true },
     { label: 'Assumptions & Decisions', route: ENGAGEMENT_ROUTES.ASSUMPTIONS, enabled: true },
     { label: 'Audits', route: ENGAGEMENT_ROUTES.AUDITS, enabled: true },
-    { label: 'Reporting', route: 'reporting', enabled: false }
+    { label: 'Reporting', route: 'reporting', enabled: false },
+    { label: 'Sign Off', route: ENGAGEMENT_ROUTES.SIGN_OFF, enabled: false }
   ]
 } as const;
