@@ -39,6 +39,16 @@ export const routes: Routes = [
       ),
   },
 
+  // Layout-less Print Evidence Snapshot View
+  {
+    path: `${ENGAGEMENT_ROUTES.BASE}/:engagementId/${ENGAGEMENT_ROUTES.EVIDENCE_SNAPSHOT_PRINT}`,
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/engagements/engagement-workspace/sign-off/evidence-snapshot-print/evidence-snapshot-print.component').then(
+        (m) => m.EvidenceSnapshotPrintComponent,
+      ),
+  },
+
   // Protected
   {
     path: '',

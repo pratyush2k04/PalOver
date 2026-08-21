@@ -1,0 +1,60 @@
+<div class="print-page-wrapper">
+  <!-- Interactive Action Header (Hidden during printing) -->
+  <div class="action-header no-print">
+    <div class="action-header-content">
+      <div class="action-header-info">
+        <span class="report-tag">Evidence Snapshot</span>
+        <h2>Day-1 Sign-Off Evidence Snapshot</h2>
+      </div>
+      <div class="action-buttons">
+        <app-button variant="stroked" (click)="onClose()">Close</app-button>
+        <app-button variant="flat" (click)="onPrint()">Print / Save as PDF</app-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <app-loading-spinner label="Loading evidence snapshot..." />
+  }
+
+  <!-- Error State -->
+  @if (error() && !isLoading()) {
+    <div class="error-state">
+      <h3>Error</h3>
+      <p>{{ error() }}</p>
+      <app-button variant="stroked" (click)="onClose()">Close Window</app-button>
+    </div>
+  }
+
+  <!-- Print Document -->
+  @if (snapshot(); as s) {
+    <div class="print-document">
+      <header class="doc-header">
+        <h1>Day-1 Sign-Off Evidence Snapshot</h1>
+        <p>Signed off by <strong>{{ s.signedOffByUserName }}</strong> on {{ s.signedOffAt | date: 'dd MMM yyyy' }}</p>
+        <p>Billing date referenced: {{ s.billingStartDate | date: 'dd MMM yyyy' }}</p>
+      </header>
+
+      <section class="section-container">
+        @if (s.items.length) {
+          <ul class="evidence-item-list">
+            @for (item of s.items; track item.title) {
+              <li class="evidence-item-row">
+                <span class="evidence-item-title">{{ item.title }}</span>
+                <app-status-badge [tone]="statusTone(item.statusAtSignOff)">{{ statusLabel(item.statusAtSignOff) }}</app-status-badge>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="evidence-empty">No checklist items required evidence for this engagement.</p>
+        }
+      </section>
+
+      <footer class="doc-footer">
+        <p>Project Delivery Readiness (PDR) System &bull; Evidence Snapshot &bull; Confidential</p>
+        <p>This snapshot is a fixed, read-only record captured at the moment of Day-1 sign-off and does not reflect later checklist changes.</p>
+      </footer>
+    </div>
+  }
+</div>
