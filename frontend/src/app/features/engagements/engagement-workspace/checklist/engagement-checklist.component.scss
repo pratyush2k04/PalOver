@@ -163,9 +163,9 @@
 }
 
 .callout-icon {
-  font-size: $font-size-2xl;
+  font-size: $font-size-base;
   flex-shrink: 0;
-  margin-top: 2px;
+  line-height: 1.4;
 }
 
 .callout-body {
