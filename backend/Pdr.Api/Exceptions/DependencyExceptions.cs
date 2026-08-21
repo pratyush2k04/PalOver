@@ -1,19 +1,15 @@
-using Pdr.Api.Models.Engagements.Dependencies;
+using Microsoft.AspNetCore.Http;
+using Pdr.Api.Constants;
 
 namespace Pdr.Api.Exceptions;
 
-public class DependencyNotFoundException : AppException
-{
-    public DependencyNotFoundException(int dependencyId) 
-        : base($"Dependency with ID {dependencyId} was not found.", 404)
-    {
-    }
-}
+public class DependencyNotFoundException(int dependencyId) 
+    : AppException(DependencyConstants.Messages.DependencyNotFound(dependencyId), StatusCodes.Status404NotFound);
 
-public class DependencyValidationException : AppException
-{
-    public DependencyValidationException(string message) 
-        : base(message, 400)
-    {
-    }
-}
+public class DependencyValidationException(string message) 
+    : AppException(message, StatusCodes.Status400BadRequest);
+
+public class DependencyUnauthorizedException() 
+    : AppException(DependencyConstants.Messages.Unauthorized, StatusCodes.Status403Forbidden);
+
+

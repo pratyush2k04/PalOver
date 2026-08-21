@@ -14,6 +14,15 @@ public class DependencyConfiguration : IEntityTypeConfiguration<Dependency>
             .IsRequired()
             .HasMaxLength(2000);
 
+        builder.Property(x => x.Type)
+            .HasConversion<string>()
+            .IsRequired();
+
+        builder.Property(x => x.Status)
+            .HasConversion<string>()
+            .HasDefaultValue(DependencyStatus.Open)
+            .IsRequired();
+
         builder.HasOne(x => x.Engagement)
             .WithMany()
             .HasForeignKey(x => x.EngagementId)
