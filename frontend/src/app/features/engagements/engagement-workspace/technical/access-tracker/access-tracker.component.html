@@ -21,9 +21,7 @@
 
   <!-- Loading state -->
   @if (isLoading()) {
-    <div class="loading-container">
-      <p>Loading access items...</p>
-    </div>
+    <app-loading-spinner label="Loading access items..." />
   } @else {
     <!-- Table -->
     <div class="table-responsive">

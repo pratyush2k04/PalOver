@@ -1,3 +1,4 @@
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { Component, inject, input, output, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InlineSVGModule } from 'ng-inline-svg-2';
@@ -22,6 +23,7 @@ import {
   selector: 'app-brownfield-review',
   standalone: true,
   imports: [
+    LoadingSpinnerComponent,
     CommonModule,
     InlineSVGModule,
     TooltipDirective,

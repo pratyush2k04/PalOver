@@ -19,7 +19,7 @@
   </div>
 
   @if (isLoading()) {
-    <div class="loading-state">Loading findings...</div>
+    <app-loading-spinner label="Loading findings..." />
   } @else if (findings().length === 0) {
     <div class="empty-state">
       <p>No code review findings recorded yet.</p>

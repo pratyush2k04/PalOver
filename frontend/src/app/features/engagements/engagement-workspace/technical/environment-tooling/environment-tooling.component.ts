@@ -1,3 +1,4 @@
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { Component, inject, input, output, signal, computed, effect, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -33,6 +34,7 @@ import {
   selector: 'app-environment-tooling',
   standalone: true,
   imports: [
+    LoadingSpinnerComponent,
     CommonModule,
     FormsModule,
     InlineSVGModule,

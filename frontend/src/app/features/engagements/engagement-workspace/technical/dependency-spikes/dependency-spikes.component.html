@@ -17,9 +17,7 @@
 
   <!-- Loading State -->
   @if (isLoading()) {
-    <div class="loading-container">
-      <p>Loading dependency spikes...</p>
-    </div>
+    <app-loading-spinner label="Loading dependency spikes..." />
   } @else {
     @if (spikes().length === 0) {
       <div class="empty-state-wrapper">

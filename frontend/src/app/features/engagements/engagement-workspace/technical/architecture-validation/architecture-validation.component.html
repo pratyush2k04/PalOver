@@ -7,7 +7,7 @@
   </div>
 
   @if (isLoading()) {
-    <div class="loading-state">Loading architecture validation details...</div>
+    <app-loading-spinner label="Loading architecture validation details..." />
   } @else {
     <!-- SECTION 1: Pre-sales Proposed Architecture Status -->
     <div class="section-container status-section">

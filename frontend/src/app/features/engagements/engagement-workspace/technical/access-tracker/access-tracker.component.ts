@@ -1,3 +1,4 @@
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { Component, inject, input, output, signal, computed, effect, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
@@ -37,6 +38,7 @@ import {
   selector: 'app-access-tracker',
   standalone: true,
   imports: [
+    LoadingSpinnerComponent,
     CommonModule,
     FormsModule,
     InlineSVGModule,

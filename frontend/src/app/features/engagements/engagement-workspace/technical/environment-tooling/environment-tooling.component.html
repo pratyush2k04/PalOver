@@ -16,9 +16,7 @@
 
   <!-- Loading State -->
   @if (isLoading()) {
-    <div class="loading-container">
-      <p>Loading environment & tooling items...</p>
-    </div>
+    <app-loading-spinner label="Loading environment & tooling items..." />
   } @else {
     <!-- Table -->
     <div class="table-responsive">
