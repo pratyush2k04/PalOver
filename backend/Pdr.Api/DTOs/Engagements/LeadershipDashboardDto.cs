@@ -11,5 +11,6 @@ public record LeadershipEngagementListItemDto(
     string Status,
     bool HasResourcingGap,
     int UnconfirmedResourceCount,
-    int? DaysToBilling);
-
+    int? DaysToBilling,
+    bool IsDayOneSignedOff = false,
+    bool DayOneSignOffIsException = false);

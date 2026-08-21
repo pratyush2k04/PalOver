@@ -8,51 +8,17 @@
 }
 
 .notifications-container {
+  box-sizing: border-box;
   max-width: 1400px;
   margin: 0 auto;
   padding: $spacing-8;
-}
 
-.page-header {
-  @include flex-between;
-  margin-bottom: $spacing-8;
-  flex-wrap: wrap;
-  gap: $spacing-4;
-
-  .header-titles {
-    .title-row {
-      display: flex;
-      align-items: center;
-      gap: $spacing-3;
-      margin-bottom: $spacing-2;
-
-      h1 {
-        font-size: 1.75rem;
-        font-weight: $font-weight-bold;
-        color: $color-text;
-        margin: 0;
-        letter-spacing: -0.02em;
-      }
-
-      .unread-pill {
-        background-color: $color-primary-light;
-        color: $color-primary;
-        font-size: $font-size-xs;
-        font-weight: $font-weight-semibold;
-        padding: $spacing-1 $spacing-3;
-        border-radius: $radius-full;
-        border: 1px solid #bfdbfe;
-      }
-    }
-
-    .subtitle {
-      font-size: 0.95rem;
-      color: $color-text-faint;
-      margin: 0;
-    }
+  app-page-header {
+    display: block;
+    margin-bottom: $spacing-6;
   }
 
-  .header-actions {
+  .header-actions-group {
     display: flex;
     align-items: center;
     gap: $spacing-3;

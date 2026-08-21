@@ -31,7 +31,7 @@ public class KickoffController(
     /// <param name="engagementId">The engagement ID.</param>
     /// <returns>The kickoff record with action items and outcomes.</returns>
     [HttpGet]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.PreSales)]
+    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.PreSales, RoleEnum.Leadership)]
     [EndpointSummary("Get kickoff record")]
     [ProducesResponseType(typeof(KickoffRecordDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -74,7 +74,7 @@ public class KickoffController(
     /// <param name="engagementId">The engagement ID.</param>
     /// <returns>List of open action items.</returns>
     [HttpGet("actions/open")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.PreSales)]
+    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.PreSales, RoleEnum.Leadership)]
     [EndpointSummary("Get open action items")]
     [ProducesResponseType(typeof(IEnumerable<KickoffActionItemDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
