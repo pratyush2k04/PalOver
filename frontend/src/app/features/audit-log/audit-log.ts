@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuditLogService } from './services/audit-log.service';
-import { AuditLogDto, AuditLogFilters, EngagementAuditLogDto } from './models/audit-log.model';
+import { AuditLogDto, AuditLogFilters, EngagementAuditLogDto, AuditCategory } from './models/audit-log.model';
 import { AUDIT_LOG_MESSAGES, USER_ROLES } from '@shared/constants/app.constants';
 import { AuthService } from '@shared/services/auth';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
@@ -12,12 +12,13 @@ import { EmptyStateComponent } from '@common/components/empty-state/empty-state'
 import { PaginatorComponent } from '@common/components/paginator/paginator';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
+import { SelectComponent } from '@common/components/form/select/select';
 import { downloadCsv } from '@shared/utils/csv.util';
 
 @Component({
   selector: 'app-audit-log',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, AlertComponent, EmptyStateComponent, PaginatorComponent, ButtonComponent, InputComponent],
+  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, AlertComponent, EmptyStateComponent, PaginatorComponent, ButtonComponent, InputComponent, SelectComponent],
   templateUrl: './audit-log.html',
   styleUrl: './audit-log.scss'
 })
@@ -39,52 +40,37 @@ export class AuditLogComponent implements OnInit {
       : 'No audit log entries found.';
   }
 
-  allLogs = signal<(AuditLogDto | EngagementAuditLogDto)[]>([]);
+  pagedLogs = signal<(AuditLogDto | EngagementAuditLogDto)[]>([]);
   isLoading = signal(true);
   errorMessage = signal<string | null>(null);
 
   filterSearch = '';
   filterFromDate: string | null = null;
   filterToDate: string | null = null;
+  
+  filterUserId: number | null = null;
+  filterCategories: AuditCategory[] = [];
 
-  filters = signal<AuditLogFilters>({ search: '', fromDate: null, toDate: null });
   page = signal(1);
   readonly pageSize = 20;
+  totalCount = signal(0);
+  totalPages = computed(() => Math.max(1, Math.ceil(this.totalCount() / this.pageSize)));
 
-  filteredLogs = computed(() => {
-    const f = this.filters();
-    const term = f.search.trim().toLowerCase();
-    return this.allLogs()
-      .filter((log) => !f.fromDate || log.createdAt >= f.fromDate)
-      .filter((log) => !f.toDate || log.createdAt <= f.toDate)
-      .filter((log) => !term || this.matchesSearch(log, term))
-      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  });
-
-  totalPages = computed(() => Math.max(1, Math.ceil(this.filteredLogs().length / this.pageSize)));
-
-  pagedLogs = computed(() => {
-    const start = (this.page() - 1) * this.pageSize;
-    return this.filteredLogs().slice(start, start + this.pageSize);
-  });
-
+  // For global in-memory filtering fallback if engagementId == null
+  // We keep this because global audits still fetch all via API offset pagination?
+  // Wait, the plan was to remove cursor traces for EVERYTHING. So global audits should also just fetch the page.
+  
   ngOnInit(): void {
     if (this.engagementId != null) {
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      this.filterFromDate = thirtyDaysAgo.toISOString().slice(0, 10);
-      this.onFilterChange();
+      // Don't auto-set dates for backend filtered view unless needed by business logic
+      // Removing the 30-day default for engagement as backend doesn't filter by date yet
     }
-    this.loadAllLogs();
+    this.loadPage();
   }
 
   onFilterChange(): void {
-    this.filters.set({
-      search: this.filterSearch,
-      fromDate: this.filterFromDate,
-      toDate: this.filterToDate
-    });
     this.page.set(1);
+    this.loadPage();
   }
 
   goToPage(page: number): void {
@@ -92,10 +78,11 @@ export class AuditLogComponent implements OnInit {
       return;
     }
     this.page.set(page);
+    this.loadPage();
   }
 
   exportCsv(): void {
-    const rows = this.filteredLogs();
+    const rows = this.pagedLogs();
     const header = this.showUserColumn ? ['Date/Time', 'User', 'Action', 'Details'] : ['Date/Time', 'Action', 'Details'];
 
     const dataRows = rows.map((log) => {
@@ -110,28 +97,30 @@ export class AuditLogComponent implements OnInit {
     downloadCsv(dataRows, header, 'audit-log-export');
   }
 
-  private matchesSearch(log: AuditLogDto | EngagementAuditLogDto, term: string): boolean {
-    return log.userName.toLowerCase().includes(term)
-      || log.action.toLowerCase().includes(term)
-      || log.details.toLowerCase().includes(term);
-  }
-
-  private loadAllLogs(cursor: number | null = null, accumulated: (AuditLogDto | EngagementAuditLogDto)[] = []): void {
+  private loadPage(): void {
     this.isLoading.set(true);
 
     const request$ = this.engagementId != null
-      ? this.auditLogService.getEngagementAuditLogPage(this.engagementId, cursor, 100)
-      : this.auditLogService.getAuditLogPage(cursor, 100);
+      ? this.auditLogService.getEngagementAuditLogPage(this.engagementId, this.page(), this.pageSize, this.filterUserId, this.filterCategories)
+      : this.auditLogService.getAuditLogPage(this.page(), this.pageSize);
 
     request$.subscribe({
       next: (result) => {
-        const combined = [...accumulated, ...result.items];
-        if (result.hasMore && result.nextCursor != null) {
-          this.loadAllLogs(result.nextCursor, combined);
-        } else {
-          this.allLogs.set(combined);
-          this.isLoading.set(false);
+        let items = result.items;
+        
+        // If global audits, still apply in-memory text/date filtering to the *current page* 
+        // (Since global backend API doesn't support text/date filters yet)
+        if (this.engagementId == null) {
+          const term = this.filterSearch.trim().toLowerCase();
+          items = items
+            .filter(log => !this.filterFromDate || log.createdAt >= this.filterFromDate)
+            .filter(log => !this.filterToDate || log.createdAt <= this.filterToDate)
+            .filter(log => !term || this.matchesSearch(log, term));
         }
+        
+        this.pagedLogs.set(items);
+        this.totalCount.set(result.totalCount);
+        this.isLoading.set(false);
       },
       error: (error: HttpErrorResponse) => {
         const message = error.status === 401 ? AUDIT_LOG_MESSAGES.UNAUTHORIZED_ERROR : AUDIT_LOG_MESSAGES.LOAD_ERROR;
@@ -139,5 +128,11 @@ export class AuditLogComponent implements OnInit {
         this.isLoading.set(false);
       }
     });
+  }
+
+  private matchesSearch(log: AuditLogDto | EngagementAuditLogDto, term: string): boolean {
+    return log.userName.toLowerCase().includes(term)
+      || log.action.toLowerCase().includes(term)
+      || log.details.toLowerCase().includes(term);
   }
 }

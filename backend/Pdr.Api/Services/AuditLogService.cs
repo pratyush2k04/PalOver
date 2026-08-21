@@ -62,15 +62,15 @@ public class AuditLogService(
     public async Task<PagedResult<EngagementAuditLogDto>> GetEngagementAuditLogsAsync(int engagementId, int page, int pageSize, int? userId = null, List<AuditCategoryEnum>? categories = null)
     {
         var validActionIds = EngagementAuditActionVisibilityRegistry.Entries
-            .Where(kvp => currentUserService.IsAdmin() || (kvp.Value.VisibleToRoles?.Any(r => currentUserService.IsInRole(r)) ?? false))
-            .Select(kvp => (int)kvp.Key)
+            .Where(actionToVisibility => currentUserService.IsAdmin() || (actionToVisibility.Value.VisibleToRoles?.Any(r => currentUserService.IsInRole(r)) ?? false))
+            .Select(actionToVisibility => (int)actionToVisibility.Key)
             .ToList();
 
         if (categories != null && categories.Any())
         {
             var categoryActionIds = AuditActionCategoryRegistry.Entries
-                .Where(kvp => categories.Contains(kvp.Value))
-                .Select(kvp => (int)kvp.Key)
+                .Where(actionToCategory => categories.Contains(actionToCategory.Value))
+                .Select(actionToCategory => (int)actionToCategory.Key)
                 .ToList();
 
             validActionIds = validActionIds.Intersect(categoryActionIds).ToList();

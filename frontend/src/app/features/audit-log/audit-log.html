@@ -9,26 +9,47 @@
   </div>
 
   <div class="filter-bar">
-    <app-input
-      [id]="'audit-log-search'"
-      placeholder="Search audit log..."
-      [(ngModel)]="filterSearch"
-      (ngModelChange)="onFilterChange()"
-    />
-    <app-input
-      [id]="'audit-log-from-date'"
-      label="From"
-      type="date"
-      [(ngModel)]="filterFromDate"
-      (ngModelChange)="onFilterChange()"
-    />
-    <app-input
-      [id]="'audit-log-to-date'"
-      label="To"
-      type="date"
-      [(ngModel)]="filterToDate"
-      (ngModelChange)="onFilterChange()"
-    />
+    @if (engagementId == null) {
+      <app-input
+        [id]="'audit-log-search'"
+        placeholder="Search audit log..."
+        [(ngModel)]="filterSearch"
+        (ngModelChange)="onFilterChange()"
+      />
+      <app-input
+        [id]="'audit-log-from-date'"
+        label="From"
+        type="date"
+        [(ngModel)]="filterFromDate"
+        (ngModelChange)="onFilterChange()"
+      />
+      <app-input
+        [id]="'audit-log-to-date'"
+        label="To"
+        type="date"
+        [(ngModel)]="filterToDate"
+        (ngModelChange)="onFilterChange()"
+      />
+    } @else {
+      <!-- Engagement specific filters -->
+      <!-- Add User select if possible. For now, numeric ID input as placeholder if we don't have user list. -->
+      <!-- Wait, the plan says dropdowns for user. Does the component have a list of users? No, it doesn't. 
+           I will just add category dropdown for now, since categories are known enums. -->
+      <app-select
+        [id]="'audit-category-select'"
+        label="Event Type"
+        [(ngModel)]="filterCategories"
+        (ngModelChange)="onFilterChange()"
+        [multiple]="true"
+      >
+        <option value="Document">Document</option>
+        <option value="Checklist">Checklist</option>
+        <option value="Risk">Risk</option>
+        <option value="Access">Access</option>
+        <option value="Handover">Handover</option>
+        <option value="Escalation">Escalation</option>
+      </app-select>
+    }
   </div>
 
   @if (errorMessage()) {
