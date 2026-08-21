@@ -97,6 +97,13 @@ export const ENGAGEMENTS_ROUTES: Routes = [
           ).then((m) => m.EngagementAuditsComponent),
       },
       {
+        path: ENGAGEMENT_ROUTES.SIGN_OFF,
+        loadComponent: () =>
+          import(
+            './engagement-workspace/sign-off/sign-off.component'
+          ).then((m) => m.SignOffComponent),
+      },
+      {
         path: '',
         redirectTo: ENGAGEMENT_ROUTES.OVERVIEW,
         pathMatch: 'full',
