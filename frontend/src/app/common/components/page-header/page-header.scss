@@ -1,0 +1,46 @@
+@use '../../../../styles/tokens' as *;
+@use '../../../../styles/mixins' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.page-header {
+  @include flex-between;
+  align-items: flex-start;
+  gap: $spacing-6;
+  margin-bottom: $spacing-6;
+  flex-wrap: wrap;
+
+  .header-titles {
+    flex: 1;
+    min-width: 260px;
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: $font-weight-bold;
+      color: $color-text;
+      margin: 0 0 $spacing-2 0;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: $font-size-sm;
+      color: $color-text-faint;
+      margin: 0;
+      line-height: 1.5;
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-4;
+    flex-shrink: 0;
+
+    &:empty {
+      display: none;
+    }
+  }
+}

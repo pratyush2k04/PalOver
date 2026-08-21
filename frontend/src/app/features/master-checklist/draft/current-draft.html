@@ -1,25 +1,4 @@
 <div class="current-draft">
-  <div class="current-draft__header">
-    <div>
-      <h1>Current Draft</h1>
-      @if (draft(); as d) {
-        <app-badge [text]="d.statusName + ' · v' + d.versionNumber" />
-      }
-    </div>
-
-    <div class="current-draft__actions">
-      <app-button type="button" variant="stroked" (click)="onAddItem()">Add Item</app-button>
-      <app-button
-        type="button"
-        variant="flat"
-        (click)="onPublish()"
-        [disabled]="!draft()"
-      >
-        Publish Version
-      </app-button>
-    </div>
-  </div>
-
   @if (loading()) {
     <app-loading-spinner label="Loading current draft..." />
   } @else if (error()) {
@@ -27,7 +6,28 @@
   } @else if (notFound()) {
     <app-empty-state message="No draft version exists yet. Contact an administrator to create one." />
   } @else {
-    <div class="current-draft__list-wrapper">
+    <div class="current-draft__card">
+      <div class="current-draft__header">
+        <div class="current-draft__header-title">
+          <h1>Current Draft</h1>
+          @if (draft(); as d) {
+            <app-badge [text]="d.statusName + ' · v' + d.versionNumber" />
+          }
+        </div>
+
+        <div class="current-draft__actions">
+          <app-button type="button" variant="stroked" (click)="onAddItem()">Add Item</app-button>
+          <app-button
+            type="button"
+            variant="flat"
+            (click)="onPublish()"
+            [disabled]="!draft()"
+          >
+            Publish Version
+          </app-button>
+        </div>
+      </div>
+
       <div class="current-draft__list-header">
         <span>Active Items</span>
         <span class="current-draft__hint">Drag to reorder</span>

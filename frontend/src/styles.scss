@@ -40,7 +40,9 @@ body.app-dialog-open {
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
   max-width: calc(100vw - 48px);
   max-height: calc(100vh - 48px);
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   animation: app-dialog-panel-in 0.15s ease-out;
 }
 
@@ -73,12 +75,16 @@ body.app-dialog-open {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .app-dialog__content {
   padding: 16px 24px;
   color: #333333;
   font-size: 14px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .app-dialog__actions {

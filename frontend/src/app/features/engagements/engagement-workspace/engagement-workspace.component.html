@@ -1,27 +1,95 @@
 <div class="workspace-container">
-  <div class="workspace-header" *ngIf="!isLoading() && engagement()">
-    <div class="header-info">
-      <h1>{{ engagement()!.engagementName }}</h1>
-      <p><strong>Type:</strong> {{ engagement()!.engagementType }}</p>
-    </div>
-    <div class="header-metrics">
-      <p><strong>Kickoff Date:</strong> {{ engagement()!.kickoffDate }}</p>
-      <p><strong>Billing Date:</strong> {{ engagement()!.billingStartDate || '—' }}</p>
-      <p>
-        <strong>Readiness Score:</strong> {{ readiness()?.score ?? '—' }}
-        <span class="kickoff-ready-badge" *ngIf="engagement()!.isKickoffReady">Kickoff-ready</span>
-      </p>
-      <p><strong>Client Contact:</strong> {{ engagement()!.clientName }}</p>
-    </div>
-  </div>
+  @if (!isLoading() && engagement()) {
+    <div class="workspace-header-card">
+      <div class="header-main-info">
+        <div class="briefcase-icon-box">
+          <span class="briefcase-icon" [inlineSVG]="'assets/icons/briefcase.svg'"></span>
+        </div>
 
-  <div class="workspace-header" *ngIf="isLoading()">
-    <p>Loading engagement details...</p>
-  </div>
+        <div class="title-and-metadata">
+          <div class="title-with-badge">
+            <h1 class="engagement-title">{{ engagement()!.engagementName }}</h1>
+            <span
+              class="type-badge"
+              [class.type-badge--brownfield]="isBrownfield()"
+              [class.type-badge--greenfield]="isGreenfield()"
+            >
+              {{ engagement()!.engagementType }}
+            </span>
+          </div>
 
-  <app-tabs [tabs]="tabs()" [activeId]="activeTabId()" />
+          <div class="metadata-row">
+            <span class="meta-item">
+              <span class="meta-icon" [inlineSVG]="'assets/icons/user.svg'"></span>
+              <span class="meta-label">Client:</span>
+              <span class="meta-val">{{ engagement()!.clientName }}</span>
+            </span>
+            <span class="meta-dot">·</span>
+            <span class="meta-item">
+              <span class="meta-icon" [inlineSVG]="'assets/icons/calendar.svg'"></span>
+              <span class="meta-label">Kickoff:</span>
+              <span class="meta-val">{{ engagement()!.kickoffDate | date: 'dd MMM yyyy' }}</span>
+            </span>
+            @if (engagement()!.billingStartDate) {
+              <span class="meta-dot">·</span>
+              <span class="meta-item">
+                <span class="meta-icon" [inlineSVG]="'assets/icons/calendar.svg'"></span>
+                <span class="meta-label">Billing:</span>
+                <span class="meta-val">{{ engagement()!.billingStartDate | date: 'dd MMM yyyy' }}</span>
+              </span>
+            }
+          </div>
+
+          <div class="metadata-row metadata-row--owners">
+            <span class="meta-item">
+              <span class="meta-icon" [inlineSVG]="'assets/icons/user.svg'"></span>
+              <span class="meta-label">PM:</span>
+              <span class="meta-val">{{ owners()?.projectManagerName || 'Unassigned' }}</span>
+            </span>
+            <span class="meta-item">
+              <span class="meta-icon" [inlineSVG]="'assets/icons/user.svg'"></span>
+              <span class="meta-label">TL:</span>
+              <span class="meta-val">{{ owners()?.techLeadName || 'Unassigned' }}</span>
+            </span>
+          </div>
+
+
+        </div>
+      </div>
+
+      <div class="header-divider"></div>
+
+      <div class="header-readiness-status">
+        <app-readiness-circle [score]="scorePercent()" size="lg" />
+
+        <div class="readiness-details">
+          <span class="readiness-label">Readiness</span>
+          <span
+            class="status-badge"
+            [class.status-badge--ready]="isFullyReady()"
+            [class.status-badge--not-ready]="!isFullyReady()"
+          >
+            {{ isFullyReady() ? 'Kickoff ready' : 'Not ready' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  }
+
+
+  @if (isLoading()) {
+    <div class="workspace-header-skeleton">
+      <p>Loading engagement details...</p>
+    </div>
+  }
+
+  <div class="workspace-tabs-wrapper">
+    <app-tabs [tabs]="tabs()" [activeId]="activeTabId()" />
+  </div>
 
   <div class="workspace-content">
     <router-outlet></router-outlet>
   </div>
 </div>
+
+
