@@ -50,7 +50,7 @@ export class TechnicalReadinessComponent {
   canViewEnvironmentTooling = computed(() => !this.isPreSales());
   canViewArchitectureValidation = computed(() => true);
   canViewBrownfieldReview = computed(() => !this.isPreSales() && this.isBrownfield());
-  canViewDependencySpikes = computed(() => true);
+  canViewDependencySpikes = computed(() => !this.isPreSales());
 
   engagementId = computed(() => {
     const idStr = this.parentParamMap()?.get('id');
