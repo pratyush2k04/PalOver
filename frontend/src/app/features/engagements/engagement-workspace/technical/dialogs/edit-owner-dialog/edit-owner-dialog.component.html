@@ -12,9 +12,7 @@
       <label for="ownerSelect">Owner</label>
       
       @if (isLoading()) {
-        <div class="loading-state">
-          Loading users...
-        </div>
+        <app-loading-spinner label="Loading users..." />
       } @else {
         <select 
           id="ownerSelect" 

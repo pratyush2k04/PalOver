@@ -1,3 +1,4 @@
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { Component, inject, input, output, signal, computed, effect, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
@@ -37,6 +38,7 @@ import {
   selector: 'app-access-tracker',
   standalone: true,
   imports: [
+    LoadingSpinnerComponent,
     CommonModule,
     FormsModule,
     InlineSVGModule,
@@ -133,7 +135,7 @@ export class AccessTrackerComponent {
   private openBlockDialog(item: AccessItemDto): void {
     const dialogRef = this.dialog.open<BlockAccessItemDialogComponent, BlockAccessItemDialogData, BlockAccessItemDialogResult>(
       BlockAccessItemDialogComponent,
-      { data: { itemName: item.name, currentReason: item.blockReason } }
+      { data: { itemName: item.name, currentReason: item.blockReason }, disableClose: true }
     );
 
     dialogRef.closed$.subscribe((result) => {
@@ -184,41 +186,59 @@ export class AccessTrackerComponent {
     });
   }
 
-  getStatusBadgeClass(status: string): string {
-    switch (status) {
-      case 'Granted':
-      case '2':
-        return 'badge-granted';
-      case 'Blocked':
-      case '3':
-        return 'badge-blocked';
+  getStatusNumericValue(status: AccessItemStatus | string | number): AccessItemStatus {
+    if (status === AccessItemStatus.Granted || status === 'Granted' || +status === AccessItemStatus.Granted) {
+      return AccessItemStatus.Granted;
+    }
+    if (status === AccessItemStatus.Blocked || status === 'Blocked' || +status === AccessItemStatus.Blocked) {
+      return AccessItemStatus.Blocked;
+    }
+    return AccessItemStatus.InProgress;
+  }
+
+  getStatusLabel(status: AccessItemStatus | string | number): string {
+    const num = this.getStatusNumericValue(status);
+    switch (num) {
+      case AccessItemStatus.Granted:
+        return 'Granted';
+      case AccessItemStatus.Blocked:
+        return 'Blocked';
+      case AccessItemStatus.InProgress:
       default:
-        return 'badge-inprogress';
+        return 'In Progress';
     }
   }
 
-  getStatusTone(status: string): StatusBadgeTone {
-    switch (status) {
-      case 'Granted':
-      case '2':
+  getStatusTone(status: AccessItemStatus | string | number): StatusBadgeTone {
+    const num = this.getStatusNumericValue(status);
+    switch (num) {
+      case AccessItemStatus.Granted:
         return 'success';
-      case 'Blocked':
-      case '3':
+      case AccessItemStatus.Blocked:
         return 'danger';
+      case AccessItemStatus.InProgress:
       default:
         return 'info';
     }
   }
 
-  getStatusNumericValue(status: string): number {
-    if (status === 'Granted' || status === '2') return AccessItemStatus.Granted;
-    if (status === 'Blocked' || status === '3') return AccessItemStatus.Blocked;
-    return AccessItemStatus.InProgress;
+  getStatusBadgeClass(status: AccessItemStatus | string | number): string {
+    const num = this.getStatusNumericValue(status);
+    switch (num) {
+      case AccessItemStatus.Granted:
+        return 'badge-granted';
+      case AccessItemStatus.Blocked:
+        return 'badge-blocked';
+      case AccessItemStatus.InProgress:
+      default:
+        return 'badge-inprogress';
+    }
   }
 
   openAddModal(): void {
     const dialogRef = this.dialog.open<AddAccessItemDialogComponent, undefined, AddAccessItemDialogResult>(
-      AddAccessItemDialogComponent
+      AddAccessItemDialogComponent,
+      { disableClose: true }
     );
 
     dialogRef.closed$.subscribe((result) => {
@@ -235,7 +255,8 @@ export class AccessTrackerComponent {
           itemName: item.name, 
           engagementId: this.engagementId(),
           currentOwnerId: item.ownerId 
-        } 
+        },
+        disableClose: true
       }
     );
 

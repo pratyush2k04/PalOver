@@ -19,7 +19,7 @@
   </div>
 
   @if (isLoading()) {
-    <div class="loading-state">Loading findings...</div>
+    <app-loading-spinner label="Loading findings..." />
   } @else if (findings().length === 0) {
     <div class="empty-state">
       <p>No code review findings recorded yet.</p>
@@ -71,7 +71,7 @@
                   } @else if (item.clientDecision && +item.clientDecision === 1) {
                     <app-status-badge tone="success">Accepted</app-status-badge>
                   } @else if (item.clientDecision && +item.clientDecision === 2) {
-                    <app-status-badge tone="info">Deferred</app-status-badge>
+                    <app-status-badge tone="warning">Deferred</app-status-badge>
                   } @else if (!item.clientDecision) {
                     <app-status-badge tone="neutral">Open</app-status-badge>
                   }
@@ -81,6 +81,7 @@
                       <app-button
                         type="button"
                         variant="stroked"
+                        class="btn-accept"
                         [disabled]="item.clientDecision !== null && item.clientDecision !== undefined && +item.clientDecision === 1"
                         (click)="onUpdateDecision(item.id, 1)">
                         Accept
@@ -88,6 +89,7 @@
                       <app-button
                         type="button"
                         variant="stroked"
+                        class="btn-defer"
                         [disabled]="item.clientDecision !== null && item.clientDecision !== undefined && +item.clientDecision === 2"
                         (click)="onUpdateDecision(item.id, 2)">
                         Defer

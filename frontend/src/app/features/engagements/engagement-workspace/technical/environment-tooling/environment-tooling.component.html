@@ -16,9 +16,7 @@
 
   <!-- Loading State -->
   @if (isLoading()) {
-    <div class="loading-container">
-      <p>Loading environment & tooling items...</p>
-    </div>
+    <app-loading-spinner label="Loading environment & tooling items..." />
   } @else {
     <!-- Table -->
     <div class="table-responsive">
@@ -43,9 +41,15 @@
                 <div class="owner-content">
                   <span>{{ item.ownerFullName || 'Unassigned' }}</span>
                   @if (isTechLead()) {
-                    <button class="edit-owner-btn" (click)="openEditOwnerModal(item)" [appTooltip]="'Change owner'">
-                      <span [inlineSVG]="'assets/icons/edit.svg'"></span>
-                    </button>
+                    <app-button
+                      type="button"
+                      variant="icon"
+                      class="btn-action"
+                      ariaLabel="Change owner"
+                      [appTooltip]="'Change owner'"
+                      (click)="openEditOwnerModal(item)">
+                      <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                    </app-button>
                   }
                 </div>
               </td>

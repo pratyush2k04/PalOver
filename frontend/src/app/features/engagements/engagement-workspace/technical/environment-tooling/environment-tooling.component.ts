@@ -1,3 +1,4 @@
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { Component, inject, input, output, signal, computed, effect, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -33,6 +34,7 @@ import {
   selector: 'app-environment-tooling',
   standalone: true,
   imports: [
+    LoadingSpinnerComponent,
     CommonModule,
     FormsModule,
     InlineSVGModule,
@@ -108,7 +110,7 @@ export class EnvironmentToolingComponent {
   private openNaDialog(item: EnvironmentToolingItemDto): void {
     const dialogRef = this.dialog.open<NotApplicableReasonDialogComponent, NotApplicableReasonDialogData, NotApplicableReasonDialogResult>(
       NotApplicableReasonDialogComponent,
-      { data: { itemName: item.name, currentReason: item.notApplicableReason } }
+      { data: { itemName: item.name, currentReason: item.notApplicableReason }, disableClose: true }
     );
 
     dialogRef.closed$.subscribe((result) => {
@@ -136,19 +138,7 @@ export class EnvironmentToolingComponent {
       },
       error: (err) => {
         this.toastService.error(`Failed to update status for ${item.name}`);
-        console.warn('API update environment status failed, updating local state for testing', err);
-        const updatedList = this.items().map(i => {
-          if (i.id === item.id) {
-            return {
-              ...i,
-              status: newStatus,
-              notApplicableReason: newStatus === EnvironmentToolingStatus.NotApplicable ? naReason : undefined
-            };
-          }
-          return i;
-        });
-        this.items.set(updatedList);
-        this.itemsUpdated.emit(updatedList);
+        console.warn('API update environment status failed', err);
       }
     });
   }
@@ -183,7 +173,8 @@ export class EnvironmentToolingComponent {
 
   openAddModal(): void {
     const dialogRef = this.dialog.open<AddEnvironmentItemDialogComponent, undefined, AddEnvironmentItemDialogResult>(
-      AddEnvironmentItemDialogComponent
+      AddEnvironmentItemDialogComponent,
+      { disableClose: true }
     );
 
     dialogRef.closed$.subscribe((result) => {
@@ -200,7 +191,8 @@ export class EnvironmentToolingComponent {
           itemName: item.name, 
           engagementId: this.engagementId(),
           currentOwnerId: item.ownerId 
-        } 
+        },
+        disableClose: true
       }
     );
 

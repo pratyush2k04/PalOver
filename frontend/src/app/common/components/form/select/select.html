@@ -4,7 +4,7 @@
   }
   <select
     [id]="id()"
-    [disabled]="disabled"
+    [disabled]="disabled()"
     [class.is-invalid]="showError"
     (change)="onSelectChange($any($event.target).value)"
     (blur)="markTouched()"

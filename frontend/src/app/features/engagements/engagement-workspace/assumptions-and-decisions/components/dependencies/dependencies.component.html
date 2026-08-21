@@ -1,0 +1,63 @@
+<div class="panel-card">
+  @if (atRiskCount() > 0) {
+    <div class="banner-alert">
+      <span [inlineSVG]="'assets/icons/alert-triangle.svg'"></span>
+      <span>{{ atRiskCount() }} dependency(s) at risk</span>
+    </div>
+  }
+
+  <div class="panel-header">
+    <div class="title-section">
+      <h2>Dependencies</h2>
+    </div>
+    <app-button class="btn-add" variant="stroked" (click)="openDependencyDialog()">+ Add</app-button>
+  </div>
+
+  @if (isLoading()) {
+    <app-loading-spinner></app-loading-spinner>
+  } @else {
+    <div class="panel-content">
+      @if (dependencies().length === 0) {
+        <div>
+          <app-empty-state title="No Dependencies Found" message="Click '+ Add' to create your first dependency."></app-empty-state>
+        </div>
+      } @else {
+        <div class="list-container">
+          @for (item of dependencies(); track item.id) {
+            <div class="list-item" [ngClass]="'status-' + DependencyStatus[item.status].toLowerCase()">
+              
+              <div class="item-main">
+                <div class="item-text">
+                  <span class="description">{{ item.description }}</span>
+                  <app-status-badge [tone]="getStatusTone(item.status)">{{ getStatusLabel(item.status) }}</app-status-badge>
+                  <span class="type-badge">{{ item.type }}</span>
+                </div>
+                
+                <div class="item-meta">
+                  <span class="rationale">Needed By: {{ item.neededByDate | date:'mediumDate' }}</span>
+                </div>
+              </div>
+
+              <div class="item-right">
+                @if (item.ownerName) {
+                  <div class="owner-container">
+                    <span class="owner-icon" [inlineSVG]="'assets/icons/user.svg'"></span>
+                    {{ item.ownerName }}
+                  </div>
+                }
+                
+                <div class="item-actions">
+                  <app-button class="btn-edit" variant="stroked" (click)="openDependencyDialog(item)">Edit</app-button>
+                  @if (item.status !== DependencyStatus.Met) {
+                    <app-button class="btn-met" type="button" variant="stroked" (click)="markAsMet(item)">Mark Met</app-button>
+                  }
+                </div>
+              </div>
+
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
