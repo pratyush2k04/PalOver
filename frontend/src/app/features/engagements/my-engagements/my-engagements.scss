@@ -17,18 +17,16 @@
 
 .toolbar-row {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
+  gap: $spacing-4;
   margin-top: -$spacing-8;
-  margin-bottom: $spacing-2;
+  margin-bottom: $spacing-3;
 }
 
 .sort-control {
   @include flex-center;
   gap: $spacing-2;
-
-  &.presales-view {
-    margin-right: 175px;
-  }
 
   label {
     font-size: $font-size-xs;

@@ -1,12 +1,12 @@
 <div class="my-engagements-page">
-  <app-page-header title="My Engagements" description="Track kickoff readiness and manage your assigned engagements.">
+  <app-page-header title="My Engagements" description="Track kickoff readiness and manage your assigned engagements." />
+
+  <div class="toolbar-row">
     @if (isPreSales()) {
       <app-engagements (engagementCreated)="loadEngagements()" />
     }
-  </app-page-header>
 
-  <div class="toolbar-row">
-    <div class="sort-control" [class.presales-view]="isPreSales()">
+    <div class="sort-control">
       <label for="sortBy">Sort by</label>
       <app-select
         id="sortBy"
