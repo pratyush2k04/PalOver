@@ -1,4 +1,3 @@
-using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,10 +15,7 @@ namespace Pdr.Api.Controllers;
 [Authorize]
 [Route("api/engagements/{engagementId:int}/dependency-spikes")]
 [Produces("application/json")]
-public class DependencySpikesController(
-    IDependencySpikeService service,
-    IValidator<CreateDependencySpikeRequest> createValidator,
-    IValidator<UpdateDependencySpikeRequest> updateValidator) : ControllerBase
+public class DependencySpikesController(IDependencySpikeService service) : ControllerBase
 {
     /// <summary>
     /// Retrieves all dependency spikes for an engagement.
@@ -55,13 +51,6 @@ public class DependencySpikesController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CreateSpike(int engagementId, [FromBody] CreateDependencySpikeRequest request)
     {
-        var validationResult = await createValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
-            return BadRequest(new { errors });
-        }
-
         var result = await service.CreateSpikeAsync(engagementId, request);
         return CreatedAtAction(nameof(GetSpikes), new { engagementId }, result);
     }
@@ -83,13 +72,6 @@ public class DependencySpikesController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateSpike(int engagementId, int id, [FromBody] UpdateDependencySpikeRequest request)
     {
-        var validationResult = await updateValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
-            return BadRequest(new { errors });
-        }
-
         var result = await service.UpdateSpikeAsync(id, request);
         return Ok(result);
     }
