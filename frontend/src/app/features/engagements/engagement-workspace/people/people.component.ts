@@ -10,6 +10,7 @@ import { LoaderService } from '@shared/services/loader.service';
 import { ToastService } from '@common/services/toast/toast';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { ButtonComponent } from '@common/components/button/button';
+import { SectionHeaderComponent } from '@common/components/section-header/section-header';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { AuthService } from '@shared/services/auth';
 import { USER_ROLES } from '@shared/constants/app.constants';
@@ -27,7 +28,8 @@ import {
     FormsModule,
     ConfirmDialogComponent,
     InlineSVGModule,
-    ButtonComponent
+    ButtonComponent,
+    SectionHeaderComponent,
   ],
   templateUrl: './people.component.html',
   styleUrl: './people.component.scss'

@@ -4,23 +4,9 @@
 .resources-container {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  padding: 1.5rem 0;
+  gap: $spacing-4;
+  padding: 0;
   width: 100%;
-}
-
-.resources-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-
-  .page-title {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: $color-text;
-  }
 }
 
 .requests-list {

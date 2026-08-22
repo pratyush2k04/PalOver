@@ -20,6 +20,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { AlertComponent } from '@common/components/alert/alert';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
+import { SectionHeaderComponent } from '@common/components/section-header/section-header';
 import { InputComponent } from '@common/components/form/input/input';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
@@ -46,7 +47,8 @@ import { RiskCommentsComponent } from './components/risk-comments/risk-comments.
     InputComponent,
     SelectComponent,
     TextareaComponent,
-    RiskCommentsComponent
+    RiskCommentsComponent,
+    SectionHeaderComponent
   ],
   templateUrl: './risks.component.html',
   styleUrl: './risks.component.scss'

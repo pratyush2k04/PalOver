@@ -14,6 +14,7 @@ import {
   EngagementSortBy,
   DayOneSignOffRequest
 } from '../models/engagement.model';
+import { EvidenceSnapshot } from '../models/evidence-snapshot.model';
 import { ENGAGEMENT_API_ENDPOINTS } from '@shared/constants/app.constants';
 
 export interface EngagementOpenItemsSummary {
@@ -77,5 +78,9 @@ export class EngagementService {
 
   signOffDayOne(id: number, request: DayOneSignOffRequest): Observable<EngagementInfo> {
     return this.http.post<EngagementInfo>(ENGAGEMENT_API_ENDPOINTS.DAY_ONE_SIGN_OFF(id), request);
+  }
+
+  getEvidenceSnapshot(id: number): Observable<EvidenceSnapshot> {
+    return this.http.get<EvidenceSnapshot>(ENGAGEMENT_API_ENDPOINTS.EVIDENCE_SNAPSHOT(id));
   }
 }

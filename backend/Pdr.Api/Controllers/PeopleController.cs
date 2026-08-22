@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,9 +17,7 @@ namespace Pdr.Api.Controllers;
 [Authorize]
 [Route("api/engagements/{engagementId:int}/people")]
 [Produces("application/json")]
-public class PeopleController(
-    IPersonService personService,
-    IValidator<PersonDto> validator) : ControllerBase
+public class PeopleController(IPersonService personService) : ControllerBase
 {
     private string? GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -54,13 +51,6 @@ public class PeopleController(
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<PersonDto>> CreatePerson(int engagementId, [FromBody] PersonDto request)
     {
-        var validationResult = await validator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
-            return BadRequest(new { errors });
-        }
-
         var created = await personService.CreatePersonAsync(engagementId, request, GetUserId());
         return CreatedAtAction(nameof(GetPeople), new { engagementId }, created);
     }
@@ -81,13 +71,6 @@ public class PeopleController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PersonDto>> UpdatePerson(int engagementId, int id, [FromBody] PersonDto request)
     {
-        var validationResult = await validator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
-            return BadRequest(new { errors });
-        }
-
         var updated = await personService.UpdatePersonAsync(engagementId, id, request, GetUserId());
         return Ok(updated);
     }

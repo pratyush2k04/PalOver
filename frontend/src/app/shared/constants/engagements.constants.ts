@@ -24,6 +24,7 @@ export const ENGAGEMENT_API_ENDPOINTS = {
   DOCUMENT_DELETE: (id: number) => `/api/documents/${id}`,
   OPEN_ITEMS_SUMMARY: (id: number) => `/api/Engagements/${id}/open-items-summary`,
   DAY_ONE_SIGN_OFF: (id: number) => `/api/Engagements/${id}/day-one-sign-off`,
+  EVIDENCE_SNAPSHOT: (id: number) => `/api/Engagements/${id}/evidence-snapshot`,
 } as const;
 
 export const ENGAGEMENT_CONSTANTS = {
@@ -66,7 +67,6 @@ export const ENGAGEMENT_WORKSPACE_CONFIG = {
     { label: 'Risks', route: ENGAGEMENT_ROUTES.RISKS, enabled: true },
     { label: 'Assumptions & Decisions', route: ENGAGEMENT_ROUTES.ASSUMPTIONS, enabled: true },
     { label: 'Audits', route: ENGAGEMENT_ROUTES.AUDITS, enabled: true },
-    { label: 'Reporting', route: 'reporting', enabled: false },
     { label: 'Sign Off', route: ENGAGEMENT_ROUTES.SIGN_OFF, enabled: false }
   ]
 } as const;

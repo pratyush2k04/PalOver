@@ -1,10 +1,14 @@
-import { Component, computed, effect, inject, input, output } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ButtonComponent } from '@common/components/button/button';
 import { AlertComponent } from '@common/components/alert/alert';
 import { DayOneSignOffRequest } from '@features/engagements/models/engagement.model';
+import { DialogRef } from '@common/services/dialog/dialog-ref';
+import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
+import { EngagementService } from '@features/engagements/services/engagement.service';
+import { ToastService } from '@common/services/toast/toast';
 
 @Component({
   selector: 'app-day-one-sign-off-dialog',
@@ -15,22 +19,21 @@ import { DayOneSignOffRequest } from '@features/engagements/models/engagement.mo
 })
 export class DayOneSignOffDialogComponent {
   private fb = inject(FormBuilder);
+  private dialogRef = inject(DialogRef<boolean>);
+  public data = inject(DIALOG_DATA) as {
+    engagementId: number;
+    isAbleToStartDayOne: boolean;
+    isLeadership: boolean;
+    initialBillingStartDate: string;
+  };
+  private engagementService = inject(EngagementService);
+  private toastService = inject(ToastService);
 
-  // Signal inputs
-  readonly isAbleToStartDayOne = input<boolean>(true);
-  readonly isLeadership = input<boolean>(false);
-  readonly initialBillingStartDate = input<string>('');
-  readonly isBusy = input<boolean>(false);
-
-  // Signal outputs
-  readonly confirmed = output<DayOneSignOffRequest>();
-  readonly cancelled = output<void>();
-
-  // Computed derived state
-  readonly isException = computed(() => !this.isAbleToStartDayOne());
+  readonly isBusy = signal<boolean>(false);
+  readonly isException = computed(() => !this.data.isAbleToStartDayOne);
 
   readonly form: FormGroup = this.fb.group({
-    billingStartDate: ['', Validators.required],
+    billingStartDate: [this.data.initialBillingStartDate || '', Validators.required],
     exceptionJustification: ['']
   });
 
@@ -43,20 +46,13 @@ export class DayOneSignOffDialogComponent {
 
   readonly canSubmit = computed(() => {
     if (this.isBusy()) return false;
-    if (this.isException() && !this.isLeadership()) return false;
+    if (this.isException() && !this.data.isLeadership) return false;
     return this.formStatus() === 'VALID';
   });
 
   constructor() {
     effect(() => {
-      const initialDate = this.initialBillingStartDate();
-      if (initialDate) {
-        this.form.patchValue({ billingStartDate: initialDate }, { emitEvent: true });
-      }
-    });
-
-    effect(() => {
-      const isBlockedAndNotLeadership = !this.isAbleToStartDayOne() && !this.isLeadership();
+      const isBlockedAndNotLeadership = !this.data.isAbleToStartDayOne && !this.data.isLeadership;
       const busy = this.isBusy();
 
       if (busy || isBlockedAndNotLeadership) {
@@ -86,14 +82,10 @@ export class DayOneSignOffDialogComponent {
     });
   }
 
-  onBackdropClick(): void {
+  onCancel(): void {
     if (!this.isBusy()) {
-      this.cancelled.emit();
+      this.dialogRef.close(false);
     }
-  }
-
-  onDialogClick(event: MouseEvent): void {
-    event.stopPropagation();
   }
 
   onSubmit(): void {
@@ -106,6 +98,16 @@ export class DayOneSignOffDialogComponent {
       exceptionJustification: this.isException() ? val.exceptionJustification?.trim() : undefined
     };
 
-    this.confirmed.emit(request);
+    this.isBusy.set(true);
+    this.engagementService.signOffDayOne(this.data.engagementId, request).subscribe({
+      next: () => {
+        this.isBusy.set(false);
+        this.toastService.success('Day-1 successfully signed off!');
+        this.dialogRef.close(true);
+      },
+      error: () => {
+        this.isBusy.set(false);
+      }
+    });
   }
 }

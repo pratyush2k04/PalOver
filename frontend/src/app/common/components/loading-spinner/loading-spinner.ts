@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-loading-spinner',
@@ -7,7 +7,7 @@ import { Component, Input } from '@angular/core';
   styleUrl: './loading-spinner.scss'
 })
 export class LoadingSpinnerComponent {
-  @Input() label = 'Loading...';
-  @Input() size: 'sm' | 'md' = 'md';
-  @Input() inline = false;
+  readonly label = input<string>('Loading...');
+  readonly size = input<'sm' | 'md'>('md');
+  readonly inline = input<boolean>(false);
 }

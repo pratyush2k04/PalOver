@@ -1,0 +1,17 @@
+<div class="section-header">
+  <div class="section-header-titles">
+    <div class="title-row">
+      <h2 class="section-title">{{ title() }}</h2>
+      @if (badge()) {
+        <span class="section-badge">{{ badge() }}</span>
+      }
+    </div>
+    @if (description()) {
+      <p class="section-description">{{ description() }}</p>
+    }
+  </div>
+
+  <div class="section-header-actions">
+    <ng-content></ng-content>
+  </div>
+</div>

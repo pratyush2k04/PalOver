@@ -23,7 +23,9 @@ public class AppDbContext : DbContext
     public DbSet<EngagementStatus> EngagementStatuses => Set<EngagementStatus>();
     public DbSet<EngagementType> EngagementTypes => Set<EngagementType>();
     public DbSet<DayOneSignOffRecord> DayOneSignOffRecords => Set<DayOneSignOffRecord>();
-    
+    public DbSet<EvidenceSnapshot> EvidenceSnapshots => Set<EvidenceSnapshot>();
+    public DbSet<EvidenceSnapshotItem> EvidenceSnapshotItems => Set<EvidenceSnapshotItem>();
+
     public DbSet<Assumption> Assumptions => Set<Assumption>();
 
     // Handover entities

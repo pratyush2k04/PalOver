@@ -36,7 +36,7 @@
 
     .search-box {
       position: relative;
-      width: 280px;
+      width: 17.5rem;
 
       .search-icon {
         position: absolute;
@@ -45,14 +45,14 @@
         transform: translateY(-50%);
         z-index: 2;
         pointer-events: none;
-        color: #94a3b8;
+        color: $color-text-fainter;
         display: flex;
         align-items: center;
 
         ::ng-deep svg,
         svg {
-          width: 16px;
-          height: 16px;
+          width: $font-size-base;
+          height: $font-size-base;
         }
       }
 
@@ -66,7 +66,7 @@
     }
 
     .role-filter-box {
-      width: 180px;
+      width: 11.25rem;
 
       ::ng-deep .app-field {
         margin-bottom: 0;
@@ -82,8 +82,8 @@
     display: flex;
     align-items: center;
     gap: $spacing-5;
-    width: 260px;
-    min-width: 260px;
+    width: 16.25rem;
+    min-width: 16.25rem;
     box-shadow: $shadow-sm;
 
     .card-icon {

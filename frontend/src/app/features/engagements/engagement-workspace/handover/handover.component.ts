@@ -34,6 +34,7 @@ import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
+import { SectionHeaderComponent } from '@common/components/section-header/section-header';
 import { ClientContactTransitionCardComponent } from './client-contact-transition-card/client-contact-transition-card.component';
 
 const MAX_FREE_TEXT_LENGTH = 2000;
@@ -59,6 +60,7 @@ interface RealisticEditForm {
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
+    SectionHeaderComponent,
     FlaggedItemsBannerComponent,
     AlertComponent,
     ButtonComponent,

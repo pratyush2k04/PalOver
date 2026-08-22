@@ -463,6 +463,30 @@ namespace Pdr.Api.Migrations
                             Id = 21,
                             Action = "ChecklistItemEvidenceUpdated",
                             Details = "Evidence updated for checklist item '{itemTitle}' on engagement '{engagementName}' by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Action = "DependencyCreated",
+                            Details = "Dependency {dependencyDescription} ({dependencyType}) created for engagement {engagementName}"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Action = "DependencyUpdated",
+                            Details = "Dependency {dependencyDescription} updated to status {dependencyStatus} for engagement {engagementName}"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Action = "DependencyDeleted",
+                            Details = "Dependency {dependencyDescription} deleted from engagement {engagementName}"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Action = "DependencyEscalated",
+                            Details = "Dependency {dependencyDescription} escalated to risk {riskTitle} for engagement {engagementName}"
                         });
                 });
 
@@ -2418,6 +2442,168 @@ namespace Pdr.Api.Migrations
                             Id = 2,
                             Name = "Brownfield"
                         });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Engagements.EvidenceSnapshot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly>("BillingStartDate")
+                        .HasColumnType("date")
+                        .HasColumnName("billing_start_date");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer")
+                        .HasColumnName("engagement_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<DateTime>("SignedOffAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("signed_off_at");
+
+                    b.Property<int>("SignedOffByUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("signed_off_by_user_id");
+
+                    b.Property<string>("SignedOffByUserName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("signed_off_by_user_name");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EngagementId")
+                        .IsUnique();
+
+                    b.HasIndex("SignedOffByUserId");
+
+                    b.ToTable("evidence_snapshots", (string)null);
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Engagements.EvidenceSnapshotItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("category_name");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("display_order");
+
+                    b.Property<string>("EvidenceLink")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("evidence_link");
+
+                    b.Property<string>("EvidenceNote")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("evidence_note");
+
+                    b.Property<int>("EvidenceSnapshotId")
+                        .HasColumnType("integer")
+                        .HasColumnName("evidence_snapshot_id");
+
+                    b.Property<DateTime?>("EvidenceSubmittedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("evidence_submitted_at");
+
+                    b.Property<string>("EvidenceSubmittedByName")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("evidence_submitted_by_name");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<int?>("SourceChecklistItemId")
+                        .HasColumnType("integer")
+                        .HasColumnName("source_checklist_item_id");
+
+                    b.Property<string>("StatusAtSignOff")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("status_at_sign_off");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EvidenceSnapshotId");
+
+                    b.ToTable("evidence_snapshot_items", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition", b =>
@@ -5489,6 +5675,36 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Status");
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.Engagements.EvidenceSnapshot", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Engagements.Engagement", "Engagement")
+                        .WithOne("EvidenceSnapshot")
+                        .HasForeignKey("Pdr.Api.Models.Engagements.EvidenceSnapshot", "EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "SignedOffByUser")
+                        .WithMany()
+                        .HasForeignKey("SignedOffByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Engagement");
+
+                    b.Navigation("SignedOffByUser");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Engagements.EvidenceSnapshotItem", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Engagements.EvidenceSnapshot", "EvidenceSnapshot")
+                        .WithMany("Items")
+                        .HasForeignKey("EvidenceSnapshotId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EvidenceSnapshot");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem", b =>
                 {
                     b.HasOne("Pdr.Api.Models.Engagements.Engagement", "Engagement")
@@ -5785,6 +6001,8 @@ namespace Pdr.Api.Migrations
 
                     b.Navigation("EnvironmentToolingItems");
 
+                    b.Navigation("EvidenceSnapshot");
+
                     b.Navigation("HandoverInfo");
 
                     b.Navigation("KickoffActionItems");
@@ -5797,6 +6015,11 @@ namespace Pdr.Api.Migrations
             modelBuilder.Entity("Pdr.Api.Models.Engagements.EngagementStatus", b =>
                 {
                     b.Navigation("Engagements");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Engagements.EvidenceSnapshot", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition", b =>

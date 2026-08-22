@@ -1,21 +1,15 @@
 <div class="people-directory">
-  <!-- Header Section -->
-  <div class="people-directory__header">
-    <div class="people-directory__title-group">
-      <h2 class="people-directory__title">People Directory</h2>
-    </div>
-    <div class="people-directory__actions">
-      @if (!isLeadership()) {
-        <app-button type="button" variant="flat" [disabled]="isImporting()" (click)="onImportFromHandover()">
-          Import from handover
-        </app-button>
-        <app-button type="button" variant="accent" (click)="onAddPerson()">
-          <span class="btn-icon">+</span>
-          <span>Add person</span>
-        </app-button>
-      }
-    </div>
-  </div>
+  <app-section-header title="People Directory">
+    @if (!isLeadership()) {
+      <app-button type="button" variant="flat" [disabled]="isImporting()" (click)="onImportFromHandover()">
+        Import from handover
+      </app-button>
+      <app-button type="button" variant="accent" (click)="onAddPerson()">
+        <span class="btn-icon">+</span>
+        <span>Add person</span>
+      </app-button>
+    }
+  </app-section-header>
 
   <!-- Table Card Section -->
   <div class="people-directory__card">

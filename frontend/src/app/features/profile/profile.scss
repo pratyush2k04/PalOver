@@ -1,16 +1,21 @@
 @use '../../../styles/mixins' as *;
 
-.profile-page {
-  padding: 1.5rem 2rem 1.25rem;
+:host {
+  display: block;
+  font-family: $font-family-base;
+  color: $color-text;
 }
 
-.page-header {
-  margin-bottom: $spacing-4;
+.profile-page {
+  padding: $spacing-8;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: $font-family-base;
+  color: $color-text;
 
-  h2 {
-    margin: 0;
-    font-size: $font-size-2xl;
-    color: $color-text;
+  app-page-header {
+    display: block;
+    margin-bottom: $spacing-6;
   }
 }
 
@@ -22,24 +27,22 @@
 }
 
 .profile-card {
-  flex: 1 1 22.5rem;
-  min-width: 20rem;
-  @include card-surface($padding: $spacing-6, $radius: $radius-lg);
+  flex: 1 1 360px;
+  min-width: 320px;
+  @include card-surface($padding: $spacing-6, $radius: $radius-xl);
   box-shadow: $shadow-sm;
 }
 
 .card-title {
-  margin: 0 0 $spacing-4;
-  font-size: 0.8125rem;
-  font-weight: $font-weight-bold;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #1e3a8a;
+  margin: 0 0 $spacing-5;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: $color-text;
 }
 
 .field-note {
   margin: -$spacing-1 0 $spacing-3;
-  font-size: 0.8125rem;
+  font-size: $font-size-xs;
   color: $color-text-faint;
 }
 
@@ -53,9 +56,9 @@
 .chip {
   font-size: $font-size-xs;
   font-weight: $font-weight-medium;
-  padding: $spacing-1 0.625rem;
+  padding: $spacing-1 $spacing-2;
   border-radius: $radius-full;
-  background: #f3f4f6;
+  background: $color-surface-hover;
   color: $color-text-faint;
   border: 1px solid $color-border-soft;
 

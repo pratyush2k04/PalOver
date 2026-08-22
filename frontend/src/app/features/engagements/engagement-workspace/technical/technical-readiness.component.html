@@ -55,6 +55,15 @@
       </div>
     }
 
+    <!-- Dependency Spikes Section -->
+    @if (canViewDependencySpikes()) {
+      <div class="readiness-section">
+        <app-dependency-spikes
+          [engagementId]="engagementId()!">
+        </app-dependency-spikes>
+      </div>
+    }
+
     <!-- Code Review & Architecture Analysis Card (Brownfield Only) -->
     @if (canViewBrownfieldReview()) {
       <div class="readiness-section">

@@ -1,14 +1,12 @@
 @use '../../../../../styles/mixins' as *;
 
 .engagements-page {
-  position: relative;
+  display: inline-block;
 }
 
 .mark-as-sow-btn {
-  position: absolute;
-  top: 25px;
-  right: -136px;
-  width: 300px;
+  display: inline-flex;
+  white-space: nowrap;
 }
 
 .page-header {
