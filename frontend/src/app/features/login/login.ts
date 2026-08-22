@@ -51,8 +51,8 @@ export class LoginComponent implements OnInit {
     this.authService.login(this.loginForm.value).subscribe({
       next: async () => {
         const context = await this.appContext.initialize();
+        await this.router.navigateByUrl(context.workspace.route);
         this.loaderService.hide();
-        this.router.navigateByUrl(context.workspace.route);
       },
       error: (err) => {
         this.loaderService.hide();

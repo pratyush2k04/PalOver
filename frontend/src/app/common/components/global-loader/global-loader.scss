@@ -18,6 +18,10 @@
   pointer-events: auto;
   animation: loader-fade-in 0.18s ease-out;
 
+  &.is-full-page {
+    left: 0;
+  }
+
   @media (max-width: 768px) {
     left: 0;
   }

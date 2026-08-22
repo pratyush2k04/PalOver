@@ -1,7 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  inject
+  inject,
+  input
 } from '@angular/core';
 
 import { LoaderService } from '@shared/services/loader.service';
@@ -15,5 +16,6 @@ import { LoaderService } from '@shared/services/loader.service';
 })
 export class GlobalLoader {
   readonly loader = inject(LoaderService);
+  readonly fullPage = input(false);
 }
 

@@ -1,6 +1,7 @@
 @if (loader.isLoading()) {
   <div
     class="loader-backdrop"
+    [class.is-full-page]="fullPage()"
     role="status"
     aria-live="polite"
     aria-label="Loading">
