@@ -7,11 +7,13 @@ import { AppContextService } from '@shared/services/app-context';
 import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
+import { LoaderService } from '@shared/services/loader.service';
+import { GlobalLoader } from '@common/components/global-loader/global-loader';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AlertComponent, ButtonComponent, InputComponent],
+  imports: [CommonModule, ReactiveFormsModule, AlertComponent, ButtonComponent, InputComponent, GlobalLoader],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
@@ -21,6 +23,7 @@ export class LoginComponent implements OnInit {
   private appContext = inject(AppContextService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private loaderService = inject(LoaderService);
 
   loginForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -28,7 +31,6 @@ export class LoginComponent implements OnInit {
   });
 
   errorMessage = signal<string | null>(null);
-  isLoading = signal(false);
 
   ngOnInit(): void {
     const reason = this.route.snapshot.queryParamMap.get('reason');
@@ -43,17 +45,17 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    this.isLoading.set(true);
+    this.loaderService.show();
     this.errorMessage.set(null);
 
     this.authService.login(this.loginForm.value).subscribe({
       next: async () => {
         const context = await this.appContext.initialize();
-        this.isLoading.set(false);
+        this.loaderService.hide();
         this.router.navigateByUrl(context.workspace.route);
       },
       error: (err) => {
-        this.isLoading.set(false);
+        this.loaderService.hide();
         if (err.status === 401 && err.error?.message) {
           this.errorMessage.set(err.error.message);
         } else if (err.status === 429 && err.error?.message) {

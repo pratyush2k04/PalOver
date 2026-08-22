@@ -17,11 +17,15 @@
   backdrop-filter: blur(0.1875rem);
   pointer-events: auto;
   animation: loader-fade-in 0.18s ease-out;
-  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   @media (max-width: 768px) {
     left: 0;
   }
+}
+
+:host-context(app-login) .loader-backdrop,
+:host(.full-page) .loader-backdrop {
+  left: 0;
 }
 
 .loader-card {
@@ -53,8 +57,8 @@
     fill: $color-accent-orange;
   }
 
-  &--white {
-    fill: $color-surface;
+  &--blue {
+    fill: $color-primary;
   }
 }
 
