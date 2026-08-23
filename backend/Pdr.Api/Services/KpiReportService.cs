@@ -43,19 +43,13 @@ public class KpiReportService(
         if (scopedEngagementIds.Count == 0)
             return BuildEmptyResponse(period);
 
-        var engagementInfoTask = engagementRepository.GetEngagementReportInfoAsync(scopedEngagementIds);
-        var assignmentsTask = engagementRepository.GetAssignmentsForEngagementsAsync(scopedEngagementIds);
-        var auditRowsTask = auditLogRepository.GetByEngagementIdsAndActionsAsync(scopedEngagementIds, ReportAuditActionIds);
-        var resolvedAccessItemsTask = accessTrackerRepository.GetResolvedAccessItemsByEngagementIdsAsync(scopedEngagementIds);
-        var priorityNotificationsTask = notificationRepository.GetByPriorityAsync(EscalationNotificationPriority);
-
-        await Task.WhenAll(engagementInfoTask, assignmentsTask, auditRowsTask, resolvedAccessItemsTask, priorityNotificationsTask);
-
-        var engagementInfos = await engagementInfoTask;
-        var assignments = await assignmentsTask;
-        var auditRows = await auditRowsTask;
-        var resolvedAccessItems = await resolvedAccessItemsTask;
-        var priorityNotifications = await priorityNotificationsTask;
+        // Sequential, not Task.WhenAll: these all share one scoped DbContext via their
+        // repositories, and EF Core's DbContext does not support concurrent operations.
+        var engagementInfos = await engagementRepository.GetEngagementReportInfoAsync(scopedEngagementIds);
+        var assignments = await engagementRepository.GetAssignmentsForEngagementsAsync(scopedEngagementIds);
+        var auditRows = await auditLogRepository.GetByEngagementIdsAndActionsAsync(scopedEngagementIds, ReportAuditActionIds);
+        var resolvedAccessItems = await accessTrackerRepository.GetResolvedAccessItemsByEngagementIdsAsync(scopedEngagementIds);
+        var priorityNotifications = await notificationRepository.GetByPriorityAsync(EscalationNotificationPriority);
 
         var relevantEngagementIds = ComputeRelevantEngagementIds(scopedEngagementIds, engagementInfos, assignments, request);
 
