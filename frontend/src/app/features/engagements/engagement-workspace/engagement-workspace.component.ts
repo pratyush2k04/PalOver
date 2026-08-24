@@ -75,12 +75,12 @@ export class EngagementWorkspaceComponent {
 
   readonly tabs = computed<TabItem[]>(() => {
     const isSignedOff = !!this.engagement()?.dayOneSignOff;
-    const isAuthorized = this.isAuthorizedForSignOff();
 
     return ENGAGEMENT_WORKSPACE_CONFIG.DEFAULT_TABS
       .filter((tab) => {
         if (tab.route === ENGAGEMENT_ROUTES.SIGN_OFF) {
-          return isAuthorized && isSignedOff;
+          // Hidden before sign-off, but once signed off, visible to all roles (including Pre-Sales & Tech Lead)
+          return isSignedOff;
         }
         return true;
       })
