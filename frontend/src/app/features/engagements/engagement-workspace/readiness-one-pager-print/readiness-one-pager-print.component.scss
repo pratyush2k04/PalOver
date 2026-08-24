@@ -88,6 +88,14 @@
   }
 }
 
+.section-heading-row {
+  @include flex-between;
+
+  h3 {
+    margin: 0;
+  }
+}
+
 .section-note {
   margin: 0;
   font-size: $font-size-sm;
@@ -160,43 +168,16 @@
   color: $color-text-muted;
 }
 
-.blocker-list,
-.outstanding-list,
-.exclusion-list {
+.outstanding-list {
   margin: 0;
-  padding: 0;
-  list-style: none;
-  @include flex-column($spacing-3);
-}
-
-.outstanding-list,
-.exclusion-list {
-  padding-left: $spacing-4;
+  padding: 0 0 0 $spacing-4;
   list-style: disc;
   font-size: $font-size-sm;
   color: $color-text-muted;
-}
-
-.blocker-item {
-  display: flex;
-  align-items: flex-start;
-  gap: $spacing-3;
-  padding: $spacing-3;
-  background: $color-danger-bg;
-  border: 1px solid $color-danger-border;
-  border-radius: $radius-md;
-}
-
-.blocker-detail {
-  @include flex-column($spacing-1);
-  font-size: $font-size-sm;
+  @include flex-column($spacing-3);
 
   strong {
     color: $color-text;
-  }
-
-  span {
-    color: $color-text-faint;
   }
 }
 
@@ -279,11 +260,13 @@
   padding-top: $spacing-1;
 }
 
-.exclusions-section {
-  background: $color-warning-bg;
-  border: 1px solid $color-warning-border;
-  border-radius: $radius-md;
-  padding: $spacing-4;
+.checklist-table tr.is-blocked {
+  background: $color-danger-bg;
+
+  td {
+    color: $color-danger-text;
+    border-bottom-color: $color-danger-border;
+  }
 }
 
 .doc-footer {
@@ -305,7 +288,7 @@
   .print-page-wrapper { background: #fff !important; padding: 0 !important; min-height: auto !important; }
   .print-document { margin: 0 !important; padding: 0 !important; max-width: 100% !important; box-shadow: none !important; border-radius: 0 !important; }
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  .section-container, .blocker-item {
+  .section-container {
     break-inside: avoid;
     page-break-inside: avoid;
   }

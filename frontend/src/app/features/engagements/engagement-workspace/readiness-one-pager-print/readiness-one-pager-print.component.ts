@@ -5,7 +5,7 @@ import { Title } from '@angular/platform-browser';
 import { ButtonComponent } from '@common/components/button/button';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
-import { ReadinessOnePagerDto, ReadinessOnePagerService } from '@shared/services/readiness-one-pager.service';
+import { OutstandingMandatoryItemDto, ReadinessOnePagerDto, ReadinessOnePagerService } from '@shared/services/readiness-one-pager.service';
 import { PORTFOLIO_STATUS } from '@shared/constants/portfolio.constants';
 import { KICKOFF_READINESS_TIERS } from '@shared/constants/kickoff.constants';
 
@@ -52,6 +52,26 @@ export class ReadinessOnePagerPrintComponent implements OnInit {
   readonly atRiskFloorTone = computed<StatusBadgeTone>(() =>
     this.clearsAtRiskFloor() ? 'success' : 'danger'
   );
+
+  readonly outstandingHandoverItems = computed<OutstandingMandatoryItemDto[]>(() =>
+    (this.report()?.outstandingMandatoryItems ?? []).filter((item) => item.category === 'Handover')
+  );
+
+  readonly outstandingCommitments = computed<OutstandingMandatoryItemDto[]>(() =>
+    (this.report()?.outstandingMandatoryItems ?? []).filter((item) => item.category === 'Commitment')
+  );
+
+  readonly outstandingChecklistItems = computed<OutstandingMandatoryItemDto[]>(() =>
+    (this.report()?.outstandingMandatoryItems ?? []).filter((item) => item.category === 'Checklist')
+  );
+
+  readonly blockedChecklistItemCount = computed<number>(() =>
+    this.outstandingChecklistItems().filter((item) => this.isBlockedChecklistItem(item)).length
+  );
+
+  isBlockedChecklistItem(item: OutstandingMandatoryItemDto): boolean {
+    return item.reason.startsWith('Blocked');
+  }
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('engagementId') ?? this.route.snapshot.paramMap.get('id');

@@ -59,25 +59,6 @@
         </div>
       </section>
 
-      <section class="section-container blockers-section">
-        <h3>Open Blockers</h3>
-        @if (r.openBlockers.length === 0) {
-          <p class="empty-note">No open blockers.</p>
-        } @else {
-          <ul class="blocker-list">
-            @for (blocker of r.openBlockers; track blocker.riskId) {
-              <li class="blocker-item">
-                <app-status-badge tone="danger">{{ blocker.status }}</app-status-badge>
-                <div class="blocker-detail">
-                  <strong>{{ blocker.title }}</strong>
-                  <span>Impact: {{ blocker.impact }}{{ blocker.ownerName ? ' · Owner: ' + blocker.ownerName : '' }}</span>
-                </div>
-              </li>
-            }
-          </ul>
-        }
-      </section>
-
       <section class="section-container">
         <h3>Key Dates</h3>
         <div class="key-dates">
@@ -96,6 +77,72 @@
             </div>
           }
         </div>
+      </section>
+
+      <section class="section-container">
+        <h3>Committed vs Realistic</h3>
+        @if (outstandingCommitments().length === 0) {
+          <p class="empty-note">No outstanding commitments — all acknowledged as realistic.</p>
+        } @else {
+          <table class="commitments-table">
+            <thead>
+              <tr>
+                <th>Commitment</th>
+                <th>Current State</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of outstandingCommitments(); track item.sourceId) {
+                <tr>
+                  <td>{{ item.label }}</td>
+                  <td>{{ item.reason }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </section>
+
+      <section class="section-container">
+        <div class="section-heading-row">
+          <h3>Checklist Items</h3>
+          @if (blockedChecklistItemCount() > 0) {
+            <app-status-badge tone="danger">{{ blockedChecklistItemCount() }} blocked</app-status-badge>
+          }
+        </div>
+        @if (outstandingChecklistItems().length === 0) {
+          <p class="empty-note">No outstanding checklist items — all mandatory items complete.</p>
+        } @else {
+          <table class="commitments-table checklist-table">
+            <thead>
+              <tr>
+                <th>Checklist</th>
+                <th>Current State</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of outstandingChecklistItems(); track item.sourceId) {
+                <tr [class.is-blocked]="isBlockedChecklistItem(item)">
+                  <td>{{ item.label }}</td>
+                  <td>{{ item.reason }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </section>
+
+      <section class="section-container">
+        <h3>Client Context</h3>
+        @if (outstandingHandoverItems().length === 0) {
+          <p class="empty-note">Business Problem and Client Sentiment are both captured.</p>
+        } @else {
+          <ul class="outstanding-list">
+            @for (item of outstandingHandoverItems(); track item.label) {
+              <li><strong>{{ item.label }}</strong> — {{ item.reason }}</li>
+            }
+          </ul>
+        }
       </section>
 
       <section class="section-container">
@@ -132,73 +179,6 @@
           </app-status-badge>
         </div>
       </section>
-
-      <section class="section-container">
-        <h3>Outstanding Mandatory Items</h3>
-        @if (r.outstandingMandatoryItems.length === 0) {
-          <p class="empty-note">No outstanding mandatory items.</p>
-        } @else {
-          <ul class="outstanding-list">
-            @for (item of r.outstandingMandatoryItems; track item.label + item.category) {
-              <li>
-                <strong>{{ item.label }}</strong> ({{ item.category }}) — {{ item.reason }}
-              </li>
-            }
-          </ul>
-        }
-      </section>
-
-      <section class="section-container">
-        <h3>Committed vs Realistic</h3>
-        @if (r.commitments.length === 0) {
-          <p class="empty-note">No commitments recorded.</p>
-        } @else {
-          <table class="commitments-table">
-            <thead>
-              <tr>
-                <th>Commitment</th>
-                <th>Committed</th>
-                <th>Realistic</th>
-                <th>Acknowledged</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (commitment of r.commitments; track commitment.commitmentId) {
-                <tr>
-                  <td>{{ commitment.title }}</td>
-                  <td>{{ commitment.committedTimeline }}</td>
-                  <td>{{ commitment.realisticTimeline || '—' }}</td>
-                  <td>{{ commitment.isAcknowledged ? 'Yes' : 'No' }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        }
-      </section>
-
-      <section class="section-container exclusions-section">
-        <h3>Score Exclusions</h3>
-        <p class="section-note">These items affect kickoff readiness but are not counted toward the score above.</p>
-        <ul class="exclusion-list">
-          @for (note of r.scoreExclusionNotes; track note) {
-            <li>{{ note }}</li>
-          }
-        </ul>
-      </section>
-
-      @if (r.commercial) {
-        <section class="section-container">
-          <h3>Commercial</h3>
-          <p>Commercial model: <strong>{{ r.commercial.commercialModelName }}</strong></p>
-          @if (r.commercial.commercialDocumentTitles.length > 0) {
-            <ul class="outstanding-list">
-              @for (title of r.commercial.commercialDocumentTitles; track title) {
-                <li>{{ title }}</li>
-              }
-            </ul>
-          }
-        </section>
-      }
 
       <footer class="doc-footer">
         <p>Project Delivery Readiness (PDR) System • Kickoff Readiness One-Pager • Confidential</p>
