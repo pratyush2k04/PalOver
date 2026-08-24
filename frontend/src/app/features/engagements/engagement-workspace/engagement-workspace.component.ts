@@ -75,13 +75,22 @@ export class EngagementWorkspaceComponent {
 
   readonly tabs = computed<TabItem[]>(() => {
     const isSignedOff = !!this.engagement()?.dayOneSignOff;
-    return ENGAGEMENT_WORKSPACE_CONFIG.DEFAULT_TABS.map((tab) => {
-      let enabled = tab.enabled;
-      if (tab.route === ENGAGEMENT_ROUTES.SIGN_OFF) {
-        enabled = isSignedOff;
-      }
-      return { id: tab.route, ...tab, enabled };
-    });
+
+    return ENGAGEMENT_WORKSPACE_CONFIG.DEFAULT_TABS
+      .filter((tab) => {
+        if (tab.route === ENGAGEMENT_ROUTES.SIGN_OFF) {
+          // Hidden before sign-off, but once signed off, visible to all roles (including Pre-Sales & Tech Lead)
+          return isSignedOff;
+        }
+        return true;
+      })
+      .map((tab) => {
+        let enabled = tab.enabled;
+        if (tab.route === ENGAGEMENT_ROUTES.SIGN_OFF) {
+          enabled = isSignedOff;
+        }
+        return { id: tab.route, ...tab, enabled };
+      });
   });
 
   readonly currentUrl = toSignal(

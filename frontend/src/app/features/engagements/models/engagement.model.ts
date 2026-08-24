@@ -102,6 +102,7 @@ export interface EngagementListItem {
   kickoffDate: string;
   daysToKickoff: number;
   readinessScore: number | null;
+  isSignedOff: boolean;
 }
 
 export interface EngagementListResponse {

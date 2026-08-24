@@ -15,13 +15,55 @@
   color: $color-text;
 }
 
-.toolbar-row {
+.header-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid $color-border-soft;
+  margin-bottom: $spacing-6;
+  margin-top: $spacing-4;
+}
+
+.tabs-control {
+  display: flex;
+  gap: $spacing-6;
+}
+
+.toolbar-actions {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
   gap: $spacing-4;
-  margin-top: -$spacing-8;
-  margin-bottom: $spacing-3;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: $font-size-base;
+  color: $color-text-faint;
+  padding: $spacing-3 $spacing-2;
+  cursor: pointer;
+  position: relative;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-text-muted;
+  }
+
+  &.active {
+    color: $color-primary;
+    font-weight: $font-weight-medium;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: $color-primary;
+    }
+  }
 }
 
 .sort-control {
