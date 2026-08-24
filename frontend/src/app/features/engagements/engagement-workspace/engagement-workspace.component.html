@@ -84,7 +84,14 @@
 
       <div class="header-divider"></div>
 
-      <div class="header-readiness-status">
+      <div
+        class="header-readiness-status"
+        role="button"
+        tabindex="0"
+        aria-label="View kickoff readiness one-pager"
+        (click)="openReadinessOnePagerDialog()"
+        (keydown.enter)="openReadinessOnePagerDialog()"
+      >
         <app-readiness-circle [score]="scorePercent()" size="lg" />
 
         <div class="readiness-details">

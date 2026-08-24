@@ -1,0 +1,123 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h3>Kickoff Readiness One-Pager</h3>
+  </div>
+
+  <div class="dialog-body">
+    @if (isLoading()) {
+      <app-loading-spinner label="Loading kickoff-readiness one-pager..." />
+    }
+
+    @if (error() && !isLoading()) {
+      <app-alert variant="danger">{{ error() }}</app-alert>
+    }
+
+    @if (report(); as r) {
+      <div class="report-meta">
+        <div>
+          <strong>{{ r.engagementName }}</strong>
+          <span class="client-name">{{ r.clientName }}</span>
+        </div>
+        <div class="meta-details">
+          <span>Requested by {{ r.requesterName }}</span>
+          <span>Generated {{ r.generatedAtUtc | date: 'dd MMM yyyy, HH:mm' }} UTC</span>
+        </div>
+      </div>
+
+      @if (r.openBlockers.length > 0) {
+        <app-alert variant="danger">
+          <strong>{{ r.openBlockers.length }} open blocker(s)</strong>
+        </app-alert>
+        <ul class="blocker-list">
+          @for (blocker of r.openBlockers; track blocker.riskId) {
+            <li class="blocker-item">
+              <app-status-badge tone="danger">{{ blocker.status }}</app-status-badge>
+              <div class="blocker-detail">
+                <strong>{{ blocker.title }}</strong>
+                <span>Impact: {{ blocker.impact }}{{ blocker.ownerName ? ' · Owner: ' + blocker.ownerName : '' }}</span>
+              </div>
+            </li>
+          }
+        </ul>
+      } @else {
+        <app-empty-state message="No open blockers." />
+      }
+
+      <div class="section">
+        <div class="section-heading">
+          <h4>Readiness Score</h4>
+          <app-status-badge [tone]="scoreTone()">{{ r.score }}%</app-status-badge>
+          <app-status-badge [tone]="statusTone()">{{ r.status }}</app-status-badge>
+        </div>
+        <div class="breakdown-row"><span>Handover fields</span><span>{{ r.handoverFieldsPassed }} / {{ r.handoverFieldsApplicable }}</span></div>
+        <div class="breakdown-row"><span>Commitments</span><span>{{ r.commitmentsPassed }} / {{ r.commitmentsApplicable }}</span></div>
+        <div class="breakdown-row"><span>Access items</span><span>{{ r.accessItemsPassed }} / {{ r.accessItemsApplicable }}</span></div>
+      </div>
+
+      @if (r.outstandingMandatoryItems.length > 0) {
+        <div class="section">
+          <h4>Outstanding Mandatory Items</h4>
+          <ul class="outstanding-list">
+            @for (item of r.outstandingMandatoryItems; track item.label + item.category) {
+              <li><strong>{{ item.label }}</strong> ({{ item.category }}) — {{ item.reason }}</li>
+            }
+          </ul>
+        </div>
+      }
+
+      <div class="section">
+        <h4>Score Exclusions</h4>
+        <p class="section-note">These items affect kickoff readiness but are not counted toward the score above.</p>
+        <ul class="outstanding-list">
+          @for (note of r.scoreExclusionNotes; track note) {
+            <li>{{ note }}</li>
+          }
+        </ul>
+      </div>
+
+      <div class="section">
+        <h4>Key Dates</h4>
+        <div class="key-dates">
+          <div class="key-date-item"><span class="key-date-label">Kickoff Date</span><span>{{ r.kickoffDate | date: 'dd MMM yyyy' }}</span></div>
+          <div class="key-date-item"><span class="key-date-label">Days to Kickoff</span><span>{{ r.daysToKickoff }}</span></div>
+          @if (r.billingStartDate) {
+            <div class="key-date-item"><span class="key-date-label">Billing Start Date</span><span>{{ r.billingStartDate | date: 'dd MMM yyyy' }}</span></div>
+          }
+        </div>
+      </div>
+
+      @if (r.commitments.length > 0) {
+        <div class="section">
+          <h4>Committed vs Realistic</h4>
+          <table class="commitments-table">
+            <thead>
+              <tr><th>Commitment</th><th>Committed</th><th>Realistic</th><th>Acknowledged</th></tr>
+            </thead>
+            <tbody>
+              @for (commitment of r.commitments; track commitment.commitmentId) {
+                <tr>
+                  <td>{{ commitment.title }}</td>
+                  <td>{{ commitment.committedTimeline }}</td>
+                  <td>{{ commitment.realisticTimeline || '—' }}</td>
+                  <td>{{ commitment.isAcknowledged ? 'Yes' : 'No' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      @if (r.commercial) {
+        <div class="section">
+          <h4>Commercial</h4>
+          <p>Commercial model: <strong>{{ r.commercial.commercialModelName }}</strong></p>
+        </div>
+      }
+    }
+  </div>
+
+  <div class="dialog-footer">
+    <app-button type="button" variant="stroked" (click)="close()">Close</app-button>
+    <app-button type="button" variant="flat" [disabled]="!report()" (click)="exportAsPdf()">Export as PDF</app-button>
+  </div>
+</div>

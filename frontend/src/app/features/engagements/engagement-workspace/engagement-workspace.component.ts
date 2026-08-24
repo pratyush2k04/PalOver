@@ -15,6 +15,7 @@ import { ENGAGEMENT_ROUTES } from '@shared/constants/routes.constants';
 import { TabItem, TabsComponent } from '@common/components/tabs/tabs';
 import { ReadinessCircleComponent } from '@shared/readiness-circle/readiness-circle';
 import { DayOneSignOffDialogComponent } from './components/day-one-sign-off-dialog/day-one-sign-off-dialog.component';
+import { ReadinessOnePagerDialogComponent } from './components/readiness-one-pager-dialog/readiness-one-pager-dialog.component';
 import { ButtonComponent } from '@common/components/button/button';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DialogService } from '@common/services/dialog/dialog.service';
@@ -175,6 +176,15 @@ export class EngagementWorkspaceComponent {
       if (success) {
         this.loadEngagement(engagementId);
       }
+    });
+  }
+
+  openReadinessOnePagerDialog(): void {
+    const engagementId = this.engagementId();
+    if (!engagementId) return;
+
+    this.dialogService.open(ReadinessOnePagerDialogComponent, {
+      data: { engagementId }
     });
   }
 }

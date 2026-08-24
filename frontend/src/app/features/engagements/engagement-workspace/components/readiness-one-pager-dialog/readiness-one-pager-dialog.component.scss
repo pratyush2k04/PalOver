@@ -1,0 +1,163 @@
+@use '../../../../../../styles/mixins' as *;
+
+.dialog-container {
+  width: 640px;
+  max-width: calc(100vw - 48px);
+  max-height: 85vh;
+  background: $color-surface;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog-header {
+  @include flex-between;
+  padding: $spacing-5 $spacing-6;
+  border-bottom: 1px solid $color-border-soft;
+
+  h3 {
+    margin: 0;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $color-text;
+  }
+}
+
+.dialog-body {
+  padding: $spacing-6;
+  overflow-y: auto;
+  @include flex-column($spacing-5);
+}
+
+.report-meta {
+  @include flex-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: $spacing-3;
+
+  .client-name {
+    display: block;
+    font-size: $font-size-sm;
+    color: $color-text-faint;
+  }
+}
+
+.meta-details {
+  @include flex-column($spacing-1);
+  text-align: right;
+  font-size: $font-size-xs;
+  color: $color-text-faint;
+}
+
+.section {
+  @include flex-column($spacing-3);
+
+  h4 {
+    margin: 0;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: $color-text;
+  }
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+
+  h4 {
+    margin: 0;
+  }
+}
+
+.section-note {
+  margin: 0;
+  font-size: $font-size-xs;
+  color: $color-text-faint;
+}
+
+.breakdown-row {
+  @include flex-between;
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+}
+
+.blocker-list,
+.outstanding-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  @include flex-column($spacing-2);
+}
+
+.outstanding-list {
+  padding-left: $spacing-4;
+  list-style: disc;
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+}
+
+.blocker-item {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-3;
+  padding: $spacing-3;
+  background: $color-danger-bg;
+  border: 1px solid $color-danger-border;
+  border-radius: $radius-md;
+}
+
+.blocker-detail {
+  @include flex-column($spacing-1);
+  font-size: $font-size-sm;
+
+  strong {
+    color: $color-text;
+  }
+
+  span {
+    color: $color-text-faint;
+  }
+}
+
+.key-dates {
+  display: flex;
+  gap: $spacing-6;
+  flex-wrap: wrap;
+}
+
+.key-date-item {
+  @include flex-column($spacing-1);
+  font-size: $font-size-sm;
+}
+
+.key-date-label {
+  font-weight: $font-weight-semibold;
+  color: $color-text-faint;
+}
+
+.commitments-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $font-size-sm;
+
+  th, td {
+    text-align: left;
+    padding: $spacing-2 $spacing-3;
+    border-bottom: 1px solid $color-border-soft;
+  }
+
+  th {
+    color: $color-text-faint;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-3;
+  padding: $spacing-4 $spacing-6 $spacing-6;
+  border-top: 1px solid $color-border-soft;
+}
