@@ -99,6 +99,41 @@
       </section>
 
       <section class="section-container">
+        <h3>Score Threshold by Kickoff Proximity</h3>
+        <p class="section-note">
+          Kickoff-ready always requires a 100% score and zero open blockers. Below 100%, this floor decides
+          whether the engagement is In Progress or flagged At Risk, and it rises as kickoff nears.
+        </p>
+        <table class="tier-table">
+          <thead>
+            <tr>
+              <th>Days to Kickoff</th>
+              <th>At-Risk Floor</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (tier of readinessTiers; track tier.tierKey) {
+              <tr [class.is-current]="tier.tierKey === r.daysToKickoffTier">
+                <td>
+                  {{ tier.daysLabel }}
+                  @if (tier.tierKey === r.daysToKickoffTier) {
+                    <app-status-badge tone="warning">Current</app-status-badge>
+                  }
+                </td>
+                <td class="tier-threshold">{{ tier.threshold }}%</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <div class="tier-verdict">
+          <span>Current score {{ r.score }}% vs. {{ r.requiredScoreThresholdForTier }}% floor</span>
+          <app-status-badge [tone]="atRiskFloorTone()">
+            {{ clearsAtRiskFloor() ? 'Clears floor' : 'Below floor — At Risk' }}
+          </app-status-badge>
+        </div>
+      </section>
+
+      <section class="section-container">
         <h3>Outstanding Mandatory Items</h3>
         @if (r.outstandingMandatoryItems.length === 0) {
           <p class="empty-note">No outstanding mandatory items.</p>

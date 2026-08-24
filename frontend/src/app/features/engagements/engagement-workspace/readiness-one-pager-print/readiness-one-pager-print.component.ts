@@ -7,6 +7,7 @@ import { LoadingSpinnerComponent } from '@common/components/loading-spinner/load
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ReadinessOnePagerDto, ReadinessOnePagerService } from '@shared/services/readiness-one-pager.service';
 import { PORTFOLIO_STATUS } from '@shared/constants/portfolio.constants';
+import { KICKOFF_READINESS_TIERS } from '@shared/constants/kickoff.constants';
 
 @Component({
   selector: 'app-readiness-one-pager-print',
@@ -39,6 +40,18 @@ export class ReadinessOnePagerPrintComponent implements OnInit {
     if (score >= 40) return 'warning';
     return 'danger';
   });
+
+  readonly readinessTiers = KICKOFF_READINESS_TIERS;
+
+  readonly clearsAtRiskFloor = computed<boolean>(() => {
+    const report = this.report();
+    if (!report) return true;
+    return report.score >= report.requiredScoreThresholdForTier;
+  });
+
+  readonly atRiskFloorTone = computed<StatusBadgeTone>(() =>
+    this.clearsAtRiskFloor() ? 'success' : 'danger'
+  );
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('engagementId') ?? this.route.snapshot.paramMap.get('id');

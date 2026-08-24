@@ -233,6 +233,52 @@
   }
 }
 
+.tier-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $font-size-sm;
+
+  th, td {
+    text-align: left;
+    padding: $spacing-2 $spacing-3;
+    border-bottom: 1px solid $color-border-soft;
+  }
+
+  th {
+    color: $color-text-faint;
+    font-weight: $font-weight-semibold;
+  }
+
+  td {
+    color: $color-text-muted;
+  }
+
+  .tier-threshold {
+    font-variant-numeric: tabular-nums;
+    font-weight: $font-weight-semibold;
+    color: $color-text;
+  }
+
+  tr.is-current {
+    background: $color-warning-bg;
+
+    td {
+      color: $color-text;
+    }
+
+    app-status-badge {
+      margin-left: $spacing-2;
+    }
+  }
+}
+
+.tier-verdict {
+  @include flex-between;
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  padding-top: $spacing-1;
+}
+
 .exclusions-section {
   background: $color-warning-bg;
   border: 1px solid $color-warning-border;
