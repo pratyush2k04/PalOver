@@ -91,3 +91,17 @@
     }
   }
 }
+
+.trend-icon {
+  display: inline-flex;
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-right: $spacing-1;
+  vertical-align: middle;
+
+  ::ng-deep svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}

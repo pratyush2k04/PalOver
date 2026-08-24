@@ -1,6 +1,7 @@
 import { Component, ElementRef, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { InlineSVGModule } from 'ng-inline-svg-2';
 import { AppContextService } from '@shared/services/app-context';
 import { PageHeaderComponent } from '@common/components/page-header/page-header';
 import { BadgeComponent } from '@common/components/badge/badge';
@@ -23,6 +24,7 @@ import { KpiOptionDto, KpiReportResponse, PeriodPreset } from './models/kpi-repo
   imports: [
     CommonModule,
     FormsModule,
+    InlineSVGModule,
     PageHeaderComponent,
     BadgeComponent,
     LoadingSpinnerComponent,

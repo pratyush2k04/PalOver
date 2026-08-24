@@ -88,7 +88,10 @@
               </span>
               @if (r.readinessTime.hasPriorPeriodComparison && r.readinessTime.absoluteChangeDays !== null) {
                 <app-status-badge [tone]="r.readinessTime.absoluteChangeDays < 0 ? 'danger' : 'success'">
-                  {{ r.readinessTime.absoluteChangeDays >= 0 ? '▲' : '▼' }}
+                  <span
+                    class="trend-icon"
+                    [inlineSVG]="r.readinessTime.absoluteChangeDays >= 0 ? 'assets/icons/trend-up.svg' : 'assets/icons/trend-down.svg'"
+                  ></span>
                   {{ r.readinessTime.absoluteChangeDays | number: '1.1-1' }}
                 </app-status-badge>
               }
@@ -105,7 +108,10 @@
               <span class="kpi-value">{{ r.accessDelay.current.averageDays | number: '1.1-1' }} days</span>
               @if (r.accessDelay.hasPriorPeriodComparison && r.accessDelay.absoluteChangeDays !== null) {
                 <app-status-badge [tone]="r.accessDelay.absoluteChangeDays < 0 ? 'danger' : 'success'">
-                  {{ r.accessDelay.absoluteChangeDays >= 0 ? '▲' : '▼' }}
+                  <span
+                    class="trend-icon"
+                    [inlineSVG]="r.accessDelay.absoluteChangeDays >= 0 ? 'assets/icons/trend-up.svg' : 'assets/icons/trend-down.svg'"
+                  ></span>
                   {{ r.accessDelay.absoluteChangeDays | number: '1.1-1' }}
                 </app-status-badge>
               }
@@ -119,7 +125,11 @@
             <span class="kpi-value">{{ r.escalationCount.current.count }}</span>
             @if (r.escalationCount.hasPriorPeriodComparison && r.escalationCount.absoluteChange !== null) {
               <app-status-badge [tone]="r.escalationCount.absoluteChange < 0 ? 'danger' : 'success'">
-                {{ r.escalationCount.absoluteChange >= 0 ? '▲' : '▼' }} {{ r.escalationCount.absoluteChange }}
+                <span
+                  class="trend-icon"
+                  [inlineSVG]="r.escalationCount.absoluteChange >= 0 ? 'assets/icons/trend-up.svg' : 'assets/icons/trend-down.svg'"
+                ></span>
+                {{ r.escalationCount.absoluteChange }}
               </app-status-badge>
             }
           </div>
@@ -134,7 +144,10 @@
               <span class="kpi-value">{{ (r.onTimeKickoffRate.current.rate ?? 0) * 100 | number: '1.0-0' }}%</span>
               @if (r.onTimeKickoffRate.hasPriorPeriodComparison && r.onTimeKickoffRate.absoluteChangeRate !== null) {
                 <app-status-badge [tone]="r.onTimeKickoffRate.absoluteChangeRate < 0 ? 'danger' : 'success'">
-                  {{ r.onTimeKickoffRate.absoluteChangeRate >= 0 ? '▲' : '▼' }}
+                  <span
+                    class="trend-icon"
+                    [inlineSVG]="r.onTimeKickoffRate.absoluteChangeRate >= 0 ? 'assets/icons/trend-up.svg' : 'assets/icons/trend-down.svg'"
+                  ></span>
                   {{ r.onTimeKickoffRate.absoluteChangeRate * 100 | number: '1.0-0' }}%
                 </app-status-badge>
               }
