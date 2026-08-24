@@ -193,6 +193,14 @@ public class EngagementsController(
         return Ok(readiness);
     }
 
+    [HttpGet("{id:int}/readiness-one-pager")]
+    [AuthorizeRoles(RoleEnum.PreSales, RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.Leadership)]
+    public async Task<ActionResult<ReadinessOnePagerDto>> GetReadinessOnePager(int id)
+    {
+        var onePager = await kickoffReadinessService.GetOnePagerAsync(id);
+        return Ok(onePager);
+    }
+
     [HttpPost("{id:int}/kickoff-ready")]
     [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.Leadership)]
     public async Task<IActionResult> MarkKickoffReady(int id)

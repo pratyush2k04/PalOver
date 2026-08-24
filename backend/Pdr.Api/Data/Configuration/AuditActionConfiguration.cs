@@ -194,6 +194,12 @@ public class AuditActionConfiguration : IEntityTypeConfiguration<AuditAction>
                 Id = (int)AuditActionEnum.AccessItemBlocked,
                 Action = AuditActionEnum.AccessItemBlocked.ToString(),
                 Details = "Access item '{itemName}' blocked on engagement {engagementName} by {actorName}"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.ReadinessOnePagerGenerated,
+                Action = AuditActionEnum.ReadinessOnePagerGenerated.ToString(),
+                Details = "Kickoff-readiness one-pager generated for engagement {engagementName} by {actorName}"
             });
     }
 }

@@ -23,7 +23,8 @@ export type AuditAction =
   | 'DependencyCreated'
   | 'DependencyUpdated'
   | 'DependencyDeleted'
-  | 'DependencyEscalated';
+  | 'DependencyEscalated'
+  | 'ReadinessOnePagerGenerated';
 export interface AuditLogDto {
   id: number;
   userId: number;

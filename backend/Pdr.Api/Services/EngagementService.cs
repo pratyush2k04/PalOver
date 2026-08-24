@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Exceptions;
+using Pdr.Api.Helpers;
 using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.Engagements;
 using Pdr.Api.Models.EngagementAssignment;
@@ -472,42 +473,8 @@ public class EngagementService(
             var openBlockerCount = summary.OpenRisksCount;
 
             var daysToKickoff = engagement.KickoffDate.DayNumber - today.DayNumber;
-
-            int requiredThreshold;
-            if (daysToKickoff > 14)
-            {
-                requiredThreshold = LeadershipDashboardConstants.Thresholds.TierGreaterThan14;
-            }
-            else if (daysToKickoff >= 8)
-            {
-                requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier8To14;
-            }
-            else if (daysToKickoff >= 4)
-            {
-                requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier4To7;
-            }
-            else if (daysToKickoff >= 1)
-            {
-                requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier1To3;
-            }
-            else
-            {
-                requiredThreshold = LeadershipDashboardConstants.Thresholds.TierDay0OrPast;
-            }
-
-            string status;
-            if (readinessScore == 100 && openBlockerCount == 0)
-            {
-                status = LeadershipDashboardConstants.Statuses.KickoffReady;
-            }
-            else if (openBlockerCount > 0 || readinessScore < requiredThreshold)
-            {
-                status = LeadershipDashboardConstants.Statuses.AtRisk;
-            }
-            else
-            {
-                status = LeadershipDashboardConstants.Statuses.InProgress;
-            }
+            var requiredThreshold = LeadershipDashboardHelpers.GetRequiredThreshold(daysToKickoff);
+            var status = LeadershipDashboardHelpers.DeriveStatus(readinessScore, openBlockerCount, requiredThreshold);
 
             int? daysToBilling = engagement.BillingStartDate.HasValue
                 ? engagement.BillingStartDate.Value.DayNumber - today.DayNumber
@@ -515,9 +482,7 @@ public class EngagementService(
 
             int unconfirmedResourceCount = summary.ResourcingOpenCount;
 
-            bool hasResourcingGap = daysToBilling.HasValue &&
-                                   daysToBilling.Value <= ResourceRequestConstants.BillingGapThresholdDays &&
-                                   unconfirmedResourceCount > 0;
+            bool hasResourcingGap = LeadershipDashboardHelpers.EvaluateResourcingGap(daysToBilling, unconfirmedResourceCount);
 
             var fullEngagementInfo = await engagementRepository.GetEngagementInfoAsync(engagement.EngagementId);
             var isDayOneSignedOff = fullEngagementInfo?.DayOneSignOff != null;

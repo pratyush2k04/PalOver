@@ -49,6 +49,16 @@ export const routes: Routes = [
       ),
   },
 
+  // Layout-less Print Kickoff Readiness One-Pager View
+  {
+    path: `${ENGAGEMENT_ROUTES.BASE}/:engagementId/${ENGAGEMENT_ROUTES.READINESS_ONE_PAGER_PRINT}`,
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/engagements/engagement-workspace/readiness-one-pager-print/readiness-one-pager-print.component').then(
+        (m) => m.ReadinessOnePagerPrintComponent,
+      ),
+  },
+
   // Protected
   {
     path: '',

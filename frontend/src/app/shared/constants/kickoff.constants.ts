@@ -13,6 +13,14 @@ export const KICKOFF_MESSAGES = {
   DELETE_ACTION_CONFIRM: (title: string) => `Are you sure you want to delete "${title}"?`,
 } as const;
 
+export const KICKOFF_READINESS_TIERS = [
+  { tierKey: 'GreaterThan14', daysLabel: 'More than 14 days out', threshold: 0 },
+  { tierKey: '8To14', daysLabel: '8–14 days out', threshold: 40 },
+  { tierKey: '4To7', daysLabel: '4–7 days out', threshold: 60 },
+  { tierKey: '1To3', daysLabel: '1–3 days out', threshold: 85 },
+  { tierKey: 'Day0OrPast', daysLabel: 'Kickoff day or past due', threshold: 95 },
+] as const;
+
 export const KICKOFF_API_ENDPOINTS = {
   RECORD: (id: number) => `/api/engagements/${id}/workspace/kickoff`,
   ACTIONS_OPEN: (id: number) => `/api/engagements/${id}/workspace/kickoff/actions/open`,

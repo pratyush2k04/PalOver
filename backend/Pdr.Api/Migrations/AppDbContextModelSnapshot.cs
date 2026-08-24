@@ -505,6 +505,12 @@ namespace Pdr.Api.Migrations
                             Id = 28,
                             Action = "AccessItemBlocked",
                             Details = "Access item '{itemName}' blocked on engagement {engagementName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            Action = "ReadinessOnePagerGenerated",
+                            Details = "Kickoff-readiness one-pager generated for engagement {engagementName} by {actorName}"
                         });
                 });
 

@@ -1,0 +1,363 @@
+@use '../../../../../styles/mixins' as *;
+
+:host {
+  display: block;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.print-page-wrapper {
+  min-height: 100%;
+  background: $color-bg;
+  font-family: $font-family-base;
+  color: $color-text;
+  @include flex-column;
+  align-items: center;
+  padding: 0 0 $spacing-8;
+}
+
+.action-header {
+  width: 100%;
+  background: $color-surface;
+  border-bottom: 1px solid $color-border-soft;
+  box-shadow: $shadow-sm;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.action-header-content {
+  max-width: 56.25rem;
+  margin: 0 auto;
+  padding: $spacing-4 $spacing-6;
+  @include flex-between;
+}
+
+.report-tag {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $color-text-faint;
+}
+
+.action-header-info h2 {
+  margin: $spacing-1 0 0;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text;
+}
+
+.action-buttons {
+  display: flex;
+  gap: $spacing-3;
+}
+
+.error-state {
+  margin-top: $spacing-8;
+  text-align: center;
+  @include card-surface($spacing-8);
+  max-width: 28.125rem;
+  width: 100%;
+
+  p {
+    color: $color-text-faint;
+    margin: $spacing-4 0;
+  }
+}
+
+.print-document {
+  max-width: 56.25rem;
+  width: 100%;
+  background: $color-surface;
+  margin-top: $spacing-8;
+  padding: $spacing-8;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-card;
+  @include flex-column($spacing-8);
+}
+
+.section-container {
+  @include flex-column($spacing-4);
+
+  h3 {
+    margin: 0;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $color-text;
+  }
+}
+
+.section-heading-row {
+  @include flex-between;
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.section-note {
+  margin: 0;
+  font-size: $font-size-sm;
+  color: $color-text-faint;
+}
+
+.empty-note {
+  margin: 0;
+  font-size: $font-size-sm;
+  color: $color-text-faint;
+}
+
+.doc-header {
+  @include flex-column($spacing-6);
+  border-bottom: 1px solid $color-border-soft;
+  padding-bottom: $spacing-6;
+}
+
+.brand-section {
+  @include flex-column($spacing-1);
+}
+
+.doc-title {
+  margin: 0;
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-text;
+}
+
+.doc-subtitle {
+  margin: 0;
+  font-size: $font-size-sm;
+  color: $color-text-faint;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-4;
+  background: $color-bg;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-lg;
+  padding: $spacing-4 $spacing-5;
+}
+
+.meta-item {
+  @include flex-column($spacing-1);
+}
+
+.meta-label {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  color: $color-text-faint;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.meta-value {
+  font-size: $font-size-sm;
+  color: $color-text;
+
+  &.font-semibold {
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.score-headline {
+  @include flex-between;
+  justify-content: flex-start;
+  gap: $spacing-3;
+}
+
+.score-value {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-text;
+}
+
+.section-title {
+  margin: 0;
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  color: $color-text;
+}
+
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-4;
+}
+
+.pillar-card {
+  background: $color-bg;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-lg;
+  padding: $spacing-5;
+  @include flex-column($spacing-3);
+
+  &.ready {
+    border-left: 4px solid $color-success;
+  }
+
+  &.attention {
+    border-left: 4px solid $color-warning;
+  }
+}
+
+.pillar-header {
+  @include flex-between;
+
+  h4 {
+    margin: 0;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text;
+  }
+}
+
+.pillar-metric {
+  @include flex-column($spacing-1);
+
+  .metric-number {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-text;
+    line-height: 1.1;
+  }
+
+  .metric-caption {
+    font-size: $font-size-xs;
+    color: $color-text-faint;
+  }
+}
+
+.pillar-details {
+  @include flex-column($spacing-2);
+  border-top: 1px dashed $color-border-soft;
+  padding-top: $spacing-2;
+}
+
+.detail-row {
+  @include flex-between;
+  font-size: $font-size-xs;
+  color: $color-text-faint;
+
+  .font-medium {
+    font-weight: $font-weight-medium;
+    color: $color-text-muted;
+  }
+
+  .text-danger {
+    color: $color-danger-text;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.outstanding-list {
+  margin: 0;
+  padding: 0 0 0 $spacing-4;
+  list-style: disc;
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  @include flex-column($spacing-3);
+
+  strong {
+    color: $color-text;
+  }
+}
+
+.commitments-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $font-size-sm;
+
+  th, td {
+    text-align: left;
+    padding: $spacing-2 $spacing-3;
+    border-bottom: 1px solid $color-border-soft;
+  }
+
+  th {
+    color: $color-text-faint;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.tier-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $font-size-sm;
+
+  th, td {
+    text-align: left;
+    padding: $spacing-2 $spacing-3;
+    border-bottom: 1px solid $color-border-soft;
+  }
+
+  th {
+    color: $color-text-faint;
+    font-weight: $font-weight-semibold;
+  }
+
+  td {
+    color: $color-text-muted;
+  }
+
+  .tier-threshold {
+    font-variant-numeric: tabular-nums;
+    font-weight: $font-weight-semibold;
+    color: $color-text;
+  }
+
+  tr.is-current {
+    background: $color-warning-bg;
+
+    td {
+      color: $color-text;
+    }
+
+    app-status-badge {
+      margin-left: $spacing-2;
+    }
+  }
+}
+
+.tier-verdict {
+  @include flex-between;
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  padding-top: $spacing-1;
+}
+
+.checklist-table tr.is-blocked {
+  background: $color-danger-bg;
+
+  td {
+    color: $color-danger-text;
+    border-bottom-color: $color-danger-border;
+  }
+}
+
+.doc-footer {
+  border-top: 1px solid $color-border-soft;
+  padding-top: $spacing-6;
+  text-align: center;
+
+  p {
+    margin: $spacing-1 0;
+    font-size: $font-size-xs;
+    color: $color-text-fainter;
+  }
+}
+
+@media print {
+  :host { height: auto !important; overflow: visible !important; }
+  body, html { background: #fff !important; margin: 0 !important; padding: 0 !important; }
+  .no-print { display: none !important; }
+  .print-page-wrapper { background: #fff !important; padding: 0 !important; min-height: auto !important; }
+  .print-document { margin: 0 !important; padding: 0 !important; max-width: 100% !important; box-shadow: none !important; border-radius: 0 !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .section-container {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
