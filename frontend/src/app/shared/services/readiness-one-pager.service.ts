@@ -45,8 +45,6 @@ export interface ReadinessOnePagerDto {
   handoverFieldsPassed: number;
   commitmentsApplicable: number;
   commitmentsPassed: number;
-  accessItemsApplicable: number;
-  accessItemsPassed: number;
   kickoffDate: string;
   billingStartDate: string | null;
   daysToKickoff: number;
