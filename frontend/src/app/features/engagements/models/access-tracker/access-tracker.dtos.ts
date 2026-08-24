@@ -8,7 +8,6 @@ export interface AccessItemDto {
   ownerFullName: string;
   status: string;
   timeZoneNote?: string;
-  expectedTurnaroundDays?: number;
   daysUntilBillingDate?: number;
   isOverdueWithClient: boolean;
   grantedDate?: string;

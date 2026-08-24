@@ -38,14 +38,22 @@
 
       <section class="section-container">
         @if (s.items.length) {
-          <ul class="evidence-item-list">
-            @for (item of s.items; track item.title) {
-              <li class="evidence-item-row">
-                <span class="evidence-item-title">{{ item.title }}</span>
-                <app-status-badge [tone]="statusTone(item.statusAtSignOff)">{{ statusLabel(item.statusAtSignOff) }}</app-status-badge>
-              </li>
-            }
-          </ul>
+          <table class="evidence-item-table">
+            <thead>
+              <tr>
+                <th>Checklist Item</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of s.items; track item.title) {
+                <tr>
+                  <td>{{ item.title }}</td>
+                  <td><app-status-badge [tone]="statusTone(item.statusAtSignOff)">{{ statusLabel(item.statusAtSignOff) }}</app-status-badge></td>
+                </tr>
+              }
+            </tbody>
+          </table>
         } @else {
           <p class="evidence-empty">No checklist items required evidence for this engagement.</p>
         }

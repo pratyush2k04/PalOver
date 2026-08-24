@@ -17,6 +17,7 @@ public class AuditLogConfiguration : IEntityTypeConfiguration<AuditLog>
         builder.HasIndex(x => x.UserId);
         builder.HasIndex(x => x.AuditActionId);
         builder.HasIndex(x => x.EngagementId);
+        builder.HasIndex(x => new { x.EngagementId, x.AuditActionId });
 
         builder.Property(x => x.PayloadJson)
             .IsRequired();

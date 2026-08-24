@@ -34,4 +34,6 @@ public interface IEngagementRepository
     Task InitializeTechnicalReadinessItemsAsync(int engagementId, int ownerId);
     Task<EvidenceSnapshotDto> GetEvidenceSnapshotAsync(int engagementId);
     Task<bool> IsUserAssignedAsync(int engagementId, int userId);
+    Task<List<EngagementReportInfoDto>> GetEngagementReportInfoAsync(List<int> engagementIds);
+    Task<List<EngagementAssignment>> GetAssignmentsForEngagementsAsync(List<int> engagementIds);
 }

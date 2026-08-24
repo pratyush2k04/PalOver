@@ -21,6 +21,7 @@ import { PaginatorComponent } from '@common/components/paginator/paginator';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
 
 @Component({
   selector: 'app-notification-fullpage',
@@ -39,7 +40,8 @@ import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confir
     PaginatorComponent,
     EmptyStateComponent,
     StatusBadgeComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    TooltipDirective
   ],
   templateUrl: './notification-fullpage.component.html',
   styleUrl: './notification-fullpage.component.scss'

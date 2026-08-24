@@ -307,4 +307,18 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
         await context.EngagementAssignments
             .AsNoTracking()
             .AnyAsync(a => a.EngagementId == engagementId && a.UserId == userId);
+
+    public async Task<List<EngagementReportInfoDto>> GetEngagementReportInfoAsync(List<int> engagementIds) =>
+        await context.Engagements
+            .AsNoTracking()
+            .Where(e => engagementIds.Contains(e.EngagementId))
+            .Select(e => new EngagementReportInfoDto(e.EngagementId, e.EngagementTypeId, e.KickoffDate))
+            .ToListAsync();
+
+    public async Task<List<EngagementAssignment>> GetAssignmentsForEngagementsAsync(List<int> engagementIds) =>
+        await context.EngagementAssignments
+            .AsNoTracking()
+            .Include(a => a.User)
+            .Where(a => engagementIds.Contains(a.EngagementId))
+            .ToListAsync();
 }

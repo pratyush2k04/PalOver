@@ -82,6 +82,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IDependencyService, DependencyService>();
         services.AddScoped<IAssumptionService, AssumptionService>();
         services.AddScoped<IDependencySpikeService, DependencySpikeService>();
+        services.AddScoped<IKpiReportService, KpiReportService>();
         services.AddScoped<TemplateMapperResolver<INotificationTemplateMapper>>();
         services.AddScoped<TemplateMapperResolver<IAuditTemplateMapper>>();
         services.AddSingleton<TemplateRenderer>();

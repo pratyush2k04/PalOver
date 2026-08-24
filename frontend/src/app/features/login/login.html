@@ -28,9 +28,10 @@
         [errorMessages]="{ required: 'Password is required.' }"
       />
 
-      <app-button type="submit" variant="flat" [fullWidth]="true" [loading]="isLoading()">
-        {{ isLoading() ? 'Signing in...' : 'Sign In' }}
+      <app-button type="submit" variant="flat" [fullWidth]="true">
+        Sign In
       </app-button>
     </form>
   </div>
+  <app-global-loader />
 </div>
