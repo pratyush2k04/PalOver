@@ -1,20 +1,41 @@
 <div class="my-engagements-page">
   <app-page-header title="My Engagements" description="Track kickoff readiness and manage your assigned engagements." />
 
-  <div class="toolbar-row">
-    @if (isPreSales()) {
-      <app-engagements (engagementCreated)="loadEngagements()" />
-    }
-
-    <div class="sort-control">
-      <label for="sortBy">Sort by</label>
-      <app-select
-        id="sortBy"
-        [options]="sortOptions"
-        [ngModel]="sortBy()"
-        (ngModelChange)="onSortChange($event)"
-      />
+  <div class="header-toolbar">
+    <div class="tabs-control">
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab() === 'Active'" 
+        (click)="setTab('Active')"
+      >
+        Active ({{ activeEngagementsCount() }})
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab() === 'Past'" 
+        (click)="setTab('Past')"
+      >
+        Past Engagements ({{ pastEngagementsCount() }})
+      </button>
     </div>
+
+    @if (activeTab() === 'Active') {
+      <div class="toolbar-actions">
+        @if (isPreSales()) {
+          <app-engagements (engagementCreated)="loadEngagements()" />
+        }
+
+        <div class="sort-control">
+          <label for="sortBy">Sort by</label>
+          <app-select
+            id="sortBy"
+            [options]="sortOptions"
+            [ngModel]="sortBy()"
+            (ngModelChange)="onSortChange($event)"
+          />
+        </div>
+      </div>
+    }
   </div>
 
   @if (errorMessage()) {
