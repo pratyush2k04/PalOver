@@ -1,7 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
@@ -23,7 +22,7 @@ export interface AllocateResourcesDialogData {
 @Component({
   selector: 'app-allocate-resources-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, InlineSVGModule, ButtonComponent, AlertComponent, InputComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, AlertComponent, InputComponent],
   templateUrl: './allocate-resources-dialog.component.html',
   styleUrl: './allocate-resources-dialog.component.scss',
 })

@@ -18,6 +18,7 @@ import { DayOneSignOffDialogComponent } from './components/day-one-sign-off-dial
 import { ButtonComponent } from '@common/components/button/button';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DialogService } from '@common/services/dialog/dialog.service';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 
 @Component({
   selector: 'app-engagement-workspace',
@@ -29,7 +30,8 @@ import { DialogService } from '@common/services/dialog/dialog.service';
     TabsComponent,
     ButtonComponent,
     InlineSVGModule,
-    ReadinessCircleComponent
+    ReadinessCircleComponent,
+    LoadingSpinnerComponent
   ],
   templateUrl: './engagement-workspace.component.html',
   styleUrl: './engagement-workspace.component.scss'
@@ -73,13 +75,22 @@ export class EngagementWorkspaceComponent {
 
   readonly tabs = computed<TabItem[]>(() => {
     const isSignedOff = !!this.engagement()?.dayOneSignOff;
-    return ENGAGEMENT_WORKSPACE_CONFIG.DEFAULT_TABS.map((tab) => {
-      let enabled = tab.enabled;
-      if (tab.route === ENGAGEMENT_ROUTES.SIGN_OFF) {
-        enabled = isSignedOff;
-      }
-      return { id: tab.route, ...tab, enabled };
-    });
+
+    return ENGAGEMENT_WORKSPACE_CONFIG.DEFAULT_TABS
+      .filter((tab) => {
+        if (tab.route === ENGAGEMENT_ROUTES.SIGN_OFF) {
+          // Hidden before sign-off, but once signed off, visible to all roles (including Pre-Sales & Tech Lead)
+          return isSignedOff;
+        }
+        return true;
+      })
+      .map((tab) => {
+        let enabled = tab.enabled;
+        if (tab.route === ENGAGEMENT_ROUTES.SIGN_OFF) {
+          enabled = isSignedOff;
+        }
+        return { id: tab.route, ...tab, enabled };
+      });
   });
 
   readonly currentUrl = toSignal(

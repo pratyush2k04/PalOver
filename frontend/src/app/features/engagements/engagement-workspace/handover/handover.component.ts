@@ -36,6 +36,7 @@ import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { SectionHeaderComponent } from '@common/components/section-header/section-header';
 import { ClientContactTransitionCardComponent } from './client-contact-transition-card/client-contact-transition-card.component';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 
 const MAX_FREE_TEXT_LENGTH = 2000;
 const SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
@@ -70,6 +71,7 @@ interface RealisticEditForm {
     StatusBadgeComponent,
     EmptyStateComponent,
     ClientContactTransitionCardComponent,
+    LoadingSpinnerComponent,
   ],
   templateUrl: './handover.component.html',
   styleUrl: './handover.component.scss',

@@ -29,6 +29,7 @@ import {
   BlockItemDialogResult
 } from './dialogs/block-item-dialog/block-item-dialog.component';
 import { SectionHeaderComponent } from '@common/components/section-header/section-header';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
 import {
   AttachEvidenceDialogComponent,
   AttachEvidenceDialogData,
@@ -48,6 +49,7 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
     StatusBadgeComponent,
     ButtonComponent,
     SectionHeaderComponent,
+    TooltipDirective,
   ],
   templateUrl: './engagement-checklist.component.html',
   styleUrl: './engagement-checklist.component.scss'

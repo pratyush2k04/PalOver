@@ -21,6 +21,7 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
             .AsNoTracking()
             .Include(e => e.EngagementType)
             .Include(e => e.CommercialModel)
+            .Include(e => e.DayOneSignOffRecord)
             .Where(e => e.EngagementAssignments.Any(a => a.UserId == userId));
 
         query = sortBy switch
@@ -129,4 +130,18 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
         await context.Engagements
             .Where(e => engagementIds.Contains(e.EngagementId) && !e.IsDeleted)
             .ToDictionaryAsync(e => e.EngagementId);
+
+    public async Task<List<EngagementReportInfoDto>> GetEngagementReportInfoAsync(List<int> engagementIds) =>
+        await context.Engagements
+            .AsNoTracking()
+            .Where(e => engagementIds.Contains(e.EngagementId))
+            .Select(e => new EngagementReportInfoDto(e.EngagementId, e.EngagementTypeId, e.KickoffDate))
+            .ToListAsync();
+
+    public async Task<List<EngagementAssignment>> GetAssignmentsForEngagementsAsync(List<int> engagementIds) =>
+        await context.EngagementAssignments
+            .AsNoTracking()
+            .Include(a => a.User)
+            .Where(a => engagementIds.Contains(a.EngagementId))
+            .ToListAsync();
 }

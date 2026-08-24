@@ -247,7 +247,8 @@ public class EngagementService(
                 e.CommercialModel.Name,
                 e.KickoffDate,
                 e.KickoffDate.DayNumber - today.DayNumber,
-                ReadinessScore: null))
+                ReadinessScore: null,
+                IsSignedOff: e.DayOneSignOffRecord != null))
             .ToList();
 
         return new EngagementListResponse(items);

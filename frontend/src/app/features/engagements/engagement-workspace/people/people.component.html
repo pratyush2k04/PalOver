@@ -35,12 +35,12 @@
           <td class="col-org">{{ getOrgLabel(person.personType) }}</td>
           <td class="col-actions">
             <div class="action-buttons">
-              <app-button type="button" variant="icon" class="edit-btn" ariaLabel="Edit person" title="Edit person"
+              <app-button type="button" variant="icon" class="edit-btn" ariaLabel="Edit person" [appTooltip]="'Edit person'"
                 (click)="onEditPerson(person)">
                 <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
               </app-button>
               <app-button type="button" variant="icon" class="delete-btn" ariaLabel="Delete person"
-                title="Delete person" (click)="onDeletePerson(person)">
+                [appTooltip]="'Delete person'" (click)="onDeletePerson(person)">
                 <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
               </app-button>
             </div>

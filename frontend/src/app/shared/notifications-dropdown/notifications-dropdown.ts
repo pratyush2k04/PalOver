@@ -6,6 +6,7 @@ import { switchMap, timer } from 'rxjs';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { ButtonComponent } from '@common/components/button/button';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { NotificationService } from '../services/notification.service';
 import { Notification } from '../models/notification.model';
 import { APP_ROUTES } from '@shared/constants/app.constants';
@@ -16,7 +17,7 @@ const UNREAD_COUNT_POLL_INTERVAL_MS = 30_000;
 @Component({
   selector: 'app-notifications-dropdown',
   standalone: true,
-  imports: [InlineSVGModule, EmptyStateComponent, LoadingSpinnerComponent, ButtonComponent],
+  imports: [InlineSVGModule, EmptyStateComponent, LoadingSpinnerComponent, ButtonComponent, TooltipDirective],
   templateUrl: './notifications-dropdown.html',
   styleUrl: './notifications-dropdown.scss'
 })

@@ -487,6 +487,24 @@ namespace Pdr.Api.Migrations
                             Id = 25,
                             Action = "DependencyEscalated",
                             Details = "Dependency {dependencyDescription} escalated to risk {riskTitle} for engagement {engagementName}"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Action = "KickoffReadyMarked",
+                            Details = "Engagement {engagementName} marked kickoff-ready by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Action = "KickoffReadyReverted",
+                            Details = "Kickoff-ready status reverted for engagement {engagementName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Action = "AccessItemBlocked",
+                            Details = "Access item '{itemName}' blocked on engagement {engagementName} by {actorName}"
                         });
                 });
 
@@ -533,6 +551,8 @@ namespace Pdr.Api.Migrations
                     b.HasIndex("EngagementId");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("EngagementId", "AuditActionId");
 
                     b.ToTable("audit_logs", (string)null);
                 });

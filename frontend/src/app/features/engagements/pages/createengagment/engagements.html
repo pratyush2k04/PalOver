@@ -1,14 +1,6 @@
 <div class="engagements-page">
     <app-button type="button" variant="accent" (click)="openModal()" class="mark-as-sow-btn">+ Mark SOW Signed</app-button>
 
-  @if (warnings().length > 0) {
-  <app-alert variant="warning">
-    @for (warning of warnings(); track warning) {
-    <div>{{ warning }}</div>
-    }
-  </app-alert>
-  }
-
   @if (showModal()) {
   <div class="modal-overlay">
     <div class="modal-card">

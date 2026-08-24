@@ -47,6 +47,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
 
 @Component({
   selector: 'app-engagement-documents',
@@ -61,6 +62,7 @@ import { StatusBadgeComponent } from '@common/components/status-badge/status-bad
     LoadingSpinnerComponent,
     EmptyStateComponent,
     StatusBadgeComponent,
+    TooltipDirective,
   ],
   templateUrl: './engagement-documents.component.html',
   styleUrl: './engagement-documents.component.scss',
