@@ -20,6 +20,7 @@ export const ENGAGEMENTS_ROUTES: Routes = [
       import(
         './engagement-workspace/engagement-workspace.component'
       ).then((m) => m.EngagementWorkspaceComponent),
+      
     children: [
       {
         path: ENGAGEMENT_ROUTES.OVERVIEW,

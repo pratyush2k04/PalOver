@@ -8,5 +8,4 @@ public class RealisticCommitmentDto
     public int Timeline { get; set; }
     public CommitmentTimelineUnitEnum TimelineUnit { get; set; }
     public string? AcknowledgementMessage { get; set; }
-    public bool IsPossible { get; set; }
 }
