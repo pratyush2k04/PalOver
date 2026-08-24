@@ -404,4 +404,6 @@
   </form>
 </div>
 
-<div class="loading" *ngIf="isLoading()">Loading handover details...</div>
+<div class="loading-container" *ngIf="isLoading()">
+  <app-loading-spinner label="Loading handover details..."></app-loading-spinner>
+</div>
