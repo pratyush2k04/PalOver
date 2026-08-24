@@ -25,3 +25,9 @@ public class DayOneExceptionJustificationTooShortException : AppException
     public DayOneExceptionJustificationTooShortException()
         : base(EngagementValidationConstants.Messages.DayOneExceptionJustificationTooShort, 400) { }
 }
+
+public class EvidenceSnapshotNotFoundException : AppException
+{
+    public EvidenceSnapshotNotFoundException(int engagementId)
+        : base(EngagementValidationConstants.Messages.EvidenceSnapshotNotFound(engagementId), 404) { }
+}

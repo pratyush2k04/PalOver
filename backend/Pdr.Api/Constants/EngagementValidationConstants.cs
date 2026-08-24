@@ -28,5 +28,6 @@ public static class EngagementValidationConstants
         public const string DayOneTechnicalBlockersRemaining = "Cannot sign off Day-1 readiness: all applicable technical items must be ready unless a leadership exception is recorded.";
         public const string DayOneLeadershipExceptionForbidden = "Only Leadership can record an exception to sign off Day-1 readiness with open items.";
         public const string DayOneExceptionJustificationTooShort = "Leadership exception justification must be at least 20 characters.";
+        public static string EvidenceSnapshotNotFound(int engagementId) => $"No evidence snapshot exists for engagement {engagementId}. Day-1 readiness has not been signed off yet.";
     }
 }

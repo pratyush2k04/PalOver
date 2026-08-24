@@ -13,7 +13,7 @@ The audit log is a central, append-only log of significant actions taken by user
 - `audit_actions` — a small, seeded lookup table of action *types* (e.g. `UserCreated`). Rarely changes.
 - `audit_logs` — one row per actual *event* (who did it, which action type, when, and a JSON payload of ids). Grows continuously.
 
-Reading the log is already fully built: `GET /api/audit-logs` returns a cursor-paginated, human-readable feed — every authenticated user can call it, but a non-`Leadership`/non-`Admin` caller only sees their own entries (see section 3). **You never need to touch the controller, DTOs, or pagination logic.**
+Reading the log is already fully built: `GET /api/audit-logs` returns a page-paginated, human-readable, filterable-by-category feed — every authenticated user can call it, but a non-`Leadership`/non-`Admin` caller only sees their own entries (see section 3). **You never need to touch the controller, DTOs, or pagination logic.**
 
 Writing to the log is a single call: inject `IAuditLogService` into your own service and call `LogAsync(...)`. That's the entire integration surface for recording a new event of an *existing* action type.
 
@@ -47,18 +47,20 @@ Add a matching seed row inside the existing `HasData(...)` call:
 builder.HasData(
     new AuditAction
     {
-        AuditActionId = (int)AuditActionEnum.UserLoggedIn,
+        Id = (int)AuditActionEnum.UserLoggedIn,
         Action = AuditActionEnum.UserLoggedIn.ToString(),
         Details = "User {userName} logged into the system"
     },
     // ...existing entries...
     new AuditAction
     {
-        AuditActionId = (int)AuditActionEnum.EngagementArchived,
+        Id = (int)AuditActionEnum.EngagementArchived,
         Action = AuditActionEnum.EngagementArchived.ToString(),
         Details = "Engagement {engagementName} was archived by {actorName}"
     });
 ```
+
+Note the entity's primary key property is `Id`, not `AuditActionId` — `AuditActionId` is the name of the *foreign key* column on `AuditLog` that points at this row, not a property on `AuditAction` itself.
 
 **Important — `Details` is a template, not literal text, and its placeholders are filled from the *mapper's* output, not the raw payload.** The `{userName}`, `{actorName}`, `{engagementName}` placeholders are filled in at *read* time by matching each `{placeholder}` against a key in the dictionary your action's `IAuditTemplateMapper` returns — **not** against the raw JSON payload you pass to `LogAsync` (that payload holds ids; the mapper resolves those ids into the display values the template expects). You can invent any placeholder names you like as long as your mapper's returned dictionary uses the same keys.
 
@@ -99,7 +101,7 @@ dotnet ef migrations add Add<YourActionName>AuditAction
 **Signature** (`Pdr.Api/Services/Interfaces/IAuditLogService.cs`):
 
 ```csharp
-Task LogAsync(AuditActionEnum action, IDictionary<string, object?> payload, int? actingUserId = null);
+Task LogAsync(AuditActionEnum action, IDictionary<string, object?> payload, int? engagementId = null, int? actingUserId = null);
 ```
 
 **The payload holds ids, not resolved display strings.** `LogAsync` doesn't render anything itself — it just serializes whatever dictionary you pass and stores it as-is. Resolution to display values (e.g. an id to a user's full name) happens later, at read time, via the action's registered `IAuditTemplateMapper`.
@@ -134,10 +136,11 @@ No DI registration is needed for `IAuditLogService` itself — it's already regi
 
 ### What happens internally, step by step
 
-1. **The acting user defaults to the current caller, via an optional override.** `LogAsync(action, payload, actingUserId: null)` resolves the user via `ICurrentUserService.GetUserId()` when `actingUserId` is omitted. Pass `actingUserId` explicitly for the rare case where the acting user isn't (yet) the authenticated caller of the current request — e.g. `AuthService.LoginAsync` passes the just-authenticated `user.Id`, since login itself is an anonymous endpoint with no JWT on the request yet. There's still no supported way to log on behalf of a true system/background process with no user at all.
-2. **The action row is looked up by the enum's int value.** If no seeded `AuditAction` row exists for that value (e.g. you forgot section 1, or passed a value that was never seeded), it throws a raw `InvalidOperationException`. Note this bypasses this repo's usual `AppException`-based exception convention — that's a known gap in this feature, not a pattern to copy elsewhere.
-3. **The payload is serialized to JSON exactly as given, with no schema enforced by `LogAsync` itself.** `PayloadJson` accepts any `IDictionary<string, object?>` — there is no fixed shape checked at write time. But the keys/values you choose are only useful if they match what your action's registered `IAuditTemplateMapper.MapAsync` expects to deserialize (ids, keyed to that mapper's private payload record) — not the `Details` template's placeholder names.
-4. **The write is its own, separate save.** The repository calls `AddAsync` then its own `SaveChangesAsync` — this is **not** batched with whatever `SaveChangesAsync` your calling code already did (or is about to do). The audit entry commits independently. If your own business save fails *after* you've already called `LogAsync`, the audit entry is **not** automatically rolled back.
+1. **The acting user defaults to the current caller, via an optional override.** `LogAsync(action, payload, engagementId, actingUserId)` resolves the user via `ICurrentUserService.GetUserId()` when `actingUserId` is omitted.
+2. **EngagementId is tracked explicitly.** If the action relates to a specific engagement, you MUST pass `engagementId` as an explicit parameter (e.g., `engagementId: 42`). This populates the `EngagementId` column in the database, allowing the `GET /api/engagementaudits` endpoint to efficiently filter audits by engagement. While you may *also* include `"EngagementId"` in the payload JSON if your mapper needs it to resolve the engagement's name, you must still pass it as the explicit parameter so the database column gets populated.
+3. **The action row is looked up by the enum's int value.** If no seeded `AuditAction` row exists for that value (e.g. you forgot section 1, or passed a value that was never seeded), it throws a raw `InvalidOperationException`. Note this bypasses this repo's usual `AppException`-based exception convention — that's a known gap in this feature, not a pattern to copy elsewhere.
+4. **The payload is serialized to JSON exactly as given, with no schema enforced by `LogAsync` itself.** `PayloadJson` accepts any `IDictionary<string, object?>` — there is no fixed shape checked at write time. But the keys/values you choose are only useful if they match what your action's registered `IAuditTemplateMapper.MapAsync` expects to deserialize (ids, keyed to that mapper's private payload record) — not the `Details` template's placeholder names.
+5. **The write is its own, separate save.** The repository calls `AddAsync` then its own `SaveChangesAsync` — this is **not** batched with whatever `SaveChangesAsync` your calling code already did (or is about to do). The audit entry commits independently. If your own business save fails *after* you've already called `LogAsync`, the audit entry is **not** automatically rolled back.
 
 ## 2b. Add a mapper (required for a brand-new action type)
 
@@ -197,13 +200,16 @@ No other DI changes needed — `TemplateMapperResolver<IAuditTemplateMapper>` is
 
 ## 3. How reads and rendering work (informational — you don't need to build this)
 
-`GET /api/audit-logs?cursor={id}&limit={n}` is already fully implemented. Every authenticated user can call it (`AuditLogController`, `[Authorize]`), but the rows returned are scoped: `Leadership`/`Admin` callers (inline `IsInRole`/`IsAdmin` check, computed in `AuditLogService.GetAuditLogsAsync`) see every user's entries; everyone else only sees rows where they were the acting user. It returns a `CursorPagedResult<AuditLogDto>`, newest entries first.
+`GET /api/audit-logs?page={p}&pageSize={n}&categories={category}` is already fully implemented, using standard offset pagination. Every authenticated user can call it (`AuditLogController`, `[Authorize]`), but the rows returned are scoped: `Leadership`/`Admin` callers (inline `IsInRole`/`IsAdmin` check, computed in `AuditLogService.GetAuditLogsAsync`) see every user's entries; everyone else only sees rows where they were the acting user. It returns a `PagedResult<AuditLogDto>` (`Items`, `TotalCount`, `Page`, `PageSize`), newest entries first. `categories` is optional and repeatable (`?categories=Document&categories=Access`), filtering to actions whose `AuditActionCategoryRegistry` entry matches one of the given `AuditCategoryEnum` values.
+
+The engagement-scoped equivalent, `GET /api/engagementaudits?engagementId={id}&page={p}&pageSize={n}&userId={id}&categories={category}` (`EngagementAuditsController`), works the same way but additionally restricts results to actions visible to the caller's role per `EngagementAuditActionVisibilityRegistry`, and supports an optional `userId` filter. `GET /api/engagementaudits/users?engagementId={id}` returns the distinct list of users who have entries for that engagement (only those whose actions the caller is authorized to see).
 
 Internally, `AuditLogService.GetAuditLogsAsync`:
 
-1. Computes whether the caller is elevated (`Leadership` or `Admin`) and passes `null` (no filter) or the caller's own user id into `repository.GetPageAsync(cursor, limit, scopedUserId)`.
-2. Fetches `limit + 1` rows ordered by `AuditLogId` descending (cursor = "give me rows with a smaller id than this"); if it got more than `limit` back, there's a next page (`HasMore = true`, `NextCursor` = the last item's id).
-3. Maps each `AuditLog` row to an `AuditLogDto` by resolving the row's mapper and rendering against its output:
+1. Computes whether the caller is elevated (`Leadership` or `Admin`) and passes `null` (no filter) or the caller's own user id as `scopedUserId`.
+2. If `categories` was supplied, resolves it to the set of action ids whose `AuditActionCategoryRegistry` entry matches (`validActionIds`). (`GetEngagementAuditLogsAsync` additionally starts `validActionIds` from the role-visible action ids per `EngagementAuditActionVisibilityRegistry`, then intersects with the category filter if both are present.)
+3. Calls `repository.GetPageAsync(page, pageSize, scopedUserId, engagementId, validActionIds)`, which returns the page's rows plus a total count for that filtered set.
+4. Maps each `AuditLog` row to an `AuditLogDto` by resolving the row's mapper and rendering against its output:
 
 ```csharp
 var mapper = mapperResolver.Resolve(auditLog.AuditAction.Action)

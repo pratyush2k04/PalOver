@@ -5,6 +5,7 @@ using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
 using Pdr.Api.Models.Engagements;
+using Pdr.Api.Models.EngagementChecklist;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.EngagementAssignment;
@@ -743,6 +744,8 @@ public class EngagementService(
 
         engagement.BillingStartDate = request.BillingStartDate;
 
+        await CaptureEvidenceSnapshotAsync(engagementId, currentUserId, currentUser.FullName, signOffRecord);
+
         await db.SaveChangesAsync();
 
         return new DayOneSignOffDto(
@@ -752,6 +755,87 @@ public class EngagementService(
             signOffRecord.SignedOffAt,
             signOffRecord.IsException,
             signOffRecord.ExceptionJustification);
+    }
+
+    private async Task CaptureEvidenceSnapshotAsync(int engagementId, int currentUserId, string currentUserFullName, DayOneSignOffRecord signOffRecord)
+    {
+        var evidenceItems = await db.EngagementChecklistItems
+            .Where(i => i.EngagementChecklist.EngagementId == engagementId && i.EvidenceRequired)
+            .Include(i => i.Category)
+            .Include(i => i.EvidenceSubmittedBy)
+            .OrderBy(i => i.DisplayOrder)
+            .ToListAsync();
+
+        var snapshot = await db.EvidenceSnapshots
+            .Include(s => s.Items)
+            .FirstOrDefaultAsync(s => s.EngagementId == engagementId);
+
+        if (snapshot == null)
+        {
+            snapshot = new EvidenceSnapshot { EngagementId = engagementId };
+            db.EvidenceSnapshots.Add(snapshot);
+        }
+        else
+        {
+            db.EvidenceSnapshotItems.RemoveRange(snapshot.Items);
+            snapshot.Items.Clear();
+        }
+
+        snapshot.SignedOffByUserId = currentUserId;
+        snapshot.SignedOffByUserName = currentUserFullName;
+        snapshot.SignedOffAt = signOffRecord.SignedOffAt;
+        snapshot.BillingStartDate = signOffRecord.BillingStartDate;
+
+        foreach (var item in evidenceItems)
+        {
+            snapshot.Items.Add(new EvidenceSnapshotItem
+            {
+                SourceChecklistItemId = item.Id,
+                Title = item.Title,
+                CategoryName = item.Category.CategoryName,
+                DisplayOrder = item.DisplayOrder,
+                StatusAtSignOff = MapStatusAtSignOff(item),
+                EvidenceNote = item.EvidenceNote,
+                EvidenceLink = item.EvidenceLink,
+                EvidenceSubmittedAt = item.EvidenceSubmittedAt,
+                EvidenceSubmittedByName = item.EvidenceSubmittedBy?.FullName
+            });
+        }
+    }
+
+    private static EvidenceSnapshotItemStatus MapStatusAtSignOff(EngagementChecklistItem item)
+    {
+        if (!item.IsApplicable)
+            return EvidenceSnapshotItemStatus.NotApplicable;
+
+        return item.Status == MasterChecklistConstants.ItemStatuses.Complete
+            ? EvidenceSnapshotItemStatus.Complete
+            : EvidenceSnapshotItemStatus.Open;
+    }
+
+    public async Task<EvidenceSnapshotDto> GetEvidenceSnapshotAsync(int engagementId)
+    {
+        var snapshot = await db.EvidenceSnapshots
+            .AsNoTracking()
+            .Include(s => s.Items)
+            .FirstOrDefaultAsync(s => s.EngagementId == engagementId)
+            ?? throw new EvidenceSnapshotNotFoundException(engagementId);
+
+        return new EvidenceSnapshotDto(
+            snapshot.SignedOffAt,
+            snapshot.SignedOffByUserName,
+            snapshot.BillingStartDate,
+            snapshot.Items
+                .OrderBy(i => i.DisplayOrder)
+                .Select(i => new EvidenceSnapshotItemDto(
+                    i.Title,
+                    i.CategoryName,
+                    i.StatusAtSignOff,
+                    i.EvidenceNote,
+                    i.EvidenceLink,
+                    i.EvidenceSubmittedAt,
+                    i.EvidenceSubmittedByName))
+                .ToList());
     }
 }
 
