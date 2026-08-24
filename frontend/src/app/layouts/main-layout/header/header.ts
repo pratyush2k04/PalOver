@@ -41,7 +41,7 @@ export class HeaderComponent {
     this.router.navigate([APP_ROUTES.PROFILE]);
   }
 
-  onSignOut(): void {
+  onLogOut(): void {
     this.isUserMenuOpen.set(false);
     this.authService.logout();
     this.appContext.reset();
