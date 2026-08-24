@@ -260,9 +260,21 @@ select {
   justify-content: space-between;
 }
 
+.variance-badge-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
 .variance-badge {
   @include status-badge($color-warning-bg, $color-warning-text);
   border: 1px solid $color-warning-border;
+}
+
+.escalation-badge {
+  @include status-badge($color-danger-bg, $color-danger-text);
+  border: 1px solid $color-danger-border;
 }
 .click-to-edit-placeholder {
   background: transparent;

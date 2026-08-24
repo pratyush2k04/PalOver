@@ -228,9 +228,16 @@
             >
               <ng-container *ngIf="c.realisticCommitment; else noRealisticYet">
                 <div class="content-header realistic-header">
-                  <span *ngIf="c.isVarianceFlagged" class="variance-badge">
-                    {{ c.varianceDescription }}
-                  </span>
+                  @if (c.isVarianceFlagged) {
+                    <div class="variance-badge-group">
+                      <span class="variance-badge">
+                        {{ c.varianceDescription }}
+                      </span>
+                      <span class="escalation-badge">
+                        Escalated to Leadership
+                      </span>
+                    </div>
+                  }
                   <span class="timeline-info">
                     {{
                       formatTimeline(
