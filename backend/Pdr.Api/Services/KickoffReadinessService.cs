@@ -357,17 +357,17 @@ public class KickoffReadinessService(
 
         if (computation.CommitmentsCheck.FailingIds.Count > 0)
         {
-            notes.Add($"{computation.CommitmentsCheck.FailingIds.Count} commitment(s) not yet acknowledged as realistic — not counted toward the score numerator.");
+            notes.Add($"{computation.CommitmentsCheck.FailingIds.Count} commitment(s) not yet acknowledged as realistic — dragging the score down.");
         }
 
         if (computation.AccessItemsCheck.FailingIds.Count > 0)
         {
-            notes.Add($"{computation.AccessItemsCheck.FailingIds.Count} access item(s) blocked — excluded from the score numerator.");
+            notes.Add($"{computation.AccessItemsCheck.FailingIds.Count} access item(s) blocked — dragging the score down.");
         }
 
         if (inProgressAccessItemCount > 0)
         {
-            notes.Add($"{inProgressAccessItemCount} access item(s) still in progress — counted as passed today, not yet fully resolved.");
+            notes.Add($"{inProgressAccessItemCount} access item(s) still in progress — currently scored as passed, but not yet fully resolved.");
         }
 
         if (openBlockerCount > 0)
@@ -375,7 +375,7 @@ public class KickoffReadinessService(
             notes.Add($"{openBlockerCount} open blocker(s) recorded as risks — not part of the score, but blocks 'Kickoff-ready' status regardless of score.");
         }
 
-        notes.Add($"Kickoff is in {daysToKickoff} day(s), placing this engagement in a tier that requires a minimum score of {requiredThreshold}% — current score is {score}%.");
+        notes.Add($"Kickoff is in {daysToKickoff} day(s); at this proximity, a score below {requiredThreshold}% is flagged At Risk — current score is {score}%.");
 
         if (hasResourcingGap)
         {
@@ -476,6 +476,7 @@ public class KickoffReadinessService(
         return new ReadinessCheck(
             Applicable: mandatoryItems.Count,
             Passed: mandatoryItems.Count - failingIds.Count,
-            FailingIds: failingIds);
+            FailingIds: failingIds,
+            FailingFieldLabels: new List<string>());
     }
 }
