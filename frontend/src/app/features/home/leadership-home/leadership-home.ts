@@ -11,6 +11,8 @@ import { StatusBadgeComponent } from '@common/components/status-badge/status-bad
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { InputComponent } from '@common/components/form/input/input';
 import { MultiSelectListComponent } from '@common/components/multi-select-list/multi-select-list';
+import { ButtonComponent } from '@common/components/button/button';
+import { downloadCsv } from '@shared/utils/csv.util';
 import { KPI_PERIOD_STATUS, KPI_REPORT_MESSAGES, KPI_REPORT_PERIOD_OPTIONS } from '@shared/constants/app.constants';
 import { KpiReportService } from './services/kpi-report.service';
 import { KpiOptionDto, KpiReportResponse, PeriodPreset } from './models/kpi-report.model';
@@ -29,7 +31,8 @@ import { KpiOptionDto, KpiReportResponse, PeriodPreset } from './models/kpi-repo
     StatusBadgeComponent,
     SelectComponent,
     InputComponent,
-    MultiSelectListComponent
+    MultiSelectListComponent,
+    ButtonComponent
   ],
   templateUrl: './leadership-home.html',
   styleUrl: './leadership-home.scss'
@@ -94,6 +97,55 @@ export class LeadershipHomeComponent implements OnInit {
 
   isNoData(status: number): boolean {
     return status === KPI_PERIOD_STATUS.NO_ENGAGEMENTS_IN_PERIOD;
+  }
+
+  exportCsv(): void {
+    const r = this.report();
+    if (!r) {
+      return;
+    }
+
+    const header = ['Metric', 'Current Value', 'Prior Value', 'Change'];
+    const rows: string[][] = [
+      [
+        'Readiness Time (days)',
+        this.isNoData(r.readinessTime.current.status) ? 'No data' : String(r.readinessTime.current.averageDays ?? ''),
+        r.readinessTime.prior && !this.isNoData(r.readinessTime.prior.status)
+          ? String(r.readinessTime.prior.averageDays ?? '')
+          : '',
+        r.readinessTime.hasPriorPeriodComparison && r.readinessTime.absoluteChangeDays !== null
+          ? String(r.readinessTime.absoluteChangeDays)
+          : ''
+      ],
+      [
+        'Access Delay (days)',
+        this.isNoData(r.accessDelay.current.status) ? 'No data' : String(r.accessDelay.current.averageDays ?? ''),
+        r.accessDelay.prior && !this.isNoData(r.accessDelay.prior.status) ? String(r.accessDelay.prior.averageDays ?? '') : '',
+        r.accessDelay.hasPriorPeriodComparison && r.accessDelay.absoluteChangeDays !== null
+          ? String(r.accessDelay.absoluteChangeDays)
+          : ''
+      ],
+      [
+        'Escalation Count',
+        String(r.escalationCount.current.count ?? ''),
+        r.escalationCount.prior ? String(r.escalationCount.prior.count ?? '') : '',
+        r.escalationCount.hasPriorPeriodComparison && r.escalationCount.absoluteChange !== null
+          ? String(r.escalationCount.absoluteChange)
+          : ''
+      ],
+      [
+        'On-Time Kickoff Rate (%)',
+        this.isNoData(r.onTimeKickoffRate.current.status) ? 'No data' : String((r.onTimeKickoffRate.current.rate ?? 0) * 100),
+        r.onTimeKickoffRate.prior && !this.isNoData(r.onTimeKickoffRate.prior.status)
+          ? String((r.onTimeKickoffRate.prior.rate ?? 0) * 100)
+          : '',
+        r.onTimeKickoffRate.hasPriorPeriodComparison && r.onTimeKickoffRate.absoluteChangeRate !== null
+          ? String(r.onTimeKickoffRate.absoluteChangeRate * 100)
+          : ''
+      ]
+    ];
+
+    downloadCsv(rows, header, 'leadership-kpi-report');
   }
 
   private loadFilterOptions(): void {

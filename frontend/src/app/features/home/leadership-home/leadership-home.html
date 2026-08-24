@@ -4,6 +4,7 @@
       @if (user(); as currentUser) {
         <app-badge [text]="currentUser.role" />
       }
+      <app-button variant="stroked" [disabled]="!report()" (click)="exportCsv()">Export</app-button>
     </app-page-header>
 
     @if (errorMessage()) {
