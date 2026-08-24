@@ -28,7 +28,8 @@ public class DocumentService(
     IUserRepository userRepository,
     INotificationService notificationService,
     IValidator<DocumentUploadDto> uploadValidator,
-    IAuditLogService auditLogService) : IDocumentService
+    IAuditLogService auditLogService,
+    IEngagementAccessService engagementAccessService) : IDocumentService
 {
     // ── Helper methods ──────────────────────────────────────────────────────
 
@@ -235,6 +236,8 @@ public class DocumentService(
 
     public async Task<IEnumerable<DocumentResponseDto>> GetDocumentsByEngagementAsync(int engagementId)
     {
+        await engagementAccessService.ValidateAccessAsync(engagementId);
+
         var userRoleId = currentUserService.GetRoleId();
         var isAdmin = currentUserService.IsAdmin();
         var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
@@ -251,6 +254,8 @@ public class DocumentService(
         {
             throw new DocumentNotFoundException(id);
         }
+
+        await engagementAccessService.ValidateAccessAsync(doc.EngagementId);
 
         if (!File.Exists(doc.FilePath))
         {

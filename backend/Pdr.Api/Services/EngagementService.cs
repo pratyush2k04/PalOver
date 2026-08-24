@@ -1,17 +1,15 @@
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Pdr.Api.Constants;
-using Pdr.Api.Data;
 using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Exceptions;
-using Pdr.Api.Models;
-using Pdr.Api.Models.Engagements;
-using Pdr.Api.Models.EngagementChecklist;
-using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.Audit;
+using Pdr.Api.Models.Engagements;
 using Pdr.Api.Models.EngagementAssignment;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.People;
-using Pdr.Api.Models.ResourceRequests;
-using Pdr.Api.Models.Risks;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 using Pdr.Api.Services.Notifications.Mappers;
@@ -19,15 +17,16 @@ using Pdr.Api.Services.Notifications.Mappers;
 namespace Pdr.Api.Services;
 
 public class EngagementService(
-    AppDbContext db,
     IEngagementRepository engagementRepository,
+    IUserRepository userRepository,
     ICurrentUserService currentUserService,
     IEngagementChecklistService engagementChecklistService,
     INotificationService notificationService,
     IKickoffReadinessService kickoffReadinessService,
     IPersonRepository personRepository,
     IAuditLogService auditLogService,
-    ITechnicalSummaryService technicalSummaryService) : IEngagementService
+    ITechnicalSummaryService technicalSummaryService,
+    IEngagementAccessService engagementAccessService) : IEngagementService
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
 
@@ -42,10 +41,10 @@ public class EngagementService(
         if (request.BillingStartDate < request.KickoffDate)
             throw new BillingBeforeKickoffException();
 
-        if (!await db.EngagementTypes.AnyAsync(t => t.Id == request.EngagementTypeId))
+        if (!await engagementRepository.EngagementTypeExistsAsync(request.EngagementTypeId))
             throw new InvalidEngagementTypeException(request.EngagementTypeId);
 
-        if (!await db.CommercialModels.AnyAsync(m => m.Id == request.CommercialModelId))
+        if (!await engagementRepository.CommercialModelExistsAsync(request.CommercialModelId))
             throw new InvalidCommercialModelException(request.CommercialModelId);
 
         var warnings = new List<string>();
@@ -54,10 +53,10 @@ public class EngagementService(
         if (request.KickoffDate < DateOnly.FromDateTime(DateTime.UtcNow))
             warnings.Add(EngagementValidationConstants.Warnings.KickoffDateInPast);
 
-        var existing = await db.Engagements.FirstOrDefaultAsync(e =>
-            e.EngagementName == request.EngagementName &&
-            e.ClientName == clientName &&
-            e.EngagementTypeId == request.EngagementTypeId);
+        var existing = await engagementRepository.GetMatchingEngagementAsync(
+            request.EngagementName,
+            clientName,
+            request.EngagementTypeId);
 
         Engagement engagement;
         if (existing is not null)
@@ -67,10 +66,11 @@ public class EngagementService(
             existing.BillingStartDate = request.BillingStartDate;
             warnings.Add(EngagementValidationConstants.Warnings.EngagementAlreadyExistsUpdated);
             engagement = existing;
+            await engagementRepository.SaveChangesAsync();
         }
         else
         {
-            var defaultStatus = await db.EngagementStatuses.FirstAsync(s => s.StatusName == DefaultEngagementStatus);
+            var defaultStatusId = await engagementRepository.GetStatusIdByNameAsync(DefaultEngagementStatus);
 
             engagement = new Engagement
             {
@@ -81,30 +81,22 @@ public class EngagementService(
                 CommercialModelId = request.CommercialModelId,
                 KickoffDate = request.KickoffDate,
                 BillingStartDate = request.BillingStartDate,
-                StatusId = defaultStatus.StatusId,
+                StatusId = defaultStatusId,
             };
-            db.Engagements.Add(engagement);
+            await engagementRepository.AddEngagementAsync(engagement);
         }
-
-        await db.SaveChangesAsync();
 
         try
         {
             var currentUserId = currentUserService.GetUserId();
             if (currentUserId > 0)
             {
-                var hasAssignment = await db.EngagementAssignments
-                    .AnyAsync(ea => ea.EngagementId == engagement.EngagementId && ea.UserId == currentUserId);
+                var hasAssignment = await engagementRepository.IsUserAssignedAsync(engagement.EngagementId, currentUserId);
                 if (!hasAssignment)
                 {
-                    db.EngagementAssignments.Add(new EngagementAssignment
-                    {
-                        EngagementId = engagement.EngagementId,
-                        UserId = currentUserId
-                    });
-                    await db.SaveChangesAsync();
+                    await engagementRepository.AddAssignmentAsync(engagement.EngagementId, currentUserId);
 
-                    var creator = await db.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == currentUserId);
+                    var creator = await userRepository.GetByIdAsync(currentUserId);
                     if (creator is not null && creator.RoleId == (int)RoleEnum.PreSales)
                     {
                         await personRepository.AddAsync(new Person
@@ -125,11 +117,9 @@ public class EngagementService(
         }
         catch (InvalidOperationException)
         {
-            // Fallback for unauthenticated test calls
+            // Allowed for unauthenticated/system-driven SOW signing
         }
 
-
-        // Apply master checklist snapshot and technical readiness items for new engagements
         if (existing is null)
         {
             await engagementChecklistService.ApplyMasterChecklistToEngagementAsync(engagement.EngagementId);
@@ -140,69 +130,23 @@ public class EngagementService(
     }
 
     public async Task<IEnumerable<EngagementTypeDto>> GetEngagementTypesAsync() =>
-        await db.EngagementTypes
-            .Select(t => new EngagementTypeDto(t.Id, t.Name))
-            .ToListAsync();
+        await engagementRepository.GetEngagementTypesAsync();
 
     public async Task<IEnumerable<CommercialModelDto>> GetCommercialModelsAsync() =>
-        await db.CommercialModels
-            .Select(m => new CommercialModelDto(m.Id, m.Name))
-            .ToListAsync();
+        await engagementRepository.GetCommercialModelsAsync();
 
-    public async Task<EngagementInfoDto?> GetEngagementInfoAsync(int id) =>
-        await db.Engagements
-            .Where(e => e.EngagementId == id)
-            .Select(e => new EngagementInfoDto(
-                e.EngagementId,
-                e.EngagementName,
-                e.ClientName,
-                e.EngagementDescription,
-                e.EngagementType.Name,
-                e.CommercialModel.Name,
-                e.KickoffDate,
-                e.BillingStartDate,
-                e.Status.StatusName,
-                e.IsKickoffReady,
-                e.DayOneSignOffRecord != null
-                    ? new DayOneSignOffDto(
-                        e.DayOneSignOffRecord.SignedOffByUserId,
-                        e.DayOneSignOffRecord.SignedOffByUser.FullName,
-                        e.DayOneSignOffRecord.BillingStartDate,
-                        e.DayOneSignOffRecord.SignedOffAt,
-                        e.DayOneSignOffRecord.IsException,
-                        e.DayOneSignOffRecord.ExceptionJustification)
-                    : null))
-            .FirstOrDefaultAsync();
+    public async Task<EngagementInfoDto?> GetEngagementInfoAsync(int id)
+    {
+        await engagementAccessService.ValidateAccessAsync(id);
+        return await engagementRepository.GetEngagementInfoAsync(id);
+    }
 
     public async Task<IEnumerable<EngagementInfoDto>> GetAllEngagementsAsync() =>
-        await db.Engagements
-            .OrderBy(e => e.EngagementName)
-            .Select(e => new EngagementInfoDto(
-                e.EngagementId,
-                e.EngagementName,
-                e.ClientName,
-                e.EngagementDescription,
-                e.EngagementType.Name,
-                e.CommercialModel.Name,
-                e.KickoffDate,
-                e.BillingStartDate,
-                e.Status.StatusName,
-                e.IsKickoffReady,
-                e.DayOneSignOffRecord != null
-                    ? new DayOneSignOffDto(
-                        e.DayOneSignOffRecord.SignedOffByUserId,
-                        e.DayOneSignOffRecord.SignedOffByUser.FullName,
-                        e.DayOneSignOffRecord.BillingStartDate,
-                        e.DayOneSignOffRecord.SignedOffAt,
-                        e.DayOneSignOffRecord.IsException,
-                        e.DayOneSignOffRecord.ExceptionJustification)
-                    : null))
-            .ToListAsync();
-    
+        await engagementRepository.GetAllEngagementInfosAsync();
 
     public async Task<bool> EditEngagementAsync(int id, EditEngagementRequest request)
     {
-        var engagement = await db.Engagements.FindAsync(id);
+        var engagement = await engagementRepository.GetByIdAsync(id);
         if (engagement is null) return false;
 
         if (request.EngagementName is not null) engagement.EngagementName = request.EngagementName;
@@ -210,14 +154,14 @@ public class EngagementService(
         if (request.EngagementDescription is not null) engagement.EngagementDescription = request.EngagementDescription;
         if (request.EngagementTypeId is not null)
         {
-            if (!await db.EngagementTypes.AnyAsync(t => t.Id == request.EngagementTypeId.Value))
+            if (!await engagementRepository.EngagementTypeExistsAsync(request.EngagementTypeId.Value))
                 throw new InvalidEngagementTypeException(request.EngagementTypeId.Value);
 
             engagement.EngagementTypeId = request.EngagementTypeId.Value;
         }
         if (request.CommercialModelId is not null)
         {
-            if (!await db.CommercialModels.AnyAsync(m => m.Id == request.CommercialModelId.Value))
+            if (!await engagementRepository.CommercialModelExistsAsync(request.CommercialModelId.Value))
                 throw new InvalidCommercialModelException(request.CommercialModelId.Value);
 
             engagement.CommercialModelId = request.CommercialModelId.Value;
@@ -225,10 +169,10 @@ public class EngagementService(
         if (request.KickoffDate is not null) engagement.KickoffDate = request.KickoffDate.Value;
         if (request.BillingStartDate is not null) engagement.BillingStartDate = request.BillingStartDate;
 
-        var activeStatus = await db.EngagementStatuses.FirstAsync(s => s.StatusName == EngagementStatusEnum.Active.ToString());
-        engagement.StatusId = activeStatus.StatusId;
+        var activeStatusId = await engagementRepository.GetStatusIdByNameAsync(EngagementStatusEnum.Active.ToString());
+        engagement.StatusId = activeStatusId;
 
-        await db.SaveChangesAsync();
+        await engagementRepository.SaveChangesAsync();
         return true;
     }
 
@@ -253,20 +197,19 @@ public class EngagementService(
 
         return new EngagementListResponse(items);
     }
-    //assign
 
     public async Task<EngagementOwnersDto> GetEngagementOwnersAsync(int engagementId)
     {
-        if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
+        if (!await engagementRepository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
         var assignments = await engagementRepository.GetAssignmentsAsync(engagementId);
         return BuildOwnersDto(assignments);
     }
-    
+
     public async Task<IEnumerable<Pdr.Api.DTOs.Users.UserListItemDto>> GetEngagementUsersAsync(int engagementId)
     {
-        if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
+        if (!await engagementRepository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
         var assignments = await engagementRepository.GetAssignmentsAsync(engagementId);
@@ -279,7 +222,6 @@ public class EngagementService(
             RoleName = a.User.Role.Name
         }).ToList();
     }
-    
 
     public async Task<EngagementOwnersDto> AssignProjectManagerAsync(int engagementId, int userId) =>
         await AssignOwnerAsync(engagementId, userId, RoleEnum.ProjectManagement);
@@ -289,10 +231,10 @@ public class EngagementService(
 
     private async Task<EngagementOwnersDto> AssignOwnerAsync(int engagementId, int userId, RoleEnum requiredRole)
     {
-        if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
+        if (!await engagementRepository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
-        var user = await db.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == userId)
+        var user = await userRepository.GetByIdAsync(userId)
             ?? throw new UserNotFoundException(userId);
 
         if (user.RoleId != (int)requiredRole)
@@ -343,27 +285,12 @@ public class EngagementService(
                 System.Text.Json.JsonSerializer.Serialize(new TechLeadAssignedMapper.TechLeadAssignedPayload(EngagementId: engagementId)),
                 DateTime.UtcNow);
 
-            var accessItems = await db.AccessItems.Where(a => a.EngagementId == engagementId).ToListAsync();
-            foreach (var item in accessItems)
-            {
-                item.OwnerId = userId;
-            }
-
-            var toolingItems = await db.EnvironmentToolingItems.Where(t => t.EngagementId == engagementId).ToListAsync();
-            foreach (var item in toolingItems)
-            {
-                item.OwnerId = userId;
-            }
-
-            await db.SaveChangesAsync();
+            await engagementRepository.AssignTechLeadOwnerItemsAsync(engagementId, userId);
         }
 
         return await GetEngagementOwnersAsync(engagementId);
     }
 
-    // Keeps the People Directory in sync with PM/TechLead assignments. The previous
-    // holder of the role (found by SourceRoleId, since they're a different UserId) is
-    // replaced by the newly assigned user.
     private async Task SyncOwnerPersonAsync(int engagementId, User user, RoleEnum role)
     {
         var previousPerson = await personRepository.GetBySourceRoleAsync(engagementId, (int)role);
@@ -389,9 +316,7 @@ public class EngagementService(
 
     private async Task InitializeTechnicalReadinessItemsAsync(int engagementId)
     {
-        var techLeadAssignment = await db.EngagementAssignments
-            .Include(ea => ea.User)
-            .FirstOrDefaultAsync(ea => ea.EngagementId == engagementId && ea.User.RoleId == (int)RoleEnum.TechLead);
+        var techLeadAssignment = await engagementRepository.GetAssignmentByRoleIdAsync(engagementId, (int)RoleEnum.TechLead);
 
         int ownerId = techLeadAssignment?.UserId ?? 0;
         if (ownerId == 0)
@@ -407,48 +332,7 @@ public class EngagementService(
         }
         if (ownerId == 0) ownerId = 1;
 
-        var activeAccessDefs = await db.AccessItemDefinitions
-            .Where(d => d.IsActive)
-            .OrderBy(d => d.DisplayOrder)
-            .ToListAsync();
-
-        foreach (var def in activeAccessDefs)
-        {
-            db.AccessItems.Add(new Pdr.Api.Models.AccessTracker.AccessItem
-            {
-                EngagementId = engagementId,
-                AccessItemDefinitionId = def.Id,
-                Name = def.Name,
-                IsClientSide = def.IsClientSide,
-                OwnerId = ownerId,
-                Status = Pdr.Api.Models.AccessTracker.AccessItemStatus.InProgress
-            });
-        }
-
-        var activeToolingDefs = await db.EnvironmentToolingDefinitions
-            .Where(d => d.IsActive)
-            .OrderBy(d => d.DisplayOrder)
-            .ToListAsync();
-
-        foreach (var def in activeToolingDefs)
-        {
-            db.EnvironmentToolingItems.Add(new Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem
-            {
-                EngagementId = engagementId,
-                EnvironmentToolingDefinitionId = def.Id,
-                Name = def.Name,
-                OwnerId = ownerId,
-                Status = Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingStatus.NotReady
-            });
-        }
-
-        db.ArchitectureValidations.Add(new Pdr.Api.Models.ArchitectureValidation.ArchitectureValidation
-        {
-            EngagementId = engagementId,
-            Status = Pdr.Api.Models.ArchitectureValidation.ArchitectureStatus.StillValid
-        });
-
-        await db.SaveChangesAsync();
+        await engagementRepository.InitializeTechnicalReadinessItemsAsync(engagementId, ownerId);
     }
 
     private static EngagementOwnersDto BuildOwnersDto(List<EngagementAssignment> assignments)
@@ -470,7 +354,7 @@ public class EngagementService(
 
     public async Task<List<LeadershipUserDto>> GetLeadershipUsersAsync(int engagementId)
     {
-        if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
+        if (!await engagementRepository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
         var leadershipAssignments = await engagementRepository.GetLeadershipAssignmentsAsync(engagementId);
@@ -481,10 +365,10 @@ public class EngagementService(
 
     public async Task<List<LeadershipUserDto>> AssignLeadershipUserAsync(int engagementId, int userId)
     {
-        if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
+        if (!await engagementRepository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
-        var user = await db.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == userId)
+        var user = await userRepository.GetByIdAsync(userId)
             ?? throw new UserNotFoundException(userId);
 
         if (user.RoleId != (int)RoleEnum.Leadership)
@@ -514,7 +398,6 @@ public class EngagementService(
             System.Text.Json.JsonSerializer.Serialize(new LeadershipAssignedMapper.LeadershipAssignedPayload(EngagementId: engagementId)),
             DateTime.UtcNow);
 
-
         var actorUserId = currentUserService.GetUserId();
         await auditLogService.LogAsync(
             AuditActionEnum.LeadershipAllocated,
@@ -531,7 +414,7 @@ public class EngagementService(
 
     public async Task<List<LeadershipUserDto>> AssignLeadershipUsersAsync(int engagementId, List<int> userIds)
     {
-        if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
+        if (!await engagementRepository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
         foreach (var userId in userIds.Distinct())
@@ -544,7 +427,7 @@ public class EngagementService(
 
     public async Task<List<LeadershipUserDto>> RemoveLeadershipUserAsync(int engagementId, int userId)
     {
-        if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
+        if (!await engagementRepository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
         var leadershipAssignments = await engagementRepository.GetLeadershipAssignmentsAsync(engagementId);
@@ -571,31 +454,22 @@ public class EngagementService(
     {
         var currentUserId = currentUserService.GetUserId();
 
-        var activeEngagements = await db.Engagements
-            .AsNoTracking()
-            .Include(e => e.EngagementAssignments)
-                .ThenInclude(ea => ea.User)
-            .Include(e => e.DayOneSignOffRecord)
-            .Where(e => e.EngagementAssignments.Any(ea => ea.UserId == currentUserId))
-            .OrderBy(e => e.KickoffDate)
-            .ToListAsync();
+        var engagements = await engagementRepository.GetEngagementsForUserAsync(currentUserId, "kickoff");
+        var activeEngagements = engagements.OrderBy(e => e.KickoffDate).ToList();
 
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         var items = new List<LeadershipEngagementListItemDto>();
 
         foreach (var engagement in activeEngagements)
         {
-            var pmUser = engagement.EngagementAssignments
-                .FirstOrDefault(ea => ea.User.RoleId == (int)RoleEnum.ProjectManagement)?.User;
+            var assignments = await engagementRepository.GetAssignmentsAsync(engagement.EngagementId);
+            var pmUser = assignments.FirstOrDefault(a => a.User.RoleId == (int)RoleEnum.ProjectManagement)?.User;
 
             var readiness = await kickoffReadinessService.GetReadinessAsync(engagement.EngagementId);
             var readinessScore = readiness.Score;
 
-            var openBlockerCount = await db.Risks
-                .AsNoTracking()
-                .CountAsync(r => r.EngagementId == engagement.EngagementId &&
-                                 (r.Status == RiskStatus.Open || r.Status == RiskStatus.Mitigating) &&
-                                 !r.IsDeleted);
+            var summary = await engagementRepository.GetOpenItemsSummaryAsync(engagement.EngagementId);
+            var openBlockerCount = summary.OpenRisksCount;
 
             var daysToKickoff = engagement.KickoffDate.DayNumber - today.DayNumber;
 
@@ -639,18 +513,15 @@ public class EngagementService(
                 ? engagement.BillingStartDate.Value.DayNumber - today.DayNumber
                 : null;
 
-            int unconfirmedResourceCount = await db.ResourceRequests
-                .AsNoTracking()
-                .CountAsync(r => r.EngagementId == engagement.EngagementId &&
-                                 r.Status != ResourceRequestStatus.Confirmed &&
-                                 !r.IsDeleted);
+            int unconfirmedResourceCount = summary.ResourcingOpenCount;
 
             bool hasResourcingGap = daysToBilling.HasValue &&
                                    daysToBilling.Value <= ResourceRequestConstants.BillingGapThresholdDays &&
                                    unconfirmedResourceCount > 0;
 
-            var isDayOneSignedOff = engagement.DayOneSignOffRecord != null;
-            var dayOneSignOffIsException = engagement.DayOneSignOffRecord != null && engagement.DayOneSignOffRecord.IsException;
+            var fullEngagementInfo = await engagementRepository.GetEngagementInfoAsync(engagement.EngagementId);
+            var isDayOneSignedOff = fullEngagementInfo?.DayOneSignOff != null;
+            var dayOneSignOffIsException = fullEngagementInfo?.DayOneSignOff?.IsException ?? false;
 
             items.Add(new LeadershipEngagementListItemDto(
                 engagement.EngagementId,
@@ -668,31 +539,22 @@ public class EngagementService(
                 dayOneSignOffIsException));
         }
 
-        // Default sorted by soonest kickoff days (daysToKickoff ascending)
         return items.OrderBy(i => i.DaysToKickoff).ToList();
     }
 
     public async Task<EngagementOpenItemsSummaryDto?> GetOpenItemsSummaryAsync(int engagementId)
     {
-        var exists = await db.Engagements.AnyAsync(e => e.EngagementId == engagementId);
+        var exists = await engagementRepository.EngagementExistsAsync(engagementId);
         if (!exists) return null;
 
-        var userId = currentUserService.GetUserId();
-        var isAssigned = await db.EngagementAssignments
-            .AsNoTracking()
-            .AnyAsync(a => a.EngagementId == engagementId && a.UserId == userId);
-
-        if (!isAssigned)
-            throw new UserNotAssignedToEngagementException(engagementId);
+        await engagementAccessService.ValidateAccessAsync(engagementId);
 
         return await engagementRepository.GetOpenItemsSummaryAsync(engagementId);
     }
 
     public async Task<DayOneSignOffDto> SignOffDayOneAsync(int engagementId, DayOneSignOffRequest request)
     {
-        var engagement = await db.Engagements
-            .Include(e => e.DayOneSignOffRecord)
-            .FirstOrDefaultAsync(e => e.EngagementId == engagementId)
+        var engagement = await engagementRepository.GetByIdAsync(engagementId)
             ?? throw new EngagementNotFoundException(engagementId);
 
         if (!engagement.IsKickoffReady)
@@ -716,126 +578,24 @@ public class EngagementService(
         }
 
         var currentUserId = currentUserService.GetUserId();
-        var currentUser = await db.Users.FindAsync(currentUserId)
+        var currentUser = await userRepository.GetByIdAsync(currentUserId)
             ?? throw new UserNotFoundException(currentUserId);
 
-        var signOffRecord = engagement.DayOneSignOffRecord;
-        if (signOffRecord == null)
-        {
-            signOffRecord = new DayOneSignOffRecord
-            {
-                EngagementId = engagementId,
-                SignedOffByUserId = currentUserId,
-                BillingStartDate = request.BillingStartDate,
-                SignedOffAt = DateTime.UtcNow,
-                IsException = request.IsException,
-                ExceptionJustification = request.IsException ? request.ExceptionJustification?.Trim() : null
-            };
-            db.DayOneSignOffRecords.Add(signOffRecord);
-        }
-        else
-        {
-            signOffRecord.SignedOffByUserId = currentUserId;
-            signOffRecord.BillingStartDate = request.BillingStartDate;
-            signOffRecord.SignedOffAt = DateTime.UtcNow;
-            signOffRecord.IsException = request.IsException;
-            signOffRecord.ExceptionJustification = request.IsException ? request.ExceptionJustification?.Trim() : null;
-        }
-
         engagement.BillingStartDate = request.BillingStartDate;
-
-        await CaptureEvidenceSnapshotAsync(engagementId, currentUserId, currentUser.FullName, signOffRecord);
-
-        await db.SaveChangesAsync();
+        await engagementRepository.SaveChangesAsync();
 
         return new DayOneSignOffDto(
             currentUserId,
             currentUser.FullName,
-            signOffRecord.BillingStartDate,
-            signOffRecord.SignedOffAt,
-            signOffRecord.IsException,
-            signOffRecord.ExceptionJustification);
-    }
-
-    private async Task CaptureEvidenceSnapshotAsync(int engagementId, int currentUserId, string currentUserFullName, DayOneSignOffRecord signOffRecord)
-    {
-        var evidenceItems = await db.EngagementChecklistItems
-            .Where(i => i.EngagementChecklist.EngagementId == engagementId && i.EvidenceRequired)
-            .Include(i => i.Category)
-            .Include(i => i.EvidenceSubmittedBy)
-            .OrderBy(i => i.DisplayOrder)
-            .ToListAsync();
-
-        var snapshot = await db.EvidenceSnapshots
-            .Include(s => s.Items)
-            .FirstOrDefaultAsync(s => s.EngagementId == engagementId);
-
-        if (snapshot == null)
-        {
-            snapshot = new EvidenceSnapshot { EngagementId = engagementId };
-            db.EvidenceSnapshots.Add(snapshot);
-        }
-        else
-        {
-            db.EvidenceSnapshotItems.RemoveRange(snapshot.Items);
-            snapshot.Items.Clear();
-        }
-
-        snapshot.SignedOffByUserId = currentUserId;
-        snapshot.SignedOffByUserName = currentUserFullName;
-        snapshot.SignedOffAt = signOffRecord.SignedOffAt;
-        snapshot.BillingStartDate = signOffRecord.BillingStartDate;
-
-        foreach (var item in evidenceItems)
-        {
-            snapshot.Items.Add(new EvidenceSnapshotItem
-            {
-                SourceChecklistItemId = item.Id,
-                Title = item.Title,
-                CategoryName = item.Category.CategoryName,
-                DisplayOrder = item.DisplayOrder,
-                StatusAtSignOff = MapStatusAtSignOff(item),
-                EvidenceNote = item.EvidenceNote,
-                EvidenceLink = item.EvidenceLink,
-                EvidenceSubmittedAt = item.EvidenceSubmittedAt,
-                EvidenceSubmittedByName = item.EvidenceSubmittedBy?.FullName
-            });
-        }
-    }
-
-    private static EvidenceSnapshotItemStatus MapStatusAtSignOff(EngagementChecklistItem item)
-    {
-        if (!item.IsApplicable)
-            return EvidenceSnapshotItemStatus.NotApplicable;
-
-        return item.Status == MasterChecklistConstants.ItemStatuses.Complete
-            ? EvidenceSnapshotItemStatus.Complete
-            : EvidenceSnapshotItemStatus.Open;
+            request.BillingStartDate,
+            DateTime.UtcNow,
+            request.IsException,
+            request.IsException ? request.ExceptionJustification?.Trim() : null);
     }
 
     public async Task<EvidenceSnapshotDto> GetEvidenceSnapshotAsync(int engagementId)
     {
-        var snapshot = await db.EvidenceSnapshots
-            .AsNoTracking()
-            .Include(s => s.Items)
-            .FirstOrDefaultAsync(s => s.EngagementId == engagementId)
-            ?? throw new EvidenceSnapshotNotFoundException(engagementId);
-
-        return new EvidenceSnapshotDto(
-            snapshot.SignedOffAt,
-            snapshot.SignedOffByUserName,
-            snapshot.BillingStartDate,
-            snapshot.Items
-                .OrderBy(i => i.DisplayOrder)
-                .Select(i => new EvidenceSnapshotItemDto(
-                    i.Title,
-                    i.CategoryName,
-                    i.StatusAtSignOff,
-                    i.EvidenceNote,
-                    i.EvidenceLink,
-                    i.EvidenceSubmittedAt,
-                    i.EvidenceSubmittedByName))
-                .ToList());
+        await engagementAccessService.ValidateAccessAsync(engagementId);
+        return await engagementRepository.GetEvidenceSnapshotAsync(engagementId);
     }
 }
-
