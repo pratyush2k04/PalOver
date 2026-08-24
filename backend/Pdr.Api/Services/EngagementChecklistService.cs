@@ -18,10 +18,13 @@ public class EngagementChecklistService(
     ICurrentUserService currentUserService,
     IRiskService riskService,
     IAuditLogService auditLogService,
-    ILogger<EngagementChecklistService> logger) : IEngagementChecklistService
+    ILogger<EngagementChecklistService> logger,
+    IEngagementAccessService engagementAccessService) : IEngagementChecklistService
 {
     public async Task<EngagementChecklistResponseDto?> GetByEngagementIdAsync(int engagementId)
     {
+        await engagementAccessService.ValidateAccessAsync(engagementId);
+
         var checklist = await checklistRepository.GetByEngagementIdAsync(engagementId);
 
         // If no checklist exists yet (e.g. existing seed engagements), apply one on the fly

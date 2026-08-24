@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { ENGAGEMENT_ROUTES, TECHNICAL_READINESS_ROUTES, RISK_ROUTES } from '@shared/constants/app.constants';
+import { engagementAccessGuard } from '@shared/guards/engagement-access.guard';
 
 export const ENGAGEMENTS_ROUTES: Routes = [
   {
@@ -14,10 +15,12 @@ export const ENGAGEMENTS_ROUTES: Routes = [
   },
   {
     path: `:id/${ENGAGEMENT_ROUTES.WORKSPACE}`,
+    canActivate: [engagementAccessGuard],
     loadComponent: () =>
       import(
         './engagement-workspace/engagement-workspace.component'
       ).then((m) => m.EngagementWorkspaceComponent),
+      
     children: [
       {
         path: ENGAGEMENT_ROUTES.OVERVIEW,

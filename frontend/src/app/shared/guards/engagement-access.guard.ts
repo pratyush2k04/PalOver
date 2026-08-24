@@ -2,25 +2,31 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { catchError, map, of } from 'rxjs';
 import { AuthService } from '@shared/services/auth';
-import { HandoverService } from '@features/engagements/services/handover.service';
-import { APP_ROUTES } from '@shared/constants/app.constants';
+import { EngagementService } from '@features/engagements/services/engagement.service';
+import { ACCESS_DENIED_ROUTES, AUTH_ROUTES } from '@shared/constants/app.constants';
 
 export const engagementAccessGuard: CanActivateFn = (route) => {
   const authService = inject(AuthService);
-  const handoverService = inject(HandoverService);
+  const engagementService = inject(EngagementService);
   const router = inject(Router);
 
   if (!authService.isLoggedIn()) {
-    router.navigate([APP_ROUTES.LOGIN]);
+    router.navigate([`/${AUTH_ROUTES.LOGIN}`]);
     return of(false);
   }
 
-  const engagementId = Number(route.paramMap.get('id'));
+  const idParam = route.paramMap.get('id') || route.parent?.paramMap.get('id') || route.paramMap.get('engagementId');
+  const engagementId = Number(idParam);
 
-  return handoverService.getHandover(engagementId).pipe(
+  if (!engagementId || isNaN(engagementId)) {
+    router.navigate([`/${ACCESS_DENIED_ROUTES.BASE}`]);
+    return of(false);
+  }
+
+  return engagementService.getEngagementInfo(engagementId).pipe(
     map(() => true),
     catchError(() => {
-      router.navigate([APP_ROUTES.DASHBOARD]);
+      router.navigate([`/${ACCESS_DENIED_ROUTES.BASE}`]);
       return of(false);
     })
   );

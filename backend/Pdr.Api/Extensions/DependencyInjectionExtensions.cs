@@ -48,6 +48,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserManagementService, UserManagementService>();
         services.AddScoped<IProfileService, ProfileService>();
+        services.AddScoped<IEngagementAccessService, EngagementAccessService>();
         services.AddScoped<IEngagementService, EngagementService>();
         services.AddScoped<IHandoverAccessService, HandoverAccessService>();
         services.AddScoped<IHandoverService, HandoverService>();

@@ -228,6 +228,19 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",
                 IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 18,
+                Key = NotificationConstants.TemplateKeys.CommitmentVarianceEscalated,
+                Title = "Commitment Variance — {EngagementName}",
+                Body = "Commitment '{CommitmentTitle}' timeline variance flagged: {VarianceDescription}.",
+                DefaultPriority = NotificationPriority.High,
+                LinkPattern = "/engagements/{EngagementId}/workspace/handover",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
             }
         );
     }
