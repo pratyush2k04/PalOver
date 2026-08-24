@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Exceptions;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.Engagements;
 using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Models.LoginEntity;
@@ -518,8 +519,8 @@ public class EngagementService(
                                    unconfirmedResourceCount > 0;
 
             var fullEngagementInfo = await engagementRepository.GetEngagementInfoAsync(engagement.EngagementId);
-            var isDayOneSignedOff = fullEngagementInfo?.DayOneSignOffRecord != null;
-            var dayOneSignOffIsException = fullEngagementInfo?.DayOneSignOffRecord?.IsException ?? false;
+            var isDayOneSignedOff = fullEngagementInfo?.DayOneSignOff != null;
+            var dayOneSignOffIsException = fullEngagementInfo?.DayOneSignOff?.IsException ?? false;
 
             items.Add(new LeadershipEngagementListItemDto(
                 engagement.EngagementId,
@@ -591,6 +592,9 @@ public class EngagementService(
             request.IsException ? request.ExceptionJustification?.Trim() : null);
     }
 
-    public async Task<EvidenceSnapshotDto> GetEvidenceSnapshotAsync(int engagementId) =>
-        await engagementRepository.GetEvidenceSnapshotAsync(engagementId);
+    public async Task<EvidenceSnapshotDto> GetEvidenceSnapshotAsync(int engagementId)
+    {
+        await engagementAccessService.ValidateAccessAsync(engagementId);
+        return await engagementRepository.GetEvidenceSnapshotAsync(engagementId);
+    }
 }
