@@ -3,6 +3,7 @@ using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Exceptions.KickoffReadinessExceptions;
 using Pdr.Api.Models.AccessTracker;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.EngagementChecklist;
 using Pdr.Api.Models.Handover;
 using Pdr.Api.Repositories.Interfaces;
@@ -16,6 +17,8 @@ public class KickoffReadinessService(
     ICommitmentRepository commitmentRepository,
     IRealisticCommitmentRepository realisticCommitmentRepository,
     IAccessTrackerRepository accessTrackerRepository,
+    IAuditLogService auditLogService,
+    ICurrentUserService currentUserService,
     IEngagementChecklistRepository checklistRepository) : IKickoffReadinessService
 {
     private readonly record struct ReadinessCheck(int Applicable, int Passed, List<int> FailingIds);
@@ -74,8 +77,19 @@ public class KickoffReadinessService(
                 throw new KickoffNotReadyException();
         }
 
+        var wasAlreadyReady = engagement.IsKickoffReady;
         engagement.IsKickoffReady = true;
         await engagementRepository.SaveChangesAsync();
+
+        if (!wasAlreadyReady)
+        {
+            var actorUserId = currentUserService.GetUserId();
+            await auditLogService.LogAsync(
+                AuditActionEnum.KickoffReadyMarked,
+                new Dictionary<string, object?> { ["EngagementId"] = engagementId, ["ActorUserId"] = actorUserId },
+                engagementId: engagementId,
+                actingUserId: actorUserId);
+        }
     }
 
     public async Task RevertKickoffReadyAsync(int engagementId)
@@ -85,6 +99,13 @@ public class KickoffReadinessService(
 
         engagement.IsKickoffReady = false;
         await engagementRepository.SaveChangesAsync();
+
+        var actorUserId = currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            AuditActionEnum.KickoffReadyReverted,
+            new Dictionary<string, object?> { ["EngagementId"] = engagementId, ["ActorUserId"] = actorUserId },
+            engagementId: engagementId,
+            actingUserId: actorUserId);
     }
 
     private static ReadinessCheck EvaluateHandoverMandatoryFields(HandoverInfo? handover)

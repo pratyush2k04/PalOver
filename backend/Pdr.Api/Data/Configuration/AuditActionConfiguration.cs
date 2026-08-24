@@ -176,6 +176,24 @@ public class AuditActionConfiguration : IEntityTypeConfiguration<AuditAction>
                 Id = (int)AuditActionEnum.DependencyEscalated,
                 Action = AuditActionEnum.DependencyEscalated.ToString(),
                 Details = "Dependency {dependencyDescription} escalated to risk {riskTitle} for engagement {engagementName}"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.KickoffReadyMarked,
+                Action = AuditActionEnum.KickoffReadyMarked.ToString(),
+                Details = "Engagement {engagementName} marked kickoff-ready by {actorName}"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.KickoffReadyReverted,
+                Action = AuditActionEnum.KickoffReadyReverted.ToString(),
+                Details = "Kickoff-ready status reverted for engagement {engagementName} by {actorName}"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.AccessItemBlocked,
+                Action = AuditActionEnum.AccessItemBlocked.ToString(),
+                Details = "Access item '{itemName}' blocked on engagement {engagementName} by {actorName}"
             });
     }
 }
