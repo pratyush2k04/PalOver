@@ -6,17 +6,23 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
 import { AlertComponent } from '@common/components/alert/alert';
 import { BadgeComponent } from '@common/components/badge/badge';
 import { ButtonComponent } from '@common/components/button/button';
-import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
+import {
+  StatusBadgeComponent,
+  StatusBadgeTone,
+} from '@common/components/status-badge/status-badge';
 import { EngagementService } from '@features/engagements/services/engagement.service';
-import { EvidenceSnapshot, EvidenceSnapshotItemStatus } from '@features/engagements/models/evidence-snapshot.model';
+import {
+  EvidenceSnapshot,
+  EvidenceSnapshotItemStatus,
+} from '@features/engagements/models/evidence-snapshot.model';
 import { ENGAGEMENT_ROUTES } from '@shared/constants/routes.constants';
 
 @Component({
   selector: 'app-sign-off',
   standalone: true,
-  imports: [CommonModule, InlineSVGModule, AlertComponent, BadgeComponent, ButtonComponent, StatusBadgeComponent],
+  imports: [CommonModule, InlineSVGModule, AlertComponent, ButtonComponent, StatusBadgeComponent],
   templateUrl: './sign-off.component.html',
-  styleUrl: './sign-off.component.scss'
+  styleUrl: './sign-off.component.scss',
 })
 export class SignOffComponent {
   private route = inject(ActivatedRoute);
@@ -37,7 +43,7 @@ export class SignOffComponent {
       if (id) {
         this.engagementService.getEvidenceSnapshot(id).subscribe({
           next: (snapshot) => this.snapshot.set(snapshot),
-          error: () => this.snapshot.set(null)
+          error: () => this.snapshot.set(null),
         });
       }
     });
@@ -56,6 +62,9 @@ export class SignOffComponent {
   exportSnapshot(): void {
     const id = this.engagementId();
     if (!id) return;
-    window.open(`/${ENGAGEMENT_ROUTES.BASE}/${id}/${ENGAGEMENT_ROUTES.EVIDENCE_SNAPSHOT_PRINT}`, '_blank');
+    window.open(
+      `/${ENGAGEMENT_ROUTES.BASE}/${id}/${ENGAGEMENT_ROUTES.EVIDENCE_SNAPSHOT_PRINT}`,
+      '_blank',
+    );
   }
 }
