@@ -12,6 +12,8 @@ export interface KickoffReadinessDto {
   commitmentsPassed: number;
   accessItemsApplicable: number;
   accessItemsPassed: number;
+  checklistItemsApplicable: number;
+  checklistItemsPassed: number;
 }
 
 @Injectable({
