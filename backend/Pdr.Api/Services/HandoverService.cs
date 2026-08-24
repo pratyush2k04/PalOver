@@ -76,8 +76,7 @@ public class HandoverService : IHandoverService
                     Description = realistic.Description,
                     Timeline = realistic.Timeline,
                     TimelineUnit = realistic.TimelineUnit,
-                    AcknowledgementMessage = realistic.AcknowledgementMessage,
-                    IsPossible = realistic.IsPossible
+                    AcknowledgementMessage = realistic.AcknowledgementMessage
                 };
 
                 var variance = RealisticCommitmentService.CalculateVariance(

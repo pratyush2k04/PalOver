@@ -137,7 +137,6 @@ public class RealisticCommitmentService : IRealisticCommitmentService
             Timeline = request.Timeline,
             TimelineUnit = request.TimelineUnit,
             AcknowledgementMessage = request.AcknowledgementMessage,
-            IsPossible = request.IsPossible,
             CreatedBy = userIdStr,
             UpdatedBy = userIdStr
         };
@@ -176,8 +175,7 @@ public class RealisticCommitmentService : IRealisticCommitmentService
             Description = realistic.Description,
             Timeline = realistic.Timeline,
             TimelineUnit = realistic.TimelineUnit,
-            AcknowledgementMessage = realistic.AcknowledgementMessage,
-            IsPossible = realistic.IsPossible
+            AcknowledgementMessage = realistic.AcknowledgementMessage
         };
     }
 
@@ -204,7 +202,6 @@ public class RealisticCommitmentService : IRealisticCommitmentService
         realistic.Timeline = request.Timeline;
         realistic.TimelineUnit = request.TimelineUnit;
         realistic.AcknowledgementMessage = request.AcknowledgementMessage;
-        realistic.IsPossible = request.IsPossible;
         realistic.UpdatedBy = userIdStr;
 
         await _realisticCommitmentRepository.SaveChangesAsync();
@@ -240,8 +237,7 @@ public class RealisticCommitmentService : IRealisticCommitmentService
             Description = realistic.Description,
             Timeline = realistic.Timeline,
             TimelineUnit = realistic.TimelineUnit,
-            AcknowledgementMessage = realistic.AcknowledgementMessage,
-            IsPossible = realistic.IsPossible
+            AcknowledgementMessage = realistic.AcknowledgementMessage
         };
     }
 }

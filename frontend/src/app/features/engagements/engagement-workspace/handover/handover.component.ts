@@ -50,7 +50,6 @@ interface RealisticEditForm {
   timeline: number;
   timelineUnit: string;
   acknowledgementMessage: string;
-  isPossible: boolean;
 }
 
 @Component({
@@ -206,7 +205,6 @@ export class HandoverComponent {
       timeline: 1,
       timelineUnit: 'Weeks',
       acknowledgementMessage: '',
-      isPossible: true,
     };
   }
 
@@ -408,7 +406,6 @@ export class HandoverComponent {
       timeline: existing?.timeline || c.timeline,
       timelineUnit: existing?.timelineUnit || c.timelineUnit,
       acknowledgementMessage: ackMessage,
-      isPossible: existing?.isPossible ?? true,
     });
   }
 
@@ -450,7 +447,6 @@ export class HandoverComponent {
       timeline: form.timeline,
       timelineUnit: form.timelineUnit,
       acknowledgementMessage: form.acknowledgementMessage || null,
-      isPossible: form.isPossible,
     };
 
     const request$ = c.realisticCommitment
@@ -480,32 +476,6 @@ export class HandoverComponent {
           this.extractErrorMessage(err, 'Failed to save realistic commitment'),
           true,
         );
-      },
-    });
-  }
-
-  toggleMarkImpossible(c: CommitmentDto) {
-    const id = this.engagementId();
-    if (!id || !c.realisticCommitment) return;
-
-    const payload: UpdateRealisticCommitmentRequest = {
-      description: c.realisticCommitment.description,
-      timeline: c.realisticCommitment.timeline,
-      timelineUnit: c.realisticCommitment.timelineUnit,
-      acknowledgementMessage: c.realisticCommitment.acknowledgementMessage,
-      isPossible: !c.realisticCommitment.isPossible,
-    };
-
-    this.handoverService.updateRealisticCommitment(id, c.commitmentId, payload).subscribe({
-      next: (data) => {
-        this.commitments.update((commits) =>
-          commits.map((item) =>
-            item.commitmentId === c.commitmentId ? { ...item, realisticCommitment: data } : item,
-          ),
-        );
-      },
-      error: (err) => {
-        this.showMessage(this.extractErrorMessage(err, 'Failed to update commitment'), true);
       },
     });
   }
