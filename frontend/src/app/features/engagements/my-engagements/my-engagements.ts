@@ -64,13 +64,28 @@ export class MyEngagementsComponent implements OnInit {
   errorMessage = signal<string | null>(null);
   engagements = signal<MyEngagementRow[]>([]);
   currentPage = signal(1);
+  activeTab = signal<'Active' | 'Past'>('Active');
 
-  activeCount = computed(() => this.engagements().length);
+  filteredEngagements = computed(() => {
+    return this.engagements().filter(e => 
+      this.activeTab() === 'Past' ? e.isSignedOff : !e.isSignedOff
+    );
+  });
+
+  activeEngagementsCount = computed(() => this.engagements().filter(e => !e.isSignedOff).length);
+  pastEngagementsCount = computed(() => this.engagements().filter(e => e.isSignedOff).length);
+
+  activeCount = computed(() => this.filteredEngagements().length);
   totalPages = computed(() => Math.max(1, Math.ceil(this.activeCount() / PAGE_SIZE)));
   pagedEngagements = computed(() => {
     const start = (this.currentPage() - 1) * PAGE_SIZE;
-    return this.engagements().slice(start, start + PAGE_SIZE);
+    return this.filteredEngagements().slice(start, start + PAGE_SIZE);
   });
+
+  setTab(tabId: 'Active' | 'Past'): void {
+    this.activeTab.set(tabId);
+    this.currentPage.set(1);
+  }
 
   ngOnInit(): void {
     this.loadEngagements();
