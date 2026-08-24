@@ -35,12 +35,33 @@
       margin-bottom: 0;
     }
   }
+
 }
 
 .filter-label {
   font-size: $font-size-xs;
   font-weight: $font-weight-medium;
   color: $color-text-faint;
+}
+
+.filter-dropdown {
+  position: relative;
+
+  app-button {
+    ::ng-deep button {
+      min-width: 11.25rem;
+      justify-content: space-between;
+    }
+  }
+}
+
+.filter-dropdown-panel {
+  position: absolute;
+  top: calc(100% + #{$spacing-1});
+  left: 0;
+  z-index: 50;
+  min-width: 16rem;
+  @include card-surface($spacing-3, $radius-md);
 }
 
 .kpi-grid {

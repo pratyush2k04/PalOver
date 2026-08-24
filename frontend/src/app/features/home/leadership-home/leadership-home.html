@@ -33,22 +33,40 @@
 
       <div class="filter-group">
         <span class="filter-label">Project Managers</span>
-        <app-multi-select-list
-          [options]="pmOptions()"
-          [selectedValues]="selectedPmIds"
-          emptyMessage="All PMs included"
-          (selectedValuesChange)="onPmSelectionChange($event)"
-        />
+        <div class="filter-dropdown">
+          <app-button variant="stroked" (click)="togglePmPicker(); $event.stopPropagation()">
+            {{ pmFilterSummary() }}
+          </app-button>
+          @if (isPmPickerOpen()) {
+            <div class="filter-dropdown-panel" (click)="$event.stopPropagation()">
+              <app-multi-select-list
+                [options]="pmOptions()"
+                [selectedValues]="selectedPmIds"
+                emptyMessage="All PMs included"
+                (selectedValuesChange)="onPmSelectionChange($event)"
+              />
+            </div>
+          }
+        </div>
       </div>
 
       <div class="filter-group">
         <span class="filter-label">Engagement Types</span>
-        <app-multi-select-list
-          [options]="engagementTypeOptions()"
-          [selectedValues]="selectedEngagementTypeIds"
-          emptyMessage="All types included"
-          (selectedValuesChange)="onEngagementTypeSelectionChange($event)"
-        />
+        <div class="filter-dropdown">
+          <app-button variant="stroked" (click)="toggleEngagementTypePicker(); $event.stopPropagation()">
+            {{ engagementTypeFilterSummary() }}
+          </app-button>
+          @if (isEngagementTypePickerOpen()) {
+            <div class="filter-dropdown-panel" (click)="$event.stopPropagation()">
+              <app-multi-select-list
+                [options]="engagementTypeOptions()"
+                [selectedValues]="selectedEngagementTypeIds"
+                emptyMessage="All types included"
+                (selectedValuesChange)="onEngagementTypeSelectionChange($event)"
+              />
+            </div>
+          }
+        </div>
       </div>
     </div>
 

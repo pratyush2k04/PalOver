@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AppContextService } from '@shared/services/app-context';
@@ -40,6 +40,7 @@ import { KpiOptionDto, KpiReportResponse, PeriodPreset } from './models/kpi-repo
 export class LeadershipHomeComponent implements OnInit {
   private appContext = inject(AppContextService);
   private kpiReportService = inject(KpiReportService);
+  private elementRef = inject(ElementRef);
 
   readonly user = this.appContext.user;
   readonly workspace = this.appContext.workspace;
@@ -55,6 +56,9 @@ export class LeadershipHomeComponent implements OnInit {
   pmOptions = signal<SelectOption[]>([]);
   engagementTypeOptions = signal<SelectOption[]>([]);
 
+  isPmPickerOpen = signal(false);
+  isEngagementTypePickerOpen = signal(false);
+
   isLoading = signal(true);
   errorMessage = signal<string | null>(null);
   report = signal<KpiReportResponse | null>(null);
@@ -65,6 +69,19 @@ export class LeadershipHomeComponent implements OnInit {
     const r = this.report();
     return r != null && r.relevantEngagementCount === 0;
   });
+
+  readonly pmFilterSummary = computed(() => this.buildFilterSummary(this.selectedPmIds, this.pmOptions(), 'PM'));
+  readonly engagementTypeFilterSummary = computed(() =>
+    this.buildFilterSummary(this.selectedEngagementTypeIds, this.engagementTypeOptions(), 'type')
+  );
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.elementRef.nativeElement.contains(event.target)) {
+      this.isPmPickerOpen.set(false);
+      this.isEngagementTypePickerOpen.set(false);
+    }
+  }
 
   ngOnInit(): void {
     this.loadFilterOptions();
@@ -83,6 +100,16 @@ export class LeadershipHomeComponent implements OnInit {
     if (this.customFrom && this.customTo) {
       this.loadReport();
     }
+  }
+
+  togglePmPicker(): void {
+    this.isEngagementTypePickerOpen.set(false);
+    this.isPmPickerOpen.update((open) => !open);
+  }
+
+  toggleEngagementTypePicker(): void {
+    this.isPmPickerOpen.set(false);
+    this.isEngagementTypePickerOpen.update((open) => !open);
   }
 
   onPmSelectionChange(values: unknown[]): void {
@@ -146,6 +173,16 @@ export class LeadershipHomeComponent implements OnInit {
     ];
 
     downloadCsv(rows, header, 'leadership-kpi-report');
+  }
+
+  private buildFilterSummary(selectedIds: number[], options: SelectOption[], noun: string): string {
+    if (selectedIds.length === 0) {
+      return `All ${noun}s`;
+    }
+    if (selectedIds.length === 1) {
+      return options.find((o) => o.value === selectedIds[0])?.label ?? `1 ${noun}`;
+    }
+    return `${selectedIds.length} ${noun}s selected`;
   }
 
   private loadFilterOptions(): void {
