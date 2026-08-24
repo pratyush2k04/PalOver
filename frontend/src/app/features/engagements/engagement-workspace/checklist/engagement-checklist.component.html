@@ -197,7 +197,7 @@
                       </button>
                     } @else if (item.evidenceRequired) {
                       <div class="evidence-required-wrapper">
-                        <app-status-badge tone="warning" title="Evidence is required to complete this item">
+                        <app-status-badge tone="warning" [appTooltip]="'Evidence is required to complete this item'">
                           Required
                         </app-status-badge>
                         @if (canToggleStatus()) {
@@ -249,7 +249,7 @@
                           }
 
                           @if (item.status !== 'Blocked') {
-                            <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openBlockDialog(item)" title="Flag as Blocked">
+                            <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openBlockDialog(item)" ariaLabel="Flag as Blocked" [appTooltip]="'Flag as Blocked'">
                               🚩
                             </app-button>
                           }
@@ -257,7 +257,7 @@
 
                         <!-- Applicability Actions (PM only) -->
                         @if (canChangeApplicability() && item.exemptionStatus !== 'Pending') {
-                          <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openMarkNaDialog(item)" title="Mark Not Applicable">
+                          <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openMarkNaDialog(item)" ariaLabel="Mark Not Applicable" [appTooltip]="'Mark Not Applicable'">
                             ✕
                           </app-button>
                         }

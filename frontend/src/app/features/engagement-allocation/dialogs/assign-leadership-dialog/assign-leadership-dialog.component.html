@@ -20,7 +20,8 @@
             <button
               type="button"
               class="chip-remove"
-              title="Remove User"
+              aria-label="Remove User"
+              [appTooltip]="'Remove User'"
               (click)="removeTagChip(user)"
             >
               &times;

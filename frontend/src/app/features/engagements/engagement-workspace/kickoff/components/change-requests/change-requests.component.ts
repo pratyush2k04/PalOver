@@ -9,6 +9,7 @@ import { CHANGE_REQUEST_CONSTANTS } from '@shared/constants/change-request.const
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { LogCrDialogComponent, LogCrDialogData } from './dialogs/log-cr-dialog/log-cr-dialog.component';
 import { RejectCrDialogComponent, RejectCrDialogData } from './dialogs/reject-cr-dialog/reject-cr-dialog.component';
@@ -21,7 +22,8 @@ import { ViewReasonDialogComponent, ViewReasonDialogData } from './dialogs/view-
     CommonModule,
     InlineSVGModule,
     StatusBadgeComponent,
-    ButtonComponent
+    ButtonComponent,
+    TooltipDirective
   ],
   templateUrl: './change-requests.component.html',
   styleUrl: './change-requests.component.scss'

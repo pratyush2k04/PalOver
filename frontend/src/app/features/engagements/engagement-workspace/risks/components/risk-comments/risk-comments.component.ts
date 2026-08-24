@@ -9,6 +9,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { ToastService } from '@common/services/toast/toast';
 import { RISK_COMMENT_MESSAGES, RISK_COMMENT_CONSTANTS } from '@shared/constants/app.constants';
 import { InlineSVGModule } from 'ng-inline-svg-2';
@@ -25,7 +26,8 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
     ButtonComponent,
     EmptyStateComponent,
     LoadingSpinnerComponent,
-    TextareaComponent
+    TextareaComponent,
+    TooltipDirective
   ],
   templateUrl: './risk-comments.component.html',
   styleUrl: './risk-comments.component.scss'
