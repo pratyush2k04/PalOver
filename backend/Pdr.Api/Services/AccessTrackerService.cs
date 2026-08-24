@@ -4,6 +4,7 @@ using Pdr.Api.DTOs.AccessTracker;
 using Pdr.Api.Exceptions;
 
 using Pdr.Api.Models.AccessTracker;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
@@ -15,7 +16,8 @@ public class AccessTrackerService(
     IAccessTrackerRepository repository,
     IRiskService riskService,
     INotificationService notificationService,
-    ICurrentUserService currentUserService) : IAccessTrackerService
+    ICurrentUserService currentUserService,
+    IAuditLogService auditLogService) : IAccessTrackerService
 {
     // -------------------------------------------------------------------------
     // State machine: defines which transitions are allowed
@@ -120,12 +122,20 @@ public class AccessTrackerService(
 
         if (request.Status == AccessItemStatus.Blocked)
         {
+            var actorUserId = currentUserService.GetUserId();
+
             await notificationService.CreateFromTemplateAsync(
                 "AccessItemBlocked",
                 item.EngagementId,
                 RoleEnum.TechLead,
-                JsonSerializer.Serialize(new AccessItemBlockedMapper.AccessItemBlockedData(AccessItemId: item.Id, TriggerUserId: currentUserService.GetUserId())),
+                JsonSerializer.Serialize(new AccessItemBlockedMapper.AccessItemBlockedData(AccessItemId: item.Id, TriggerUserId: actorUserId)),
                 DateTime.UtcNow);
+
+            await auditLogService.LogAsync(
+                AuditActionEnum.AccessItemBlocked,
+                new Dictionary<string, object?> { ["AccessItemId"] = item.Id, ["ActorUserId"] = actorUserId },
+                engagementId: item.EngagementId,
+                actingUserId: actorUserId);
         }
 
         return MapToDto(item);

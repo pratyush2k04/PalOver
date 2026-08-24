@@ -20,4 +20,6 @@ public interface IEngagementRepository
     Task AddAssignmentAsync(int engagementId, int userId);
     Task<EngagementOpenItemsSummaryDto> GetOpenItemsSummaryAsync(int engagementId);
     Task<Dictionary<int, Engagement>> GetByIdsAsync(IEnumerable<int> engagementIds);
+    Task<List<EngagementReportInfoDto>> GetEngagementReportInfoAsync(List<int> engagementIds);
+    Task<List<EngagementAssignment>> GetAssignmentsForEngagementsAsync(List<int> engagementIds);
 }

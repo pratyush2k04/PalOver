@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
 using Pdr.Api.Models.Audit;
 using Pdr.Api.Repositories.Interfaces;
+using Pdr.Api.DTOs.Audit;
 using Pdr.Api.DTOs.Common;
 
 namespace Pdr.Api.Repositories;
@@ -75,4 +76,13 @@ public class AuditLogRepository(AppDbContext context) : IAuditLogRepository
             .OrderBy(u => u.Name)
             .ToListAsync();
     }
+
+    public async Task<List<AuditLogLiteDto>> GetByEngagementIdsAndActionsAsync(List<int> engagementIds, List<int> auditActionIds) =>
+        await context.AuditLogs
+            .AsNoTracking()
+            .Where(x => x.EngagementId != null
+                        && engagementIds.Contains(x.EngagementId.Value)
+                        && auditActionIds.Contains(x.AuditActionId))
+            .Select(x => new AuditLogLiteDto(x.EngagementId!.Value, x.AuditActionId, x.PayloadJson, x.CreatedAt))
+            .ToListAsync();
 }
