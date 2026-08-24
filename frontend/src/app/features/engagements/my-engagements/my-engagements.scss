@@ -15,20 +15,24 @@
   color: $color-text;
 }
 
-.toolbar-row {
+.header-toolbar {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: flex-end;
-  gap: $spacing-4;
+  border-bottom: 1px solid $color-border-soft;
+  margin-bottom: $spacing-6;
   margin-top: $spacing-4;
-  margin-bottom: $spacing-3;
 }
 
 .tabs-control {
   display: flex;
   gap: $spacing-6;
-  border-bottom: 1px solid $color-border-soft;
-  margin-bottom: $spacing-6;
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: $spacing-4;
 }
 
 .tab-btn {
@@ -47,7 +51,7 @@
   }
 
   &.active {
-    color: #1e3a8a; // Darker blue matching the screenshot
+    color: $color-primary;
     font-weight: $font-weight-medium;
     
     &::after {
@@ -56,8 +60,8 @@
       bottom: -1px;
       left: 0;
       right: 0;
-      height: 3px;
-      background-color: $color-accent-orange;
+      height: 2px;
+      background-color: $color-primary;
     }
   }
 }
