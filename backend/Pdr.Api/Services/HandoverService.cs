@@ -19,23 +19,28 @@ public class HandoverService : IHandoverService
     private readonly IRealisticCommitmentRepository _realisticCommitmentRepository;
     private readonly IKickoffReadinessService _kickoffReadinessService;
     private readonly INotificationService _notificationService;
+    private readonly IEngagementAccessService _engagementAccessService;
 
     public HandoverService(
         IHandoverRepository handoverRepository,
         ICommitmentRepository commitmentRepository,
         IRealisticCommitmentRepository realisticCommitmentRepository,
         IKickoffReadinessService kickoffReadinessService,
-        INotificationService notificationService)
+        INotificationService notificationService,
+        IEngagementAccessService engagementAccessService)
     {
         _handoverRepository = handoverRepository;
         _commitmentRepository = commitmentRepository;
         _realisticCommitmentRepository = realisticCommitmentRepository;
         _kickoffReadinessService = kickoffReadinessService;
         _notificationService = notificationService;
+        _engagementAccessService = engagementAccessService;
     }
 
     public async Task<HandoverInfoDto> GetHandoverAsync(int engagementId)
     {
+        await _engagementAccessService.ValidateAccessAsync(engagementId);
+
         var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
 
         if (handover == null)
@@ -96,6 +101,8 @@ public class HandoverService : IHandoverService
 
     public async Task<HandoverInfoDto> SaveHandoverDraftAsync(int engagementId, SaveHandoverDraftRequest request, string userIdStr)
     {
+        await _engagementAccessService.ValidateAccessAsync(engagementId);
+
         var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
 
         if (handover == null)
@@ -126,6 +133,8 @@ public class HandoverService : IHandoverService
 
     public async Task<HandoverInfoDto> SubmitHandoverAsync(int engagementId, string userIdStr)
     {
+        await _engagementAccessService.ValidateAccessAsync(engagementId);
+
         var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
 
         if (handover == null)

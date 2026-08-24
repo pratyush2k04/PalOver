@@ -21,10 +21,13 @@ public class TechnicalSummaryService(
     IDependencySpikeRepository dependencySpikeRepository,
     IDocumentRepository documentRepository,
     ICurrentUserService currentUserService,
-    IAuditLogService auditLogService) : ITechnicalSummaryService
+    IAuditLogService auditLogService,
+    IEngagementAccessService engagementAccessService) : ITechnicalSummaryService
 {
     public async Task<DayOneReadinessSummaryDto> GetDayOneSummaryAsync(int engagementId)
     {
+        await engagementAccessService.ValidateAccessAsync(engagementId);
+
         var engagement = await engagementRepository.GetByIdAsync(engagementId)
             ?? throw new EngagementNotFoundException(engagementId);
 
