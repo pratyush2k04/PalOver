@@ -1,0 +1,266 @@
+@use '../../../../../styles/mixins' as *;
+
+:host {
+  display: block;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.print-page-wrapper {
+  min-height: 100%;
+  background: $color-bg;
+  font-family: $font-family-base;
+  color: $color-text;
+  @include flex-column;
+  align-items: center;
+  padding: 0 0 $spacing-8;
+}
+
+.action-header {
+  width: 100%;
+  background: $color-surface;
+  border-bottom: 1px solid $color-border-soft;
+  box-shadow: $shadow-sm;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.action-header-content {
+  max-width: 56.25rem;
+  margin: 0 auto;
+  padding: $spacing-4 $spacing-6;
+  @include flex-between;
+}
+
+.report-tag {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $color-text-faint;
+}
+
+.action-header-info h2 {
+  margin: $spacing-1 0 0;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text;
+}
+
+.action-buttons {
+  display: flex;
+  gap: $spacing-3;
+}
+
+.error-state {
+  margin-top: $spacing-8;
+  text-align: center;
+  @include card-surface($spacing-8);
+  max-width: 28.125rem;
+  width: 100%;
+
+  p {
+    color: $color-text-faint;
+    margin: $spacing-4 0;
+  }
+}
+
+.print-document {
+  max-width: 56.25rem;
+  width: 100%;
+  background: $color-surface;
+  margin-top: $spacing-8;
+  padding: $spacing-8;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-card;
+  @include flex-column($spacing-8);
+}
+
+.section-container {
+  @include flex-column($spacing-4);
+
+  h3 {
+    margin: 0;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $color-text;
+  }
+}
+
+.section-note {
+  margin: 0;
+  font-size: $font-size-sm;
+  color: $color-text-faint;
+}
+
+.empty-note {
+  margin: 0;
+  font-size: $font-size-sm;
+  color: $color-text-faint;
+}
+
+.doc-header {
+  @include flex-between;
+  align-items: flex-start;
+  border-bottom: 1px solid $color-border-soft;
+  padding-bottom: $spacing-6;
+
+  h1 {
+    margin: $spacing-1 0 0;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    color: $color-text;
+  }
+
+  .client-name {
+    margin: $spacing-1 0 0;
+    font-size: $font-size-base;
+    color: $color-text-faint;
+  }
+}
+
+.doc-header-meta {
+  text-align: right;
+  font-size: $font-size-sm;
+  color: $color-text-faint;
+
+  p {
+    margin: 0 0 $spacing-1;
+  }
+}
+
+.score-summary {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $spacing-6;
+}
+
+.score-block {
+  @include flex-column($spacing-2);
+  align-items: flex-start;
+}
+
+.score-value {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-text;
+}
+
+.score-breakdown {
+  @include flex-column($spacing-1);
+  min-width: 14rem;
+}
+
+.breakdown-row {
+  @include flex-between;
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+}
+
+.blocker-list,
+.outstanding-list,
+.exclusion-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  @include flex-column($spacing-3);
+}
+
+.outstanding-list,
+.exclusion-list {
+  padding-left: $spacing-4;
+  list-style: disc;
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+}
+
+.blocker-item {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-3;
+  padding: $spacing-3;
+  background: $color-danger-bg;
+  border: 1px solid $color-danger-border;
+  border-radius: $radius-md;
+}
+
+.blocker-detail {
+  @include flex-column($spacing-1);
+  font-size: $font-size-sm;
+
+  strong {
+    color: $color-text;
+  }
+
+  span {
+    color: $color-text-faint;
+  }
+}
+
+.key-dates {
+  display: flex;
+  gap: $spacing-8;
+  flex-wrap: wrap;
+}
+
+.key-date-item {
+  @include flex-column($spacing-1);
+  font-size: $font-size-sm;
+}
+
+.key-date-label {
+  font-weight: $font-weight-semibold;
+  color: $color-text-faint;
+}
+
+.commitments-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $font-size-sm;
+
+  th, td {
+    text-align: left;
+    padding: $spacing-2 $spacing-3;
+    border-bottom: 1px solid $color-border-soft;
+  }
+
+  th {
+    color: $color-text-faint;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.exclusions-section {
+  background: $color-warning-bg;
+  border: 1px solid $color-warning-border;
+  border-radius: $radius-md;
+  padding: $spacing-4;
+}
+
+.doc-footer {
+  border-top: 1px solid $color-border-soft;
+  padding-top: $spacing-6;
+  text-align: center;
+
+  p {
+    margin: $spacing-1 0;
+    font-size: $font-size-xs;
+    color: $color-text-fainter;
+  }
+}
+
+@media print {
+  :host { height: auto !important; overflow: visible !important; }
+  body, html { background: #fff !important; margin: 0 !important; padding: 0 !important; }
+  .no-print { display: none !important; }
+  .print-page-wrapper { background: #fff !important; padding: 0 !important; min-height: auto !important; }
+  .print-document { margin: 0 !important; padding: 0 !important; max-width: 100% !important; box-shadow: none !important; border-radius: 0 !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .section-container, .blocker-item {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

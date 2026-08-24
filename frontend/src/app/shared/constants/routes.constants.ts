@@ -63,6 +63,7 @@ export const ENGAGEMENT_ROUTES = {
   DAY_ONE_SUMMARY_PRINT: 'day-one-summary-print',
   SIGN_OFF: 'sign-off',
   EVIDENCE_SNAPSHOT_PRINT: 'evidence-snapshot-print',
+  READINESS_ONE_PAGER_PRINT: 'readiness-one-pager-print',
 } as const;
 
 export const MASTER_CHECKLIST_ROUTES = {

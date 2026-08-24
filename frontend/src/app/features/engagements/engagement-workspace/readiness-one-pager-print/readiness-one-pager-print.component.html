@@ -1,0 +1,174 @@
+<div class="print-page-wrapper">
+  <div class="action-header no-print">
+    <div class="action-header-content">
+      <div class="action-header-info">
+        <span class="report-tag">Kickoff Readiness One-Pager</span>
+        <h2>{{ report()?.engagementName || 'Kickoff Readiness' }}</h2>
+      </div>
+      <div class="action-buttons">
+        <app-button variant="stroked" (click)="onClose()">Close</app-button>
+        <app-button variant="flat" (click)="onPrint()">Print / Save as PDF</app-button>
+      </div>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <app-loading-spinner label="Loading kickoff-readiness one-pager..." />
+  }
+
+  @if (error() && !isLoading()) {
+    <div class="error-state">
+      <h3>Error</h3>
+      <p>{{ error() }}</p>
+      <app-button variant="stroked" (click)="onClose()">Close Window</app-button>
+    </div>
+  }
+
+  @if (report(); as r) {
+    <div class="print-document">
+      <header class="doc-header">
+        <div class="doc-header-info">
+          <span class="report-tag">Kickoff Readiness One-Pager</span>
+          <h1>{{ r.engagementName }}</h1>
+          <p class="client-name">{{ r.clientName }}</p>
+        </div>
+        <div class="doc-header-meta">
+          <p>Requested by {{ r.requesterName }}</p>
+          <p>Generated {{ r.generatedAtUtc | date: 'dd MMM yyyy, HH:mm' }} UTC</p>
+        </div>
+      </header>
+
+      <section class="section-container score-summary">
+        <div class="score-block">
+          <span class="score-value">{{ r.score }}%</span>
+          <app-status-badge [tone]="statusTone()">{{ r.status }}</app-status-badge>
+        </div>
+        <div class="score-breakdown">
+          <div class="breakdown-row">
+            <span>Handover fields</span>
+            <span>{{ r.handoverFieldsPassed }} / {{ r.handoverFieldsApplicable }}</span>
+          </div>
+          <div class="breakdown-row">
+            <span>Commitments</span>
+            <span>{{ r.commitmentsPassed }} / {{ r.commitmentsApplicable }}</span>
+          </div>
+          <div class="breakdown-row">
+            <span>Access items</span>
+            <span>{{ r.accessItemsPassed }} / {{ r.accessItemsApplicable }}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-container blockers-section">
+        <h3>Open Blockers</h3>
+        @if (r.openBlockers.length === 0) {
+          <p class="empty-note">No open blockers.</p>
+        } @else {
+          <ul class="blocker-list">
+            @for (blocker of r.openBlockers; track blocker.riskId) {
+              <li class="blocker-item">
+                <app-status-badge tone="danger">{{ blocker.status }}</app-status-badge>
+                <div class="blocker-detail">
+                  <strong>{{ blocker.title }}</strong>
+                  <span>Impact: {{ blocker.impact }}{{ blocker.ownerName ? ' · Owner: ' + blocker.ownerName : '' }}</span>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <section class="section-container">
+        <h3>Key Dates</h3>
+        <div class="key-dates">
+          <div class="key-date-item">
+            <span class="key-date-label">Kickoff Date</span>
+            <span>{{ r.kickoffDate | date: 'dd MMM yyyy' }}</span>
+          </div>
+          <div class="key-date-item">
+            <span class="key-date-label">Days to Kickoff</span>
+            <span>{{ r.daysToKickoff }}</span>
+          </div>
+          @if (r.billingStartDate) {
+            <div class="key-date-item">
+              <span class="key-date-label">Billing Start Date</span>
+              <span>{{ r.billingStartDate | date: 'dd MMM yyyy' }}</span>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="section-container">
+        <h3>Outstanding Mandatory Items</h3>
+        @if (r.outstandingMandatoryItems.length === 0) {
+          <p class="empty-note">No outstanding mandatory items.</p>
+        } @else {
+          <ul class="outstanding-list">
+            @for (item of r.outstandingMandatoryItems; track item.label + item.category) {
+              <li>
+                <strong>{{ item.label }}</strong> ({{ item.category }}) — {{ item.reason }}
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <section class="section-container">
+        <h3>Committed vs Realistic</h3>
+        @if (r.commitments.length === 0) {
+          <p class="empty-note">No commitments recorded.</p>
+        } @else {
+          <table class="commitments-table">
+            <thead>
+              <tr>
+                <th>Commitment</th>
+                <th>Committed</th>
+                <th>Realistic</th>
+                <th>Acknowledged</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (commitment of r.commitments; track commitment.commitmentId) {
+                <tr>
+                  <td>{{ commitment.title }}</td>
+                  <td>{{ commitment.committedTimeline }}</td>
+                  <td>{{ commitment.realisticTimeline || '—' }}</td>
+                  <td>{{ commitment.isAcknowledged ? 'Yes' : 'No' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </section>
+
+      <section class="section-container exclusions-section">
+        <h3>Score Exclusions</h3>
+        <p class="section-note">These items affect kickoff readiness but are not counted toward the score above.</p>
+        <ul class="exclusion-list">
+          @for (note of r.scoreExclusionNotes; track note) {
+            <li>{{ note }}</li>
+          }
+        </ul>
+      </section>
+
+      @if (r.commercial) {
+        <section class="section-container">
+          <h3>Commercial</h3>
+          <p>Commercial model: <strong>{{ r.commercial.commercialModelName }}</strong></p>
+          @if (r.commercial.commercialDocumentTitles.length > 0) {
+            <ul class="outstanding-list">
+              @for (title of r.commercial.commercialDocumentTitles; track title) {
+                <li>{{ title }}</li>
+              }
+            </ul>
+          }
+        </section>
+      }
+
+      <footer class="doc-footer">
+        <p>Project Delivery Readiness (PDR) System • Kickoff Readiness One-Pager • Confidential</p>
+        <p>Generating this report does not change any data and is recorded in the engagement's audit trail.</p>
+      </footer>
+    </div>
+  }
+</div>
