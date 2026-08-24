@@ -15,9 +15,24 @@ public class KickoffReadinessService(
     IRealisticCommitmentRepository realisticCommitmentRepository,
     IAccessTrackerRepository accessTrackerRepository) : IKickoffReadinessService
 {
-    private readonly record struct ReadinessCheck(int Applicable, int Passed, List<int> FailingIds);
+    private readonly record struct ReadinessCheck(int Applicable, int Passed, List<int> FailingIds, List<string> FailingFieldLabels);
+
+    private readonly record struct ReadinessComputation(
+        KickoffReadinessDto Dto,
+        ReadinessCheck HandoverCheck,
+        ReadinessCheck CommitmentsCheck,
+        ReadinessCheck AccessItemsCheck,
+        List<Commitment> Commitments,
+        Dictionary<int, RealisticCommitment> RealisticByCommitmentId,
+        List<AccessItem> AccessItems);
 
     public async Task<KickoffReadinessDto> GetReadinessAsync(int engagementId)
+    {
+        var computation = await ComputeReadinessAsync(engagementId);
+        return computation.Dto;
+    }
+
+    private async Task<ReadinessComputation> ComputeReadinessAsync(int engagementId)
     {
         var handover = await handoverRepository.GetByEngagementIdAsync(engagementId);
         var commitments = handover == null
@@ -37,7 +52,7 @@ public class KickoffReadinessService(
         var totalPassed = checks.Sum(c => c.Passed);
         var score = totalApplicable == 0 ? 100 : (int)Math.Round(totalPassed * 100.0 / totalApplicable);
 
-        return new KickoffReadinessDto(
+        var dto = new KickoffReadinessDto(
             score,
             totalApplicable,
             totalPassed,
@@ -47,6 +62,15 @@ public class KickoffReadinessService(
             commitmentsCheck.Passed,
             accessItemsCheck.Applicable,
             accessItemsCheck.Passed);
+
+        return new ReadinessComputation(
+            dto,
+            handoverCheck,
+            commitmentsCheck,
+            accessItemsCheck,
+            commitments,
+            realisticByCommitmentId,
+            accessItems);
     }
 
     public async Task<bool> IsFullyReadyAsync(int engagementId)
@@ -84,17 +108,26 @@ public class KickoffReadinessService(
     {
         var passed = 0;
         var failingIds = new List<int>();
+        var failingFieldLabels = new List<string>();
 
         var businessProblemOk = handover != null && !string.IsNullOrWhiteSpace(handover.BusinessProblem);
         var clientSentimentOk = handover != null && !string.IsNullOrWhiteSpace(handover.ClientSentiment);
 
         if (businessProblemOk) passed++;
-        else if (handover != null) failingIds.Add(handover.HandoverId);
+        else
+        {
+            failingFieldLabels.Add("Business Problem");
+            if (handover != null) failingIds.Add(handover.HandoverId);
+        }
 
         if (clientSentimentOk) passed++;
-        else if (handover != null) failingIds.Add(handover.HandoverId);
+        else
+        {
+            failingFieldLabels.Add("Client Sentiment");
+            if (handover != null) failingIds.Add(handover.HandoverId);
+        }
 
-        return new ReadinessCheck(Applicable: 2, Passed: passed, FailingIds: failingIds);
+        return new ReadinessCheck(Applicable: 2, Passed: passed, FailingIds: failingIds, FailingFieldLabels: failingFieldLabels);
     }
 
     private static ReadinessCheck EvaluateCommitments(
@@ -110,7 +143,8 @@ public class KickoffReadinessService(
         return new ReadinessCheck(
             Applicable: commitments.Count,
             Passed: commitments.Count - failingIds.Count,
-            FailingIds: failingIds);
+            FailingIds: failingIds,
+            FailingFieldLabels: new List<string>());
     }
 
     private static bool CommitmentIsAcknowledged(Commitment commitment, RealisticCommitment realistic) =>
@@ -127,6 +161,7 @@ public class KickoffReadinessService(
         return new ReadinessCheck(
             Applicable: accessItems.Count,
             Passed: accessItems.Count - failingIds.Count,
-            FailingIds: failingIds);
+            FailingIds: failingIds,
+            FailingFieldLabels: new List<string>());
     }
 }
