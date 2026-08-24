@@ -5,7 +5,6 @@ using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Exceptions.KickoffReadinessExceptions;
 using Pdr.Api.Helpers;
-using Pdr.Api.Models.AccessTracker;
 using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.Documents;
 using Pdr.Api.Models.EngagementChecklist;
@@ -23,7 +22,6 @@ public class KickoffReadinessService(
     IHandoverRepository handoverRepository,
     ICommitmentRepository commitmentRepository,
     IRealisticCommitmentRepository realisticCommitmentRepository,
-    IAccessTrackerRepository accessTrackerRepository,
     ICurrentUserService currentUserService,
     IAuditLogService auditLogService,
     AppDbContext db,
@@ -35,10 +33,8 @@ public class KickoffReadinessService(
         KickoffReadinessDto Dto,
         ReadinessCheck HandoverCheck,
         ReadinessCheck CommitmentsCheck,
-        ReadinessCheck AccessItemsCheck,
         List<Commitment> Commitments,
-        Dictionary<int, RealisticCommitment> RealisticByCommitmentId,
-        List<AccessItem> AccessItems);
+        Dictionary<int, RealisticCommitment> RealisticByCommitmentId);
 
     public async Task<KickoffReadinessDto> GetReadinessAsync(int engagementId)
     {
@@ -54,15 +50,13 @@ public class KickoffReadinessService(
             : await commitmentRepository.GetByHandoverIdAsync(handover.HandoverId);
         var realisticByCommitmentId = await realisticCommitmentRepository
             .GetByCommitmentIdsAsync(commitments.Select(c => c.CommitmentId).ToList());
-        var accessItems = await accessTrackerRepository.GetAccessItemsByEngagementIdAsync(engagementId);
         var checklist = await checklistRepository.GetByEngagementIdAsync(engagementId);
 
         var handoverCheck = EvaluateHandoverMandatoryFields(handover);
         var commitmentsCheck = EvaluateCommitments(commitments, realisticByCommitmentId);
-        var accessItemsCheck = EvaluateAccessItems(accessItems);
         var checklistCheck = EvaluateChecklistItems(checklist?.Items ?? []);
 
-        var checks = new List<ReadinessCheck> { handoverCheck, commitmentsCheck, accessItemsCheck, checklistCheck };
+        var checks = new List<ReadinessCheck> { handoverCheck, commitmentsCheck, checklistCheck };
 
         var totalApplicable = checks.Sum(c => c.Applicable);
         var totalPassed = checks.Sum(c => c.Passed);
@@ -76,8 +70,6 @@ public class KickoffReadinessService(
             handoverCheck.Passed,
             commitmentsCheck.Applicable,
             commitmentsCheck.Passed,
-            accessItemsCheck.Applicable,
-            accessItemsCheck.Passed,
             checklistCheck.Applicable,
             checklistCheck.Passed);
 
@@ -85,10 +77,8 @@ public class KickoffReadinessService(
             dto,
             handoverCheck,
             commitmentsCheck,
-            accessItemsCheck,
             commitments,
-            realisticByCommitmentId,
-            accessItems);
+            realisticByCommitmentId);
     }
 
     public async Task<bool> IsFullyReadyAsync(int engagementId)
@@ -154,9 +144,7 @@ public class KickoffReadinessService(
         var outstandingMandatoryItems = BuildOutstandingMandatoryItems(
             computation.HandoverCheck,
             computation.CommitmentsCheck,
-            computation.AccessItemsCheck,
-            computation.Commitments,
-            computation.AccessItems);
+            computation.Commitments);
 
         var openBlockers = await db.Risks
             .AsNoTracking()
@@ -193,8 +181,6 @@ public class KickoffReadinessService(
             .CountAsync(i => i.EngagementChecklist.EngagementId == engagementId &&
                              i.IsMandatory && i.IsApplicable && i.Status != "Complete");
 
-        var inProgressAccessItemCount = computation.AccessItems.Count(a => a.Status == AccessItemStatus.InProgress);
-
         var isCommercialVisible = currentUserService.IsInRole(RoleEnum.ProjectManagement) ||
                                   currentUserService.IsInRole(RoleEnum.Leadership) ||
                                   currentUserService.IsAdmin();
@@ -217,7 +203,6 @@ public class KickoffReadinessService(
         var scoreExclusionNotes = BuildScoreExclusionNotes(
             computation,
             openBlockers.Count,
-            inProgressAccessItemCount,
             daysToKickoff,
             requiredThreshold,
             computation.Dto.Score,
@@ -245,8 +230,6 @@ public class KickoffReadinessService(
             computation.Dto.HandoverFieldsPassed,
             computation.Dto.CommitmentsApplicable,
             computation.Dto.CommitmentsPassed,
-            computation.Dto.AccessItemsApplicable,
-            computation.Dto.AccessItemsPassed,
             engagement.KickoffDate,
             engagement.BillingStartDate,
             daysToKickoff,
@@ -285,9 +268,7 @@ public class KickoffReadinessService(
     private static List<OutstandingMandatoryItemDto> BuildOutstandingMandatoryItems(
         ReadinessCheck handoverCheck,
         ReadinessCheck commitmentsCheck,
-        ReadinessCheck accessItemsCheck,
-        List<Commitment> commitments,
-        List<AccessItem> accessItems)
+        List<Commitment> commitments)
     {
         var items = new List<OutstandingMandatoryItemDto>();
 
@@ -301,13 +282,6 @@ public class KickoffReadinessService(
         {
             var title = commitmentsById.TryGetValue(failingId, out var commitment) ? commitment.Title : $"Commitment #{failingId}";
             items.Add(new OutstandingMandatoryItemDto("Commitment", failingId, title, "Not yet acknowledged as realistic"));
-        }
-
-        var accessItemsById = accessItems.ToDictionary(a => a.Id);
-        foreach (var failingId in accessItemsCheck.FailingIds)
-        {
-            var name = accessItemsById.TryGetValue(failingId, out var accessItem) ? accessItem.Name : $"Access item #{failingId}";
-            items.Add(new OutstandingMandatoryItemDto("AccessItem", failingId, name, "Blocked"));
         }
 
         return items;
@@ -337,7 +311,6 @@ public class KickoffReadinessService(
     private static List<string> BuildScoreExclusionNotes(
         ReadinessComputation computation,
         int openBlockerCount,
-        int inProgressAccessItemCount,
         int daysToKickoff,
         int requiredThreshold,
         int score,
@@ -358,16 +331,6 @@ public class KickoffReadinessService(
         if (computation.CommitmentsCheck.FailingIds.Count > 0)
         {
             notes.Add($"{computation.CommitmentsCheck.FailingIds.Count} commitment(s) not yet acknowledged as realistic — dragging the score down.");
-        }
-
-        if (computation.AccessItemsCheck.FailingIds.Count > 0)
-        {
-            notes.Add($"{computation.AccessItemsCheck.FailingIds.Count} access item(s) blocked — dragging the score down.");
-        }
-
-        if (inProgressAccessItemCount > 0)
-        {
-            notes.Add($"{inProgressAccessItemCount} access item(s) still in progress — currently scored as passed, but not yet fully resolved.");
         }
 
         if (openBlockerCount > 0)
@@ -445,20 +408,6 @@ public class KickoffReadinessService(
     private static bool CommitmentIsAcknowledged(Commitment commitment, RealisticCommitment realistic) =>
         RealisticCommitmentService.TimelinesMatch(commitment.Timeline, commitment.TimelineUnit, realistic.Timeline, realistic.TimelineUnit) ||
         !string.IsNullOrWhiteSpace(realistic.AcknowledgementMessage);
-
-    private static ReadinessCheck EvaluateAccessItems(List<AccessItem> accessItems)
-    {
-        var failingIds = accessItems
-            .Where(a => a.Status == AccessItemStatus.Blocked)
-            .Select(a => a.Id)
-            .ToList();
-
-        return new ReadinessCheck(
-            Applicable: accessItems.Count,
-            Passed: accessItems.Count - failingIds.Count,
-            FailingIds: failingIds,
-            FailingFieldLabels: new List<string>());
-    }
 
     // Blocked items are excluded entirely (not counted as applicable), same as
     // Not Applicable items (they're exempted and can never reach Complete).
