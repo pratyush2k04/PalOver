@@ -27,5 +27,8 @@ public enum AuditActionEnum
     DependencyUpdated = 23,
     DependencyDeleted = 24,
     DependencyEscalated = 25,
-    ReadinessOnePagerGenerated = 26
+    ReadinessOnePagerGenerated = 29,
+    KickoffReadyMarked = 26,
+    KickoffReadyReverted = 27,
+    AccessItemBlocked = 28
 }

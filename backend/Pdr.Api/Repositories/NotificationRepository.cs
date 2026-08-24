@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Data;
 using Pdr.Api.Models.Notifications;
+using Pdr.Api.DTOs.Notifications;
 using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Repositories;
@@ -77,4 +78,11 @@ public class NotificationRepository(AppDbContext context) : INotificationReposit
 
     public async Task<NotificationTemplate?> GetTemplateByKeyAsync(string templateKey) =>
         await context.NotificationTemplates.FirstOrDefaultAsync(t => t.Key == templateKey);
+
+    public async Task<List<NotificationLiteDto>> GetByPriorityAsync(int priority) =>
+        await context.Notifications
+            .AsNoTracking()
+            .Where(n => (int)n.Priority == priority)
+            .Select(n => new NotificationLiteDto(n.Data, n.CreatedAt))
+            .ToListAsync();
 }

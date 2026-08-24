@@ -19,6 +19,7 @@ import { ReadinessOnePagerDialogComponent } from './components/readiness-one-pag
 import { ButtonComponent } from '@common/components/button/button';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DialogService } from '@common/services/dialog/dialog.service';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 
 @Component({
   selector: 'app-engagement-workspace',
@@ -30,7 +31,8 @@ import { DialogService } from '@common/services/dialog/dialog.service';
     TabsComponent,
     ButtonComponent,
     InlineSVGModule,
-    ReadinessCircleComponent
+    ReadinessCircleComponent,
+    LoadingSpinnerComponent
   ],
   templateUrl: './engagement-workspace.component.html',
   styleUrl: './engagement-workspace.component.scss'

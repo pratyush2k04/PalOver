@@ -179,6 +179,24 @@ public class AuditActionConfiguration : IEntityTypeConfiguration<AuditAction>
             },
             new AuditAction
             {
+                Id = (int)AuditActionEnum.KickoffReadyMarked,
+                Action = AuditActionEnum.KickoffReadyMarked.ToString(),
+                Details = "Engagement {engagementName} marked kickoff-ready by {actorName}"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.KickoffReadyReverted,
+                Action = AuditActionEnum.KickoffReadyReverted.ToString(),
+                Details = "Kickoff-ready status reverted for engagement {engagementName} by {actorName}"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.AccessItemBlocked,
+                Action = AuditActionEnum.AccessItemBlocked.ToString(),
+                Details = "Access item '{itemName}' blocked on engagement {engagementName} by {actorName}"
+            },
+            new AuditAction
+            {
                 Id = (int)AuditActionEnum.ReadinessOnePagerGenerated,
                 Action = AuditActionEnum.ReadinessOnePagerGenerated.ToString(),
                 Details = "Kickoff-readiness one-pager generated for engagement {engagementName} by {actorName}"

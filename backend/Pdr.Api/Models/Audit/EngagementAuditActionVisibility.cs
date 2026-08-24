@@ -48,6 +48,9 @@ public static class EngagementAuditActionVisibilityRegistry
         [AuditActionEnum.DependencyUpdated] = new(VisibleToRoles: AllRoles),
         [AuditActionEnum.DependencyDeleted] = new(VisibleToRoles: AllRoles),
         [AuditActionEnum.DependencyEscalated] = new(VisibleToRoles: AllRoles),
-        [AuditActionEnum.ReadinessOnePagerGenerated] = new(VisibleToRoles: AllRoles)
+        [AuditActionEnum.ReadinessOnePagerGenerated] = new(VisibleToRoles: AllRoles),
+        [AuditActionEnum.KickoffReadyMarked] = new(VisibleToRoles: AllRoles),
+        [AuditActionEnum.KickoffReadyReverted] = new(VisibleToRoles: AllRoles),
+        [AuditActionEnum.AccessItemBlocked] = new(VisibleToRoles: AllRoles)
     };
 }

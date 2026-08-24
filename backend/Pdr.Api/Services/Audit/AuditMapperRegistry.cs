@@ -34,6 +34,9 @@ public static class AuditMapperRegistry
         services.AddScoped<IAuditTemplateMapper, DependencyDeletedMapper>();
         services.AddScoped<IAuditTemplateMapper, DependencyEscalatedMapper>();
         services.AddScoped<IAuditTemplateMapper, ReadinessOnePagerGeneratedMapper>();
+        services.AddScoped<IAuditTemplateMapper, KickoffReadyMarkedMapper>();
+        services.AddScoped<IAuditTemplateMapper, KickoffReadyRevertedMapper>();
+        services.AddScoped<IAuditTemplateMapper, AccessItemBlockedAuditMapper>();
 
         // Add new mappers here when adding new audit action types.
 

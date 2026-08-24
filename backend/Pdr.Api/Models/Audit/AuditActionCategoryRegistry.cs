@@ -29,6 +29,9 @@ public static class AuditActionCategoryRegistry
         [AuditActionEnum.DependencyUpdated] = AuditCategoryEnum.Risk,
         [AuditActionEnum.DependencyDeleted] = AuditCategoryEnum.Risk,
         [AuditActionEnum.DependencyEscalated] = AuditCategoryEnum.Escalation,
-        [AuditActionEnum.ReadinessOnePagerGenerated] = AuditCategoryEnum.TechnicalReadiness
+        [AuditActionEnum.ReadinessOnePagerGenerated] = AuditCategoryEnum.TechnicalReadiness,
+        [AuditActionEnum.KickoffReadyMarked] = AuditCategoryEnum.TechnicalReadiness,
+        [AuditActionEnum.KickoffReadyReverted] = AuditCategoryEnum.TechnicalReadiness,
+        [AuditActionEnum.AccessItemBlocked] = AuditCategoryEnum.TechnicalReadiness
     };
 }

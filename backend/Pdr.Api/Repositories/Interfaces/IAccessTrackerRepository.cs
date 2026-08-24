@@ -1,6 +1,7 @@
 using Pdr.Api.Models;
 using Pdr.Api.Models.Engagements;
 using Pdr.Api.Models.AccessTracker;
+using Pdr.Api.DTOs.AccessTracker;
 
 namespace Pdr.Api.Repositories.Interfaces;
 
@@ -11,6 +12,7 @@ public interface IAccessTrackerRepository
     Task<AccessItem?> GetAccessItemByIdAsync(int id);
     Task AddAccessItemAsync(AccessItem item);
     Task SaveChangesAsync();
+    Task<List<AccessItemDelayInfoDto>> GetResolvedAccessItemsByEngagementIdsAsync(List<int> engagementIds);
 
     // Validation lookups (self-contained — no service touches DbContext directly)
     Task<bool> EngagementExistsAsync(int engagementId);
