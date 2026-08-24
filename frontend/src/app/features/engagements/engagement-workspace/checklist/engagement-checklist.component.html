@@ -192,7 +192,7 @@
                         class="btn-evidence-view"
                         (click)="openAttachEvidenceDialog(item, false)"
                         [title]="item.evidenceNote || item.evidenceLink || 'View Evidence'">
-                        <span class="evidence-icon">📎</span>
+                        <span class="evidence-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
                         <span class="evidence-text">{{ item.evidenceNote ? (item.evidenceNote | slice:0:20) + (item.evidenceNote.length > 20 ? '...' : '') : 'View Link' }}</span>
                       </button>
                     } @else if (item.evidenceRequired) {
@@ -250,7 +250,7 @@
 
                           @if (item.status !== 'Blocked') {
                             <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openBlockDialog(item)" ariaLabel="Flag as Blocked" [appTooltip]="'Flag as Blocked'">
-                              🚩
+                              <span class="action-icon" [inlineSVG]="'assets/icons/flag.svg'"></span>
                             </app-button>
                           }
                         }
@@ -258,7 +258,7 @@
                         <!-- Applicability Actions (PM only) -->
                         @if (canChangeApplicability() && item.exemptionStatus !== 'Pending') {
                           <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openMarkNaDialog(item)" ariaLabel="Mark Not Applicable" [appTooltip]="'Mark Not Applicable'">
-                            ✕
+                            <span class="action-icon" [inlineSVG]="'assets/icons/close.svg'"></span>
                           </app-button>
                         }
 
