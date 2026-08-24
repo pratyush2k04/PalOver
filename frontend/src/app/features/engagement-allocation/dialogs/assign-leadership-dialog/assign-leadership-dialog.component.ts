@@ -5,6 +5,7 @@ import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { AutocompleteComponent, AutocompleteOption } from '@common/components/autocomplete/autocomplete';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { ToastService } from '@common/services/toast/toast';
 import { EngagementAllocationService } from '../../services/engagement-allocation.service';
 import { EngagementAllocationItem, LeadershipUserItem } from '../../models/engagement-allocation.model';
@@ -17,7 +18,7 @@ export interface AssignLeadershipDialogData {
 @Component({
   selector: 'app-assign-leadership-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, AutocompleteComponent],
+  imports: [CommonModule, FormsModule, ButtonComponent, AutocompleteComponent, TooltipDirective],
   templateUrl: './assign-leadership-dialog.component.html',
   styleUrl: './assign-leadership-dialog.component.scss'
 })

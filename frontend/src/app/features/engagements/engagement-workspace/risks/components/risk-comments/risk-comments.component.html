@@ -24,7 +24,7 @@
                 <div class="author-details">
                   <span class="author-name">{{ comment.authorName }}</span>
                   @if (comment.isEdited) {
-                    <span class="edited-badge" title="This comment was edited">(edited)</span>
+                    <span class="edited-badge" [appTooltip]="'This comment was edited'">(edited)</span>
                   }
                 </div>
                 <div class="time-and-actions">

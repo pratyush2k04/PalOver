@@ -61,7 +61,6 @@ public class AccessTrackerService(
             IsClientSide = request.IsClientSide,
             OwnerId = request.OwnerId,
             TimeZoneNote = request.TimeZoneNote,
-            ExpectedTurnaroundDays = request.ExpectedTurnaroundDays,
             Status = AccessItemStatus.InProgress,
             // Custom items have no definition link
             AccessItemDefinitionId = null
@@ -203,11 +202,9 @@ public class AccessTrackerService(
         }
 
         bool isOverdueWithClient = false;
-        if (item.IsClientSide && item.Status != AccessItemStatus.Granted && item.ExpectedTurnaroundDays.HasValue)
+        if (item.IsClientSide && item.Status != AccessItemStatus.Granted && daysUntilBillingDate.HasValue)
         {
-            var createdDate = DateOnly.FromDateTime(item.CreatedAt);
-            int workingDaysElapsed = CalculateWorkingDays(createdDate, today);
-            isOverdueWithClient = workingDaysElapsed > item.ExpectedTurnaroundDays.Value;
+            isOverdueWithClient = daysUntilBillingDate.Value < 3;
         }
 
         return new AccessItemDto
@@ -219,26 +216,10 @@ public class AccessTrackerService(
             OwnerFullName = item.Owner?.FullName ?? string.Empty,
             Status = item.Status.ToString(),
             TimeZoneNote = item.TimeZoneNote,
-            ExpectedTurnaroundDays = item.ExpectedTurnaroundDays,
             DaysUntilBillingDate = daysUntilBillingDate,
             IsOverdueWithClient = isOverdueWithClient,
             GrantedDate = item.GrantedDate,
             BlockReason = item.BlockReason
         };
-    }
-
-    private static int CalculateWorkingDays(DateOnly startDate, DateOnly endDate)
-    {
-        int workingDays = 0;
-        var current = startDate;
-        while (current < endDate)
-        {
-            if (current.DayOfWeek != DayOfWeek.Saturday && current.DayOfWeek != DayOfWeek.Sunday)
-            {
-                workingDays++;
-            }
-            current = current.AddDays(1);
-        }
-        return workingDays;
     }
 }

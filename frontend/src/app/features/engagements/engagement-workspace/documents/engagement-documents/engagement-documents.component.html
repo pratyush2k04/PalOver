@@ -82,7 +82,7 @@
                           type="button"
                           variant="icon"
                           ariaLabel="Edit allowed roles"
-                          title="Edit allowed roles"
+                          [appTooltip]="'Edit allowed roles'"
                           (click)="openCustomVisibilityModal(doc)"
                         >
                           <span class="edit-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
@@ -126,7 +126,7 @@
                     variant="icon"
                     class="btn-upload-version"
                     ariaLabel="Upload new version"
-                    title="Upload new version"
+                    [appTooltip]="'Upload new version'"
                     (click)="triggerVersionUpload(doc)"
                   >
                     <span class="upload-version-icon" [inlineSVG]="'assets/icons/upload.svg'"></span>
@@ -136,7 +136,7 @@
                     variant="icon"
                     class="btn-remove"
                     ariaLabel="Remove document"
-                    title="Remove document"
+                    [appTooltip]="'Remove document'"
                     (click)="openRemoveModal(doc)"
                   >
                     <span class="remove-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>

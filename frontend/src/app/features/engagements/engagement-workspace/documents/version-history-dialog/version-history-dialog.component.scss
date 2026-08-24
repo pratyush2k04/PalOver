@@ -24,18 +24,6 @@
     color: #0f172a;
     word-break: break-word;
   }
-
-  .close-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    ::ng-deep svg,
-    svg {
-      width: 1.125rem;
-      height: 1.125rem;
-    }
-  }
 }
 
 .modal-body {

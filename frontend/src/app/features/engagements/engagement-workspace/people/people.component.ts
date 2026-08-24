@@ -11,6 +11,7 @@ import { ToastService } from '@common/services/toast/toast';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { ButtonComponent } from '@common/components/button/button';
 import { SectionHeaderComponent } from '@common/components/section-header/section-header';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { AuthService } from '@shared/services/auth';
 import { USER_ROLES } from '@shared/constants/app.constants';
@@ -30,6 +31,7 @@ import {
     InlineSVGModule,
     ButtonComponent,
     SectionHeaderComponent,
+    TooltipDirective,
   ],
   templateUrl: './people.component.html',
   styleUrl: './people.component.scss'
