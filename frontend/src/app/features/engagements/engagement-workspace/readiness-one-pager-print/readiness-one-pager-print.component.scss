@@ -109,46 +109,63 @@
 }
 
 .doc-header {
-  @include flex-between;
-  align-items: flex-start;
+  @include flex-column($spacing-6);
   border-bottom: 1px solid $color-border-soft;
   padding-bottom: $spacing-6;
-
-  h1 {
-    margin: $spacing-1 0 0;
-    font-size: $font-size-2xl;
-    font-weight: $font-weight-bold;
-    color: $color-text;
-  }
-
-  .client-name {
-    margin: $spacing-1 0 0;
-    font-size: $font-size-base;
-    color: $color-text-faint;
-  }
 }
 
-.doc-header-meta {
-  text-align: right;
+.brand-section {
+  @include flex-column($spacing-1);
+}
+
+.doc-title {
+  margin: 0;
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-text;
+}
+
+.doc-subtitle {
+  margin: 0;
   font-size: $font-size-sm;
   color: $color-text-faint;
+}
 
-  p {
-    margin: 0 0 $spacing-1;
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-4;
+  background: $color-bg;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-lg;
+  padding: $spacing-4 $spacing-5;
+}
+
+.meta-item {
+  @include flex-column($spacing-1);
+}
+
+.meta-label {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  color: $color-text-faint;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.meta-value {
+  font-size: $font-size-sm;
+  color: $color-text;
+
+  &.font-semibold {
+    font-weight: $font-weight-semibold;
   }
 }
 
-.score-summary {
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: $spacing-6;
-}
-
-.score-block {
-  @include flex-column($spacing-2);
-  align-items: flex-start;
+.score-headline {
+  @include flex-between;
+  justify-content: flex-start;
+  gap: $spacing-3;
 }
 
 .score-value {
@@ -157,15 +174,82 @@
   color: $color-text;
 }
 
-.score-breakdown {
-  @include flex-column($spacing-1);
-  min-width: 14rem;
+.section-title {
+  margin: 0;
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  color: $color-text;
 }
 
-.breakdown-row {
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-4;
+}
+
+.pillar-card {
+  background: $color-bg;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-lg;
+  padding: $spacing-5;
+  @include flex-column($spacing-3);
+
+  &.ready {
+    border-left: 4px solid $color-success;
+  }
+
+  &.attention {
+    border-left: 4px solid $color-warning;
+  }
+}
+
+.pillar-header {
   @include flex-between;
-  font-size: $font-size-sm;
-  color: $color-text-muted;
+
+  h4 {
+    margin: 0;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text;
+  }
+}
+
+.pillar-metric {
+  @include flex-column($spacing-1);
+
+  .metric-number {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-text;
+    line-height: 1.1;
+  }
+
+  .metric-caption {
+    font-size: $font-size-xs;
+    color: $color-text-faint;
+  }
+}
+
+.pillar-details {
+  @include flex-column($spacing-2);
+  border-top: 1px dashed $color-border-soft;
+  padding-top: $spacing-2;
+}
+
+.detail-row {
+  @include flex-between;
+  font-size: $font-size-xs;
+  color: $color-text-faint;
+
+  .font-medium {
+    font-weight: $font-weight-medium;
+    color: $color-text-muted;
+  }
+
+  .text-danger {
+    color: $color-danger-text;
+    font-weight: $font-weight-semibold;
+  }
 }
 
 .outstanding-list {
@@ -179,22 +263,6 @@
   strong {
     color: $color-text;
   }
-}
-
-.key-dates {
-  display: flex;
-  gap: $spacing-8;
-  flex-wrap: wrap;
-}
-
-.key-date-item {
-  @include flex-column($spacing-1);
-  font-size: $font-size-sm;
-}
-
-.key-date-label {
-  font-weight: $font-weight-semibold;
-  color: $color-text-faint;
 }
 
 .commitments-table {

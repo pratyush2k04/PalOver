@@ -73,6 +73,17 @@ export class ReadinessOnePagerPrintComponent implements OnInit {
     return item.reason.startsWith('Blocked');
   }
 
+  readonly handoverIsReady = computed<boolean>(() => this.outstandingHandoverItems().length === 0);
+  readonly commitmentsIsReady = computed<boolean>(() => this.outstandingCommitments().length === 0);
+  readonly checklistIsReady = computed<boolean>(() => this.outstandingChecklistItems().length === 0);
+
+  readonly handoverTone = computed<StatusBadgeTone>(() => this.handoverIsReady() ? 'success' : 'warning');
+  readonly commitmentsTone = computed<StatusBadgeTone>(() => this.commitmentsIsReady() ? 'success' : 'warning');
+  readonly checklistTone = computed<StatusBadgeTone>(() => {
+    if (this.checklistIsReady()) return 'success';
+    return this.blockedChecklistItemCount() > 0 ? 'danger' : 'warning';
+  });
+
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('engagementId') ?? this.route.snapshot.paramMap.get('id');
     const engagementId = idParam ? +idParam : null;
