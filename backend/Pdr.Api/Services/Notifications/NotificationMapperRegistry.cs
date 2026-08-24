@@ -23,6 +23,7 @@ public static class NotificationMapperRegistry
         services.AddScoped<INotificationTemplateMapper, ResourceRequestConfirmedMapper>();
         services.AddScoped<INotificationTemplateMapper, ResourceRequestReopenedMapper>();
         services.AddScoped<INotificationTemplateMapper, ResourcingGapFlaggedNotificationMapper>();
+        services.AddScoped<INotificationTemplateMapper, CommitmentVarianceEscalatedNotificationMapper>();
 
         // Add new mappers here when adding new notification types.
 

@@ -1,10 +1,14 @@
+using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Handovers;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Handover;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
+using Pdr.Api.Services.Notifications.Mappers;
 
 namespace Pdr.Api.Services;
 
@@ -13,19 +17,67 @@ public class RealisticCommitmentService : IRealisticCommitmentService
     private readonly IHandoverRepository _handoverRepository;
     private readonly ICommitmentRepository _commitmentRepository;
     private readonly IRealisticCommitmentRepository _realisticCommitmentRepository;
+    private readonly INotificationService _notificationService;
 
     public RealisticCommitmentService(
         IHandoverRepository handoverRepository,
         ICommitmentRepository commitmentRepository,
-        IRealisticCommitmentRepository realisticCommitmentRepository)
+        IRealisticCommitmentRepository realisticCommitmentRepository,
+        INotificationService notificationService)
     {
         _handoverRepository = handoverRepository;
         _commitmentRepository = commitmentRepository;
         _realisticCommitmentRepository = realisticCommitmentRepository;
+        _notificationService = notificationService;
     }
+
+    public record TimelineVarianceResult(
+        bool IsFlagged,
+        string? Description,
+        int PercentGap,
+        int WeekGap);
 
     public static bool TimelinesMatch(int timeline1, CommitmentTimelineUnitEnum unit1, int timeline2, CommitmentTimelineUnitEnum unit2) =>
         timeline1 == timeline2 && unit1 == unit2;
+
+    public static double ConvertToWeeks(int timeline, CommitmentTimelineUnitEnum unit) =>
+        unit switch
+        {
+            CommitmentTimelineUnitEnum.Days => timeline / 7.0,
+            CommitmentTimelineUnitEnum.Weeks => timeline * 1.0,
+            CommitmentTimelineUnitEnum.Months => timeline * 4.0,
+            _ => timeline * 1.0
+        };
+
+    public static string FormatTimelineText(int timeline, CommitmentTimelineUnitEnum unit) =>
+        timeline == 1 && unit.ToString().EndsWith("s")
+            ? $"{timeline} {unit.ToString().TrimEnd('s')}"
+            : $"{timeline} {unit}";
+
+    public static TimelineVarianceResult CalculateVariance(
+        int committedTimeline,
+        CommitmentTimelineUnitEnum committedUnit,
+        int realisticTimeline,
+        CommitmentTimelineUnitEnum realisticUnit)
+    {
+        double committedWeeks = ConvertToWeeks(committedTimeline, committedUnit);
+        double realisticWeeks = ConvertToWeeks(realisticTimeline, realisticUnit);
+
+        double rawWeekGap = realisticWeeks - committedWeeks;
+        double rawPercentGap = committedWeeks > 0 ? (rawWeekGap / committedWeeks) * 100.0 : 0.0;
+
+        int weekGap = (int)Math.Round(rawWeekGap);
+        int percentGap = (int)Math.Round(rawPercentGap);
+
+        bool isFlagged = rawPercentGap >= HandoverValidationConstants.Variance.PercentageThreshold &&
+                         rawWeekGap >= HandoverValidationConstants.Variance.MinimumWeekGapThreshold;
+
+        string? description = isFlagged
+            ? $"Committed {FormatTimelineText(committedTimeline, committedUnit)} vs realistic {FormatTimelineText(realisticTimeline, realisticUnit)} (+{percentGap}%)"
+            : null;
+
+        return new TimelineVarianceResult(isFlagged, description, percentGap, weekGap);
+    }
 
     private async Task<HandoverInfo> GetHandoverOrThrowAsync(int engagementId)
     {
@@ -93,6 +145,32 @@ public class RealisticCommitmentService : IRealisticCommitmentService
         await _realisticCommitmentRepository.AddAsync(realistic);
         await _realisticCommitmentRepository.SaveChangesAsync();
 
+        var variance = CalculateVariance(
+            commitment.Timeline,
+            commitment.TimelineUnit,
+            request.Timeline,
+            request.TimelineUnit);
+
+        if (variance.IsFlagged)
+        {
+            int userIdInt = int.TryParse(userIdStr, out var id) ? id : 0;
+            var notificationData = new CommitmentVarianceEscalatedNotificationMapper.CommitmentVarianceNotificationData(
+                EngagementId: engagementId,
+                CommitmentId: commitment.CommitmentId,
+                Title: commitment.Title,
+                VarianceDescription: variance.Description!,
+                PercentGap: variance.PercentGap,
+                WeekGap: variance.WeekGap,
+                TriggerUserId: userIdInt);
+
+            await _notificationService.CreateFromTemplateAsync(
+                NotificationConstants.TemplateKeys.CommitmentVarianceEscalated,
+                engagementId,
+                RoleEnum.Leadership,
+                JsonSerializer.Serialize(notificationData),
+                DateTime.UtcNow);
+        }
+
         return new RealisticCommitmentDto
         {
             Description = realistic.Description,
@@ -130,6 +208,32 @@ public class RealisticCommitmentService : IRealisticCommitmentService
         realistic.UpdatedBy = userIdStr;
 
         await _realisticCommitmentRepository.SaveChangesAsync();
+
+        var variance = CalculateVariance(
+            commitment.Timeline,
+            commitment.TimelineUnit,
+            request.Timeline,
+            request.TimelineUnit);
+
+        if (variance.IsFlagged)
+        {
+            int userIdInt = int.TryParse(userIdStr, out var id) ? id : 0;
+            var notificationData = new CommitmentVarianceEscalatedNotificationMapper.CommitmentVarianceNotificationData(
+                EngagementId: engagementId,
+                CommitmentId: commitment.CommitmentId,
+                Title: commitment.Title,
+                VarianceDescription: variance.Description!,
+                PercentGap: variance.PercentGap,
+                WeekGap: variance.WeekGap,
+                TriggerUserId: userIdInt);
+
+            await _notificationService.CreateFromTemplateAsync(
+                NotificationConstants.TemplateKeys.CommitmentVarianceEscalated,
+                engagementId,
+                RoleEnum.Leadership,
+                JsonSerializer.Serialize(notificationData),
+                DateTime.UtcNow);
+        }
 
         return new RealisticCommitmentDto
         {

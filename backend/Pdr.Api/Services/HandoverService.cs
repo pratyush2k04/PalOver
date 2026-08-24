@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Pdr.Api.Constants;
@@ -78,6 +79,17 @@ public class HandoverService : IHandoverService
                     AcknowledgementMessage = realistic.AcknowledgementMessage,
                     IsPossible = realistic.IsPossible
                 };
+
+                var variance = RealisticCommitmentService.CalculateVariance(
+                    commitmentDto.Timeline,
+                    commitmentDto.TimelineUnit,
+                    realistic.Timeline,
+                    realistic.TimelineUnit);
+
+                commitmentDto.IsVarianceFlagged = variance.IsFlagged;
+                commitmentDto.VarianceDescription = variance.Description;
+                commitmentDto.VariancePercent = variance.PercentGap;
+                commitmentDto.WeekGap = variance.WeekGap;
             }
         }
 

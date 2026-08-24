@@ -11,6 +11,12 @@ public static class HandoverValidationConstants
     public const string RealisticTimelineDiffersAcknowledgementRequired = "The realistic timeline differs from the promised timeline. Please provide an acknowledgement message.";
     public const string UpdatedAcknowledgementRequired = "The estimation gap between the promised and realistic timelines still exceeds the threshold. Please provide an updated acknowledgement message.";
 
+    public static class Variance
+    {
+        public const double PercentageThreshold = 20.0;
+        public const double MinimumWeekGapThreshold = 1.0;
+    }
+
     public static string ActionRequiresRole(string role) => $"This action requires the '{role}' role.";
     public static string NotFoundForEngagement(int engagementId) => $"No handover draft exists yet for engagement {engagementId}. Save the Client Context section first.";
     public static string CommitmentNotFound(int id) => $"Commitment with ID {id} was not found.";
