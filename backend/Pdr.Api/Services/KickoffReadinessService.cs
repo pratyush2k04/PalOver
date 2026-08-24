@@ -33,8 +33,10 @@ public class KickoffReadinessService(
         KickoffReadinessDto Dto,
         ReadinessCheck HandoverCheck,
         ReadinessCheck CommitmentsCheck,
+        ReadinessCheck ChecklistCheck,
         List<Commitment> Commitments,
-        Dictionary<int, RealisticCommitment> RealisticByCommitmentId);
+        Dictionary<int, RealisticCommitment> RealisticByCommitmentId,
+        List<EngagementChecklistItem> ChecklistItems);
 
     public async Task<KickoffReadinessDto> GetReadinessAsync(int engagementId)
     {
@@ -77,8 +79,10 @@ public class KickoffReadinessService(
             dto,
             handoverCheck,
             commitmentsCheck,
+            checklistCheck,
             commitments,
-            realisticByCommitmentId);
+            realisticByCommitmentId,
+            checklist?.Items.ToList() ?? []);
     }
 
     public async Task<bool> IsFullyReadyAsync(int engagementId)
@@ -144,7 +148,9 @@ public class KickoffReadinessService(
         var outstandingMandatoryItems = BuildOutstandingMandatoryItems(
             computation.HandoverCheck,
             computation.CommitmentsCheck,
-            computation.Commitments);
+            computation.Commitments,
+            computation.ChecklistCheck,
+            computation.ChecklistItems);
 
         var openBlockers = await db.Risks
             .AsNoTracking()
@@ -176,11 +182,6 @@ public class KickoffReadinessService(
         var isDayOneSignedOff = engagement.DayOneSignOffRecord != null;
         var dayOneSignOffIsException = engagement.DayOneSignOffRecord != null && engagement.DayOneSignOffRecord.IsException;
 
-        var outstandingChecklistCount = await db.EngagementChecklistItems
-            .AsNoTracking()
-            .CountAsync(i => i.EngagementChecklist.EngagementId == engagementId &&
-                             i.IsMandatory && i.IsApplicable && i.Status != "Complete");
-
         var isCommercialVisible = currentUserService.IsInRole(RoleEnum.ProjectManagement) ||
                                   currentUserService.IsInRole(RoleEnum.Leadership) ||
                                   currentUserService.IsAdmin();
@@ -210,8 +211,7 @@ public class KickoffReadinessService(
             unconfirmedResourceCount,
             daysToBilling,
             isDayOneSignedOff,
-            dayOneSignOffIsException,
-            outstandingChecklistCount);
+            dayOneSignOffIsException);
 
         var actorUserId = currentUserService.GetUserId();
         var requesterName = currentUserService.GetFullName() ?? "Unknown User";
@@ -230,6 +230,8 @@ public class KickoffReadinessService(
             computation.Dto.HandoverFieldsPassed,
             computation.Dto.CommitmentsApplicable,
             computation.Dto.CommitmentsPassed,
+            computation.Dto.ChecklistItemsApplicable,
+            computation.Dto.ChecklistItemsPassed,
             engagement.KickoffDate,
             engagement.BillingStartDate,
             daysToKickoff,
@@ -268,7 +270,9 @@ public class KickoffReadinessService(
     private static List<OutstandingMandatoryItemDto> BuildOutstandingMandatoryItems(
         ReadinessCheck handoverCheck,
         ReadinessCheck commitmentsCheck,
-        List<Commitment> commitments)
+        List<Commitment> commitments,
+        ReadinessCheck checklistCheck,
+        List<EngagementChecklistItem> checklistItems)
     {
         var items = new List<OutstandingMandatoryItemDto>();
 
@@ -282,6 +286,17 @@ public class KickoffReadinessService(
         {
             var title = commitmentsById.TryGetValue(failingId, out var commitment) ? commitment.Title : $"Commitment #{failingId}";
             items.Add(new OutstandingMandatoryItemDto("Commitment", failingId, title, "Not yet acknowledged as realistic"));
+        }
+
+        var checklistItemsById = checklistItems.ToDictionary(i => i.Id);
+        foreach (var failingId in checklistCheck.FailingIds)
+        {
+            var title = checklistItemsById.TryGetValue(failingId, out var item) ? item.Title : $"Checklist item #{failingId}";
+            var isBlocked = item != null && item.Status == MasterChecklistConstants.ItemStatuses.Blocked;
+            var reason = isBlocked
+                ? (string.IsNullOrWhiteSpace(item!.BlockReason) ? "Blocked" : $"Blocked: {item.BlockReason}")
+                : "Not yet completed";
+            items.Add(new OutstandingMandatoryItemDto("Checklist", failingId, title, reason));
         }
 
         return items;
@@ -318,8 +333,7 @@ public class KickoffReadinessService(
         int unconfirmedResourceCount,
         int? daysToBilling,
         bool isDayOneSignedOff,
-        bool dayOneSignOffIsException,
-        int outstandingChecklistCount)
+        bool dayOneSignOffIsException)
     {
         var notes = new List<string>();
 
@@ -354,9 +368,9 @@ public class KickoffReadinessService(
             notes.Add("Day-1 was signed off under exception.");
         }
 
-        if (outstandingChecklistCount > 0)
+        if (computation.ChecklistCheck.FailingIds.Count > 0)
         {
-            notes.Add($"{outstandingChecklistCount} mandatory checklist item(s) outstanding — checklist completion is not currently part of the readiness score.");
+            notes.Add($"{computation.ChecklistCheck.FailingIds.Count} mandatory checklist item(s) outstanding — dragging the score down.");
         }
 
         return notes;
@@ -409,12 +423,12 @@ public class KickoffReadinessService(
         RealisticCommitmentService.TimelinesMatch(commitment.Timeline, commitment.TimelineUnit, realistic.Timeline, realistic.TimelineUnit) ||
         !string.IsNullOrWhiteSpace(realistic.AcknowledgementMessage);
 
-    // Blocked items are excluded entirely (not counted as applicable), same as
-    // Not Applicable items (they're exempted and can never reach Complete).
+    // Only genuinely Not Applicable items are exempted. Blocked items stay in the
+    // denominator and count against the score until they're unblocked and completed.
     private static ReadinessCheck EvaluateChecklistItems(ICollection<EngagementChecklistItem> checklistItems)
     {
         var mandatoryItems = checklistItems
-            .Where(i => i.IsMandatory && i.IsApplicable && i.Status != MasterChecklistConstants.ItemStatuses.Blocked)
+            .Where(i => i.IsMandatory && i.IsApplicable)
             .ToList();
 
         var failingIds = mandatoryItems

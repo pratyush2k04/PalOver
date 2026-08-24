@@ -14,6 +14,8 @@ public record ReadinessOnePagerDto(
     int HandoverFieldsPassed,
     int CommitmentsApplicable,
     int CommitmentsPassed,
+    int ChecklistItemsApplicable,
+    int ChecklistItemsPassed,
     DateOnly KickoffDate,
     DateOnly? BillingStartDate,
     int DaysToKickoff,
