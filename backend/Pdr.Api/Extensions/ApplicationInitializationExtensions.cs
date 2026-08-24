@@ -16,24 +16,24 @@ public static class ApplicationInitializationExtensions
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             db.Database.Migrate();
 
-            if (!db.EngagementTypes.Any()) {
+            if (!db.EngagementTypes.Any())
+            {
                 db.EngagementTypes.AddRange(
                     Enum.GetValues<EngagementTypeEnum>()
-                        .Select(t => new EngagementType { Name = t.ToString() })
-                       
-                );
+                        .Select(t => new EngagementType { Name = t.ToString() }));
+                db.SaveChanges();
             }
-            db.SaveChanges();
-           
-            if (!db.EngagementStatuses.Any()) {
+
+            if (!db.EngagementStatuses.Any())
+            {
                 db.EngagementStatuses.AddRange(
                     Enum.GetValues<EngagementStatusEnum>()
-                        .Select(s => new EngagementStatus { StatusName = s.ToString() })
-                );
+                        .Select(s => new EngagementStatus { StatusName = s.ToString() }));
+                db.SaveChanges();
             }
-            db.SaveChanges();
-            
         }
+
         return host;
     }
 }
+
