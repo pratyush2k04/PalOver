@@ -87,8 +87,6 @@ public class HandoverService : IHandoverService
 
                 commitmentDto.IsVarianceFlagged = variance.IsFlagged;
                 commitmentDto.VarianceDescription = variance.Description;
-                commitmentDto.VariancePercent = variance.PercentGap;
-                commitmentDto.WeekGap = variance.WeekGap;
             }
         }
 

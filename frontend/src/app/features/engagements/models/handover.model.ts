@@ -30,6 +30,8 @@ export interface CommitmentDto {
   timeline: number;
   timelineUnit: string;
   realisticCommitment?: RealisticCommitmentDto;
+  isVarianceFlagged?: boolean;
+  varianceDescription?: string;
 }
 
 export interface HandoverInfoDto {

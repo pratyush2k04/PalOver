@@ -228,6 +228,9 @@
             >
               <ng-container *ngIf="c.realisticCommitment; else noRealisticYet">
                 <div class="content-header realistic-header">
+                  <span *ngIf="c.isVarianceFlagged" class="variance-badge">
+                    {{ c.varianceDescription }}
+                  </span>
                   <span class="timeline-info">
                     {{
                       formatTimeline(

@@ -15,6 +15,9 @@ public static class HandoverValidationConstants
     {
         public const double PercentageThreshold = 20.0;
         public const double MinimumWeekGapThreshold = 1.0;
+
+        public static string FormatDescription(string committedText, string realisticText, int percentGap) =>
+            $"Committed {committedText} vs realistic {realisticText} (+{percentGap}%)";
     }
 
     public static string ActionRequiresRole(string role) => $"This action requires the '{role}' role.";

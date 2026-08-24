@@ -73,7 +73,10 @@ public class RealisticCommitmentService : IRealisticCommitmentService
                          rawWeekGap >= HandoverValidationConstants.Variance.MinimumWeekGapThreshold;
 
         string? description = isFlagged
-            ? $"Committed {FormatTimelineText(committedTimeline, committedUnit)} vs realistic {FormatTimelineText(realisticTimeline, realisticUnit)} (+{percentGap}%)"
+            ? HandoverValidationConstants.Variance.FormatDescription(
+                FormatTimelineText(committedTimeline, committedUnit),
+                FormatTimelineText(realisticTimeline, realisticUnit),
+                percentGap)
             : null;
 
         return new TimelineVarianceResult(isFlagged, description, percentGap, weekGap);

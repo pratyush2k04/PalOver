@@ -1,4 +1,5 @@
 @use 'sass:color';
+@use '../../../../../styles/mixins' as *;
 @use '../../../../../styles/tokens' as *;
 
 .handover-container {
@@ -256,7 +257,12 @@ select {
 }
 
 .realistic-header {
-  justify-content: flex-end;
+  justify-content: space-between;
+}
+
+.variance-badge {
+  @include status-badge($color-warning-bg, $color-warning-text);
+  border: 1px solid $color-warning-border;
 }
 .click-to-edit-placeholder {
   background: transparent;

@@ -14,6 +14,4 @@ public class CommitmentDto
     public RealisticCommitmentDto? RealisticCommitment { get; set; }
     public bool IsVarianceFlagged { get; set; }
     public string? VarianceDescription { get; set; }
-    public int? VariancePercent { get; set; }
-    public int? WeekGap { get; set; }
 }

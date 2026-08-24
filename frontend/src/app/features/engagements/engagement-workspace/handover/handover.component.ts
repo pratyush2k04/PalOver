@@ -40,6 +40,7 @@ import { ClientContactTransitionCardComponent } from './client-contact-transitio
 const MAX_FREE_TEXT_LENGTH = 2000;
 const SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
 const TIMELINE_UNITS = ['Days', 'Weeks', 'Months'] as const;
+const MATERIAL_VARIANCE_FLAGGED_LABEL = 'material commitment timeline variance(s) flagged for leadership escalation';
 
 function timelinesMatch(timeline1: number, unit1: string, timeline2: number, unit2: string): boolean {
   return timeline1 === timeline2 && unit1 === unit2;
@@ -103,11 +104,23 @@ export class HandoverComponent {
   kickoffReadiness = signal<KickoffReadinessDto | null>(null);
   handoverFlaggedItems = computed<FlaggedItem[]>(() => {
     const r = this.kickoffReadiness();
-    if (!r) return [];
-    return [
-      { label: 'mandatory handover field(s) incomplete', count: r.handoverFieldsApplicable - r.handoverFieldsPassed },
-      { label: 'commitment(s) missing acknowledgement', count: r.commitmentsApplicable - r.commitmentsPassed }
-    ];
+    const commits = this.commitments();
+    const flaggedVarianceCount = commits.filter((c) => c.isVarianceFlagged).length;
+
+    const items: FlaggedItem[] = [];
+    if (r) {
+      items.push(
+        { label: 'mandatory handover field(s) incomplete', count: r.handoverFieldsApplicable - r.handoverFieldsPassed },
+        { label: 'commitment(s) missing acknowledgement', count: r.commitmentsApplicable - r.commitmentsPassed }
+      );
+    }
+    if (flaggedVarianceCount > 0) {
+      items.push({
+        label: MATERIAL_VARIANCE_FLAGGED_LABEL,
+        count: flaggedVarianceCount
+      });
+    }
+    return items;
   });
 
   readonly sentimentOptions: SelectOption[] = SENTIMENT_OPTIONS.map((value) => ({ value, label: value }));
