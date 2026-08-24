@@ -1,8 +1,10 @@
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Exceptions.KickoffReadinessExceptions;
 using Pdr.Api.Models.AccessTracker;
 using Pdr.Api.Models.Audit;
+using Pdr.Api.Models.EngagementChecklist;
 using Pdr.Api.Models.Handover;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
@@ -16,7 +18,8 @@ public class KickoffReadinessService(
     IRealisticCommitmentRepository realisticCommitmentRepository,
     IAccessTrackerRepository accessTrackerRepository,
     IAuditLogService auditLogService,
-    ICurrentUserService currentUserService) : IKickoffReadinessService
+    ICurrentUserService currentUserService,
+    IEngagementChecklistRepository checklistRepository) : IKickoffReadinessService
 {
     private readonly record struct ReadinessCheck(int Applicable, int Passed, List<int> FailingIds);
 
@@ -29,12 +32,14 @@ public class KickoffReadinessService(
         var realisticByCommitmentId = await realisticCommitmentRepository
             .GetByCommitmentIdsAsync(commitments.Select(c => c.CommitmentId).ToList());
         var accessItems = await accessTrackerRepository.GetAccessItemsByEngagementIdAsync(engagementId);
+        var checklist = await checklistRepository.GetByEngagementIdAsync(engagementId);
 
         var handoverCheck = EvaluateHandoverMandatoryFields(handover);
         var commitmentsCheck = EvaluateCommitments(commitments, realisticByCommitmentId);
         var accessItemsCheck = EvaluateAccessItems(accessItems);
+        var checklistCheck = EvaluateChecklistItems(checklist?.Items ?? []);
 
-        var checks = new List<ReadinessCheck> { handoverCheck, commitmentsCheck, accessItemsCheck };
+        var checks = new List<ReadinessCheck> { handoverCheck, commitmentsCheck, accessItemsCheck, checklistCheck };
 
         var totalApplicable = checks.Sum(c => c.Applicable);
         var totalPassed = checks.Sum(c => c.Passed);
@@ -49,7 +54,9 @@ public class KickoffReadinessService(
             commitmentsCheck.Applicable,
             commitmentsCheck.Passed,
             accessItemsCheck.Applicable,
-            accessItemsCheck.Passed);
+            accessItemsCheck.Passed,
+            checklistCheck.Applicable,
+            checklistCheck.Passed);
     }
 
     public async Task<bool> IsFullyReadyAsync(int engagementId)
@@ -148,6 +155,25 @@ public class KickoffReadinessService(
         return new ReadinessCheck(
             Applicable: accessItems.Count,
             Passed: accessItems.Count - failingIds.Count,
+            FailingIds: failingIds);
+    }
+
+    // Blocked items are excluded entirely (not counted as applicable), same as
+    // Not Applicable items (they're exempted and can never reach Complete).
+    private static ReadinessCheck EvaluateChecklistItems(ICollection<EngagementChecklistItem> checklistItems)
+    {
+        var mandatoryItems = checklistItems
+            .Where(i => i.IsMandatory && i.IsApplicable && i.Status != MasterChecklistConstants.ItemStatuses.Blocked)
+            .ToList();
+
+        var failingIds = mandatoryItems
+            .Where(i => i.Status != MasterChecklistConstants.ItemStatuses.Complete)
+            .Select(i => i.Id)
+            .ToList();
+
+        return new ReadinessCheck(
+            Applicable: mandatoryItems.Count,
+            Passed: mandatoryItems.Count - failingIds.Count,
             FailingIds: failingIds);
     }
 }

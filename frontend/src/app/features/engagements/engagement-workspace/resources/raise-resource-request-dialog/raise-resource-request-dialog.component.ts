@@ -8,7 +8,6 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
@@ -60,7 +59,6 @@ function notAfterBillingDateValidator(billingStartDate: string | null | undefine
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    InlineSVGModule,
     ButtonComponent,
     AlertComponent,
     SelectComponent,
