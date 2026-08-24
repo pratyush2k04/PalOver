@@ -51,6 +51,7 @@
         </div>
         <div class="breakdown-row"><span>Handover fields</span><span>{{ r.handoverFieldsPassed }} / {{ r.handoverFieldsApplicable }}</span></div>
         <div class="breakdown-row"><span>Commitments</span><span>{{ r.commitmentsPassed }} / {{ r.commitmentsApplicable }}</span></div>
+        <div class="breakdown-row"><span>Checklist items</span><span>{{ r.checklistItemsPassed }} / {{ r.checklistItemsApplicable }}</span></div>
       </div>
 
       @if (r.outstandingMandatoryItems.length > 0) {
