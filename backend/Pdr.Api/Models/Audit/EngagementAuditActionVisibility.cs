@@ -47,6 +47,7 @@ public static class EngagementAuditActionVisibilityRegistry
         [AuditActionEnum.DependencyCreated] = new(VisibleToRoles: AllRoles),
         [AuditActionEnum.DependencyUpdated] = new(VisibleToRoles: AllRoles),
         [AuditActionEnum.DependencyDeleted] = new(VisibleToRoles: AllRoles),
-        [AuditActionEnum.DependencyEscalated] = new(VisibleToRoles: AllRoles)
+        [AuditActionEnum.DependencyEscalated] = new(VisibleToRoles: AllRoles),
+        [AuditActionEnum.ReadinessOnePagerGenerated] = new(VisibleToRoles: AllRoles)
     };
 }

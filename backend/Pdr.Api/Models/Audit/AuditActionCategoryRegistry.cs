@@ -28,6 +28,7 @@ public static class AuditActionCategoryRegistry
         [AuditActionEnum.DependencyCreated] = AuditCategoryEnum.Risk,
         [AuditActionEnum.DependencyUpdated] = AuditCategoryEnum.Risk,
         [AuditActionEnum.DependencyDeleted] = AuditCategoryEnum.Risk,
-        [AuditActionEnum.DependencyEscalated] = AuditCategoryEnum.Escalation
+        [AuditActionEnum.DependencyEscalated] = AuditCategoryEnum.Escalation,
+        [AuditActionEnum.ReadinessOnePagerGenerated] = AuditCategoryEnum.TechnicalReadiness
     };
 }

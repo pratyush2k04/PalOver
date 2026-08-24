@@ -487,6 +487,12 @@ namespace Pdr.Api.Migrations
                             Id = 25,
                             Action = "DependencyEscalated",
                             Details = "Dependency {dependencyDescription} escalated to risk {riskTitle} for engagement {engagementName}"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Action = "ReadinessOnePagerGenerated",
+                            Details = "Kickoff-readiness one-pager generated for engagement {engagementName} by {actorName}"
                         });
                 });
 

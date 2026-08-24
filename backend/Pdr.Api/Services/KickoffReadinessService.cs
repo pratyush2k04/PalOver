@@ -1,8 +1,16 @@
+using Microsoft.EntityFrameworkCore;
+using Pdr.Api.Data;
 using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Exceptions.KickoffReadinessExceptions;
+using Pdr.Api.Helpers;
 using Pdr.Api.Models.AccessTracker;
+using Pdr.Api.Models.Audit;
+using Pdr.Api.Models.Documents;
 using Pdr.Api.Models.Handover;
+using Pdr.Api.Models.LoginEntity;
+using Pdr.Api.Models.ResourceRequests;
+using Pdr.Api.Models.Risks;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
@@ -13,7 +21,10 @@ public class KickoffReadinessService(
     IHandoverRepository handoverRepository,
     ICommitmentRepository commitmentRepository,
     IRealisticCommitmentRepository realisticCommitmentRepository,
-    IAccessTrackerRepository accessTrackerRepository) : IKickoffReadinessService
+    IAccessTrackerRepository accessTrackerRepository,
+    ICurrentUserService currentUserService,
+    IAuditLogService auditLogService,
+    AppDbContext db) : IKickoffReadinessService
 {
     private readonly record struct ReadinessCheck(int Applicable, int Passed, List<int> FailingIds, List<string> FailingFieldLabels);
 
@@ -102,6 +113,265 @@ public class KickoffReadinessService(
 
         engagement.IsKickoffReady = false;
         await engagementRepository.SaveChangesAsync();
+    }
+
+    public async Task<ReadinessOnePagerDto> GetOnePagerAsync(int engagementId)
+    {
+        var computation = await ComputeReadinessAsync(engagementId);
+
+        var engagement = await db.Engagements
+            .AsNoTracking()
+            .Include(e => e.CommercialModel)
+            .Include(e => e.DayOneSignOffRecord)
+            .FirstOrDefaultAsync(e => e.EngagementId == engagementId)
+            ?? throw new EngagementNotFoundException(engagementId);
+
+        var outstandingMandatoryItems = BuildOutstandingMandatoryItems(
+            computation.HandoverCheck,
+            computation.CommitmentsCheck,
+            computation.AccessItemsCheck,
+            computation.Commitments,
+            computation.AccessItems);
+
+        var openBlockers = await db.Risks
+            .AsNoTracking()
+            .Include(r => r.Owner)
+            .Where(r => r.EngagementId == engagementId &&
+                        (r.Status == RiskStatus.Open || r.Status == RiskStatus.Mitigating) &&
+                        !r.IsDeleted)
+            .Select(r => new OpenBlockerDto(r.Id, r.Title, r.Status.ToString(), r.Impact.ToString(), r.Owner != null ? r.Owner.FullName : null))
+            .ToListAsync();
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var daysToKickoff = engagement.KickoffDate.DayNumber - today.DayNumber;
+        var requiredThreshold = LeadershipDashboardHelpers.GetRequiredThreshold(daysToKickoff);
+        var daysToKickoffTier = GetTierLabel(daysToKickoff);
+        var status = LeadershipDashboardHelpers.DeriveStatus(computation.Dto.Score, openBlockers.Count, requiredThreshold);
+
+        int? daysToBilling = engagement.BillingStartDate.HasValue
+            ? engagement.BillingStartDate.Value.DayNumber - today.DayNumber
+            : null;
+
+        var unconfirmedResourceCount = await db.ResourceRequests
+            .AsNoTracking()
+            .CountAsync(r => r.EngagementId == engagementId &&
+                             r.Status != ResourceRequestStatus.Confirmed &&
+                             !r.IsDeleted);
+
+        var hasResourcingGap = LeadershipDashboardHelpers.EvaluateResourcingGap(daysToBilling, unconfirmedResourceCount);
+
+        var isDayOneSignedOff = engagement.DayOneSignOffRecord != null;
+        var dayOneSignOffIsException = engagement.DayOneSignOffRecord != null && engagement.DayOneSignOffRecord.IsException;
+
+        var outstandingChecklistCount = await db.EngagementChecklistItems
+            .AsNoTracking()
+            .CountAsync(i => i.EngagementChecklist.EngagementId == engagementId &&
+                             i.IsMandatory && i.IsApplicable && i.Status != "Complete");
+
+        var inProgressAccessItemCount = computation.AccessItems.Count(a => a.Status == AccessItemStatus.InProgress);
+
+        var isCommercialVisible = currentUserService.IsInRole(RoleEnum.ProjectManagement) ||
+                                  currentUserService.IsInRole(RoleEnum.Leadership) ||
+                                  currentUserService.IsAdmin();
+
+        CommercialDetailDto? commercial = null;
+        if (isCommercialVisible)
+        {
+            var commercialDocumentTitles = await db.Documents
+                .AsNoTracking()
+                .Include(d => d.Category)
+                .Where(d => d.EngagementId == engagementId && d.Category.CategoryName == DocumentCategoryNames.Commercial && !d.IsDeleted)
+                .Select(d => d.FileName)
+                .ToListAsync();
+
+            commercial = new CommercialDetailDto(engagement.CommercialModel.Name, commercialDocumentTitles);
+        }
+
+        var commitmentComparisons = BuildCommitmentComparisons(computation.Commitments, computation.RealisticByCommitmentId);
+
+        var scoreExclusionNotes = BuildScoreExclusionNotes(
+            computation,
+            openBlockers.Count,
+            inProgressAccessItemCount,
+            daysToKickoff,
+            requiredThreshold,
+            computation.Dto.Score,
+            hasResourcingGap,
+            unconfirmedResourceCount,
+            daysToBilling,
+            isDayOneSignedOff,
+            dayOneSignOffIsException,
+            outstandingChecklistCount);
+
+        var actorUserId = currentUserService.GetUserId();
+        var requesterName = currentUserService.GetFullName() ?? "Unknown User";
+
+        var onePager = new ReadinessOnePagerDto(
+            engagement.EngagementId,
+            engagement.EngagementName,
+            engagement.ClientName,
+            actorUserId,
+            requesterName,
+            DateTime.UtcNow,
+            computation.Dto.Score,
+            computation.Dto.TotalApplicable,
+            computation.Dto.TotalPassed,
+            computation.Dto.HandoverFieldsApplicable,
+            computation.Dto.HandoverFieldsPassed,
+            computation.Dto.CommitmentsApplicable,
+            computation.Dto.CommitmentsPassed,
+            computation.Dto.AccessItemsApplicable,
+            computation.Dto.AccessItemsPassed,
+            engagement.KickoffDate,
+            engagement.BillingStartDate,
+            daysToKickoff,
+            daysToKickoffTier,
+            requiredThreshold,
+            status,
+            outstandingMandatoryItems,
+            openBlockers,
+            commitmentComparisons,
+            hasResourcingGap,
+            unconfirmedResourceCount,
+            daysToBilling,
+            isDayOneSignedOff,
+            dayOneSignOffIsException,
+            commercial,
+            scoreExclusionNotes);
+
+        await auditLogService.LogAsync(
+            AuditActionEnum.ReadinessOnePagerGenerated,
+            new Dictionary<string, object?> { ["EngagementId"] = engagement.EngagementId, ["ActorUserId"] = actorUserId },
+            engagementId: engagement.EngagementId,
+            actingUserId: actorUserId > 0 ? actorUserId : null);
+
+        return onePager;
+    }
+
+    private static string GetTierLabel(int daysToKickoff)
+    {
+        if (daysToKickoff > 14) return "GreaterThan14";
+        if (daysToKickoff >= 8) return "8To14";
+        if (daysToKickoff >= 4) return "4To7";
+        if (daysToKickoff >= 1) return "1To3";
+        return "Day0OrPast";
+    }
+
+    private static List<OutstandingMandatoryItemDto> BuildOutstandingMandatoryItems(
+        ReadinessCheck handoverCheck,
+        ReadinessCheck commitmentsCheck,
+        ReadinessCheck accessItemsCheck,
+        List<Commitment> commitments,
+        List<AccessItem> accessItems)
+    {
+        var items = new List<OutstandingMandatoryItemDto>();
+
+        foreach (var fieldLabel in handoverCheck.FailingFieldLabels)
+        {
+            items.Add(new OutstandingMandatoryItemDto("Handover", null, fieldLabel, $"{fieldLabel} field is blank"));
+        }
+
+        var commitmentsById = commitments.ToDictionary(c => c.CommitmentId);
+        foreach (var failingId in commitmentsCheck.FailingIds)
+        {
+            var title = commitmentsById.TryGetValue(failingId, out var commitment) ? commitment.Title : $"Commitment #{failingId}";
+            items.Add(new OutstandingMandatoryItemDto("Commitment", failingId, title, "Not yet acknowledged as realistic"));
+        }
+
+        var accessItemsById = accessItems.ToDictionary(a => a.Id);
+        foreach (var failingId in accessItemsCheck.FailingIds)
+        {
+            var name = accessItemsById.TryGetValue(failingId, out var accessItem) ? accessItem.Name : $"Access item #{failingId}";
+            items.Add(new OutstandingMandatoryItemDto("AccessItem", failingId, name, "Blocked"));
+        }
+
+        return items;
+    }
+
+    private static List<CommitmentComparisonDto> BuildCommitmentComparisons(
+        List<Commitment> commitments,
+        Dictionary<int, RealisticCommitment> realisticByCommitmentId)
+    {
+        return commitments.Select(commitment =>
+        {
+            var hasRealistic = realisticByCommitmentId.TryGetValue(commitment.CommitmentId, out var realistic);
+            var isAcknowledged = hasRealistic && CommitmentIsAcknowledged(commitment, realistic!);
+
+            return new CommitmentComparisonDto(
+                commitment.CommitmentId,
+                commitment.Title,
+                FormatTimeline(commitment.Timeline, commitment.TimelineUnit),
+                hasRealistic ? FormatTimeline(realistic!.Timeline, realistic.TimelineUnit) : null,
+                isAcknowledged,
+                hasRealistic ? realistic!.AcknowledgementMessage : null);
+        }).ToList();
+    }
+
+    private static string FormatTimeline(int timeline, CommitmentTimelineUnitEnum unit) => $"{timeline} {unit}";
+
+    private static List<string> BuildScoreExclusionNotes(
+        ReadinessComputation computation,
+        int openBlockerCount,
+        int inProgressAccessItemCount,
+        int daysToKickoff,
+        int requiredThreshold,
+        int score,
+        bool hasResourcingGap,
+        int unconfirmedResourceCount,
+        int? daysToBilling,
+        bool isDayOneSignedOff,
+        bool dayOneSignOffIsException,
+        int outstandingChecklistCount)
+    {
+        var notes = new List<string>();
+
+        if (computation.HandoverCheck.FailingFieldLabels.Count > 0)
+        {
+            notes.Add($"{computation.HandoverCheck.FailingFieldLabels.Count} handover field(s) not yet captured — dragging the score down.");
+        }
+
+        if (computation.CommitmentsCheck.FailingIds.Count > 0)
+        {
+            notes.Add($"{computation.CommitmentsCheck.FailingIds.Count} commitment(s) not yet acknowledged as realistic — not counted toward the score numerator.");
+        }
+
+        if (computation.AccessItemsCheck.FailingIds.Count > 0)
+        {
+            notes.Add($"{computation.AccessItemsCheck.FailingIds.Count} access item(s) blocked — excluded from the score numerator.");
+        }
+
+        if (inProgressAccessItemCount > 0)
+        {
+            notes.Add($"{inProgressAccessItemCount} access item(s) still in progress — counted as passed today, not yet fully resolved.");
+        }
+
+        if (openBlockerCount > 0)
+        {
+            notes.Add($"{openBlockerCount} open blocker(s) recorded as risks — not part of the score, but blocks 'Kickoff-ready' status regardless of score.");
+        }
+
+        notes.Add($"Kickoff is in {daysToKickoff} day(s), placing this engagement in a tier that requires a minimum score of {requiredThreshold}% — current score is {score}%.");
+
+        if (hasResourcingGap)
+        {
+            notes.Add($"{unconfirmedResourceCount} unconfirmed resource request(s) with billing starting in {daysToBilling} day(s) — a resourcing gap, independent of the score.");
+        }
+
+        if (!isDayOneSignedOff)
+        {
+            notes.Add("Day-1 sign-off has not yet been recorded.");
+        }
+        else if (dayOneSignOffIsException)
+        {
+            notes.Add("Day-1 was signed off under exception.");
+        }
+
+        if (outstandingChecklistCount > 0)
+        {
+            notes.Add($"{outstandingChecklistCount} mandatory checklist item(s) outstanding — checklist completion is not currently part of the readiness score.");
+        }
+
+        return notes;
     }
 
     private static ReadinessCheck EvaluateHandoverMandatoryFields(HandoverInfo? handover)
