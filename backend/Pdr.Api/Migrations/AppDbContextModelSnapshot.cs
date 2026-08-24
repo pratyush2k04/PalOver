@@ -88,7 +88,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("AccessItems");
+                    b.ToTable("AccessItems", (string)null);
 
                     b.HasData(
                         new
@@ -199,7 +199,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AccessItemDefinitions");
+                    b.ToTable("AccessItemDefinitions", (string)null);
 
                     b.HasData(
                         new
@@ -505,12 +505,6 @@ namespace Pdr.Api.Migrations
                             Id = 28,
                             Action = "AccessItemBlocked",
                             Details = "Access item '{itemName}' blocked on engagement {engagementName} by {actorName}"
-                        },
-                        new
-                        {
-                            Id = 29,
-                            Action = "ReadinessOnePagerGenerated",
-                            Details = "Kickoff-readiness one-pager generated for engagement {engagementName} by {actorName}"
                         });
                 });
 
@@ -2101,7 +2095,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Assumptions");
+                    b.ToTable("Assumptions", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Engagements.CommercialModel", b =>
@@ -2273,7 +2267,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Dependencies");
+                    b.ToTable("Dependencies", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Engagements.Engagement", b =>
@@ -2658,7 +2652,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EnvironmentToolingDefinitions");
+                    b.ToTable("EnvironmentToolingDefinitions", (string)null);
 
                     b.HasData(
                         new
@@ -2746,7 +2740,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("EnvironmentToolingItems");
+                    b.ToTable("EnvironmentToolingItems", (string)null);
 
                     b.HasData(
                         new
