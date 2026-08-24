@@ -24,25 +24,6 @@
         </div>
       </div>
 
-      @if (r.openBlockers.length > 0) {
-        <app-alert variant="danger">
-          <strong>{{ r.openBlockers.length }} open blocker(s)</strong>
-        </app-alert>
-        <ul class="blocker-list">
-          @for (blocker of r.openBlockers; track blocker.riskId) {
-            <li class="blocker-item">
-              <app-status-badge tone="danger">{{ blocker.status }}</app-status-badge>
-              <div class="blocker-detail">
-                <strong>{{ blocker.title }}</strong>
-                <span>Impact: {{ blocker.impact }}{{ blocker.ownerName ? ' · Owner: ' + blocker.ownerName : '' }}</span>
-              </div>
-            </li>
-          }
-        </ul>
-      } @else {
-        <app-empty-state message="No open blockers." />
-      }
-
       <div class="section">
         <div class="section-heading">
           <h4>Readiness Score</h4>
@@ -52,27 +33,6 @@
         <div class="breakdown-row"><span>Handover fields</span><span>{{ r.handoverFieldsPassed }} / {{ r.handoverFieldsApplicable }}</span></div>
         <div class="breakdown-row"><span>Commitments</span><span>{{ r.commitmentsPassed }} / {{ r.commitmentsApplicable }}</span></div>
         <div class="breakdown-row"><span>Checklist items</span><span>{{ r.checklistItemsPassed }} / {{ r.checklistItemsApplicable }}</span></div>
-      </div>
-
-      @if (r.outstandingMandatoryItems.length > 0) {
-        <div class="section">
-          <h4>Outstanding Mandatory Items</h4>
-          <ul class="outstanding-list">
-            @for (item of r.outstandingMandatoryItems; track item.label + item.category) {
-              <li><strong>{{ item.label }}</strong> ({{ item.category }}) — {{ item.reason }}</li>
-            }
-          </ul>
-        </div>
-      }
-
-      <div class="section">
-        <h4>Score Exclusions</h4>
-        <p class="section-note">These items affect kickoff readiness but are not counted toward the score above.</p>
-        <ul class="outstanding-list">
-          @for (note of r.scoreExclusionNotes; track note) {
-            <li>{{ note }}</li>
-          }
-        </ul>
       </div>
 
       <div class="section">
@@ -86,33 +46,65 @@
         </div>
       </div>
 
-      @if (r.commitments.length > 0) {
-        <div class="section">
-          <h4>Committed vs Realistic</h4>
+      <div class="section">
+        <h4>Client Context</h4>
+        @if (outstandingHandoverItems().length === 0) {
+          <app-empty-state message="Business Problem and Client Sentiment are both captured." />
+        } @else {
+          <ul class="outstanding-list">
+            @for (item of outstandingHandoverItems(); track item.label) {
+              <li><strong>{{ item.label }}</strong> — {{ item.reason }}</li>
+            }
+          </ul>
+        }
+      </div>
+
+      <div class="section">
+        <h4>Committed vs Realistic</h4>
+        @if (outstandingCommitments().length === 0) {
+          <app-empty-state message="No outstanding commitments — all acknowledged as realistic." />
+        } @else {
           <table class="commitments-table">
             <thead>
-              <tr><th>Commitment</th><th>Committed</th><th>Realistic</th><th>Acknowledged</th></tr>
+              <tr><th>Commitment</th><th>Current State</th></tr>
             </thead>
             <tbody>
-              @for (commitment of r.commitments; track commitment.commitmentId) {
+              @for (item of outstandingCommitments(); track item.sourceId) {
                 <tr>
-                  <td>{{ commitment.title }}</td>
-                  <td>{{ commitment.committedTimeline }}</td>
-                  <td>{{ commitment.realisticTimeline || '—' }}</td>
-                  <td>{{ commitment.isAcknowledged ? 'Yes' : 'No' }}</td>
+                  <td>{{ item.label }}</td>
+                  <td>{{ item.reason }}</td>
                 </tr>
               }
             </tbody>
           </table>
-        </div>
-      }
+        }
+      </div>
 
-      @if (r.commercial) {
-        <div class="section">
-          <h4>Commercial</h4>
-          <p>Commercial model: <strong>{{ r.commercial.commercialModelName }}</strong></p>
+      <div class="section">
+        <div class="section-heading">
+          <h4>Checklist Items</h4>
+          @if (blockedChecklistItemCount() > 0) {
+            <app-status-badge tone="danger">{{ blockedChecklistItemCount() }} blocked</app-status-badge>
+          }
         </div>
-      }
+        @if (outstandingChecklistItems().length === 0) {
+          <app-empty-state message="No outstanding checklist items — all mandatory items complete." />
+        } @else {
+          <table class="commitments-table checklist-table">
+            <thead>
+              <tr><th>Checklist</th><th>Current State</th></tr>
+            </thead>
+            <tbody>
+              @for (item of outstandingChecklistItems(); track item.sourceId) {
+                <tr [class.is-blocked]="isBlockedChecklistItem(item)">
+                  <td>{{ item.label }}</td>
+                  <td>{{ item.reason }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </div>
     }
   </div>
 

@@ -83,41 +83,16 @@
   color: $color-text-muted;
 }
 
-.blocker-list,
 .outstanding-list {
   margin: 0;
-  padding: 0;
-  list-style: none;
-  @include flex-column($spacing-2);
-}
-
-.outstanding-list {
-  padding-left: $spacing-4;
+  padding: 0 0 0 $spacing-4;
   list-style: disc;
   font-size: $font-size-sm;
   color: $color-text-muted;
-}
-
-.blocker-item {
-  display: flex;
-  align-items: flex-start;
-  gap: $spacing-3;
-  padding: $spacing-3;
-  background: $color-danger-bg;
-  border: 1px solid $color-danger-border;
-  border-radius: $radius-md;
-}
-
-.blocker-detail {
-  @include flex-column($spacing-1);
-  font-size: $font-size-sm;
+  @include flex-column($spacing-2);
 
   strong {
     color: $color-text;
-  }
-
-  span {
-    color: $color-text-faint;
   }
 }
 
@@ -151,6 +126,15 @@
   th {
     color: $color-text-faint;
     font-weight: $font-weight-semibold;
+  }
+}
+
+.checklist-table tr.is-blocked {
+  background: $color-danger-bg;
+
+  td {
+    color: $color-danger-text;
+    border-bottom-color: $color-danger-border;
   }
 }
 

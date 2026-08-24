@@ -80,6 +80,19 @@
       </section>
 
       <section class="section-container">
+        <h3>Client Context</h3>
+        @if (outstandingHandoverItems().length === 0) {
+          <p class="empty-note">Business Problem and Client Sentiment are both captured.</p>
+        } @else {
+          <ul class="outstanding-list">
+            @for (item of outstandingHandoverItems(); track item.label) {
+              <li><strong>{{ item.label }}</strong> — {{ item.reason }}</li>
+            }
+          </ul>
+        }
+      </section>
+
+      <section class="section-container">
         <h3>Committed vs Realistic</h3>
         @if (outstandingCommitments().length === 0) {
           <p class="empty-note">No outstanding commitments — all acknowledged as realistic.</p>
@@ -129,19 +142,6 @@
               }
             </tbody>
           </table>
-        }
-      </section>
-
-      <section class="section-container">
-        <h3>Client Context</h3>
-        @if (outstandingHandoverItems().length === 0) {
-          <p class="empty-note">Business Problem and Client Sentiment are both captured.</p>
-        } @else {
-          <ul class="outstanding-list">
-            @for (item of outstandingHandoverItems(); track item.label) {
-              <li><strong>{{ item.label }}</strong> — {{ item.reason }}</li>
-            }
-          </ul>
         }
       </section>
 

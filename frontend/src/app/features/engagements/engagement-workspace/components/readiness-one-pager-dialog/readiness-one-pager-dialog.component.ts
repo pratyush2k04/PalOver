@@ -7,7 +7,7 @@ import { LoadingSpinnerComponent } from '@common/components/loading-spinner/load
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
-import { ReadinessOnePagerDto, ReadinessOnePagerService } from '@shared/services/readiness-one-pager.service';
+import { OutstandingMandatoryItemDto, ReadinessOnePagerDto, ReadinessOnePagerService } from '@shared/services/readiness-one-pager.service';
 import { PORTFOLIO_STATUS } from '@shared/constants/portfolio.constants';
 import { ENGAGEMENT_ROUTES } from '@shared/constants/routes.constants';
 
@@ -42,6 +42,26 @@ export class ReadinessOnePagerDialogComponent implements OnInit {
     if (score >= 40) return 'warning';
     return 'danger';
   });
+
+  readonly outstandingHandoverItems = computed<OutstandingMandatoryItemDto[]>(() =>
+    (this.report()?.outstandingMandatoryItems ?? []).filter((item) => item.category === 'Handover')
+  );
+
+  readonly outstandingCommitments = computed<OutstandingMandatoryItemDto[]>(() =>
+    (this.report()?.outstandingMandatoryItems ?? []).filter((item) => item.category === 'Commitment')
+  );
+
+  readonly outstandingChecklistItems = computed<OutstandingMandatoryItemDto[]>(() =>
+    (this.report()?.outstandingMandatoryItems ?? []).filter((item) => item.category === 'Checklist')
+  );
+
+  readonly blockedChecklistItemCount = computed<number>(() =>
+    this.outstandingChecklistItems().filter((item) => this.isBlockedChecklistItem(item)).length
+  );
+
+  isBlockedChecklistItem(item: OutstandingMandatoryItemDto): boolean {
+    return item.reason.startsWith('Blocked');
+  }
 
   ngOnInit(): void {
     this.onePagerService.getOnePager(this.data.engagementId).subscribe({
