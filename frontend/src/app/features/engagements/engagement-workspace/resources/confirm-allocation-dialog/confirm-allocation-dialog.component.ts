@@ -7,7 +7,6 @@ import {
   ValidationErrors,
   ValidatorFn,
 } from '@angular/forms';
-import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
@@ -38,7 +37,7 @@ function notFutureDateValidator(): ValidatorFn {
 @Component({
   selector: 'app-confirm-allocation-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, InlineSVGModule, ButtonComponent, AlertComponent, InputComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, AlertComponent, InputComponent],
   templateUrl: './confirm-allocation-dialog.component.html',
   styleUrl: './confirm-allocation-dialog.component.scss',
 })
