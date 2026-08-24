@@ -64,16 +64,30 @@ public class RiskRepository(AppDbContext context) : IRiskRepository
 
     public async Task<List<RiskBlockerSourceItem>> GetActiveAccessBlockersAsync(int engagementId)
     {
+        var engagement = await context.Engagements
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.EngagementId == engagementId && !e.IsDeleted);
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        int? daysToBilling = engagement?.BillingStartDate.HasValue == true
+            ? engagement.BillingStartDate.Value.DayNumber - today.DayNumber
+            : null;
+
+        var isBillingApproaching = daysToBilling.HasValue && daysToBilling.Value < 3;
+
         return await context.AccessItems
             .AsNoTracking()
             .Where(a => a.EngagementId == engagementId &&
-                        a.Status == AccessItemStatus.Blocked &&
-                        !a.IsDeleted)
+                        !a.IsDeleted &&
+                        (a.Status == AccessItemStatus.Blocked ||
+                         (isBillingApproaching && a.IsClientSide && a.Status != AccessItemStatus.Granted)))
             .Select(a => new RiskBlockerSourceItem(
                 RiskConstants.SourceTypes.AccessTracker,
                 a.Id,
                 a.Name,
-                a.BlockReason ?? string.Empty,
+                a.Status == AccessItemStatus.Blocked
+                    ? (a.BlockReason ?? "Access request is blocked")
+                    : $"Client-side access request is overdue ({daysToBilling} days to billing).",
                 (int?)a.OwnerId))
             .ToListAsync();
     }

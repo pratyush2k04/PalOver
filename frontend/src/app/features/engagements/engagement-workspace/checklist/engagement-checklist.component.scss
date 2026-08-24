@@ -379,7 +379,17 @@
     text-decoration: none;
 
     .evidence-icon {
-      font-size: 11px;
+      width: 1rem;
+      height: 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      ::ng-deep svg {
+        width: 1rem;
+        height: 1rem;
+      }
     }
 
     .evidence-text {
@@ -459,6 +469,35 @@
   align-items: center;
   justify-content: flex-start;
   gap: $spacing-2;
+
+  .action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: $color-text-faint;
+    transition: color 0.15s ease, transform 0.15s ease;
+
+    ::ng-deep svg,
+    svg {
+      width: 1.15rem;
+      height: 1.15rem;
+      stroke: currentColor;
+      transition: stroke 0.15s ease;
+    }
+  }
+
+  app-button {
+    &:hover:not([disabled]) {
+      .action-icon {
+        color: $color-danger;
+
+        ::ng-deep svg,
+        svg {
+          stroke: $color-danger;
+        }
+      }
+    }
+  }
 }
 
 // Consolidated Not Applicable section
