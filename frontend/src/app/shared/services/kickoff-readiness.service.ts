@@ -21,7 +21,7 @@ export class KickoffReadinessService {
   private http = inject(HttpClient);
 
   private readinessSignal = signal<KickoffReadinessDto | null>(null);
-  private isLoadingSignal = signal(false);
+  private isLoadingSignal = signal(true);
   private hasErrorSignal = signal(false);
   private trackedEngagementId: number | null = null;
   private requestSeq = 0;
