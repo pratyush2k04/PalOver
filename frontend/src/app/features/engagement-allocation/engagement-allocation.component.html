@@ -108,7 +108,7 @@
                   <div class="model-sub">{{ eng.commercialModel }}</div>
                 </td>
                 <td class="col-contacts">
-                  @if (eng.isLoadingLeadership) {
+                  @if (eng.isLoadingLeadership || eng.isLoadingHandover) {
                     <span class="loading-text">Loading contacts...</span>
                   } @else {
                     @if (eng.leadershipUsers && eng.leadershipUsers.length > 0) {
@@ -120,7 +120,7 @@
                           </span>
                         }
                       </div>
-                    } @else {
+                    } @else if (eng.hasHandoverDraft) {
                       <app-status-badge tone="warning">
                          Missing Leadership Contact
                       </app-status-badge>
@@ -128,14 +128,16 @@
                   }
                 </td>
                 <td class="actions-col">
-                  <app-button
-                    type="button"
-                    variant="flat"
-                    (click)="openAssignModal(eng)"
-                  >
-                    <span class="assign-icon" [inlineSVG]="'assets/icons/user-plus.svg'"></span>
-                    Assign Leadership
-                  </app-button>
+                  @if (!eng.isLoadingHandover && eng.hasHandoverDraft) {
+                    <app-button
+                      type="button"
+                      variant="flat"
+                      (click)="openAssignModal(eng)"
+                    >
+                      <span class="assign-icon" [inlineSVG]="'assets/icons/user-plus.svg'"></span>
+                      Assign Leadership
+                    </app-button>
+                  }
                 </td>
               </tr>
             }

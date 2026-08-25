@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { EngagementAllocationService } from './services/engagement-allocation.service';
 import { EngagementAllocationItem, LeadershipUserItem } from './models/engagement-allocation.model';
+import { HandoverService } from '@features/engagements/services/handover.service';
 import { ToastService } from '@common/services/toast/toast';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
@@ -32,6 +33,7 @@ import {
 })
 export class EngagementAllocationComponent implements OnInit {
   private allocationService = inject(EngagementAllocationService);
+  private handoverService = inject(HandoverService);
   private toastService = inject(ToastService);
   private dialog = inject(DialogService);
 
@@ -80,7 +82,9 @@ export class EngagementAllocationComponent implements OnInit {
         const items: EngagementAllocationItem[] = data.map(e => ({
           ...e,
           leadershipUsers: [],
-          isLoadingLeadership: true
+          isLoadingLeadership: true,
+          hasHandoverDraft: false,
+          isLoadingHandover: true
         }));
         this.engagements.set(items);
         this.loading.set(false);
@@ -102,6 +106,30 @@ export class EngagementAllocationComponent implements OnInit {
                 list.map(item =>
                   item.engagementId === eng.engagementId
                     ? { ...item, isLoadingLeadership: false }
+                    : item
+                )
+              );
+            }
+          });
+        });
+
+        // Fetch handover draft status for each engagement
+        items.forEach(eng => {
+          this.handoverService.getHandover(eng.engagementId).subscribe({
+            next: (dto) => {
+              this.engagements.update(list =>
+                list.map(item =>
+                  item.engagementId === eng.engagementId
+                    ? { ...item, hasHandoverDraft: dto.handoverId > 0, isLoadingHandover: false }
+                    : item
+                )
+              );
+            },
+            error: () => {
+              this.engagements.update(list =>
+                list.map(item =>
+                  item.engagementId === eng.engagementId
+                    ? { ...item, isLoadingHandover: false }
                     : item
                 )
               );
