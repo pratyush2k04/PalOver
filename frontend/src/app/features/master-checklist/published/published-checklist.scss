@@ -26,6 +26,13 @@
     padding: $spacing-5 $spacing-6;
     background-color: $color-surface;
 
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: stretch;
+      padding: $spacing-4;
+      gap: $spacing-3;
+    }
+
     h1 {
       color: $color-text;
       font-size: $font-size-lg;
