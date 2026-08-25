@@ -1,402 +1,423 @@
-<div class="handover-container" *ngIf="!isLoading()">
-  <app-section-header title="Pre-Sales to Delivery Handover">
-    <div class="header-status-group">
-      <div class="status-report" [ngClass]="{'submitted': isSubmitted(), 'draft': !isSubmitted()}">
-        <span class="status-report-dot"></span>
-        <span class="status-report-text">{{ handover()?.status || 'Not Started' }}</span>
+@if (!isLoading()) {
+  <div class="handover-container">
+    <app-section-header [title]="HANDOVER_LABELS.TITLE">
+      <div class="header-status-group">
+        <div class="status-report" [ngClass]="{'submitted': isSubmitted(), 'draft': !isSubmitted()}">
+          <span class="status-report-dot"></span>
+          <span class="status-report-text">{{ handover()?.status || 'Not Started' }}</span>
+        </div>
+        <app-button variant="flat" [disabled]="isSaving() || isSubmitted()" (click)="submitHandover()">{{ HANDOVER_BUTTONS.SUBMIT_HANDOVER }}</app-button>
       </div>
-      <app-button *ngIf="isPreSales()" variant="stroked" [disabled]="isSaving() || isSubmitted()" (click)="saveDraft()">Save Draft</app-button>
-      <app-button variant="flat" [disabled]="isSaving() || isSubmitted()" (click)="submitHandover()">Submit Handover</app-button>
-    </div>
-  </app-section-header>
+    </app-section-header>
 
-  <app-alert *ngIf="message()" [variant]="isError() ? 'danger' : 'neutral'">
-    {{ message() }}
-  </app-alert>
+    @if (message()) {
+      <app-alert [variant]="isError() ? 'danger' : 'neutral'">
+        {{ message() }}
+      </app-alert>
+    }
 
-  <app-flagged-items-banner *ngIf="kickoffReadiness()" [items]="handoverFlaggedItems()"></app-flagged-items-banner>
+    @if (kickoffReadiness()) {
+      <app-flagged-items-banner [items]="handoverFlaggedItems()"></app-flagged-items-banner>
+    }
 
-  <form [formGroup]="clientContextForm" *ngIf="isPreSales()">
-    <div class="section client-context">
-      <h3>Client Context</h3>
+    @if (isPreSales()) {
+      <form [formGroup]="clientContextForm">
+        <div class="section client-context">
+          <h3>{{ HANDOVER_LABELS.CLIENT_CONTEXT }}</h3>
 
-      <app-textarea
-        id="clientBackground"
-        label="Client Background"
-        placeholder="Brief history and overview of the client..."
-        formControlName="clientBackground"
-        [maxLength]="maxFreeTextLength"
-      />
+          <app-textarea
+            id="clientBackground"
+            [label]="HANDOVER_LABELS.CLIENT_BACKGROUND"
+            [placeholder]="HANDOVER_PLACEHOLDERS.CLIENT_BACKGROUND"
+            formControlName="clientBackground"
+            [maxLength]="maxFreeTextLength"
+          />
 
-      <app-textarea
-        id="businessProblem"
-        label="Business Problem (Required)"
-        placeholder="What core problem are we solving?"
-        formControlName="businessProblem"
-        [maxLength]="maxFreeTextLength"
-        [errorMessages]="{ required: 'Business Problem is required.' }"
-      />
+          <app-textarea
+            id="businessProblem"
+            [label]="HANDOVER_LABELS.BUSINESS_PROBLEM"
+            [placeholder]="HANDOVER_PLACEHOLDERS.BUSINESS_PROBLEM"
+            formControlName="businessProblem"
+            [maxLength]="maxFreeTextLength"
+            [errorMessages]="{ required: 'Business Problem is required.' }"
+          />
 
-      <app-select
-        id="clientSentiment"
-        label="Client Sentiment (Required)"
-        formControlName="clientSentiment"
-        [options]="sentimentOptions"
-        [errorMessages]="{ required: 'Client Sentiment is required.' }"
-      />
+          <app-select
+            id="clientSentiment"
+            [label]="HANDOVER_LABELS.CLIENT_SENTIMENT"
+            [placeholder]="HANDOVER_PLACEHOLDERS.CLIENT_SENTIMENT"
+            formControlName="clientSentiment"
+            [options]="sentimentOptions"
+            [errorMessages]="{ required: 'Client Sentiment is required.' }"
+          />
 
-      <app-input
-        id="dealOrigin"
-        label="Deal Origin"
-        placeholder="e.g. RFP, Direct Sales, Partner..."
-        formControlName="dealOrigin"
-        [maxLength]="maxFreeTextLength"
-      />
-    </div>
-  </form>
+          <app-input
+            id="dealOrigin"
+            [label]="HANDOVER_LABELS.DEAL_ORIGIN"
+            [placeholder]="HANDOVER_PLACEHOLDERS.DEAL_ORIGIN"
+            formControlName="dealOrigin"
+            [maxLength]="maxFreeTextLength"
+          />
 
-  <div class="section client-context client-context-readonly" *ngIf="!isPreSales()">
-    <h3>Client Context</h3>
-
-    <div class="readonly-field">
-      <span class="readonly-label">Client Background</span>
-      <p class="readonly-value" [class.readonly-value-empty]="!handover()?.clientBackground">
-        {{ handover()?.clientBackground || 'Not provided' }}
-      </p>
-    </div>
-
-    <div class="readonly-field">
-      <span class="readonly-label">Business Problem</span>
-      <p class="readonly-value" [class.readonly-value-empty]="!handover()?.businessProblem">
-        {{ handover()?.businessProblem || 'Not provided' }}
-      </p>
-    </div>
-
-    <div class="readonly-field">
-      <span class="readonly-label">Client Sentiment</span>
-      <app-status-badge *ngIf="handover()?.clientSentiment; else noSentiment"
-        [tone]="getSentimentTone(handover()?.clientSentiment)">
-        {{ handover()?.clientSentiment }}
-      </app-status-badge>
-      <ng-template #noSentiment>
-        <p class="readonly-value readonly-value-empty">Not provided</p>
-      </ng-template>
-    </div>
-
-    <div class="readonly-field">
-      <span class="readonly-label">Deal Origin</span>
-      <p class="readonly-value" [class.readonly-value-empty]="!handover()?.dealOrigin">
-        {{ handover()?.dealOrigin || 'Not provided' }}
-      </p>
-    </div>
-  </div>
-
-  <div class="section">
-    <app-client-contact-transition-card
-      [engagementId]="engagementId()!"
-      [clientName]="engagementInfo()?.clientName || ''"
-      (onSaved)="onClientContactSaved()">
-    </app-client-contact-transition-card>
-  </div>
-
-  <form [formGroup]="clientContextForm">
-
-    <div class="section commitments">
-      <h3>Commitments</h3>
-
-      <app-empty-state *ngIf="commitments().length === 0" message="No Commitments" />
-
-      <div class="commitment-cards" *ngIf="commitments().length > 0">
-        <div
-          class="commitment-card"
-          *ngFor="let c of commitments()"
-        >
-          <div class="commitment-square promised-square">
-            <div class="square-header">
-              <span class="square-label">Promised</span>
-              <app-button
-                *ngIf="isPreSales() && !isSubmitted() && editingCommitmentId() !== c.commitmentId"
-                variant="icon"
-                (click)="startEditCommitment(c)"
-                ariaLabel="Edit promised commitment"
-              >
-                &#9998;
-              </app-button>
-            </div>
-
-            <ng-container
-              *ngIf="editingCommitmentId() !== c.commitmentId; else editPromisedTemplate"
-            >
-              <div class="content-header">
-                <div>
-                  <h4>{{ c.title }}</h4>
-                  <p class="type-info">
-                    {{
-                      c.commitmentTypeId === 1
-                        ? 'Software'
-                        : c.commitmentTypeId === 2
-                          ? 'Services'
-                          : 'Training'
-                    }}
-                  </p>
-                </div>
-                <span class="timeline-info">{{ formatTimeline(c.timeline, c.timelineUnit) }}</span>
-              </div>
-              <p class="description">{{ c.description }}</p>
-            </ng-container>
-            <ng-template #editPromisedTemplate>
-              <app-input
-                [id]="'edit-promised-title-' + c.commitmentId"
-                type="text"
-                [(ngModel)]="editCommitment().title"
-                [ngModelOptions]="{ standalone: true }"
-                [maxLength]="100"
-                placeholder="Title"
-              />
-              <app-input
-                [id]="'edit-promised-desc-' + c.commitmentId"
-                type="text"
-                [(ngModel)]="editCommitment().description"
-                [ngModelOptions]="{ standalone: true }"
-                [maxLength]="2000"
-                placeholder="Description"
-              />
-              <div class="form-row">
-                <input
-                  type="number"
-                  min="1"
-                  [(ngModel)]="editCommitment().timeline"
-                  [ngModelOptions]="{ standalone: true }"
-                />
-                <app-select
-                  [id]="'edit-promised-unit-' + c.commitmentId"
-                  [(ngModel)]="editCommitment().timelineUnit"
-                  [ngModelOptions]="{ standalone: true }"
-                  [options]="timelineUnitOptions"
-                />
-              </div>
-              <ul class="inline-errors" *ngIf="editCommitmentErrors().length > 0">
-                <li *ngFor="let err of editCommitmentErrors()">{{ err }}</li>
-              </ul>
-              <div class="row-actions">
-                <app-button variant="flat" size="sm" (click)="saveEditCommitment(c.commitmentId)">
-                  Save
-                </app-button>
-                <app-button variant="stroked" size="sm" (click)="cancelEditCommitment()">Cancel</app-button>
-              </div>
-            </ng-template>
-
-            <div
-              class="row-actions"
-              *ngIf="isPreSales() && !isSubmitted() && editingCommitmentId() !== c.commitmentId"
-            >
-              <ng-container *ngIf="pendingDeleteId() === c.commitmentId; else deleteButton">
-                <span class="confirm-inline">Remove this commitment?</span>
-                <app-button variant="danger" size="sm" (click)="confirmDeleteCommitment(c.commitmentId)">
-                  Yes
-                </app-button>
-                <app-button variant="stroked" size="sm" (click)="cancelDeleteCommitment()">Cancel</app-button>
-              </ng-container>
-              <ng-template #deleteButton>
-                <app-button variant="danger" size="sm" (click)="requestDeleteCommitment(c.commitmentId)">
-                  Delete
-                </app-button>
-              </ng-template>
-            </div>
+          <div class="client-context-actions">
+            <app-button variant="stroked" [disabled]="isSaving() || isSubmitted()" (click)="saveDraft()">{{ HANDOVER_BUTTONS.SAVE_DRAFT }}</app-button>
           </div>
+        </div>
+      </form>
+    }
 
-          <div class="commitment-square realistic-square">
-            <div class="square-header">
-              <span class="square-label">Realistic</span>
-              <app-button
-                *ngIf="
-                  isProjectManagement() &&
-                  !isSubmitted() &&
-                  c.realisticCommitment &&
-                  editingRealisticCommitmentId() !== c.commitmentId
-                "
-                variant="icon"
-                (click)="startEditRealisticCommitment(c)"
-                ariaLabel="Edit realistic commitment"
-              >
-                &#9998;
-              </app-button>
-            </div>
+    @if (!isPreSales()) {
+      <div class="section client-context client-context-readonly">
+        <h3>{{ HANDOVER_LABELS.CLIENT_CONTEXT }}</h3>
 
-            <ng-container
-              *ngIf="editingRealisticCommitmentId() !== c.commitmentId; else editRealisticTemplate"
-            >
-              <ng-container *ngIf="c.realisticCommitment; else noRealisticYet">
-                <div class="content-header realistic-header">
-                  @if (c.isVarianceFlagged) {
-                    <div class="variance-badge-group">
-                      <span class="variance-badge">
-                        {{ c.varianceDescription }}
-                      </span>
-                      <span class="escalation-badge">
-                        Escalated to Leadership
-                      </span>
+        <div class="readonly-field">
+          <span class="readonly-label">{{ HANDOVER_LABELS.CLIENT_BACKGROUND }}</span>
+          <p class="readonly-value" [class.readonly-value-empty]="!handover()?.clientBackground">
+            {{ handover()?.clientBackground || HANDOVER_LABELS.NOT_PROVIDED }}
+          </p>
+        </div>
+
+        <div class="readonly-field">
+          <span class="readonly-label">{{ HANDOVER_LABELS.BUSINESS_PROBLEM }}</span>
+          <p class="readonly-value" [class.readonly-value-empty]="!handover()?.businessProblem">
+            {{ handover()?.businessProblem || HANDOVER_LABELS.NOT_PROVIDED }}
+          </p>
+        </div>
+
+        <div class="readonly-field">
+          <span class="readonly-label">{{ HANDOVER_LABELS.CLIENT_SENTIMENT }}</span>
+          @if (handover()?.clientSentiment) {
+            <app-status-badge [tone]="getSentimentTone(handover()?.clientSentiment)">
+              {{ handover()?.clientSentiment }}
+            </app-status-badge>
+          } @else {
+            <p class="readonly-value readonly-value-empty">{{ HANDOVER_LABELS.NOT_PROVIDED }}</p>
+          }
+        </div>
+
+        <div class="readonly-field">
+          <span class="readonly-label">{{ HANDOVER_LABELS.DEAL_ORIGIN }}</span>
+          <p class="readonly-value" [class.readonly-value-empty]="!handover()?.dealOrigin">
+            {{ handover()?.dealOrigin || HANDOVER_LABELS.NOT_PROVIDED }}
+          </p>
+        </div>
+      </div>
+    }
+
+    <div class="section">
+      <app-client-contact-transition-card
+        [engagementId]="engagementId()!"
+        [clientName]="engagementInfo()?.clientName || ''"
+        (onSaved)="onClientContactSaved()">
+      </app-client-contact-transition-card>
+    </div>
+
+    <form [formGroup]="clientContextForm">
+      <div class="section commitments">
+        <h3>{{ HANDOVER_LABELS.COMMITMENTS }}</h3>
+
+        @if (commitments().length === 0) {
+          <app-empty-state message="No Commitments" />
+        }
+
+        @if (commitments().length > 0) {
+          <div class="commitment-cards">
+            @for (c of commitments(); track c.commitmentId) {
+              <div class="commitment-card">
+                <div class="commitment-square promised-square">
+                  <div class="square-header">
+                    <span class="square-label">{{ HANDOVER_LABELS.PROMISED }}</span>
+                    @if (isPreSales() && !isSubmitted() && editingCommitmentId() !== c.commitmentId) {
+                      <app-button
+                        variant="icon"
+                        (click)="startEditCommitment(c)"
+                        ariaLabel="Edit promised commitment"
+                      >
+                        &#9998;
+                      </app-button>
+                    }
+                  </div>
+
+                  @if (editingCommitmentId() !== c.commitmentId) {
+                    <div class="content-header">
+                      <div>
+                        <h4>{{ c.title }}</h4>
+                        <p class="type-info">
+                          {{
+                            c.commitmentTypeId === 1
+                              ? HANDOVER_LABELS.SOFTWARE
+                              : c.commitmentTypeId === 2
+                                ? HANDOVER_LABELS.SERVICES
+                                : HANDOVER_LABELS.TRAINING
+                          }}
+                        </p>
+                      </div>
+                      <span class="timeline-info">{{ formatTimeline(c.timeline, c.timelineUnit) }}</span>
+                    </div>
+                    <p class="description">{{ c.description }}</p>
+                  } @else {
+                    <app-input
+                      [id]="'edit-promised-title-' + c.commitmentId"
+                      type="text"
+                      [(ngModel)]="editCommitment().title"
+                      [ngModelOptions]="{ standalone: true }"
+                      [maxLength]="100"
+                      [placeholder]="HANDOVER_PLACEHOLDERS.TITLE"
+                    />
+                    <app-input
+                      [id]="'edit-promised-desc-' + c.commitmentId"
+                      type="text"
+                      [(ngModel)]="editCommitment().description"
+                      [ngModelOptions]="{ standalone: true }"
+                      [maxLength]="2000"
+                      [placeholder]="HANDOVER_PLACEHOLDERS.DESCRIPTION"
+                    />
+                    <div class="form-row">
+                      <input
+                        type="number"
+                        min="1"
+                        [(ngModel)]="editCommitment().timeline"
+                        [ngModelOptions]="{ standalone: true }"
+                      />
+                      <app-select
+                        [id]="'edit-promised-unit-' + c.commitmentId"
+                        [(ngModel)]="editCommitment().timelineUnit"
+                        [ngModelOptions]="{ standalone: true }"
+                        [options]="timelineUnitOptions"
+                      />
+                    </div>
+                    @if (editCommitmentErrors().length > 0) {
+                      <ul class="inline-errors">
+                        @for (err of editCommitmentErrors(); track $index) {
+                          <li>{{ err }}</li>
+                        }
+                      </ul>
+                    }
+                    <div class="row-actions">
+                      <app-button variant="flat" size="sm" (click)="saveEditCommitment(c.commitmentId)">
+                        {{ HANDOVER_BUTTONS.SAVE }}
+                      </app-button>
+                      <app-button variant="stroked" size="sm" (click)="cancelEditCommitment()">{{ HANDOVER_BUTTONS.CANCEL }}</app-button>
                     </div>
                   }
-                  <span class="timeline-info">
-                    {{
-                      formatTimeline(
-                        c.realisticCommitment.timeline,
-                        c.realisticCommitment.timelineUnit
-                      )
-                    }}
-                  </span>
+
+                  @if (isPreSales() && !isSubmitted() && editingCommitmentId() !== c.commitmentId) {
+                    <div class="row-actions">
+                      @if (pendingDeleteId() === c.commitmentId) {
+                        <span class="confirm-inline">{{ HANDOVER_LABELS.REMOVE_CONFIRM }}</span>
+                        <app-button variant="danger" size="sm" (click)="confirmDeleteCommitment(c.commitmentId)">
+                          {{ HANDOVER_BUTTONS.YES }}
+                        </app-button>
+                        <app-button variant="stroked" size="sm" (click)="cancelDeleteCommitment()">{{ HANDOVER_BUTTONS.CANCEL }}</app-button>
+                      } @else {
+                        <app-button variant="danger" size="sm" (click)="requestDeleteCommitment(c.commitmentId)">
+                          {{ HANDOVER_BUTTONS.DELETE }}
+                        </app-button>
+                      }
+                    </div>
+                  }
                 </div>
-                <p class="description">{{ c.realisticCommitment.description }}</p>
-                <p
-                  *ngIf="c.realisticCommitment.acknowledgementMessage"
-                  class="acknowledgement-info"
-                >
-                  Acknowledged: {{ c.realisticCommitment.acknowledgementMessage }}
-                </p>
 
-                <app-button
-                  *ngIf="
-                    commitmentNeedsAcknowledgement(c) &&
-                    !c.realisticCommitment.acknowledgementMessage &&
-                    isProjectManagement() &&
-                    !isSubmitted()
-                  "
-                  variant="warning"
-                  size="sm"
-                  (click)="startEditRealisticCommitment(c)"
-                >
-                  Acknowledge Timeline Mismatch
-                </app-button>
-              </ng-container>
-              <ng-template #noRealisticYet>
-                <button
-                  *ngIf="isProjectManagement() && !isSubmitted()"
-                  class="click-to-edit-placeholder"
-                  (click)="startEditRealisticCommitment(c)"
-                >
-                  Click on any field to enter edit mode.
-                </button>
-                <p *ngIf="!isProjectManagement()" class="empty-state">Not yet provided.</p>
-              </ng-template>
-            </ng-container>
+                <div class="commitment-square realistic-square">
+                  <div class="square-header">
+                    <span class="square-label">{{ HANDOVER_LABELS.REALISTIC }}</span>
+                    @if (
+                      isProjectManagement() &&
+                      !isSubmitted() &&
+                      c.realisticCommitment &&
+                      editingRealisticCommitmentId() !== c.commitmentId
+                    ) {
+                      <app-button
+                        variant="icon"
+                        (click)="startEditRealisticCommitment(c)"
+                        ariaLabel="Edit realistic commitment"
+                      >
+                        &#9998;
+                      </app-button>
+                    }
+                  </div>
 
-            <ng-template #editRealisticTemplate>
-              <app-textarea
-                [id]="'edit-realistic-desc-' + c.commitmentId"
-                [(ngModel)]="realisticEditForm().description"
-                [ngModelOptions]="{ standalone: true }"
-                [maxLength]="2000"
-                placeholder="Realistic description"
-                [rows]="2"
-              />
+                  @if (editingRealisticCommitmentId() !== c.commitmentId) {
+                    @if (c.realisticCommitment) {
+                      <div class="content-header realistic-header">
+                        @if (c.isVarianceFlagged) {
+                          <div class="variance-badge-group">
+                            <span class="variance-badge">
+                              {{ c.varianceDescription }}
+                            </span>
+                            <span class="escalation-badge">
+                              {{ HANDOVER_LABELS.ESCALATED_LEADERSHIP }}
+                            </span>
+                          </div>
+                        }
+                        <span class="timeline-info">
+                          {{
+                            formatTimeline(
+                              c.realisticCommitment.timeline,
+                              c.realisticCommitment.timelineUnit
+                            )
+                          }}
+                        </span>
+                      </div>
+                      <p class="description">{{ c.realisticCommitment.description }}</p>
+                      @if (c.realisticCommitment.acknowledgementMessage) {
+                        <p class="acknowledgement-info">
+                          Acknowledged: {{ c.realisticCommitment.acknowledgementMessage }}
+                        </p>
+                      }
+
+                      @if (
+                        commitmentNeedsAcknowledgement(c) &&
+                        !c.realisticCommitment.acknowledgementMessage &&
+                        isProjectManagement() &&
+                        !isSubmitted()
+                      ) {
+                        <app-button
+                          variant="warning"
+                          size="sm"
+                          (click)="startEditRealisticCommitment(c)"
+                        >
+                          {{ HANDOVER_BUTTONS.ACKNOWLEDGE_MISMATCH }}
+                        </app-button>
+                      }
+                    } @else {
+                      @if (isProjectManagement() && !isSubmitted()) {
+                        <button
+                          class="click-to-edit-placeholder"
+                          (click)="startEditRealisticCommitment(c)"
+                        >
+                          {{ HANDOVER_LABELS.CLICK_TO_EDIT }}
+                        </button>
+                      }
+                      @if (!isProjectManagement()) {
+                        <p class="empty-state">{{ HANDOVER_LABELS.NOT_YET_PROVIDED }}</p>
+                      }
+                    }
+                  } @else {
+                    <app-textarea
+                      [id]="'edit-realistic-desc-' + c.commitmentId"
+                      [(ngModel)]="realisticEditForm().description"
+                      [ngModelOptions]="{ standalone: true }"
+                      [maxLength]="2000"
+                      [placeholder]="HANDOVER_PLACEHOLDERS.REALISTIC_DESCRIPTION"
+                      [rows]="2"
+                    />
+                    <div class="form-row">
+                      <input
+                        type="number"
+                        min="1"
+                        [(ngModel)]="realisticEditForm().timeline"
+                        [ngModelOptions]="{ standalone: true }"
+                      />
+                      <app-select
+                        [id]="'edit-realistic-unit-' + c.commitmentId"
+                        [(ngModel)]="realisticEditForm().timelineUnit"
+                        [ngModelOptions]="{ standalone: true }"
+                        [options]="timelineUnitOptions"
+                      />
+                    </div>
+
+                    <div class="form-group">
+                      <app-input
+                        [id]="'edit-realistic-ack-' + c.commitmentId"
+                        [label]="editFormNeedsAcknowledgement(c) ? HANDOVER_LABELS.ACKNOWLEDGEMENT_MESSAGE_REQ : HANDOVER_LABELS.ACKNOWLEDGEMENT_MESSAGE"
+                        [(ngModel)]="realisticEditForm().acknowledgementMessage"
+                        [ngModelOptions]="{ standalone: true }"
+                        [maxLength]="2000"
+                        [placeholder]="HANDOVER_PLACEHOLDERS.WHY_REALISTIC_DIFFERS"
+                      />
+                      @if (acknowledgementWarningVisible()) {
+                        <div class="warning-text">
+                          {{ HANDOVER_LABELS.ACK_WARNING }}
+                        </div>
+                      }
+                    </div>
+
+                    @if (realisticEditErrors().length > 0) {
+                      <ul class="inline-errors">
+                        @for (err of realisticEditErrors(); track $index) {
+                          <li>{{ err }}</li>
+                        }
+                      </ul>
+                    }
+                    <div class="row-actions">
+                      <app-button variant="flat" size="sm" (click)="saveRealisticCommitment(c)">{{ HANDOVER_BUTTONS.SAVE }}</app-button>
+                      <app-button variant="stroked" size="sm" (click)="cancelEditRealisticCommitment()">
+                        {{ HANDOVER_BUTTONS.CANCEL }}
+                      </app-button>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        @if (isPreSales() && !isSubmitted()) {
+          <div class="add-commitment-form">
+            <div class="add-commitment-form-inner">
+              <h4>{{ HANDOVER_LABELS.ADD_NEW_COMMITMENT }}</h4>
               <div class="form-row">
+                <input
+                  type="text"
+                  [(ngModel)]="newCommitment().title"
+                  [ngModelOptions]="{ standalone: true }"
+                  maxlength="100"
+                  [placeholder]="HANDOVER_PLACEHOLDERS.TITLE_REQ"
+                  [class.is-invalid]="newCommitmentTouched() && !newCommitment().title"
+                  style="flex: 2"
+                />
+                <app-select
+                  id="new-commitment-type"
+                  [(ngModel)]="newCommitment().commitmentTypeId"
+                  [ngModelOptions]="{ standalone: true }"
+                  [options]="commitmentTypeOptions"
+                  style="flex: 1"
+                />
+              </div>
+              <div class="form-row">
+                <textarea
+                  [(ngModel)]="newCommitment().description"
+                  [ngModelOptions]="{ standalone: true }"
+                  maxlength="2000"
+                  [placeholder]="HANDOVER_PLACEHOLDERS.DESCRIPTION_REQ"
+                  rows="2"
+                  [class.is-invalid]="newCommitmentTouched() && !newCommitment().description"
+                ></textarea>
+              </div>
+              <div class="form-row form-row-timeline">
                 <input
                   type="number"
                   min="1"
-                  [(ngModel)]="realisticEditForm().timeline"
+                  [(ngModel)]="newCommitment().timeline"
                   [ngModelOptions]="{ standalone: true }"
+                  [placeholder]="HANDOVER_PLACEHOLDERS.TIMELINE"
                 />
                 <app-select
-                  [id]="'edit-realistic-unit-' + c.commitmentId"
-                  [(ngModel)]="realisticEditForm().timelineUnit"
+                  id="new-commitment-unit"
+                  [(ngModel)]="newCommitment().timelineUnit"
                   [ngModelOptions]="{ standalone: true }"
                   [options]="timelineUnitOptions"
                 />
               </div>
-
-              <div class="form-group">
-                <app-input
-                  [id]="'edit-realistic-ack-' + c.commitmentId"
-                  [label]="'Acknowledgement Message' + (editFormNeedsAcknowledgement(c) ? ' (Required)' : '')"
-                  [(ngModel)]="realisticEditForm().acknowledgementMessage"
-                  [ngModelOptions]="{ standalone: true }"
-                  [maxLength]="2000"
-                  placeholder="Why does the realistic estimate differ?"
-                />
-                <div class="warning-text" *ngIf="acknowledgementWarningVisible()">
-                  You've changed your realistic estimates. Consider revisiting your acknowledgement
-                  message.
+              @if (newCommitmentTouched() && (!newCommitment().title || !newCommitment().description)) {
+                <div class="invalid-feedback">
+                  {{ HANDOVER_MESSAGES.TITLE_AND_DESC_REQUIRED }}
                 </div>
+              }
+              <div class="row-actions add-form-actions">
+                <app-button variant="flat" (click)="addCommitment()">{{ HANDOVER_BUTTONS.ADD_COMMITMENT }}</app-button>
               </div>
-
-              <ul class="inline-errors" *ngIf="realisticEditErrors().length > 0">
-                <li *ngFor="let err of realisticEditErrors()">{{ err }}</li>
-              </ul>
-              <div class="row-actions">
-                <app-button variant="flat" size="sm" (click)="saveRealisticCommitment(c)">Save</app-button>
-                <app-button variant="stroked" size="sm" (click)="cancelEditRealisticCommitment()">
-                  Cancel
-                </app-button>
-              </div>
-            </ng-template>
+            </div>
           </div>
-        </div>
+        }
       </div>
+    </form>
+  </div>
+}
 
-      <div class="add-commitment-form" *ngIf="isPreSales() && !isSubmitted()">
-        <div class="add-commitment-form-inner">
-          <h4>Add New Commitment</h4>
-          <div class="form-row">
-            <input
-              type="text"
-              [(ngModel)]="newCommitment().title"
-              [ngModelOptions]="{ standalone: true }"
-              maxlength="100"
-              placeholder="Title (Required)"
-              [class.is-invalid]="newCommitmentTouched() && !newCommitment().title"
-              style="flex: 2"
-            />
-            <app-select
-              id="new-commitment-type"
-              [(ngModel)]="newCommitment().commitmentTypeId"
-              [ngModelOptions]="{ standalone: true }"
-              [options]="commitmentTypeOptions"
-              style="flex: 1"
-            />
-          </div>
-          <div class="form-row">
-            <textarea
-              [(ngModel)]="newCommitment().description"
-              [ngModelOptions]="{ standalone: true }"
-              maxlength="2000"
-              placeholder="Description (Required)"
-              rows="2"
-              [class.is-invalid]="newCommitmentTouched() && !newCommitment().description"
-            ></textarea>
-          </div>
-          <div class="form-row form-row-timeline">
-            <input
-              type="number"
-              min="1"
-              [(ngModel)]="newCommitment().timeline"
-              [ngModelOptions]="{ standalone: true }"
-              placeholder="Timeline"
-            />
-            <app-select
-              id="new-commitment-unit"
-              [(ngModel)]="newCommitment().timelineUnit"
-              [ngModelOptions]="{ standalone: true }"
-              [options]="timelineUnitOptions"
-            />
-          </div>
-          <div
-            class="invalid-feedback"
-            *ngIf="
-              newCommitmentTouched() && (!newCommitment().title || !newCommitment().description)
-            "
-          >
-            Title and Description are required.
-          </div>
-          <div class="row-actions add-form-actions">
-            <app-button variant="flat" (click)="addCommitment()">Add Commitment</app-button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </form>
-</div>
-
-<div class="loading-container" *ngIf="isLoading()">
-  <app-loading-spinner label="Loading handover details..."></app-loading-spinner>
-</div>
+@if (isLoading()) {
+  <div class="loading-container">
+    <app-loading-spinner label="Loading handover details..."></app-loading-spinner>
+  </div>
+}

@@ -42,12 +42,16 @@
 }
 
 .section {
-  background: $color-surface;
-  border: 1px solid $color-border-soft;
-  border-radius: $radius-md;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  box-shadow: $shadow-card;
+  @include card-surface($spacing-6, $radius-md);
+  margin-bottom: $spacing-8;
+}
+
+.client-context-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: $spacing-4;
+  padding-top: $spacing-3;
+  border-top: 1px solid $color-border-soft;
 }
 
 .section h3 {
@@ -56,6 +60,12 @@
   padding-bottom: 0.5rem;
   margin-bottom: 1rem;
   color: $color-text;
+}
+
+:host ::ng-deep .required-star,
+.required-star {
+  color: $color-danger;
+  font-weight: 600;
 }
 
 .form-group {

@@ -19,6 +19,14 @@ import { EngagementInfoDto } from '../../models/engagement.model';
 import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
 import { ENGAGEMENT_ROUTES } from '@shared/constants/app.constants';
 import {
+  HANDOVER_MESSAGES,
+  HANDOVER_SENTIMENT_OPTIONS,
+  HANDOVER_TIMELINE_UNITS,
+  HANDOVER_LABELS,
+  HANDOVER_PLACEHOLDERS,
+  HANDOVER_BUTTONS,
+} from '@shared/constants/handover.constants';
+import {
   HandoverInfoDto,
   SaveHandoverDraftRequest,
   CreateCommitmentRequest,
@@ -36,11 +44,10 @@ import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { SectionHeaderComponent } from '@common/components/section-header/section-header';
 import { ClientContactTransitionCardComponent } from './client-contact-transition-card/client-contact-transition-card.component';
+import { ToastService } from '@common/services/toast/toast';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 
 const MAX_FREE_TEXT_LENGTH = 2000;
-const SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
-const TIMELINE_UNITS = ['Days', 'Weeks', 'Months'] as const;
 
 function timelinesMatch(timeline1: number, unit1: string, timeline2: number, unit2: string): boolean {
   return timeline1 === timeline2 && unit1 === unit2;
@@ -76,8 +83,12 @@ interface RealisticEditForm {
   styleUrl: './handover.component.scss',
 })
 export class HandoverComponent {
-  private static readonly KICKOFF_NOT_READY_MESSAGE =
-    'Engagement is not kickoff-ready. All mandatory items must be complete before submitting the handover.';
+  private static readonly KICKOFF_NOT_READY_MESSAGE = HANDOVER_MESSAGES.KICKOFF_NOT_READY;
+
+  HANDOVER_LABELS = HANDOVER_LABELS;
+  HANDOVER_PLACEHOLDERS = HANDOVER_PLACEHOLDERS;
+  HANDOVER_BUTTONS = HANDOVER_BUTTONS;
+  HANDOVER_MESSAGES = HANDOVER_MESSAGES;
 
   engagementInfo = signal<EngagementInfoDto | null>(null);
 
@@ -87,6 +98,7 @@ export class HandoverComponent {
   private engagementService = inject(EngagementService);
   private kickoffReadinessService = inject(KickoffReadinessService);
   private authService = inject(AuthService);
+  private toastService = inject(ToastService);
   private fb = inject(FormBuilder);
 
   private parentParamMap = toSignal(this.route.parent!.paramMap);
@@ -112,9 +124,9 @@ export class HandoverComponent {
     ];
   });
 
-  readonly sentimentOptions: SelectOption[] = SENTIMENT_OPTIONS.map((value) => ({ value, label: value }));
-  readonly timelineUnits = TIMELINE_UNITS;
-  readonly timelineUnitOptions: SelectOption[] = TIMELINE_UNITS.map((value) => ({ value, label: value }));
+  readonly sentimentOptions: SelectOption[] = HANDOVER_SENTIMENT_OPTIONS.map((value) => ({ value, label: value }));
+  readonly timelineUnits = HANDOVER_TIMELINE_UNITS;
+  readonly timelineUnitOptions: SelectOption[] = HANDOVER_TIMELINE_UNITS.map((value) => ({ value, label: value }));
   readonly maxFreeTextLength = MAX_FREE_TEXT_LENGTH;
 
   getSentimentTone(sentiment: string | null | undefined): StatusBadgeTone {
@@ -149,9 +161,9 @@ export class HandoverComponent {
   realisticEditErrors = signal<string[]>([]);
 
   commitmentTypes = [
-    { id: 1, name: 'Software' },
-    { id: 2, name: 'Services' },
-    { id: 3, name: 'Training' },
+    { id: 1, name: HANDOVER_LABELS.SOFTWARE },
+    { id: 2, name: HANDOVER_LABELS.SERVICES },
+    { id: 3, name: HANDOVER_LABELS.TRAINING },
   ];
 
   readonly commitmentTypeOptions: SelectOption[] = this.commitmentTypes.map((t) => ({
@@ -193,7 +205,7 @@ export class HandoverComponent {
 
   private loadEngagement(id: number) {
     this.engagementService.getEngagementInfo(id).pipe(
-      catchError(() => of(null))   //when an api falls it catches the error and returns null instead the crashing the component
+      catchError(() => of(null))
     ).subscribe(data => this.engagementInfo.set(data)); 
   }
 
@@ -232,7 +244,7 @@ export class HandoverComponent {
           this.handover.set(null);
           this.isLoading.set(false);
         } else {
-          this.showMessage('Failed to load handover details', true);
+          this.showMessage(HANDOVER_MESSAGES.LOAD_ERROR, true);
           this.isLoading.set(false);
         }
       },
@@ -246,8 +258,7 @@ export class HandoverComponent {
     const { businessProblem, clientSentiment } = this.clientContextForm.getRawValue();
     if (!businessProblem || !clientSentiment) {
       this.clientContextForm.markAllAsTouched();
-      this.showMessage('Business Problem and Client Sentiment are required to save a draft.', true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      this.toastService.error(HANDOVER_MESSAGES.DRAFT_REQUIRED_FIELDS);
       return;
     }
 
@@ -257,11 +268,11 @@ export class HandoverComponent {
     this.handoverService.saveDraft(id, request).subscribe({
       next: (data) => {
         this.handover.set(data);
-        this.showMessage('Draft saved successfully', false);
+        this.toastService.success(HANDOVER_MESSAGES.SAVE_DRAFT_SUCCESS);
         this.isSaving.set(false);
       },
       error: (err) => {
-        this.showMessage(this.extractErrorMessage(err, 'Failed to save draft'), true);
+        this.toastService.error(this.extractErrorMessage(err, HANDOVER_MESSAGES.SAVE_DRAFT_ERROR));
         this.isSaving.set(false);
       },
     });
@@ -273,7 +284,7 @@ export class HandoverComponent {
 
     if (!this.isValidForSubmit()) {
       this.clientContextForm.markAllAsTouched();
-      this.showMessage('Please complete all required fields.', true);
+      this.showMessage(HANDOVER_MESSAGES.SUBMIT_REQUIRED_FIELDS, true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
@@ -283,11 +294,11 @@ export class HandoverComponent {
       next: (data) => {
         this.handover.set(data);
         this.clientContextForm.disable();
-        this.showMessage('Handover submitted successfully', false);
+        this.showMessage(HANDOVER_MESSAGES.SUBMIT_SUCCESS, false);
         this.isSaving.set(false);
       },
       error: (err) => {
-        const errorMessage = this.extractErrorMessage(err, 'Failed to submit handover');
+        const errorMessage = this.extractErrorMessage(err, HANDOVER_MESSAGES.SUBMIT_ERROR);
         this.showMessage(errorMessage, true);
         this.isSaving.set(false);
 
@@ -314,10 +325,10 @@ export class HandoverComponent {
         this.commitments.update((c) => [...c, data]);
         this.newCommitment.set(this.emptyCommitment());
         this.newCommitmentTouched.set(false);
-        this.showMessage('Commitment added successfully', false);
+        this.showMessage(HANDOVER_MESSAGES.COMMITMENT_ADDED, false);
       },
       error: (err) => {
-        this.showMessage(this.extractErrorMessage(err, 'Failed to add commitment'), true);
+        this.showMessage(this.extractErrorMessage(err, HANDOVER_MESSAGES.COMMITMENT_ADD_ERROR), true);
       },
     });
   }
@@ -345,8 +356,8 @@ export class HandoverComponent {
 
     const currentEdit = this.editCommitment();
     const errors: string[] = [];
-    if (!currentEdit.title) errors.push('Title is required.');
-    if (!currentEdit.description) errors.push('Description is required.');
+    if (!currentEdit.title) errors.push(HANDOVER_MESSAGES.TITLE_REQUIRED);
+    if (!currentEdit.description) errors.push(HANDOVER_MESSAGES.DESCRIPTION_REQUIRED);
 
     if (errors.length > 0) {
       this.editCommitmentErrors.set(errors);
@@ -364,10 +375,10 @@ export class HandoverComponent {
           return arr;
         });
         this.editingCommitmentId.set(null);
-        this.showMessage('Commitment updated successfully', false);
+        this.showMessage(HANDOVER_MESSAGES.COMMITMENT_UPDATED, false);
       },
       error: (err) => {
-        this.showMessage(this.extractErrorMessage(err, 'Failed to update commitment'), true);
+        this.showMessage(this.extractErrorMessage(err, HANDOVER_MESSAGES.COMMITMENT_UPDATE_ERROR), true);
       },
     });
   }
@@ -388,11 +399,11 @@ export class HandoverComponent {
       next: () => {
         this.commitments.update((c) => c.filter((item) => item.commitmentId !== commitmentId));
         this.pendingDeleteId.set(null);
-        this.showMessage('Commitment deleted', false);
+        this.showMessage(HANDOVER_MESSAGES.COMMITMENT_DELETED, false);
       },
       error: (err) => {
         this.pendingDeleteId.set(null);
-        this.showMessage(this.extractErrorMessage(err, 'Failed to delete commitment'), true);
+        this.showMessage(this.extractErrorMessage(err, HANDOVER_MESSAGES.COMMITMENT_DELETE_ERROR), true);
       },
     });
   }
@@ -432,9 +443,9 @@ export class HandoverComponent {
 
     const form = this.realisticEditForm();
     const errors: string[] = [];
-    if (!form.description) errors.push('Description is required.');
+    if (!form.description) errors.push(HANDOVER_MESSAGES.DESCRIPTION_REQUIRED);
     if (this.editFormNeedsAcknowledgement(c) && !form.acknowledgementMessage) {
-      errors.push('An acknowledgement message is required when the realistic timeline differs from the promised timeline.');
+      errors.push(HANDOVER_MESSAGES.ACK_MESSAGE_REQUIRED);
     }
 
     if (errors.length > 0) {
@@ -466,7 +477,7 @@ export class HandoverComponent {
     request$.subscribe({
       next: (data) => {
         this.editingRealisticCommitmentId.set(null);
-        this.showMessage('Realistic commitment saved', false);
+        this.showMessage(HANDOVER_MESSAGES.REALISTIC_SAVED, false);
         this.handoverService.getHandover(id).subscribe({
           next: (refreshed) => {
             this.commitments.set(refreshed.commitments || []);
@@ -475,7 +486,7 @@ export class HandoverComponent {
       },
       error: (err) => {
         this.showMessage(
-          this.extractErrorMessage(err, 'Failed to save realistic commitment'),
+          this.extractErrorMessage(err, HANDOVER_MESSAGES.REALISTIC_SAVE_ERROR),
           true,
         );
       },
@@ -500,7 +511,7 @@ export class HandoverComponent {
   }
 
   onClientContactSaved(): void {
-    this.showMessage('Client contact transition recorded.', false);
+    this.showMessage(HANDOVER_MESSAGES.CLIENT_CONTACT_TRANSITION_SAVED, false);
   }
 
   private showMessage(msg: string, isErr: boolean) {
