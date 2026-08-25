@@ -7,6 +7,7 @@ import { APP_ROUTES } from '@shared/constants/app.constants';
 import { AvatarComponent } from '@common/components/avatar/avatar';
 import { NotificationsDropdownComponent } from '@shared/notifications-dropdown/notifications-dropdown';
 import { GlobalSearchComponent } from '@shared/global-search/global-search';
+import { LayoutService } from '@shared/services/layout.service';
 
 @Component({
   selector: 'app-header',
@@ -20,6 +21,7 @@ export class HeaderComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
   private elementRef = inject(ElementRef);
+  readonly layoutService = inject(LayoutService);
 
   readonly user = this.appContext.user;
   readonly workspace = this.appContext.workspace;
