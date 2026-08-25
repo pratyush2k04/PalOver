@@ -57,6 +57,10 @@
       background-color: #ECFCCB; // Light green/lime from original design
       ::ng-deep svg { stroke: #65A30D; fill: none; }
     }
+    &.text-warning {
+      background-color: #FEF3C7; // Light yellow/orange
+      ::ng-deep svg { stroke: #D97706; fill: none; }
+    }
     &.text-info {
       background-color: #F0F9FF;
       ::ng-deep svg { stroke: #0EA5E9; fill: none; }

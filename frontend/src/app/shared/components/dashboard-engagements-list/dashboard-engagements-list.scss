@@ -53,17 +53,31 @@
 .engagement-item {
   display: flex;
   align-items: center;
-  padding: 1.25rem 0;
-  border-bottom: 1px solid var(--surface-border, #f3f4f6);
-  gap: 1rem;
+  gap: 1.25rem;
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid var(--surface-border, #e5e7eb);
+  text-decoration: none;
+  transition: background-color 0.2s;
   
   &:last-child {
     border-bottom: none;
-    padding-bottom: 0;
   }
   
   &:first-child {
     padding-top: 0;
+  }
+}
+
+.engagement-item.clickable {
+  cursor: pointer;
+  border-radius: 8px;
+  
+  &:hover {
+    background-color: var(--surface-ground, #f9fafb);
+    
+    .engagement-name {
+      color: var(--primary-color, #3b82f6);
+    }
   }
 }
 
@@ -85,6 +99,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: color 0.2s ease;
 }
 
 .engagement-meta {

@@ -1,13 +1,13 @@
 <div class="list-card">
   <div class="list-header">
     <h3>Engagements approaching kickoff <span class="header-subtitle">(within 7 days)</span></h3>
-    <a routerLink="/portfolio" class="view-all-link">View full portfolio &rarr;</a>
+    <a routerLink="/my-engagements" class="view-all-link">View all engagements &rarr;</a>
   </div>
   
   <div class="list-content custom-scrollbar">
     <div class="engagements-list">
       @for (engagement of engagements(); track engagement.engagementId) {
-        <div class="engagement-item">
+        <a [routerLink]="['/engagements', engagement.engagementId]" class="engagement-item clickable">
           <div class="engagement-icon" [ngClass]="getStatusIconClass(engagement.status)">
             <span [inlineSVG]="'assets/icons/briefcase.svg'"></span>
           </div>
@@ -45,7 +45,7 @@
             </div>
             <span class="progress-text">{{ engagement.readinessPercentage }}%</span>
           </div>
-        </div>
+        </a>
       } @empty {
         <div class="empty-state">No active engagements approaching kickoff.</div>
       }

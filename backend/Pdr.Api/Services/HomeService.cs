@@ -13,7 +13,7 @@ using Pdr.Api.Models.Notifications;
 
 namespace Pdr.Api.Services;
 
-public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadinessService) : IHomeService
+public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadinessService, INotificationService notificationService) : IHomeService
 {
     public async Task<HomeResponseDto> GetHomeAsync(int userId)
     {
@@ -87,8 +87,8 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
 
         return [
             new DashboardCardsDto { Title = "My Handovers", Count = myHandoversCount, Type = "engagement" },
-            new DashboardCardsDto { Title = "Draft Handovers", Count = draftHandoversCount, Type = "handover" },
-            new DashboardCardsDto { Title = "Completed Handovers", Count = completeHandoversCount, Type = "handover" }
+            new DashboardCardsDto { Title = "Draft Handovers", Count = draftHandoversCount, Type = "draft-handover" },
+            new DashboardCardsDto { Title = "Completed Handovers", Count = completeHandoversCount, Type = "complete-handover" }
         ];
     }
 
@@ -199,8 +199,12 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
 
     private async Task<List<DashboardEngagementDto>> GetDashboardEngagementsAsync(IQueryable<int> myEngagementsQuery)
     {
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var sevenDaysFromNow = today.AddDays(7);
+
         var engagements = await db.Engagements
-            .Where(e => myEngagementsQuery.Contains(e.EngagementId))
+            .Where(e => myEngagementsQuery.Contains(e.EngagementId) && e.KickoffDate <= sevenDaysFromNow)
+            .OrderBy(e => e.KickoffDate)
             .Select(e => new 
             {
                 e.EngagementId,
@@ -210,7 +214,6 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
             .ToListAsync();
 
         var dtos = new List<DashboardEngagementDto>();
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
         foreach (var e in engagements)
         {
@@ -253,9 +256,10 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
 
     private async Task<List<DashboardBlockerDto>> GetDashboardBlockersAsync(int userId)
     {
-        var blockers = await db.Notifications
-            .Where(n => n.ReceiverUserId == userId && n.Priority == NotificationPriority.High)
-            .OrderByDescending(n => n.CreatedAt)
+        var result = await notificationService.GetForUserAsync(userId, null, 1, 50);
+        
+        var blockers = result.Items
+            .Where(n => n.Priority == NotificationPriority.High)
             .Take(5)
             .Select(n => new DashboardBlockerDto
             {
@@ -263,9 +267,9 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
                 ProjectName = n.Title ?? "Task",
                 BlockerDescription = n.Body ?? "",
                 OwnerName = "System",
-                DueDate = n.ScheduledFor
+                DueDate = n.ReceivedAt
             })
-            .ToListAsync();
+            .ToList();
                               
         return blockers;
     }

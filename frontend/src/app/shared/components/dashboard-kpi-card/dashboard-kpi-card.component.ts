@@ -18,15 +18,19 @@ export class DashboardKpiCardComponent {
       case 'engagement':
         return 'assets/icons/briefcase.svg';
       case 'blocker':
-        return 'assets/icons/alert-circle.svg';
+        return 'assets/icons/lock.svg';
       case 'handover':
         return 'assets/icons/file.svg';
+      case 'draft-handover':
+        return 'assets/icons/edit.svg';
+      case 'complete-handover':
+        return 'assets/icons/check-circle.svg';
       case 'checklist':
         return 'assets/icons/checklist.svg';
       case 'tech-queue':
         return 'assets/icons/layers.svg';
       case 'access-item':
-        return 'assets/icons/lock.svg';
+        return 'assets/icons/alert-circle.svg';
       case 'escalation':
         return 'assets/icons/alert-triangle.svg';
       default:
@@ -44,7 +48,10 @@ export class DashboardKpiCardComponent {
         return 'text-primary';
       case 'checklist':
       case 'access-item':
+      case 'complete-handover':
         return 'text-success';
+      case 'draft-handover':
+        return 'text-warning';
       default:
         return 'text-info';
     }
