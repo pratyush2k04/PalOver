@@ -1,14 +1,19 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { AutocompleteComponent, AutocompleteOption } from '@common/components/autocomplete/autocomplete';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
+import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
+import { AlertComponent } from '@common/components/alert/alert';
 import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { ToastService } from '@common/services/toast/toast';
 import { EngagementAllocationService } from '../../services/engagement-allocation.service';
 import { EngagementAllocationItem, LeadershipUserItem } from '../../models/engagement-allocation.model';
+import { HandoverService } from '@features/engagements/services/handover.service';
+import { HandoverInfoDto } from '@features/engagements/models/handover.model';
 
 export interface AssignLeadershipDialogData {
   engagement: EngagementAllocationItem;
@@ -18,13 +23,23 @@ export interface AssignLeadershipDialogData {
 @Component({
   selector: 'app-assign-leadership-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, AutocompleteComponent, TooltipDirective],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ButtonComponent,
+    AutocompleteComponent,
+    LoadingSpinnerComponent,
+    StatusBadgeComponent,
+    AlertComponent,
+    TooltipDirective
+  ],
   templateUrl: './assign-leadership-dialog.component.html',
   styleUrl: './assign-leadership-dialog.component.scss'
 })
-export class AssignLeadershipDialogComponent {
+export class AssignLeadershipDialogComponent implements OnInit {
   private dialogRef = inject<DialogRef<LeadershipUserItem[]>>(DialogRef);
   private allocationService = inject(EngagementAllocationService);
+  private handoverService = inject(HandoverService);
   private toastService = inject(ToastService);
   readonly data = inject<AssignLeadershipDialogData>(DIALOG_DATA);
 
@@ -33,6 +48,20 @@ export class AssignLeadershipDialogComponent {
   modalLeadershipUsers = signal<LeadershipUserItem[]>([...(this.data.engagement.leadershipUsers || [])]);
   modalSearchTerm = signal<string>('');
   isSaving = signal<boolean>(false);
+  readonly handover = signal<HandoverInfoDto | null>(null);
+  readonly isLoadingHandover = signal<boolean>(true);
+
+  ngOnInit(): void {
+    this.handoverService.getHandover(this.engagement.engagementId).subscribe({
+      next: (dto) => {
+        this.handover.set(dto);
+        this.isLoadingHandover.set(false);
+      },
+      error: () => {
+        this.isLoadingHandover.set(false);
+      }
+    });
+  }
 
   readonly filteredAvailableUsers = computed(() => {
     const term = this.modalSearchTerm().toLowerCase().trim();
