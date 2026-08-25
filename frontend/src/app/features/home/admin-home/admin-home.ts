@@ -1,9 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { AppContextService } from '@shared/services/app-context';
+import { PageHeaderComponent } from '@common/components/page-header/page-header';
+
 @Component({
   selector: 'app-admin-home',
   standalone: true,
-  imports: [],
+  imports: [
+    PageHeaderComponent
+  ],
   templateUrl: './admin-home.html',
   styleUrl: './admin-home.scss'
 })

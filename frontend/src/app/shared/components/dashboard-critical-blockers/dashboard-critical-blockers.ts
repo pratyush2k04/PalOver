@@ -17,7 +17,7 @@ export class DashboardCriticalBlockersComponent {
   getCategory(title: string): string {
     if (!title) return 'TASK';
     const parts = title.split(/ — |: /);
-    return parts[0].toUpperCase();
+    return parts[0];
   }
 
   getEngagementName(title: string): string {

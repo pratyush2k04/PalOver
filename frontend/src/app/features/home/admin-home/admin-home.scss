@@ -1,17 +1,18 @@
+@use '../../../../styles/tokens' as *;
+@use '../../../../styles/mixins' as *;
+
 :host {
   display: block;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .home-workspace {
   display: flex;
   flex-direction: column;
-  padding: 2rem;
+  padding: $spacing-8;
+  max-width: 1400px;
   margin: 0 auto;
-}
-
-.welcome-message {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  letter-spacing: -0.02em;
+  font-family: $font-family-base;
+  color: $color-text;
 }

@@ -3,27 +3,27 @@
     <h3>Needs attention</h3>
     <a routerLink="/notifications" class="view-all-link">View my notifications &rarr;</a>
   </div>
-  
+
   <div class="list-content custom-scrollbar">
     <div class="blockers-list">
       @for (blocker of blockers(); track blocker.riskId) {
-        <div class="blocker-item">
+      <div class="blocker-item">
 
-          <div class="blocker-details">
-            <div class="engagement-header">
-              <span class="engagement-name">{{ getEngagementName(blocker.projectName) }}</span>
-              <span class="time-ago">{{ getRelativeTime(blocker.dueDate.toString()) }}</span>
-            </div>
-            
-            <div class="blocker-meta-row">
-              <span class="category-name">{{ getCategory(blocker.projectName) }}</span>
-            </div>
+        <div class="blocker-details">
+          <div class="engagement-header">
+            <span class="engagement-name">{{ getEngagementName(blocker.projectName) }}</span>
+            <span class="time-ago">{{ getRelativeTime(blocker.dueDate.toString()) }}</span>
+          </div>
+
+          <div class="blocker-meta-row">
+            <span class="category-name">{{ getCategory(blocker.projectName) }}</span>
           </div>
         </div>
+      </div>
       } @empty {
-        <div class="empty-state">
-          No items need attention!
-        </div>
+      <div class="empty-state">
+        No items need attention!
+      </div>
       }
     </div>
   </div>

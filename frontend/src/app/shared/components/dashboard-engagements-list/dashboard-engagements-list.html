@@ -3,51 +3,39 @@
     <h3>Engagements approaching kickoff <span class="header-subtitle">(within 7 days)</span></h3>
     <a routerLink="/my-engagements" class="view-all-link">View all engagements &rarr;</a>
   </div>
-  
+
   <div class="list-content custom-scrollbar">
     <div class="engagements-list">
       @for (engagement of engagements(); track engagement.engagementId) {
-        <a [routerLink]="['/engagements', engagement.engagementId]" class="engagement-item clickable">
-          <div class="engagement-icon" [ngClass]="getStatusIconClass(engagement.status)">
-            <span [inlineSVG]="'assets/icons/briefcase.svg'"></span>
+      <a [routerLink]="['/engagements', engagement.engagementId]" class="engagement-item clickable">
+        <div class="engagement-details">
+          <span class="engagement-name" [title]="engagement.engagementName">{{ engagement.engagementName }}</span>
+
+          <div class="engagement-meta">
+            <span>Kickoff: {{ engagement.kickoffDate | date:'dd MMM yyyy' }}</span>
+            <span class="dot-separator">&bull;</span>
+            <span class="days-to-go">
+              @if (engagement.daysToGo < 0) { {{ -engagement.daysToGo }} days ago } @else if (engagement.daysToGo===0) {
+                Today } @else { In {{ engagement.daysToGo }} days } </span>
           </div>
-          
-          <div class="engagement-details">
-            <div class="engagement-name-row">
-              <span class="engagement-name">{{ engagement.engagementName }}</span>
-              <!-- Badges removed as per user request -->
-            </div>
-            
-            <div class="engagement-meta">
-              <span>Kickoff: {{ engagement.kickoffDate | date:'dd MMM yyyy' }}</span>
-              <span class="dot-separator">&bull;</span>
-              <span class="days-to-go">
-                @if (engagement.daysToGo < 0) {
-                  {{ -engagement.daysToGo }} days ago
-                } @else if (engagement.daysToGo === 0) {
-                  Today
-                } @else {
-                  In {{ engagement.daysToGo }} days
-                }
-              </span>
-            </div>
+        </div>
+
+        <div class="engagement-status-col">
+          <span class="status-badge" [ngClass]="getStatusClass(engagement.status)">
+            {{ engagement.status }}
+          </span>
+        </div>
+
+        <div class="engagement-progress-col">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="engagement.readinessPercentage"
+              [ngClass]="getStatusFillClass(engagement.status)"></div>
           </div>
-          
-          <div class="engagement-status-col">
-            <span class="status-badge" [ngClass]="getStatusClass(engagement.status)">
-              {{ engagement.status }}
-            </span>
-          </div>
-          
-          <div class="engagement-progress-col">
-            <div class="progress-bar">
-              <div class="progress-fill" [style.width.%]="engagement.readinessPercentage" [ngClass]="getStatusFillClass(engagement.status)"></div>
-            </div>
-            <span class="progress-text">{{ engagement.readinessPercentage }}%</span>
-          </div>
-        </a>
+          <span class="progress-text">{{ engagement.readinessPercentage }}%</span>
+        </div>
+      </a>
       } @empty {
-        <div class="empty-state">No active engagements approaching kickoff.</div>
+      <div class="empty-state">No active engagements approaching kickoff.</div>
       }
     </div>
   </div>

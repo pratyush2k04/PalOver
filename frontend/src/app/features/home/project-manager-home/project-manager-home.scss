@@ -1,24 +1,23 @@
-.dashboard-container {
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+@use '../../../../styles/tokens' as *;
+@use '../../../../styles/mixins' as *;
+
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.dashboard-header {
-  .page-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-color, #1f2937);
-    margin: 0 0 0.25rem 0;
-  }
-  
-  .welcome-msg {
-    font-size: 0.875rem;
-    color: var(--text-color-secondary, #6b7280);
-    margin: 0;
-  }
+.home-workspace {
+  display: flex;
+  flex-direction: column;
+  padding: $spacing-8;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: $font-family-base;
+  color: $color-text;
 }
+
+
 
 .cards-grid {
   display: grid;

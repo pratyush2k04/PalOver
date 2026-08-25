@@ -3,11 +3,12 @@ import { AppContextService } from '@shared/services/app-context';
 import { DashboardKpiCardComponent } from '@shared/components/dashboard-kpi-card/dashboard-kpi-card.component';
 import { DashboardEngagementsListComponent } from '@shared/components/dashboard-engagements-list/dashboard-engagements-list';
 import { DashboardCriticalBlockersComponent } from '@shared/components/dashboard-critical-blockers/dashboard-critical-blockers';
+import { PageHeaderComponent } from '@common/components/page-header/page-header';
 
 @Component({
   selector: 'app-project-manager-home',
   standalone: true,
-  imports: [DashboardKpiCardComponent, DashboardEngagementsListComponent, DashboardCriticalBlockersComponent],
+  imports: [DashboardKpiCardComponent, DashboardEngagementsListComponent, DashboardCriticalBlockersComponent, PageHeaderComponent],
   templateUrl: './project-manager-home.html',
   styleUrl: './project-manager-home.scss'
 })

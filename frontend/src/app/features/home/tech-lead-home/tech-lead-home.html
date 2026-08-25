@@ -1,6 +1,6 @@
 @if (workspace(); as ws) {
   <div class="home-workspace">
-    <div class="welcome-message mb-6">{{ ws.welcomeMessage }}</div>
+    <app-page-header [title]="ws.welcomeMessage" />
     
     @if (ws.cards && ws.cards.length > 0) {
       <div class="kpi-cards-grid">

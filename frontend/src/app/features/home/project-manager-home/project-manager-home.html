@@ -1,9 +1,5 @@
-<div class="dashboard-container">
-  
-  <div class="dashboard-header">
-    <h1 class="page-title">{{ workspace()?.title }}</h1>
-    <p class="welcome-msg">{{ workspace()?.welcomeMessage }}</p>
-  </div>
+<div class="home-workspace">
+  <app-page-header [title]="workspace()?.welcomeMessage || ''" />
 
   @if (workspace(); as data) {
     <!-- Row 1: KPI Cards -->

@@ -13,27 +13,27 @@
   justify-content: space-between;
   align-items: baseline;
   margin-bottom: 1.5rem;
-  
+
   h3 {
     margin: 0;
     font-size: 1rem;
     font-weight: 700;
     color: var(--text-color, #111827);
   }
-  
+
   .header-subtitle {
     font-weight: 500;
     color: var(--primary-color, #3b82f6);
     font-size: 0.875rem;
     margin-left: 0.5rem;
   }
-  
+
   .view-all-link {
     font-size: 0.875rem;
     color: var(--primary-color, #3b82f6);
     text-decoration: none;
     font-weight: 600;
-    
+
     &:hover {
       text-decoration: underline;
     }
@@ -43,6 +43,7 @@
 .list-content {
   overflow-y: auto;
   max-height: 450px;
+  min-height: 250px;
 }
 
 .engagements-list {
@@ -54,15 +55,15 @@
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  padding: 0.75rem 0.5rem;
+  padding: 0.75rem 0;
   border-bottom: 1px solid var(--surface-border, #e5e7eb);
   text-decoration: none;
   transition: background-color 0.2s;
-  
+
   &:last-child {
     border-bottom: none;
   }
-  
+
   &:first-child {
     padding-top: 0;
   }
@@ -71,10 +72,10 @@
 .engagement-item.clickable {
   cursor: pointer;
   border-radius: 8px;
-  
+
   &:hover {
     background-color: var(--surface-ground, #f9fafb);
-    
+
     .engagement-name {
       color: var(--primary-color, #3b82f6);
     }
@@ -93,7 +94,7 @@
 }
 
 .engagement-name {
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.95rem;
   color: var(--text-color, #111827);
   white-space: nowrap;
@@ -133,10 +134,25 @@
   min-width: 90px;
 }
 
-.status-ready { background: #ecfdf5; color: #059669; }
-.status-in-progress { background: #fffbeb; color: #d97706; }
-.status-at-risk { background: #fef2f2; color: #dc2626; }
-.status-default { background: #f3f4f6; color: #4b5563; }
+.status-ready {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.status-in-progress {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.status-at-risk {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.status-default {
+  background: #f3f4f6;
+  color: #4b5563;
+}
 
 .engagement-progress-col {
   width: 140px;
@@ -158,11 +174,22 @@
   height: 100%;
   border-radius: 4px;
   transition: width 0.3s ease;
-  
-  &.fill-ready { background-color: #10b981; }
-  &.fill-at-risk { background-color: #ef4444; }
-  &.fill-in-progress { background-color: #f59e0b; }
-  &.fill-default { background-color: #3b82f6; }
+
+  &.fill-ready {
+    background-color: #10b981;
+  }
+
+  &.fill-at-risk {
+    background-color: #ef4444;
+  }
+
+  &.fill-in-progress {
+    background-color: #f59e0b;
+  }
+
+  &.fill-default {
+    background-color: #3b82f6;
+  }
 }
 
 .progress-text {

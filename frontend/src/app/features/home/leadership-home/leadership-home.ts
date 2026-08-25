@@ -30,7 +30,8 @@ import { KpiOptionDto, KpiReportResponse, PeriodPreset } from './models/kpi-repo
     InlineSVGModule,
     DashboardKpiCardComponent,
     DashboardEngagementsListComponent,
-    DashboardCriticalBlockersComponent
+    DashboardCriticalBlockersComponent,
+    PageHeaderComponent
   ],
   templateUrl: './leadership-home.html',
   styleUrl: './leadership-home.scss'
