@@ -23,6 +23,12 @@
   }
 }
 
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .modal-body {
   padding: 1.5rem;
   display: flex;
