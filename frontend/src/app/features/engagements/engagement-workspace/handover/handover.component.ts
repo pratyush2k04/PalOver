@@ -18,6 +18,8 @@ import { KickoffReadinessDto, KickoffReadinessService } from '@shared/services/k
 import { EngagementInfoDto } from '../../models/engagement.model';
 import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
 import { ENGAGEMENT_ROUTES } from '@shared/constants/app.constants';
+import { DialogService } from '@common/services/dialog/dialog.service';
+import { AddCommitmentDialogComponent, AddCommitmentDialogData } from './dialogs/add-commitment-dialog/add-commitment-dialog.component';
 import {
   HANDOVER_MESSAGES,
   HANDOVER_SENTIMENT_OPTIONS,
@@ -99,6 +101,7 @@ export class HandoverComponent {
   private kickoffReadinessService = inject(KickoffReadinessService);
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
+  private dialog = inject(DialogService);
   private fb = inject(FormBuilder);
 
   private parentParamMap = toSignal(this.route.parent!.paramMap);
@@ -140,6 +143,19 @@ export class HandoverComponent {
     }
   }
 
+  getCommitmentTypeTone(typeId: number): StatusBadgeTone {
+    switch (typeId) {
+      case 1:
+        return 'info';
+      case 2:
+        return 'success';
+      case 3:
+        return 'warning';
+      default:
+        return 'neutral';
+    }
+  }
+
   clientContextForm: FormGroup = this.fb.group({
     clientBackground: ['', [Validators.maxLength(MAX_FREE_TEXT_LENGTH)]],
     businessProblem: ['', [Validators.required, Validators.maxLength(MAX_FREE_TEXT_LENGTH)]],
@@ -172,6 +188,7 @@ export class HandoverComponent {
   }));
 
   isSubmitted = computed(() => this.handover()?.status === 'Submitted');
+  hasHandoverDraft = computed(() => !!this.handover()?.handoverId);
   newCommitmentTouched = signal(false);
 
   isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
@@ -311,25 +328,20 @@ export class HandoverComponent {
     });
   }
 
-  addCommitment() {
+  openAddCommitmentDialog(): void {
     const id = this.engagementId();
     if (!id) return;
 
-    const currentNew = this.newCommitment();
-    if (!currentNew.description || !currentNew.title) {
-      return;
-    }
+    const data: AddCommitmentDialogData = { engagementId: id };
+    const dialogRef = this.dialog.open<AddCommitmentDialogComponent, AddCommitmentDialogData, CommitmentDto>(
+      AddCommitmentDialogComponent,
+      { data }
+    );
 
-    this.handoverService.addCommitment(id, currentNew).subscribe({
-      next: (data) => {
-        this.commitments.update((c) => [...c, data]);
-        this.newCommitment.set(this.emptyCommitment());
-        this.newCommitmentTouched.set(false);
-        this.showMessage(HANDOVER_MESSAGES.COMMITMENT_ADDED, false);
-      },
-      error: (err) => {
-        this.showMessage(this.extractErrorMessage(err, HANDOVER_MESSAGES.COMMITMENT_ADD_ERROR), true);
-      },
+    dialogRef.closed$.subscribe((response) => {
+      if (!response) return;
+      this.commitments.update((c) => [...c, response]);
+      this.toastService.success(HANDOVER_MESSAGES.COMMITMENT_ADDED);
     });
   }
 
@@ -375,10 +387,10 @@ export class HandoverComponent {
           return arr;
         });
         this.editingCommitmentId.set(null);
-        this.showMessage(HANDOVER_MESSAGES.COMMITMENT_UPDATED, false);
+        this.toastService.success(HANDOVER_MESSAGES.COMMITMENT_UPDATED);
       },
       error: (err) => {
-        this.showMessage(this.extractErrorMessage(err, HANDOVER_MESSAGES.COMMITMENT_UPDATE_ERROR), true);
+        this.toastService.error(this.extractErrorMessage(err, HANDOVER_MESSAGES.COMMITMENT_UPDATE_ERROR));
       },
     });
   }
@@ -399,11 +411,11 @@ export class HandoverComponent {
       next: () => {
         this.commitments.update((c) => c.filter((item) => item.commitmentId !== commitmentId));
         this.pendingDeleteId.set(null);
-        this.showMessage(HANDOVER_MESSAGES.COMMITMENT_DELETED, false);
+        this.toastService.success(HANDOVER_MESSAGES.COMMITMENT_DELETED);
       },
       error: (err) => {
         this.pendingDeleteId.set(null);
-        this.showMessage(this.extractErrorMessage(err, HANDOVER_MESSAGES.COMMITMENT_DELETE_ERROR), true);
+        this.toastService.error(this.extractErrorMessage(err, HANDOVER_MESSAGES.COMMITMENT_DELETE_ERROR));
       },
     });
   }
@@ -477,7 +489,7 @@ export class HandoverComponent {
     request$.subscribe({
       next: (data) => {
         this.editingRealisticCommitmentId.set(null);
-        this.showMessage(HANDOVER_MESSAGES.REALISTIC_SAVED, false);
+        this.toastService.success(HANDOVER_MESSAGES.REALISTIC_SAVED);
         this.handoverService.getHandover(id).subscribe({
           next: (refreshed) => {
             this.commitments.set(refreshed.commitments || []);
@@ -485,10 +497,7 @@ export class HandoverComponent {
         });
       },
       error: (err) => {
-        this.showMessage(
-          this.extractErrorMessage(err, HANDOVER_MESSAGES.REALISTIC_SAVE_ERROR),
-          true,
-        );
+        this.toastService.error(this.extractErrorMessage(err, HANDOVER_MESSAGES.REALISTIC_SAVE_ERROR));
       },
     });
   }

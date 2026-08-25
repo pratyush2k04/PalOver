@@ -1,0 +1,56 @@
+@use '../../../../../../../styles/tokens' as *;
+@use '../../../../../../../styles/mixins' as *;
+
+.dialog-container {
+  background-color: $color-surface;
+  border-radius: $radius-lg;
+  width: min(35rem, calc(100vw - 2rem));
+  overflow: hidden;
+}
+
+.dialog-header {
+  padding: $spacing-5 $spacing-6;
+  border-bottom: 1px solid $color-border-soft;
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: $color-text;
+    margin: 0;
+  }
+}
+
+.dialog-body {
+  padding: $spacing-6;
+  max-height: 70vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+}
+
+.form-row {
+  display: flex;
+  gap: $spacing-4;
+  align-items: flex-start;
+}
+
+.form-row-timeline {
+  display: flex;
+  gap: $spacing-4;
+  align-items: flex-start;
+}
+
+.dialog-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: $spacing-3;
+  padding: $spacing-4 $spacing-6;
+  background-color: $color-bg;
+  border-top: 1px solid $color-border-soft;
+
+  app-button {
+    min-width: 6.25rem;
+  }
+}

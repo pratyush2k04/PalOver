@@ -34,6 +34,10 @@ export const HANDOVER_LABELS = {
   ADD_NEW_COMMITMENT: 'Add New Commitment',
   ACKNOWLEDGEMENT_MESSAGE_REQ: 'Acknowledgement Message *',
   ACKNOWLEDGEMENT_MESSAGE: 'Acknowledgement Message',
+  COMMITMENT_TYPE: 'Commitment Type',
+  DESCRIPTION: 'Description',
+  TIMELINE: 'Timeline',
+  UNIT: 'Unit',
 } as const;
 
 export const HANDOVER_PLACEHOLDERS = {
@@ -41,8 +45,8 @@ export const HANDOVER_PLACEHOLDERS = {
   BUSINESS_PROBLEM: 'What core problem are we solving?',
   CLIENT_SENTIMENT: '-Select-',
   DEAL_ORIGIN: 'e.g. RFP, Direct Sales, Partner...',
-  TITLE_REQ: 'Title *',
-  DESCRIPTION_REQ: 'Description *',
+  TITLE_REQ: 'Enter commitment title...',
+  DESCRIPTION_REQ: 'Enter commitment description...',
   TITLE: 'Title',
   DESCRIPTION: 'Description',
   REALISTIC_DESCRIPTION: 'Realistic description',
@@ -83,4 +87,5 @@ export const HANDOVER_MESSAGES = {
   DESCRIPTION_REQUIRED: 'Description is required.',
   TITLE_AND_DESC_REQUIRED: 'Title and Description are required.',
   ACK_MESSAGE_REQUIRED: 'An acknowledgement message is required when the realistic timeline differs from the promised timeline.',
+  SAVE_DRAFT_FIRST: 'Save draft first to add commitments.',
 } as const;

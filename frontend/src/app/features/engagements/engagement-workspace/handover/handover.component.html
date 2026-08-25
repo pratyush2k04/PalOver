@@ -114,7 +114,23 @@
 
     <form [formGroup]="clientContextForm">
       <div class="section commitments">
-        <h3>{{ HANDOVER_LABELS.COMMITMENTS }}</h3>
+        <div class="commitments-header">
+          <h3>{{ HANDOVER_LABELS.COMMITMENTS }}</h3>
+          @if (isPreSales() && !isSubmitted()) {
+            <div class="header-action-group">
+              @if (!hasHandoverDraft()) {
+                <span class="save-draft-hint">{{ HANDOVER_MESSAGES.SAVE_DRAFT_FIRST }}</span>
+              }
+              <app-button
+                variant="flat"
+                [disabled]="!hasHandoverDraft()"
+                (click)="openAddCommitmentDialog()"
+              >
+                + {{ HANDOVER_BUTTONS.ADD_COMMITMENT }}
+              </app-button>
+            </div>
+          }
+        </div>
 
         @if (commitments().length === 0) {
           <app-empty-state message="No Commitments" />
@@ -128,21 +144,35 @@
                   <div class="square-header">
                     <span class="square-label">{{ HANDOVER_LABELS.PROMISED }}</span>
                     @if (isPreSales() && !isSubmitted() && editingCommitmentId() !== c.commitmentId) {
-                      <app-button
-                        variant="icon"
-                        (click)="startEditCommitment(c)"
-                        ariaLabel="Edit promised commitment"
-                      >
-                        &#9998;
-                      </app-button>
+                      <div class="card-header-actions">
+                        <app-button
+                          variant="stroked"
+                          size="sm"
+                          (click)="startEditCommitment(c)"
+                          ariaLabel="Edit promised commitment"
+                        >
+                          Edit
+                        </app-button>
+                        @if (pendingDeleteId() === c.commitmentId) {
+                          <span class="confirm-inline">{{ HANDOVER_LABELS.REMOVE_CONFIRM }}</span>
+                          <app-button variant="danger" size="sm" (click)="confirmDeleteCommitment(c.commitmentId)">
+                            {{ HANDOVER_BUTTONS.YES }}
+                          </app-button>
+                          <app-button variant="stroked" size="sm" (click)="cancelDeleteCommitment()">{{ HANDOVER_BUTTONS.CANCEL }}</app-button>
+                        } @else {
+                          <app-button variant="danger" size="sm" (click)="requestDeleteCommitment(c.commitmentId)">
+                            {{ HANDOVER_BUTTONS.DELETE }}
+                          </app-button>
+                        }
+                      </div>
                     }
                   </div>
 
                   @if (editingCommitmentId() !== c.commitmentId) {
                     <div class="content-header">
-                      <div>
+                      <div class="title-with-badge">
                         <h4>{{ c.title }}</h4>
-                        <p class="type-info">
+                        <app-status-badge [tone]="getCommitmentTypeTone(c.commitmentTypeId)">
                           {{
                             c.commitmentTypeId === 1
                               ? HANDOVER_LABELS.SOFTWARE
@@ -150,7 +180,7 @@
                                 ? HANDOVER_LABELS.SERVICES
                                 : HANDOVER_LABELS.TRAINING
                           }}
-                        </p>
+                        </app-status-badge>
                       </div>
                       <span class="timeline-info">{{ formatTimeline(c.timeline, c.timelineUnit) }}</span>
                     </div>
@@ -198,22 +228,6 @@
                         {{ HANDOVER_BUTTONS.SAVE }}
                       </app-button>
                       <app-button variant="stroked" size="sm" (click)="cancelEditCommitment()">{{ HANDOVER_BUTTONS.CANCEL }}</app-button>
-                    </div>
-                  }
-
-                  @if (isPreSales() && !isSubmitted() && editingCommitmentId() !== c.commitmentId) {
-                    <div class="row-actions">
-                      @if (pendingDeleteId() === c.commitmentId) {
-                        <span class="confirm-inline">{{ HANDOVER_LABELS.REMOVE_CONFIRM }}</span>
-                        <app-button variant="danger" size="sm" (click)="confirmDeleteCommitment(c.commitmentId)">
-                          {{ HANDOVER_BUTTONS.YES }}
-                        </app-button>
-                        <app-button variant="stroked" size="sm" (click)="cancelDeleteCommitment()">{{ HANDOVER_BUTTONS.CANCEL }}</app-button>
-                      } @else {
-                        <app-button variant="danger" size="sm" (click)="requestDeleteCommitment(c.commitmentId)">
-                          {{ HANDOVER_BUTTONS.DELETE }}
-                        </app-button>
-                      }
                     </div>
                   }
                 </div>
@@ -353,64 +367,7 @@
           </div>
         }
 
-        @if (isPreSales() && !isSubmitted()) {
-          <div class="add-commitment-form">
-            <div class="add-commitment-form-inner">
-              <h4>{{ HANDOVER_LABELS.ADD_NEW_COMMITMENT }}</h4>
-              <div class="form-row">
-                <input
-                  type="text"
-                  [(ngModel)]="newCommitment().title"
-                  [ngModelOptions]="{ standalone: true }"
-                  maxlength="100"
-                  [placeholder]="HANDOVER_PLACEHOLDERS.TITLE_REQ"
-                  [class.is-invalid]="newCommitmentTouched() && !newCommitment().title"
-                  style="flex: 2"
-                />
-                <app-select
-                  id="new-commitment-type"
-                  [(ngModel)]="newCommitment().commitmentTypeId"
-                  [ngModelOptions]="{ standalone: true }"
-                  [options]="commitmentTypeOptions"
-                  style="flex: 1"
-                />
-              </div>
-              <div class="form-row">
-                <textarea
-                  [(ngModel)]="newCommitment().description"
-                  [ngModelOptions]="{ standalone: true }"
-                  maxlength="2000"
-                  [placeholder]="HANDOVER_PLACEHOLDERS.DESCRIPTION_REQ"
-                  rows="2"
-                  [class.is-invalid]="newCommitmentTouched() && !newCommitment().description"
-                ></textarea>
-              </div>
-              <div class="form-row form-row-timeline">
-                <input
-                  type="number"
-                  min="1"
-                  [(ngModel)]="newCommitment().timeline"
-                  [ngModelOptions]="{ standalone: true }"
-                  [placeholder]="HANDOVER_PLACEHOLDERS.TIMELINE"
-                />
-                <app-select
-                  id="new-commitment-unit"
-                  [(ngModel)]="newCommitment().timelineUnit"
-                  [ngModelOptions]="{ standalone: true }"
-                  [options]="timelineUnitOptions"
-                />
-              </div>
-              @if (newCommitmentTouched() && (!newCommitment().title || !newCommitment().description)) {
-                <div class="invalid-feedback">
-                  {{ HANDOVER_MESSAGES.TITLE_AND_DESC_REQUIRED }}
-                </div>
-              }
-              <div class="row-actions add-form-actions">
-                <app-button variant="flat" (click)="addCommitment()">{{ HANDOVER_BUTTONS.ADD_COMMITMENT }}</app-button>
-              </div>
-            </div>
-          </div>
-        }
+
       </div>
     </form>
   </div>

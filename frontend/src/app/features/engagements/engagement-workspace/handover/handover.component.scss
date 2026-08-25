@@ -54,6 +54,30 @@
   border-top: 1px solid $color-border-soft;
 }
 
+.commitments-header {
+  @include flex-between;
+  padding-bottom: $spacing-2;
+  margin-bottom: $spacing-4;
+
+  h3 {
+    margin: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+.header-action-group {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+}
+
+.save-draft-hint {
+  font-size: 0.8125rem;
+  color: $color-text-muted;
+  font-style: italic;
+}
+
 .section h3 {
   margin-top: 0;
   border-bottom: 1px solid $color-border-soft;
@@ -185,7 +209,7 @@ select {
 
 .commitment-card {
   display: flex;
-  min-height: 240px;
+  min-height: 120px;
   background: $color-surface;
   border: 1px solid $color-border-soft;
   border-radius: $radius-md;
@@ -229,8 +253,13 @@ select {
   align-items: center;
   padding-bottom: 0.625rem;
   margin-bottom: 0.25rem;
-  border-bottom: 1px solid $color-border-soft;
   min-height: 2.5rem;
+}
+
+.card-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .square-label {
@@ -266,6 +295,17 @@ select {
   margin-bottom: 0.5rem;
 }
 
+.title-with-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+
+  h4 {
+    margin: 0;
+  }
+}
+
 .realistic-header {
   justify-content: space-between;
 }
@@ -286,18 +326,23 @@ select {
   @include status-badge($color-danger-bg, $color-danger-text);
   border: 1px solid $color-danger-border;
 }
-.click-to-edit-placeholder {
-  background: transparent;
+.click-to-edit-placeholder,
+.realistic-square p.empty-state {
+  background: $color-bg;
   border: 1px dashed $color-border;
+  border-radius: $radius-sm;
   color: $color-text-fainter;
   padding: 1rem;
   text-align: center;
   font-style: italic;
   width: 100%;
   flex: 1;
+  min-height: 4rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0;
+  box-sizing: border-box;
 
   &:hover {
     border-color: $color-primary;
