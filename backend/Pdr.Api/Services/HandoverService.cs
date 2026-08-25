@@ -21,6 +21,7 @@ public class HandoverService : IHandoverService
     private readonly IKickoffReadinessService _kickoffReadinessService;
     private readonly INotificationService _notificationService;
     private readonly IEngagementAccessService _engagementAccessService;
+    private readonly IUserRepository _userRepository;
 
     public HandoverService(
         IHandoverRepository handoverRepository,
@@ -28,7 +29,8 @@ public class HandoverService : IHandoverService
         IRealisticCommitmentRepository realisticCommitmentRepository,
         IKickoffReadinessService kickoffReadinessService,
         INotificationService notificationService,
-        IEngagementAccessService engagementAccessService)
+        IEngagementAccessService engagementAccessService,
+        IUserRepository userRepository)
     {
         _handoverRepository = handoverRepository;
         _commitmentRepository = commitmentRepository;
@@ -36,6 +38,7 @@ public class HandoverService : IHandoverService
         _kickoffReadinessService = kickoffReadinessService;
         _notificationService = notificationService;
         _engagementAccessService = engagementAccessService;
+        _userRepository = userRepository;
     }
 
     public async Task<HandoverInfoDto> GetHandoverAsync(int engagementId)
@@ -113,6 +116,7 @@ public class HandoverService : IHandoverService
         await _engagementAccessService.ValidateAccessAsync(engagementId);
 
         var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
+        var isFirstDraft = handover == null;
 
         if (handover == null)
         {
@@ -136,6 +140,22 @@ public class HandoverService : IHandoverService
         handover.DealOrigin = request.DealOrigin;
 
         await _handoverRepository.SaveChangesAsync();
+
+        if (isFirstDraft)
+        {
+            var admins = await _userRepository.GetAdminsAsync();
+            if (admins.Count > 0)
+            {
+                await _notificationService.CreateFromTemplateAsync(
+                    NotificationConstants.TemplateKeys.HandoverDraftFirstSaved,
+                    admins.Select(a => a.Id),
+                    JsonSerializer.Serialize(new HandoverDraftFirstSavedMapper.HandoverDraftFirstSavedPayload(
+                        HandoverId: handover.HandoverId,
+                        TriggerUserId: int.Parse(userIdStr),
+                        EngagementId: engagementId)),
+                    DateTime.UtcNow);
+            }
+        }
 
         return await GetHandoverAsync(engagementId);
     }
