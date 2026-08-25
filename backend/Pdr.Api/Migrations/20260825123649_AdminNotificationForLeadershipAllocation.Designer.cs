@@ -13,8 +13,8 @@ using Pdr.Api.Data;
 namespace Pdr.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260825121831_AddHandoverDraftFirstSavedNotificationTemplate")]
-    partial class AddHandoverDraftFirstSavedNotificationTemplate
+    [Migration("20260825123649_AdminNotificationForLeadershipAllocation")]
+    partial class AdminNotificationForLeadershipAllocation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -4895,7 +4895,7 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            Id = 19,
+                            Id = 23697,
                             Body = "{ActorName} started the handover for {EngagementName}.",
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",

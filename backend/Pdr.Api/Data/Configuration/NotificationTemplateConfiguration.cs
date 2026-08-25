@@ -244,7 +244,7 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             },
             new NotificationTemplate
             {
-                Id = 19,
+                Id = 23697,
                 Key = NotificationConstants.TemplateKeys.HandoverDraftFirstSaved,
                 Title = "Handover Started — {EngagementName}",
                 Body = "{ActorName} started the handover for {EngagementName}.",
