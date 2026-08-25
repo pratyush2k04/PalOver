@@ -12,6 +12,7 @@ import { LoadingSpinnerComponent } from '@common/components/loading-spinner/load
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
 import { CommunicationCadenceService } from '@features/engagements/services/communication-cadence.service';
+import { KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
 import { EngagementParticipant } from '@features/engagements/models/cadence.model';
 import {
   MarkNaDialogComponent,
@@ -60,6 +61,7 @@ export class EngagementChecklistComponent {
   private authService = inject(AuthService);
   private dialog = inject(DialogService);
   private cadenceService = inject(CommunicationCadenceService);
+  private kickoffReadinessService = inject(KickoffReadinessService);
 
   private paramMap = toSignal(this.route.parent!.paramMap);
 
@@ -215,6 +217,19 @@ export class EngagementChecklistComponent {
     });
   }
 
+  /**
+   * Applies a mutation's returned checklist and, unless told otherwise, refreshes the
+   * shared kickoff readiness score — the backend check only reads IsMandatory/IsApplicable/
+   * Status, so owner-only changes should pass refreshReadiness: false to skip a wasted fetch.
+   */
+  private applyUpdatedChecklist(updatedChecklist: EngagementChecklist, opts: { refreshReadiness?: boolean } = {}): void {
+    this.checklist.set(updatedChecklist);
+    this.isUpdating.set(false);
+    if (opts.refreshReadiness ?? true) {
+      this.kickoffReadinessService.refresh();
+    }
+  }
+
   toggleItemStatus(item: EngagementChecklistItem): void {
     const engId = this.engagementId();
     if (!engId || !this.canToggleStatus() || !item.isApplicable || this.isUpdating()) {
@@ -231,10 +246,7 @@ export class EngagementChecklistComponent {
     this.isUpdating.set(true);
 
     this.checklistService.updateItemStatus(engId, item.id, { status: nextStatus }).subscribe({
-      next: (updatedChecklist) => {
-        this.checklist.set(updatedChecklist);
-        this.isUpdating.set(false);
-      },
+      next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist),
       error: () => {
         this.isUpdating.set(false);
       }
@@ -269,10 +281,7 @@ export class EngagementChecklistComponent {
           link: result.link,
           markComplete: result.markComplete
         }).subscribe({
-          next: (updatedChecklist) => {
-            this.checklist.set(updatedChecklist);
-            this.isUpdating.set(false);
-          },
+          next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist),
           error: () => {
             this.isUpdating.set(false);
           }
@@ -304,10 +313,7 @@ export class EngagementChecklistComponent {
           isApplicable: false,
           reason: result.reason
         }).subscribe({
-          next: (updatedChecklist) => {
-            this.checklist.set(updatedChecklist);
-            this.isUpdating.set(false);
-          },
+          next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist),
           error: () => {
             this.isUpdating.set(false);
           }
@@ -326,10 +332,7 @@ export class EngagementChecklistComponent {
     this.checklistService.updateItemApplicability(engId, item.id, {
       isApplicable: true
     }).subscribe({
-      next: (updatedChecklist) => {
-        this.checklist.set(updatedChecklist);
-        this.isUpdating.set(false);
-      },
+      next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist),
       error: () => {
         this.isUpdating.set(false);
       }
@@ -361,10 +364,7 @@ export class EngagementChecklistComponent {
           approved: result.approved,
           rejectionReason: result.rejectionReason
         }).subscribe({
-          next: (updatedChecklist) => {
-            this.checklist.set(updatedChecklist);
-            this.isUpdating.set(false);
-          },
+          next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist),
           error: () => {
             this.isUpdating.set(false);
           }
@@ -383,10 +383,7 @@ export class EngagementChecklistComponent {
     this.isUpdating.set(true);
 
     this.checklistService.updateItemOwner(engId, item.id, { personId }).subscribe({
-      next: (updatedChecklist) => {
-        this.checklist.set(updatedChecklist);
-        this.isUpdating.set(false);
-      },
+      next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist, { refreshReadiness: false }),
       error: () => {
         this.isUpdating.set(false);
       }
@@ -417,10 +414,7 @@ export class EngagementChecklistComponent {
           reason: result.reason,
           personId: result.personId
         }).subscribe({
-          next: (updatedChecklist) => {
-            this.checklist.set(updatedChecklist);
-            this.isUpdating.set(false);
-          },
+          next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist),
           error: () => {
             this.isUpdating.set(false);
           }
@@ -437,10 +431,7 @@ export class EngagementChecklistComponent {
 
     this.isUpdating.set(true);
     this.checklistService.unblockItem(engId, item.id).subscribe({
-      next: (updatedChecklist) => {
-        this.checklist.set(updatedChecklist);
-        this.isUpdating.set(false);
-      },
+      next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist),
       error: () => {
         this.isUpdating.set(false);
       }
