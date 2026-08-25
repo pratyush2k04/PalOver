@@ -8,6 +8,11 @@
   min-height: 100%;
   box-sizing: border-box;
   font-family: $font-family-base;
+
+  @media (max-width: 768px) {
+    padding: $spacing-3 $spacing-4;
+    gap: $spacing-3;
+  }
 }
 
 .workspace-header-card {
@@ -19,6 +24,13 @@
   border-radius: $radius-xl;
   box-shadow: $shadow-sm;
   gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    padding: $spacing-4;
+    gap: $spacing-4;
+  }
 }
 
 .header-main-info {
@@ -154,6 +166,10 @@
   background-color: $color-border-soft;
   margin: 0 $spacing-8;
   flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
 
 .header-readiness-status {
@@ -212,6 +228,15 @@
 
 .workspace-tabs-wrapper {
   margin-top: $spacing-1;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+
+  /* Hide scrollbar for a clean horizontal tab scroll */
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .workspace-content {
