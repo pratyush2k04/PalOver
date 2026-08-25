@@ -161,6 +161,19 @@
   align-items: center;
   gap: $spacing-5;
   flex-shrink: 0;
+  cursor: pointer;
+  border-radius: $radius-md;
+  transition: background-color $transition-base;
+
+  &:hover,
+  &:focus-visible {
+    background-color: $color-surface-hover;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+  }
 }
 
 .readiness-details {

@@ -505,6 +505,12 @@ namespace Pdr.Api.Migrations
                             Id = 28,
                             Action = "AccessItemBlocked",
                             Details = "Access item '{itemName}' blocked on engagement {engagementName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            Action = "ReadinessOnePagerGenerated",
+                            Details = "Kickoff-readiness one-pager generated for engagement {engagementName} by {actorName}"
                         });
                 });
 
@@ -3172,12 +3178,6 @@ namespace Pdr.Api.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("is_deleted");
 
-                    b.Property<bool>("IsPossible")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true)
-                        .HasColumnName("is_possible");
-
                     b.Property<int>("Timeline")
                         .HasColumnType("integer")
                         .HasColumnName("timeline");
@@ -4875,6 +4875,19 @@ namespace Pdr.Api.Migrations
                             Key = "ResourcingGapFlagRaised",
                             LinkPattern = "/engagements/{EngagementId}/workspace/resources",
                             Title = "Resources Not Confirmed — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Body = "Commitment '{CommitmentTitle}' timeline variance flagged: {VarianceDescription}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 3,
+                            IsDeleted = false,
+                            Key = "CommitmentVarianceEscalated",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/handover",
+                            Title = "Commitment Variance — {EngagementName}",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });

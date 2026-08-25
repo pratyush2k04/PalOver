@@ -188,5 +188,12 @@ export class EngagementWorkspaceComponent {
       }
     });
   }
+
+  openReadinessOnePager(): void {
+    const engagementId = this.engagementId();
+    if (!engagementId) return;
+
+    window.open(`/engagements/${engagementId}/${ENGAGEMENT_ROUTES.READINESS_ONE_PAGER_PRINT}`, '_blank');
+  }
 }
 

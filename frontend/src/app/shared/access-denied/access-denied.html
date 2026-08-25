@@ -1,4 +1,17 @@
-<div class="placeholder-page">
-  <h1>Access Denied</h1>
-  <p>You do not have permission to view this page.</p>
+<div class="access-denied-container">
+  <div class="access-denied-card">
+    <app-alert variant="danger">
+      <div class="alert-content">
+        <div class="alert-header">
+          <span class="alert-icon" [inlineSVG]="'assets/icons/lock.svg'"></span>
+          <h2>Access Denied</h2>
+        </div>
+        <p>You are not allocated to this engagement workspace. If you believe this is an error, please contact your administrator or project manager to assign you access.</p>
+      </div>
+    </app-alert>
+
+    <div class="actions">
+      <app-button variant="flat" (click)="goHome()">Return to Home</app-button>
+    </div>
+  </div>
 </div>

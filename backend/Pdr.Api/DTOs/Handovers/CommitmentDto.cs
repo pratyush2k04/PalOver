@@ -12,4 +12,6 @@ public class CommitmentDto
     public int Timeline { get; set; }
     public CommitmentTimelineUnitEnum TimelineUnit { get; set; }
     public RealisticCommitmentDto? RealisticCommitment { get; set; }
+    public bool IsVarianceFlagged { get; set; }
+    public string? VarianceDescription { get; set; }
 }

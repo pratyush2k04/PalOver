@@ -10,8 +10,6 @@ export interface KickoffReadinessDto {
   handoverFieldsPassed: number;
   commitmentsApplicable: number;
   commitmentsPassed: number;
-  accessItemsApplicable: number;
-  accessItemsPassed: number;
   checklistItemsApplicable: number;
   checklistItemsPassed: number;
 }

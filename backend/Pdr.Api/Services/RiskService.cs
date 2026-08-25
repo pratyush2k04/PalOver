@@ -14,10 +14,12 @@ namespace Pdr.Api.Services;
 
 public class RiskService(
     IRiskRepository riskRepository,
-    ICurrentUserService currentUserService) : IRiskService
+    ICurrentUserService currentUserService,
+    IEngagementAccessService engagementAccessService) : IRiskService
 {
     public async Task<List<RiskDto>> GetRisksByEngagementAsync(int engagementId, RiskStatus? status = null, int? ownerId = null)
     {
+        await engagementAccessService.ValidateAccessAsync(engagementId);
         await SyncAutoCreatedRisksAsync(engagementId);
         var risks = await riskRepository.GetByEngagementIdAsync(engagementId, status, ownerId);
         if (!risks.Any())

@@ -16,6 +16,7 @@ public static class NotificationConstants
         public const string TechLeadAssigned = "TechLeadAssigned";
         public const string DocumentUploaded = "DocumentUploaded";
         public const string ResourcingGapFlagRaised = "ResourcingGapFlagRaised";
+        public const string CommitmentVarianceEscalated = "CommitmentVarianceEscalated";
     }
 
     public static class RiskCommentMention
@@ -27,6 +28,19 @@ public static class NotificationConstants
         public const string CommentSnippetKey = "CommentSnippet";
         public const string DefaultRiskTitle = "Risk";
         public const string DefaultAuthorName = "A team member";
+    }
+
+    public static class CommitmentVarianceEscalated
+    {
+        public const string TemplateKey = "CommitmentVarianceEscalated";
+        public const string ParseErrorMessage = "CommitmentVarianceEscalated notification data could not be parsed.";
+        public const string EngagementNameKey = "EngagementName";
+        public const string CommitmentTitleKey = "CommitmentTitle";
+        public const string VarianceDescriptionKey = "VarianceDescription";
+        public const string PercentGapKey = "PercentGap";
+        public const string WeekGapKey = "WeekGap";
+        public const string EngagementIdKey = "EngagementId";
+        public const string DefaultEngagementName = "Engagement";
     }
 
     public static class Messages

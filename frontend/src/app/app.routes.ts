@@ -20,7 +20,7 @@ import { authGuard } from '@shared/guards/auth.guard';
 import { adminGuard } from '@shared/guards/admin.guard';
 import { workspaceGuard } from '@shared/guards/workspace.guard';
 import { workspaceRedirectGuard } from '@shared/guards/workspace-redirect.guard';
-// import { engagementAccessGuard } from './core/guards/engagement-access.guard';
+import { engagementAccessGuard } from '@shared/guards/engagement-access.guard';
 
 export const routes: Routes = [
   // Public
@@ -32,7 +32,7 @@ export const routes: Routes = [
   // Layout-less Print Summary View
   {
     path: `${ENGAGEMENT_ROUTES.BASE}/:engagementId/${ENGAGEMENT_ROUTES.DAY_ONE_SUMMARY_PRINT}`,
-    canActivate: [authGuard],
+    canActivate: [authGuard, engagementAccessGuard],
     loadComponent: () =>
       import('./features/engagements/engagement-workspace/technical/day-one-summary-print/day-one-summary-print.component').then(
         (m) => m.DayOneSummaryPrintComponent,
@@ -42,10 +42,20 @@ export const routes: Routes = [
   // Layout-less Print Evidence Snapshot View
   {
     path: `${ENGAGEMENT_ROUTES.BASE}/:engagementId/${ENGAGEMENT_ROUTES.EVIDENCE_SNAPSHOT_PRINT}`,
-    canActivate: [authGuard],
+    canActivate: [authGuard, engagementAccessGuard],
     loadComponent: () =>
       import('./features/engagements/engagement-workspace/sign-off/evidence-snapshot-print/evidence-snapshot-print.component').then(
         (m) => m.EvidenceSnapshotPrintComponent,
+      ),
+  },
+
+  // Layout-less Print Kickoff Readiness One-Pager View
+  {
+    path: `${ENGAGEMENT_ROUTES.BASE}/:engagementId/${ENGAGEMENT_ROUTES.READINESS_ONE_PAGER_PRINT}`,
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/engagements/engagement-workspace/readiness-one-pager-print/readiness-one-pager-print.component').then(
+        (m) => m.ReadinessOnePagerPrintComponent,
       ),
   },
 
