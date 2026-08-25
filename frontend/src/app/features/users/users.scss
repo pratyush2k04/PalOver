@@ -17,6 +17,10 @@
   font-family: $font-family-base;
   color: $color-text;
 
+  @media (max-width: 768px) {
+    padding: $spacing-4;
+  }
+
   app-page-header {
     display: block;
     margin-bottom: 0;
@@ -37,6 +41,10 @@
     .search-box {
       position: relative;
       width: 17.5rem;
+
+      @media (max-width: 768px) {
+        width: 100%;
+      }
 
       .search-icon {
         position: absolute;
@@ -126,10 +134,12 @@
     border: 1px solid $color-border-soft;
     border-radius: $radius-lg;
     box-shadow: $shadow-sm;
-    overflow: hidden;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 
     .users-table {
       width: 100%;
+      min-width: 44rem;
       border-collapse: collapse;
       text-align: left;
 
