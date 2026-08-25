@@ -128,13 +128,15 @@
 }
 
 @media print {
-  :host { height: auto !important; overflow: visible !important; }
+  :host { display: block !important; height: auto !important; overflow: visible !important; }
   body, html { background: #fff !important; margin: 0 !important; padding: 0 !important; }
   .no-print { display: none !important; }
-  .print-page-wrapper { background: #fff !important; padding: 0 !important; min-height: auto !important; }
-  .print-document { margin: 0 !important; padding: 0 !important; max-width: 100% !important; box-shadow: none !important; border-radius: 0 !important; }
+  .print-page-wrapper { display: block !important; background: #fff !important; padding: 0 !important; min-height: auto !important; }
+  .print-document { display: block !important; margin: 0 !important; padding: 0 !important; max-width: 100% !important; box-shadow: none !important; border-radius: 0 !important; }
+  .print-document > * { margin-bottom: 1rem !important; display: block; }
+  .print-document > *:last-child { margin-bottom: 0 !important; }
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  app-summary-print-hero, app-summary-print-pillars, app-summary-print-blockers, .doc-reference-box {
+  app-summary-print-hero, .doc-reference-box, .doc-footer {
     break-inside: avoid;
     page-break-inside: avoid;
   }

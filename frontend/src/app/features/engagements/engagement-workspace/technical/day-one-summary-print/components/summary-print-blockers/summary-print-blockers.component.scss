@@ -104,3 +104,10 @@
   font-size: 0.85rem;
   color: #15803d;
 }
+
+@media print {
+  .blockers-table tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
