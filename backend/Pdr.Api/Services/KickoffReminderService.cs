@@ -18,12 +18,14 @@ public class KickoffReminderService(
         if (template is null) return;
 
         var existingReminders = await kickoffReminderRepository.GetKickoffRemindersAsync(engagementId, template.Id);
+        var assignments = await engagementRepository.GetAssignmentsAsync(engagementId);
+        var hasChanges = false;
 
         foreach (var role in KickoffReminderConstants.ReceiverRoles)
         {
             // CreateFromTemplateAsync silently no-ops if this role is unfilled - check up front so we
             // don't attempt to schedule a notification for a role with no assignment.
-            var assignment = await engagementRepository.GetAssignmentByRoleIdAsync(engagementId, (int)role);
+            var assignment = assignments.FirstOrDefault(a => a.User.RoleId == (int)role);
             if (assignment is null) continue;
 
             foreach (var (thresholdDays, priority) in KickoffReminderConstants.Thresholds)
@@ -48,9 +50,14 @@ public class KickoffReminderService(
                 else if (match.ScheduledFor != scheduledFor)
                 {
                     match.ScheduledFor = scheduledFor;
-                    await notificationRepository.SaveChangesAsync();
+                    hasChanges = true;
                 }
             }
+        }
+
+        if (hasChanges)
+        {
+            await notificationRepository.SaveChangesAsync();
         }
     }
 
