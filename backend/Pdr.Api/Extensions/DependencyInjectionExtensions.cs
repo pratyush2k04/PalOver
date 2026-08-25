@@ -34,6 +34,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IClientContactTransitionRepository, ClientContactTransitionRepository>();
         services.AddScoped<IRiskRepository, RiskRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<IKickoffReminderRepository, KickoffReminderRepository>();
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
         services.AddScoped<IArchitectureValidationRepository, ArchitectureValidationRepository>();
         services.AddScoped<ISearchRepository, SearchRepository>();

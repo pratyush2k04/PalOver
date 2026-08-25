@@ -72,11 +72,5 @@ public class NotificationRepository(AppDbContext context) : INotificationReposit
     public async Task<NotificationTemplate?> GetTemplateByKeyAsync(string templateKey) =>
         await context.NotificationTemplates.FirstOrDefaultAsync(t => t.Key == templateKey);
 
-    public async Task<List<Notification>> GetKickoffRemindersAsync(int engagementId, int templateId) =>
-        await context.Notifications
-            .IgnoreQueryFilters()
-            .Where(n => n.TemplateId == templateId && EF.Functions.JsonContains(n.Data!, $"{{\"EngagementId\":{engagementId}}}"))
-            .ToListAsync();
-
     public async Task SaveChangesAsync() => await context.SaveChangesAsync();
 }

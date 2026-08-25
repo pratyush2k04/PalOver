@@ -12,6 +12,5 @@ public interface INotificationRepository
     Task<int> GetUnreadCountAsync(int userId);
     Task BulkDeleteAsync(IEnumerable<int> ids);
     Task<NotificationTemplate?> GetTemplateByKeyAsync(string templateKey);
-    Task<List<Notification>> GetKickoffRemindersAsync(int engagementId, int templateId);
     Task SaveChangesAsync();
 }
