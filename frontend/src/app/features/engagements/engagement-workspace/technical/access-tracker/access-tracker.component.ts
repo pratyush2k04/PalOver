@@ -3,13 +3,12 @@ import { Component, inject, input, output, signal, computed, effect, DestroyRef 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { catchError, of } from 'rxjs';
 import { TECHNICAL_READINESS_ROLES } from '@shared/constants/app.constants';
 import { TechnicalReadinessService } from '@features/engagements/services/technical-readiness.service';
 import { AuthService } from '@shared/services/auth';
 import { AccessItemDto } from '@features/engagements/models/access-tracker/access-tracker.dtos';
 import { AccessItemStatus } from '@features/engagements/models/access-tracker/access-tracker.enums';
-import { KickoffReadinessDto, KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
+import { KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
 import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
@@ -69,7 +68,7 @@ export class AccessTrackerComponent {
   itemToDelete = signal<AccessItemDto | null>(null);
   isDeleting = signal<boolean>(false);
 
-  kickoffReadiness = signal<KickoffReadinessDto | null>(null);
+  kickoffReadiness = this.kickoffReadinessService.readiness;
   blockedItems = computed(() => this.accessItems().filter(i => i.status === 'Blocked'));
   accessTrackerFlaggedItems = computed<FlaggedItem[]>(() => [
     { label: 'access item(s) blocked', count: this.blockedItems().length }
@@ -86,16 +85,9 @@ export class AccessTrackerComponent {
       const id = this.engagementId();
       if (id) {
         this.loadItems(id);
-        this.loadKickoffReadiness(id);
+        this.kickoffReadinessService.track(id);
       }
     });
-  }
-
-  private loadKickoffReadiness(id: number) {
-    this.kickoffReadinessService.getReadiness(id).pipe(
-      takeUntilDestroyed(this.destroyRef),
-      catchError(() => of(null))
-    ).subscribe(data => this.kickoffReadiness.set(data));
   }
 
   loadItems(id: number) {
