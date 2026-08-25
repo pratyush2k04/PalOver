@@ -18,6 +18,18 @@
   color: #1e40af;
   font-family: $font-family-base;
 
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-3;
+    padding: $spacing-3 $spacing-4;
+
+    .share-btn {
+      justify-content: center;
+      width: 100%;
+    }
+  }
+
   &.ready {
     background-color: #f0fdf4;
     border-color: #bbf7d0;
