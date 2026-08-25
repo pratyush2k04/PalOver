@@ -50,36 +50,6 @@ public class AuditActionConfiguration : IEntityTypeConfiguration<AuditAction>
                 Id = (int)AuditActionEnum.UserDeleted,
                 Action = AuditActionEnum.UserDeleted.ToString(),
                 Details = "User {userName} was deleted by {actorName}"
-            },
-            new AuditAction
-            {
-                Id = (int)AuditActionEnum.KickoffReminderScheduled,
-                Action = AuditActionEnum.KickoffReminderScheduled.ToString(),
-                Details = "Kickoff readiness reminder scheduled for engagement {engagementName} ({thresholdLabel} before kickoff)"
-            },
-            new AuditAction
-            {
-                Id = (int)AuditActionEnum.KickoffReminderFired,
-                Action = AuditActionEnum.KickoffReminderFired.ToString(),
-                Details = "A {thresholdLabel}-before-kickoff readiness reminder was sent for engagement {engagementName}"
-            },
-            new AuditAction
-            {
-                Id = (int)AuditActionEnum.KickoffReminderSuppressed,
-                Action = AuditActionEnum.KickoffReminderSuppressed.ToString(),
-                Details = "Kickoff reminders for engagement {engagementName} ({thresholdsLabel} before kickoff on {kickoffDate}) were suppressed after readiness reached 100%"
-            },
-            new AuditAction
-            {
-                Id = (int)AuditActionEnum.KickoffReminderReactivated,
-                Action = AuditActionEnum.KickoffReminderReactivated.ToString(),
-                Details = "Kickoff reminders for engagement {engagementName} ({thresholdsLabel} before kickoff on {kickoffDate}) were reactivated after readiness dropped to {readinessScore}%"
-            },
-            new AuditAction
-            {
-                Id = (int)AuditActionEnum.KickoffReminderRetiredForBilling,
-                Action = AuditActionEnum.KickoffReminderRetiredForBilling.ToString(),
-                Details = "Kickoff reminders for engagement {engagementName} were retired after billing was signed off"
             });
     }
 }
