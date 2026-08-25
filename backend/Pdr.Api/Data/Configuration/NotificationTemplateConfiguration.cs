@@ -249,7 +249,7 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
                 Title = "Handover Started — {EngagementName}",
                 Body = "{ActorName} started the handover for {EngagementName}.",
                 DefaultPriority = NotificationPriority.Medium,
-                LinkPattern = "/engagements/{EngagementId}/workspace/handover",
+                LinkPattern = "/engagement-allocation",
                 CreatedAt = seedTimestamp,
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",

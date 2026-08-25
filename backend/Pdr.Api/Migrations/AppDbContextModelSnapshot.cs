@@ -4899,7 +4899,7 @@ namespace Pdr.Api.Migrations
                             DefaultPriority = 2,
                             IsDeleted = false,
                             Key = "HandoverDraftFirstSaved",
-                            LinkPattern = "/engagements/{EngagementId}/workspace/handover",
+                            LinkPattern = "/engagement-allocation",
                             Title = "Handover Started — {EngagementName}",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
