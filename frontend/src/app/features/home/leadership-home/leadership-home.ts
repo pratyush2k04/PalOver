@@ -14,6 +14,8 @@ import { InputComponent } from '@common/components/form/input/input';
 import { MultiSelectListComponent } from '@common/components/multi-select-list/multi-select-list';
 import { ButtonComponent } from '@common/components/button/button';
 import { DashboardKpiCardComponent } from '@shared/components/dashboard-kpi-card/dashboard-kpi-card.component';
+import { DashboardEngagementsListComponent } from '@shared/components/dashboard-engagements-list/dashboard-engagements-list';
+import { DashboardCriticalBlockersComponent } from '@shared/components/dashboard-critical-blockers/dashboard-critical-blockers';
 import { downloadCsv } from '@shared/utils/csv.util';
 import { KPI_PERIOD_STATUS, KPI_REPORT_MESSAGES, KPI_REPORT_PERIOD_OPTIONS } from '@shared/constants/app.constants';
 import { KpiReportService } from './services/kpi-report.service';
@@ -26,7 +28,9 @@ import { KpiOptionDto, KpiReportResponse, PeriodPreset } from './models/kpi-repo
     CommonModule,
     FormsModule,
     InlineSVGModule,
-    DashboardKpiCardComponent
+    DashboardKpiCardComponent,
+    DashboardEngagementsListComponent,
+    DashboardCriticalBlockersComponent
   ],
   templateUrl: './leadership-home.html',
   styleUrl: './leadership-home.scss'

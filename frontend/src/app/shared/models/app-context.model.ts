@@ -18,6 +18,25 @@ export interface WorkspaceMetadata {
   welcomeMessage: string;
   emptyState: string;
   cards: DashboardCard[];
+  engagements: DashboardEngagement[];
+  criticalBlockers: DashboardBlocker[];
+}
+
+export interface DashboardEngagement {
+  engagementId: number;
+  engagementName: string;
+  kickoffDate: string;
+  daysToGo: number;
+  readinessPercentage: number;
+  status: string;
+}
+
+export interface DashboardBlocker {
+  riskId: number;
+  projectName: string;
+  blockerDescription: string;
+  ownerName: string;
+  dueDate: string;
 }
 
 export interface HomeResponse {

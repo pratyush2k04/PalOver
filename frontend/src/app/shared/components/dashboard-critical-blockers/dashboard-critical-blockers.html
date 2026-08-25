@@ -1,0 +1,48 @@
+<div class="list-card">
+  <div class="list-header">
+    <h3>Needs attention</h3>
+    <a routerLink="/notifications" class="view-all-link">View my notifications</a>
+  </div>
+  
+  <div class="list-content custom-scrollbar">
+    <div class="blockers-list">
+      @for (blocker of blockers(); track blocker.riskId) {
+        <div class="blocker-item">
+          <div class="blocker-icon-container">
+            <span class="warning-icon" [inlineSVG]="'assets/icons/alert-circle.svg'"></span>
+          </div>
+          
+          <div class="blocker-details">
+            <div class="project-name">{{ blocker.projectName }}</div>
+            <div class="blocker-desc">{{ blocker.blockerDescription }}</div>
+          </div>
+          
+          <div class="blocker-meta">
+            <div class="owner-name">
+              <span class="avatar-sm">{{ blocker.ownerName.charAt(0) || 'U' }}</span>
+              {{ blocker.ownerName }}
+            </div>
+            
+            @if (blocker.dueDate) {
+              <div class="due-date" 
+                   [ngClass]="{'text-overdue': isOverdue(blocker.dueDate), 'text-warning': isToday(blocker.dueDate)}">
+                Due: {{ blocker.dueDate | date:'MMM d' }}
+              </div>
+            }
+          </div>
+          
+          <div class="blocker-actions">
+            <button class="btn-nudge">Nudge</button>
+            <button class="btn-icon">
+              <span [inlineSVG]="'assets/icons/message-square.svg'"></span>
+            </button>
+          </div>
+        </div>
+      } @empty {
+        <div class="empty-state">
+          No items need attention!
+        </div>
+      }
+    </div>
+  </div>
+</div>

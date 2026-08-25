@@ -1,20 +1,39 @@
-.home-workspace {
+.dashboard-container {
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  padding: 2rem;
-  margin: 0 auto;
+  gap: 1.5rem;
+}
 
-  .welcome-message {
-    font-size: 1.75rem;
+.dashboard-header {
+  .page-title {
+    font-size: 1.5rem;
     font-weight: 700;
-    color: #1a1a1a;
-    letter-spacing: -0.02em;
-    margin-bottom: 2rem;
+    color: var(--text-color, #1f2937);
+    margin: 0 0 0.25rem 0;
   }
+  
+  .welcome-msg {
+    font-size: 0.875rem;
+    color: var(--text-color-secondary, #6b7280);
+    margin: 0;
+  }
+}
 
-  .kpi-cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.main-content-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  width: 100%;
+  
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
   }
 }

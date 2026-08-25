@@ -9,10 +9,11 @@ using Pdr.Api.Services.Interfaces;
 using Pdr.Api.Models.Handover;
 using Pdr.Api.Models.Risks;
 using Pdr.Api.Models.AccessTracker;
+using Pdr.Api.Models.Notifications;
 
 namespace Pdr.Api.Services;
 
-public class HomeService(AppDbContext db) : IHomeService
+public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadinessService) : IHomeService
 {
     public async Task<HomeResponseDto> GetHomeAsync(int userId)
     {
@@ -32,7 +33,13 @@ public class HomeService(AppDbContext db) : IHomeService
             IsAdmin = user.IsAdmin,
         };
 
+        var myEngagementsQuery = db.EngagementAssignments
+            .Where(ea => ea.UserId == user.Id)
+            .Select(ea => ea.EngagementId);
+
         var cards = user.IsAdmin ? [] : await GetDashboardCardsAsync(user.Id, (RoleEnum)user.RoleId);
+        var engagements = user.IsAdmin ? [] : await GetDashboardEngagementsAsync(myEngagementsQuery);
+        var blockers = user.IsAdmin ? [] : await GetDashboardBlockersAsync(user.Id);
 
         var homeDto = new HomeDashboardDto
         {
@@ -40,7 +47,9 @@ public class HomeService(AppDbContext db) : IHomeService
             Title = ResolveTitle(user),
             WelcomeMessage = BuildWelcomeMessage(user),
             EmptyState = ResolveEmptyState(user),
-            Cards = cards
+            Cards = cards,
+            Engagements = engagements,
+            CriticalBlockers = blockers
         };
 
         return new HomeResponseDto { User = userDto, Home = homeDto };
@@ -184,8 +193,81 @@ public class HomeService(AppDbContext db) : IHomeService
             RoleEnum.PreSales => HomeConstants.EmptyStates.MyHandovers,
             RoleEnum.TechLead => HomeConstants.EmptyStates.TechnicalReadiness,
             RoleEnum.Leadership => HomeConstants.EmptyStates.PortfolioDashboard,
-            _ => throw new RoleNotFoundException(user.RoleId),
+            _ => string.Empty
         };
+    }
+
+    private async Task<List<DashboardEngagementDto>> GetDashboardEngagementsAsync(IQueryable<int> myEngagementsQuery)
+    {
+        var engagements = await db.Engagements
+            .Where(e => myEngagementsQuery.Contains(e.EngagementId))
+            .Select(e => new 
+            {
+                e.EngagementId,
+                e.EngagementName,
+                e.KickoffDate
+            })
+            .ToListAsync();
+
+        var dtos = new List<DashboardEngagementDto>();
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        foreach (var e in engagements)
+        {
+            var readiness = await kickoffReadinessService.GetReadinessAsync(e.EngagementId);
+            var daysToKickoff = e.KickoffDate.DayNumber - today.DayNumber;
+
+            int requiredThreshold;
+            if (daysToKickoff > 14) requiredThreshold = LeadershipDashboardConstants.Thresholds.TierGreaterThan14;
+            else if (daysToKickoff >= 8) requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier8To14;
+            else if (daysToKickoff >= 4) requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier4To7;
+            else if (daysToKickoff >= 1) requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier1To3;
+            else requiredThreshold = LeadershipDashboardConstants.Thresholds.TierDay0OrPast;
+
+            int openBlockerCount = await db.Risks
+                .CountAsync(r => r.EngagementId == e.EngagementId &&
+                                 (r.Status == RiskStatus.Open || r.Status == RiskStatus.Mitigating) &&
+                                 !r.IsDeleted);
+
+            string status;
+            if (readiness.Score == 100 && openBlockerCount == 0)
+                status = LeadershipDashboardConstants.Statuses.KickoffReady;
+            else if (openBlockerCount > 0 || readiness.Score < requiredThreshold)
+                status = LeadershipDashboardConstants.Statuses.AtRisk;
+            else
+                status = LeadershipDashboardConstants.Statuses.InProgress;
+
+            dtos.Add(new DashboardEngagementDto
+            {
+                EngagementId = e.EngagementId,
+                EngagementName = e.EngagementName,
+                KickoffDate = e.KickoffDate,
+                DaysToGo = daysToKickoff,
+                ReadinessPercentage = readiness.Score,
+                Status = status
+            });
+        }
+
+        return dtos;
+    }
+
+    private async Task<List<DashboardBlockerDto>> GetDashboardBlockersAsync(int userId)
+    {
+        var blockers = await db.Notifications
+            .Where(n => n.ReceiverUserId == userId && n.Priority == NotificationPriority.High)
+            .OrderByDescending(n => n.CreatedAt)
+            .Take(5)
+            .Select(n => new DashboardBlockerDto
+            {
+                RiskId = n.Id,
+                ProjectName = n.Title ?? "Task",
+                BlockerDescription = n.Body ?? "",
+                OwnerName = "System",
+                DueDate = n.ScheduledFor
+            })
+            .ToListAsync();
+                              
+        return blockers;
     }
 
     private static string BuildWelcomeMessage(User user)
