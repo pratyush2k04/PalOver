@@ -5,6 +5,7 @@ import { HeaderComponent } from './header/header';
 import { ToastComponent } from '@common/components/toast/toast';
 import { GlobalLoader } from '@common/components/global-loader/global-loader';
 import { LoaderService } from '@shared/services/loader.service';
+import { LayoutService } from '@shared/services/layout.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -16,11 +17,13 @@ import { LoaderService } from '@shared/services/loader.service';
 export class MainLayoutComponent {
   private router = inject(Router);
   private loaderService = inject(LoaderService);
+  readonly layoutService = inject(LayoutService);
 
   constructor() {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         this.loaderService.show();
+        this.layoutService.closeSidebar();
       } else if (
         event instanceof NavigationEnd ||
         event instanceof NavigationCancel ||
