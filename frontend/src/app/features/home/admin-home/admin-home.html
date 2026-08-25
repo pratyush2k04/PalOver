@@ -1,13 +1,5 @@
 @if (workspace(); as ws) {
   <div class="home-workspace">
-    <h1>{{ ws.title }}</h1>
-
-    <app-banner [message]="ws.welcomeMessage" />
-
-    @if (user(); as currentUser) {
-      <app-badge [text]="currentUser.role" />
-    }
-
-    <app-workspace-card [emptyState]="ws.emptyState" />
+    <div class="welcome-message">{{ ws.welcomeMessage }}</div>
   </div>
 }

@@ -1,13 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { AppContextService } from '@shared/services/app-context';
-import { BannerComponent } from '@common/components/banner/banner';
-import { BadgeComponent } from '@common/components/badge/badge';
-import { WorkspaceCardComponent } from '@shared/workspace-card/workspace-card';
-
+import { DashboardKpiCardComponent } from '@shared/components/dashboard-kpi-card/dashboard-kpi-card.component';
 @Component({
   selector: 'app-pre-sales-home',
   standalone: true,
-  imports: [BannerComponent, BadgeComponent, WorkspaceCardComponent],
+  imports: [DashboardKpiCardComponent],
   templateUrl: './pre-sales-home.html',
   styleUrl: './pre-sales-home.scss'
 })
@@ -16,4 +13,8 @@ export class PreSalesHomeComponent {
 
   readonly user = this.appContext.user;
   readonly workspace = this.appContext.workspace;
+
+  ngOnInit() {
+    this.appContext.refreshContext();
+  }
 }

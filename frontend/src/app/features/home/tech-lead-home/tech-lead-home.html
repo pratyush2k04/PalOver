@@ -1,13 +1,13 @@
 @if (workspace(); as ws) {
   <div class="home-workspace">
-    <h1>{{ ws.title }}</h1>
-
-    <app-banner [message]="ws.welcomeMessage" />
-
-    @if (user(); as currentUser) {
-      <app-badge [text]="currentUser.role" />
+    <div class="welcome-message mb-6">{{ ws.welcomeMessage }}</div>
+    
+    @if (ws.cards && ws.cards.length > 0) {
+      <div class="kpi-cards-grid">
+        @for (card of ws.cards; track card.title) {
+          <app-dashboard-kpi-card [card]="card"></app-dashboard-kpi-card>
+        }
+      </div>
     }
-
-    <app-workspace-card [emptyState]="ws.emptyState" />
   </div>
 }

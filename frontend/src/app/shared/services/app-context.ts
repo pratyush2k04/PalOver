@@ -36,6 +36,11 @@ export class AppContextService {
     this.initializationPromise = null;
   }
 
+  async refreshContext(): Promise<AppContext> {
+    this.initializationPromise = this.fetchContext();
+    return this.initializationPromise;
+  }
+
   private async fetchContext(): Promise<AppContext> {
     const response = await firstValueFrom(this.http.get<HomeResponse>('/api/home'));
 

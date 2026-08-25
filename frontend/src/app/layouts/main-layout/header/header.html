@@ -3,9 +3,7 @@
 
   @if (user(); as currentUser) {
     <div class="header-actions">
-      @if (workspace()?.welcomeMessage; as welcomeMsg) {
-        <div class="welcome-message">{{ welcomeMsg }}</div>
-      }
+
 
       <app-notifications-dropdown />
 

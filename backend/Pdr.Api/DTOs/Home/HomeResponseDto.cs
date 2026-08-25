@@ -14,6 +14,7 @@ public class HomeDashboardDto
     public string Title { get; set; } = string.Empty;
     public string WelcomeMessage { get; set; } = string.Empty;
     public string EmptyState { get; set; } = string.Empty;
+    public List<DashboardCardsDto> Cards { get; set; } = [];
 }
 
 public class HomeResponseDto

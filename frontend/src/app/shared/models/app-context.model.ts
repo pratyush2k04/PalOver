@@ -5,11 +5,19 @@ export interface HomeUser {
   isAdmin: boolean;
 }
 
+export interface DashboardCard {
+  title: string;
+  count: number;
+  subtitle?: string;
+  type: string;
+}
+
 export interface WorkspaceMetadata {
   route: string;
   title: string;
   welcomeMessage: string;
   emptyState: string;
+  cards: DashboardCard[];
 }
 
 export interface HomeResponse {
