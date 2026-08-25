@@ -24,7 +24,7 @@ They are stored in the `NotificationTemplates` table and seeded via an EF migrat
 ```csharp
 new NotificationTemplate
 {
-    Id = 4,                         // next available id (check the file for the current max)
+    Id = 4,
     Key = "DocumentUploaded",
     Title = "Document uploaded — {DocumentName}",
     Body = "{UploaderName} uploaded {DocumentName} to engagement {EngagementName}.",
@@ -142,6 +142,7 @@ await notificationService.CreateFromTemplateAsync(
 - If no user is assigned → logs and returns (no exception, no row).
 - If the `templateKey` doesn't match any `NotificationTemplate` → logs and returns (no exception, no row). Unlike Option B, a missing template here is **not** an error.
 - Otherwise, creates a notification addressed to that user. Its link is not set here — it's rendered from the template's `LinkPattern` (if any) at fetch time, using the mapper's returned values. There is no `link` parameter on this method; if this specific notification needs a link that differs from its template's default, set `Notification.Link` directly on the entity as an override (rare — most types don't need this).
+- Priority is `priorityOverride ?? template.DefaultPriority` — omit `priorityOverride` (or pass `null`) to use the template's seeded `DefaultPriority`. Pass it when the same template needs different urgency depending on the calling context (e.g. the same reminder template fired at different day-thresholds before a deadline, where the closer threshold should be `High` even though the template's own default is `Low`).
 
 **Method signature:**
 
@@ -152,6 +153,7 @@ Task CreateFromTemplateAsync(
     RoleEnum receiverRole,
     string data,
     DateTime scheduledFor,
+    NotificationPriority? priorityOverride = null,
     CancellationToken cancellationToken = default);
 ```
 
@@ -170,7 +172,7 @@ await notificationService.CreateFromTemplateAsync(
 
 **What happens internally:**
 - Looks up the template by key; throws `NotificationTemplateNotFoundException` if missing.
-- Creates a notification addressed to the given user, using the template's default priority.
+- Creates a notification addressed to the given user, using `priorityOverride ?? template.DefaultPriority` (same override rule as Option A — omit it to use the template's default).
 
 **Method signature:**
 
@@ -180,6 +182,7 @@ Task CreateFromTemplateAsync(
     int receiverUserId,
     string data,
     DateTime scheduledFor,
+    NotificationPriority? priorityOverride = null,
     CancellationToken cancellationToken = default);
 ```
 
