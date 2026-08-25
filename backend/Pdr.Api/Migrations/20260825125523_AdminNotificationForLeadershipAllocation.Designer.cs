@@ -13,7 +13,7 @@ using Pdr.Api.Data;
 namespace Pdr.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260825124605_AdminNotificationForLeadershipAllocation")]
+    [Migration("20260825125523_AdminNotificationForLeadershipAllocation")]
     partial class AdminNotificationForLeadershipAllocation
     {
         /// <inheritdoc />
@@ -4899,11 +4899,11 @@ namespace Pdr.Api.Migrations
                             Body = "{ActorName} started the handover for {EngagementName}.",
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            DefaultPriority = 2,
+                            DefaultPriority = 3,
                             IsDeleted = false,
                             Key = "HandoverDraftFirstSaved",
                             LinkPattern = "/engagement-allocation",
-                            Title = "Handover Started — {EngagementName}",
+                            Title = "Allocate leadership for engagement {EngagementName}",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });

@@ -246,9 +246,9 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             {
                 Id = 23697,
                 Key = NotificationConstants.TemplateKeys.HandoverDraftFirstSaved,
-                Title = "Handover Started — {EngagementName}",
+                Title = "Allocate leadership for engagement {EngagementName}",
                 Body = "{ActorName} started the handover for {EngagementName}.",
-                DefaultPriority = NotificationPriority.Medium,
+                DefaultPriority = NotificationPriority.High,
                 LinkPattern = "/engagement-allocation",
                 CreatedAt = seedTimestamp,
                 UpdatedAt = seedTimestamp,
