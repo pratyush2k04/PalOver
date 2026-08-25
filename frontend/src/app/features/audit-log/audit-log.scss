@@ -16,6 +16,10 @@
   font-family: $font-family-base;
   color: $color-text;
 
+  @media (max-width: 768px) {
+    padding: $spacing-4;
+  }
+
   &.workspace-tab {
     padding: 0;
     max-width: none;
@@ -54,11 +58,13 @@
   border: 1px solid $color-border-soft;
   border-radius: $radius-lg;
   box-shadow: $shadow-sm;
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 table {
   width: 100%;
+  min-width: 48rem;
   border-collapse: collapse;
 }
 
