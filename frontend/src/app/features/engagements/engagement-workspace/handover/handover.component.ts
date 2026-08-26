@@ -14,7 +14,7 @@ import { HandoverService } from '../../services/handover.service';
 import { EngagementService } from '../../services/engagement.service';
 import { catchError, of } from 'rxjs';
 import { AuthService } from '@shared/services/auth';
-import { KickoffReadinessDto, KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
+import { KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
 import { EngagementInfoDto } from '../../models/engagement.model';
 import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
 import { ENGAGEMENT_ROUTES } from '@shared/constants/app.constants';
@@ -102,7 +102,7 @@ export class HandoverComponent {
   message = signal('');
   isError = signal(false);
 
-  kickoffReadiness = signal<KickoffReadinessDto | null>(null);
+  kickoffReadiness = this.kickoffReadinessService.readiness;
   handoverFlaggedItems = computed<FlaggedItem[]>(() => {
     const r = this.kickoffReadiness();
     if (!r) return [];
@@ -179,16 +179,10 @@ export class HandoverComponent {
       const id = this.engagementId();
       if (id) {
         this.loadHandover(id);
-        this.loadKickoffReadiness(id);
+        this.kickoffReadinessService.track(id);
         this.loadEngagement(id);
       }
     });
-  }
-
-  private loadKickoffReadiness(id: number) {
-    this.kickoffReadinessService.getReadiness(id).pipe(
-      catchError(() => of(null))
-    ).subscribe(data => this.kickoffReadiness.set(data));
   }
 
   private loadEngagement(id: number) {
@@ -259,6 +253,7 @@ export class HandoverComponent {
         this.handover.set(data);
         this.showMessage('Draft saved successfully', false);
         this.isSaving.set(false);
+        this.kickoffReadinessService.refresh();
       },
       error: (err) => {
         this.showMessage(this.extractErrorMessage(err, 'Failed to save draft'), true);
@@ -285,6 +280,7 @@ export class HandoverComponent {
         this.clientContextForm.disable();
         this.showMessage('Handover submitted successfully', false);
         this.isSaving.set(false);
+        this.kickoffReadinessService.refresh();
       },
       error: (err) => {
         const errorMessage = this.extractErrorMessage(err, 'Failed to submit handover');
@@ -315,6 +311,7 @@ export class HandoverComponent {
         this.newCommitment.set(this.emptyCommitment());
         this.newCommitmentTouched.set(false);
         this.showMessage('Commitment added successfully', false);
+        this.kickoffReadinessService.refresh();
       },
       error: (err) => {
         this.showMessage(this.extractErrorMessage(err, 'Failed to add commitment'), true);
@@ -365,6 +362,7 @@ export class HandoverComponent {
         });
         this.editingCommitmentId.set(null);
         this.showMessage('Commitment updated successfully', false);
+        this.kickoffReadinessService.refresh();
       },
       error: (err) => {
         this.showMessage(this.extractErrorMessage(err, 'Failed to update commitment'), true);
@@ -389,6 +387,7 @@ export class HandoverComponent {
         this.commitments.update((c) => c.filter((item) => item.commitmentId !== commitmentId));
         this.pendingDeleteId.set(null);
         this.showMessage('Commitment deleted', false);
+        this.kickoffReadinessService.refresh();
       },
       error: (err) => {
         this.pendingDeleteId.set(null);
@@ -472,6 +471,7 @@ export class HandoverComponent {
             this.commitments.set(refreshed.commitments || []);
           },
         });
+        this.kickoffReadinessService.refresh();
       },
       error: (err) => {
         this.showMessage(

@@ -8,6 +8,36 @@
   </div>
 
   <div class="modal-body">
+    <div class="handover-summary">
+      <label class="input-label">Handover Draft Details</label>
+      @if (isLoadingHandover()) {
+        <app-loading-spinner size="sm" [inline]="true" label="Loading handover details..." />
+      } @else if (handover()?.hasHandoverDraft) {
+        <div class="handover-summary-grid">
+          <div class="handover-field">
+            <span class="handover-field-label">Status</span>
+            <app-status-badge tone="info">{{ handover()!.status }}</app-status-badge>
+          </div>
+          @if (handover()!.clientBackground) {
+            <div class="handover-field">
+              <span class="handover-field-label">Client Background</span>
+              <p class="handover-field-value">{{ handover()!.clientBackground }}</p>
+            </div>
+          }
+          <div class="handover-field">
+            <span class="handover-field-label">Business Problem</span>
+            <p class="handover-field-value">{{ handover()!.businessProblem || '—' }}</p>
+          </div>
+          <div class="handover-field">
+            <span class="handover-field-label">Client Sentiment</span>
+            <p class="handover-field-value">{{ handover()!.clientSentiment || '—' }}</p>
+          </div>
+        </div>
+      } @else {
+        <app-alert variant="warning">No handover draft found for this engagement.</app-alert>
+      }
+    </div>
+
     <label class="input-label">Assigned Leadership Users</label>
 
     <!-- Search & Multi-select Chips Container -->

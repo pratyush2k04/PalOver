@@ -1,7 +1,6 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { AuthService } from '@shared/services/auth';
 import { EngagementDetailComponent } from './components/engagement-detail/engagement-detail';
 import { OpenItemsByAreaComponent } from './components/open-items-by-area/open-items-by-area.component';
 
@@ -13,10 +12,8 @@ import { OpenItemsByAreaComponent } from './components/open-items-by-area/open-i
   styleUrl: './overview.component.scss'
 })
 export class OverviewComponent {
-  private authService = inject(AuthService);
   private route = inject(ActivatedRoute);
 
-  readonly isLeadership = computed(() => this.authService.hasRole('Leadership'));
   engagementId = signal<number | null>(null);
 
   constructor() {
