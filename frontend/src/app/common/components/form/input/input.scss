@@ -24,7 +24,6 @@
   background-color: $color-surface;
   border: 1px solid $color-border-input;
   border-radius: $radius-md;
-  padding: 0 $spacing-3;
   box-sizing: border-box;
 
   &:focus-within {
@@ -61,8 +60,9 @@ input {
   color: $color-text;
   background: transparent;
   border: none;
-  padding: $spacing-2 0;
+  padding: $spacing-2 $spacing-3;
   outline: none;
+  border-radius: $radius-md;
 
   &:disabled {
     cursor: not-allowed;
