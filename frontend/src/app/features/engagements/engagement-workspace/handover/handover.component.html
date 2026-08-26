@@ -104,296 +104,292 @@
       </div>
     }
 
-    <div class="section">
-      <app-client-contact-transition-card
-        [engagementId]="engagementId()!"
-        [clientName]="engagementInfo()?.clientName || ''"
-        (onSaved)="onClientContactSaved()">
-      </app-client-contact-transition-card>
-    </div>
-
-    <form [formGroup]="clientContextForm">
-      <div class="section commitments">
-        <div class="commitments-header">
-          <h3>{{ HANDOVER_LABELS.COMMITMENTS }}</h3>
-          @if (isPreSales() && !isSubmitted()) {
-            <div class="header-action-group">
-              @if (!hasHandoverDraft()) {
-                <span class="save-draft-hint">{{ HANDOVER_MESSAGES.SAVE_DRAFT_FIRST }}</span>
-              }
-              <app-button
-                variant="flat"
-                [disabled]="!hasHandoverDraft()"
-                (click)="openAddCommitmentDialog()"
-              >
-                + {{ HANDOVER_BUTTONS.ADD_COMMITMENT }}
-              </app-button>
-            </div>
-          }
-        </div>
-
-        @if (commitments().length === 0) {
-          <app-empty-state message="No Commitments" />
+    <!-- Commitments Section -->
+    <div class="section commitments">
+      <div class="commitments-header">
+        <h3>{{ HANDOVER_LABELS.COMMITMENTS }}</h3>
+        @if (isPreSales() && !isSubmitted()) {
+          <div class="header-action-group">
+            @if (!hasHandoverDraft()) {
+              <span class="save-draft-hint">{{ HANDOVER_MESSAGES.SAVE_DRAFT_FIRST }}</span>
+            }
+            <app-button
+              variant="flat"
+              [disabled]="!hasHandoverDraft()"
+              (click)="openAddCommitmentDialog()"
+            >
+              + {{ HANDOVER_BUTTONS.ADD_COMMITMENT }}
+            </app-button>
+          </div>
         }
+      </div>
 
-        @if (commitments().length > 0) {
-          <div class="commitment-cards">
-            @for (c of commitments(); track c.commitmentId) {
-              <div class="commitment-card">
-                <div class="commitment-square promised-square">
-                  <div class="square-header">
-                    <span class="square-label">{{ HANDOVER_LABELS.PROMISED }}</span>
-                    @if (isPreSales() && !isSubmitted() && editingCommitmentId() !== c.commitmentId) {
-                      <div class="card-header-actions">
-                        <app-button
-                          variant="stroked"
-                          size="sm"
-                          (click)="startEditCommitment(c)"
-                          ariaLabel="Edit promised commitment"
-                        >
-                          Edit
-                        </app-button>
-                        <app-button
-                          variant="danger"
-                          size="sm"
-                          (click)="requestDeleteCommitment(c.commitmentId)"
-                          ariaLabel="Delete promised commitment"
-                        >
-                          {{ HANDOVER_BUTTONS.DELETE }}
-                        </app-button>
-                      </div>
-                    }
-                  </div>
+      @if (commitments().length === 0) {
+        <app-empty-state message="No Commitments" />
+      }
 
-                  @if (editingCommitmentId() !== c.commitmentId) {
-                    <div class="content-header">
-                      <div class="title-with-badge">
-                        <h4>{{ c.title }}</h4>
-                        <app-status-badge [tone]="getCommitmentTypeTone(c.commitmentTypeId)">
-                          {{
-                            c.commitmentTypeId === 1
-                              ? HANDOVER_LABELS.SOFTWARE
-                              : c.commitmentTypeId === 2
-                                ? HANDOVER_LABELS.SERVICES
-                                : HANDOVER_LABELS.TRAINING
-                          }}
-                        </app-status-badge>
-                      </div>
-                      <span class="timeline-info">{{ formatTimeline(c.timeline, c.timelineUnit) }}</span>
+      @if (commitments().length > 0) {
+        <div class="commitment-cards">
+          @for (c of commitments(); track c.commitmentId) {
+            <div class="commitment-card">
+              <div class="commitment-square promised-square">
+                <div class="square-header">
+                  <span class="square-label">{{ HANDOVER_LABELS.PROMISED }}</span>
+                  @if (isPreSales() && !isSubmitted() && editingCommitmentId() !== c.commitmentId) {
+                    <div class="card-header-actions">
+                      <app-button
+                        variant="stroked"
+                        size="sm"
+                        (click)="startEditCommitment(c)"
+                        ariaLabel="Edit promised commitment"
+                      >
+                        Edit
+                      </app-button>
+                      <app-button
+                        variant="danger"
+                        size="sm"
+                        (click)="requestDeleteCommitment(c.commitmentId)"
+                        ariaLabel="Delete promised commitment"
+                      >
+                        {{ HANDOVER_BUTTONS.DELETE }}
+                      </app-button>
                     </div>
-                    <p class="description">{{ c.description }}</p>
-                  } @else {
-                    <app-input
-                      [id]="'edit-promised-title-' + c.commitmentId"
-                      type="text"
-                      [(ngModel)]="editCommitment().title"
+                  }
+                </div>
+
+                @if (editingCommitmentId() !== c.commitmentId) {
+                  <div class="content-header">
+                    <div class="title-with-badge">
+                      <h4>{{ c.title }}</h4>
+                      <app-status-badge [tone]="getCommitmentTypeTone(c.commitmentTypeId)">
+                        {{
+                          c.commitmentTypeId === 1
+                            ? HANDOVER_LABELS.SOFTWARE
+                            : c.commitmentTypeId === 2
+                              ? HANDOVER_LABELS.SERVICES
+                              : HANDOVER_LABELS.TRAINING
+                        }}
+                      </app-status-badge>
+                    </div>
+                    <span class="timeline-info">{{ formatTimeline(c.timeline, c.timelineUnit) }}</span>
+                  </div>
+                  <p class="description">{{ c.description }}</p>
+                } @else {
+                  <app-input
+                    [id]="'edit-promised-title-' + c.commitmentId"
+                    type="text"
+                    [(ngModel)]="editCommitment().title"
+                    [ngModelOptions]="{ standalone: true }"
+                    [maxLength]="100"
+                    [placeholder]="HANDOVER_PLACEHOLDERS.TITLE"
+                    [class.is-invalid]="editCommitmentTouched() && !editCommitment().title"
+                  />
+                  @if (editCommitmentTouched() && !editCommitment().title) {
+                    <div class="invalid-feedback">
+                      {{ HANDOVER_MESSAGES.TITLE_REQUIRED }}
+                    </div>
+                  }
+                  <app-input
+                    [id]="'edit-promised-desc-' + c.commitmentId"
+                    type="text"
+                    [(ngModel)]="editCommitment().description"
+                    [ngModelOptions]="{ standalone: true }"
+                    [maxLength]="2000"
+                    [placeholder]="HANDOVER_PLACEHOLDERS.DESCRIPTION"
+                    [class.is-invalid]="editCommitmentTouched() && !editCommitment().description"
+                  />
+                  @if (editCommitmentTouched() && !editCommitment().description) {
+                    <div class="invalid-feedback">
+                      {{ HANDOVER_MESSAGES.DESCRIPTION_REQUIRED }}
+                    </div>
+                  }
+                  <div class="form-row">
+                    <input
+                      type="number"
+                      min="1"
+                      [(ngModel)]="editCommitment().timeline"
                       [ngModelOptions]="{ standalone: true }"
-                      [maxLength]="100"
-                      [placeholder]="HANDOVER_PLACEHOLDERS.TITLE"
-                      [class.is-invalid]="editCommitmentTouched() && !editCommitment().title"
                     />
-                    @if (editCommitmentTouched() && !editCommitment().title) {
-                      <div class="invalid-feedback">
-                        {{ HANDOVER_MESSAGES.TITLE_REQUIRED }}
+                    <app-select
+                      [id]="'edit-promised-unit-' + c.commitmentId"
+                      [(ngModel)]="editCommitment().timelineUnit"
+                      [ngModelOptions]="{ standalone: true }"
+                      [options]="timelineUnitOptions"
+                    />
+                  </div>
+                  <div class="row-actions">
+                    <app-button variant="flat" size="sm" (click)="saveEditCommitment(c.commitmentId)">
+                      {{ HANDOVER_BUTTONS.SAVE }}
+                    </app-button>
+                    <app-button variant="stroked" size="sm" (click)="cancelEditCommitment()">{{ HANDOVER_BUTTONS.CANCEL }}</app-button>
+                  </div>
+                }
+              </div>
+
+              <div class="commitment-square realistic-square">
+                <div class="square-header">
+                  <span class="square-label">{{ HANDOVER_LABELS.REALISTIC }}</span>
+                  @if (
+                    isProjectManagement() &&
+                    !isSubmitted() &&
+                    c.realisticCommitment &&
+                    editingRealisticCommitmentId() !== c.commitmentId
+                  ) {
+                    <app-button
+                      variant="stroked"
+                      size="sm"
+                      (click)="startEditRealisticCommitment(c)"
+                      ariaLabel="Edit realistic commitment"
+                    >
+                      Edit
+                    </app-button>
+                  }
+                </div>
+
+                @if (editingRealisticCommitmentId() !== c.commitmentId) {
+                  @if (c.realisticCommitment) {
+                    @if (c.isVarianceFlagged) {
+                      <div class="content-header realistic-header">
+                        <div class="variance-badge-group">
+                          <span class="variance-badge">
+                            {{ c.varianceDescription }}
+                          </span>
+                          <span class="escalation-badge">
+                            {{ HANDOVER_LABELS.ESCALATED_LEADERSHIP }}
+                          </span>
+                        </div>
+                        <span class="timeline-info">
+                          {{
+                            formatTimeline(
+                              c.realisticCommitment.timeline,
+                              c.realisticCommitment.timelineUnit
+                            )
+                          }}
+                        </span>
+                      </div>
+                      <p class="description">{{ c.realisticCommitment.description }}</p>
+                    } @else {
+                      <div class="content-header realistic-header">
+                        <p class="description description-inline">{{ c.realisticCommitment.description }}</p>
+                        <span class="timeline-info">
+                          {{
+                            formatTimeline(
+                              c.realisticCommitment.timeline,
+                              c.realisticCommitment.timelineUnit
+                            )
+                          }}
+                        </span>
                       </div>
                     }
-                    <app-input
-                      [id]="'edit-promised-desc-' + c.commitmentId"
-                      type="text"
-                      [(ngModel)]="editCommitment().description"
+                    @if (c.realisticCommitment.acknowledgementMessage) {
+                      <div class="acknowledgement-block">
+                        <span class="acknowledgement-label">Acknowledgement:</span>
+                        <p class="acknowledgement-info">{{ c.realisticCommitment.acknowledgementMessage }}</p>
+                      </div>
+                    }
+
+                    @if (
+                      commitmentNeedsAcknowledgement(c) &&
+                      !c.realisticCommitment.acknowledgementMessage &&
+                      isProjectManagement() &&
+                      !isSubmitted()
+                    ) {
+                      <app-button
+                        variant="warning"
+                        size="sm"
+                        (click)="startEditRealisticCommitment(c)"
+                      >
+                        {{ HANDOVER_BUTTONS.ACKNOWLEDGE_MISMATCH }}
+                      </app-button>
+                    }
+                  } @else {
+                    @if (isProjectManagement() && !isSubmitted()) {
+                      <button
+                        class="click-to-edit-placeholder"
+                        (click)="startEditRealisticCommitment(c)"
+                      >
+                        {{ HANDOVER_LABELS.CLICK_TO_EDIT }}
+                      </button>
+                    }
+                    @if (!isProjectManagement()) {
+                      <p class="empty-state">{{ HANDOVER_LABELS.NOT_YET_PROVIDED }}</p>
+                    }
+                  }
+                } @else {
+                  <div class="realistic-edit-form">
+                    <app-textarea
+                      [id]="'edit-realistic-desc-' + c.commitmentId"
+                      [label]="HANDOVER_LABELS.DESCRIPTION + ' *'"
+                      [(ngModel)]="realisticEditForm().description"
                       [ngModelOptions]="{ standalone: true }"
                       [maxLength]="2000"
-                      [placeholder]="HANDOVER_PLACEHOLDERS.DESCRIPTION"
-                      [class.is-invalid]="editCommitmentTouched() && !editCommitment().description"
+                      [placeholder]="HANDOVER_PLACEHOLDERS.REALISTIC_DESCRIPTION"
+                      [rows]="2"
+                      [class.is-invalid]="realisticEditTouched() && !realisticEditForm().description"
                     />
-                    @if (editCommitmentTouched() && !editCommitment().description) {
+                    @if (realisticEditTouched() && !realisticEditForm().description) {
                       <div class="invalid-feedback">
                         {{ HANDOVER_MESSAGES.DESCRIPTION_REQUIRED }}
                       </div>
                     }
-                    <div class="form-row">
-                      <input
+                    <div class="form-row-timeline">
+                      <app-input
+                        [id]="'edit-realistic-timeline-' + c.commitmentId"
+                        [label]="HANDOVER_LABELS.TIMELINE"
                         type="number"
-                        min="1"
-                        [(ngModel)]="editCommitment().timeline"
+                        [min]="1"
+                        [(ngModel)]="realisticEditForm().timeline"
                         [ngModelOptions]="{ standalone: true }"
+                        style="flex: 1"
                       />
                       <app-select
-                        [id]="'edit-promised-unit-' + c.commitmentId"
-                        [(ngModel)]="editCommitment().timelineUnit"
+                        [id]="'edit-realistic-unit-' + c.commitmentId"
+                        [label]="HANDOVER_LABELS.UNIT"
+                        [(ngModel)]="realisticEditForm().timelineUnit"
                         [ngModelOptions]="{ standalone: true }"
                         [options]="timelineUnitOptions"
+                        style="flex: 1"
                       />
                     </div>
-                    <div class="row-actions">
-                      <app-button variant="flat" size="sm" (click)="saveEditCommitment(c.commitmentId)">
-                        {{ HANDOVER_BUTTONS.SAVE }}
-                      </app-button>
-                      <app-button variant="stroked" size="sm" (click)="cancelEditCommitment()">{{ HANDOVER_BUTTONS.CANCEL }}</app-button>
-                    </div>
-                  }
-                </div>
 
-                <div class="commitment-square realistic-square">
-                  <div class="square-header">
-                    <span class="square-label">{{ HANDOVER_LABELS.REALISTIC }}</span>
-                    @if (
-                      isProjectManagement() &&
-                      !isSubmitted() &&
-                      c.realisticCommitment &&
-                      editingRealisticCommitmentId() !== c.commitmentId
-                    ) {
-                      <app-button
-                        variant="stroked"
-                        size="sm"
-                        (click)="startEditRealisticCommitment(c)"
-                        ariaLabel="Edit realistic commitment"
-                      >
-                        Edit
-                      </app-button>
-                    }
-                  </div>
-
-                  @if (editingRealisticCommitmentId() !== c.commitmentId) {
-                    @if (c.realisticCommitment) {
-                      @if (c.isVarianceFlagged) {
-                        <div class="content-header realistic-header">
-                          <div class="variance-badge-group">
-                            <span class="variance-badge">
-                              {{ c.varianceDescription }}
-                            </span>
-                            <span class="escalation-badge">
-                              {{ HANDOVER_LABELS.ESCALATED_LEADERSHIP }}
-                            </span>
-                          </div>
-                          <span class="timeline-info">
-                            {{
-                              formatTimeline(
-                                c.realisticCommitment.timeline,
-                                c.realisticCommitment.timelineUnit
-                              )
-                            }}
-                          </span>
-                        </div>
-                        <p class="description">{{ c.realisticCommitment.description }}</p>
-                      } @else {
-                        <div class="content-header realistic-header">
-                          <p class="description description-inline">{{ c.realisticCommitment.description }}</p>
-                          <span class="timeline-info">
-                            {{
-                              formatTimeline(
-                                c.realisticCommitment.timeline,
-                                c.realisticCommitment.timelineUnit
-                              )
-                            }}
-                          </span>
-                        </div>
-                      }
-                      @if (c.realisticCommitment.acknowledgementMessage) {
-                        <div class="acknowledgement-block">
-                          <span class="acknowledgement-label">Acknowledgement:</span>
-                          <p class="acknowledgement-info">{{ c.realisticCommitment.acknowledgementMessage }}</p>
-                        </div>
-                      }
-
-                      @if (
-                        commitmentNeedsAcknowledgement(c) &&
-                        !c.realisticCommitment.acknowledgementMessage &&
-                        isProjectManagement() &&
-                        !isSubmitted()
-                      ) {
-                        <app-button
-                          variant="warning"
-                          size="sm"
-                          (click)="startEditRealisticCommitment(c)"
-                        >
-                          {{ HANDOVER_BUTTONS.ACKNOWLEDGE_MISMATCH }}
-                        </app-button>
-                      }
-                    } @else {
-                      @if (isProjectManagement() && !isSubmitted()) {
-                        <button
-                          class="click-to-edit-placeholder"
-                          (click)="startEditRealisticCommitment(c)"
-                        >
-                          {{ HANDOVER_LABELS.CLICK_TO_EDIT }}
-                        </button>
-                      }
-                      @if (!isProjectManagement()) {
-                        <p class="empty-state">{{ HANDOVER_LABELS.NOT_YET_PROVIDED }}</p>
-                      }
-                    }
-                  } @else {
-                    <div class="realistic-edit-form">
-                      <app-textarea
-                        [id]="'edit-realistic-desc-' + c.commitmentId"
-                        [label]="HANDOVER_LABELS.DESCRIPTION + ' *'"
-                        [(ngModel)]="realisticEditForm().description"
+                    <div class="form-group">
+                      <app-input
+                        [id]="'edit-realistic-ack-' + c.commitmentId"
+                        [label]="editFormNeedsAcknowledgement(c) ? HANDOVER_LABELS.ACKNOWLEDGEMENT_MESSAGE_REQ : HANDOVER_LABELS.ACKNOWLEDGEMENT_MESSAGE"
+                        [(ngModel)]="realisticEditForm().acknowledgementMessage"
                         [ngModelOptions]="{ standalone: true }"
                         [maxLength]="2000"
-                        [placeholder]="HANDOVER_PLACEHOLDERS.REALISTIC_DESCRIPTION"
-                        [rows]="2"
-                        [class.is-invalid]="realisticEditTouched() && !realisticEditForm().description"
+                        [placeholder]="HANDOVER_PLACEHOLDERS.WHY_REALISTIC_DIFFERS"
+                        [class.is-invalid]="realisticEditTouched() && editFormNeedsAcknowledgement(c) && !realisticEditForm().acknowledgementMessage"
                       />
-                      @if (realisticEditTouched() && !realisticEditForm().description) {
+                      @if (realisticEditTouched() && editFormNeedsAcknowledgement(c) && !realisticEditForm().acknowledgementMessage) {
                         <div class="invalid-feedback">
-                          {{ HANDOVER_MESSAGES.DESCRIPTION_REQUIRED }}
+                          {{ HANDOVER_MESSAGES.ACK_MESSAGE_REQUIRED }}
                         </div>
                       }
-                      <div class="form-row-timeline">
-                        <app-input
-                          [id]="'edit-realistic-timeline-' + c.commitmentId"
-                          [label]="HANDOVER_LABELS.TIMELINE"
-                          type="number"
-                          [min]="1"
-                          [(ngModel)]="realisticEditForm().timeline"
-                          [ngModelOptions]="{ standalone: true }"
-                          style="flex: 1"
-                        />
-                        <app-select
-                          [id]="'edit-realistic-unit-' + c.commitmentId"
-                          [label]="HANDOVER_LABELS.UNIT"
-                          [(ngModel)]="realisticEditForm().timelineUnit"
-                          [ngModelOptions]="{ standalone: true }"
-                          [options]="timelineUnitOptions"
-                          style="flex: 1"
-                        />
-                      </div>
-
-                      <div class="form-group">
-                        <app-input
-                          [id]="'edit-realistic-ack-' + c.commitmentId"
-                          [label]="editFormNeedsAcknowledgement(c) ? HANDOVER_LABELS.ACKNOWLEDGEMENT_MESSAGE_REQ : HANDOVER_LABELS.ACKNOWLEDGEMENT_MESSAGE"
-                          [(ngModel)]="realisticEditForm().acknowledgementMessage"
-                          [ngModelOptions]="{ standalone: true }"
-                          [maxLength]="2000"
-                          [placeholder]="HANDOVER_PLACEHOLDERS.WHY_REALISTIC_DIFFERS"
-                          [class.is-invalid]="realisticEditTouched() && editFormNeedsAcknowledgement(c) && !realisticEditForm().acknowledgementMessage"
-                        />
-                        @if (realisticEditTouched() && editFormNeedsAcknowledgement(c) && !realisticEditForm().acknowledgementMessage) {
-                          <div class="invalid-feedback">
-                            {{ HANDOVER_MESSAGES.ACK_MESSAGE_REQUIRED }}
-                          </div>
-                        }
-                      </div>
-
-                      <div class="row-actions">
-                        <app-button variant="flat" size="sm" (click)="saveRealisticCommitment(c)">{{ HANDOVER_BUTTONS.SAVE }}</app-button>
-                        <app-button variant="stroked" size="sm" (click)="cancelEditRealisticCommitment()">
-                          {{ HANDOVER_BUTTONS.CANCEL }}
-                        </app-button>
-                      </div>
                     </div>
-                  }
-                </div>
+
+                    <div class="row-actions">
+                      <app-button variant="flat" size="sm" (click)="saveRealisticCommitment(c)">{{ HANDOVER_BUTTONS.SAVE }}</app-button>
+                      <app-button variant="stroked" size="sm" (click)="cancelEditRealisticCommitment()">
+                        {{ HANDOVER_BUTTONS.CANCEL }}
+                      </app-button>
+                    </div>
+                  </div>
+                }
               </div>
-            }
-          </div>
-        }
+            </div>
+          }
+        </div>
+      }
+    </div>
 
-
-      </div>
-    </form>
+    <!-- Client Contact Transition Section -->
+    <app-client-contact-transition-card
+      [engagementId]="engagementId()!"
+      [clientName]="engagementInfo()?.clientName || ''"
+      (onSaved)="onClientContactSaved()">
+    </app-client-contact-transition-card>
   </div>
 }
 
