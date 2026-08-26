@@ -1,3 +1,5 @@
+@use '../../../../styles/tokens' as *;
+
 :host {
   display: inline-block;
 }
@@ -9,8 +11,8 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background-color: #f5a623;
-  color: #ffffff;
+  background-color: $color-accent-orange;
+  color: $color-surface;
   font-size: 0.8rem;
   font-weight: 600;
   flex-shrink: 0;

@@ -85,7 +85,7 @@
     &:focus {
       outline: none;
       border-color: $color-primary;
-      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+      box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
     }
   }
 
@@ -112,7 +112,7 @@
     &:focus {
       outline: none;
       border-color: $color-primary;
-      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+      box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
     }
   }
 
@@ -242,7 +242,7 @@
 
   .gate-item-status-separator {
     margin: 0 $spacing-1;
-    color: #f87171;
+    color: $color-danger-400;
   }
 
   .gate-item-status {
@@ -402,7 +402,7 @@
     padding: $spacing-1 $spacing-2;
     background: $color-primary-light;
     color: $color-primary;
-    border: 1px solid #bfdbfe;
+    border: 1px solid $color-primary-border;
     border-radius: $radius-sm;
     font-size: $font-size-xs;
     font-weight: $font-weight-medium;
@@ -429,7 +429,7 @@
     }
 
     &:hover {
-      background: #dbeafe;
+      background: $color-primary-subtle;
       color: $color-primary-hover;
     }
   }
@@ -491,7 +491,7 @@
   &:focus {
     outline: none;
     border-color: $color-primary;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
   }
 }
 

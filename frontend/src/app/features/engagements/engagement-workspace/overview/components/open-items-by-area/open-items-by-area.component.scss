@@ -1,4 +1,3 @@
-@use '../../../../../../../styles/tokens' as *;
 @use '../../../../../../../styles/mixins' as *;
 
 .open-items-card {
@@ -37,8 +36,8 @@
 }
 
 .item-card {
-  background-color: #f8fafc;
-  border: 1px solid #f1f5f9;
+  background-color: $color-slate-50;
+  border: 1px solid $color-slate-100;
   border-radius: 0.75rem;
   padding: 1.25rem 1.5rem;
   display: flex;
@@ -51,10 +50,10 @@
     user-select: none;
 
     &:hover {
-      background-color: #f1f5f9;
-      border-color: #cbd5e1;
+      background-color: $color-slate-100;
+      border-color: $color-slate-300;
       transform: translateY(-2px);
-      box-shadow: 0 4px 6px -1px #0000001a, 0 2px 4px -2px #00000010;
+      box-shadow: 0 4px 6px -1px rgba($color-black, 0.1), 0 2px 4px -2px rgba($color-black, 0.06);
     }
 
     &:active {
@@ -67,12 +66,12 @@
 .count-value {
   font-size: 2rem;
   font-weight: 800;
-  color: #1e293b;
+  color: $color-slate-800;
   line-height: 1.1;
 }
 
 .count-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #64748b;
+  color: $color-slate-500;
 }

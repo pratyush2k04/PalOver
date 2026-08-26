@@ -1,7 +1,9 @@
+@use '../../../../styles/tokens' as *;
+
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba($color-black, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12,9 +14,9 @@
 .modal-card {
   width: 100%;
   max-width: 460px;
-  background: #ffffff;
+  background: $color-surface;
   border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 30px rgba($color-black, 0.2);
   overflow: hidden;
 }
 
@@ -23,13 +25,13 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #edf0f3;
+  border-bottom: 1px solid $color-border-light-gray;
 
   h3 {
     margin: 0;
     font-size: 1.1rem;
     font-weight: 700;
-    color: #1a1a1a;
+    color: $color-text;
   }
 }
 
@@ -39,7 +41,7 @@
   p {
     margin: 0;
     font-size: 0.9rem;
-    color: #333333;
+    color: $color-text-muted;
     line-height: 1.5;
   }
 }

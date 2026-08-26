@@ -8,17 +8,17 @@
   font-family: $font-family-base;
 
   &__card {
-    background-color: #ffffff;
-    border: 1px solid #e2e8f0;
+    background-color: $color-surface;
+    border: 1px solid $color-slate-200;
     border-radius: 0.75rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 3px 0 rgba($color-black, 0.05);
     overflow: hidden;
   }
 
   &__loading {
     padding: 2.5rem;
     text-align: center;
-    color: #64748b;
+    color: $color-slate-500;
     font-size: 0.875rem;
   }
 }
@@ -42,8 +42,8 @@
   text-align: left;
 
   thead {
-    background-color: #ffffff;
-    border-bottom: 1px solid #e2e8f0;
+    background-color: $color-surface;
+    border-bottom: 1px solid $color-slate-200;
 
     tr {
       th {
@@ -52,7 +52,7 @@
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: #64748b;
+        color: $color-slate-500;
         white-space: nowrap;
       }
     }
@@ -60,7 +60,7 @@
 
   tbody {
     tr {
-      border-bottom: 1px solid #f1f5f9;
+      border-bottom: 1px solid $color-slate-100;
       transition: background-color $transition-base;
 
       &:last-child {
@@ -68,13 +68,13 @@
       }
 
       &:hover {
-        background-color: #f8fafc;
+        background-color: $color-slate-50;
       }
 
       td {
         padding: 1rem 1.25rem;
         font-size: 0.875rem;
-        color: #334155;
+        color: $color-slate-700;
         vertical-align: middle;
       }
     }
@@ -99,11 +99,11 @@
 
   .col-name {
     font-weight: 500;
-    color: #1e293b;
+    color: $color-slate-800;
   }
 
   .col-role {
-    color: #475569;
+    color: $color-slate-600;
   }
 
   .col-actions {
@@ -120,17 +120,17 @@
     .edit-btn {
       ::ng-deep button.btn,
       ::ng-deep .btn {
-        color: #64748b;
+        color: $color-slate-500;
         transition: all 0.15s ease;
 
         &:hover:not(:disabled) {
-          color: #2563eb !important;
-          background-color: #eff6ff !important;
+          color: $color-primary !important;
+          background-color: $color-primary-light !important;
 
           .action-icon,
           svg {
-            stroke: #2563eb !important;
-            color: #2563eb !important;
+            stroke: $color-primary !important;
+            color: $color-primary !important;
           }
         }
       }
@@ -139,17 +139,17 @@
     .delete-btn {
       ::ng-deep button.btn,
       ::ng-deep .btn {
-        color: #64748b;
+        color: $color-slate-500;
         transition: all 0.15s ease;
 
         &:hover:not(:disabled) {
-          color: #dc2626 !important;
-          background-color: #fee2e2 !important;
+          color: $color-danger !important;
+          background-color: $color-danger-light !important;
 
           .action-icon,
           svg {
-            stroke: #dc2626 !important;
-            color: #dc2626 !important;
+            stroke: $color-danger !important;
+            color: $color-danger !important;
           }
         }
       }
@@ -166,17 +166,17 @@
   .edit-btn {
     ::ng-deep button.btn,
     ::ng-deep .btn {
-      color: #64748b;
+      color: $color-slate-500;
       transition: all 0.15s ease;
 
       &:hover:not(:disabled) {
-        color: #2563eb !important;
-        background-color: #eff6ff !important;
+        color: $color-primary !important;
+        background-color: $color-primary-light !important;
 
         .action-icon,
         svg {
-          stroke: #2563eb !important;
-          color: #2563eb !important;
+          stroke: $color-primary !important;
+          color: $color-primary !important;
         }
       }
     }
@@ -185,17 +185,17 @@
   .delete-btn {
     ::ng-deep button.btn,
     ::ng-deep .btn {
-      color: #64748b;
+      color: $color-slate-500;
       transition: all 0.15s ease;
 
       &:hover:not(:disabled) {
-        color: #dc2626 !important;
-        background-color: #fee2e2 !important;
+        color: $color-danger !important;
+        background-color: $color-danger-light !important;
 
         .action-icon,
         svg {
-          stroke: #dc2626 !important;
-          color: #dc2626 !important;
+          stroke: $color-danger !important;
+          color: $color-danger !important;
         }
       }
     }
@@ -217,7 +217,7 @@
 .empty-state {
   text-align: center;
   padding: 2.5rem 1.25rem !important;
-  color: #94a3b8;
+  color: $color-slate-400;
   font-style: italic;
   font-size: 0.875rem;
 }

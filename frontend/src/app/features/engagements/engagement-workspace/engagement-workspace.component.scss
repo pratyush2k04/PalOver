@@ -1,5 +1,4 @@
 @use '../../../../styles/mixins' as *;
-@use '../../../../styles/tokens' as *;
 
 .workspace-container {
   @include flex-column($spacing-5);
