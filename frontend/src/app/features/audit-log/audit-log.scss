@@ -36,6 +36,20 @@
   gap: $spacing-3;
   flex-wrap: wrap;
 
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-2;
+    width: 100%;
+
+    app-select,
+    app-input,
+    app-button {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+
   app-select {
     min-width: 10rem;
 
