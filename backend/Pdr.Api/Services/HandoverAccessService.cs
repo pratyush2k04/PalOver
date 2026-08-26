@@ -26,12 +26,6 @@ public class HandoverAccessService : IHandoverAccessService
             throw new HandoverAccessDeniedException(HandoverValidationConstants.AccessDenied);
         }
 
-        var roleId = assignment.User.RoleId;
-        if (roleId != (int)RoleEnum.PreSales && roleId != (int)RoleEnum.ProjectManagement)
-        {
-            throw new HandoverAccessDeniedException(HandoverValidationConstants.AccessDenied);
-        }
-
         return true;
     }
 

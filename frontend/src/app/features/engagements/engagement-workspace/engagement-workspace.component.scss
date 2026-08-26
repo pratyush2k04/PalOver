@@ -394,3 +394,8 @@
   color: $color-warning-text;
   cursor: help;
 }
+
+.workspace-content {
+  position: relative;
+  min-height: 20rem;
+}

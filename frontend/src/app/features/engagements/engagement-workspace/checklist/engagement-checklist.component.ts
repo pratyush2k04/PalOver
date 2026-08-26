@@ -46,7 +46,6 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
     CommonModule,
     FormsModule,
     InlineSVGModule,
-    LoadingSpinnerComponent,
     StatusBadgeComponent,
     ButtonComponent,
     SectionHeaderComponent,

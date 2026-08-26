@@ -26,9 +26,7 @@
   </div>
 
   <div class="table-card">
-    @if (isLoading()) {
-      <app-loading-spinner label="Loading documents..." />
-    } @else if (documents().length === 0) {
+    @if (documents().length === 0 && !isLoading()) {
       <app-empty-state icon="assets/icons/empty-doc.svg" message="No documents uploaded yet." />
     } @else if (filteredDocuments().length === 0) {
       <app-empty-state icon="assets/icons/empty-doc.svg" [message]="DOCUMENT_MESSAGES.NO_SEARCH_RESULTS" />
