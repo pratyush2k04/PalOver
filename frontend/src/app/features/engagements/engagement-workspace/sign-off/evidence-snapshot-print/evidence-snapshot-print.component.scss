@@ -29,10 +29,19 @@
 }
 
 .action-header-content {
-  @include flex-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   max-width: 56.25rem;
   margin: 0 auto;
   padding: $spacing-4 $spacing-6;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+  }
 }
 
 .report-tag {
@@ -48,11 +57,28 @@
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
   color: #0f172a;
+
+  @media screen and (max-width: 768px) {
+    font-size: 1.1rem;
+  }
 }
 
 .action-buttons {
   display: flex;
   gap: $spacing-3;
+
+  @media screen and (max-width: 768px) {
+    width: 100%;
+
+    app-button {
+      flex: 1;
+
+      ::ng-deep button {
+        width: 100%;
+        white-space: nowrap;
+      }
+    }
+  }
 }
 
 .error-state {
@@ -80,6 +106,14 @@
   padding: 2.5rem 3rem;
   border-radius: 0.75rem;
   box-shadow: 0 0.625rem 0.9375rem -0.1875rem rgba(0, 0, 0, 0.05);
+
+  @media screen and (max-width: 768px) {
+    margin-top: $spacing-4;
+    padding: 1.25rem;
+    border-radius: 0.5rem;
+    box-sizing: border-box;
+    width: calc(100% - 1.5rem);
+  }
 }
 
 .doc-header {
