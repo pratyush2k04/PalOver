@@ -10,6 +10,10 @@
   @include card-surface($spacing-6, $radius-md);
   margin-bottom: $spacing-8;
   width: 100%;
+
+  @media (max-width: 768px) {
+    padding: $spacing-4;
+  }
 }
 
 .transition-header {
@@ -56,6 +60,13 @@
     background: $color-bg;
     justify-content: flex-start;
   }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-4;
+    padding: $spacing-4;
+  }
 }
 
 .contact-party {
@@ -67,6 +78,11 @@
 
   &.incoming-party {
     justify-content: flex-start;
+  }
+
+  @media (max-width: 768px) {
+    flex: 1 1 auto;
+    width: 100%;
   }
 
   .avatar {
@@ -84,8 +100,8 @@
     }
 
     &.avatar-purple {
-      background-color: #f3e8ff;
-      color: #6b21a8;
+      background-color: $color-role-admin-bg;
+      color: $color-role-admin-text;
     }
 
     &.avatar-blue {
@@ -132,6 +148,12 @@
   align-items: center;
   margin: 0 $spacing-4;
 
+  @media (max-width: 768px) {
+    width: 100%;
+    margin: $spacing-1 0;
+    justify-content: center;
+  }
+
   .line {
     flex: 1;
     height: 1px;
@@ -152,6 +174,10 @@
       color: $color-primary;
       width: 1rem;
       height: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      transform: rotate(90deg);
     }
   }
 }

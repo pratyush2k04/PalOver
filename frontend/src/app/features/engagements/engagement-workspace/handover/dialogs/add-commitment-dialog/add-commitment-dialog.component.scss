@@ -6,11 +6,20 @@
   border-radius: $radius-lg;
   width: min(35rem, calc(100vw - 2rem));
   overflow: hidden;
+
+  @media (max-width: 640px) {
+    width: calc(100vw - 1rem);
+    border-radius: $radius-md;
+  }
 }
 
 .dialog-header {
   padding: $spacing-5 $spacing-6;
   border-bottom: 1px solid $color-border-soft;
+
+  @media (max-width: 640px) {
+    padding: $spacing-4;
+  }
 
   h3 {
     font-size: $font-size-lg;
@@ -27,18 +36,47 @@
   display: flex;
   flex-direction: column;
   gap: $spacing-4;
+
+  @media (max-width: 640px) {
+    padding: $spacing-4;
+    gap: $spacing-3;
+  }
 }
 
 .form-row {
   display: flex;
   gap: $spacing-4;
   align-items: flex-start;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-3;
+
+    app-input,
+    app-select {
+      flex: 1 1 100% !important;
+      width: 100%;
+    }
+  }
 }
 
 .form-row-timeline {
   display: flex;
   gap: $spacing-4;
   align-items: flex-start;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-3;
+
+    app-input,
+    app-select {
+      flex: 1 1 100% !important;
+      width: 100%;
+    }
+  }
 }
 
 .dialog-footer {
@@ -49,6 +87,17 @@
   padding: $spacing-4 $spacing-6;
   background-color: $color-bg;
   border-top: 1px solid $color-border-soft;
+
+  @media (max-width: 640px) {
+    padding: $spacing-3 $spacing-4;
+    flex-direction: column-reverse;
+    align-items: stretch;
+
+    app-button {
+      width: 100%;
+      min-width: 100%;
+    }
+  }
 
   app-button {
     min-width: 6.25rem;
