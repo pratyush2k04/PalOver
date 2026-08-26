@@ -216,6 +216,44 @@
 .col-actions {
   text-align: right;
   white-space: nowrap;
+
+  .btn-upload-version {
+    ::ng-deep button.btn,
+    ::ng-deep .btn {
+      color: #64748b;
+      transition: all 0.15s ease;
+
+      &:hover:not(:disabled) {
+        color: #d97706 !important;
+        background-color: #fef3c7 !important;
+
+        .upload-version-icon,
+        svg {
+          stroke: #d97706 !important;
+          color: #d97706 !important;
+        }
+      }
+    }
+  }
+
+  .btn-remove {
+    ::ng-deep button.btn,
+    ::ng-deep .btn {
+      color: #64748b;
+      transition: all 0.15s ease;
+
+      &:hover:not(:disabled) {
+        color: #dc2626 !important;
+        background-color: #fee2e2 !important;
+
+        .remove-icon,
+        svg {
+          stroke: #dc2626 !important;
+          color: #dc2626 !important;
+        }
+      }
+    }
+  }
 }
 
 .remove-icon,
@@ -229,16 +267,6 @@
     width: 16px;
     height: 16px;
   }
-}
-
-.btn-remove:hover {
-  color: #ef4444;
-  background-color: #fef2f2;
-}
-
-.btn-upload-version:hover {
-  color: #ea8a00;
-  background-color: #fef3e2;
 }
 
 .col-nowrap {
