@@ -2,7 +2,7 @@
 
 .list-card {
   background: $color-surface;
-  border-radius: 12px;
+  border-radius: 0.75rem;
   box-shadow: $shadow-card;
   padding: $spacing-6;
   display: flex;
@@ -37,7 +37,7 @@
 
 .list-content {
   overflow-y: auto;
-  max-height: 400px;
+  max-height: 25rem;
 }
 
 .blockers-list {
@@ -88,7 +88,7 @@
   font-size: 0.65rem;
   font-weight: $font-weight-semibold;
   padding: 0.15rem 0.5rem;
-  border-radius: 12px;
+  border-radius: 0.75rem;
   text-transform: capitalize;
 }
 
@@ -117,7 +117,7 @@
   flex-direction: column;
   align-items: flex-end;
   gap: $spacing-1;
-  min-width: 100px;
+  min-width: 6.25rem;
 }
 
 .owner-name {
@@ -132,8 +132,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    width: 1.5rem;
+    height: 1.5rem;
     border-radius: 50%;
     background: $color-primary;
     color: $color-surface;

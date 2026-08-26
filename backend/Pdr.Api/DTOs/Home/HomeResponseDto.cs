@@ -8,7 +8,6 @@ public class HomeUserDto
     public int Id { get; set; }
     public string FullName { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
-    public bool IsAdmin { get; set; }
 }
 
 public class HomeDashboardDto
@@ -36,8 +35,6 @@ public class DashboardBlockerDto
 {
     public int RiskId { get; set; }
     public string ProjectName { get; set; } = string.Empty;
-    public string BlockerDescription { get; set; } = string.Empty;
-    public string OwnerName { get; set; } = string.Empty;
     public DateTime? DueDate { get; set; }
 }
 

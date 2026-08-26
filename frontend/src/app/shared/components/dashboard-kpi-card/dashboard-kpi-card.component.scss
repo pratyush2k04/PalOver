@@ -3,7 +3,7 @@
 
 .kpi-card {
   height: 100%;
-  border-radius: 12px;
+  border-radius: 0.75rem;
   box-shadow: $shadow-card;
   border: 1px solid $color-border-soft;
   background-color: $color-surface !important;
@@ -29,9 +29,9 @@
   }
 
   .icon-wrapper {
-    width: 60px;
-    height: 60px;
-    border-radius: 16px;
+    width: 3.75rem;
+    height: 3.75rem;
+    border-radius: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -41,8 +41,8 @@
     }
 
     ::ng-deep svg {
-      width: 28px;
-      height: 28px;
+      width: 1.75rem;
+      height: 1.75rem;
     }
 
     &.text-primary {
@@ -110,24 +110,4 @@
     font-weight: $font-weight-semibold;
     color: $color-text-faint;
   }
-
-  .subtitle {
-    font-size: 0.85rem;
-    color: $color-success;
-    font-weight: $font-weight-semibold;
-    display: flex;
-    align-items: center;
-    gap: $spacing-1;
-    margin-top: $spacing-2;
-    z-index: 2;
-
-    .trend-icon {
-      ::ng-deep svg {
-        width: 16px;
-        height: 16px;
-        stroke: currentColor;
-      }
-    }
-  }
-
 }

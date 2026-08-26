@@ -40,7 +40,7 @@ export class SidebarComponent {
     ];
 
     // Users, Engagement Allocation, Master Checklist and Audit Log links: visible ONLY to Admin
-    const isAdminUser = currentUser.isAdmin || currentUser.role === USER_ROLES.ADMIN || this.authService.isAdmin();
+    const isAdminUser = currentUser.role === USER_ROLES.ADMIN || this.authService.isAdmin();
     if (isAdminUser) {
       items.push({ label: 'Users', icon: 'users', route: APP_ROUTES.USERS });
       items.push({ label: 'Engagement Allocation', icon: 'user-check', route: APP_ROUTES.ENGAGEMENT_ALLOCATION });

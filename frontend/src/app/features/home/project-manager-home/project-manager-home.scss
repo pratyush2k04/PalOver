@@ -8,10 +8,9 @@
 }
 
 .home-workspace {
-  display: flex;
-  flex-direction: column;
+  @include flex-column();
   padding: $spacing-8;
-  max-width: 1400px;
+  max-width: 87.5rem;
   margin: 0 auto;
   font-family: $font-family-base;
   color: $color-text;
@@ -26,8 +25,8 @@
   width: 100%;
   margin-bottom: 1.5rem;
   
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  @media (max-width: 64rem) {
+    grid-template-columns: repeat(auto-fit, minmax(17.5rem, 1fr));
   }
 }
 
@@ -46,7 +45,7 @@
     grid-column: span 1;
   }
   
-  @media (max-width: 1024px) {
+  @media (max-width: 64rem) {
     grid-template-columns: 1fr;
     
     .main-left, .main-right {

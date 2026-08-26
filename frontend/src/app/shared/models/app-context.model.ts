@@ -2,13 +2,11 @@ export interface HomeUser {
   id: number;
   fullName: string;
   role: string;
-  isAdmin: boolean;
 }
 
 export interface DashboardCard {
   title: string;
   count: number;
-  subtitle?: string;
   type: string;
 }
 
@@ -34,8 +32,6 @@ export interface DashboardEngagement {
 export interface DashboardBlocker {
   riskId: number;
   projectName: string;
-  blockerDescription: string;
-  ownerName: string;
   dueDate: string;
 }
 

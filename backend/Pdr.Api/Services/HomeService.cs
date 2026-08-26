@@ -1,26 +1,18 @@
-using Microsoft.EntityFrameworkCore;
 using Pdr.Api.Constants;
-using Pdr.Api.Data;
 using Pdr.Api.DTOs.Home;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
 using Pdr.Api.Models.LoginEntity;
+using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
-using Pdr.Api.Models.Handover;
-using Pdr.Api.Models.Risks;
-using Pdr.Api.Models.AccessTracker;
 using Pdr.Api.Models.Notifications;
-
 namespace Pdr.Api.Services;
 
-public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadinessService, INotificationService notificationService) : IHomeService
+public class HomeService(IHomeRepository homeRepository, IKickoffReadinessService kickoffReadinessService, INotificationService notificationService) : IHomeService
 {
     public async Task<HomeResponseDto> GetHomeAsync(int userId)
     {
-        var user = await db.Users
-            .AsNoTracking()
-            .Include(u => u.Role)
-            .FirstOrDefaultAsync(u => u.Id == userId);
+        var user = await homeRepository.GetUserWithRoleAsync(userId);
 
         if (user is null)
             throw new UserNotFoundException(userId);
@@ -29,26 +21,23 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
         {
             Id = user.Id,
             FullName = user.FullName,
-            Role = user.IsAdmin ? RoleConstants.Leadership : user.Role.Name,
-            IsAdmin = user.IsAdmin,
+            Role = user.Role.Name
         };
 
-        var myEngagementsQuery = db.EngagementAssignments
-            .Where(ea => ea.UserId == user.Id)
-            .Select(ea => ea.EngagementId);
+        var myEngagementIds = await homeRepository.GetUserEngagementIdsAsync(user.Id);
 
-        var effectiveRole = user.IsAdmin ? RoleEnum.Leadership : (RoleEnum)user.RoleId;
+        var effectiveRole = (RoleEnum)user.RoleId;
 
-        var cards = await GetDashboardCardsAsync(user.Id, effectiveRole);
-        var engagements = await GetDashboardEngagementsAsync(myEngagementsQuery);
+        var cards = await GetDashboardCardsAsync(user.Id, effectiveRole, myEngagementIds);
+        var engagements = await GetDashboardEngagementsAsync(myEngagementIds);
         var blockers = await GetDashboardBlockersAsync(user.Id);
 
         var homeDto = new HomeDashboardDto
         {
-            Route = ResolveRoute(user),
-            Title = ResolveTitle(user),
+            Route = ResolveRoute(effectiveRole),
+            Title = ResolveTitle(effectiveRole),
             WelcomeMessage = BuildWelcomeMessage(user),
-            EmptyState = ResolveEmptyState(user),
+            EmptyState = ResolveEmptyState(effectiveRole),
             Cards = cards,
             Engagements = engagements,
             CriticalBlockers = blockers
@@ -57,35 +46,23 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
         return new HomeResponseDto { User = userDto, Home = homeDto };
     }
 
-    private async Task<List<DashboardCardsDto>> GetDashboardCardsAsync(int userId, RoleEnum role)
+    private async Task<List<DashboardCardsDto>> GetDashboardCardsAsync(int userId, RoleEnum role, List<int> engagementIds)
     {
-        var myEngagementsQuery = db.EngagementAssignments
-            .Where(ea => ea.UserId == userId)
-            .Select(ea => ea.EngagementId);
-
         return role switch
         {
-            RoleEnum.PreSales => await GetPreSalesCardsAsync(myEngagementsQuery),
-            RoleEnum.ProjectManagement => await GetProjectManagerCardsAsync(userId, myEngagementsQuery),
-            RoleEnum.TechLead => await GetTechLeadCardsAsync(myEngagementsQuery),
-            RoleEnum.Leadership => await GetLeadershipCardsAsync(userId, myEngagementsQuery),
+            RoleEnum.PreSales => await GetPreSalesCardsAsync(engagementIds),
+            RoleEnum.ProjectManagement => await GetProjectManagerCardsAsync(engagementIds),
+            RoleEnum.TechLead => await GetTechLeadCardsAsync(engagementIds),
+            RoleEnum.Leadership => await GetLeadershipCardsAsync(userId, engagementIds),
             _ => []
         };
     }
 
-    private async Task<List<DashboardCardsDto>> GetPreSalesCardsAsync(IQueryable<int> myEngagementsQuery)
+    private async Task<List<DashboardCardsDto>> GetPreSalesCardsAsync(List<int> engagementIds)
     {
-        var myHandoversCount = await myEngagementsQuery.CountAsync();
-        
-        var draftHandoversCount = await db.HandoverInfos
-            .Where(h => myEngagementsQuery.Contains(h.EngagementId) 
-                     && h.StatusId == (int)HandoverStatusEnum.Draft)
-            .CountAsync();
-            
-        var completeHandoversCount = await db.HandoverInfos
-            .Where(h => myEngagementsQuery.Contains(h.EngagementId) 
-                     && h.StatusId == (int)HandoverStatusEnum.Submitted)
-            .CountAsync();
+        var myHandoversCount = engagementIds.Count;
+        var draftHandoversCount = await homeRepository.GetDraftHandoversCountAsync(engagementIds);
+        var completeHandoversCount = await homeRepository.GetCompleteHandoversCountAsync(engagementIds);
 
         return [
             new DashboardCardsDto { Title = HomeConstants.Titles.MyHandovers, Count = myHandoversCount, Type = HomeConstants.CardTypes.Engagement },
@@ -94,20 +71,11 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
         ];
     }
 
-    private async Task<List<DashboardCardsDto>> GetProjectManagerCardsAsync(int userId, IQueryable<int> myEngagementsQuery)
+    private async Task<List<DashboardCardsDto>> GetProjectManagerCardsAsync(List<int> engagementIds)
     {
-        var myEngagementsCount = await myEngagementsQuery.CountAsync();
-        
-        var checklistCount = await db.EngagementChecklistItems
-            .Where(c => myEngagementsQuery.Contains(c.EngagementChecklist.EngagementId) 
-                     && c.Status == HomeConstants.Statuses.Incomplete 
-                     && c.IsMandatory)
-            .CountAsync();
-            
-        var openBlockersCount = await db.Risks
-            .Where(r => myEngagementsQuery.Contains(r.EngagementId) 
-                     && r.Status == RiskStatus.Open)
-            .CountAsync();
+        var myEngagementsCount = engagementIds.Count;
+        var checklistCount = await homeRepository.GetIncompleteChecklistCountAsync(engagementIds);
+        var openBlockersCount = await homeRepository.GetOpenBlockersCountAsync(engagementIds);
 
         return [
             new DashboardCardsDto { Title = HomeConstants.Titles.MyEngagements, Count = myEngagementsCount, Type = HomeConstants.CardTypes.Engagement },
@@ -116,19 +84,11 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
         ];
     }
 
-    private async Task<List<DashboardCardsDto>> GetTechLeadCardsAsync(IQueryable<int> myEngagementsQuery)
+    private async Task<List<DashboardCardsDto>> GetTechLeadCardsAsync(List<int> engagementIds)
     {
-        var myTechQueueCount = await myEngagementsQuery.CountAsync();
-        
-        var openBlockersCount = await db.Risks
-            .Where(r => myEngagementsQuery.Contains(r.EngagementId) 
-                     && r.Status == RiskStatus.Open)
-            .CountAsync();
-            
-        var openAccessItemsCount = await db.AccessItems
-            .Where(a => myEngagementsQuery.Contains(a.EngagementId) 
-                     && a.Status == AccessItemStatus.InProgress)
-            .CountAsync();
+        var myTechQueueCount = engagementIds.Count;
+        var openBlockersCount = await homeRepository.GetOpenBlockersCountAsync(engagementIds);
+        var openAccessItemsCount = await homeRepository.GetOpenAccessItemsCountAsync(engagementIds);
 
         return [
             new DashboardCardsDto { Title = "My Tech Queue", Count = myTechQueueCount, Type = HomeConstants.CardTypes.TechQueue },
@@ -137,18 +97,11 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
         ];
     }
 
-    private async Task<List<DashboardCardsDto>> GetLeadershipCardsAsync(int userId, IQueryable<int> myEngagementsQuery)
+    private async Task<List<DashboardCardsDto>> GetLeadershipCardsAsync(int userId, List<int> engagementIds)
     {
-        var myEngagementsCount = await myEngagementsQuery.CountAsync();
-        
-        var openBlockersCount = await db.Risks
-            .Where(r => myEngagementsQuery.Contains(r.EngagementId) 
-                     && r.Status == RiskStatus.Open)
-            .CountAsync();
-            
-        var myEscalationsCount = await db.RiskEscalationHistories
-            .Where(e => e.EscalatedToUserId == userId)
-            .CountAsync();
+        var myEngagementsCount = engagementIds.Count;
+        var openBlockersCount = await homeRepository.GetOpenBlockersCountAsync(engagementIds);
+        var myEscalationsCount = await homeRepository.GetMyEscalationsCountAsync(userId);
 
         return [
             new DashboardCardsDto { Title = HomeConstants.Titles.MyEngagements, Count = myEngagementsCount, Type = HomeConstants.CardTypes.Engagement },
@@ -157,10 +110,8 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
         ];
     }
 
-    private static string ResolveRoute(User user)
+    private static string ResolveRoute(RoleEnum effectiveRole)
     {
-        var effectiveRole = user.IsAdmin ? RoleEnum.Leadership : (RoleEnum)user.RoleId;
-
         return effectiveRole switch
         {
             RoleEnum.ProjectManagement => HomeConstants.FrontendRoutes.EngagementDashboard,
@@ -171,10 +122,8 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
         };
     }
 
-    private static string ResolveTitle(User user)
+    private static string ResolveTitle(RoleEnum effectiveRole)
     {
-        var effectiveRole = user.IsAdmin ? RoleEnum.Leadership : (RoleEnum)user.RoleId;
-
         return effectiveRole switch
         {
             RoleEnum.ProjectManagement => HomeConstants.Titles.MyEngagements,
@@ -185,10 +134,8 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
         };
     }
 
-    private static string ResolveEmptyState(User user)
+    private static string ResolveEmptyState(RoleEnum effectiveRole)
     {
-        var effectiveRole = user.IsAdmin ? RoleEnum.Leadership : (RoleEnum)user.RoleId;
-
         return effectiveRole switch
         {
             RoleEnum.ProjectManagement => HomeConstants.EmptyStates.MyEngagements,
@@ -199,23 +146,12 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
         };
     }
 
-    private async Task<List<DashboardEngagementDto>> GetDashboardEngagementsAsync(IQueryable<int> myEngagementsQuery)
+    private async Task<List<DashboardEngagementDto>> GetDashboardEngagementsAsync(List<int> engagementIds)
     {
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         var sevenDaysFromNow = today.AddDays(7);
 
-        var engagements = await db.Engagements
-            .Where(e => myEngagementsQuery.Contains(e.EngagementId) && e.KickoffDate <= sevenDaysFromNow)
-            .OrderBy(e => e.KickoffDate)
-            .Select(e => new 
-            {
-                e.EngagementId,
-                e.EngagementName,
-                e.KickoffDate
-            })
-            .ToListAsync();
-
-        var dtos = new List<DashboardEngagementDto>();
+        var engagements = await homeRepository.GetUpcomingKickoffsAsync(engagementIds, sevenDaysFromNow);
 
         foreach (var e in engagements)
         {
@@ -229,10 +165,7 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
             else if (daysToKickoff >= LeadershipDashboardConstants.Days.Tier1To3) requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier1To3;
             else requiredThreshold = LeadershipDashboardConstants.Thresholds.TierDay0OrPast;
 
-            int openBlockerCount = await db.Risks
-                .CountAsync(r => r.EngagementId == e.EngagementId &&
-                                 (r.Status == RiskStatus.Open || r.Status == RiskStatus.Mitigating) &&
-                                 !r.IsDeleted);
+            int openBlockerCount = await homeRepository.GetEngagementOpenBlockerCountAsync(e.EngagementId);
 
             string status;
             if (readiness.Score == 100 && openBlockerCount == 0)
@@ -242,18 +175,12 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
             else
                 status = LeadershipDashboardConstants.Statuses.InProgress;
 
-            dtos.Add(new DashboardEngagementDto
-            {
-                EngagementId = e.EngagementId,
-                EngagementName = e.EngagementName,
-                KickoffDate = e.KickoffDate,
-                DaysToGo = daysToKickoff,
-                ReadinessPercentage = readiness.Score,
-                Status = status
-            });
+            e.DaysToGo = daysToKickoff;
+            e.ReadinessPercentage = readiness.Score;
+            e.Status = status;
         }
 
-        return dtos;
+        return engagements;
     }
 
     private async Task<List<DashboardBlockerDto>> GetDashboardBlockersAsync(int userId)
@@ -267,8 +194,6 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
             {
                 RiskId = n.Id,
                 ProjectName = n.Title ?? HomeConstants.Fallbacks.Task,
-                BlockerDescription = n.Body ?? "",
-                OwnerName = HomeConstants.Fallbacks.System,
                 DueDate = n.ReceivedAt
             })
             .ToList();
@@ -278,7 +203,7 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
 
     private static string BuildWelcomeMessage(User user)
     {
-        var roleLabel = user.IsAdmin ? RoleConstants.Leadership : user.Role.Name;
+        var roleLabel = user.Role.Name;
         return $"Welcome, {user.FullName} - {roleLabel}";
     }
 }
