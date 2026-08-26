@@ -5,7 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
 import { EngagementService } from '../services/engagement.service';
 import { TechnicalReadinessService } from '../services/technical-readiness.service';
-import { KickoffReadinessDto, KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
+import { KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
 import { AuthService } from '@shared/services/auth';
 import { ToastService } from '@common/services/toast/toast';
 import { ENGAGEMENT_WORKSPACE_CONFIG } from '@shared/constants/engagements.constants';
@@ -54,7 +54,7 @@ export class EngagementWorkspaceComponent {
   });
 
   engagement = signal<EngagementInfoDto | null>(null);
-  readiness = signal<KickoffReadinessDto | null>(null);
+  readiness = this.kickoffReadinessService.readiness;
   owners = signal<EngagementOwners | null>(null);
   isLoading = signal<boolean>(true);
 
@@ -147,10 +147,7 @@ export class EngagementWorkspaceComponent {
       }
     });
 
-    this.kickoffReadinessService.getReadiness(id).subscribe({
-      next: (data) => this.readiness.set(data),
-      error: () => this.readiness.set(null)
-    });
+    this.kickoffReadinessService.track(id);
 
     this.engagementService.getEngagementOwners(id).subscribe({
       next: (owners) => this.owners.set(owners),
