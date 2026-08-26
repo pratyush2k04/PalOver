@@ -6,6 +6,8 @@ using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 using Pdr.Api.Models.Notifications;
+using Pdr.Api.Helpers;
+
 namespace Pdr.Api.Services;
 
 public class HomeService(IHomeRepository homeRepository, IKickoffReadinessService kickoffReadinessService, INotificationService notificationService) : IHomeService
@@ -158,26 +160,12 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
             var readiness = await kickoffReadinessService.GetReadinessAsync(e.EngagementId);
             var daysToKickoff = e.KickoffDate.DayNumber - today.DayNumber;
 
-            int requiredThreshold;
-            if (daysToKickoff > LeadershipDashboardConstants.Days.TierGreaterThan14) requiredThreshold = LeadershipDashboardConstants.Thresholds.TierGreaterThan14;
-            else if (daysToKickoff >= LeadershipDashboardConstants.Days.Tier8To14) requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier8To14;
-            else if (daysToKickoff >= LeadershipDashboardConstants.Days.Tier4To7) requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier4To7;
-            else if (daysToKickoff >= LeadershipDashboardConstants.Days.Tier1To3) requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier1To3;
-            else requiredThreshold = LeadershipDashboardConstants.Thresholds.TierDay0OrPast;
-
+            int requiredThreshold = LeadershipDashboardHelpers.GetRequiredThreshold(daysToKickoff);
             int openBlockerCount = await homeRepository.GetEngagementOpenBlockerCountAsync(e.EngagementId);
-
-            string status;
-            if (readiness.Score == 100 && openBlockerCount == 0)
-                status = LeadershipDashboardConstants.Statuses.KickoffReady;
-            else if (openBlockerCount > 0 || readiness.Score < requiredThreshold)
-                status = LeadershipDashboardConstants.Statuses.AtRisk;
-            else
-                status = LeadershipDashboardConstants.Statuses.InProgress;
 
             e.DaysToGo = daysToKickoff;
             e.ReadinessPercentage = readiness.Score;
-            e.Status = status;
+            e.Status = LeadershipDashboardHelpers.DeriveStatus(readiness.Score, openBlockerCount, requiredThreshold);
         }
 
         return engagements;

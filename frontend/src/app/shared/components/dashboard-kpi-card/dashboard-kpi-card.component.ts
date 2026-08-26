@@ -28,7 +28,7 @@ export class DashboardKpiCardComponent {
       case 'checklist':
         return 'assets/icons/checklist.svg';
       case 'tech-queue':
-        return 'assets/icons/layers.svg';
+        return 'assets/icons/briefcase.svg';
       case 'access-item':
         return 'assets/icons/alert-circle.svg';
       case 'escalation':
@@ -45,6 +45,7 @@ export class DashboardKpiCardComponent {
         return 'text-danger';
       case 'engagement':
       case 'handover':
+      case 'tech-queue':
         return 'text-primary';
       case 'checklist':
       case 'access-item':

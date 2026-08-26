@@ -18,11 +18,4 @@ public static class LeadershipDashboardConstants
         public const int TierDay0OrPast = 95;
     }
 
-    public static class Days
-    {
-        public const int TierGreaterThan14 = 14;
-        public const int Tier8To14 = 8;
-        public const int Tier4To7 = 4;
-        public const int Tier1To3 = 1;
-    }
 }
