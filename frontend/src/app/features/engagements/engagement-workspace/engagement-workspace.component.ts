@@ -8,6 +8,7 @@ import { TechnicalReadinessService } from '../services/technical-readiness.servi
 import { KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
 import { AuthService } from '@shared/services/auth';
 import { ToastService } from '@common/services/toast/toast';
+import { LoaderService } from '@shared/services/loader.service';
 import { ENGAGEMENT_WORKSPACE_CONFIG } from '@shared/constants/engagements.constants';
 import { USER_ROLES } from '@shared/constants/users.constants';
 import { DayOneSignOffRequest, EngagementInfoDto, EngagementOwners } from '../models/engagement.model';
@@ -45,6 +46,7 @@ export class EngagementWorkspaceComponent {
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
   private dialogService = inject(DialogService);
+  private loaderService = inject(LoaderService);
 
   private paramMap = toSignal(this.route.paramMap);
 
@@ -135,15 +137,18 @@ export class EngagementWorkspaceComponent {
 
   private loadEngagement(id: number) {
     this.isLoading.set(true);
+    this.loaderService.setInitialWorkspaceLoad(true);
     this.engagementService.getEngagementInfo(id).subscribe({
       next: (data) => {
         this.engagement.set(data);
         this.isLoading.set(false);
+        this.loaderService.setInitialWorkspaceLoad(false);
       },
       error: (error) => {
         console.error(error);
         this.engagement.set(null);
         this.isLoading.set(false);
+        this.loaderService.setInitialWorkspaceLoad(false);
       }
     });
 

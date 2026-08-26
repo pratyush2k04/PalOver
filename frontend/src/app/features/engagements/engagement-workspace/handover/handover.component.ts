@@ -16,8 +16,17 @@ import { catchError, of } from 'rxjs';
 import { AuthService } from '@shared/services/auth';
 import { KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
 import { EngagementInfoDto } from '../../models/engagement.model';
-import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
 import { ENGAGEMENT_ROUTES } from '@shared/constants/app.constants';
+import { DialogService } from '@common/services/dialog/dialog.service';
+import { AddCommitmentDialogComponent, AddCommitmentDialogData } from './dialogs/add-commitment-dialog/add-commitment-dialog.component';
+import {
+  HANDOVER_MESSAGES,
+  HANDOVER_SENTIMENT_OPTIONS,
+  HANDOVER_TIMELINE_UNITS,
+  HANDOVER_LABELS,
+  HANDOVER_PLACEHOLDERS,
+  HANDOVER_BUTTONS,
+} from '@shared/constants/handover.constants';
 import {
   HandoverInfoDto,
   SaveHandoverDraftRequest,
@@ -36,11 +45,12 @@ import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { SectionHeaderComponent } from '@common/components/section-header/section-header';
 import { ClientContactTransitionCardComponent } from './client-contact-transition-card/client-contact-transition-card.component';
+import { ToastService } from '@common/services/toast/toast';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 
+import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
+
 const MAX_FREE_TEXT_LENGTH = 2000;
-const SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
-const TIMELINE_UNITS = ['Days', 'Weeks', 'Months'] as const;
 
 function timelinesMatch(timeline1: number, unit1: string, timeline2: number, unit2: string): boolean {
   return timeline1 === timeline2 && unit1 === unit2;
@@ -61,7 +71,6 @@ interface RealisticEditForm {
     ReactiveFormsModule,
     FormsModule,
     SectionHeaderComponent,
-    FlaggedItemsBannerComponent,
     AlertComponent,
     ButtonComponent,
     InputComponent,
@@ -70,14 +79,18 @@ interface RealisticEditForm {
     StatusBadgeComponent,
     EmptyStateComponent,
     ClientContactTransitionCardComponent,
-    LoadingSpinnerComponent,
+    ConfirmDialogComponent,
   ],
   templateUrl: './handover.component.html',
   styleUrl: './handover.component.scss',
 })
 export class HandoverComponent {
-  private static readonly KICKOFF_NOT_READY_MESSAGE =
-    'Engagement is not kickoff-ready. All mandatory items must be complete before submitting the handover.';
+  private static readonly KICKOFF_NOT_READY_MESSAGE = HANDOVER_MESSAGES.KICKOFF_NOT_READY;
+
+  HANDOVER_LABELS = HANDOVER_LABELS;
+  HANDOVER_PLACEHOLDERS = HANDOVER_PLACEHOLDERS;
+  HANDOVER_BUTTONS = HANDOVER_BUTTONS;
+  HANDOVER_MESSAGES = HANDOVER_MESSAGES;
 
   engagementInfo = signal<EngagementInfoDto | null>(null);
 
@@ -87,6 +100,8 @@ export class HandoverComponent {
   private engagementService = inject(EngagementService);
   private kickoffReadinessService = inject(KickoffReadinessService);
   private authService = inject(AuthService);
+  private toastService = inject(ToastService);
+  private dialog = inject(DialogService);
   private fb = inject(FormBuilder);
 
   private parentParamMap = toSignal(this.route.parent!.paramMap);
@@ -103,18 +118,21 @@ export class HandoverComponent {
   isError = signal(false);
 
   kickoffReadiness = this.kickoffReadinessService.readiness;
-  handoverFlaggedItems = computed<FlaggedItem[]>(() => {
+
+  isHandoverReadyToSubmit = computed(() => {
     const r = this.kickoffReadiness();
-    if (!r) return [];
-    return [
-      { label: 'mandatory handover field(s) incomplete', count: r.handoverFieldsApplicable - r.handoverFieldsPassed },
-      { label: 'commitment(s) missing acknowledgement', count: r.commitmentsApplicable - r.commitmentsPassed }
-    ];
+    if (!r) return false;
+    return (
+      r.handoverFieldsPassed >= r.handoverFieldsApplicable &&
+      r.commitmentsPassed >= r.commitmentsApplicable &&
+      r.checklistItemsPassed >= r.checklistItemsApplicable
+    );
   });
 
-  readonly sentimentOptions: SelectOption[] = SENTIMENT_OPTIONS.map((value) => ({ value, label: value }));
-  readonly timelineUnits = TIMELINE_UNITS;
-  readonly timelineUnitOptions: SelectOption[] = TIMELINE_UNITS.map((value) => ({ value, label: value }));
+
+  readonly sentimentOptions: SelectOption[] = HANDOVER_SENTIMENT_OPTIONS.map((value) => ({ value, label: value }));
+  readonly timelineUnits = HANDOVER_TIMELINE_UNITS;
+  readonly timelineUnitOptions: SelectOption[] = HANDOVER_TIMELINE_UNITS.map((value) => ({ value, label: value }));
   readonly maxFreeTextLength = MAX_FREE_TEXT_LENGTH;
 
   getSentimentTone(sentiment: string | null | undefined): StatusBadgeTone {
@@ -123,6 +141,19 @@ export class HandoverComponent {
         return 'info';
       case 'Strained':
         return 'danger';
+      default:
+        return 'neutral';
+    }
+  }
+
+  getCommitmentTypeTone(typeId: number): StatusBadgeTone {
+    switch (typeId) {
+      case 1:
+        return 'info';
+      case 2:
+        return 'success';
+      case 3:
+        return 'warning';
       default:
         return 'neutral';
     }
@@ -147,11 +178,13 @@ export class HandoverComponent {
 
   editCommitmentErrors = signal<string[]>([]);
   realisticEditErrors = signal<string[]>([]);
+  editCommitmentTouched = signal(false);
+  realisticEditTouched = signal(false);
 
   commitmentTypes = [
-    { id: 1, name: 'Software' },
-    { id: 2, name: 'Services' },
-    { id: 3, name: 'Training' },
+    { id: 1, name: HANDOVER_LABELS.SOFTWARE },
+    { id: 2, name: HANDOVER_LABELS.SERVICES },
+    { id: 3, name: HANDOVER_LABELS.TRAINING },
   ];
 
   readonly commitmentTypeOptions: SelectOption[] = this.commitmentTypes.map((t) => ({
@@ -160,6 +193,7 @@ export class HandoverComponent {
   }));
 
   isSubmitted = computed(() => this.handover()?.status === 'Submitted');
+  hasHandoverDraft = computed(() => !!this.handover()?.handoverId);
   newCommitmentTouched = signal(false);
 
   isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
@@ -187,7 +221,7 @@ export class HandoverComponent {
 
   private loadEngagement(id: number) {
     this.engagementService.getEngagementInfo(id).pipe(
-      catchError(() => of(null))   //when an api falls it catches the error and returns null instead the crashing the component
+      catchError(() => of(null))
     ).subscribe(data => this.engagementInfo.set(data)); 
   }
 
@@ -226,7 +260,7 @@ export class HandoverComponent {
           this.handover.set(null);
           this.isLoading.set(false);
         } else {
-          this.showMessage('Failed to load handover details', true);
+          this.showMessage(HANDOVER_MESSAGES.LOAD_ERROR, true);
           this.isLoading.set(false);
         }
       },
@@ -240,8 +274,7 @@ export class HandoverComponent {
     const { businessProblem, clientSentiment } = this.clientContextForm.getRawValue();
     if (!businessProblem || !clientSentiment) {
       this.clientContextForm.markAllAsTouched();
-      this.showMessage('Business Problem and Client Sentiment are required to save a draft.', true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      this.toastService.error(HANDOVER_MESSAGES.DRAFT_REQUIRED_FIELDS);
       return;
     }
 
@@ -251,12 +284,12 @@ export class HandoverComponent {
     this.handoverService.saveDraft(id, request).subscribe({
       next: (data) => {
         this.handover.set(data);
-        this.showMessage('Draft saved successfully', false);
+        this.toastService.success(HANDOVER_MESSAGES.SAVE_DRAFT_SUCCESS);
         this.isSaving.set(false);
         this.kickoffReadinessService.refresh();
       },
       error: (err) => {
-        this.showMessage(this.extractErrorMessage(err, 'Failed to save draft'), true);
+        this.toastService.error(this.extractErrorMessage(err, HANDOVER_MESSAGES.SAVE_DRAFT_ERROR));
         this.isSaving.set(false);
       },
     });
@@ -268,7 +301,7 @@ export class HandoverComponent {
 
     if (!this.isValidForSubmit()) {
       this.clientContextForm.markAllAsTouched();
-      this.showMessage('Please complete all required fields.', true);
+      this.showMessage(HANDOVER_MESSAGES.SUBMIT_REQUIRED_FIELDS, true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
@@ -278,79 +311,72 @@ export class HandoverComponent {
       next: (data) => {
         this.handover.set(data);
         this.clientContextForm.disable();
-        this.showMessage('Handover submitted successfully', false);
+        this.showMessage(HANDOVER_MESSAGES.SUBMIT_SUCCESS, false);
         this.isSaving.set(false);
         this.kickoffReadinessService.refresh();
       },
       error: (err) => {
-        const errorMessage = this.extractErrorMessage(err, 'Failed to submit handover');
+        const errorMessage = this.extractErrorMessage(err, HANDOVER_MESSAGES.SUBMIT_ERROR);
         this.showMessage(errorMessage, true);
         this.isSaving.set(false);
-
-        if (errorMessage === HandoverComponent.KICKOFF_NOT_READY_MESSAGE) {
-          setTimeout(() => {
-            this.router.navigate(['../', ENGAGEMENT_ROUTES.KICKOFF], { relativeTo: this.route });
-          }, 1500);
-        }
       }
     });
   }
 
-  addCommitment() {
+  openAddCommitmentDialog(): void {
     const id = this.engagementId();
     if (!id) return;
 
-    const currentNew = this.newCommitment();
-    if (!currentNew.description || !currentNew.title) {
-      return;
-    }
+    const data: AddCommitmentDialogData = { engagementId: id };
+    const dialogRef = this.dialog.open<AddCommitmentDialogComponent, AddCommitmentDialogData, CommitmentDto>(
+      AddCommitmentDialogComponent,
+      { data }
+    );
 
-    this.handoverService.addCommitment(id, currentNew).subscribe({
-      next: (data) => {
-        this.commitments.update((c) => [...c, data]);
-        this.newCommitment.set(this.emptyCommitment());
-        this.newCommitmentTouched.set(false);
-        this.showMessage('Commitment added successfully', false);
-        this.kickoffReadinessService.refresh();
-      },
-      error: (err) => {
-        this.showMessage(this.extractErrorMessage(err, 'Failed to add commitment'), true);
-      },
+    dialogRef.closed$.subscribe((response) => {
+      if (!response) return;
+      this.commitments.update((c) => [...c, response]);
+      this.toastService.success(HANDOVER_MESSAGES.COMMITMENT_ADDED);
+      this.kickoffReadinessService.refresh();
     });
   }
 
   startEditCommitment(c: CommitmentDto) {
-    this.editCommitmentErrors.set([]);
-    this.editingCommitmentId.set(c.commitmentId);
-    this.editCommitment.set({
-      description: c.description,
-      commitmentTypeId: c.commitmentTypeId,
-      title: c.title,
-      timeline: c.timeline,
-      timelineUnit: c.timelineUnit,
+    const id = this.engagementId();
+    if (!id) return;
+
+    const data: AddCommitmentDialogData = { engagementId: id, commitment: c };
+    const dialogRef = this.dialog.open<AddCommitmentDialogComponent, AddCommitmentDialogData, CommitmentDto>(
+      AddCommitmentDialogComponent,
+      { data }
+    );
+
+    dialogRef.closed$.subscribe((response) => {
+      if (!response) return;
+      this.commitments.update((commits) => {
+        const arr = [...commits];
+        const index = arr.findIndex((item) => item.commitmentId === c.commitmentId);
+        if (index !== -1) arr[index] = response;
+        return arr;
+      });
+      this.toastService.success(HANDOVER_MESSAGES.COMMITMENT_UPDATED);
     });
   }
 
   cancelEditCommitment() {
     this.editingCommitmentId.set(null);
-    this.editCommitmentErrors.set([]);
+    this.editCommitmentTouched.set(false);
   }
 
   saveEditCommitment(commitmentId: number) {
     const id = this.engagementId();
     if (!id) return;
 
+    this.editCommitmentTouched.set(true);
     const currentEdit = this.editCommitment();
-    const errors: string[] = [];
-    if (!currentEdit.title) errors.push('Title is required.');
-    if (!currentEdit.description) errors.push('Description is required.');
-
-    if (errors.length > 0) {
-      this.editCommitmentErrors.set(errors);
+    if (!currentEdit.title || !currentEdit.description) {
       return;
     }
-
-    this.editCommitmentErrors.set([]);
 
     this.handoverService.updateCommitment(id, commitmentId, currentEdit).subscribe({
       next: (data) => {
@@ -361,14 +387,16 @@ export class HandoverComponent {
           return arr;
         });
         this.editingCommitmentId.set(null);
-        this.showMessage('Commitment updated successfully', false);
+        this.toastService.success(HANDOVER_MESSAGES.COMMITMENT_UPDATED);
         this.kickoffReadinessService.refresh();
       },
       error: (err) => {
-        this.showMessage(this.extractErrorMessage(err, 'Failed to update commitment'), true);
+        this.toastService.error(this.extractErrorMessage(err, HANDOVER_MESSAGES.COMMITMENT_UPDATE_ERROR));
       },
     });
   }
+
+  isDeletingCommitment = signal(false);
 
   requestDeleteCommitment(commitmentId: number) {
     this.pendingDeleteId.set(commitmentId);
@@ -382,22 +410,25 @@ export class HandoverComponent {
     const id = this.engagementId();
     if (!id) return;
 
+    this.isDeletingCommitment.set(true);
     this.handoverService.deleteCommitment(id, commitmentId).subscribe({
       next: () => {
         this.commitments.update((c) => c.filter((item) => item.commitmentId !== commitmentId));
         this.pendingDeleteId.set(null);
-        this.showMessage('Commitment deleted', false);
+        this.isDeletingCommitment.set(false);
+        this.toastService.success(HANDOVER_MESSAGES.COMMITMENT_DELETED);
         this.kickoffReadinessService.refresh();
       },
       error: (err) => {
         this.pendingDeleteId.set(null);
-        this.showMessage(this.extractErrorMessage(err, 'Failed to delete commitment'), true);
+        this.isDeletingCommitment.set(false);
+        this.toastService.error(this.extractErrorMessage(err, HANDOVER_MESSAGES.COMMITMENT_DELETE_ERROR));
       },
     });
   }
 
   startEditRealisticCommitment(c: CommitmentDto) {
-    this.realisticEditErrors.set([]);
+    this.realisticEditTouched.set(false);
     this.editingRealisticCommitmentId.set(c.commitmentId);
     const existing = c.realisticCommitment;
     const ackMessage = existing?.acknowledgementMessage || '';
@@ -412,7 +443,7 @@ export class HandoverComponent {
 
   cancelEditRealisticCommitment() {
     this.editingRealisticCommitmentId.set(null);
-    this.realisticEditErrors.set([]);
+    this.realisticEditTouched.set(false);
   }
 
   commitmentNeedsAcknowledgement(c: CommitmentDto): boolean {
@@ -429,19 +460,11 @@ export class HandoverComponent {
     const id = this.engagementId();
     if (!id) return;
 
+    this.realisticEditTouched.set(true);
     const form = this.realisticEditForm();
-    const errors: string[] = [];
-    if (!form.description) errors.push('Description is required.');
-    if (this.editFormNeedsAcknowledgement(c) && !form.acknowledgementMessage) {
-      errors.push('An acknowledgement message is required when the realistic timeline differs from the promised timeline.');
-    }
-
-    if (errors.length > 0) {
-      this.realisticEditErrors.set(errors);
+    if (!form.description || (this.editFormNeedsAcknowledgement(c) && !form.acknowledgementMessage)) {
       return;
     }
-
-    this.realisticEditErrors.set([]);
 
     const payload = {
       description: form.description,
@@ -465,7 +488,7 @@ export class HandoverComponent {
     request$.subscribe({
       next: (data) => {
         this.editingRealisticCommitmentId.set(null);
-        this.showMessage('Realistic commitment saved', false);
+        this.toastService.success(HANDOVER_MESSAGES.REALISTIC_SAVED);
         this.handoverService.getHandover(id).subscribe({
           next: (refreshed) => {
             this.commitments.set(refreshed.commitments || []);
@@ -474,10 +497,7 @@ export class HandoverComponent {
         this.kickoffReadinessService.refresh();
       },
       error: (err) => {
-        this.showMessage(
-          this.extractErrorMessage(err, 'Failed to save realistic commitment'),
-          true,
-        );
+        this.toastService.error(this.extractErrorMessage(err, HANDOVER_MESSAGES.REALISTIC_SAVE_ERROR));
       },
     });
   }
@@ -500,7 +520,7 @@ export class HandoverComponent {
   }
 
   onClientContactSaved(): void {
-    this.showMessage('Client contact transition recorded.', false);
+    this.showMessage(HANDOVER_MESSAGES.CLIENT_CONTACT_TRANSITION_SAVED, false);
   }
 
   private showMessage(msg: string, isErr: boolean) {
