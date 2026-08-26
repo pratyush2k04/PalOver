@@ -14,6 +14,10 @@
   margin: 0 auto;
   font-family: $font-family-base;
   color: $color-text;
+
+  @media (max-width: 768px) {
+    padding: $spacing-4;
+  }
 }
 
 .filter-toolbar {
