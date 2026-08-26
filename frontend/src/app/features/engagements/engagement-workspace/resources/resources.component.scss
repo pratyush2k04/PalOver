@@ -1,5 +1,4 @@
 @use '../../../../../styles/tokens' as *;
-@use '../../../../../styles/mixins' as *;
 
 .resources-container {
   display: flex;
@@ -24,7 +23,7 @@
   transition: border-color $transition-fast, box-shadow $transition-fast;
 
   &:hover {
-    border-color: #cbd5e1;
+    border-color: $color-slate-300;
     box-shadow: $shadow-card;
   }
 
@@ -68,8 +67,8 @@
     .skill-tag {
       display: inline-flex;
       align-items: center;
-      background-color: #f1f5f9;
-      color: #334155;
+      background-color: $color-slate-100;
+      color: $color-slate-700;
       font-size: 0.75rem;
       font-weight: 500;
       padding: 0.25rem 0.625rem;

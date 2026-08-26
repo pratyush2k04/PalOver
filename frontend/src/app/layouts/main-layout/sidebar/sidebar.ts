@@ -3,6 +3,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AppContextService } from '@shared/services/app-context';
 import { AuthService } from '@shared/services/auth';
 import { APP_ROUTES, USER_ROLES, MASTER_CHECKLIST_ROUTES } from '@shared/constants/app.constants';
+import { LayoutService } from '@shared/services/layout.service';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
 
@@ -24,6 +25,7 @@ export class SidebarComponent {
   private appContext = inject(AppContextService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  readonly layoutService = inject(LayoutService);
 
   readonly user = this.appContext.user;
   readonly workspace = this.appContext.workspace;

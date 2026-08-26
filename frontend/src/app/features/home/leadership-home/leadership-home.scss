@@ -1,6 +1,5 @@
 @use '../../../../styles/tokens' as *;
 @use '../../../../styles/mixins' as *;
-
 :host {
   display: block;
   width: 100%;
@@ -15,37 +14,38 @@
   font-family: $font-family-base;
   color: $color-text;
 
+
   .kpi-cards-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(17.5rem, 1fr));
     gap: 1.5rem;
     width: 100%;
     margin-bottom: 1.5rem;
     
-    @media (max-width: 64rem) {
-      grid-template-columns: repeat(auto-fit, minmax(17.5rem, 1fr));
+    @include respond-to('lg') {
+      grid-template-columns: repeat(3, 1fr);
     }
   }
 
   .main-content-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr;
     gap: 1.5rem;
     width: 100%;
     align-items: start;
 
-    .main-left {
-      grid-column: span 2;
-    }
-    
-    .main-right {
+    .main-left, .main-right {
       grid-column: span 1;
     }
-    
-    @media (max-width: 64rem) {
-      grid-template-columns: 1fr;
+
+    @include respond-to('lg') {
+      grid-template-columns: repeat(3, 1fr);
+
+      .main-left {
+        grid-column: span 2;
+      }
       
-      .main-left, .main-right {
+      .main-right {
         grid-column: span 1;
       }
     }

@@ -241,6 +241,19 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",
                 IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 23697,
+                Key = NotificationConstants.TemplateKeys.HandoverDraftFirstSaved,
+                Title = "Allocate leadership for engagement {EngagementName}",
+                Body = "{ActorName} started the handover for {EngagementName}.",
+                DefaultPriority = NotificationPriority.High,
+                LinkPattern = "/engagement-allocation",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
             }
         );
     }

@@ -1,3 +1,5 @@
+@use '../styles/tokens' as *;
+
 .container {
   max-width: 640px;
   margin: 2rem auto;
@@ -6,7 +8,7 @@
 }
 
 .subtitle {
-  color: #555;
+  color: $color-text-subdued;
 }
 
 .note-form {
@@ -26,7 +28,7 @@
 }
 
 .error {
-  color: #c0392b;
+  color: $color-danger-crimson;
 }
 
 .notes {
@@ -35,13 +37,13 @@
 
   li {
     padding: 0.75rem;
-    border: 1px solid #e0e0e0;
+    border: 1px solid $color-border-default;
     border-radius: 6px;
     margin-bottom: 0.5rem;
 
     small {
       display: block;
-      color: #888;
+      color: $color-text-light;
       margin-top: 0.25rem;
     }
   }

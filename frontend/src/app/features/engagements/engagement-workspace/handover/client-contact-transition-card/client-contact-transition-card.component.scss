@@ -1,7 +1,9 @@
+@use '../../../../../../styles/tokens' as *;
+
 .client-contact-transition-card {
-  border: 0.0625rem solid #e2e8f0;
+  border: 0.0625rem solid $color-slate-200;
   border-radius: 0.5rem;
-  background: #ffffff;
+  background: $color-surface;
   overflow: hidden;
 
   .card-header {
@@ -9,15 +11,15 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    background: #f8fafc;
-    border-bottom: 0.0625rem solid #e2e8f0;
+    background: $color-slate-50;
+    border-bottom: 0.0625rem solid $color-slate-200;
     padding: 1rem;
 
     h3 {
       margin: 0;
       font-size: 1.125rem;
       font-weight: 600;
-      color: #0f172a;
+      color: $color-slate-900;
     }
 
     .add-button {
@@ -29,7 +31,7 @@
     padding: 1.5rem;
 
     .loading-text {
-      color: #64748b;
+      color: $color-slate-500;
       font-size: 0.875rem;
       margin: 0;
     }
@@ -41,8 +43,8 @@
         gap: 0.75rem;
 
         .transition-item {
-          background: #f8fafc;
-          border: 0.0625rem solid #e2e8f0;
+          background: $color-slate-50;
+          border: 0.0625rem solid $color-slate-200;
           border-radius: 0.375rem;
           padding: 0.875rem 1rem;
 
@@ -54,12 +56,12 @@
 
             .label {
               font-weight: 600;
-              color: #334155;
+              color: $color-slate-700;
               min-width: 6.25rem;
             }
 
             .contact-info {
-              color: #475569;
+              color: $color-slate-600;
             }
 
             &:last-child {
@@ -70,8 +72,8 @@
       }
 
       .empty-state {
-        background: #f8fafc;
-        border: 0.0625rem solid #e2e8f0;
+        background: $color-slate-50;
+        border: 0.0625rem solid $color-slate-200;
         border-radius: 0.375rem;
         padding: 1rem;
 
@@ -83,12 +85,12 @@
 
           .label {
             font-weight: 600;
-            color: #334155;
+            color: $color-slate-700;
             min-width: 6.25rem;
           }
 
           .contact-info {
-            color: #475569;
+            color: $color-slate-600;
           }
         }
       }

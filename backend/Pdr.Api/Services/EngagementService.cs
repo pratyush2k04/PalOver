@@ -9,6 +9,7 @@ using Pdr.Api.Helpers;
 using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.Engagements;
 using Pdr.Api.Models.EngagementAssignment;
+using Pdr.Api.Models.Handover;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.People;
 using Pdr.Api.Repositories.Interfaces;
@@ -27,7 +28,8 @@ public class EngagementService(
     IPersonRepository personRepository,
     IAuditLogService auditLogService,
     ITechnicalSummaryService technicalSummaryService,
-    IEngagementAccessService engagementAccessService) : IEngagementService
+    IEngagementAccessService engagementAccessService,
+    IHandoverRepository handoverRepository) : IEngagementService
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
 
@@ -353,6 +355,25 @@ public class EngagementService(
             leadership);
     }
 
+    public async Task<HandoverDraftStatusDto> GetHandoverDraftStatusAsync(int engagementId)
+    {
+        if (!await engagementRepository.EngagementExistsAsync(engagementId))
+            throw new EngagementNotFoundException(engagementId);
+
+        var handover = await handoverRepository.GetByEngagementIdAsync(engagementId);
+        if (handover == null)
+            return new HandoverDraftStatusDto(false, null, null, null, null);
+
+        var status = await handoverRepository.GetStatusByIdAsync(handover.StatusId);
+
+        return new HandoverDraftStatusDto(
+            true,
+            status?.StatusName ?? HandoverStatusNames.Draft,
+            handover.ClientBackground,
+            handover.BusinessProblem,
+            handover.ClientSentiment);
+    }
+
     public async Task<List<LeadershipUserDto>> GetLeadershipUsersAsync(int engagementId)
     {
         if (!await engagementRepository.EngagementExistsAsync(engagementId))
@@ -368,6 +389,10 @@ public class EngagementService(
     {
         if (!await engagementRepository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
+
+        var handover = await handoverRepository.GetByEngagementIdAsync(engagementId);
+        if (handover == null)
+            throw new HandoverIncompleteException(HandoverValidationConstants.NotFoundForLeadershipAllocation);
 
         var user = await userRepository.GetByIdAsync(userId)
             ?? throw new UserNotFoundException(userId);

@@ -13,6 +13,10 @@
   font-family: $font-family-base;
   color: $color-text;
 
+  @media (max-width: 768px) {
+    padding: $spacing-4;
+  }
+
   app-page-header {
     display: block;
     margin-bottom: $spacing-6;
@@ -28,9 +32,14 @@
 
 .profile-card {
   flex: 1 1 360px;
-  min-width: 320px;
+  min-width: 280px;
+  width: 100%;
   @include card-surface($padding: $spacing-6, $radius: $radius-xl);
   box-shadow: $shadow-sm;
+
+  @media (max-width: 768px) {
+    padding: $spacing-4;
+  }
 }
 
 .card-title {
