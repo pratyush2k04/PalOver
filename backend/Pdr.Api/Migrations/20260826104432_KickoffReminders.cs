@@ -14,7 +14,7 @@ namespace Pdr.Api.Migrations
             migrationBuilder.InsertData(
                 table: "notification_templates",
                 columns: new[] { "id", "body", "created_at", "created_by", "default_priority", "key", "link_pattern", "title", "updated_at", "updated_by" },
-                values: new object[] { 96837, "{EngagementName} still has open mandatory items with kickoff in {DaysBeforeKickoff} day(s). Priority escalates as the date approaches.", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", 2, "KickoffReadinessReminder", "/engagements/{EngagementId}/workspace/{TabKey}", "{DaysBeforeKickoff} day(s) until kickoff — {EngagementName} readiness incomplete", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null });
+                values: new object[] { 96837, "{EngagementName} still has open mandatory items with kickoff in {DaysBeforeKickoff} days.", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System", 2, "KickoffReadinessReminder", "/engagements/{EngagementId}/workspace/{TabKey}", "{DaysBeforeKickoff} days until kickoff — {EngagementName} readiness incomplete", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null });
         }
 
         /// <inheritdoc />
