@@ -22,6 +22,9 @@
           <app-input
             id="estimate-weeks"
             label="Estimate (Weeks)"
+            type="number"
+            [min]="0"
+            step="any"
             [ngModel]="estimateWeeks()"
             (ngModelChange)="onEstimateWeeksChange($event)"
             name="estimateWeeks"

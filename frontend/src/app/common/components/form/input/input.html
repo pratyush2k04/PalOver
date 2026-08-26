@@ -12,6 +12,7 @@
       [placeholder]="placeholder()"
       [attr.maxlength]="maxLength()"
       [attr.min]="min()"
+      [attr.step]="step()"
       [value]="value"
       [disabled]="disabled()"
       (input)="onInput($any($event.target).value)"
