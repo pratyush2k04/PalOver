@@ -14,7 +14,7 @@ import { HandoverService } from '../../services/handover.service';
 import { EngagementService } from '../../services/engagement.service';
 import { catchError, of } from 'rxjs';
 import { AuthService } from '@shared/services/auth';
-import { KickoffReadinessDto, KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
+import { KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
 import { EngagementInfoDto } from '../../models/engagement.model';
 import { ENGAGEMENT_ROUTES } from '@shared/constants/app.constants';
 import { DialogService } from '@common/services/dialog/dialog.service';
@@ -118,7 +118,7 @@ export class HandoverComponent {
   message = signal('');
   isError = signal(false);
 
-  kickoffReadiness = signal<KickoffReadinessDto | null>(null);
+  kickoffReadiness = this.kickoffReadinessService.readiness;
 
   isHandoverReadyToSubmit = computed(() => {
     const r = this.kickoffReadiness();
@@ -214,16 +214,10 @@ export class HandoverComponent {
       const id = this.engagementId();
       if (id) {
         this.loadHandover(id);
-        this.loadKickoffReadiness(id);
+        this.kickoffReadinessService.track(id);
         this.loadEngagement(id);
       }
     });
-  }
-
-  private loadKickoffReadiness(id: number) {
-    this.kickoffReadinessService.getReadiness(id).pipe(
-      catchError(() => of(null))
-    ).subscribe(data => this.kickoffReadiness.set(data));
   }
 
   private loadEngagement(id: number) {
@@ -293,6 +287,7 @@ export class HandoverComponent {
         this.handover.set(data);
         this.toastService.success(HANDOVER_MESSAGES.SAVE_DRAFT_SUCCESS);
         this.isSaving.set(false);
+        this.kickoffReadinessService.refresh();
       },
       error: (err) => {
         this.toastService.error(this.extractErrorMessage(err, HANDOVER_MESSAGES.SAVE_DRAFT_ERROR));
@@ -319,6 +314,7 @@ export class HandoverComponent {
         this.clientContextForm.disable();
         this.showMessage(HANDOVER_MESSAGES.SUBMIT_SUCCESS, false);
         this.isSaving.set(false);
+        this.kickoffReadinessService.refresh();
       },
       error: (err) => {
         const errorMessage = this.extractErrorMessage(err, HANDOVER_MESSAGES.SUBMIT_ERROR);
@@ -342,6 +338,7 @@ export class HandoverComponent {
       if (!response) return;
       this.commitments.update((c) => [...c, response]);
       this.toastService.success(HANDOVER_MESSAGES.COMMITMENT_ADDED);
+      this.kickoffReadinessService.refresh();
     });
   }
 
@@ -392,6 +389,7 @@ export class HandoverComponent {
         });
         this.editingCommitmentId.set(null);
         this.toastService.success(HANDOVER_MESSAGES.COMMITMENT_UPDATED);
+        this.kickoffReadinessService.refresh();
       },
       error: (err) => {
         this.toastService.error(this.extractErrorMessage(err, HANDOVER_MESSAGES.COMMITMENT_UPDATE_ERROR));
@@ -420,6 +418,7 @@ export class HandoverComponent {
         this.pendingDeleteId.set(null);
         this.isDeletingCommitment.set(false);
         this.toastService.success(HANDOVER_MESSAGES.COMMITMENT_DELETED);
+        this.kickoffReadinessService.refresh();
       },
       error: (err) => {
         this.pendingDeleteId.set(null);
@@ -496,6 +495,7 @@ export class HandoverComponent {
             this.commitments.set(refreshed.commitments || []);
           },
         });
+        this.kickoffReadinessService.refresh();
       },
       error: (err) => {
         this.toastService.error(this.extractErrorMessage(err, HANDOVER_MESSAGES.REALISTIC_SAVE_ERROR));

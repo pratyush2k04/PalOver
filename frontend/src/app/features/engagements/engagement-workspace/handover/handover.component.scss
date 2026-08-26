@@ -1,6 +1,5 @@
-@use 'sass:color';
 @use '../../../../../styles/mixins' as *;
-@use '../../../../../styles/tokens' as *;
+@use 'sass:color';
 
 .handover-container {
   font-family: $font-family-base;

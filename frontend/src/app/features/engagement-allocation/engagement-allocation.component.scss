@@ -1,4 +1,3 @@
-@use '../../../styles/tokens' as *;
 @use '../../../styles/mixins' as *;
 
 .allocation-page {
@@ -7,6 +6,10 @@
   margin: 0 auto;
   font-family: $font-family-base;
   color: $color-text;
+
+  @media (max-width: 768px) {
+    padding: $spacing-4;
+  }
 }
 
 /* Summary Metrics */
@@ -156,10 +159,12 @@
   border: 1px solid $color-border-soft;
   border-radius: $radius-lg;
   box-shadow: $shadow-sm;
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 
   .engagements-table {
     width: 100%;
+    min-width: 48rem;
     border-collapse: collapse;
     text-align: left;
 

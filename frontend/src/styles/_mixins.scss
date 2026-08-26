@@ -58,7 +58,7 @@
 
 @mixin button-primary {
   @include button-base;
-  color: #ffffff;
+  color: $color-surface;
   background-color: $color-primary;
 
   &:hover:not(:disabled) {
@@ -68,7 +68,7 @@
 
 @mixin button-accent {
   @include button-base;
-  color: #ffffff;
+  color: $color-surface;
   background-color: $color-accent-amber;
 
   &:hover:not(:disabled) {
@@ -83,11 +83,11 @@
 @mixin button-secondary {
   @include button-base;
   color: $color-text-muted;
-  background-color: #f3f4f6;
+  background-color: $color-gray-100;
   border-color: transparent;
 
   &:hover:not(:disabled) {
-    background-color: #e5e7eb;
+    background-color: $color-gray-200;
   }
 }
 
@@ -125,7 +125,7 @@
     border-color: $color-danger;
 
     &:focus {
-      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+      box-shadow: 0 0 0 3px rgba($color-danger, 0.15);
     }
   }
 }
@@ -137,7 +137,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba($color-black, 0.5);
   z-index: 1000;
 }
 

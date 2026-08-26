@@ -80,7 +80,9 @@ export class EngagementAllocationComponent implements OnInit {
         const items: EngagementAllocationItem[] = data.map(e => ({
           ...e,
           leadershipUsers: [],
-          isLoadingLeadership: true
+          isLoadingLeadership: true,
+          hasHandoverDraft: false,
+          isLoadingHandover: true
         }));
         this.engagements.set(items);
         this.loading.set(false);
@@ -102,6 +104,30 @@ export class EngagementAllocationComponent implements OnInit {
                 list.map(item =>
                   item.engagementId === eng.engagementId
                     ? { ...item, isLoadingLeadership: false }
+                    : item
+                )
+              );
+            }
+          });
+        });
+
+        // Fetch handover draft status for each engagement
+        items.forEach(eng => {
+          this.allocationService.getHandoverDraftStatus(eng.engagementId).subscribe({
+            next: (status) => {
+              this.engagements.update(list =>
+                list.map(item =>
+                  item.engagementId === eng.engagementId
+                    ? { ...item, hasHandoverDraft: status.hasHandoverDraft, isLoadingHandover: false }
+                    : item
+                )
+              );
+            },
+            error: () => {
+              this.engagements.update(list =>
+                list.map(item =>
+                  item.engagementId === eng.engagementId
+                    ? { ...item, isLoadingHandover: false }
                     : item
                 )
               );

@@ -1,7 +1,5 @@
 @use '../../../../../../../styles/mixins' as *;
 
-@use '../../../../../../../styles/mixins' as *;
-
 .loading-box {
   padding: $spacing-4;
   @include flex-center;

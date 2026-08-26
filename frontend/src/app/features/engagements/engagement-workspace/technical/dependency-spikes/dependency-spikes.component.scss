@@ -1,5 +1,4 @@
 @use '../../../../../../styles/tokens' as *;
-@use '../../../../../../styles/mixins' as *;
 
 .dependency-spikes-card {
   background-color: $color-surface;
@@ -25,7 +24,7 @@
       h3 {
         font-size: 1.125rem;
         font-weight: 600;
-        color: #111827;
+        color: $color-gray-900;
         margin: 0;
       }
 
@@ -76,7 +75,7 @@
       font-size: 0.875rem;
 
       thead {
-        background-color: #f8fafc;
+        background-color: $color-slate-50;
         border-bottom: 1px solid $color-border-soft;
 
         th {
@@ -84,7 +83,7 @@
           text-align: left;
           font-size: 0.75rem;
           font-weight: 600;
-          color: #475569;
+          color: $color-slate-600;
           text-transform: uppercase;
           letter-spacing: 0.05em;
           white-space: nowrap;
@@ -93,41 +92,41 @@
 
       tbody {
         tr {
-          border-bottom: 1px solid #f1f5f9;
+          border-bottom: 1px solid $color-slate-100;
           transition: background-color 0.15s ease;
 
           &:hover {
-            background-color: #f8fafc;
+            background-color: $color-slate-50;
           }
 
           td {
             padding: 0.875rem 1rem;
             vertical-align: middle;
-            color: #1e293b;
+            color: $color-slate-800;
           }
 
           .dependency-cell {
             font-weight: 600;
-            color: #0f172a;
+            color: $color-slate-900;
             white-space: nowrap;
           }
 
           .objective-cell {
             max-width: 280px;
-            color: #334155;
+            color: $color-slate-700;
             line-height: 1.4;
           }
 
           .findings-cell {
             max-width: 320px;
-            color: #475569;
+            color: $color-slate-600;
             font-size: 0.8125rem;
             line-height: 1.4;
           }
 
           .owner-cell {
             white-space: nowrap;
-            color: #475569;
+            color: $color-slate-600;
 
             .owner-content {
               display: flex;
@@ -154,20 +153,20 @@
 
           .btn-action {
             ::ng-deep .btn {
-              color: #6b7280;
+              color: $color-gray-500;
               transition: color 0.15s ease, background-color 0.15s ease;
 
               &:hover {
-                color: #2563eb;
-                background-color: #eff6ff;
+                color: $color-primary;
+                background-color: $color-primary-light;
               }
             }
 
             &.btn-danger {
               ::ng-deep .btn {
                 &:hover {
-                  color: #dc2626;
-                  background-color: #fee2e2;
+                  color: $color-danger;
+                  background-color: $color-danger-light;
                 }
               }
             }
@@ -193,6 +192,6 @@
   }
 
   .text-muted {
-    color: #94a3b8;
+    color: $color-slate-400;
   }
 }

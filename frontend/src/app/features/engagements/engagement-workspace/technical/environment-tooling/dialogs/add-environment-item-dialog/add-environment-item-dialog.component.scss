@@ -1,7 +1,9 @@
+@use '../../../../../../../../styles/tokens' as *;
+
 .dialog-container {
   width: 400px;
   max-width: calc(100vw - 48px);
-  background: #ffffff;
+  background: $color-surface;
   border-radius: 0.75rem;
   overflow: hidden;
 }
@@ -11,13 +13,13 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid $color-slate-200;
 
   h3 {
     margin: 0;
     font-size: 1.1rem;
     font-weight: 600;
-    color: #111827;
+    color: $color-gray-900;
   }
 }
 
@@ -40,6 +42,6 @@
   justify-content: flex-end;
   gap: 0.5rem;
   padding: 1rem 1.5rem;
-  background-color: #f8fafc;
-  border-top: 1px solid #e2e8f0;
+  background-color: $color-slate-50;
+  border-top: 1px solid $color-slate-200;
 }

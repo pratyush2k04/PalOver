@@ -1,3 +1,5 @@
+@use '../../../../../styles/tokens' as *;
+
 :host {
   display: block;
 }
@@ -11,7 +13,7 @@
   label {
     font-size: 12px;
     font-weight: 500;
-    color: #666666;
+    color: $color-text-faint;
   }
 }
 
@@ -19,34 +21,34 @@ select {
   width: 100%;
   font-family: inherit;
   font-size: 14px;
-  color: #1a1a1a;
-  background-color: #ffffff;
-  border: 1px solid #d0d5dd;
+  color: $color-text;
+  background-color: $color-surface;
+  border: 1px solid $color-border-input;
   border-radius: 6px;
   padding: 8px 12px;
   outline: none;
   box-sizing: border-box;
 
   &:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+    border-color: $color-primary;
+    box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
   }
 
   &.is-invalid {
-    border-color: #dc2626;
+    border-color: $color-danger;
 
     &:focus {
-      box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.15);
+      box-shadow: 0 0 0 2px rgba($color-danger, 0.15);
     }
   }
 
   &:disabled {
-    background-color: #f4f6f9;
+    background-color: $color-bg;
     cursor: not-allowed;
   }
 }
 
 .app-field__error {
-  color: #dc2626;
+  color: $color-danger;
   font-size: 12px;
 }
