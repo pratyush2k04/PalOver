@@ -113,7 +113,7 @@ public class TechnicalSummaryService(
                 Name = t.EnvironmentToolingDefinition?.Name ?? t.CustomName ?? t.Name,
                 OwnerName = t.Owner?.FullName,
                 Status = "Not Ready",
-                Detail = t.BlockReason ?? "Tooling setup incomplete",
+                Detail = "Tooling setup incomplete",
                 TargetSection = "tooling"
             });
         }
