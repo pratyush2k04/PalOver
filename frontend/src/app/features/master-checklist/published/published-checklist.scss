@@ -16,6 +16,13 @@
     box-shadow: $shadow-sm;
     overflow: hidden;
     padding: 0;
+
+    @media (max-width: 768px) {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      border-radius: 0;
+    }
   }
 
   &__header {
@@ -31,6 +38,10 @@
       align-items: stretch;
       padding: $spacing-4;
       gap: $spacing-3;
+      border: 1px solid $color-border-soft;
+      border-radius: $radius-lg;
+      box-shadow: $shadow-sm;
+      margin-bottom: $spacing-4;
     }
 
     h1 {
@@ -96,6 +107,10 @@
   padding: 0;
   background: transparent;
   min-height: auto;
+
+  @media (max-width: 768px) {
+    gap: $spacing-4;
+  }
 }
 
 // Category cards
@@ -105,6 +120,13 @@
   box-shadow: none;
   border: none;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    background: $color-surface;
+    border: 1px solid $color-border-soft;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+  }
 }
 
 .category-header {
@@ -113,6 +135,11 @@
   background: $color-surface-hover;
   border-top: 1px solid $color-border-soft;
   border-bottom: 1px solid $color-border-soft;
+
+  @media (max-width: 768px) {
+    border-top: none;
+    padding: $spacing-3 $spacing-4;
+  }
 }
 
 .category-name {
