@@ -47,9 +47,6 @@ namespace Pdr.Api.Migrations
                     b.Property<int>("EngagementId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ExpectedTurnaroundDays")
-                        .HasColumnType("integer");
-
                     b.Property<DateOnly?>("GrantedDate")
                         .HasColumnType("date");
 
@@ -2695,10 +2692,6 @@ namespace Pdr.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("BlockReason")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -4914,6 +4907,32 @@ namespace Pdr.Api.Migrations
                             Key = "KickoffReadinessReminder",
                             LinkPattern = "/engagements/{EngagementId}/workspace/{TabKey}",
                             Title = "{DaysBeforeKickoff} days until kickoff — {EngagementName} readiness incomplete",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Body = "You have been assigned as Engagement Leader for {EngagementName}. Please assign a Project Manager and Tech Lead to the engagement.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 3,
+                            IsDeleted = false,
+                            Key = "LeadershipActionRequired",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/overview",
+                            Title = "Action Required: Assign PM & TL — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Body = "Presales added commitment '{CommitmentTitle}' for {EngagementName}. Please review and add realistic commitments.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 3,
+                            IsDeleted = false,
+                            Key = "PresalesCommitmentAdded",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/handover",
+                            Title = "New Presales Commitment — {EngagementName}",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
