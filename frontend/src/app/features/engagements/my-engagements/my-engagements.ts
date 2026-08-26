@@ -149,7 +149,7 @@ export class MyEngagementsComponent implements OnInit {
   }
 
   openEngagement(engagementId: number): void {
-    this.router.navigate([APP_ROUTES.ENGAGEMENTS, engagementId, ENGAGEMENT_ROUTES.WORKSPACE]);
+    this.router.navigate([APP_ROUTES.ENGAGEMENTS, engagementId, ENGAGEMENT_ROUTES.WORKSPACE, ENGAGEMENT_ROUTES.OVERVIEW]);
   }
 
   formatKickoffDate(kickoffDate: string): string {

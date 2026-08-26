@@ -23,6 +23,11 @@ export const ENGAGEMENTS_ROUTES: Routes = [
       
     children: [
       {
+        path: '',
+        redirectTo: ENGAGEMENT_ROUTES.OVERVIEW,
+        pathMatch: 'full',
+      },
+      {
         path: ENGAGEMENT_ROUTES.OVERVIEW,
         loadComponent: () =>
           import(

@@ -39,7 +39,6 @@ import { RiskCommentsComponent } from './components/risk-comments/risk-comments.
     ReactiveFormsModule,
     FormsModule,
     RouterLink,
-    LoadingSpinnerComponent,
     ButtonComponent,
     AlertComponent,
     StatusBadgeComponent,

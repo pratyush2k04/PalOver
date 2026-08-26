@@ -1,6 +1,7 @@
 import { Component, inject, input, output, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonComponent } from '@common/components/button/button';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 
 import { ClientContactTransitionService } from '../../../services/client-contact-transition.service';
 import { TransitionResponse } from '../../../models/client-contact-transition.model';
@@ -85,5 +86,14 @@ export class ClientContactTransitionCardComponent {
       this.loadHistory();
       this.onSaved.emit();
     });
+  }
+
+  getInitials(name: string): string {
+    if (!name) return '??';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
   }
 }

@@ -29,11 +29,22 @@ export class DiscoveryFeatureDialogComponent {
 
   featureName = signal(this.data?.feature?.featureName ?? '');
   estimateWeeks = signal<number | null>(this.data?.feature?.estimateWeeks ?? null);
-  targetSprint = signal(this.data?.feature?.targetSprint ?? '');
+  
+  targetSprint = signal<number | null>(null);
 
   featureNameError = signal('');
   estimateWeeksError = signal('');
   targetSprintError = signal('');
+
+  constructor() {
+    const sprintStr = this.data?.feature?.targetSprint;
+    if (sprintStr) {
+      const match = sprintStr.match(/\d+/);
+      this.targetSprint.set(match ? Number(match[0]) : null);
+    } else {
+      this.targetSprint.set(null);
+    }
+  }
 
   onFeatureNameChange(val: string): void {
     this.featureName.set(val);
@@ -46,8 +57,9 @@ export class DiscoveryFeatureDialogComponent {
     this.estimateWeeksError.set('');
   }
 
-  onTargetSprintChange(val: string): void {
-    this.targetSprint.set(val);
+  onTargetSprintChange(val: any): void {
+    const num = val === '' || val === null ? null : Number(val);
+    this.targetSprint.set(num);
     this.targetSprintError.set('');
   }
 
@@ -58,7 +70,7 @@ export class DiscoveryFeatureDialogComponent {
   onSubmit(): void {
     const nameVal = this.featureName().trim();
     const weeksVal = this.estimateWeeks();
-    const sprintVal = this.targetSprint().trim();
+    const sprintVal = this.targetSprint();
     let isValid = true;
 
     if (!nameVal) {
@@ -77,11 +89,8 @@ export class DiscoveryFeatureDialogComponent {
       isValid = false;
     }
 
-    if (!sprintVal) {
-      this.targetSprintError.set('Target sprint is required (e.g., Sprint 1)');
-      isValid = false;
-    } else if (sprintVal.length > 50) {
-      this.targetSprintError.set('Target sprint cannot exceed 50 characters');
+    if (sprintVal === null || isNaN(sprintVal) || sprintVal <= 0) {
+      this.targetSprintError.set('Target sprint is required (must be > 0)');
       isValid = false;
     }
 
@@ -92,7 +101,7 @@ export class DiscoveryFeatureDialogComponent {
     this.dialogRef.close({
       featureName: nameVal,
       estimateWeeks: weeksVal!,
-      targetSprint: sprintVal
+      targetSprint: `Sprint ${sprintVal}`
     });
   }
 }
