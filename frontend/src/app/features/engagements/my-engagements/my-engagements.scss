@@ -13,6 +13,10 @@
   margin: 0 auto;
   font-family: $font-family-base;
   color: $color-text;
+
+  @media (max-width: 768px) {
+    padding: $spacing-4;
+  }
 }
 
 .header-toolbar {
@@ -22,6 +26,8 @@
   border-bottom: 1px solid $color-border-soft;
   margin-bottom: $spacing-6;
   margin-top: $spacing-4;
+  flex-wrap: wrap;
+  gap: $spacing-3;
 }
 
 .tabs-control {
@@ -102,6 +108,17 @@ app-paginator {
   padding: $spacing-5 $spacing-6;
   cursor: pointer;
   transition: background-color $transition-fast;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: $spacing-4;
+    gap: $spacing-3;
+
+    .engagement-actions {
+      align-self: flex-end;
+    }
+  }
 
   &:not(:last-child) {
     border-bottom: 1px solid $color-border-soft;
