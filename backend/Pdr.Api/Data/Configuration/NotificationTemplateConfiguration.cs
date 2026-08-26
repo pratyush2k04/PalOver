@@ -259,8 +259,8 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             {
                 Id = 96837,
                 Key = "KickoffReadinessReminder",
-                Title = "{DaysBeforeKickoff} day(s) until kickoff — {EngagementName} readiness incomplete",
-                Body = "{EngagementName} still has open mandatory items with kickoff in {DaysBeforeKickoff} day(s). Priority escalates as the date approaches.",
+                Title = "{DaysBeforeKickoff} days until kickoff — {EngagementName} readiness incomplete",
+                Body = "{EngagementName} still has open mandatory items with kickoff in {DaysBeforeKickoff} days.",
                 DefaultPriority = NotificationPriority.Medium,
                 LinkPattern = "/engagements/{EngagementId}/workspace/{TabKey}",
                 CreatedAt = seedTimestamp,
