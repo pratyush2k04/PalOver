@@ -80,9 +80,40 @@
   .list-item {
     @include flex-between;
     align-items: flex-start;
-    padding: 0.5rem 1rem;
+    padding: 0.875rem 1.25rem;
     border-bottom: 1px solid var(--border-light, #eaecf0);
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
+
+    @media screen and (max-width: 768px) {
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: stretch;
+      padding: 0.875rem 1.25rem;
+
+      .item-right {
+        margin-left: 0;
+        align-items: stretch;
+        width: 100%;
+        gap: 0.5rem;
+      }
+
+      .owner-container {
+        font-size: 0.8125rem;
+      }
+
+      .item-actions {
+        margin-left: 0;
+        width: 100%;
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+
+        app-button {
+          flex: 1;
+          min-width: 4.5rem;
+        }
+      }
+    }
 
     &:last-child {
       border-bottom: none;
@@ -100,6 +131,7 @@
         display: flex;
         align-items: center;
         gap: 1rem;
+        flex-wrap: wrap;
         margin-bottom: 0.5rem;
 
         .description {
