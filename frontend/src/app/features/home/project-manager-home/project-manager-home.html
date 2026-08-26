@@ -1,13 +1,23 @@
-@if (workspace(); as ws) {
-  <div class="home-workspace">
-    <h1>{{ ws.title }}</h1>
+<div class="home-workspace">
+  <app-page-header [title]="workspace()?.welcomeMessage || ''" />
 
-    <app-banner [message]="ws.welcomeMessage" />
+  @if (workspace(); as data) {
+    <!-- Row 1: KPI Cards -->
+    <div class="kpi-cards-grid">
+      @for (card of data.cards; track card.title) {
+        <app-dashboard-kpi-card [card]="card"></app-dashboard-kpi-card>
+      }
+    </div>
 
-    @if (user(); as currentUser) {
-      <app-badge [text]="currentUser.role" />
-    }
+    <!-- Row 2: Main Content (2-Column Layout) -->
+    <div class="main-content-grid">
+      <div class="main-left">
+        <app-dashboard-engagements-list [engagements]="data.engagements"></app-dashboard-engagements-list>
+      </div>
+      <div class="main-right">
+        <app-dashboard-critical-blockers [blockers]="data.criticalBlockers"></app-dashboard-critical-blockers>
+      </div>
+    </div>
+  }
 
-    <app-workspace-card [emptyState]="ws.emptyState" />
-  </div>
-}
+</div>

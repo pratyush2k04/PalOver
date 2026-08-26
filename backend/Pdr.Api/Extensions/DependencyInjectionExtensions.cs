@@ -43,6 +43,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IDependencyRepository, DependencyRepository>();
         services.AddScoped<IAssumptionRepository, AssumptionRepository>();
         services.AddScoped<IDependencySpikeRepository, DependencySpikeRepository>();
+        services.AddScoped<IHomeRepository, HomeRepository>();
 
         // Services
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();

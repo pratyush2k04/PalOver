@@ -35,10 +35,4 @@ export const HOME_ROUTES: Routes = [
         (m) => m.LeadershipHomeComponent
       ),
   },
-  {
-    path: HOME_ROUTES_CONFIG.USER_DIRECTORY,
-    canActivate: [workspaceGuard],
-    loadComponent: () =>
-      import('./admin-home/admin-home').then((m) => m.AdminHomeComponent),
-  },
 ];
