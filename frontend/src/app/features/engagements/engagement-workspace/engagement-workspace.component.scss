@@ -23,7 +23,22 @@
   border: 1px solid $color-border-soft;
   border-radius: $radius-xl;
   box-shadow: $shadow-sm;
-  gap: 1.5rem;
+  gap: $spacing-6;
+
+  @media screen and (max-width: 1180px) and (min-width: 769px) {
+    flex-wrap: wrap;
+    padding: $spacing-5 $spacing-6;
+    gap: $spacing-4;
+
+    .header-main-info {
+      flex: 1 1 100%;
+      width: 100%;
+    }
+
+    .header-divider:first-of-type {
+      display: none;
+    }
+  }
 
   @media screen and (max-width: 768px) {
     flex-direction: column;
@@ -164,6 +179,7 @@
     display: inline-flex;
     align-items: center;
     gap: $spacing-1;
+    white-space: nowrap;
 
     .meta-icon {
       @include flex-center;
@@ -187,6 +203,7 @@
     .meta-val {
       font-weight: $font-weight-normal;
       color: $color-text;
+      white-space: nowrap;
     }
   }
 
@@ -209,10 +226,14 @@
 
 .header-divider {
   width: 1px;
-  height: 4rem;
+  height: 3.5rem;
   background-color: $color-border-soft;
-  margin: 0 $spacing-8;
+  margin: 0 $spacing-6;
   flex-shrink: 0;
+
+  @media screen and (max-width: 1200px) {
+    margin: 0 $spacing-3;
+  }
 
   @media screen and (max-width: 768px) {
     display: none;
