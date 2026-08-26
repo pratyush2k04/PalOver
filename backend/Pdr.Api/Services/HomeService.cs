@@ -29,7 +29,7 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
         {
             Id = user.Id,
             FullName = user.FullName,
-            Role = user.Role.Name,
+            Role = user.IsAdmin ? RoleConstants.Leadership : user.Role.Name,
             IsAdmin = user.IsAdmin,
         };
 
@@ -37,9 +37,11 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
             .Where(ea => ea.UserId == user.Id)
             .Select(ea => ea.EngagementId);
 
-        var cards = user.IsAdmin ? [] : await GetDashboardCardsAsync(user.Id, (RoleEnum)user.RoleId);
-        var engagements = user.IsAdmin ? [] : await GetDashboardEngagementsAsync(myEngagementsQuery);
-        var blockers = user.IsAdmin ? [] : await GetDashboardBlockersAsync(user.Id);
+        var effectiveRole = user.IsAdmin ? RoleEnum.Leadership : (RoleEnum)user.RoleId;
+
+        var cards = await GetDashboardCardsAsync(user.Id, effectiveRole);
+        var engagements = await GetDashboardEngagementsAsync(myEngagementsQuery);
+        var blockers = await GetDashboardBlockersAsync(user.Id);
 
         var homeDto = new HomeDashboardDto
         {
@@ -86,9 +88,9 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
             .CountAsync();
 
         return [
-            new DashboardCardsDto { Title = "My Handovers", Count = myHandoversCount, Type = "engagement" },
-            new DashboardCardsDto { Title = "Draft Handovers", Count = draftHandoversCount, Type = "draft-handover" },
-            new DashboardCardsDto { Title = "Completed Handovers", Count = completeHandoversCount, Type = "complete-handover" }
+            new DashboardCardsDto { Title = HomeConstants.Titles.MyHandovers, Count = myHandoversCount, Type = HomeConstants.CardTypes.Engagement },
+            new DashboardCardsDto { Title = "Draft Handovers", Count = draftHandoversCount, Type = HomeConstants.CardTypes.DraftHandover },
+            new DashboardCardsDto { Title = "Completed Handovers", Count = completeHandoversCount, Type = HomeConstants.CardTypes.CompleteHandover }
         ];
     }
 
@@ -98,7 +100,7 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
         
         var checklistCount = await db.EngagementChecklistItems
             .Where(c => myEngagementsQuery.Contains(c.EngagementChecklist.EngagementId) 
-                     && c.Status == "Incomplete" 
+                     && c.Status == HomeConstants.Statuses.Incomplete 
                      && c.IsMandatory)
             .CountAsync();
             
@@ -108,9 +110,9 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
             .CountAsync();
 
         return [
-            new DashboardCardsDto { Title = "My Engagements", Count = myEngagementsCount, Type = "engagement" },
-            new DashboardCardsDto { Title = "Checklist Actions", Count = checklistCount, Type = "checklist" },
-            new DashboardCardsDto { Title = "Open Blockers", Count = openBlockersCount, Type = "blocker" }
+            new DashboardCardsDto { Title = HomeConstants.Titles.MyEngagements, Count = myEngagementsCount, Type = HomeConstants.CardTypes.Engagement },
+            new DashboardCardsDto { Title = "Checklist Actions", Count = checklistCount, Type = HomeConstants.CardTypes.Checklist },
+            new DashboardCardsDto { Title = "Open Blockers", Count = openBlockersCount, Type = HomeConstants.CardTypes.Blocker }
         ];
     }
 
@@ -129,9 +131,9 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
             .CountAsync();
 
         return [
-            new DashboardCardsDto { Title = "My Tech Queue", Count = myTechQueueCount, Type = "tech-queue" },
-            new DashboardCardsDto { Title = "Open Blockers", Count = openBlockersCount, Type = "blocker" },
-            new DashboardCardsDto { Title = "Open Access Items", Count = openAccessItemsCount, Type = "access-item" }
+            new DashboardCardsDto { Title = "My Tech Queue", Count = myTechQueueCount, Type = HomeConstants.CardTypes.TechQueue },
+            new DashboardCardsDto { Title = "Open Blockers", Count = openBlockersCount, Type = HomeConstants.CardTypes.Blocker },
+            new DashboardCardsDto { Title = "Open Access Items", Count = openAccessItemsCount, Type = HomeConstants.CardTypes.AccessItem }
         ];
     }
 
@@ -149,45 +151,45 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
             .CountAsync();
 
         return [
-            new DashboardCardsDto { Title = "My Engagements", Count = myEngagementsCount, Type = "engagement" },
-            new DashboardCardsDto { Title = "Open Blockers", Count = openBlockersCount, Type = "blocker" },
-            new DashboardCardsDto { Title = "My Escalations", Count = myEscalationsCount, Type = "escalation" }
+            new DashboardCardsDto { Title = HomeConstants.Titles.MyEngagements, Count = myEngagementsCount, Type = HomeConstants.CardTypes.Engagement },
+            new DashboardCardsDto { Title = "Open Blockers", Count = openBlockersCount, Type = HomeConstants.CardTypes.Blocker },
+            new DashboardCardsDto { Title = "My Escalations", Count = myEscalationsCount, Type = HomeConstants.CardTypes.Escalation }
         ];
     }
 
     private static string ResolveRoute(User user)
     {
-        if (user.IsAdmin) return HomeConstants.FrontendRoutes.UserDirectory;
+        var effectiveRole = user.IsAdmin ? RoleEnum.Leadership : (RoleEnum)user.RoleId;
 
-        return (RoleEnum)user.RoleId switch
+        return effectiveRole switch
         {
             RoleEnum.ProjectManagement => HomeConstants.FrontendRoutes.EngagementDashboard,
             RoleEnum.PreSales => HomeConstants.FrontendRoutes.MyHandovers,
             RoleEnum.TechLead => HomeConstants.FrontendRoutes.TechnicalReadiness,
             RoleEnum.Leadership => HomeConstants.FrontendRoutes.PortfolioDashboard,
-            _ => throw new RoleNotFoundException(user.RoleId),
+            _ => throw new RoleNotFoundException((int)effectiveRole),
         };
     }
 
     private static string ResolveTitle(User user)
     {
-        if (user.IsAdmin) return HomeConstants.Titles.UserDirectory;
+        var effectiveRole = user.IsAdmin ? RoleEnum.Leadership : (RoleEnum)user.RoleId;
 
-        return (RoleEnum)user.RoleId switch
+        return effectiveRole switch
         {
             RoleEnum.ProjectManagement => HomeConstants.Titles.MyEngagements,
             RoleEnum.PreSales => HomeConstants.Titles.MyHandovers,
             RoleEnum.TechLead => HomeConstants.Titles.TechnicalReadiness,
             RoleEnum.Leadership => HomeConstants.Titles.PortfolioDashboard,
-            _ => throw new RoleNotFoundException(user.RoleId),
+            _ => throw new RoleNotFoundException((int)effectiveRole),
         };
     }
 
     private static string ResolveEmptyState(User user)
     {
-        if (user.IsAdmin) return HomeConstants.EmptyStates.UserDirectory;
+        var effectiveRole = user.IsAdmin ? RoleEnum.Leadership : (RoleEnum)user.RoleId;
 
-        return (RoleEnum)user.RoleId switch
+        return effectiveRole switch
         {
             RoleEnum.ProjectManagement => HomeConstants.EmptyStates.MyEngagements,
             RoleEnum.PreSales => HomeConstants.EmptyStates.MyHandovers,
@@ -221,10 +223,10 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
             var daysToKickoff = e.KickoffDate.DayNumber - today.DayNumber;
 
             int requiredThreshold;
-            if (daysToKickoff > 14) requiredThreshold = LeadershipDashboardConstants.Thresholds.TierGreaterThan14;
-            else if (daysToKickoff >= 8) requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier8To14;
-            else if (daysToKickoff >= 4) requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier4To7;
-            else if (daysToKickoff >= 1) requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier1To3;
+            if (daysToKickoff > LeadershipDashboardConstants.Days.TierGreaterThan14) requiredThreshold = LeadershipDashboardConstants.Thresholds.TierGreaterThan14;
+            else if (daysToKickoff >= LeadershipDashboardConstants.Days.Tier8To14) requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier8To14;
+            else if (daysToKickoff >= LeadershipDashboardConstants.Days.Tier4To7) requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier4To7;
+            else if (daysToKickoff >= LeadershipDashboardConstants.Days.Tier1To3) requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier1To3;
             else requiredThreshold = LeadershipDashboardConstants.Thresholds.TierDay0OrPast;
 
             int openBlockerCount = await db.Risks
@@ -264,9 +266,9 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
             .Select(n => new DashboardBlockerDto
             {
                 RiskId = n.Id,
-                ProjectName = n.Title ?? "Task",
+                ProjectName = n.Title ?? HomeConstants.Fallbacks.Task,
                 BlockerDescription = n.Body ?? "",
-                OwnerName = "System",
+                OwnerName = HomeConstants.Fallbacks.System,
                 DueDate = n.ReceivedAt
             })
             .ToList();
@@ -276,7 +278,7 @@ public class HomeService(AppDbContext db, IKickoffReadinessService kickoffReadin
 
     private static string BuildWelcomeMessage(User user)
     {
-        var roleLabel = user.IsAdmin ? RoleConstants.Admin : user.Role.Name;
+        var roleLabel = user.IsAdmin ? RoleConstants.Leadership : user.Role.Name;
         return $"Welcome, {user.FullName} - {roleLabel}";
     }
 }

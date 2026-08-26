@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DashboardBlocker } from '@shared/models/app-context.model';
 import { RouterModule } from '@angular/router';
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { DASHBOARD_CONSTANTS } from '@shared/constants/home.constants';
 
 @Component({
   selector: 'app-dashboard-critical-blockers',
@@ -15,7 +16,7 @@ export class DashboardCriticalBlockersComponent {
   blockers = input.required<DashboardBlocker[]>();
 
   getCategory(title: string): string {
-    if (!title) return 'TASK';
+    if (!title) return DASHBOARD_CONSTANTS.FALLBACK_TASK;
     const parts = title.split(/ — |: /);
     return parts[0];
   }
@@ -32,9 +33,9 @@ export class DashboardCriticalBlockersComponent {
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-    if (diffInSeconds < 60) return 'Just now';
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    if (diffInSeconds < 60) return DASHBOARD_CONSTANTS.TIME.JUST_NOW;
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}${DASHBOARD_CONSTANTS.TIME.MINUTES_AGO}`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}${DASHBOARD_CONSTANTS.TIME.HOURS_AGO}`;
+    return `${Math.floor(diffInSeconds / 86400)}${DASHBOARD_CONSTANTS.TIME.DAYS_AGO}`;
   }
 }

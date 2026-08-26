@@ -1,8 +1,10 @@
+@use '../../../../styles/tokens' as *;
+
 .list-card {
-  background: var(--surface-card, #ffffff);
+  background: $color-surface;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  padding: 1.5rem;
+  box-shadow: $shadow-card;
+  padding: $spacing-6;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -12,27 +14,27 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 1.5rem;
+  margin-bottom: $spacing-6;
 
   h3 {
     margin: 0;
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: var(--text-color, #111827);
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $color-text;
   }
 
   .header-subtitle {
-    font-weight: 500;
-    color: var(--primary-color, #3b82f6);
-    font-size: 0.875rem;
-    margin-left: 0.5rem;
+    font-weight: $font-weight-medium;
+    color: $color-primary;
+    font-size: $font-size-sm;
+    margin-left: $spacing-2;
   }
 
   .view-all-link {
-    font-size: 0.875rem;
-    color: var(--primary-color, #3b82f6);
+    font-size: $font-size-sm;
+    color: $color-primary;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: $font-weight-semibold;
 
     &:hover {
       text-decoration: underline;
@@ -53,9 +55,9 @@
 .engagement-item {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid var(--surface-border, #e5e7eb);
+  gap: $spacing-5;
+  padding: $spacing-3 0;
+  border-bottom: 1px solid $color-border-soft;
   text-decoration: none;
   transition: background-color 0.2s;
 
@@ -70,13 +72,13 @@
 
 .engagement-item.clickable {
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: $radius-lg;
 
   &:hover {
-    background-color: var(--surface-ground, #f9fafb);
+    background-color: $color-surface-hover;
 
     .engagement-name {
-      color: var(--primary-color, #3b82f6);
+      color: $color-primary;
     }
   }
 }
@@ -93,9 +95,9 @@
 }
 
 .engagement-name {
-  font-weight: 500;
+  font-weight: $font-weight-medium;
   font-size: 0.95rem;
-  color: var(--text-color, #111827);
+  color: $color-text;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -104,16 +106,16 @@
 
 .engagement-meta {
   font-size: 0.8rem;
-  color: var(--text-color-secondary, #6b7280);
-  font-weight: 500;
+  color: $color-text-fainter;
+  font-weight: $font-weight-medium;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: $spacing-2;
 }
 
 .dot-separator {
   font-size: 0.6rem;
-  color: #9ca3af;
+  color: $color-text-fainter;
 }
 
 .engagement-status-col {
@@ -127,82 +129,82 @@
   align-items: center;
   justify-content: center;
   padding: 0.35rem 0.85rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  border-radius: $radius-full;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
   min-width: 90px;
 }
 
 .status-ready {
-  background: #ecfdf5;
-  color: #059669;
+  background: $color-success-bg;
+  color: $color-success-text;
 }
 
 .status-in-progress {
-  background: #fffbeb;
-  color: #d97706;
+  background: $color-warning-bg;
+  color: $color-warning-text;
 }
 
 .status-at-risk {
-  background: #fef2f2;
-  color: #dc2626;
+  background: $color-danger-bg;
+  color: $color-danger-text;
 }
 
 .status-default {
-  background: #f3f4f6;
-  color: #4b5563;
+  background: $color-surface-hover;
+  color: $color-text-faint;
 }
 
 .engagement-progress-col {
   width: 140px;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: $spacing-3;
   justify-content: flex-end;
 }
 
 .progress-bar {
   width: 60px;
   height: 6px;
-  background: var(--surface-ground, #f3f4f6);
-  border-radius: 4px;
+  background: $color-border-soft;
+  border-radius: $radius-sm;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  border-radius: 4px;
+  border-radius: $radius-sm;
   transition: width 0.3s ease;
 
   &.fill-ready {
-    background-color: #10b981;
+    background-color: $color-success;
   }
 
   &.fill-at-risk {
-    background-color: #ef4444;
+    background-color: $color-danger;
   }
 
   &.fill-in-progress {
-    background-color: #f59e0b;
+    background-color: $color-accent-amber;
   }
 
   &.fill-default {
-    background-color: #3b82f6;
+    background-color: $color-primary;
   }
 }
 
 .progress-text {
   font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--text-color, #111827);
+  font-weight: $font-weight-bold;
+  color: $color-text;
   min-width: 35px;
   text-align: right;
 }
 
 .empty-state {
   text-align: center;
-  color: var(--text-color-secondary, #6b7280);
+  color: $color-text-fainter;
   padding: 3rem 0;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
 }
