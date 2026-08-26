@@ -1,0 +1,50 @@
+<div class="quick-actions-card">
+  <h3 class="section-title">Quick Actions</h3>
+
+  <div class="tiles-grid">
+    <app-action-tile
+      icon="alert-triangle"
+      label="Log a Risk"
+      tone="danger"
+      [routerLink]="['../risks']"
+      [queryParams]="{ action: 'create' }"
+    />
+
+    @if (canUpdateChecklist()) {
+      <app-action-tile
+        icon="checklist"
+        label="Update Checklist"
+        tone="info"
+        [routerLink]="['../checklist']"
+      />
+    }
+
+    @if (canRequestResourcing()) {
+      <app-action-tile
+        icon="users"
+        label="Request Resourcing"
+        tone="success"
+        [routerLink]="['../resources']"
+        [queryParams]="{ action: 'create' }"
+      />
+    }
+
+    @if (canAddDependency()) {
+      <app-action-tile
+        icon="share"
+        label="Add Dependency"
+        tone="warning"
+        [routerLink]="['../assumptions-and-decisions']"
+        [queryParams]="{ action: 'create' }"
+      />
+    }
+
+    <app-action-tile
+      icon="upload"
+      label="Upload Document"
+      tone="neutral"
+      [routerLink]="['../documents']"
+      [queryParams]="{ action: 'create' }"
+    />
+  </div>
+</div>

@@ -1,0 +1,9 @@
+<a
+  class="action-tile"
+  [class]="'tone-' + tone()"
+  [routerLink]="routerLink()"
+  [queryParams]="queryParams()"
+>
+  <span class="action-tile-icon" [inlineSVG]="'assets/icons/' + icon() + '.svg'"></span>
+  <span class="action-tile-label">{{ label() }}</span>
+</a>

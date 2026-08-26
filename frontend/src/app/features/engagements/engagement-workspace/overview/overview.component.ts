@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { EngagementDetailComponent } from './components/engagement-detail/engagement-detail';
 import { OpenItemsByAreaComponent } from './components/open-items-by-area/open-items-by-area.component';
+import { QuickActionsComponent } from './components/quick-actions/quick-actions.component';
 
 @Component({
   selector: 'app-overview',
   standalone: true,
-  imports: [CommonModule, EngagementDetailComponent, OpenItemsByAreaComponent],
+  imports: [CommonModule, EngagementDetailComponent, OpenItemsByAreaComponent, QuickActionsComponent],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.scss'
 })
