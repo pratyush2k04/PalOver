@@ -13,8 +13,8 @@
   border-bottom: 1px solid $color-border-soft;
 
   h3 {
-    font-size: 1.125rem;
-    font-weight: 600;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
     color: $color-text;
     margin: 0;
   }

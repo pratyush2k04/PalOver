@@ -26,7 +26,7 @@ export const HANDOVER_LABELS = {
   SERVICES: 'Services',
   TRAINING: 'Training',
   ESCALATED_LEADERSHIP: 'Escalated to Leadership',
-  CLICK_TO_EDIT: 'Click on any field to enter edit mode.',
+  CLICK_TO_EDIT: 'Click here to give realistic estimates',
   NOT_YET_PROVIDED: 'Not yet provided.',
   NOT_PROVIDED: 'Not provided',
   REMOVE_CONFIRM: 'Remove this commitment?',

@@ -20,6 +20,7 @@ import {
 
 export interface AddCommitmentDialogData {
   engagementId: number;
+  commitment?: CommitmentDto;
 }
 
 @Component({
@@ -69,6 +70,20 @@ export class AddCommitmentDialogComponent {
 
   isSubmitting = signal(false);
   errorMessage = signal<string>('');
+  isEditMode = signal(false);
+
+  constructor() {
+    if (this.data.commitment) {
+      this.isEditMode.set(true);
+      this.form.patchValue({
+        title: this.data.commitment.title,
+        commitmentTypeId: this.data.commitment.commitmentTypeId,
+        description: this.data.commitment.description,
+        timeline: this.data.commitment.timeline,
+        timelineUnit: this.data.commitment.timelineUnit,
+      });
+    }
+  }
 
   onCancel(): void {
     this.dialogRef.close();
@@ -84,15 +99,20 @@ export class AddCommitmentDialogComponent {
     this.errorMessage.set('');
 
     const request: CreateCommitmentRequest = this.form.getRawValue();
+    const isEdit = this.isEditMode() && this.data.commitment;
 
-    this.handoverService.addCommitment(this.data.engagementId, request).subscribe({
+    const request$ = isEdit
+      ? this.handoverService.updateCommitment(this.data.engagementId, this.data.commitment!.commitmentId, request)
+      : this.handoverService.addCommitment(this.data.engagementId, request);
+
+    request$.subscribe({
       next: (response: CommitmentDto) => {
         this.isSubmitting.set(false);
         this.dialogRef.close(response);
       },
       error: (err) => {
         this.isSubmitting.set(false);
-        const msg = err?.error?.message || HANDOVER_MESSAGES.COMMITMENT_ADD_ERROR;
+        const msg = err?.error?.message || (isEdit ? HANDOVER_MESSAGES.COMMITMENT_UPDATE_ERROR : HANDOVER_MESSAGES.COMMITMENT_ADD_ERROR);
         this.errorMessage.set(msg);
       },
     });

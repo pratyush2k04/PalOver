@@ -49,6 +49,8 @@ import { ClientContactTransitionCardComponent } from './client-contact-transitio
 import { ToastService } from '@common/services/toast/toast';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 
+import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
+
 const MAX_FREE_TEXT_LENGTH = 2000;
 
 function timelinesMatch(timeline1: number, unit1: string, timeline2: number, unit2: string): boolean {
@@ -80,6 +82,7 @@ interface RealisticEditForm {
     EmptyStateComponent,
     ClientContactTransitionCardComponent,
     LoadingSpinnerComponent,
+    ConfirmDialogComponent,
   ],
   templateUrl: './handover.component.html',
   styleUrl: './handover.component.scss',
@@ -175,6 +178,8 @@ export class HandoverComponent {
 
   editCommitmentErrors = signal<string[]>([]);
   realisticEditErrors = signal<string[]>([]);
+  editCommitmentTouched = signal(false);
+  realisticEditTouched = signal(false);
 
   commitmentTypes = [
     { id: 1, name: HANDOVER_LABELS.SOFTWARE },
@@ -346,37 +351,41 @@ export class HandoverComponent {
   }
 
   startEditCommitment(c: CommitmentDto) {
-    this.editCommitmentErrors.set([]);
-    this.editingCommitmentId.set(c.commitmentId);
-    this.editCommitment.set({
-      description: c.description,
-      commitmentTypeId: c.commitmentTypeId,
-      title: c.title,
-      timeline: c.timeline,
-      timelineUnit: c.timelineUnit,
+    const id = this.engagementId();
+    if (!id) return;
+
+    const data: AddCommitmentDialogData = { engagementId: id, commitment: c };
+    const dialogRef = this.dialog.open<AddCommitmentDialogComponent, AddCommitmentDialogData, CommitmentDto>(
+      AddCommitmentDialogComponent,
+      { data }
+    );
+
+    dialogRef.closed$.subscribe((response) => {
+      if (!response) return;
+      this.commitments.update((commits) => {
+        const arr = [...commits];
+        const index = arr.findIndex((item) => item.commitmentId === c.commitmentId);
+        if (index !== -1) arr[index] = response;
+        return arr;
+      });
+      this.toastService.success(HANDOVER_MESSAGES.COMMITMENT_UPDATED);
     });
   }
 
   cancelEditCommitment() {
     this.editingCommitmentId.set(null);
-    this.editCommitmentErrors.set([]);
+    this.editCommitmentTouched.set(false);
   }
 
   saveEditCommitment(commitmentId: number) {
     const id = this.engagementId();
     if (!id) return;
 
+    this.editCommitmentTouched.set(true);
     const currentEdit = this.editCommitment();
-    const errors: string[] = [];
-    if (!currentEdit.title) errors.push(HANDOVER_MESSAGES.TITLE_REQUIRED);
-    if (!currentEdit.description) errors.push(HANDOVER_MESSAGES.DESCRIPTION_REQUIRED);
-
-    if (errors.length > 0) {
-      this.editCommitmentErrors.set(errors);
+    if (!currentEdit.title || !currentEdit.description) {
       return;
     }
-
-    this.editCommitmentErrors.set([]);
 
     this.handoverService.updateCommitment(id, commitmentId, currentEdit).subscribe({
       next: (data) => {
@@ -395,6 +404,8 @@ export class HandoverComponent {
     });
   }
 
+  isDeletingCommitment = signal(false);
+
   requestDeleteCommitment(commitmentId: number) {
     this.pendingDeleteId.set(commitmentId);
   }
@@ -407,21 +418,24 @@ export class HandoverComponent {
     const id = this.engagementId();
     if (!id) return;
 
+    this.isDeletingCommitment.set(true);
     this.handoverService.deleteCommitment(id, commitmentId).subscribe({
       next: () => {
         this.commitments.update((c) => c.filter((item) => item.commitmentId !== commitmentId));
         this.pendingDeleteId.set(null);
+        this.isDeletingCommitment.set(false);
         this.toastService.success(HANDOVER_MESSAGES.COMMITMENT_DELETED);
       },
       error: (err) => {
         this.pendingDeleteId.set(null);
+        this.isDeletingCommitment.set(false);
         this.toastService.error(this.extractErrorMessage(err, HANDOVER_MESSAGES.COMMITMENT_DELETE_ERROR));
       },
     });
   }
 
   startEditRealisticCommitment(c: CommitmentDto) {
-    this.realisticEditErrors.set([]);
+    this.realisticEditTouched.set(false);
     this.editingRealisticCommitmentId.set(c.commitmentId);
     const existing = c.realisticCommitment;
     const ackMessage = existing?.acknowledgementMessage || '';
@@ -436,7 +450,7 @@ export class HandoverComponent {
 
   cancelEditRealisticCommitment() {
     this.editingRealisticCommitmentId.set(null);
-    this.realisticEditErrors.set([]);
+    this.realisticEditTouched.set(false);
   }
 
   commitmentNeedsAcknowledgement(c: CommitmentDto): boolean {
@@ -453,19 +467,11 @@ export class HandoverComponent {
     const id = this.engagementId();
     if (!id) return;
 
+    this.realisticEditTouched.set(true);
     const form = this.realisticEditForm();
-    const errors: string[] = [];
-    if (!form.description) errors.push(HANDOVER_MESSAGES.DESCRIPTION_REQUIRED);
-    if (this.editFormNeedsAcknowledgement(c) && !form.acknowledgementMessage) {
-      errors.push(HANDOVER_MESSAGES.ACK_MESSAGE_REQUIRED);
-    }
-
-    if (errors.length > 0) {
-      this.realisticEditErrors.set(errors);
+    if (!form.description || (this.editFormNeedsAcknowledgement(c) && !form.acknowledgementMessage)) {
       return;
     }
-
-    this.realisticEditErrors.set([]);
 
     const payload = {
       description: form.description,

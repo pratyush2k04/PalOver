@@ -1,6 +1,6 @@
 <div class="dialog-container">
   <div class="dialog-header">
-    <h3>{{ HANDOVER_LABELS.ADD_NEW_COMMITMENT }}</h3>
+    <h3>{{ isEditMode() ? 'Edit Commitment' : HANDOVER_LABELS.ADD_NEW_COMMITMENT }}</h3>
   </div>
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
@@ -62,7 +62,7 @@
         {{ HANDOVER_BUTTONS.CANCEL }}
       </app-button>
       <app-button type="submit" variant="flat" [disabled]="isSubmitting()">
-        {{ isSubmitting() ? 'Adding...' : HANDOVER_BUTTONS.ADD_COMMITMENT }}
+        {{ isSubmitting() ? 'Saving...' : (isEditMode() ? HANDOVER_BUTTONS.SAVE : HANDOVER_BUTTONS.ADD_COMMITMENT) }}
       </app-button>
     </div>
   </form>
