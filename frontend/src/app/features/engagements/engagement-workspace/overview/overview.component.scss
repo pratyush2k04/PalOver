@@ -13,9 +13,13 @@
   display: flex;
   flex-wrap: wrap;
   gap: $spacing-4;
-  align-items: stretch;
+  align-items: flex-start;
 
-  > * {
-    flex: 1 1 320px;
+  app-engagement-detail {
+    flex: 0 1 340px;
+  }
+
+  app-quick-actions {
+    flex: 1 1 560px;
   }
 }

@@ -1,15 +1,17 @@
 @use '../../../../../../../styles/tokens' as *;
 @use '../../../../../../../styles/mixins' as *;
 
+:host {
+  display: block;
+  align-self: flex-start;
+}
+
 .quick-actions-card {
-  display: flex;
-  flex-direction: column;
   background-color: $color-surface;
   border: 1px solid $color-border-soft;
   border-radius: $radius-lg;
   padding: $spacing-6;
   box-shadow: $shadow-sm;
-  height: 100%;
 }
 
 .section-title {
@@ -21,20 +23,11 @@
 }
 
 .tiles-grid {
-  flex: 1;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: $spacing-4;
 
-  @media (max-width: 992px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
+  > * {
+    flex: 1 1 120px;
   }
 }

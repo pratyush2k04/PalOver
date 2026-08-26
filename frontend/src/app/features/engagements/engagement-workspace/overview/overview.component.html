@@ -4,7 +4,9 @@
     <app-open-items-by-area [engagementId]="id" />
   }
   <div class="detail-row">
-    <app-engagement-detail />
+    @if (isLeadership()) {
+      <app-engagement-detail />
+    }
     <app-quick-actions />
   </div>
 </div>
