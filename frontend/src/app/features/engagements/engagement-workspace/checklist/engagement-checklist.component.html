@@ -1,10 +1,5 @@
-<!-- Loading State -->
-@if (isLoading()) {
-  <app-loading-spinner label="Loading checklist..." />
-}
-
 <!-- Error State -->
-@if (!isLoading() && error()) {
+@if (error()) {
   <div class="checklist-error">
     <span class="error-icon" [inlineSVG]="'assets/icons/alert-circle.svg'"></span>
     <p>{{ error() }}</p>
@@ -12,7 +7,7 @@
 }
 
 <!-- Checklist Content -->
-@if (!isLoading() && !error() && checklist()) {
+@if (!error() && (checklist() || !isLoading())) {
   <div class="checklist-container">
 
     <!-- Header -->
