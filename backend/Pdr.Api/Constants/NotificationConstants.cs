@@ -13,6 +13,7 @@ public static class NotificationConstants
         public const string ResourceRequestRaised = "ResourceRequestRaised";
         public const string RiskCommentMention = "RiskCommentMention";
         public const string LeadershipAssigned = "LeadershipAssigned";
+        public const string LeadershipActionRequired = "LeadershipActionRequired";
         public const string PMAssigned = "PMAssigned";
         public const string TechLeadAssigned = "TechLeadAssigned";
         public const string DocumentUploaded = "DocumentUploaded";
