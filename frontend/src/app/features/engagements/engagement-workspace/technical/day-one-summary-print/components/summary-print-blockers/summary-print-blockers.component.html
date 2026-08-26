@@ -15,31 +15,33 @@
       </div>
     </div>
   } @else {
-    <table class="blockers-table">
-      <thead>
-        <tr>
-          <th>Category</th>
-          <th>Item / Finding</th>
-          <th>Owner</th>
-          <th>Status</th>
-          <th>Details / Reason</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (item of blockers(); track item.id + '-' + item.category) {
+    <div class="table-responsive">
+      <table class="blockers-table">
+        <thead>
           <tr>
-            <td class="category-cell">
-              <span class="category-pill">{{ item.category }}</span>
-            </td>
-            <td class="name-cell font-semibold">{{ item.name }}</td>
-            <td class="owner-cell">{{ item.ownerName || 'Unassigned' }}</td>
-            <td class="status-cell">
-              <span class="status-tag-danger">{{ item.status }}</span>
-            </td>
-            <td class="detail-cell">{{ item.detail || '—' }}</td>
+            <th>Category</th>
+            <th>Item / Finding</th>
+            <th>Owner</th>
+            <th>Status</th>
+            <th>Details / Reason</th>
           </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (item of blockers(); track item.id + '-' + item.category) {
+            <tr>
+              <td class="category-cell">
+                <span class="category-pill">{{ item.category }}</span>
+              </td>
+              <td class="name-cell font-semibold">{{ item.name }}</td>
+              <td class="owner-cell">{{ item.ownerName || 'Unassigned' }}</td>
+              <td class="status-cell">
+                <span class="status-tag-danger">{{ item.status }}</span>
+              </td>
+              <td class="detail-cell">{{ item.detail || '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   }
 </section>

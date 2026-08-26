@@ -25,6 +25,11 @@
     .status-title { color: #9f1239; }
     .status-description { color: #be123c; }
   }
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    gap: 0.875rem;
+  }
 }
 
 .status-indicator-icon {

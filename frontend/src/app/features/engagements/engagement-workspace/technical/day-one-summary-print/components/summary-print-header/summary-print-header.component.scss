@@ -44,6 +44,12 @@
   padding: 1rem 1.25rem;
   border-radius: 0.5rem;
   border: 0.0625rem solid #e2e8f0;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+  }
 }
 
 .meta-item {

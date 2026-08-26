@@ -31,16 +31,17 @@
 
 .mobile-logo-btn {
   display: none;
-  background: none;
+  background-color: #1e2a5e;
   border: none;
-  padding: 0;
+  padding: 0.3125rem;
   cursor: pointer;
-  border-radius: $radius-md;
+  border-radius: 0.625rem;
   outline: none;
+  box-shadow: 0 2px 6px rgba(30, 42, 94, 0.25);
   transition: transform $transition-fast, opacity $transition-fast;
 
   &:hover {
-    opacity: 0.85;
+    opacity: 0.9;
     transform: scale(1.05);
   }
 
@@ -56,10 +57,10 @@
 }
 
 .mobile-logo-img {
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 1.875rem;
+  height: 1.875rem;
   object-fit: contain;
-  border-radius: 0.5rem;
+  border-radius: 0.375rem;
   display: block;
 }
 
