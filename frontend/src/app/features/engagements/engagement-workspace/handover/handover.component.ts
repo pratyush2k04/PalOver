@@ -8,7 +8,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { HandoverService } from '../../services/handover.service';
 import { EngagementService } from '../../services/engagement.service';
@@ -17,7 +17,6 @@ import { AuthService } from '@shared/services/auth';
 import { KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
 import { EngagementInfoDto } from '../../models/engagement.model';
 import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
-import { ENGAGEMENT_ROUTES } from '@shared/constants/app.constants';
 import {
   HandoverInfoDto,
   SaveHandoverDraftRequest,
@@ -76,13 +75,9 @@ interface RealisticEditForm {
   styleUrl: './handover.component.scss',
 })
 export class HandoverComponent {
-  private static readonly KICKOFF_NOT_READY_MESSAGE =
-    'Engagement is not kickoff-ready. All mandatory items must be complete before submitting the handover.';
-
   engagementInfo = signal<EngagementInfoDto | null>(null);
 
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
   private handoverService = inject(HandoverService);
   private engagementService = inject(EngagementService);
   private kickoffReadinessService = inject(KickoffReadinessService);
@@ -286,12 +281,6 @@ export class HandoverComponent {
         const errorMessage = this.extractErrorMessage(err, 'Failed to submit handover');
         this.showMessage(errorMessage, true);
         this.isSaving.set(false);
-
-        if (errorMessage === HandoverComponent.KICKOFF_NOT_READY_MESSAGE) {
-          setTimeout(() => {
-            this.router.navigate(['../', ENGAGEMENT_ROUTES.KICKOFF], { relativeTo: this.route });
-          }, 1500);
-        }
       }
     });
   }
