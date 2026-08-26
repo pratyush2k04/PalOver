@@ -27,7 +27,8 @@ public class EngagementService(
     IPersonRepository personRepository,
     IAuditLogService auditLogService,
     ITechnicalSummaryService technicalSummaryService,
-    IEngagementAccessService engagementAccessService) : IEngagementService
+    IEngagementAccessService engagementAccessService,
+    IHandoverRepository handoverRepository) : IEngagementService
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
 
@@ -368,6 +369,10 @@ public class EngagementService(
     {
         if (!await engagementRepository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
+
+        var handover = await handoverRepository.GetByEngagementIdAsync(engagementId);
+        if (handover == null)
+            throw new HandoverIncompleteException(HandoverValidationConstants.NotFoundForLeadershipAllocation);
 
         var user = await userRepository.GetByIdAsync(userId)
             ?? throw new UserNotFoundException(userId);
