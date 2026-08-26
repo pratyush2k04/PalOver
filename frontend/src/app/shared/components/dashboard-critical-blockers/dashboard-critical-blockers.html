@@ -7,7 +7,7 @@
   <div class="list-content custom-scrollbar">
     <div class="blockers-list">
       @for (blocker of blockers(); track blocker.riskId) {
-      <div class="blocker-item">
+      <div class="blocker-item clickable" (click)="onBlockerClick(blocker)">
 
         <div class="blocker-details">
           <div class="engagement-header">

@@ -1,9 +1,10 @@
-import { Component, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardBlocker } from '@shared/models/app-context.model';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DASHBOARD_CONSTANTS } from '@shared/constants/home.constants';
+import { NotificationService } from '@shared/services/notification.service';
 
 @Component({
   selector: 'app-dashboard-critical-blockers',
@@ -13,7 +14,24 @@ import { DASHBOARD_CONSTANTS } from '@shared/constants/home.constants';
   styleUrl: './dashboard-critical-blockers.scss'
 })
 export class DashboardCriticalBlockersComponent {
+  private notificationService = inject(NotificationService);
+  private router = inject(Router);
+
   blockers = input.required<DashboardBlocker[]>();
+
+  onBlockerClick(blocker: DashboardBlocker): void {
+    this.notificationService.getNotifications(undefined, 1, 50).subscribe({
+      next: (result) => {
+        const notification = result.items.find(n => n.id === blocker.riskId);
+        if (notification?.link) {
+          this.router.navigateByUrl(notification.link);
+        } else {
+          this.router.navigateByUrl('/notifications');
+        }
+      },
+      error: () => this.router.navigateByUrl('/notifications')
+    });
+  }
 
   getCategory(title: string): string {
     if (!title) return DASHBOARD_CONSTANTS.FALLBACK_TASK;

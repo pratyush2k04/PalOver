@@ -43,19 +43,36 @@
 .blockers-list {
   display: flex;
   flex-direction: column;
-  gap: $spacing-4;
 }
 
 .blocker-item {
   display: flex;
   align-items: flex-start;
   gap: $spacing-4;
-  padding-bottom: $spacing-3;
+  padding: $spacing-3 0;
   border-bottom: 1px solid $color-border-soft;
+  text-decoration: none;
+  transition: background-color 0.2s;
 
   &:last-child {
     border-bottom: none;
-    padding-bottom: 0;
+  }
+
+  &:first-child {
+    padding-top: 0;
+  }
+}
+
+.blocker-item.clickable {
+  cursor: pointer;
+  border-radius: $radius-lg;
+
+  &:hover {
+    background-color: $color-surface-hover;
+
+    .engagement-name {
+      color: $color-primary;
+    }
   }
 }
 

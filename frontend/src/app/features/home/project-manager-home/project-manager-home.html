@@ -3,7 +3,7 @@
 
   @if (workspace(); as data) {
     <!-- Row 1: KPI Cards -->
-    <div class="cards-grid">
+    <div class="kpi-cards-grid">
       @for (card of data.cards; track card.title) {
         <app-dashboard-kpi-card [card]="card"></app-dashboard-kpi-card>
       }
