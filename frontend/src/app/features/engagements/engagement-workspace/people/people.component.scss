@@ -29,8 +29,15 @@
   line-height: 1;
 }
 
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .people-table {
   width: 100%;
+  min-width: 36rem;
   border-collapse: collapse;
   text-align: left;
 
@@ -46,6 +53,7 @@
         text-transform: uppercase;
         letter-spacing: 0.05em;
         color: #64748b;
+        white-space: nowrap;
       }
     }
   }
