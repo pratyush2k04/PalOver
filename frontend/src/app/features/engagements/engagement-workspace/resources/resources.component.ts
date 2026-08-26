@@ -107,6 +107,10 @@ export class ResourcesComponent {
       const id = this.engagementId();
       if (id) {
         this.loadData(id);
+
+        if (this.route.snapshot.queryParamMap.get('action') === 'create' && this.isProjectManager()) {
+          this.openRaiseModal();
+        }
       }
     });
   }

@@ -115,6 +115,10 @@ export class EngagementDocumentsComponent {
       const id = this.engagementId();
       if (id) {
         this.loadDocuments(id);
+
+        if (this.route.snapshot.queryParamMap.get('action') === 'create') {
+          this.openUploadModal();
+        }
       } else {
         this.documents.set([]);
         this.isLoading.set(false);
