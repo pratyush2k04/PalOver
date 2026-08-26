@@ -1,5 +1,5 @@
 <div class="notifications-dropdown">
-  <button class="notification-button" type="button" title="Notifications" (click)="toggle()">
+  <button class="notification-button" type="button" aria-label="Notifications" [appTooltip]="'Notifications'" (click)="toggle()">
     <span [inlineSVG]="'assets/icons/bell.svg'"></span>
     @if (unreadCount() > 0) {
       <span class="notification-badge">{{ unreadCount() }}</span>
@@ -19,12 +19,14 @@
         @if (loading() && notifications().length === 0) {
           <app-loading-spinner label="Loading notifications..." />
         } @else if (notifications().length === 0) {
-          <app-empty-state message="No notifications" />
+          <app-empty-state message="No unread notifications" />
         } @else {
           @for (notification of notifications(); track notification.id) {
             <div
               class="notification-item"
               [class.unread]="!notification.readAt"
+              [class.has-link]="!!notification.link"
+              [attr.title]="notification.link ? 'Click here to redirect' : null"
               (click)="onNotificationClick(notification)"
             >
               <div class="notification-content">
@@ -34,6 +36,10 @@
             </div>
           }
         }
+      </div>
+
+      <div class="dropdown-footer">
+        <app-button variant="flat" size="sm" (click)="onViewAllClick()">View All Notifications</app-button>
       </div>
     </div>
   }

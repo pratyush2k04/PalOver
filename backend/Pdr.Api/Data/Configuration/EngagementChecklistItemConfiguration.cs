@@ -38,6 +38,13 @@ public class EngagementChecklistItemConfiguration : IEntityTypeConfiguration<Eng
         // Blocking
         builder.Property(e => e.BlockReason).HasColumnName("block_reason").HasMaxLength(1000);
 
+        // Evidence tracking (FTR-026 / US-045)
+        builder.Property(e => e.EvidenceRequired).HasColumnName("evidence_required").HasDefaultValue(false).IsRequired();
+        builder.Property(e => e.EvidenceNote).HasColumnName("evidence_note").HasMaxLength(500);
+        builder.Property(e => e.EvidenceLink).HasColumnName("evidence_link").HasMaxLength(2048);
+        builder.Property(e => e.EvidenceSubmittedAt).HasColumnName("evidence_submitted_at");
+        builder.Property(e => e.EvidenceSubmittedById).HasColumnName("evidence_submitted_by_id");
+
         // BaseAuditableEntity Column Mappings
         builder.Property(e => e.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
         builder.Property(e => e.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("NOW()");
@@ -54,10 +61,16 @@ public class EngagementChecklistItemConfiguration : IEntityTypeConfiguration<Eng
                .HasForeignKey(e => e.CategoryId)
                .OnDelete(DeleteBehavior.Restrict);
 
-        // FK to Person (owner — no cascade, a deleted person shouldn't take checklist items with it)
+        // FK to User (owner — no cascade, a deleted user shouldn't take checklist items with it)
         builder.HasOne(e => e.Owner)
                .WithMany()
                .HasForeignKey(e => e.OwnerId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+        // FK to User (evidence submitter — no cascade)
+        builder.HasOne(e => e.EvidenceSubmittedBy)
+               .WithMany()
+               .HasForeignKey(e => e.EvidenceSubmittedById)
                .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasData(GetSeedItems());
@@ -72,26 +85,26 @@ public class EngagementChecklistItemConfiguration : IEntityTypeConfiguration<Eng
         // (same 20 items, two engagements)
         var masterItems = new[]
         {
-            (Title: "Sign commercial contract",                      CategoryId: 1, IsMandatory: true,  DisplayOrder: 1,  MasterItemId: 1),
-            (Title: "Confirm engagement budget",                     CategoryId: 1, IsMandatory: true,  DisplayOrder: 2,  MasterItemId: 2),
-            (Title: "Confirm billing schedule",                      CategoryId: 1, IsMandatory: true,  DisplayOrder: 3,  MasterItemId: 3),
-            (Title: "Complete sales-to-delivery handover call",      CategoryId: 2, IsMandatory: true,  DisplayOrder: 4,  MasterItemId: 4),
-            (Title: "Share CRM opportunity notes",                   CategoryId: 2, IsMandatory: true,  DisplayOrder: 5,  MasterItemId: 5),
-            (Title: "Transfer key client contacts",                  CategoryId: 2, IsMandatory: true,  DisplayOrder: 6,  MasterItemId: 6),
-            (Title: "Document engagement scope",                     CategoryId: 3, IsMandatory: true,  DisplayOrder: 7,  MasterItemId: 7),
-            (Title: "Confirm deliverables list",                     CategoryId: 3, IsMandatory: true,  DisplayOrder: 8,  MasterItemId: 8),
-            (Title: "Identify scope assumptions and exclusions",     CategoryId: 3, IsMandatory: false, DisplayOrder: 9,  MasterItemId: 9),
-            (Title: "Set up engagement governance cadence",          CategoryId: 4, IsMandatory: true,  DisplayOrder: 10, MasterItemId: 10),
-            (Title: "Assign engagement steering committee",          CategoryId: 4, IsMandatory: true,  DisplayOrder: 11, MasterItemId: 11),
-            (Title: "Define change control process",                 CategoryId: 4, IsMandatory: true,  DisplayOrder: 12, MasterItemId: 12),
-            (Title: "Confirm RAID log owner",                        CategoryId: 4, IsMandatory: false, DisplayOrder: 13, MasterItemId: 13),
-            (Title: "Allocate delivery team members",                CategoryId: 5, IsMandatory: true,  DisplayOrder: 14, MasterItemId: 14),
-            (Title: "Confirm resource availability calendar",        CategoryId: 5, IsMandatory: true,  DisplayOrder: 15, MasterItemId: 15),
-            (Title: "Identify backup/on-call resources",             CategoryId: 5, IsMandatory: false, DisplayOrder: 16, MasterItemId: 16),
-            (Title: "Provision environment access",                  CategoryId: 6, IsMandatory: true,  DisplayOrder: 17, MasterItemId: 17),
-            (Title: "Verify technical prerequisites",                CategoryId: 6, IsMandatory: true,  DisplayOrder: 18, MasterItemId: 18),
-            (Title: "Set up source control and CI/CD access",        CategoryId: 6, IsMandatory: true,  DisplayOrder: 19, MasterItemId: 19),
-            (Title: "Confirm security and compliance requirements",  CategoryId: 6, IsMandatory: false, DisplayOrder: 20, MasterItemId: 20),
+            (Title: "Sign commercial contract",                      CategoryId: 1, IsMandatory: true,  EvidenceRequired: true, DisplayOrder: 1,  MasterItemId: 1),
+            (Title: "Confirm engagement budget",                     CategoryId: 1, IsMandatory: true,  EvidenceRequired: true, DisplayOrder: 2,  MasterItemId: 2),
+            (Title: "Confirm billing schedule",                      CategoryId: 1, IsMandatory: true,  EvidenceRequired: true, DisplayOrder: 3,  MasterItemId: 3),
+            (Title: "Complete sales-to-delivery handover call",      CategoryId: 2, IsMandatory: true,  EvidenceRequired: true, DisplayOrder: 4,  MasterItemId: 4),
+            (Title: "Share CRM opportunity notes",                   CategoryId: 2, IsMandatory: true,  EvidenceRequired: true, DisplayOrder: 5,  MasterItemId: 5),
+            (Title: "Transfer key client contacts",                  CategoryId: 2, IsMandatory: true,  EvidenceRequired: true, DisplayOrder: 6,  MasterItemId: 6),
+            (Title: "Document engagement scope",                     CategoryId: 3, IsMandatory: true,  EvidenceRequired: true, DisplayOrder: 7,  MasterItemId: 7),
+            (Title: "Confirm deliverables list",                     CategoryId: 3, IsMandatory: true,  EvidenceRequired: true, DisplayOrder: 8,  MasterItemId: 8),
+            (Title: "Identify scope assumptions and exclusions",     CategoryId: 3, IsMandatory: false, EvidenceRequired: true, DisplayOrder: 9,  MasterItemId: 9),
+            (Title: "Set up engagement governance cadence",          CategoryId: 4, IsMandatory: true,  EvidenceRequired: true, DisplayOrder: 10, MasterItemId: 10),
+            (Title: "Assign engagement steering committee",          CategoryId: 4, IsMandatory: true,  EvidenceRequired: true, DisplayOrder: 11, MasterItemId: 11),
+            (Title: "Define change control process",                 CategoryId: 4, IsMandatory: true,  EvidenceRequired: true, DisplayOrder: 12, MasterItemId: 12),
+            (Title: "Confirm RAID log owner",                        CategoryId: 4, IsMandatory: false, EvidenceRequired: true, DisplayOrder: 13, MasterItemId: 13),
+            (Title: "Allocate delivery team members",                CategoryId: 5, IsMandatory: true,  EvidenceRequired: true, DisplayOrder: 14, MasterItemId: 14),
+            (Title: "Confirm resource availability calendar",        CategoryId: 5, IsMandatory: true,  EvidenceRequired: true, DisplayOrder: 15, MasterItemId: 15),
+            (Title: "Identify backup/on-call resources",             CategoryId: 5, IsMandatory: false, EvidenceRequired: true, DisplayOrder: 16, MasterItemId: 16),
+            (Title: "Provision environment access",                  CategoryId: 6, IsMandatory: true,  EvidenceRequired: true, DisplayOrder: 17, MasterItemId: 17),
+            (Title: "Verify technical prerequisites",                CategoryId: 6, IsMandatory: true,  EvidenceRequired: true, DisplayOrder: 18, MasterItemId: 18),
+            (Title: "Set up source control and CI/CD access",        CategoryId: 6, IsMandatory: true,  EvidenceRequired: true, DisplayOrder: 19, MasterItemId: 19),
+            (Title: "Confirm security and compliance requirements",  CategoryId: 6, IsMandatory: false, EvidenceRequired: true, DisplayOrder: 20, MasterItemId: 20),
         };
 
         var seed = new List<object>();
@@ -111,6 +124,7 @@ public class EngagementChecklistItemConfiguration : IEntityTypeConfiguration<Eng
                     Description = (string?)null,
                     CategoryId = item.CategoryId,
                     IsMandatory = item.IsMandatory,
+                    EvidenceRequired = item.EvidenceRequired,
                     DisplayOrder = item.DisplayOrder,
                     IsApplicable = true,
                     Status = "Incomplete",

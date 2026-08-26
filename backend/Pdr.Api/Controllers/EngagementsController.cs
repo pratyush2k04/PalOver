@@ -28,9 +28,9 @@ public class EngagementsController(
     [HttpGet("my-engagements")]
     [Authorize]
     [EndpointSummary("Get my assigned engagements")]
-    [ProducesResponseType(typeof(PmEngagementListResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(EngagementListResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<PmEngagementListResponse>> GetMyEngagements([FromQuery] string sortBy = "kickoff")
+    public async Task<ActionResult<EngagementListResponse>> GetMyEngagements([FromQuery] string sortBy = "kickoff")
     {
         var result = await engagementService.GetMyEngagementsAsync(sortBy);
         return Ok(result);
@@ -129,6 +129,24 @@ public class EngagementsController(
     }
 
     /// <summary>
+    /// Retrieves all system users assigned to an engagement.
+    /// </summary>
+    /// <param name="id">The engagement ID.</param>
+    /// <returns>A list of users assigned to the engagement.</returns>
+    [HttpGet("{id:int}/users")]
+    [Authorize]
+    [EndpointSummary("Get all assigned users")]
+    [ProducesResponseType(typeof(IEnumerable<Pdr.Api.DTOs.Users.UserListItemDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IEnumerable<Pdr.Api.DTOs.Users.UserListItemDto>>> GetEngagementUsers(int id)
+    {
+        var users = await engagementService.GetEngagementUsersAsync(id);
+        return Ok(users);
+    }
+
+    /// <summary>
     /// Assigns a Project Manager to an engagement (Leadership only).
     /// </summary>
     /// <param name="id">The engagement ID.</param>
@@ -177,6 +195,14 @@ public class EngagementsController(
         return Ok(readiness);
     }
 
+    [HttpGet("{id:int}/readiness-one-pager")]
+    [AuthorizeRoles(RoleEnum.PreSales, RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.Leadership)]
+    public async Task<ActionResult<ReadinessOnePagerDto>> GetReadinessOnePager(int id)
+    {
+        var onePager = await kickoffReadinessService.GetOnePagerAsync(id);
+        return Ok(onePager);
+    }
+
     [HttpPost("{id:int}/kickoff-ready")]
     [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.Leadership)]
     public async Task<IActionResult> MarkKickoffReady(int id)
@@ -209,6 +235,23 @@ public class EngagementsController(
     {
         var users = await engagementService.GetLeadershipUsersAsync(id);
         return Ok(users);
+    }
+
+    /// <summary>
+    /// Gets whether an engagement has a handover draft and its content, for use in the leadership allocation flow (Admin only).
+    /// </summary>
+    /// <param name="id">The engagement ID.</param>
+    /// <returns>Handover draft status and content, independent of the caller's engagement assignment.</returns>
+    /// <response code="200">Handover draft status returned successfully.</response>
+    /// <response code="404">Engagement was not found.</response>
+    [HttpGet("{id:int}/handover-draft-status")]
+    [Authorize(Policy = "AdminOnly")]
+    [ProducesResponseType(typeof(HandoverDraftStatusDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<HandoverDraftStatusDto>> GetHandoverDraftStatus(int id)
+    {
+        var status = await engagementService.GetHandoverDraftStatusAsync(id);
+        return Ok(status);
     }
 
     /// <summary>
@@ -271,5 +314,58 @@ public class EngagementsController(
     {
         var dashboard = await engagementService.GetLeadershipDashboardAsync();
         return Ok(dashboard);
+    }
+
+    /// <summary>
+    /// Retrieves open items summary for a specific engagement (checklist open, access open, open risks, resourcing open).
+    /// </summary>
+    /// <param name="id">The engagement ID.</param>
+    [HttpGet("{id:int}/open-items-summary")]
+    [Authorize]
+    [EndpointSummary("Get open items summary")]
+    [ProducesResponseType(typeof(EngagementOpenItemsSummaryDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<EngagementOpenItemsSummaryDto>> GetOpenItemsSummary(int id)
+    {
+        var summary = await engagementService.GetOpenItemsSummaryAsync(id);
+        return summary is null ? NotFound() : Ok(summary);
+    }
+
+    /// <summary>
+    /// Records Day-1 readiness sign-off for an engagement against a billing date (Project Management and Leadership only).
+    /// </summary>
+    /// <param name="id">The engagement ID.</param>
+    /// <param name="request">Sign-off payload referencing the billing start date and optional leadership exception.</param>
+    /// <returns>The recorded Day-1 sign-off details.</returns>
+    [HttpPost("{id:int}/day-one-sign-off")]
+    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.Leadership)]
+    [EndpointSummary("Sign off Day-1 readiness for billing")]
+    [ProducesResponseType(typeof(DayOneSignOffDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<DayOneSignOffDto>> SignOffDayOne(int id, [FromBody] DayOneSignOffRequest request)
+    {
+        var result = await engagementService.SignOffDayOneAsync(id, request);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Retrieves the read-only evidence snapshot captured at Day-1 sign-off for an engagement.
+    /// </summary>
+    /// <param name="id">The engagement ID.</param>
+    /// <returns>The immutable evidence snapshot, including every evidence-required checklist item's status at sign-off.</returns>
+    [HttpGet("{id:int}/evidence-snapshot")]
+    [Authorize]
+    [EndpointSummary("Get the Day-1 sign-off evidence snapshot")]
+    [ProducesResponseType(typeof(EvidenceSnapshotDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<EvidenceSnapshotDto>> GetEvidenceSnapshot(int id)
+    {
+        var result = await engagementService.GetEvidenceSnapshotAsync(id);
+        return Ok(result);
     }
 }

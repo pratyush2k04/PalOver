@@ -44,6 +44,21 @@ export interface GetCommercialModelsResponse {
   commercialModels: CommercialModelOption[];
 }
 
+export interface DayOneSignOffRequest {
+  billingStartDate: string;
+  isException: boolean;
+  exceptionJustification?: string;
+}
+
+export interface DayOneSignOffDto {
+  billingStartDate: string;
+  isException: boolean;
+  exceptionJustification?: string;
+  signedOffAt: string;
+  signedOffByUserId: number;
+  signedOffByUserName: string;
+}
+
 export interface EngagementInfo {
   engagementId: number;
   engagementName: string;
@@ -55,6 +70,7 @@ export interface EngagementInfo {
   billingStartDate?: string;
   status: string;
   isKickoffReady: boolean;
+  dayOneSignOff?: DayOneSignOffDto;
 }
 
 export interface EngagementInfoDto {
@@ -67,6 +83,7 @@ export interface EngagementInfoDto {
   billingStartDate?: string;
   status: string;
   isKickoffReady: boolean;
+  dayOneSignOff?: DayOneSignOffDto;
 }
 
 export interface EngagementOwners {
@@ -76,18 +93,20 @@ export interface EngagementOwners {
   techLeadName?: string;
 }
 
-export interface PmEngagementListItem {
-  engagementId: number;
+export interface EngagementListItem {
+  id: number;
+  engagementName: string;
   clientName: string;
   engagementTypeName: string;
   commercialModelName: string;
   kickoffDate: string;
   daysToKickoff: number;
   readinessScore: number | null;
+  isSignedOff: boolean;
 }
 
-export interface PmEngagementListResponse {
-  engagements: PmEngagementListItem[];
+export interface EngagementListResponse {
+  engagements: EngagementListItem[];
 }
 
 export type EngagementSortBy = 'kickoff' | 'readiness' | 'client';

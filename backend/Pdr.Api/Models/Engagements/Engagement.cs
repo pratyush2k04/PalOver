@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using Pdr.Api.Models.AccessTracker;
 using Pdr.Api.Models.EnvironmentTooling;
-using Pdr.Api.Models.Engagements;
+using Pdr.Api.Models.Kickoff;
+using Pdr.Api.Models.People;
 
-
-namespace Pdr.Api.Models;
+namespace Pdr.Api.Models.Engagements;
 
 public class Engagement : BaseAuditableEntity
 {   
@@ -41,6 +41,10 @@ public class Engagement : BaseAuditableEntity
     public ICollection<Person> People { get; set; } = new List<Person>();
 
     public KickoffRecord? KickoffRecord { get; set; }
+
+    public DayOneSignOffRecord? DayOneSignOffRecord { get; set; }
+
+    public EvidenceSnapshot? EvidenceSnapshot { get; set; }
 
     public Handover.HandoverInfo? HandoverInfo { get; set; }
 

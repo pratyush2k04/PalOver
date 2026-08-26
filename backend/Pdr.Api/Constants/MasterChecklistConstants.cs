@@ -22,6 +22,7 @@ public static class MasterChecklistConstants
     {
         public const string Incomplete = "Incomplete";
         public const string Complete = "Complete";
+        public const string Blocked = "Blocked";
     }
 
     public static class ExemptionStatuses
@@ -65,6 +66,7 @@ public static class MasterChecklistConstants
 
         public const string NotApplicableReasonRequired = "A reason is required when marking a checklist item as Not Applicable.";
         public const string BlockReasonRequired = "A reason is required when flagging a checklist item as Blocked.";
+        public const string EvidenceNoteRequired = "Evidence note is required.";
 
         public static string ChecklistItemNotFound(int id) => $"Checklist item with ID {id} was not found.";
         public static string InvalidItemStatus(string status) => $"Invalid checklist item status '{status}'. Status must be 'Complete' or 'Incomplete'.";
@@ -72,5 +74,6 @@ public static class MasterChecklistConstants
         public static string ExemptionNotPending(int id) => $"Checklist item {id} does not have a pending exemption request.";
         public static string CannotUpdateBlockedItem(int id) => $"Checklist item {id} is Blocked; unblock it before changing its status.";
         public static string ItemNotBlocked(int id) => $"Checklist item {id} is not currently Blocked.";
+        public static string EvidenceRequiredToComplete(int id) => $"Evidence is required to complete checklist item {id}.";
     }
 }

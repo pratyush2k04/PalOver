@@ -7,6 +7,7 @@ export const FORM_LABELS = {
   CARD_TITLE: 'Client Contact Transition',
   ADD_TRANSITION_TITLE: 'Add Client Contact Transition',
   OUTGOING_SECTION: 'Outgoing Contact',
+  OUTGOING_PERSON: 'Contact (Required)',
   OUTGOING_NAME: 'Name (Required)',
   OUTGOING_ROLE: 'Role (Required)',
   INCOMING_SECTION: 'Incoming Contact',
@@ -15,8 +16,7 @@ export const FORM_LABELS = {
 } as const;
 
 export const FORM_PLACEHOLDERS = {
-  OUTGOING_NAME: 'Current contact name',
-  OUTGOING_ROLE: 'e.g., Sales Manager, Account Lead',
+  OUTGOING_PERSON: '-- Select --',
   INCOMING_NAME: 'New contact name',
   INCOMING_ROLE: 'e.g., Delivery Manager, PM',
 } as const;
@@ -42,6 +42,7 @@ export const DIALOG_LABELS = {
 export const VALIDATION_MESSAGES = {
   REQUIRED: 'This field is required.',
   MAX_LENGTH: 'Maximum 200 characters.',
+  OUTGOING_PERSON_REQUIRED: 'Please select an outgoing contact.',
   OUTGOING_NAME_REQUIRED: 'Outgoing contact name is required.',
   OUTGOING_ROLE_REQUIRED: 'Outgoing contact role is required.',
   INCOMING_NAME_REQUIRED: 'Incoming contact name is required.',

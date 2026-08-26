@@ -1,3 +1,5 @@
+@use '../../../../../styles/tokens' as *;
+
 :host {
   display: block;
 }
@@ -7,7 +9,7 @@
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: #333333;
+  color: $color-text-muted;
   cursor: pointer;
 
   input {

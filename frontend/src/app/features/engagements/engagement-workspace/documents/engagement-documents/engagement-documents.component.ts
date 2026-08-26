@@ -2,7 +2,7 @@ import {
   Component,
   DestroyRef,
   OnInit,
-  ViewChild,
+  viewChild,
   ElementRef,
   inject,
   signal,
@@ -17,7 +17,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DocumentService } from '../../../services/document.service';
 import { DocumentCategory, DocumentItem, DocumentVisibility } from '../../../models/document.model';
-import { AuthService } from 'src/app/services/auth';
+import { AuthService } from '@shared/services/auth';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import {
   UploadDocumentDialogComponent,
@@ -41,11 +41,13 @@ import {
 } from '../version-history-dialog/version-history-dialog.component';
 
 import { DOCUMENT_CONFIG, DOCUMENT_MESSAGES } from '@shared/constants/document.constants';
+import { SectionHeaderComponent } from '@common/components/section-header/section-header';
 import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
 
 @Component({
   selector: 'app-engagement-documents',
@@ -54,11 +56,13 @@ import { StatusBadgeComponent } from '@common/components/status-badge/status-bad
     DatePipe,
     FormsModule,
     InlineSVGModule,
+    SectionHeaderComponent,
     AlertComponent,
     ButtonComponent,
     LoadingSpinnerComponent,
     EmptyStateComponent,
     StatusBadgeComponent,
+    TooltipDirective,
   ],
   templateUrl: './engagement-documents.component.html',
   styleUrl: './engagement-documents.component.scss',
@@ -70,7 +74,7 @@ export class EngagementDocumentsComponent {
   private destroyRef = inject(DestroyRef);
   private dialog = inject(DialogService);
 
-  @ViewChild('versionFileInput') versionFileInput!: ElementRef<HTMLInputElement>;
+  readonly versionFileInput = viewChild<ElementRef<HTMLInputElement>>('versionFileInput');
   private pendingVersionDocId: number | null = null;
 
   readonly DOCUMENT_MESSAGES = DOCUMENT_MESSAGES;
@@ -254,7 +258,7 @@ export class EngagementDocumentsComponent {
 
   triggerVersionUpload(doc: DocumentItem): void {
     this.pendingVersionDocId = doc.id;
-    this.versionFileInput.nativeElement.click();
+    this.versionFileInput()?.nativeElement.click();
   }
 
   onVersionFileSelected(event: Event): void {

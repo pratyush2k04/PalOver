@@ -11,9 +11,10 @@ public class SearchService(
     ICurrentUserService currentUserService) : ISearchService
 {
     private const int MinQueryLength = 2;
-    private const int ResultsPerGroupCap = 8;
+    private const int DefaultResultsPerGroupCap = 8;
+    private const int FilteredResultsPerGroupCap = 20;
 
-    public async Task<GlobalSearchResponseDto> SearchAsync(string? query)
+    public async Task<GlobalSearchResponseDto> SearchAsync(string? query, string[]? types = null)
     {
         var term = query?.Trim() ?? string.Empty;
 
@@ -30,16 +31,40 @@ public class SearchService(
             return new GlobalSearchResponseDto { Query = term };
         }
 
+        var filterTypes = types?
+            .Where(t => !string.IsNullOrWhiteSpace(t))
+            .Select(t => t.Trim().ToLowerInvariant())
+            .ToHashSet() ?? [];
+
+        var isFiltered = filterTypes.Count > 0;
+        var cap = isFiltered ? FilteredResultsPerGroupCap : DefaultResultsPerGroupCap;
+
+        var shouldSearchEngagements = !isFiltered || filterTypes.Contains("engagement") || filterTypes.Contains("engagements");
+        var shouldSearchDocuments = !isFiltered || filterTypes.Contains("document") || filterTypes.Contains("documents");
+        var shouldSearchPeople = !isFiltered || filterTypes.Contains("person") || filterTypes.Contains("people");
+        var shouldSearchChecklists = !isFiltered || filterTypes.Contains("checklist") || filterTypes.Contains("checklistitem") || filterTypes.Contains("checklistitems") || filterTypes.Contains("checklist-item");
+
         var isAdmin = currentUserService.IsAdmin();
         var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
         var roleId = currentUserService.GetRoleId();
 
-        // Sequential, not Task.WhenAll: all four queries share one scoped AppDbContext instance,
+        // Sequential, not Task.WhenAll: all queries share one scoped AppDbContext instance,
         // and DbContext does not support concurrent operations on the same instance.
-        var (engagementCount, engagementItems) = await searchRepository.SearchEngagementsAsync(engagementIds, term, ResultsPerGroupCap);
-        var (documentCount, documentItems) = await searchRepository.SearchDocumentsAsync(engagementIds, term, ResultsPerGroupCap, roleId, isAdmin, isPm);
-        var (peopleCount, peopleItems) = await searchRepository.SearchPeopleAsync(engagementIds, term, ResultsPerGroupCap);
-        var (checklistCount, checklistItems) = await searchRepository.SearchChecklistItemsAsync(engagementIds, term, ResultsPerGroupCap);
+        var (engagementCount, engagementItems) = shouldSearchEngagements
+            ? await searchRepository.SearchEngagementsAsync(engagementIds, term, cap)
+            : (0, []);
+
+        var (documentCount, documentItems) = shouldSearchDocuments
+            ? await searchRepository.SearchDocumentsAsync(engagementIds, term, cap, roleId, isAdmin, isPm)
+            : (0, []);
+
+        var (peopleCount, peopleItems) = shouldSearchPeople
+            ? await searchRepository.SearchPeopleAsync(engagementIds, term, cap)
+            : (0, []);
+
+        var (checklistCount, checklistItems) = shouldSearchChecklists
+            ? await searchRepository.SearchChecklistItemsAsync(engagementIds, term, cap)
+            : (0, []);
 
         return new GlobalSearchResponseDto
         {

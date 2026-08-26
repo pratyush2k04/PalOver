@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +6,7 @@ using Pdr.Api.Attributes;
 using Pdr.Api.DTOs.People;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Services.Interfaces;
+using Pdr.Api.Exceptions;
 
 namespace Pdr.Api.Controllers;
 
@@ -15,12 +15,9 @@ namespace Pdr.Api.Controllers;
 /// </summary>
 [ApiController]
 [Authorize]
-[AuthorizeRoles(RoleEnum.PreSales, RoleEnum.ProjectManagement, RoleEnum.TechLead)]
 [Route("api/engagements/{engagementId:int}/people")]
 [Produces("application/json")]
-public class PeopleController(
-    IPersonService personService,
-    IValidator<PersonDto> validator) : ControllerBase
+public class PeopleController(IPersonService personService) : ControllerBase
 {
     private string? GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -54,13 +51,6 @@ public class PeopleController(
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<PersonDto>> CreatePerson(int engagementId, [FromBody] PersonDto request)
     {
-        var validationResult = await validator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
-            return BadRequest(new { errors });
-        }
-
         var created = await personService.CreatePersonAsync(engagementId, request, GetUserId());
         return CreatedAtAction(nameof(GetPeople), new { engagementId }, created);
     }
@@ -81,13 +71,6 @@ public class PeopleController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PersonDto>> UpdatePerson(int engagementId, int id, [FromBody] PersonDto request)
     {
-        var validationResult = await validator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
-            return BadRequest(new { errors });
-        }
-
         var updated = await personService.UpdatePersonAsync(engagementId, id, request, GetUserId());
         return Ok(updated);
     }
@@ -108,5 +91,23 @@ public class PeopleController(
     {
         await personService.DeletePersonAsync(engagementId, id, GetUserId());
         return NoContent();
+    }
+
+    /// <summary>
+    /// Imports handover contacts to the People Directory.
+    /// Adds incoming contact from latest transition, deletes all outgoing contacts.
+    /// </summary>
+    /// <param name="engagementId">The engagement ID.</param>
+    /// <returns>Import summary with counts of added, already present, and deleted contacts.</returns>
+    [HttpPost("import-from-handover")]
+    [EndpointSummary("Import contacts from handover")]
+    [ProducesResponseType(typeof(ImportHandoverContactsResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ImportHandoverContactsResponseDto>> ImportFromHandover(int engagementId)
+    {
+        var result = await personService.ImportHandoverContactsAsync(engagementId, GetUserId());
+        return Ok(result);
     }
 }

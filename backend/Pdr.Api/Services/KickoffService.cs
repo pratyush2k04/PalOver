@@ -1,6 +1,7 @@
 using Pdr.Api.DTOs.Kickoff;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
+using Pdr.Api.Models.Kickoff;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
@@ -15,7 +16,12 @@ public class KickoffService(IKickoffRepository repository) : IKickoffService
         var record = await repository.GetByEngagementIdAsync(engagementId);
         if (record is null)
         {
-            throw new KickoffRecordNotFoundException(engagementId);
+            return new KickoffRecordDto
+            {
+                EngagementId = engagementId,
+                Outcomes = string.Empty,
+                ActionItems = new List<KickoffActionItemDto>()
+            };
         }
 
         return MapToDto(record);

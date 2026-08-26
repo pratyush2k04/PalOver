@@ -2,12 +2,16 @@ using Pdr.Api.Constants;
 using Pdr.Api.DTOs.ArchitectureValidation;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.ArchitectureValidation;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class ArchitectureValidationService(IArchitectureValidationRepository repository) : IArchitectureValidationService
+public class ArchitectureValidationService(
+    IArchitectureValidationRepository repository,
+    IAuditLogService auditLogService,
+    ICurrentUserService currentUserService) : IArchitectureValidationService
 {
     public async Task<ArchitectureValidationDto> GetByEngagementIdAsync(int engagementId)
     {
@@ -97,6 +101,18 @@ public class ArchitectureValidationService(IArchitectureValidationRepository rep
 
         await repository.AddFeatureItemAsync(item);
         await repository.SaveChangesAsync();
+
+        var actorUserId = currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            AuditActionEnum.DiscoveryItemAdded,
+            new Dictionary<string, object?>
+            {
+                ["EngagementId"] = engagementId,
+                ["ItemName"] = item.FeatureName,
+                ["ActorUserId"] = actorUserId
+            },
+            engagementId: engagementId,
+            actingUserId: actorUserId > 0 ? actorUserId : null);
 
         return MapFeatureToDto(item);
     }

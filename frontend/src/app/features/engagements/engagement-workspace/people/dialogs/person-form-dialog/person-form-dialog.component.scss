@@ -1,45 +1,41 @@
+@use '../../../../../../../styles/mixins' as *;
+
 .dialog-container {
-  width: 100%;
-  max-width: 28rem;
-  background: #ffffff;
-  border-radius: 0.75rem;
-  overflow: hidden;
+  @include modal-card(35rem);
+  width: 35rem;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 0;
 }
 
 .dialog-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
+  @include flex-between;
+  padding: $spacing-4 $spacing-5;
+  border-bottom: 1px solid $color-border-soft;
+  background: $color-surface-hover;
 
   h3 {
     margin: 0;
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #0f172a;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text;
   }
 }
 
 .dialog-body {
-  padding: 1.25rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  padding: $spacing-5;
+  @include flex-column($spacing-4);
 }
 
 .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
+  @include flex-column($spacing-1);
 }
 
 .dialog-footer {
+  padding: $spacing-3 $spacing-5;
+  border-top: 1px solid $color-border-soft;
+  background: $color-surface-hover;
   display: flex;
-  align-items: center;
   justify-content: flex-end;
-  gap: 0.75rem;
-  padding: 1rem 1.5rem;
-  background-color: #f8fafc;
-  border-top: 1px solid #e2e8f0;
+  gap: $spacing-3;
 }

@@ -13,10 +13,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { HandoverService } from '../../services/handover.service';
 import { EngagementService } from '../../services/engagement.service';
 import { catchError, of } from 'rxjs';
-import { AuthService } from 'src/app/services/auth';
-import { KickoffReadinessDto, KickoffReadinessService } from 'src/app/services/kickoff-readiness.service';
+import { AuthService } from '@shared/services/auth';
+import { KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
 import { EngagementInfoDto } from '../../models/engagement.model';
 import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
+import { ENGAGEMENT_ROUTES } from '@shared/constants/app.constants';
 import {
   HandoverInfoDto,
   SaveHandoverDraftRequest,
@@ -33,7 +34,9 @@ import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
+import { SectionHeaderComponent } from '@common/components/section-header/section-header';
 import { ClientContactTransitionCardComponent } from './client-contact-transition-card/client-contact-transition-card.component';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 
 const MAX_FREE_TEXT_LENGTH = 2000;
 const SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
@@ -48,7 +51,6 @@ interface RealisticEditForm {
   timeline: number;
   timelineUnit: string;
   acknowledgementMessage: string;
-  isPossible: boolean;
 }
 
 @Component({
@@ -58,6 +60,7 @@ interface RealisticEditForm {
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
+    SectionHeaderComponent,
     FlaggedItemsBannerComponent,
     AlertComponent,
     ButtonComponent,
@@ -67,6 +70,7 @@ interface RealisticEditForm {
     StatusBadgeComponent,
     EmptyStateComponent,
     ClientContactTransitionCardComponent,
+    LoadingSpinnerComponent,
   ],
   templateUrl: './handover.component.html',
   styleUrl: './handover.component.scss',
@@ -98,7 +102,7 @@ export class HandoverComponent {
   message = signal('');
   isError = signal(false);
 
-  kickoffReadiness = signal<KickoffReadinessDto | null>(null);
+  kickoffReadiness = this.kickoffReadinessService.readiness;
   handoverFlaggedItems = computed<FlaggedItem[]>(() => {
     const r = this.kickoffReadiness();
     if (!r) return [];
@@ -175,16 +179,10 @@ export class HandoverComponent {
       const id = this.engagementId();
       if (id) {
         this.loadHandover(id);
-        this.loadKickoffReadiness(id);
+        this.kickoffReadinessService.track(id);
         this.loadEngagement(id);
       }
     });
-  }
-
-  private loadKickoffReadiness(id: number) {
-    this.kickoffReadinessService.getReadiness(id).pipe(
-      catchError(() => of(null))
-    ).subscribe(data => this.kickoffReadiness.set(data));
   }
 
   private loadEngagement(id: number) {
@@ -203,7 +201,6 @@ export class HandoverComponent {
       timeline: 1,
       timelineUnit: 'Weeks',
       acknowledgementMessage: '',
-      isPossible: true,
     };
   }
 
@@ -256,6 +253,7 @@ export class HandoverComponent {
         this.handover.set(data);
         this.showMessage('Draft saved successfully', false);
         this.isSaving.set(false);
+        this.kickoffReadinessService.refresh();
       },
       error: (err) => {
         this.showMessage(this.extractErrorMessage(err, 'Failed to save draft'), true);
@@ -282,6 +280,7 @@ export class HandoverComponent {
         this.clientContextForm.disable();
         this.showMessage('Handover submitted successfully', false);
         this.isSaving.set(false);
+        this.kickoffReadinessService.refresh();
       },
       error: (err) => {
         const errorMessage = this.extractErrorMessage(err, 'Failed to submit handover');
@@ -290,7 +289,7 @@ export class HandoverComponent {
 
         if (errorMessage === HandoverComponent.KICKOFF_NOT_READY_MESSAGE) {
           setTimeout(() => {
-            this.router.navigate(['../kickoff'], { relativeTo: this.route });
+            this.router.navigate(['../', ENGAGEMENT_ROUTES.KICKOFF], { relativeTo: this.route });
           }, 1500);
         }
       }
@@ -312,6 +311,7 @@ export class HandoverComponent {
         this.newCommitment.set(this.emptyCommitment());
         this.newCommitmentTouched.set(false);
         this.showMessage('Commitment added successfully', false);
+        this.kickoffReadinessService.refresh();
       },
       error: (err) => {
         this.showMessage(this.extractErrorMessage(err, 'Failed to add commitment'), true);
@@ -362,6 +362,7 @@ export class HandoverComponent {
         });
         this.editingCommitmentId.set(null);
         this.showMessage('Commitment updated successfully', false);
+        this.kickoffReadinessService.refresh();
       },
       error: (err) => {
         this.showMessage(this.extractErrorMessage(err, 'Failed to update commitment'), true);
@@ -386,6 +387,7 @@ export class HandoverComponent {
         this.commitments.update((c) => c.filter((item) => item.commitmentId !== commitmentId));
         this.pendingDeleteId.set(null);
         this.showMessage('Commitment deleted', false);
+        this.kickoffReadinessService.refresh();
       },
       error: (err) => {
         this.pendingDeleteId.set(null);
@@ -405,7 +407,6 @@ export class HandoverComponent {
       timeline: existing?.timeline || c.timeline,
       timelineUnit: existing?.timelineUnit || c.timelineUnit,
       acknowledgementMessage: ackMessage,
-      isPossible: existing?.isPossible ?? true,
     });
   }
 
@@ -447,7 +448,6 @@ export class HandoverComponent {
       timeline: form.timeline,
       timelineUnit: form.timelineUnit,
       acknowledgementMessage: form.acknowledgementMessage || null,
-      isPossible: form.isPossible,
     };
 
     const request$ = c.realisticCommitment
@@ -464,45 +464,20 @@ export class HandoverComponent {
 
     request$.subscribe({
       next: (data) => {
-        this.commitments.update((commits) =>
-          commits.map((item) =>
-            item.commitmentId === c.commitmentId ? { ...item, realisticCommitment: data } : item,
-          ),
-        );
         this.editingRealisticCommitmentId.set(null);
         this.showMessage('Realistic commitment saved', false);
+        this.handoverService.getHandover(id).subscribe({
+          next: (refreshed) => {
+            this.commitments.set(refreshed.commitments || []);
+          },
+        });
+        this.kickoffReadinessService.refresh();
       },
       error: (err) => {
         this.showMessage(
           this.extractErrorMessage(err, 'Failed to save realistic commitment'),
           true,
         );
-      },
-    });
-  }
-
-  toggleMarkImpossible(c: CommitmentDto) {
-    const id = this.engagementId();
-    if (!id || !c.realisticCommitment) return;
-
-    const payload: UpdateRealisticCommitmentRequest = {
-      description: c.realisticCommitment.description,
-      timeline: c.realisticCommitment.timeline,
-      timelineUnit: c.realisticCommitment.timelineUnit,
-      acknowledgementMessage: c.realisticCommitment.acknowledgementMessage,
-      isPossible: !c.realisticCommitment.isPossible,
-    };
-
-    this.handoverService.updateRealisticCommitment(id, c.commitmentId, payload).subscribe({
-      next: (data) => {
-        this.commitments.update((commits) =>
-          commits.map((item) =>
-            item.commitmentId === c.commitmentId ? { ...item, realisticCommitment: data } : item,
-          ),
-        );
-      },
-      error: (err) => {
-        this.showMessage(this.extractErrorMessage(err, 'Failed to update commitment'), true);
       },
     });
   }

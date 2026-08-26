@@ -12,13 +12,14 @@
 
     @if (isTechLead()) {
       <app-button type="button" variant="flat" (click)="onAddFinding()">
-        + Add Finding
+        <span class="btn-icon" [inlineSVG]="'assets/icons/plus.svg'"></span>
+        <span>Add Finding</span>
       </app-button>
     }
   </div>
 
   @if (isLoading()) {
-    <div class="loading-state">Loading findings...</div>
+    <app-loading-spinner label="Loading findings..." />
   } @else if (findings().length === 0) {
     <div class="empty-state">
       <p>No code review findings recorded yet.</p>
@@ -70,7 +71,7 @@
                   } @else if (item.clientDecision && +item.clientDecision === 1) {
                     <app-status-badge tone="success">Accepted</app-status-badge>
                   } @else if (item.clientDecision && +item.clientDecision === 2) {
-                    <app-status-badge tone="info">Deferred</app-status-badge>
+                    <app-status-badge tone="warning">Deferred</app-status-badge>
                   } @else if (!item.clientDecision) {
                     <app-status-badge tone="neutral">Open</app-status-badge>
                   }
@@ -80,6 +81,7 @@
                       <app-button
                         type="button"
                         variant="stroked"
+                        class="btn-accept"
                         [disabled]="item.clientDecision !== null && item.clientDecision !== undefined && +item.clientDecision === 1"
                         (click)="onUpdateDecision(item.id, 1)">
                         Accept
@@ -87,6 +89,7 @@
                       <app-button
                         type="button"
                         variant="stroked"
+                        class="btn-defer"
                         [disabled]="item.clientDecision !== null && item.clientDecision !== undefined && +item.clientDecision === 2"
                         (click)="onUpdateDecision(item.id, 2)">
                         Defer
@@ -102,8 +105,8 @@
                     variant="icon"
                     class="btn-remove"
                     ariaLabel="Delete finding"
-                    title="Delete finding"
-                    (click)="onDeleteFinding(item.id)">
+                    [appTooltip]="'Delete finding'"
+                    (click)="onDeleteFinding(item)">
                     <span class="remove-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
                   </app-button>
                 </td>
@@ -115,3 +118,16 @@
     </div>
   }
 </div>
+
+<!-- Delete Confirmation Dialog -->
+@if (findingToDelete(); as finding) {
+  <app-confirm-dialog
+    title="Delete Finding"
+    confirmLabel="Delete"
+    [isBusy]="isDeleting()"
+    [isDestructive]="true"
+    (confirmed)="confirmDeleteFinding()"
+    (cancelled)="cancelDeleteFinding()">
+    Are you sure you want to delete <strong>{{ finding.title }}</strong>? This action cannot be undone.
+  </app-confirm-dialog>
+}

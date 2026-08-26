@@ -1,28 +1,28 @@
+@use '../../../../../../../styles/tokens' as *;
+
 .dialog-container {
-  background-color: #ffffff;
+  background-color: $color-surface;
   border-radius: 0.75rem;
-  width: 100%;
-  max-width: 500px;
+  width: min(31.25rem, calc(100vw - 2rem));
   overflow: hidden;
 }
 
 .dialog-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 0.0625rem solid $color-slate-100;
 
   h3 {
     font-size: 1.125rem;
     font-weight: 600;
-    color: #0f172a;
+    color: $color-slate-900;
     margin: 0;
   }
 }
 
 .dialog-body {
   padding: 2rem;
+  max-height: 70vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 1.75rem;
@@ -31,28 +31,33 @@
 .form-section {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0.75rem;
 
   h4 {
     font-size: 0.95rem;
     font-weight: 700;
-    color: #1e293b;
+    color: $color-slate-800;
     margin: 0;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.03125rem;
+  }
+
+  app-select,
+  app-input {
+    margin-bottom: 0;
   }
 }
 
 .confirm-section {
-  border: 1px solid #e2e8f0;
+  border: 0.0625rem solid $color-slate-200;
   border-radius: 0.5rem;
   padding: 1.25rem;
-  background-color: #f8fafc;
+  background-color: $color-slate-50;
 }
 
 .confirm-message {
   font-size: 0.9rem;
-  color: #475569;
+  color: $color-slate-600;
   margin: 0 0 1rem 0;
   line-height: 1.5;
   font-weight: 500;
@@ -73,12 +78,12 @@
 
   .label {
     font-weight: 600;
-    color: #334155;
+    color: $color-slate-700;
     min-width: 4rem;
   }
 
   .contact-info {
-    color: #475569;
+    color: $color-slate-600;
   }
 }
 
@@ -86,12 +91,13 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 1rem;
   padding: 1.5rem 2rem;
-  background-color: #f8fafc;
-  border-top: 1px solid #e2e8f0;
+  background-color: $color-slate-50;
+  border-top: 0.0625rem solid $color-slate-200;
 
   app-button {
-    min-width: 120px;
+    min-width: 7.5rem;
   }
 }

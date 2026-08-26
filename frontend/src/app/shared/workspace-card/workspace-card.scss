@@ -1,22 +1,24 @@
+@use '../../../styles/tokens' as *;
+
 :host {
   display: block;
 }
 
 .workspace-card {
   padding: 2rem;
-  border: 1px solid #e5e9ef;
+  border: 1px solid $color-border-soft;
   border-radius: 12px;
-  background: #ffffff;
+  background: $color-surface;
 
   h3 {
     margin: 0 0 0.5rem;
     font-size: 1rem;
-    color: #1a1a1a;
+    color: $color-text;
   }
 
   p {
     margin: 0 0 1.5rem;
-    color: #6b7280;
+    color: $color-gray-500;
     font-size: 0.875rem;
   }
 }

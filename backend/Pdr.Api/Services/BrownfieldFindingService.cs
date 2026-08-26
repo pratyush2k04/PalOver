@@ -1,12 +1,16 @@
 using Pdr.Api.DTOs.BrownField;
 using Pdr.Api.Exceptions;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.BrownField;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class BrownfieldFindingService(IBrownfieldFindingRepository repository) : IBrownfieldFindingService
+public class BrownfieldFindingService(
+    IBrownfieldFindingRepository repository,
+    IAuditLogService auditLogService,
+    ICurrentUserService currentUserService) : IBrownfieldFindingService
 {
     public async Task<BrownfieldReadinessResponse> GetFindingsByEngagementIdAsync(int engagementId)
     {
@@ -56,6 +60,19 @@ public class BrownfieldFindingService(IBrownfieldFindingRepository repository) :
         await repository.SaveChangesAsync();
 
         var created = await repository.GetByIdAsync(finding.Id);
+
+        var actorUserId = currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            AuditActionEnum.BrownfieldItemAdded,
+            new Dictionary<string, object?>
+            {
+                ["EngagementId"] = engagementId,
+                ["FindingName"] = finding.Title,
+                ["ActorUserId"] = actorUserId
+            },
+            engagementId: engagementId,
+            actingUserId: actorUserId > 0 ? actorUserId : null);
+
         return MapToDto(created!);
     }
 

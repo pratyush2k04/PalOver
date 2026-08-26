@@ -1,6 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Pdr.Api.Constants;
+using Pdr.Api.Data;
 using Pdr.Api.DTOs.EngagementChecklist;
 using Pdr.Api.Exceptions;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.EngagementChecklist;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
@@ -10,11 +14,17 @@ namespace Pdr.Api.Services;
 public class EngagementChecklistService(
     IEngagementChecklistRepository checklistRepository,
     IMasterChecklistRepository masterChecklistRepository,
-    IPersonRepository personRepository,
-    ICurrentUserService currentUserService) : IEngagementChecklistService
+    AppDbContext dbContext,
+    ICurrentUserService currentUserService,
+    IRiskService riskService,
+    IAuditLogService auditLogService,
+    ILogger<EngagementChecklistService> logger,
+    IEngagementAccessService engagementAccessService) : IEngagementChecklistService
 {
     public async Task<EngagementChecklistResponseDto?> GetByEngagementIdAsync(int engagementId)
     {
+        await engagementAccessService.ValidateAccessAsync(engagementId);
+
         var checklist = await checklistRepository.GetByEngagementIdAsync(engagementId);
 
         // If no checklist exists yet (e.g. existing seed engagements), apply one on the fly
@@ -47,6 +57,7 @@ public class EngagementChecklistService(
                     Description = i.Description,
                     CategoryId = i.CategoryId,
                     IsMandatory = i.IsMandatory,
+                    EvidenceRequired = i.EvidenceRequired,
                     DisplayOrder = i.DisplayOrder,
                     IsApplicable = true,
                     Status = MasterChecklistConstants.ItemStatuses.Incomplete,
@@ -87,12 +98,22 @@ public class EngagementChecklistService(
             throw new CannotUpdateBlockedItemException(itemId);
         }
 
+        if (normalizedStatus == MasterChecklistConstants.ItemStatuses.Complete && item.EvidenceRequired)
+        {
+            var hasEvidence = !string.IsNullOrWhiteSpace(item.EvidenceNote) || !string.IsNullOrWhiteSpace(item.EvidenceLink);
+            if (!hasEvidence)
+            {
+                throw new ChecklistItemEvidenceRequiredException(itemId);
+            }
+        }
+
         var currentUserId = currentUserService.GetUserId();
         item.Status = normalizedStatus;
         item.UpdatedAt = DateTime.UtcNow;
         item.UpdatedBy = currentUserId.ToString();
 
         await checklistRepository.SaveChangesAsync();
+        await riskService.SyncAutoCreatedRisksAsync(engagementId);
 
         var updated = await checklistRepository.GetByEngagementIdAsync(engagementId)
             ?? throw new InvalidOperationException(MasterChecklistConstants.Messages.FailedToUpdateChecklist);
@@ -141,6 +162,7 @@ public class EngagementChecklistService(
                 item.IsApplicable = false;
                 item.NotApplicableReason = trimmedReason;
                 item.ExemptionStatus = MasterChecklistConstants.ExemptionStatuses.None;
+                item.ExemptionRejectionReason = null;
             }
             else
             {
@@ -148,6 +170,7 @@ public class EngagementChecklistService(
                 item.NotApplicableReason = trimmedReason;
                 item.ExemptionRequestedById = currentUserId;
                 item.ExemptionRequestedAt = DateTime.UtcNow;
+                item.ExemptionRejectionReason = null;
                 // Mandatory item stays IsApplicable = true until approved by Leadership
             }
         }
@@ -156,6 +179,7 @@ public class EngagementChecklistService(
         item.UpdatedBy = currentUserId.ToString();
 
         await checklistRepository.SaveChangesAsync();
+        await riskService.SyncAutoCreatedRisksAsync(engagementId);
 
         var updated = await checklistRepository.GetByEngagementIdAsync(engagementId)
             ?? throw new InvalidOperationException(MasterChecklistConstants.Messages.FailedToUpdateChecklist);
@@ -181,6 +205,7 @@ public class EngagementChecklistService(
             item.ExemptionStatus = MasterChecklistConstants.ExemptionStatuses.Approved;
             item.ExemptionReviewedById = currentUserId;
             item.ExemptionReviewedAt = DateTime.UtcNow;
+            item.ExemptionRejectionReason = null;
         }
         else
         {
@@ -195,6 +220,7 @@ public class EngagementChecklistService(
         item.UpdatedBy = currentUserId.ToString();
 
         await checklistRepository.SaveChangesAsync();
+        await riskService.SyncAutoCreatedRisksAsync(engagementId);
 
         var updated = await checklistRepository.GetByEngagementIdAsync(engagementId)
             ?? throw new InvalidOperationException(MasterChecklistConstants.Messages.FailedToUpdateChecklist);
@@ -214,7 +240,7 @@ public class EngagementChecklistService(
 
         if (dto.PersonId is not null)
         {
-            await EnsurePersonBelongsToEngagementAsync(engagementId, dto.PersonId.Value);
+            await EnsureUserBelongsToEngagementAsync(engagementId, dto.PersonId.Value);
         }
 
         var currentUserId = currentUserService.GetUserId();
@@ -223,6 +249,7 @@ public class EngagementChecklistService(
         item.UpdatedBy = currentUserId.ToString();
 
         await checklistRepository.SaveChangesAsync();
+        await riskService.SyncAutoCreatedRisksAsync(engagementId);
 
         var updated = await checklistRepository.GetByEngagementIdAsync(engagementId)
             ?? throw new InvalidOperationException("Failed to retrieve updated checklist.");
@@ -245,7 +272,7 @@ public class EngagementChecklistService(
             throw new ChecklistBlockReasonRequiredException();
         }
 
-        await EnsurePersonBelongsToEngagementAsync(engagementId, dto.PersonId);
+        await EnsureUserBelongsToEngagementAsync(engagementId, dto.PersonId);
 
         var currentUserId = currentUserService.GetUserId();
         item.Status = "Blocked";
@@ -255,6 +282,7 @@ public class EngagementChecklistService(
         item.UpdatedBy = currentUserId.ToString();
 
         await checklistRepository.SaveChangesAsync();
+        await riskService.SyncAutoCreatedRisksAsync(engagementId);
 
         var updated = await checklistRepository.GetByEngagementIdAsync(engagementId)
             ?? throw new InvalidOperationException("Failed to retrieve updated checklist.");
@@ -279,6 +307,7 @@ public class EngagementChecklistService(
         item.UpdatedBy = currentUserId.ToString();
 
         await checklistRepository.SaveChangesAsync();
+        await riskService.SyncAutoCreatedRisksAsync(engagementId);
 
         var updated = await checklistRepository.GetByEngagementIdAsync(engagementId)
             ?? throw new InvalidOperationException("Failed to retrieve updated checklist.");
@@ -286,12 +315,62 @@ public class EngagementChecklistService(
         return MapToDto(updated);
     }
 
-    private async Task EnsurePersonBelongsToEngagementAsync(int engagementId, int personId)
+    public async Task<EngagementChecklistResponseDto> SaveItemEvidenceAsync(int engagementId, int itemId, SaveChecklistItemEvidenceRequestDto dto)
     {
-        var people = await personRepository.GetByEngagementIdAsync(engagementId);
-        if (!people.Any(p => p.PersonId == personId))
+        var item = await checklistRepository.GetItemByIdAsync(engagementId, itemId)
+            ?? throw new EngagementChecklistItemNotFoundException(itemId);
+
+        if (!item.IsApplicable)
         {
-            throw new PersonNotFoundException(personId, engagementId);
+            throw new CannotUpdateNonApplicableItemException(itemId);
+        }
+
+        var currentUserId = currentUserService.GetUserId();
+        item.EvidenceNote = dto.Note?.Trim();
+        item.EvidenceLink = string.IsNullOrWhiteSpace(dto.Link) ? null : dto.Link.Trim();
+        item.EvidenceSubmittedAt = DateTime.UtcNow;
+        item.EvidenceSubmittedById = currentUserId;
+        item.UpdatedAt = DateTime.UtcNow;
+        item.UpdatedBy = currentUserId.ToString();
+
+        if (dto.MarkComplete == true && item.Status != MasterChecklistConstants.ItemStatuses.Blocked)
+        {
+            item.Status = MasterChecklistConstants.ItemStatuses.Complete;
+        }
+
+        await checklistRepository.SaveChangesAsync();
+        await riskService.SyncAutoCreatedRisksAsync(engagementId);
+
+        await auditLogService.LogAsync(
+            AuditActionEnum.ChecklistItemEvidenceUpdated,
+            new Dictionary<string, object?>
+            {
+                ["EngagementId"] = engagementId,
+                ["ChecklistItemId"] = item.Id,
+                ["ActorUserId"] = currentUserId
+            },
+            engagementId: engagementId);
+
+        logger.LogInformation("Saved evidence for checklist item {ItemId} on engagement {EngagementId} by user {UserId}", itemId, engagementId, currentUserId);
+
+        var updated = await checklistRepository.GetByEngagementIdAsync(engagementId)
+            ?? throw new InvalidOperationException("Failed to retrieve updated checklist.");
+
+        return MapToDto(updated);
+    }
+
+    private async Task EnsureUserBelongsToEngagementAsync(int engagementId, int personId)
+    {
+        var isAssigned = await dbContext.EngagementAssignments
+            .AnyAsync(a => a.EngagementId == engagementId && a.UserId == personId && !a.User.IsDeleted);
+
+        if (!isAssigned)
+        {
+            var hasAnyAssignments = await dbContext.EngagementAssignments.AnyAsync(a => a.EngagementId == engagementId);
+            if (hasAnyAssignments || !await dbContext.Users.AnyAsync(u => u.Id == personId && !u.IsDeleted))
+            {
+                throw new UserNotFoundException(personId);
+            }
         }
     }
 
@@ -336,8 +415,14 @@ public class EngagementChecklistService(
                      i.ExemptionReviewedAt,
                      i.ExemptionRejectionReason,
                      i.OwnerId,
-                     i.Owner != null ? i.Owner.Name : null,
-                     i.BlockReason))
+                     i.Owner != null ? i.Owner.FullName : null,
+                     i.BlockReason,
+                     i.EvidenceRequired,
+                     i.EvidenceNote,
+                     i.EvidenceLink,
+                     i.EvidenceSubmittedAt,
+                     i.EvidenceSubmittedById,
+                     i.EvidenceSubmittedBy != null ? i.EvidenceSubmittedBy.FullName : null))
                  .ToList()))
             .ToList();
 

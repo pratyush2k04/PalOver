@@ -11,6 +11,9 @@ using Pdr.Api.Models.EngagementChecklist;
 using Pdr.Api.Models.Documents;
 using Pdr.Api.Models.Cadence;
 using Pdr.Api.Models.Risks;
+using Pdr.Api.Models.Kickoff;
+using Pdr.Api.Models.People;
+using Pdr.Api.Models.DependencySpikes;
 
 namespace Pdr.Api.Data;
 
@@ -19,7 +22,12 @@ public class AppDbContext : DbContext
     public DbSet<Engagement> Engagements => Set<Engagement>();
     public DbSet<EngagementStatus> EngagementStatuses => Set<EngagementStatus>();
     public DbSet<EngagementType> EngagementTypes => Set<EngagementType>();
-    
+    public DbSet<DayOneSignOffRecord> DayOneSignOffRecords => Set<DayOneSignOffRecord>();
+    public DbSet<EvidenceSnapshot> EvidenceSnapshots => Set<EvidenceSnapshot>();
+    public DbSet<EvidenceSnapshotItem> EvidenceSnapshotItems => Set<EvidenceSnapshotItem>();
+
+    public DbSet<Assumption> Assumptions => Set<Assumption>();
+
     // Handover entities
     public DbSet<HandoverInfo> HandoverInfos => Set<HandoverInfo>();
     public DbSet<Commitment> Commitments => Set<Commitment>();
@@ -68,9 +76,13 @@ public class AppDbContext : DbContext
     public DbSet<Models.BrownField.BrownfieldFinding> BrownfieldFindings => Set<Models.BrownField.BrownfieldFinding>();
     public DbSet<Models.ArchitectureValidation.ArchitectureValidation> ArchitectureValidations => Set<Models.ArchitectureValidation.ArchitectureValidation>();
     public DbSet<Models.ArchitectureValidation.DiscoveryFeatureItem> DiscoveryFeatureItems => Set<Models.ArchitectureValidation.DiscoveryFeatureItem>();
+    public DbSet<DependencySpike> DependencySpikes => Set<DependencySpike>();
     public DbSet<Pdr.Api.Models.ChangeRequest.ChangeRequest> ChangeRequests => Set<Pdr.Api.Models.ChangeRequest.ChangeRequest>();
     public DbSet<Risk> Risks => Set<Risk>();
+    public DbSet<RiskEscalationHistory> RiskEscalationHistories => Set<RiskEscalationHistory>();
    
+    public DbSet<RiskComment> RiskComments => Set<RiskComment>();
+
 
  
 
@@ -79,9 +91,17 @@ public class AppDbContext : DbContext
     public DbSet<Models.Notifications.Notification> Notifications => Set<Models.Notifications.Notification>();
     public DbSet<Models.Notifications.NotificationTemplate> NotificationTemplates => Set<Models.Notifications.NotificationTemplate>();
 
-    // Audit Trail
+    // Audit Log
     public DbSet<Models.Audit.AuditAction> AuditActions => Set<Models.Audit.AuditAction>();
     public DbSet<Models.Audit.AuditLog> AuditLogs => Set<Models.Audit.AuditLog>();
+
+    // Resource Requests
+    public DbSet<Models.ResourceRequests.ResourceRequest> ResourceRequests => Set<Models.ResourceRequests.ResourceRequest>();
+    public DbSet<Models.ResourceRequests.ResourceRequestSkill> ResourceRequestSkills => Set<Models.ResourceRequests.ResourceRequestSkill>();
+    public DbSet<Models.ResourceRequests.ResourceAllocation> ResourceAllocations => Set<Models.ResourceRequests.ResourceAllocation>();
+
+    // Dependencies
+    public DbSet<Models.Engagements.Dependencies.Dependency> Dependencies => Set<Models.Engagements.Dependencies.Dependency>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

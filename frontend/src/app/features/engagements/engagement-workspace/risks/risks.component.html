@@ -1,16 +1,10 @@
 <div class="risks-container">
   <!-- Header / Action Bar -->
-  <div class="risks-header">
-    <div class="header-title">
-      <h2>Risk Register</h2>
-      <p class="subtitle">Identify, track, and mitigate project risks to ensure delivery readiness.</p>
-    </div>
-    <div class="header-actions">
-      <app-button variant="flat" (click)="openCreateModal()">
-        + Record Risk
-      </app-button>
-    </div>
-  </div>
+  <app-section-header title="Risk Register">
+    <app-button variant="flat" (click)="openCreateModal()">
+      + Record Risk
+    </app-button>
+  </app-section-header>
 
   <!-- Priority Banner -->
   @if (topPriorityCount() > 0) {
@@ -68,6 +62,11 @@
               </div>
 
               <div class="right-section">
+                @if (risk.currentEscalationLevel && risk.currentEscalationLevel !== 'None') {
+                  <app-status-badge [tone]="risk.currentEscalationLevel === 'Leadership' ? 'danger' : 'warning'">
+                    Escalated ({{ risk.currentEscalationLevel }})
+                  </app-status-badge>
+                }
                 <span class="open-days-badge">Open for {{ risk.openForDays }} day(s)</span>
               </div>
             </div>
@@ -78,9 +77,9 @@
               <!-- Linked Blocker Source Badge -->
               @if (risk.sourceTitle) {
                 <a
-                  [routerLink]="['/engagements', engagementId(), 'workspace', 'technical-readiness']"
+                  [routerLink]="getSourceRoute(risk.sourceType)"
                   class="source-link-badge clickable"
-                  title="Click to view linked blocker in Technical Readiness"
+                  [title]="'Click to view linked blocker in ' + (risk.sourceType === 'Checklist' ? 'Checklist' : 'Technical Readiness')"
                 >
                   <span class="link-title">{{ risk.sourceTitle }}</span>
                   <span class="link-type">({{ risk.sourceType }})</span>
@@ -124,6 +123,14 @@
                   <p>{{ risk.resolutionNote }}</p>
                 </div>
               }
+
+              <!-- Risk Comments Discussion Component -->
+              @if (engagementId()) {
+                <app-risk-comments
+                  [engagementId]="engagementId()!"
+                  [riskId]="risk.id"
+                />
+              }
             </div>
 
             <!-- Footer Actions -->
@@ -131,9 +138,13 @@
               <div class="action-buttons">
                 @if (risk.status !== 'Closed') {
                   <app-button variant="stroked" size="sm" (click)="openEditModal(risk)">Edit</app-button>
-                  <app-button variant="danger" size="sm" (click)="openCloseModal(risk)">Close Risk</app-button>
+                  @if (!risk.sourceType) {
+                    <app-button variant="danger" size="sm" (click)="openCloseModal(risk)">Close Risk</app-button>
+                  }
                 } @else {
-                  <app-button variant="stroked" size="sm" (click)="reopenRisk(risk)">Reopen Risk</app-button>
+                  @if (!risk.sourceType) {
+                    <app-button variant="stroked" size="sm" (click)="reopenRisk(risk)">Reopen Risk</app-button>
+                  }
                 }
               </div>
             </div>
@@ -149,7 +160,6 @@
       <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <h3>{{ isEditMode() ? 'Edit Risk' : 'Record New Risk' }}</h3>
-          <button type="button" class="close-btn" (click)="closeFormModal()">&times;</button>
         </div>
 
         <form [formGroup]="riskForm" (ngSubmit)="saveRisk()">
@@ -240,7 +250,6 @@
       <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <h3>Close Risk: {{ closingRisk()?.title }}</h3>
-          <button type="button" class="close-btn" (click)="closeCloseModal()">&times;</button>
         </div>
 
         <form [formGroup]="closeForm" (ngSubmit)="submitCloseRisk()">

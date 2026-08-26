@@ -1,3 +1,5 @@
+@use '../../../styles/tokens' as *;
+
 :host {
   position: relative;
   display: block;
@@ -11,10 +13,10 @@
   width: 2.375rem;
   height: 2.375rem;
   border-radius: 0.5rem;
-  background: #f4f6f9;
-  border: 1px solid #e5e9ef;
+  background: $color-bg;
+  border: 1px solid $color-border-soft;
   cursor: pointer;
-  color: #4b5563;
+  color: $color-gray-600;
   transition: background-color 0.15s ease, color 0.15s ease;
 
   ::ng-deep svg,
@@ -24,8 +26,8 @@
   }
 
   &:hover {
-    background-color: #e2e8f0;
-    color: #1e2a5e;
+    background-color: $color-slate-200;
+    color: $color-brand-dark;
   }
 }
 
@@ -40,11 +42,11 @@
   align-items: center;
   justify-content: center;
   border-radius: 0.5rem;
-  background: #dc2626;
-  color: #ffffff;
+  background: $color-danger;
+  color: $color-surface;
   font-size: 0.65rem;
   font-weight: 700;
-  border: 2px solid #ffffff;
+  border: 2px solid $color-surface;
 }
 
 .dropdown-panel {
@@ -55,10 +57,10 @@
   max-height: 28rem;
   display: flex;
   flex-direction: column;
-  background: #ffffff;
-  border: 1px solid #e5e9ef;
+  background: $color-surface;
+  border: 1px solid $color-border-soft;
   border-radius: 0.75rem;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 10px 30px rgba($color-slate-900, 0.12);
   z-index: 50;
   overflow: hidden;
 }
@@ -68,13 +70,13 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid #e5e9ef;
+  border-bottom: 1px solid $color-border-soft;
 }
 
 .dropdown-title {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: $color-text;
 }
 
 .dropdown-list {
@@ -85,20 +87,24 @@
 .notification-item {
   display: flex;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid #f4f6f9;
-  cursor: pointer;
+  border-bottom: 1px solid $color-bg;
+  cursor: default;
   transition: background-color 0.15s ease;
 
-  &:hover {
-    background-color: #f4f6f9;
+  &.has-link {
+    cursor: pointer;
+
+    &:hover {
+      background-color: $color-bg;
+    }
   }
 
   &.unread {
-    background-color: #eff6ff;
-    border-left: 3px solid #2563eb;
+    background-color: $color-primary-light;
+    border-left: 3px solid $color-primary;
 
-    &:hover {
-      background-color: #dbeafe;
+    &.has-link:hover {
+      background-color: $color-primary-subtle;
     }
   }
 }
@@ -113,15 +119,28 @@
 .notification-title {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: $color-text;
 }
 
 .notification-body {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: $color-gray-500;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+}
+
+.dropdown-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-top: 1px solid $color-border-soft;
+  background: $color-slate-50;
+
+  app-button {
+    width: 100%;
+  }
 }

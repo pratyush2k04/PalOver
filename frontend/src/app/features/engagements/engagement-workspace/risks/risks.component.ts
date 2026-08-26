@@ -20,12 +20,16 @@ import { ButtonComponent } from '@common/components/button/button';
 import { AlertComponent } from '@common/components/alert/alert';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
+import { SectionHeaderComponent } from '@common/components/section-header/section-header';
 import { InputComponent } from '@common/components/form/input/input';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
+import { APP_ROUTES, ENGAGEMENT_ROUTES, TECHNICAL_READINESS_ROUTES } from '@shared/constants/app.constants';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { ToastService } from '@common/services/toast/toast';
 import { RISK_MESSAGES } from '@shared/constants/app.constants';
+
+import { RiskCommentsComponent } from './components/risk-comments/risk-comments.component';
 
 @Component({
   selector: 'app-risks',
@@ -42,7 +46,9 @@ import { RISK_MESSAGES } from '@shared/constants/app.constants';
     EmptyStateComponent,
     InputComponent,
     SelectComponent,
-    TextareaComponent 
+    TextareaComponent,
+    RiskCommentsComponent,
+    SectionHeaderComponent
   ],
   templateUrl: './risks.component.html',
   styleUrl: './risks.component.scss'
@@ -107,6 +113,18 @@ export class RisksComponent implements OnInit {
       label: o.role ? `${o.name} (${o.role})` : o.name
     }))
   ]);
+
+  getSourceRoute(sourceType: string | null | undefined): string[] {
+    const id = this.engagementId();
+    if (!id) return [];
+    if (sourceType === 'Checklist') {
+      return [APP_ROUTES.ENGAGEMENTS, id.toString(), ENGAGEMENT_ROUTES.WORKSPACE, ENGAGEMENT_ROUTES.CHECKLIST];
+    }
+    if (sourceType === 'ResourceRequest') {
+      return [APP_ROUTES.ENGAGEMENTS, id.toString(), ENGAGEMENT_ROUTES.WORKSPACE, ENGAGEMENT_ROUTES.RESOURCES];
+    }
+    return [APP_ROUTES.ENGAGEMENTS, id.toString(), ENGAGEMENT_ROUTES.WORKSPACE, TECHNICAL_READINESS_ROUTES.BASE];
+  }
 
   onStatusFilterSelect(val: unknown): void {
     this.statusFilter.set((val as RiskStatus | 'ALL') || 'ALL');
@@ -205,7 +223,7 @@ export class RisksComponent implements OnInit {
           options.push({
             id: owners.projectManagerId,
             name: owners.projectManagerName,
-            role: 'Project Manager (Assigned)'
+            role: 'Project Manager'
           });
         }
 
@@ -213,7 +231,7 @@ export class RisksComponent implements OnInit {
           options.push({
             id: owners.techLeadId,
             name: owners.techLeadName,
-            role: 'Technical Lead (Assigned)'
+            role: 'Technical Lead'
           });
         }
 
@@ -291,16 +309,27 @@ export class RisksComponent implements OnInit {
     this.isEditMode.set(true);
     this.editingRiskId.set(risk.id);
     this.formSubmitted.set(false);
+
+    const numericOwnerId = risk.ownerId != null ? Number(risk.ownerId) : null;
+
+    if (numericOwnerId && !this.owners().some(o => Number(o.id) === numericOwnerId)) {
+      this.owners.update(current => [
+        ...current,
+        { id: numericOwnerId, name: risk.ownerName || `User #${numericOwnerId}` }
+      ]);
+    }
+
+    this.showFormModal.set(true);
+
     this.riskForm.patchValue({
       title: risk.title,
       description: risk.description,
       impact: risk.impact,
       likelihood: risk.likelihood,
-      ownerId: risk.ownerId ?? null,
+      ownerId: numericOwnerId,
       mitigation: risk.mitigation ?? '',
       status: risk.status
     });
-    this.showFormModal.set(true);
   }
 
   closeFormModal(): void {

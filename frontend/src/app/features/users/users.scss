@@ -1,120 +1,302 @@
+@use '../../../styles/mixins' as *;
+
 :host {
   display: block;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: $font-family-base;
+  color: $color-text;
 }
 
 .user-directory {
-  max-width: 60rem;
+  box-sizing: border-box;
+  padding: $spacing-8;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
-}
+  font-family: $font-family-base;
+  color: $color-text;
 
-.search-bar {
-  margin-bottom: 1.25rem;
+  @media (max-width: 768px) {
+    padding: $spacing-4;
+  }
 
-  input {
-    width: 100%;
-    max-width: 22.5rem;
-    padding: 0.65rem 0.9rem;
-    font-size: 0.875rem;
-    border: 1px solid #d7dce2;
-    border-radius: 0.5rem;
-    box-sizing: border-box;
-    background: #ffffff;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  app-page-header {
+    display: block;
+    margin-bottom: $spacing-4;
 
-    &:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 0.1875rem #2563eb26;
-    }
-
-    &::placeholder {
-      color: #9aa4b2;
+    ::ng-deep .page-header {
+      margin-bottom: 0;
     }
   }
-}
 
-.table-card {
-  background: #ffffff;
-  border-radius: 0.5rem;
-  box-shadow: 0 0.25rem 0.75rem #0000000f;
-  overflow: hidden;
-}
+  /* Header Controls & Cards */
+  .controls-row {
+    display: flex;
+    align-items: center;
+    gap: $spacing-4;
+    flex-wrap: wrap;
+    margin-bottom: $spacing-4;
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: stretch;
+      gap: $spacing-2;
+    }
 
-thead th {
-  text-align: left;
-  padding: 0.9rem 1.5rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: #8b95a3;
-  text-transform: uppercase;
-  border-bottom: 1px solid #edf0f3;
-}
+    .search-box {
+      position: relative;
+      width: 17.5rem;
 
-tbody tr {
-  border-bottom: 1px solid #edf0f3;
+      @media (max-width: 768px) {
+        width: 100%;
+      }
 
-  &:last-child {
-    border-bottom: none;
-  }
-}
+      .search-icon {
+        position: absolute;
+        left: 0.85rem;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 2;
+        pointer-events: none;
+        color: $color-text-fainter;
+        display: flex;
+        align-items: center;
 
-td {
-  padding: 0.85rem 1.5rem;
-  font-size: 0.875rem;
-  color: #333333;
-  vertical-align: middle;
-}
+        ::ng-deep svg,
+        svg {
+          width: $font-size-base;
+          height: $font-size-base;
+        }
+      }
 
-.col-name {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  white-space: nowrap;
-}
+      ::ng-deep .app-field {
+        margin-bottom: 0;
 
-.name {
-  font-weight: 500;
-  color: #1e3a5f;
-}
+        input {
+          padding-left: 2.5rem;
+        }
+      }
+    }
 
-.col-email {
-  color: #4a5568;
-}
+    .role-filter-box {
+      width: 11.25rem;
 
-.col-role {
-  width: 13.75rem;
+      @media (max-width: 768px) {
+        width: 100%;
+      }
 
-  select {
-    width: 100%;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.875rem;
-    color: #1a1a1a;
-    background: #ffffff;
-    border: 1px solid #d7dce2;
-    border-radius: 0.375rem;
-    cursor: pointer;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-
-    &:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 0.1875rem #2563eb26;
+      ::ng-deep .app-field {
+        margin-bottom: 0;
+      }
     }
   }
-}
 
-.empty-row {
-  padding: 1.5rem;
-  text-align: center;
-  color: #8b95a3;
-  font-size: 0.875rem;
-}
+  .total-users-card {
+    background: $color-surface;
+    border: 1px solid $color-border-soft;
+    border-radius: $radius-lg;
+    padding: $spacing-5 $spacing-6;
+    display: flex;
+    align-items: center;
+    gap: $spacing-5;
+    width: 16.25rem;
+    min-width: 16.25rem;
+    box-shadow: $shadow-sm;
 
+    @media (max-width: 768px) {
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      padding: $spacing-4;
+    }
+
+    .card-icon {
+      width: 3rem;
+      height: 3rem;
+      border-radius: $radius-md;
+      @include flex-center;
+      background: $color-primary-light;
+      color: $color-primary;
+
+      ::ng-deep svg,
+      svg {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+    }
+
+    .card-content {
+      @include flex-column;
+
+      .card-value {
+        font-size: 1.75rem;
+        font-weight: $font-weight-bold;
+        color: $color-text;
+        line-height: 1.2;
+      }
+
+      .card-label {
+        font-size: $font-size-xs;
+        font-weight: $font-weight-medium;
+        color: $color-text-faint;
+        margin-top: $spacing-1;
+      }
+    }
+  }
+
+  /* Table Card */
+  .table-card {
+    background: $color-surface;
+    border: 1px solid $color-border-soft;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    .users-table {
+      width: 100%;
+      min-width: 44rem;
+      border-collapse: collapse;
+      text-align: left;
+
+      th {
+        background: $color-surface-hover;
+        padding: 0.65rem $spacing-5;
+        font-size: $font-size-xs;
+        font-weight: $font-weight-bold;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: $color-text-muted;
+        border-bottom: 1px solid $color-border-soft;
+      }
+
+      td {
+        padding: 0.65rem $spacing-5;
+        border-bottom: 1px solid $color-border-soft;
+        vertical-align: middle;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      tr:hover td {
+        background: $color-surface-hover;
+      }
+
+      .user-name-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        white-space: nowrap;
+
+        .name {
+          font-weight: $font-weight-semibold;
+          color: $color-text;
+        }
+      }
+
+      .col-email {
+        color: $color-text-faint;
+      }
+
+      .col-role {
+        width: 17.5rem;
+        min-width: 17.5rem;
+
+        ::ng-deep .app-field {
+          margin-bottom: 0;
+
+          select {
+            font-weight: $font-weight-semibold;
+            border-radius: $radius-lg;
+            padding: 0.4rem 1.85rem 0.4rem 0.85rem;
+            width: 100%;
+            transition: border-color $transition-fast, background-color $transition-fast, color $transition-fast;
+          }
+        }
+
+        /* Distinct color schemes for each role */
+        &[data-role="Leadership"],
+        &[data-role="Admin"] {
+          ::ng-deep select {
+            background-color: $color-role-admin-bg;
+            color: $color-role-admin-text;
+            border: 1px solid $color-role-admin-border;
+          }
+        }
+
+        &[data-role="Project Management"] {
+          ::ng-deep select {
+            background-color: $color-primary-light;
+            color: $color-primary;
+            border: 1px solid $color-primary-border;
+          }
+        }
+
+        &[data-role="Pre Sales"] {
+          ::ng-deep select {
+            background-color: $color-success-bg;
+            color: $color-success;
+            border: 1px solid $color-success-border;
+          }
+        }
+
+        &[data-role="Tech Lead"] {
+          ::ng-deep select {
+            background-color: $color-orange-50;
+            color: $color-accent-amber-hover;
+            border: 1px solid $color-orange-200;
+          }
+        }
+      }
+    }
+
+    /* Table Footer */
+    .table-footer {
+      @include flex-between;
+      align-items: center;
+      padding: 0.65rem $spacing-5;
+      background: $color-surface;
+      border-top: 1px solid $color-border-soft;
+
+      @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: center;
+        gap: $spacing-3;
+        padding: $spacing-4;
+
+        .showing-text {
+          text-align: center;
+          width: 100%;
+        }
+
+        .pagination-controls {
+          width: 100%;
+          display: flex;
+          justify-content: center;
+        }
+      }
+
+      .showing-text {
+        font-size: $font-size-sm;
+        color: $color-text-faint;
+        font-weight: $font-weight-medium;
+      }
+    }
+  }
+
+  /* Loading & Empty States */
+  .loading-container,
+  .empty-state-wrapper {
+    @include flex-column($spacing-4);
+    @include flex-center;
+    padding: $spacing-8 $spacing-6;
+    background: $color-surface;
+    border-radius: $radius-lg;
+    border: 1px solid $color-border-soft;
+    color: $color-text-faint;
+  }
+}

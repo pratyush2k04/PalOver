@@ -25,6 +25,8 @@ public class User : BaseAuditableEntity
 
     public DateTimeOffset? LockoutEnd { get; set; }
 
+    public DateTimeOffset? LastLoginAt { get; set; }
+
     [System.Text.Json.Serialization.JsonIgnore]
     public ICollection<EngagementAssignment> EngagementAssignments { get; set; } = new List<EngagementAssignment>();
 

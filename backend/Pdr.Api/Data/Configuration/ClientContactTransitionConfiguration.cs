@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pdr.Api.Models;
+using Pdr.Api.Models.Handover;
 
 namespace Pdr.Api.Data.Configuration;
 
@@ -34,8 +34,8 @@ public class ClientContactTransitionConfiguration : IEntityTypeConfiguration<Cli
 
         // Foreign Key Relationship
         builder.HasOne(c => c.Engagement)
-            .WithOne()
-            .HasForeignKey<ClientContactTransition>(c => c.EngagementId)
+            .WithMany()
+            .HasForeignKey(c => c.EngagementId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

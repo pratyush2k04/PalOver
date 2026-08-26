@@ -1,111 +1,99 @@
+@use '../../../../../../styles/tokens' as *;
+
 .client-contact-transition-card {
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  background: var(--color-background);
+  border: 0.0625rem solid $color-slate-200;
+  border-radius: 0.5rem;
+  background: $color-surface;
   overflow: hidden;
 
   .card-header {
-    background: var(--color-surface);
-    border-bottom: 1px solid var(--color-border);
-    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: $color-slate-50;
+    border-bottom: 0.0625rem solid $color-slate-200;
+    padding: 1rem;
 
     h3 {
       margin: 0;
-      font-size: 18px;
+      font-size: 1.125rem;
       font-weight: 600;
-      color: var(--color-text);
+      color: $color-slate-900;
     }
-  }
-
-  .alert-container {
-    margin: 16px;
-  }
-
-  .presales-actions {
-    border-top: 1px solid var(--color-border);
-    padding: 24px;
 
     .add-button {
-      width: 100%;
+      flex-shrink: 0;
     }
   }
 
   .card-content {
-    padding: 24px;
+    padding: 1.5rem;
 
     .loading-text {
-      color: var(--color-text-secondary);
-      font-size: 14px;
+      color: $color-slate-500;
+      font-size: 0.875rem;
       margin: 0;
     }
 
     .history-container {
-      margin-bottom: 24px;
-
       .history-list {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 0.75rem;
 
         .transition-item {
-          background: var(--color-surface);
-          border: 1px solid var(--color-border);
-          border-radius: 6px;
-          padding: 12px;
+          background: $color-slate-50;
+          border: 0.0625rem solid $color-slate-200;
+          border-radius: 0.375rem;
+          padding: 0.875rem 1rem;
 
           .transition-row {
-            margin: 0 0 8px 0;
-            font-size: 14px;
+            margin: 0 0 0.5rem 0;
+            font-size: 0.875rem;
             display: flex;
-            gap: 8px;
+            gap: 0.5rem;
 
             .label {
               font-weight: 600;
-              color: var(--color-text);
-              min-width: 100px;
+              color: $color-slate-700;
+              min-width: 6.25rem;
             }
 
             .contact-info {
-              color: var(--color-text);
+              color: $color-slate-600;
             }
 
             &:last-child {
               margin-bottom: 0;
             }
           }
-
-          .divider {
-            border: none;
-            border-top: 1px solid var(--color-border);
-            margin: 12px 0;
-          }
         }
       }
 
       .empty-state {
-        background: var(--color-surface);
-        border: 1px solid var(--color-border);
-        border-radius: 6px;
-        padding: 16px;
+        background: $color-slate-50;
+        border: 0.0625rem solid $color-slate-200;
+        border-radius: 0.375rem;
+        padding: 1rem;
 
         .present-contact {
           margin: 0;
-          font-size: 14px;
+          font-size: 0.875rem;
           display: flex;
-          gap: 8px;
+          gap: 0.5rem;
 
           .label {
             font-weight: 600;
-            color: var(--color-text);
-            min-width: 100px;
+            color: $color-slate-700;
+            min-width: 6.25rem;
           }
 
           .contact-info {
-            color: var(--color-text);
+            color: $color-slate-600;
           }
         }
       }
     }
-
   }
 }

@@ -24,6 +24,13 @@ public interface INotificationService
         NotificationPriority? priorityOverride = null,
         CancellationToken cancellationToken = default);
 
+    Task CreateFromTemplateAsync(
+        string templateKey,
+        IEnumerable<int> receiverUserIds,
+        string data,
+        DateTime scheduledFor,
+        CancellationToken cancellationToken = default);
+
     Task<PagedResult<NotificationDto>> GetForUserAsync(int userId, int? engagementId, int page, int pageSize);
     Task MarkAsReadAsync(int id, int userId);
     Task MarkAllAsReadAsync(int userId);

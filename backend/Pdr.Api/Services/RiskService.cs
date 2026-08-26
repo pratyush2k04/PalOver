@@ -1,10 +1,10 @@
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Pdr.Api.Constants;
-using Pdr.Api.Data;
 using Pdr.Api.DTOs.Risks;
 using Pdr.Api.Exceptions;
-using Pdr.Api.Models.AccessTracker;
-using Pdr.Api.Models.EnvironmentTooling;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.Risks;
 using Pdr.Api.Repositories.Interfaces;
@@ -14,13 +14,27 @@ namespace Pdr.Api.Services;
 
 public class RiskService(
     IRiskRepository riskRepository,
-    AppDbContext dbContext,
-    ICurrentUserService currentUserService) : IRiskService
+    ICurrentUserService currentUserService,
+    IEngagementAccessService engagementAccessService) : IRiskService
 {
     public async Task<List<RiskDto>> GetRisksByEngagementAsync(int engagementId, RiskStatus? status = null, int? ownerId = null)
     {
+        await engagementAccessService.ValidateAccessAsync(engagementId);
+        await SyncAutoCreatedRisksAsync(engagementId);
         var risks = await riskRepository.GetByEngagementIdAsync(engagementId, status, ownerId);
-        return risks.Select(MapToDto).ToList();
+        if (!risks.Any())
+        {
+            return new List<RiskDto>();
+        }
+
+        var riskIds = risks.Select(r => r.Id).ToList();
+        var histories = await riskRepository.GetEscalationHistoriesByRiskIdsAsync(riskIds);
+
+        var escalationMap = histories
+            .GroupBy(h => h.RiskId)
+            .ToDictionary(g => g.Key, g => g.First().EscalationLevel.ToString());
+
+        return risks.Select(r => MapToDto(r, escalationMap.GetValueOrDefault(r.Id, "None"))).ToList();
     }
 
     public async Task<RiskDto> CreateRiskAsync(int engagementId, CreateRiskDto dto)
@@ -129,48 +143,24 @@ public class RiskService(
 
     public async Task SyncAutoCreatedRisksAsync(int engagementId)
     {
-        // 1. Fetch active Blocked items from AccessTracker for this engagement
-        var blockedAccessItems = await dbContext.AccessItems
-            .Where(a => a.EngagementId == engagementId &&
-                        a.Status == AccessItemStatus.Blocked &&
-                        !a.IsDeleted)
-            .Select(a => new
-            {
-                SourceType = RiskConstants.SourceTypes.AccessTracker,
-                SourceItemId = a.Id,
-                Title = a.Name,
-                Reason = a.BlockReason ?? string.Empty,
-                OwnerId = a.OwnerId
-            })
-            .ToListAsync();
+        // 1. Fetch active blockers across domains from repository
+        var accessBlockers = await riskRepository.GetActiveAccessBlockersAsync(engagementId);
+        var toolingBlockers = await riskRepository.GetActiveToolingBlockersAsync(engagementId);
+        var checklistBlockers = await riskRepository.GetActiveChecklistBlockersAsync(engagementId);
+        var resourceGapBlocker = await riskRepository.GetActiveResourceGapBlockerAsync(
+            engagementId,
+            ResourceRequestConstants.BillingGapThresholdDays);
 
-        // 2. Fetch active NotApplicable items from EnvironmentTooling for this engagement
-        var notApplicableToolingItems = await dbContext.EnvironmentToolingItems
-            .Include(e => e.EnvironmentToolingDefinition)
-            .Where(e => e.EngagementId == engagementId &&
-                        e.Status == EnvironmentToolingStatus.NotApplicable &&
-                        !e.IsDeleted)
-            .Select(e => new
-            {
-                SourceType = RiskConstants.SourceTypes.EnvironmentTooling,
-                SourceItemId = e.Id,
-                Title = e.EnvironmentToolingDefinition != null ? e.EnvironmentToolingDefinition.Name : (e.CustomName ?? e.Name),
-                Reason = e.NotApplicableReason ?? string.Empty,
-                OwnerId = e.OwnerId
-            })
-            .ToListAsync();
+        var currentBlockers = accessBlockers
+            .Concat(toolingBlockers)
+            .Concat(checklistBlockers)
+            .Concat(resourceGapBlocker != null ? [resourceGapBlocker] : Enumerable.Empty<RiskBlockerSourceItem>())
+            .ToList();
 
-        // 3. Combine into a list of current active blockers
-        var currentBlockers = blockedAccessItems.Concat(notApplicableToolingItems).ToList();
+        // 2. Fetch all existing auto-created risks for this engagement
+        var existingAutoRisks = await riskRepository.GetAutoCreatedRisksAsync(engagementId);
 
-        // 4. Fetch all existing auto-created risks for this engagement
-        var existingAutoRisks = await dbContext.Risks
-            .Where(r => r.EngagementId == engagementId &&
-                        r.SourceType != null &&
-                        r.SourceItemId != null)
-            .ToListAsync();
-
-        // 5. Reconcile:
+        // 3. Reconcile:
         // A) Create or update active blockers in risks table
         foreach (var blocker in currentBlockers)
         {
@@ -195,7 +185,7 @@ public class RiskService(
                     SourceTitle = blocker.Title.Trim()
                 };
 
-                await dbContext.Risks.AddAsync(newRisk);
+                await riskRepository.AddAsync(newRisk);
             }
             else
             {
@@ -221,10 +211,10 @@ public class RiskService(
             }
         }
 
-        await dbContext.SaveChangesAsync();
+        await riskRepository.SaveChangesAsync();
     }
 
-    private static RiskDto MapToDto(Risk risk)
+    private static RiskDto MapToDto(Risk risk, string escalationLevel = "None")
     {
         var openForDays = (DateTime.UtcNow - risk.CreatedAt).Days;
 
@@ -243,7 +233,8 @@ public class RiskService(
             OpenForDays = openForDays,
             SourceType = risk.SourceType,
             SourceItemId = risk.SourceItemId,
-            SourceTitle = risk.SourceTitle
+            SourceTitle = risk.SourceTitle,
+            CurrentEscalationLevel = escalationLevel
         };
     }
 }

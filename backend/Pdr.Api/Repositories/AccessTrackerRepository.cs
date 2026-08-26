@@ -4,6 +4,7 @@ using Pdr.Api.Models;
 using Pdr.Api.Models.Engagements;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.AccessTracker;
+using Pdr.Api.DTOs.AccessTracker;
 using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Repositories;
@@ -58,4 +59,12 @@ public class AccessTrackerRepository(AppDbContext context) : IAccessTrackerRepos
             .Where(ea => ea.EngagementId == engagementId && ea.User.RoleId == (int)RoleEnum.TechLead)
             .Select(ea => (int?)ea.UserId)
             .FirstOrDefaultAsync();
+
+    // Access items that have left the pending state (Granted or Blocked), for the KPI access-delay report
+    public async Task<List<AccessItemDelayInfoDto>> GetResolvedAccessItemsByEngagementIdsAsync(List<int> engagementIds) =>
+        await context.AccessItems
+            .AsNoTracking()
+            .Where(a => engagementIds.Contains(a.EngagementId) && a.Status != AccessItemStatus.InProgress)
+            .Select(a => new AccessItemDelayInfoDto(a.Id, a.EngagementId, a.Status, a.CreatedAt, a.GrantedDate))
+            .ToListAsync();
 }

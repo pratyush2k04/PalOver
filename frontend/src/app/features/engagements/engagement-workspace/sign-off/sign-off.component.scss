@@ -1,0 +1,86 @@
+@use '../../../../../styles/mixins' as *;
+
+.sign-off-container {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+  font-family: $font-family-base;
+}
+
+.evidence-snapshot-card {
+  @include card-surface($padding: $spacing-5, $radius: $radius-lg);
+}
+
+.evidence-snapshot-header {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+
+  h3 {
+    margin: 0;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.evidence-snapshot-meta {
+  margin: $spacing-2 0 $spacing-4;
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.evidence-item-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: $font-size-sm;
+
+  th {
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    color: $color-text-faint;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: $spacing-3 $spacing-4;
+    border-bottom: 1px solid $color-border-soft;
+    background-color: $color-bg;
+  }
+
+  td {
+    padding: $spacing-3 $spacing-4;
+    border-bottom: 1px solid $color-border-soft;
+    color: $color-text;
+    vertical-align: middle;
+  }
+
+  td:last-child {
+    width: 1%;
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+.evidence-empty {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+}
+
+app-button {
+  margin-top: $spacing-4;
+}
+
+.export-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  margin-right: $spacing-2;
+}

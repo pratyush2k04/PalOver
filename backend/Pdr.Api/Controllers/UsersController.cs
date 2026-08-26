@@ -13,7 +13,7 @@ namespace Pdr.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
+[Authorize]
 [Produces("application/json")]
 public class UsersController(IUserManagementService userManagementService) : ControllerBase
 {
@@ -42,6 +42,7 @@ public class UsersController(IUserManagementService userManagementService) : Con
     /// <param name="request">The request payload containing the new role ID.</param>
     /// <returns>The updated user details.</returns>
     [HttpPatch("{id:int}/role")]
+    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [EndpointSummary("Change user role (Admin only)")]
     [ProducesResponseType(typeof(UserListItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

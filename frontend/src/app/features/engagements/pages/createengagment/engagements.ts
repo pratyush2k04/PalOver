@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
@@ -14,6 +14,7 @@ import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
+import { ToastService } from '@common/services/toast/toast';
 
 function billingNotBeforeKickoffValidator(group: AbstractControl): ValidationErrors | null {
   const kickoffDate = group.get('kickoffDate')?.value;
@@ -36,13 +37,15 @@ function billingNotBeforeKickoffValidator(group: AbstractControl): ValidationErr
 export class EngagementsComponent implements OnInit {
   private fb = inject(FormBuilder);
   private engagementService = inject(EngagementService);
+  private toastService = inject(ToastService);
 
   showModal = signal(false);
   isSubmitting = signal(false);
   errorMessage = signal<string | null>(null);
-  warnings = signal<string[]>([]);
   engagementTypes = signal<EngagementTypeOption[]>([]);
   commercialModels = signal<CommercialModelOption[]>([]);
+
+  engagementCreated = output<void>();
 
   engagementForm: FormGroup = this.fb.group(
     {
@@ -87,7 +90,6 @@ export class EngagementsComponent implements OnInit {
 
   openModal(): void {
     this.errorMessage.set(null);
-    this.warnings.set([]);
     this.engagementForm.reset({
       engagementTypeId: this.engagementTypes()[0]?.id ?? null,
       commercialModelId: this.commercialModels()[0]?.id ?? null
@@ -107,7 +109,6 @@ export class EngagementsComponent implements OnInit {
 
     this.isSubmitting.set(true);
     this.errorMessage.set(null);
-    this.warnings.set([]);
 
     const { engagementName, clientName, engagementDescription, engagementTypeId, commercialModelId, kickoffDate, billingStartDate } =
       this.engagementForm.value;
@@ -125,8 +126,11 @@ export class EngagementsComponent implements OnInit {
       .subscribe({
         next: (response) => {
           this.isSubmitting.set(false);
-          this.warnings.set(response.warnings);
+          if (response.warnings && response.warnings.length > 0) {
+            response.warnings.forEach(warning => this.toastService.error(warning));
+          }
           this.showModal.set(false);
+          this.engagementCreated.emit();
         },
         error: (err) => {
           this.isSubmitting.set(false);

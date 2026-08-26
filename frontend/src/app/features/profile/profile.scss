@@ -1,0 +1,79 @@
+@use '../../../styles/mixins' as *;
+
+:host {
+  display: block;
+  font-family: $font-family-base;
+  color: $color-text;
+}
+
+.profile-page {
+  padding: $spacing-8;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: $font-family-base;
+  color: $color-text;
+
+  @media (max-width: 768px) {
+    padding: $spacing-4;
+  }
+
+  app-page-header {
+    display: block;
+    margin-bottom: $spacing-6;
+  }
+}
+
+.profile-cards {
+  display: flex;
+  gap: $spacing-6;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.profile-card {
+  flex: 1 1 360px;
+  min-width: 280px;
+  width: 100%;
+  @include card-surface($padding: $spacing-6, $radius: $radius-xl);
+  box-shadow: $shadow-sm;
+
+  @media (max-width: 768px) {
+    padding: $spacing-4;
+  }
+}
+
+.card-title {
+  margin: 0 0 $spacing-5;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: $color-text;
+}
+
+.field-note {
+  margin: -$spacing-1 0 $spacing-3;
+  font-size: $font-size-xs;
+  color: $color-text-faint;
+}
+
+.strength-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-2;
+  margin-bottom: $spacing-5;
+}
+
+.chip {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  padding: $spacing-1 $spacing-2;
+  border-radius: $radius-full;
+  background: $color-surface-hover;
+  color: $color-text-faint;
+  border: 1px solid $color-border-soft;
+
+  &.met {
+    background: $color-success-bg;
+    color: $color-success;
+    border-color: $color-success-border;
+  }
+}

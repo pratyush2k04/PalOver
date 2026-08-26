@@ -1,13 +1,17 @@
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Pdr.Api.Constants;
-using Pdr.Api.Data;
 using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Exceptions;
-using Pdr.Api.Models;
+using Pdr.Api.Helpers;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.Engagements;
-using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.EngagementAssignment;
-using Pdr.Api.Models.Risks;
+using Pdr.Api.Models.Handover;
+using Pdr.Api.Models.LoginEntity;
+using Pdr.Api.Models.People;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 using Pdr.Api.Services.Notifications.Mappers;
@@ -15,12 +19,17 @@ using Pdr.Api.Services.Notifications.Mappers;
 namespace Pdr.Api.Services;
 
 public class EngagementService(
-    AppDbContext db,
     IEngagementRepository engagementRepository,
+    IUserRepository userRepository,
     ICurrentUserService currentUserService,
     IEngagementChecklistService engagementChecklistService,
     INotificationService notificationService,
     IKickoffReadinessService kickoffReadinessService,
+    IPersonRepository personRepository,
+    IAuditLogService auditLogService,
+    ITechnicalSummaryService technicalSummaryService,
+    IEngagementAccessService engagementAccessService,
+    IHandoverRepository handoverRepository,
     IKickoffReminderService kickoffReminderService) : IEngagementService
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
@@ -36,10 +45,10 @@ public class EngagementService(
         if (request.BillingStartDate < request.KickoffDate)
             throw new BillingBeforeKickoffException();
 
-        if (!await db.EngagementTypes.AnyAsync(t => t.Id == request.EngagementTypeId))
+        if (!await engagementRepository.EngagementTypeExistsAsync(request.EngagementTypeId))
             throw new InvalidEngagementTypeException(request.EngagementTypeId);
 
-        if (!await db.CommercialModels.AnyAsync(m => m.Id == request.CommercialModelId))
+        if (!await engagementRepository.CommercialModelExistsAsync(request.CommercialModelId))
             throw new InvalidCommercialModelException(request.CommercialModelId);
 
         var warnings = new List<string>();
@@ -48,10 +57,10 @@ public class EngagementService(
         if (request.KickoffDate < DateOnly.FromDateTime(DateTime.UtcNow))
             warnings.Add(EngagementValidationConstants.Warnings.KickoffDateInPast);
 
-        var existing = await db.Engagements.FirstOrDefaultAsync(e =>
-            e.EngagementName == request.EngagementName &&
-            e.ClientName == clientName &&
-            e.EngagementTypeId == request.EngagementTypeId);
+        var existing = await engagementRepository.GetMatchingEngagementAsync(
+            request.EngagementName,
+            clientName,
+            request.EngagementTypeId);
 
         Engagement engagement;
         if (existing is not null)
@@ -61,10 +70,11 @@ public class EngagementService(
             existing.BillingStartDate = request.BillingStartDate;
             warnings.Add(EngagementValidationConstants.Warnings.EngagementAlreadyExistsUpdated);
             engagement = existing;
+            await engagementRepository.SaveChangesAsync();
         }
         else
         {
-            var defaultStatus = await db.EngagementStatuses.FirstAsync(s => s.StatusName == DefaultEngagementStatus);
+            var defaultStatusId = await engagementRepository.GetStatusIdByNameAsync(DefaultEngagementStatus);
 
             engagement = new Engagement
             {
@@ -75,40 +85,48 @@ public class EngagementService(
                 CommercialModelId = request.CommercialModelId,
                 KickoffDate = request.KickoffDate,
                 BillingStartDate = request.BillingStartDate,
-                StatusId = defaultStatus.StatusId,
+                StatusId = defaultStatusId,
             };
-            db.Engagements.Add(engagement);
+            await engagementRepository.AddEngagementAsync(engagement);
         }
-
-        await db.SaveChangesAsync();
 
         try
         {
             var currentUserId = currentUserService.GetUserId();
             if (currentUserId > 0)
             {
-                var hasAssignment = await db.EngagementAssignments
-                    .AnyAsync(ea => ea.EngagementId == engagement.EngagementId && ea.UserId == currentUserId);
+                var hasAssignment = await engagementRepository.IsUserAssignedAsync(engagement.EngagementId, currentUserId);
                 if (!hasAssignment)
                 {
-                    db.EngagementAssignments.Add(new EngagementAssignment
+                    await engagementRepository.AddAssignmentAsync(engagement.EngagementId, currentUserId);
+
+                    var creator = await userRepository.GetByIdAsync(currentUserId);
+                    if (creator is not null && creator.RoleId == (int)RoleEnum.PreSales)
                     {
-                        EngagementId = engagement.EngagementId,
-                        UserId = currentUserId
-                    });
-                    await db.SaveChangesAsync();
+                        await personRepository.AddAsync(new Person
+                        {
+                            EngagementId = engagement.EngagementId,
+                            Name = creator.FullName,
+                            Role = RoleEnum.PreSales.ToRoleName(),
+                            PersonType = PersonType.Internal,
+                            UserId = creator.Id,
+                            SourceRoleId = (int)RoleEnum.PreSales,
+                            CreatedAt = DateTime.UtcNow,
+                            UpdatedAt = DateTime.UtcNow
+                        });
+                        await personRepository.SaveChangesAsync();
+                    }
                 }
             }
         }
         catch (InvalidOperationException)
         {
-            // Fallback for unauthenticated test calls
+            // Allowed for unauthenticated/system-driven SOW signing
         }
 
         // Runs after the PreSales assignment bookkeeping above, so a brand-new engagement's
         // signing PreSales user is already visible when ScheduleRemindersAsync checks role assignments.
         await kickoffReminderService.ScheduleRemindersAsync(engagement.EngagementId, engagement.KickoffDate);
-
 
         // Apply master checklist snapshot and technical readiness items for new engagements
         if (existing is null)
@@ -121,51 +139,23 @@ public class EngagementService(
     }
 
     public async Task<IEnumerable<EngagementTypeDto>> GetEngagementTypesAsync() =>
-        await db.EngagementTypes
-            .Select(t => new EngagementTypeDto(t.Id, t.Name))
-            .ToListAsync();
+        await engagementRepository.GetEngagementTypesAsync();
 
     public async Task<IEnumerable<CommercialModelDto>> GetCommercialModelsAsync() =>
-        await db.CommercialModels
-            .Select(m => new CommercialModelDto(m.Id, m.Name))
-            .ToListAsync();
+        await engagementRepository.GetCommercialModelsAsync();
 
-    public async Task<EngagementInfoDto?> GetEngagementInfoAsync(int id) =>
-        await db.Engagements
-            .Where(e => e.EngagementId == id)
-            .Select(e => new EngagementInfoDto(
-                e.EngagementId,
-                e.EngagementName,
-                e.ClientName,
-                e.EngagementDescription,
-                e.EngagementType.Name,
-                e.CommercialModel.Name,
-                e.KickoffDate,
-                e.BillingStartDate,
-                e.Status.StatusName,
-                e.IsKickoffReady))
-            .FirstOrDefaultAsync();
+    public async Task<EngagementInfoDto?> GetEngagementInfoAsync(int id)
+    {
+        await engagementAccessService.ValidateAccessAsync(id);
+        return await engagementRepository.GetEngagementInfoAsync(id);
+    }
 
     public async Task<IEnumerable<EngagementInfoDto>> GetAllEngagementsAsync() =>
-        await db.Engagements
-            .OrderBy(e => e.EngagementName)
-            .Select(e => new EngagementInfoDto(
-                e.EngagementId,
-                e.EngagementName,
-                e.ClientName,
-                e.EngagementDescription,
-                e.EngagementType.Name,
-                e.CommercialModel.Name,
-                e.KickoffDate,
-                e.BillingStartDate,
-                e.Status.StatusName,
-                e.IsKickoffReady))
-            .ToListAsync();
-    
+        await engagementRepository.GetAllEngagementInfosAsync();
 
     public async Task<bool> EditEngagementAsync(int id, EditEngagementRequest request)
     {
-        var engagement = await db.Engagements.FindAsync(id);
+        var engagement = await engagementRepository.GetByIdAsync(id);
         if (engagement is null) return false;
 
         if (request.EngagementName is not null) engagement.EngagementName = request.EngagementName;
@@ -173,14 +163,14 @@ public class EngagementService(
         if (request.EngagementDescription is not null) engagement.EngagementDescription = request.EngagementDescription;
         if (request.EngagementTypeId is not null)
         {
-            if (!await db.EngagementTypes.AnyAsync(t => t.Id == request.EngagementTypeId.Value))
+            if (!await engagementRepository.EngagementTypeExistsAsync(request.EngagementTypeId.Value))
                 throw new InvalidEngagementTypeException(request.EngagementTypeId.Value);
 
             engagement.EngagementTypeId = request.EngagementTypeId.Value;
         }
         if (request.CommercialModelId is not null)
         {
-            if (!await db.CommercialModels.AnyAsync(m => m.Id == request.CommercialModelId.Value))
+            if (!await engagementRepository.CommercialModelExistsAsync(request.CommercialModelId.Value))
                 throw new InvalidCommercialModelException(request.CommercialModelId.Value);
 
             engagement.CommercialModelId = request.CommercialModelId.Value;
@@ -188,10 +178,10 @@ public class EngagementService(
         if (request.KickoffDate is not null) engagement.KickoffDate = request.KickoffDate.Value;
         if (request.BillingStartDate is not null) engagement.BillingStartDate = request.BillingStartDate;
 
-        var activeStatus = await db.EngagementStatuses.FirstAsync(s => s.StatusName == EngagementStatusEnum.Active.ToString());
-        engagement.StatusId = activeStatus.StatusId;
+        var activeStatusId = await engagementRepository.GetStatusIdByNameAsync(EngagementStatusEnum.Active.ToString());
+        engagement.StatusId = activeStatusId;
 
-        await db.SaveChangesAsync();
+        await engagementRepository.SaveChangesAsync();
 
         if (request.KickoffDate is not null)
             await kickoffReminderService.ScheduleRemindersAsync(id, request.KickoffDate.Value);
@@ -199,14 +189,14 @@ public class EngagementService(
         return true;
     }
 
-    public async Task<PmEngagementListResponse> GetMyEngagementsAsync(string sortBy)
+    public async Task<EngagementListResponse> GetMyEngagementsAsync(string sortBy)
     {
         var userId = currentUserService.GetUserId();
         var engagements = await engagementRepository.GetEngagementsForUserAsync(userId, sortBy);
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
         var items = engagements
-            .Select(e => new PmEngagementListItemDto(
+            .Select(e => new EngagementListItemDto(
                 e.EngagementId,
                 e.EngagementName,
                 e.ClientName,
@@ -214,22 +204,37 @@ public class EngagementService(
                 e.CommercialModel.Name,
                 e.KickoffDate,
                 e.KickoffDate.DayNumber - today.DayNumber,
-                ReadinessScore: null))
+                ReadinessScore: null,
+                IsSignedOff: e.DayOneSignOffRecord != null))
             .ToList();
 
-        return new PmEngagementListResponse(items);
+        return new EngagementListResponse(items);
     }
-    //assign
 
     public async Task<EngagementOwnersDto> GetEngagementOwnersAsync(int engagementId)
     {
-        if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
+        if (!await engagementRepository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
         var assignments = await engagementRepository.GetAssignmentsAsync(engagementId);
         return BuildOwnersDto(assignments);
     }
-    
+
+    public async Task<IEnumerable<Pdr.Api.DTOs.Users.UserListItemDto>> GetEngagementUsersAsync(int engagementId)
+    {
+        if (!await engagementRepository.EngagementExistsAsync(engagementId))
+            throw new EngagementNotFoundException(engagementId);
+
+        var assignments = await engagementRepository.GetAssignmentsAsync(engagementId);
+        return assignments.Select(a => new Pdr.Api.DTOs.Users.UserListItemDto
+        {
+            Id = a.User.Id,
+            FullName = a.User.FullName,
+            Email = a.User.Email,
+            RoleId = a.User.RoleId,
+            RoleName = a.User.Role.Name
+        }).ToList();
+    }
 
     public async Task<EngagementOwnersDto> AssignProjectManagerAsync(int engagementId, int userId) =>
         await AssignOwnerAsync(engagementId, userId, RoleEnum.ProjectManagement);
@@ -239,16 +244,17 @@ public class EngagementService(
 
     private async Task<EngagementOwnersDto> AssignOwnerAsync(int engagementId, int userId, RoleEnum requiredRole)
     {
-        if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
+        if (!await engagementRepository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
-        var user = await db.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == userId)
+        var user = await userRepository.GetByIdAsync(userId)
             ?? throw new UserNotFoundException(userId);
 
         if (user.RoleId != (int)requiredRole)
             throw new InvalidOwnerRoleException(userId, requiredRole.ToRoleName());
 
         var existingAssignment = await engagementRepository.GetAssignmentByRoleIdAsync(engagementId, (int)requiredRole);
+        var isReassignment = existingAssignment is not null;
         if (existingAssignment is not null)
         {
             if (existingAssignment.UserId == userId) return await GetEngagementOwnersAsync(engagementId);
@@ -256,38 +262,49 @@ public class EngagementService(
         }
 
         await engagementRepository.AddAssignmentAsync(engagementId, userId);
+        await SyncOwnerPersonAsync(engagementId, user, requiredRole);
+
+        var actorUserId = currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            isReassignment ? AuditActionEnum.PmAndTlReassigned : AuditActionEnum.PmAndTlAssigned,
+            new Dictionary<string, object?>
+            {
+                ["EngagementId"] = engagementId,
+                ["ActorUserId"] = actorUserId
+            },
+            engagementId: engagementId,
+            actingUserId: actorUserId > 0 ? actorUserId : null);
 
         if (requiredRole == RoleEnum.ProjectManagement)
         {
             await notificationService.CreateFromTemplateAsync(
-                "PMAllocated",
+                NotificationConstants.TemplateKeys.PMAllocated,
                 engagementId,
                 RoleEnum.PreSales,
                 System.Text.Json.JsonSerializer.Serialize(new PMAllocatedMapper.PMAllocatedData(AssignedUserId: userId, EngagementId: engagementId)),
                 DateTime.UtcNow);
 
-            var engagementForReminder = await db.Engagements.FindAsync(engagementId);
+            await notificationService.CreateFromTemplateAsync(
+                NotificationConstants.TemplateKeys.PMAssigned,
+                userId,
+                System.Text.Json.JsonSerializer.Serialize(new PMAssignedMapper.PMAssignedPayload(EngagementId: engagementId)),
+                DateTime.UtcNow);
+
+            var engagementForReminder = await engagementRepository.GetByIdAsync(engagementId);
             if (engagementForReminder is not null)
                 await kickoffReminderService.ScheduleRemindersAsync(engagementId, engagementForReminder.KickoffDate);
         }
-
-        if (requiredRole == RoleEnum.TechLead)
+        else if (requiredRole == RoleEnum.TechLead)
         {
-            var accessItems = await db.AccessItems.Where(a => a.EngagementId == engagementId).ToListAsync();
-            foreach (var item in accessItems)
-            {
-                item.OwnerId = userId;
-            }
+            await notificationService.CreateFromTemplateAsync(
+                NotificationConstants.TemplateKeys.TechLeadAssigned,
+                userId,
+                System.Text.Json.JsonSerializer.Serialize(new TechLeadAssignedMapper.TechLeadAssignedPayload(EngagementId: engagementId)),
+                DateTime.UtcNow);
 
-            var toolingItems = await db.EnvironmentToolingItems.Where(t => t.EngagementId == engagementId).ToListAsync();
-            foreach (var item in toolingItems)
-            {
-                item.OwnerId = userId;
-            }
+            await engagementRepository.AssignTechLeadOwnerItemsAsync(engagementId, userId);
 
-            await db.SaveChangesAsync();
-
-            var engagementForReminder = await db.Engagements.FindAsync(engagementId);
+            var engagementForReminder = await engagementRepository.GetByIdAsync(engagementId);
             if (engagementForReminder is not null)
                 await kickoffReminderService.ScheduleRemindersAsync(engagementId, engagementForReminder.KickoffDate);
         }
@@ -295,11 +312,32 @@ public class EngagementService(
         return await GetEngagementOwnersAsync(engagementId);
     }
 
+    private async Task SyncOwnerPersonAsync(int engagementId, User user, RoleEnum role)
+    {
+        var previousPerson = await personRepository.GetBySourceRoleAsync(engagementId, (int)role);
+        if (previousPerson is not null)
+        {
+            personRepository.Delete(previousPerson);
+        }
+
+        await personRepository.AddAsync(new Person
+        {
+            EngagementId = engagementId,
+            Name = user.FullName,
+            Role = role.ToRoleName(),
+            PersonType = PersonType.Internal,
+            UserId = user.Id,
+            SourceRoleId = (int)role,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+
+        await personRepository.SaveChangesAsync();
+    }
+
     private async Task InitializeTechnicalReadinessItemsAsync(int engagementId)
     {
-        var techLeadAssignment = await db.EngagementAssignments
-            .Include(ea => ea.User)
-            .FirstOrDefaultAsync(ea => ea.EngagementId == engagementId && ea.User.RoleId == (int)RoleEnum.TechLead);
+        var techLeadAssignment = await engagementRepository.GetAssignmentByRoleIdAsync(engagementId, (int)RoleEnum.TechLead);
 
         int ownerId = techLeadAssignment?.UserId ?? 0;
         if (ownerId == 0)
@@ -315,48 +353,7 @@ public class EngagementService(
         }
         if (ownerId == 0) ownerId = 1;
 
-        var activeAccessDefs = await db.AccessItemDefinitions
-            .Where(d => d.IsActive)
-            .OrderBy(d => d.DisplayOrder)
-            .ToListAsync();
-
-        foreach (var def in activeAccessDefs)
-        {
-            db.AccessItems.Add(new Pdr.Api.Models.AccessTracker.AccessItem
-            {
-                EngagementId = engagementId,
-                AccessItemDefinitionId = def.Id,
-                Name = def.Name,
-                IsClientSide = def.IsClientSide,
-                OwnerId = ownerId,
-                Status = Pdr.Api.Models.AccessTracker.AccessItemStatus.InProgress
-            });
-        }
-
-        var activeToolingDefs = await db.EnvironmentToolingDefinitions
-            .Where(d => d.IsActive)
-            .OrderBy(d => d.DisplayOrder)
-            .ToListAsync();
-
-        foreach (var def in activeToolingDefs)
-        {
-            db.EnvironmentToolingItems.Add(new Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingItem
-            {
-                EngagementId = engagementId,
-                EnvironmentToolingDefinitionId = def.Id,
-                Name = def.Name,
-                OwnerId = ownerId,
-                Status = Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingStatus.NotReady
-            });
-        }
-
-        db.ArchitectureValidations.Add(new Pdr.Api.Models.ArchitectureValidation.ArchitectureValidation
-        {
-            EngagementId = engagementId,
-            Status = Pdr.Api.Models.ArchitectureValidation.ArchitectureStatus.StillValid
-        });
-
-        await db.SaveChangesAsync();
+        await engagementRepository.InitializeTechnicalReadinessItemsAsync(engagementId, ownerId);
     }
 
     private static EngagementOwnersDto BuildOwnersDto(List<EngagementAssignment> assignments)
@@ -376,9 +373,28 @@ public class EngagementService(
             leadership);
     }
 
+    public async Task<HandoverDraftStatusDto> GetHandoverDraftStatusAsync(int engagementId)
+    {
+        if (!await engagementRepository.EngagementExistsAsync(engagementId))
+            throw new EngagementNotFoundException(engagementId);
+
+        var handover = await handoverRepository.GetByEngagementIdAsync(engagementId);
+        if (handover == null)
+            return new HandoverDraftStatusDto(false, null, null, null, null);
+
+        var status = await handoverRepository.GetStatusByIdAsync(handover.StatusId);
+
+        return new HandoverDraftStatusDto(
+            true,
+            status?.StatusName ?? HandoverStatusNames.Draft,
+            handover.ClientBackground,
+            handover.BusinessProblem,
+            handover.ClientSentiment);
+    }
+
     public async Task<List<LeadershipUserDto>> GetLeadershipUsersAsync(int engagementId)
     {
-        if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
+        if (!await engagementRepository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
         var leadershipAssignments = await engagementRepository.GetLeadershipAssignmentsAsync(engagementId);
@@ -389,10 +405,14 @@ public class EngagementService(
 
     public async Task<List<LeadershipUserDto>> AssignLeadershipUserAsync(int engagementId, int userId)
     {
-        if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
+        if (!await engagementRepository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
-        var user = await db.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == userId)
+        var handover = await handoverRepository.GetByEngagementIdAsync(engagementId);
+        if (handover == null)
+            throw new HandoverIncompleteException(HandoverValidationConstants.NotFoundForLeadershipAllocation);
+
+        var user = await userRepository.GetByIdAsync(userId)
             ?? throw new UserNotFoundException(userId);
 
         if (user.RoleId != (int)RoleEnum.Leadership)
@@ -403,12 +423,42 @@ public class EngagementService(
             throw new LeadershipUserAlreadyAssignedException();
 
         await engagementRepository.AddAssignmentAsync(engagementId, userId);
+
+        await personRepository.AddAsync(new Person
+        {
+            EngagementId = engagementId,
+            Name = user.FullName,
+            Role = RoleEnum.Leadership.ToRoleName(),
+            PersonType = PersonType.Internal,
+            UserId = user.Id,
+            SourceRoleId = (int)RoleEnum.Leadership,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+        await personRepository.SaveChangesAsync();
+        await notificationService.CreateFromTemplateAsync(
+            NotificationConstants.TemplateKeys.LeadershipAssigned,
+            userId,
+            System.Text.Json.JsonSerializer.Serialize(new LeadershipAssignedMapper.LeadershipAssignedPayload(EngagementId: engagementId)),
+            DateTime.UtcNow);
+
+        var actorUserId = currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            AuditActionEnum.LeadershipAllocated,
+            new Dictionary<string, object?>
+            {
+                ["EngagementId"] = engagementId,
+                ["ActorUserId"] = actorUserId
+            },
+            engagementId: engagementId,
+            actingUserId: actorUserId > 0 ? actorUserId : null);
+
         return await GetLeadershipUsersAsync(engagementId);
     }
 
     public async Task<List<LeadershipUserDto>> AssignLeadershipUsersAsync(int engagementId, List<int> userIds)
     {
-        if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
+        if (!await engagementRepository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
         foreach (var userId in userIds.Distinct())
@@ -421,7 +471,7 @@ public class EngagementService(
 
     public async Task<List<LeadershipUserDto>> RemoveLeadershipUserAsync(int engagementId, int userId)
     {
-        if (!await db.Engagements.AnyAsync(e => e.EngagementId == engagementId))
+        if (!await engagementRepository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
         var leadershipAssignments = await engagementRepository.GetLeadershipAssignmentsAsync(engagementId);
@@ -433,6 +483,14 @@ public class EngagementService(
             throw new LastLeadershipUserRequiredException();
 
         await engagementRepository.RemoveAssignmentAsync(assignmentToRemove);
+
+        var person = await personRepository.GetByUserAndSourceRoleAsync(engagementId, userId, (int)RoleEnum.Leadership);
+        if (person is not null)
+        {
+            personRepository.Delete(person);
+            await personRepository.SaveChangesAsync();
+        }
+
         return await GetLeadershipUsersAsync(engagementId);
     }
 
@@ -440,68 +498,38 @@ public class EngagementService(
     {
         var currentUserId = currentUserService.GetUserId();
 
-        var activeEngagements = await db.Engagements
-            .AsNoTracking()
-            .Include(e => e.EngagementAssignments)
-                .ThenInclude(ea => ea.User)
-            .Where(e => e.EngagementAssignments.Any(ea => ea.UserId == currentUserId))
-            .OrderBy(e => e.KickoffDate)
-            .ToListAsync();
+        var engagements = await engagementRepository.GetEngagementsForUserAsync(currentUserId, "kickoff");
+        var activeEngagements = engagements.OrderBy(e => e.KickoffDate).ToList();
 
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         var items = new List<LeadershipEngagementListItemDto>();
 
         foreach (var engagement in activeEngagements)
         {
-            var pmUser = engagement.EngagementAssignments
-                .FirstOrDefault(ea => ea.User.RoleId == (int)RoleEnum.ProjectManagement)?.User;
+            var assignments = await engagementRepository.GetAssignmentsAsync(engagement.EngagementId);
+            var pmUser = assignments.FirstOrDefault(a => a.User.RoleId == (int)RoleEnum.ProjectManagement)?.User;
 
             var readiness = await kickoffReadinessService.GetReadinessAsync(engagement.EngagementId);
             var readinessScore = readiness.Score;
 
-            var openBlockerCount = await db.Risks
-                .AsNoTracking()
-                .CountAsync(r => r.EngagementId == engagement.EngagementId &&
-                                 (r.Status == RiskStatus.Open || r.Status == RiskStatus.Mitigating) &&
-                                 !r.IsDeleted);
+            var summary = await engagementRepository.GetOpenItemsSummaryAsync(engagement.EngagementId);
+            var openBlockerCount = summary.OpenRisksCount;
 
             var daysToKickoff = engagement.KickoffDate.DayNumber - today.DayNumber;
+            var requiredThreshold = LeadershipDashboardHelpers.GetRequiredThreshold(daysToKickoff);
+            var status = LeadershipDashboardHelpers.DeriveStatus(readinessScore, openBlockerCount, requiredThreshold);
 
-            int requiredThreshold;
-            if (daysToKickoff > 14)
-            {
-                requiredThreshold = LeadershipDashboardConstants.Thresholds.TierGreaterThan14;
-            }
-            else if (daysToKickoff >= 8)
-            {
-                requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier8To14;
-            }
-            else if (daysToKickoff >= 4)
-            {
-                requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier4To7;
-            }
-            else if (daysToKickoff >= 1)
-            {
-                requiredThreshold = LeadershipDashboardConstants.Thresholds.Tier1To3;
-            }
-            else
-            {
-                requiredThreshold = LeadershipDashboardConstants.Thresholds.TierDay0OrPast;
-            }
+            int? daysToBilling = engagement.BillingStartDate.HasValue
+                ? engagement.BillingStartDate.Value.DayNumber - today.DayNumber
+                : null;
 
-            string status;
-            if (readinessScore == 100 && openBlockerCount == 0)
-            {
-                status = LeadershipDashboardConstants.Statuses.KickoffReady;
-            }
-            else if (openBlockerCount > 0 || readinessScore < requiredThreshold)
-            {
-                status = LeadershipDashboardConstants.Statuses.AtRisk;
-            }
-            else
-            {
-                status = LeadershipDashboardConstants.Statuses.InProgress;
-            }
+            int unconfirmedResourceCount = summary.ResourcingOpenCount;
+
+            bool hasResourcingGap = LeadershipDashboardHelpers.EvaluateResourcingGap(daysToBilling, unconfirmedResourceCount);
+
+            var fullEngagementInfo = await engagementRepository.GetEngagementInfoAsync(engagement.EngagementId);
+            var isDayOneSignedOff = fullEngagementInfo?.DayOneSignOff != null;
+            var dayOneSignOffIsException = fullEngagementInfo?.DayOneSignOff?.IsException ?? false;
 
             items.Add(new LeadershipEngagementListItemDto(
                 engagement.EngagementId,
@@ -511,11 +539,71 @@ public class EngagementService(
                 readinessScore,
                 openBlockerCount,
                 daysToKickoff,
-                status));
+                status,
+                hasResourcingGap,
+                unconfirmedResourceCount,
+                daysToBilling,
+                isDayOneSignedOff,
+                dayOneSignOffIsException));
         }
 
-        // Default sorted by soonest kickoff days (daysToKickoff ascending)
         return items.OrderBy(i => i.DaysToKickoff).ToList();
     }
-}
 
+    public async Task<EngagementOpenItemsSummaryDto?> GetOpenItemsSummaryAsync(int engagementId)
+    {
+        var exists = await engagementRepository.EngagementExistsAsync(engagementId);
+        if (!exists) return null;
+
+        await engagementAccessService.ValidateAccessAsync(engagementId);
+
+        return await engagementRepository.GetOpenItemsSummaryAsync(engagementId);
+    }
+
+    public async Task<DayOneSignOffDto> SignOffDayOneAsync(int engagementId, DayOneSignOffRequest request)
+    {
+        var engagement = await engagementRepository.GetByIdAsync(engagementId)
+            ?? throw new EngagementNotFoundException(engagementId);
+
+        if (!engagement.IsKickoffReady)
+            throw new EngagementNotKickoffReadyException();
+
+        if (request.BillingStartDate < engagement.KickoffDate)
+            throw new BillingBeforeKickoffException();
+
+        var technicalSummary = await technicalSummaryService.GetDayOneSummaryAsync(engagementId);
+        if (!technicalSummary.IsAbleToStartDayOne)
+        {
+            if (!request.IsException)
+                throw new DayOneTechnicalBlockersRemainingException();
+
+            var isLeadership = currentUserService.IsInRole(RoleEnum.Leadership);
+            if (!isLeadership)
+                throw new DayOneLeadershipExceptionForbiddenException();
+
+            if (string.IsNullOrWhiteSpace(request.ExceptionJustification) || request.ExceptionJustification.Trim().Length < 20)
+                throw new DayOneExceptionJustificationTooShortException();
+        }
+
+        var currentUserId = currentUserService.GetUserId();
+        var currentUser = await userRepository.GetByIdAsync(currentUserId)
+            ?? throw new UserNotFoundException(currentUserId);
+
+        engagement.BillingStartDate = request.BillingStartDate;
+        await engagementRepository.SaveChangesAsync();
+
+        return new DayOneSignOffDto(
+            currentUserId,
+            currentUser.FullName,
+            request.BillingStartDate,
+            DateTime.UtcNow,
+            request.IsException,
+            request.IsException ? request.ExceptionJustification?.Trim() : null);
+    }
+
+    public async Task<EvidenceSnapshotDto> GetEvidenceSnapshotAsync(int engagementId)
+    {
+        await engagementAccessService.ValidateAccessAsync(engagementId);
+        return await engagementRepository.GetEvidenceSnapshotAsync(engagementId);
+    }
+}

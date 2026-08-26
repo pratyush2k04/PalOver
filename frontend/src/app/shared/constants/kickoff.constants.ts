@@ -13,11 +13,19 @@ export const KICKOFF_MESSAGES = {
   DELETE_ACTION_CONFIRM: (title: string) => `Are you sure you want to delete "${title}"?`,
 } as const;
 
+export const KICKOFF_READINESS_TIERS = [
+  { tierKey: 'GreaterThan14', daysLabel: 'More than 14 days out', threshold: 0 },
+  { tierKey: '8To14', daysLabel: '8–14 days out', threshold: 40 },
+  { tierKey: '4To7', daysLabel: '4–7 days out', threshold: 60 },
+  { tierKey: '1To3', daysLabel: '1–3 days out', threshold: 85 },
+  { tierKey: 'Day0OrPast', daysLabel: 'Kickoff day or past due', threshold: 95 },
+] as const;
+
 export const KICKOFF_API_ENDPOINTS = {
-  RECORD: (id: number) => `/api/engagements/${id}/kickoff`,
-  ACTIONS_OPEN: (id: number) => `/api/engagements/${id}/kickoff/actions/open`,
-  ACTIONS_CREATE: (id: number) => `/api/engagements/${id}/kickoff/actions`,
-  ACTIONS_UPDATE_STATUS: (id: number, actionId: number) => `/api/engagements/${id}/kickoff/actions/${actionId}/status`,
-  ACTIONS_UPDATE: (id: number, actionId: number) => `/api/engagements/${id}/kickoff/actions/${actionId}`,
-  ACTIONS_DELETE: (id: number, actionId: number) => `/api/engagements/${id}/kickoff/actions/${actionId}`,
+  RECORD: (id: number) => `/api/engagements/${id}/workspace/kickoff`,
+  ACTIONS_OPEN: (id: number) => `/api/engagements/${id}/workspace/kickoff/actions/open`,
+  ACTIONS_CREATE: (id: number) => `/api/engagements/${id}/workspace/kickoff/actions`,
+  ACTIONS_UPDATE_STATUS: (id: number, actionId: number) => `/api/engagements/${id}/workspace/kickoff/actions/${actionId}/status`,
+  ACTIONS_UPDATE: (id: number, actionId: number) => `/api/engagements/${id}/workspace/kickoff/actions/${actionId}`,
+  ACTIONS_DELETE: (id: number, actionId: number) => `/api/engagements/${id}/workspace/kickoff/actions/${actionId}`,
 } as const;

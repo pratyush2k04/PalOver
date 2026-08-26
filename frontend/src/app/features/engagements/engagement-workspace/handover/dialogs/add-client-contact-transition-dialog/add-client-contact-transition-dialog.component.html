@@ -1,7 +1,6 @@
 <div class="dialog-container">
   <div class="dialog-header">
     <h3>{{ formLabels.ADD_TRANSITION_TITLE }}</h3>
-    <app-button type="button" variant="icon" ariaLabel="Close" (click)="onCancel()">&times;</app-button>
   </div>
 
   <form [formGroup]="form" (ngSubmit)="reviewAndConfirm()">
@@ -10,19 +9,13 @@
       @if (!showConfirm()) {
         <div class="form-section">
           <h4>{{ formLabels.OUTGOING_SECTION }}</h4>
-          <app-input
-            id="outgoing-name"
-            [label]="formLabels.OUTGOING_NAME"
-            [placeholder]="formPlaceholders.OUTGOING_NAME"
-            formControlName="outgoingContactName"
-            [maxLength]="200"
-          />
-          <app-input
-            id="outgoing-role"
-            [label]="formLabels.OUTGOING_ROLE"
-            [placeholder]="formPlaceholders.OUTGOING_ROLE"
-            formControlName="outgoingContactRole"
-            [maxLength]="200"
+          <app-select
+            id="outgoing-person"
+            [label]="formLabels.OUTGOING_PERSON"
+            [placeholder]="formPlaceholders.OUTGOING_PERSON"
+            [options]="outgoingContactOptions()"
+            [errorMessages]="{ required: validationMessages.OUTGOING_PERSON_REQUIRED }"
+            formControlName="outgoingPersonId"
           />
         </div>
 
@@ -80,7 +73,7 @@
         <app-button type="button" variant="stroked" (click)="onCancel()">
           {{ buttonLabels.CANCEL }}
         </app-button>
-        <app-button type="submit" variant="accent" [disabled]="!form.valid || isSubmitting()">
+        <app-button type="submit" variant="accent" [disabled]="isSubmitting()">
           {{ buttonLabels.REVIEW_CONFIRM }}
         </app-button>
       }

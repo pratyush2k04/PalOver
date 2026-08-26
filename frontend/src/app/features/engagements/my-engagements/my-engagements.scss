@@ -1,114 +1,157 @@
-.my-engagements-page {
-  padding: 2rem;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+@use '../../../../styles/mixins' as *;
+
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
+.my-engagements-page {
+  padding: $spacing-8;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: $font-family-base;
+  color: $color-text;
 
-  h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    color: #1a1a1a;
+  @media (max-width: 768px) {
+    padding: $spacing-4;
   }
 }
 
-.tabs-row {
+.header-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid $color-border-soft;
+  margin-bottom: $spacing-6;
+  margin-top: $spacing-4;
+  flex-wrap: wrap;
+  gap: $spacing-3;
+}
+
+.tabs-control {
+  display: flex;
+  gap: $spacing-6;
+}
+
+.toolbar-actions {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
+  gap: $spacing-4;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: $font-size-base;
+  color: $color-text-faint;
+  padding: $spacing-3 $spacing-2;
+  cursor: pointer;
+  position: relative;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-text-muted;
+  }
+
+  &.active {
+    color: $color-primary;
+    font-weight: $font-weight-medium;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: $color-primary;
+    }
+  }
 }
 
 .sort-control {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-left: auto;
-  padding-bottom: 0.5rem;
+  @include flex-center;
+  gap: $spacing-2;
 
   label {
-    font-size: 0.8125rem;
-    color: #6b7280;
+    font-size: $font-size-xs;
+    color: $color-text-faint;
+    white-space: nowrap;
   }
 
-  select {
-    padding: 0.4rem 0.6rem;
-    font-size: 0.85rem;
-    border: 1px solid #cccccc;
-    border-radius: 4px;
+  app-select {
+    min-width: 10rem;
+
+    ::ng-deep .app-field {
+      margin-bottom: 0;
+    }
   }
 }
 
+app-paginator {
+  display: block;
+  margin-top: $spacing-5;
+}
+
 .engagement-list {
-  background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background: $color-surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
   overflow: hidden;
 }
 
 .engagement-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.25rem 1.5rem;
+  @include flex-between;
+  padding: $spacing-5 $spacing-6;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: background-color $transition-fast;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: $spacing-4;
+    gap: $spacing-3;
+
+    .engagement-actions {
+      align-self: flex-end;
+    }
+  }
 
   &:not(:last-child) {
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid $color-border-soft;
   }
 
   &:hover {
-    background-color: #f9fafb;
+    background-color: $color-surface-hover;
   }
 }
 
 .engagement-title-line {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
+  @include flex-center;
+  justify-content: flex-start;
+  gap: $spacing-2;
 }
 
 .client-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #2563eb;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
 }
 
-
 .engagement-meta {
-  margin-top: 0.25rem;
-  font-size: 0.8125rem;
-  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  margin-top: $spacing-1;
+  font-size: $font-size-xs;
+  color: $color-text-faint;
 }
 
 .engagement-actions {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
+  @include flex-center;
+  gap: $spacing-6;
 }
 
-.readiness-ring {
-  position: relative;
-  width: 52px;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  svg circle {
-    transition: stroke-dashoffset 0.3s ease;
-  }
-}
-
-.readiness-value {
-  position: absolute;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #1a1a1a;
-}
 

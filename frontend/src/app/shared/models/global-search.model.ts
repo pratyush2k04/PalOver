@@ -1,3 +1,5 @@
+export type SearchType = 'engagement' | 'document' | 'person' | 'checklist';
+
 export interface SearchResultGroup<T> {
   count: number;
   items: T[];

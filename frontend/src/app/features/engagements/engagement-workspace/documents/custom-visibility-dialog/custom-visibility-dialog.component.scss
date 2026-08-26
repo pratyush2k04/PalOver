@@ -1,5 +1,7 @@
+@use '../../../../../../styles/tokens' as *;
+
 .dialog-container {
-  background-color: #ffffff;
+  background-color: $color-surface;
   border-radius: 12px;
   width: 100%;
   max-width: 520px;
@@ -10,7 +12,7 @@
 
 .modal-header {
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid $color-slate-200;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -19,19 +21,7 @@
     margin: 0;
     font-size: 1.125rem;
     font-weight: 600;
-    color: #0f172a;
-  }
-
-  .close-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    ::ng-deep svg,
-    svg {
-      width: 1.25rem;
-      height: 1.25rem;
-    }
+    color: $color-slate-900;
   }
 }
 
@@ -40,8 +30,8 @@
 }
 
 .doc-info-banner {
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background-color: $color-slate-50;
+  border: 1px solid $color-slate-200;
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1.25rem;
@@ -54,7 +44,7 @@
     .file-icon {
       width: 1.25rem;
       height: 1.25rem;
-      color: #3b82f6;
+      color: $color-primary-active;
       flex-shrink: 0;
       display: inline-flex;
       align-items: center;
@@ -69,7 +59,7 @@
 
     .file-name {
       font-weight: 600;
-      color: #1e293b;
+      color: $color-slate-800;
       word-break: break-all;
     }
   }
@@ -79,7 +69,7 @@
     display: flex;
     gap: 1.25rem;
     font-size: 0.8125rem;
-    color: #64748b;
+    color: $color-slate-500;
   }
 }
 
@@ -88,13 +78,13 @@
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.05em;
-  color: #475569;
+  color: $color-slate-600;
   margin-bottom: 0.25rem;
 }
 
 .section-hint {
   font-size: 0.8125rem;
-  color: #64748b;
+  color: $color-slate-500;
   margin: 0 0 0.75rem 0;
 }
 
@@ -102,20 +92,20 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background-color: $color-success-bg;
+  border: 1px solid $color-success-border;
   border-radius: 6px;
   padding: 0.5rem 0.75rem;
   margin-bottom: 1rem;
   font-size: 0.8125rem;
   font-weight: 500;
-  color: #166534;
+  color: $color-success-dark;
 
   .shield-icon {
     width: 14px;
     height: 14px;
     flex-shrink: 0;
-    color: #16a34a;
+    color: $color-success;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -130,7 +120,7 @@
 
 .modal-footer {
   padding: 1rem 1.5rem;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid $color-slate-200;
   display: flex;
   align-items: center;
   justify-content: space-between;

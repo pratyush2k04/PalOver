@@ -1,0 +1,128 @@
+@use '../../../styles/tokens' as *;
+
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: $font-family-base;
+  color: $color-text;
+}
+
+.audit-log {
+  padding: $spacing-8;
+  max-width: 87.5rem;
+  margin: 0 auto;
+  font-family: $font-family-base;
+  color: $color-text;
+
+  @media (max-width: 768px) {
+    padding: $spacing-4;
+  }
+
+  &.workspace-tab {
+    padding: 0;
+    max-width: none;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-3;
+  }
+}
+
+.header-actions-group {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  flex-wrap: wrap;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-2;
+    width: 100%;
+
+    app-select,
+    app-input,
+    app-button {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+
+  app-select {
+    min-width: 10rem;
+
+    ::ng-deep .app-field {
+      margin-bottom: 0;
+    }
+  }
+
+  app-input {
+    min-width: 8.75rem;
+
+    ::ng-deep .app-field {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.table-card {
+  background: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+  min-width: 48rem;
+  border-collapse: collapse;
+}
+
+thead th {
+  text-align: left;
+  padding: $spacing-4 $spacing-6;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.04em;
+  color: $color-text-muted;
+  text-transform: uppercase;
+  background: $color-surface-hover;
+  border-bottom: 1px solid $color-border-soft;
+}
+
+tbody tr {
+  border-bottom: 1px solid $color-border-soft;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: $color-surface-hover;
+  }
+}
+
+td {
+  padding: $spacing-4 $spacing-6;
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  vertical-align: middle;
+}
+
+.col-date {
+  white-space: nowrap;
+  color: $color-text-faint;
+}
+
+.col-user {
+  font-weight: $font-weight-medium;
+  color: $color-text;
+}
+
+.empty-row {
+  padding: $spacing-6;
+  text-align: center;
+}

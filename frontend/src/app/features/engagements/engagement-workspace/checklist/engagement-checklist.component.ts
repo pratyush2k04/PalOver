@@ -1,8 +1,9 @@
 import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { AuthService } from 'src/app/services/auth';
+import { AuthService } from '@shared/services/auth';
 import { EngagementChecklistService } from '@features/engagements/services/engagement-checklist.service';
 import { EngagementChecklist, EngagementChecklistItem } from '../../models/engagement-checklist.model';
 import { ENGAGEMENT_CHECKLIST_MESSAGES } from '@shared/constants/engagements.constants';
@@ -10,8 +11,9 @@ import { DialogService } from '@common/services/dialog/dialog.service';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
-import { PersonService } from 'src/app/services/person.service';
-import { PersonDto } from 'src/app/models/person.model';
+import { CommunicationCadenceService } from '@features/engagements/services/communication-cadence.service';
+import { KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
+import { EngagementParticipant } from '@features/engagements/models/cadence.model';
 import {
   MarkNaDialogComponent,
   MarkNaDialogData,
@@ -27,11 +29,29 @@ import {
   BlockItemDialogData,
   BlockItemDialogResult
 } from './dialogs/block-item-dialog/block-item-dialog.component';
+import { SectionHeaderComponent } from '@common/components/section-header/section-header';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
+import {
+  AttachEvidenceDialogComponent,
+  AttachEvidenceDialogData,
+  AttachEvidenceDialogResult
+} from './dialogs/attach-evidence-dialog/attach-evidence-dialog.component';
+
+import { InlineSVGModule } from 'ng-inline-svg-2';
 
 @Component({
   selector: 'app-engagement-checklist',
   standalone: true,
-  imports: [CommonModule, LoadingSpinnerComponent, StatusBadgeComponent, ButtonComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    InlineSVGModule,
+    LoadingSpinnerComponent,
+    StatusBadgeComponent,
+    ButtonComponent,
+    SectionHeaderComponent,
+    TooltipDirective,
+  ],
   templateUrl: './engagement-checklist.component.html',
   styleUrl: './engagement-checklist.component.scss'
 })
@@ -40,7 +60,8 @@ export class EngagementChecklistComponent {
   private checklistService = inject(EngagementChecklistService);
   private authService = inject(AuthService);
   private dialog = inject(DialogService);
-  private personService = inject(PersonService);
+  private cadenceService = inject(CommunicationCadenceService);
+  private kickoffReadinessService = inject(KickoffReadinessService);
 
   private paramMap = toSignal(this.route.parent!.paramMap);
 
@@ -53,7 +74,14 @@ export class EngagementChecklistComponent {
   isLoading = signal<boolean>(true);
   isUpdating = signal<boolean>(false);
   error = signal<string | null>(null);
-  people = signal<PersonDto[]>([]);
+  assignedUsers = signal<EngagementParticipant[]>([]);
+
+  // Search and filter signals
+  searchTerm = signal<string>('');
+  selectedCategoryId = signal<number | 'all'>('all');
+  selectedStatus = signal<string>('all');
+  selectedEvidenceFilter = signal<string>('all');
+  selectedOwnerId = signal<number | 'all' | 'unassigned'>('all');
 
   // Role permissions
   isProjectManager = computed(() => this.authService.hasRole('Project Management') || this.authService.isAdmin());
@@ -64,6 +92,82 @@ export class EngagementChecklistComponent {
   canToggleStatus = computed(() => this.isProjectManager() || this.isTechLead());
   canChangeApplicability = computed(() => this.isProjectManager());
   canPerformAnyAction = computed(() => this.canToggleStatus() || this.canChangeApplicability() || this.isLeadership());
+  canLeadershipReview = computed(() => this.isLeadership() && (this.checklist()?.pendingExemptionsCount ?? 0) > 0);
+  canPerformNaAction = computed(() => this.canChangeApplicability() || this.canLeadershipReview());
+
+  categoriesList = computed(() => {
+    return this.checklist()?.categories.map((c) => ({ id: c.categoryId, name: c.categoryName })) ?? [];
+  });
+
+  hasActiveFilters = computed(() => {
+    return (
+      this.searchTerm().trim() !== '' ||
+      this.selectedCategoryId() !== 'all' ||
+      this.selectedStatus() !== 'all' ||
+      this.selectedEvidenceFilter() !== 'all' ||
+      this.selectedOwnerId() !== 'all'
+    );
+  });
+
+  filteredCategories = computed(() => {
+    const cl = this.checklist();
+    if (!cl) return [];
+
+    const search = this.searchTerm().trim().toLowerCase();
+    const catId = this.selectedCategoryId();
+    const status = this.selectedStatus();
+    const evidence = this.selectedEvidenceFilter();
+    const owner = this.selectedOwnerId();
+
+    return cl.categories
+      .filter((category) => catId === 'all' || category.categoryId === Number(catId))
+      .map((category) => {
+        const filteredItems = category.items.filter((item) => {
+          if (!item.isApplicable) return false;
+
+          // Search term
+          if (search) {
+            const matchTitle = item.title?.toLowerCase().includes(search);
+            const matchDesc = item.description?.toLowerCase().includes(search);
+            if (!matchTitle && !matchDesc) return false;
+          }
+
+          // Status filter
+          if (status !== 'all') {
+            if (status === 'Pending') {
+              if (item.exemptionStatus !== 'Pending') return false;
+            } else if (item.status !== status) {
+              return false;
+            }
+          }
+
+          // Evidence filter
+          if (evidence !== 'all') {
+            const hasEvidence = !!item.evidenceNote || !!item.evidenceLink;
+            if (evidence === 'required' && !item.evidenceRequired) return false;
+            if (evidence === 'attached' && !hasEvidence) return false;
+            if (evidence === 'missing' && (!item.evidenceRequired || hasEvidence)) return false;
+          }
+
+          // Owner filter
+          if (owner !== 'all') {
+            if (owner === 'unassigned') {
+              if (item.ownerId != null) return false;
+            } else {
+              if (item.ownerId !== Number(owner)) return false;
+            }
+          }
+
+          return true;
+        });
+
+        return {
+          ...category,
+          items: filteredItems
+        };
+      })
+      .filter((category) => category.items.length > 0);
+  });
 
   notApplicableItems = computed(() => {
     const cl = this.checklist();
@@ -78,9 +182,17 @@ export class EngagementChecklistComponent {
       const id = this.engagementId();
       if (id) {
         this.loadChecklist(id);
-        this.loadPeople(id);
+        this.loadAssignedUsers(id);
       }
     });
+  }
+
+  clearFilters(): void {
+    this.searchTerm.set('');
+    this.selectedCategoryId.set('all');
+    this.selectedStatus.set('all');
+    this.selectedEvidenceFilter.set('all');
+    this.selectedOwnerId.set('all');
   }
 
   private loadChecklist(engagementId: number): void {
@@ -98,11 +210,24 @@ export class EngagementChecklistComponent {
     });
   }
 
-  private loadPeople(engagementId: number): void {
-    this.personService.getPeopleByEngagement(engagementId).subscribe({
-      next: (people) => this.people.set(people),
-      error: () => this.people.set([])
+  private loadAssignedUsers(engagementId: number): void {
+    this.cadenceService.getAssignedParticipants(engagementId).subscribe({
+      next: (users) => this.assignedUsers.set(users ?? []),
+      error: () => this.assignedUsers.set([])
     });
+  }
+
+  /**
+   * Applies a mutation's returned checklist and, unless told otherwise, refreshes the
+   * shared kickoff readiness score — the backend check only reads IsMandatory/IsApplicable/
+   * Status, so owner-only changes should pass refreshReadiness: false to skip a wasted fetch.
+   */
+  private applyUpdatedChecklist(updatedChecklist: EngagementChecklist, opts: { refreshReadiness?: boolean } = {}): void {
+    this.checklist.set(updatedChecklist);
+    this.isUpdating.set(false);
+    if (opts.refreshReadiness ?? true) {
+      this.kickoffReadinessService.refresh();
+    }
   }
 
   toggleItemStatus(item: EngagementChecklistItem): void {
@@ -111,16 +236,56 @@ export class EngagementChecklistComponent {
       return;
     }
 
+    // Intercept if completing an item with required evidence that hasn't been provided yet
+    if (item.status !== 'Complete' && item.evidenceRequired && !item.evidenceNote && !item.evidenceLink) {
+      this.openAttachEvidenceDialog(item, true);
+      return;
+    }
+
     const nextStatus = item.status === 'Complete' ? 'Incomplete' : 'Complete';
     this.isUpdating.set(true);
 
     this.checklistService.updateItemStatus(engId, item.id, { status: nextStatus }).subscribe({
-      next: (updatedChecklist) => {
-        this.checklist.set(updatedChecklist);
-        this.isUpdating.set(false);
-      },
+      next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist),
       error: () => {
         this.isUpdating.set(false);
+      }
+    });
+  }
+
+  openAttachEvidenceDialog(item: EngagementChecklistItem, isMandatoryCompletion = false): void {
+    const engId = this.engagementId();
+    if (!engId || this.isUpdating()) {
+      return;
+    }
+
+    const isReadOnly = !this.canToggleStatus();
+
+    const dialogRef = this.dialog.open<
+      AttachEvidenceDialogComponent,
+      AttachEvidenceDialogData,
+      AttachEvidenceDialogResult
+    >(AttachEvidenceDialogComponent, {
+      data: {
+        item,
+        isMandatoryCompletion,
+        isReadOnly
+      }
+    });
+
+    dialogRef.closed$.subscribe((result) => {
+      if (result && result.note) {
+        this.isUpdating.set(true);
+        this.checklistService.saveItemEvidence(engId, item.id, {
+          note: result.note,
+          link: result.link,
+          markComplete: result.markComplete
+        }).subscribe({
+          next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist),
+          error: () => {
+            this.isUpdating.set(false);
+          }
+        });
       }
     });
   }
@@ -148,10 +313,7 @@ export class EngagementChecklistComponent {
           isApplicable: false,
           reason: result.reason
         }).subscribe({
-          next: (updatedChecklist) => {
-            this.checklist.set(updatedChecklist);
-            this.isUpdating.set(false);
-          },
+          next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist),
           error: () => {
             this.isUpdating.set(false);
           }
@@ -170,10 +332,7 @@ export class EngagementChecklistComponent {
     this.checklistService.updateItemApplicability(engId, item.id, {
       isApplicable: true
     }).subscribe({
-      next: (updatedChecklist) => {
-        this.checklist.set(updatedChecklist);
-        this.isUpdating.set(false);
-      },
+      next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist),
       error: () => {
         this.isUpdating.set(false);
       }
@@ -205,10 +364,7 @@ export class EngagementChecklistComponent {
           approved: result.approved,
           rejectionReason: result.rejectionReason
         }).subscribe({
-          next: (updatedChecklist) => {
-            this.checklist.set(updatedChecklist);
-            this.isUpdating.set(false);
-          },
+          next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist),
           error: () => {
             this.isUpdating.set(false);
           }
@@ -227,10 +383,7 @@ export class EngagementChecklistComponent {
     this.isUpdating.set(true);
 
     this.checklistService.updateItemOwner(engId, item.id, { personId }).subscribe({
-      next: (updatedChecklist) => {
-        this.checklist.set(updatedChecklist);
-        this.isUpdating.set(false);
-      },
+      next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist, { refreshReadiness: false }),
       error: () => {
         this.isUpdating.set(false);
       }
@@ -249,7 +402,7 @@ export class EngagementChecklistComponent {
         data: {
           itemTitle: item.title,
           currentOwnerId: item.ownerId,
-          people: this.people()
+          assignedUsers: this.assignedUsers()
         }
       }
     );
@@ -261,10 +414,7 @@ export class EngagementChecklistComponent {
           reason: result.reason,
           personId: result.personId
         }).subscribe({
-          next: (updatedChecklist) => {
-            this.checklist.set(updatedChecklist);
-            this.isUpdating.set(false);
-          },
+          next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist),
           error: () => {
             this.isUpdating.set(false);
           }
@@ -281,10 +431,7 @@ export class EngagementChecklistComponent {
 
     this.isUpdating.set(true);
     this.checklistService.unblockItem(engId, item.id).subscribe({
-      next: (updatedChecklist) => {
-        this.checklist.set(updatedChecklist);
-        this.isUpdating.set(false);
-      },
+      next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist),
       error: () => {
         this.isUpdating.set(false);
       }

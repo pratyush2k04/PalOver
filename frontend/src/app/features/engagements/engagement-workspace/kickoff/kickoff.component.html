@@ -16,7 +16,7 @@
         <ul class="readiness-breakdown">
           <li>Handover fields: {{ readiness()!.handoverFieldsPassed }}/{{ readiness()!.handoverFieldsApplicable }}</li>
           <li>Commitments acknowledged: {{ readiness()!.commitmentsPassed }}/{{ readiness()!.commitmentsApplicable }}</li>
-          <li>Access items unblocked: {{ readiness()!.accessItemsPassed }}/{{ readiness()!.accessItemsApplicable }}</li>
+          <li>Checklist items complete: {{ readiness()!.checklistItemsPassed }}/{{ readiness()!.checklistItemsApplicable }}</li>
         </ul>
 
         <app-button *ngIf="canMarkReady() && !isLeadership()" variant="flat" [disabled]="isSaving() || readiness()!.score !== 100"
@@ -31,7 +31,7 @@
     </ng-container>
 
     <ng-template #loadingState>
-      <p>Loading kickoff readiness...</p>
+      <app-loading-spinner label="Loading kickoff readiness..."></app-loading-spinner>
     </ng-template>
 
     <ng-template #failedState>

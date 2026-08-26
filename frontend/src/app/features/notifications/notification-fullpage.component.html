@@ -1,0 +1,163 @@
+<div class="notifications-container">
+  <app-page-header
+    title="Notifications"
+    description="View and manage system activities, task alerts, and engagement updates."
+  >
+    <div class="header-actions-group">
+      @if (unreadCountInCurrentView() > 0) {
+        <app-badge [text]="unreadCountInCurrentView() + ' unread'" />
+      }
+      <app-button
+        variant="stroked"
+        [disabled]="unreadCountInCurrentView() === 0"
+        (click)="onMarkAllAsRead()">
+        <span [inlineSVG]="'assets/icons/check.svg'" class="btn-icon"></span>
+        Mark all as read
+      </app-button>
+    </div>
+  </app-page-header>
+
+  <!-- Filter & Controls Toolbar -->
+  <div class="controls-toolbar">
+    <div class="filter-tabs-wrapper">
+      <app-tabs
+        [tabs]="filterTabs"
+        [activeId]="selectedStatusFilter()"
+        (tabChange)="onStatusFilterChange($event)">
+      </app-tabs>
+    </div>
+
+    <div class="filter-right">
+      <div class="priority-select-wrapper">
+        <app-select
+          id="engagement-filter"
+          label="Engagement"
+          [options]="engagementFilterOptions()"
+          [ngModel]="selectedEngagementFilter() ?? 'all'"
+          (ngModelChange)="onEngagementFilterChange($event)">
+        </app-select>
+      </div>
+
+      <div class="priority-select-wrapper">
+        <app-select
+          id="priority-filter"
+          label="Priority"
+          [options]="priorityOptions"
+          [ngModel]="selectedPriorityFilter()"
+          (ngModelChange)="onPriorityFilterChange($event)">
+        </app-select>
+      </div>
+
+      @if (isAdmin() && selectedCount() > 0) {
+        <app-button
+          variant="danger"
+          (click)="promptBulkDelete()">
+          <span [inlineSVG]="'assets/icons/trash.svg'" class="btn-icon"></span>
+          Delete Selected ({{ selectedCount() }})
+        </app-button>
+      }
+    </div>
+  </div>
+
+  <!-- Notification List Section -->
+  <main class="notifications-list-card">
+    @if (isAdmin() && filteredNotifications().length > 0) {
+      <div class="batch-select-bar">
+        <app-checkbox
+          label="Select all in view"
+          [ngModel]="allSelected()"
+          (changed)="toggleSelectAll($event)">
+        </app-checkbox>
+      </div>
+    }
+
+    @if (filteredNotifications().length > 0) {
+      <div class="notifications-list">
+        @for (notification of filteredNotifications(); track notification.id) {
+          <div
+            class="notification-item"
+            [class.unread]="!notification.readAt"
+            [class.has-link]="!!notification.link"
+            [attr.title]="notification.link ? 'Click here to redirect' : null"
+            (click)="onNotificationClick(notification)">
+
+            @if (isAdmin()) {
+              <div class="select-col" (click)="$event.stopPropagation()">
+                <app-checkbox
+                  [ngModel]="selectedIds().has(notification.id)"
+                  (changed)="toggleSelect(notification.id, $event)">
+                </app-checkbox>
+              </div>
+            }
+
+            <div class="status-col">
+              <span class="unread-dot" [class.visible]="!notification.readAt"></span>
+            </div>
+
+            <div class="content-col">
+              <div class="notification-meta">
+                <app-status-badge [tone]="getPriorityTone(notification.priority)">
+                  {{ getPriorityLabel(notification.priority) }}
+                </app-status-badge>
+
+                <span class="notification-time">
+                  {{ notification.scheduledFor | date:'medium' }}
+                </span>
+              </div>
+
+              <h3 class="notification-title">{{ notification.title }}</h3>
+              <p class="notification-body">{{ notification.body }}</p>
+            </div>
+
+            <div class="actions-col" (click)="$event.stopPropagation()">
+              @if (!notification.readAt) {
+                <app-button
+                  variant="stroked"
+                  size="sm"
+                  ariaLabel="Mark as read"
+                  (click)="onMarkAsRead(notification, $event)">
+                  Mark read
+                </app-button>
+              }
+            </div>
+
+            <div class="link-col">
+              @if (notification.link) {
+                <span class="link-indicator" [appTooltip]="'Click here to redirect'">
+                  <span [inlineSVG]="'assets/icons/chevron-right.svg'"></span>
+                </span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="pagination-footer">
+        <app-paginator
+          [page]="page()"
+          [totalPages]="totalPages()"
+          [pageSize]="pageSize()"
+          [pageSizeOptions]="[5, 10, 20, 50]"
+          (pageChange)="onPageChange($event)"
+          (pageSizeChange)="onPageSizeChange($event)" />
+      </div>
+    } @else {
+      <div class="empty-container">
+        <app-empty-state message="No notifications found matching your criteria." />
+      </div>
+    }
+  </main>
+</div>
+
+@if (showDeleteConfirm()) {
+  <app-confirm-dialog
+    title="Delete Notifications"
+    [message]="'Are you sure you want to delete ' + selectedCount() + ' selected notification(s)? This action cannot be undone.'"
+    confirmLabel="Delete"
+    cancelLabel="Cancel"
+    [isBusy]="isDeleting()"
+    [isDestructive]="true"
+    (confirmed)="onConfirmBulkDelete()"
+    (cancelled)="cancelBulkDelete()">
+  </app-confirm-dialog>
+}

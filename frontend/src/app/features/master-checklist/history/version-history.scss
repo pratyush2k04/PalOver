@@ -1,4 +1,4 @@
-@use '../../../../styles/mixins' as *;
+@use '../../../../styles/tokens' as *;
 
 :host {
   display: block;
@@ -6,25 +6,34 @@
 }
 
 .version-history {
-  padding: $spacing-4;
+  padding: 0;
 
-  @include respond-to('sm') {
-    padding: $spacing-6;
+  &__card {
+    background-color: $color-surface;
+    border: 1px solid $color-border-soft;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+    overflow: hidden;
+    padding: 0;
   }
 
-  h1 {
-    color: $color-text;
-    font-size: $font-size-xl;
-    font-weight: $font-weight-semibold;
-    margin: 0 0 $spacing-4;
+  &__header {
+    padding: $spacing-5 $spacing-6;
+    background-color: $color-surface;
+
+    h1 {
+      color: $color-text;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-bold;
+      margin: 0;
+    }
   }
 
   &__table-wrapper {
     background-color: $color-surface;
-    border: 1px solid $color-border-soft;
-    border-radius: $radius-lg;
+    border: none;
+    border-radius: 0;
     overflow: hidden;
-    box-shadow: $shadow-sm;
   }
 
   .table-responsive {
@@ -42,16 +51,17 @@
     th,
     td {
       text-align: left;
-      padding: $spacing-3 $spacing-4;
+      padding: $spacing-4 $spacing-6;
       font-size: $font-size-sm;
     }
 
     th {
       color: $color-text;
       font-weight: $font-weight-semibold;
+      border-top: 1px solid $color-border-soft;
       border-bottom: 1px solid $color-border-soft;
       white-space: nowrap;
-      background-color: $color-surface;
+      background-color: $color-surface-hover;
     }
 
     td {

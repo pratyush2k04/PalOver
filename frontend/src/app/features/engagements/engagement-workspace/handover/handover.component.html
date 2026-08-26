@@ -1,6 +1,5 @@
 <div class="handover-container" *ngIf="!isLoading()">
-  <div class="header">
-    <h2>Pre-Sales to Delivery Handover</h2>
+  <app-section-header title="Pre-Sales to Delivery Handover">
     <div class="header-status-group">
       <div class="status-report" [ngClass]="{'submitted': isSubmitted(), 'draft': !isSubmitted()}">
         <span class="status-report-dot"></span>
@@ -9,7 +8,7 @@
       <app-button *ngIf="isPreSales()" variant="stroked" [disabled]="isSaving() || isSubmitted()" (click)="saveDraft()">Save Draft</app-button>
       <app-button variant="flat" [disabled]="isSaving() || isSubmitted()" (click)="submitHandover()">Submit Handover</app-button>
     </div>
-  </div>
+  </app-section-header>
 
   <app-alert *ngIf="message()" [variant]="isError() ? 'danger' : 'neutral'">
     {{ message() }}
@@ -111,9 +110,6 @@
         <div
           class="commitment-card"
           *ngFor="let c of commitments()"
-          [class.commitment-card-impossible]="
-            c.realisticCommitment && !c.realisticCommitment.isPossible
-          "
         >
           <div class="commitment-square promised-square">
             <div class="square-header">
@@ -231,37 +227,33 @@
               *ngIf="editingRealisticCommitmentId() !== c.commitmentId; else editRealisticTemplate"
             >
               <ng-container *ngIf="c.realisticCommitment; else noRealisticYet">
-                <ng-container *ngIf="c.realisticCommitment.isPossible; else rejectedByPm">
-                  <div class="content-header realistic-header">
-                    <span class="timeline-info">
-                      {{
-                        formatTimeline(
-                          c.realisticCommitment.timeline,
-                          c.realisticCommitment.timelineUnit
-                        )
-                      }}
-                    </span>
-                  </div>
-                  <p class="description">{{ c.realisticCommitment.description }}</p>
-                  <p
-                    *ngIf="c.realisticCommitment.acknowledgementMessage"
-                    class="acknowledgement-info"
-                  >
-                    Acknowledged: {{ c.realisticCommitment.acknowledgementMessage }}
-                  </p>
-                </ng-container>
-                <ng-template #rejectedByPm>
-                  <div class="rejected-placeholder">Rejected by PM</div>
-                </ng-template>
-
-                <button
-                  *ngIf="isProjectManagement() && !isSubmitted()"
-                  class="btn-toggle"
-                  [class.btn-toggle-active]="!c.realisticCommitment.isPossible"
-                  (click)="toggleMarkImpossible(c)"
+                <div class="content-header realistic-header">
+                  @if (c.isVarianceFlagged) {
+                    <div class="variance-badge-group">
+                      <span class="variance-badge">
+                        {{ c.varianceDescription }}
+                      </span>
+                      <span class="escalation-badge">
+                        Escalated to Leadership
+                      </span>
+                    </div>
+                  }
+                  <span class="timeline-info">
+                    {{
+                      formatTimeline(
+                        c.realisticCommitment.timeline,
+                        c.realisticCommitment.timelineUnit
+                      )
+                    }}
+                  </span>
+                </div>
+                <p class="description">{{ c.realisticCommitment.description }}</p>
+                <p
+                  *ngIf="c.realisticCommitment.acknowledgementMessage"
+                  class="acknowledgement-info"
                 >
-                  {{ c.realisticCommitment.isPossible ? 'Mark Impossible' : 'Marked Impossible' }}
-                </button>
+                  Acknowledged: {{ c.realisticCommitment.acknowledgementMessage }}
+                </p>
 
                 <app-button
                   *ngIf="
@@ -405,4 +397,6 @@
   </form>
 </div>
 
-<div class="loading" *ngIf="isLoading()">Loading handover details...</div>
+<div class="loading-container" *ngIf="isLoading()">
+  <app-loading-spinner label="Loading handover details..."></app-loading-spinner>
+</div>

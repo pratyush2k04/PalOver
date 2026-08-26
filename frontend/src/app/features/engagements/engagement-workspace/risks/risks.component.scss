@@ -1,28 +1,8 @@
 @use '../../../../../styles/mixins' as *;
 
 .risks-container {
-  padding: $spacing-6;
-  @include flex-column($spacing-6);
-}
-
-.risks-header {
-  @include flex-between;
-  align-items: flex-start;
-  gap: $spacing-4;
-
-  .header-title {
-    h2 {
-      margin: 0 0 $spacing-1 0;
-      font-size: $font-size-2xl;
-      font-weight: $font-weight-semibold;
-      color: $color-text;
-    }
-    .subtitle {
-      margin: 0;
-      font-size: $font-size-sm;
-      color: $color-text-faint;
-    }
-  }
+  padding: 0;
+  @include flex-column($spacing-4);
 }
 
 .priority-banner {
@@ -54,18 +34,34 @@
 }
 
 .filters-bar {
-  @include flex-between;
-  justify-content: flex-start;
-  gap: $spacing-6;
+  display: flex;
+  align-items: center;
+  gap: $spacing-4;
+  flex-wrap: wrap;
   padding: $spacing-4;
   background: $color-surface-hover;
   border: 1px solid $color-border-soft;
   border-radius: $radius-lg;
 
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-3;
+    padding: $spacing-3;
+  }
+
   .filter-group {
     display: flex;
     align-items: center;
     gap: $spacing-2;
+
+    @media screen and (max-width: 768px) {
+      width: 100%;
+
+      app-select {
+        width: 100%;
+      }
+    }
 
     label {
       font-size: $font-size-sm;
@@ -91,6 +87,13 @@
 
   .metrics-summary {
     margin-left: auto;
+
+    @media screen and (max-width: 768px) {
+      margin-left: 0;
+      display: flex;
+      justify-content: flex-start;
+    }
+
     .count-badge {
       font-size: $font-size-xs;
       font-weight: $font-weight-semibold;
@@ -133,6 +136,19 @@
     @include flex-between;
     padding: $spacing-4 $spacing-5 $spacing-2 $spacing-5;
 
+    @media screen and (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: $spacing-2;
+      padding: $spacing-3 $spacing-4 $spacing-2 $spacing-4;
+
+      .right-section {
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+
     .title-section {
       display: flex;
       align-items: center;
@@ -158,12 +174,13 @@
     .right-section {
       display: flex;
       align-items: center;
+      gap: $spacing-2;
 
       .open-days-badge {
         font-size: $font-size-xs;
         font-weight: $font-weight-medium;
         color: $color-text-faint;
-        background: rgba(0, 0, 0, 0.05);
+        background: rgba($color-black, 0.05);
         padding: 0.25rem 0.6rem;
         border-radius: $radius-full;
       }
@@ -172,6 +189,10 @@
 
   .risk-card-body {
     padding: $spacing-2 $spacing-5 $spacing-4 $spacing-5;
+
+    @media screen and (max-width: 768px) {
+      padding: $spacing-2 $spacing-4 $spacing-3 $spacing-4;
+    }
 
     .risk-description {
       margin: 0 0 $spacing-3 0;
@@ -186,8 +207,8 @@
       gap: $spacing-1;
       font-size: $font-size-xs;
       background: $color-primary-light;
-      border: 1px solid #bfdbfe;
-      color: #1e40af;
+      border: 1px solid $color-primary-border;
+      color: $color-primary-dark;
       padding: $spacing-1 $spacing-3;
       border-radius: $radius-md;
       margin-bottom: $spacing-3;
@@ -198,8 +219,8 @@
         cursor: pointer;
 
         &:hover {
-          background: #dbeafe;
-          border-color: #93c5fd;
+          background: $color-primary-subtle;
+          border-color: $color-primary-disabled;
           box-shadow: $shadow-sm;
 
           .link-title {
@@ -263,8 +284,8 @@
 
       &.mitigation-section {
         background: $color-primary-light;
-        border: 1px solid #bfdbfe;
-        color: #1e40af;
+        border: 1px solid $color-primary-border;
+        color: $color-primary-dark;
       }
 
       &.resolution-section {

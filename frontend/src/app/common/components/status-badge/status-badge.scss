@@ -1,3 +1,5 @@
+@use '../../../../styles/tokens' as *;
+
 :host {
   display: inline-block;
 }
@@ -12,27 +14,27 @@
   line-height: 1.4;
 
   &--info {
-    background-color: #eff4ff;
-    color: #2563eb;
+    background-color: $color-blue-soft-alt;
+    color: $color-primary;
   }
 
   &--neutral {
-    background-color: #f4f6f9;
-    color: #666666;
+    background-color: $color-bg;
+    color: $color-text-faint;
   }
 
   &--success {
-    background-color: #ecfdf5;
-    color: #047857;
+    background-color: $color-success-bg-alt;
+    color: $color-emerald-700;
   }
 
   &--danger {
-    background-color: #fef2f2;
-    color: #991b1b;
+    background-color: $color-danger-bg;
+    color: $color-danger-text;
   }
 
   &--warning {
-    background-color: #fff7ed;
-    color: #c2410c;
+    background-color: $color-orange-50;
+    color: $color-orange-700;
   }
 }

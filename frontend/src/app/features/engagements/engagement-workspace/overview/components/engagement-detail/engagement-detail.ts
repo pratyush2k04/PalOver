@@ -6,13 +6,13 @@ import { EngagementService } from '../../../../services/engagement.service';
 import { EngagementInfo, EngagementOwners, OwnerChange, OwnerKind } from '../../../../models/engagement.model';
 import { UserDirectoryService } from '@features/users/services/user.service';
 import { UserListItem } from '@features/users/models/user.model';
-import { AuthService } from 'src/app/services/auth';
+import { AuthService } from '@shared/services/auth';
 import { ToastService } from '@common/services/toast/toast';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
-import { ENGAGEMENT_CONSTANTS, ENGAGEMENT_MESSAGES } from '@shared/constants/app.constants';
+import { ENGAGEMENT_CONSTANTS, ENGAGEMENT_MESSAGES, USER_ROLES } from '@shared/constants/app.constants';
 
 @Component({
   selector: 'app-engagement-detail',
@@ -33,7 +33,7 @@ export class EngagementDetailComponent implements OnInit {
 
   engagement = signal<EngagementInfo | null>(null);
   owners = signal<EngagementOwners | null>(null);
-  canAssignOwners = this.authService.hasRole('Leadership');
+  canAssignOwners = this.authService.hasRole(USER_ROLES.LEADERSHIP);
 
   showAssignModal = signal(false);
   isSubmitting = signal(false);

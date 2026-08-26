@@ -4,25 +4,32 @@ using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Documents;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.Documents;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.Handover;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
+using Pdr.Api.Services.Notifications.Mappers;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Pdr.Api.Services;
 
 public class DocumentService(
     IDocumentRepository repository,
+    IEngagementRepository engagementRepository,
     IWebHostEnvironment environment,
     ICurrentUserService currentUserService,
     IUserRepository userRepository,
-    IValidator<DocumentUploadDto> uploadValidator) : IDocumentService
+    INotificationService notificationService,
+    IValidator<DocumentUploadDto> uploadValidator,
+    IAuditLogService auditLogService,
+    IEngagementAccessService engagementAccessService) : IDocumentService
 {
     // ── Helper methods ──────────────────────────────────────────────────────
 
@@ -55,6 +62,47 @@ public class DocumentService(
         }
 
         return false;
+    }
+
+    private async Task NotifyDocumentUploadedAsync(Document doc)
+    {
+        var currentUserId = currentUserService.GetUserId();
+
+        var assignments = await engagementRepository.GetAssignmentsAsync(doc.EngagementId);
+        if (assignments == null || !assignments.Any()) return;
+
+        var payload = JsonSerializer.Serialize(
+            new DocumentUploadedMapper.DocumentUploadedPayload(doc.Id, doc.EngagementId, currentUserId));
+
+        foreach (var assignment in assignments)
+        {
+            if (assignment.UserId == currentUserId) continue;
+
+            bool canAccess = false;
+            if (doc.Visibility == DocumentVisibilityNames.TeamWide)
+            {
+                canAccess = true;
+            }
+            else if (doc.Visibility == DocumentVisibilityNames.PmOnly)
+            {
+                canAccess = assignment.User.RoleId == (int)RoleEnum.ProjectManagement || assignment.User.RoleId == (int)RoleEnum.Leadership;
+            }
+            else if (doc.Visibility == DocumentVisibilityNames.Custom)
+            {
+                canAccess = assignment.User.RoleId == (int)RoleEnum.ProjectManagement
+                    || assignment.User.RoleId == (int)RoleEnum.Leadership
+                    || (doc.AllowedRoles != null && doc.AllowedRoles.Contains(assignment.User.RoleId));
+            }
+
+            if (canAccess)
+            {
+                await notificationService.CreateFromTemplateAsync(
+                    NotificationConstants.TemplateKeys.DocumentUploaded,
+                    assignment.UserId,
+                    payload,
+                    DateTime.UtcNow);
+            }
+        }
     }
 
     private static string GetCategoryDefaultVisibility(string? categoryName)
@@ -112,6 +160,23 @@ public class DocumentService(
 
         var saved = await repository.AddAsync(document);
         var reloaded = await repository.GetByIdAsync(saved.Id) ?? saved;
+
+        await NotifyDocumentUploadedAsync(reloaded);
+
+        // await NotifyDocumentUploadedAsync(reloaded);
+
+        var actorUserId = currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            AuditActionEnum.DocumentUploaded,
+            new Dictionary<string, object?>
+            {
+                ["DocumentId"] = reloaded.Id,
+                ["CategoryId"] = reloaded.CategoryId,
+                ["ActorUserId"] = actorUserId,
+                ["DocumentName"] = reloaded.FileName,
+            },
+            engagementId: dto.EngagementId,
+            actingUserId: actorUserId);
 
         var uploaderNames = await GetUploaderNamesAsync([reloaded.CreatedBy]);
         return MapToResponseDto(reloaded, uploaderNames);
@@ -171,6 +236,8 @@ public class DocumentService(
 
     public async Task<IEnumerable<DocumentResponseDto>> GetDocumentsByEngagementAsync(int engagementId)
     {
+        await engagementAccessService.ValidateAccessAsync(engagementId);
+
         var userRoleId = currentUserService.GetRoleId();
         var isAdmin = currentUserService.IsAdmin();
         var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
@@ -187,6 +254,8 @@ public class DocumentService(
         {
             throw new DocumentNotFoundException(id);
         }
+
+        await engagementAccessService.ValidateAccessAsync(doc.EngagementId);
 
         if (!File.Exists(doc.FilePath))
         {
@@ -275,6 +344,8 @@ public class DocumentService(
 
         var updated = await repository.UpdateVisibilityAsync(doc, targetVisibility, allowedRoles, updatedBy);
 
+        await NotifyDocumentUploadedAsync(updated);
+
         var uploaderNames = await GetUploaderNamesAsync([updated.CreatedBy]);
         return MapToResponseDto(updated, uploaderNames);
     }
@@ -323,6 +394,19 @@ public class DocumentService(
 
         var updated = await repository.AddVersionAsync(doc, newVersion);
         var reloaded = await repository.GetByIdAsync(updated.Id) ?? updated;
+
+        var actorUserId = currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            AuditActionEnum.DocumentVersioned,
+            new Dictionary<string, object?>
+            {
+                ["DocumentId"] = reloaded.Id,
+                ["Version"] = newVersion.VersionNumber,
+                ["ActorUserId"] = actorUserId,
+                ["DocumentName"] = reloaded.FileName
+            },
+            engagementId: reloaded.EngagementId,
+            actingUserId: actorUserId);
 
         var uploaderNames = await GetUploaderNamesAsync([reloaded.CreatedBy]);
         return MapToResponseDto(reloaded, uploaderNames);

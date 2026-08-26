@@ -9,6 +9,7 @@ public class MasterCreateChecklistItemRequestDto
     public int CategoryId { get; set; }
 
     public bool IsMandatory { get; set; } = true;
+    public bool EvidenceRequired { get; set; } = false;
 
     public int DisplayOrder { get; set; }
 }

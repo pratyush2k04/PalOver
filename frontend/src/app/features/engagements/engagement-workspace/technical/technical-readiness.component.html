@@ -1,49 +1,71 @@
 <div class="technical-readiness-container">
-  <!-- Day-1 Readiness Banner -->
-  <div class="readiness-banner" [ngClass]="{ 'ready': isDayOneReady() }">
-    <div class="banner-content">
-      <div class="banner-icon">
-        <span [inlineSVG]="'assets/icons/clock.svg'"></span>
+  <!-- Day-1 Readiness Banner (Delivery Roles Only) -->
+  @if (canViewDayOneBanner()) {
+    <div class="readiness-banner" [ngClass]="{ 'ready': isDayOneReady() }">
+      <div class="banner-content">
+        <div class="banner-icon">
+          <span [inlineSVG]="'assets/icons/clock.svg'"></span>
+        </div>
+        <div class="banner-text">
+          @if (!isDayOneReady()) {
+            <strong>Not yet able to start Day-1</strong>
+            <span> &mdash; access {{ accessGrantedCount() }}/{{ accessTotalCount() }} granted, tooling {{ toolingReadyCount() }}/{{ toolingTotalCount() }} ready</span>
+          } @else {
+            <strong>Ready for Day-1</strong>
+            <span> &mdash; access {{ accessGrantedCount() }}/{{ accessTotalCount() }} granted, tooling {{ toolingReadyCount() }}/{{ toolingTotalCount() }} ready</span>
+          }
+        </div>
       </div>
-      <div class="banner-text">
-        @if (!isDayOneReady()) {
-          <strong>Not yet able to start Day-1</strong>
-          <span> &mdash; access {{ accessGrantedCount() }}/{{ accessTotalCount() }} granted, tooling {{ toolingReadyCount() }}/{{ toolingTotalCount() }} ready</span>
-        } @else {
-          <strong>Ready for Day-1</strong>
-          <span> &mdash; access {{ accessGrantedCount() }}/{{ accessTotalCount() }} granted, tooling {{ toolingReadyCount() }}/{{ toolingTotalCount() }} ready</span>
-        }
-      </div>
+
+      <button type="button" class="share-btn" (click)="shareSummary()">
+        <span [inlineSVG]="'assets/icons/share.svg'"></span>
+        Share Summary
+      </button>
     </div>
-  </div>
+  }
 
   @if (engagementId()) {
     <!-- Access Tracker Section -->
-    <div class="readiness-section">
-      <app-access-tracker
-        [engagementId]="engagementId()!"
-        (itemsUpdated)="onAccessItemsUpdated($event)">
-      </app-access-tracker>
-    </div>
+    @if (canViewAccessTracker()) {
+      <div class="readiness-section">
+        <app-access-tracker
+          [engagementId]="engagementId()!"
+          (itemsUpdated)="onAccessItemsUpdated($event)">
+        </app-access-tracker>
+      </div>
+    }
 
     <!-- Environment & Tooling Section -->
-    <div class="readiness-section">
-      <app-environment-tooling
-        [engagementId]="engagementId()!"
-        (itemsUpdated)="onToolingItemsUpdated($event)">
-      </app-environment-tooling>
-    </div>
+    @if (canViewEnvironmentTooling()) {
+      <div class="readiness-section">
+        <app-environment-tooling
+          [engagementId]="engagementId()!"
+          (itemsUpdated)="onToolingItemsUpdated($event)">
+        </app-environment-tooling>
+      </div>
+    }
 
     <!-- Architecture Validation & Discovery Section -->
-    <div class="readiness-section">
-      <app-architecture-validation
-        [engagementId]="engagementId()!"
-        (validationUpdated)="onArchitectureValidationUpdated($event)">
-      </app-architecture-validation>
-    </div>
+    @if (canViewArchitectureValidation()) {
+      <div class="readiness-section">
+        <app-architecture-validation
+          [engagementId]="engagementId()!"
+          (validationUpdated)="onArchitectureValidationUpdated($event)">
+        </app-architecture-validation>
+      </div>
+    }
+
+    <!-- Dependency Spikes Section -->
+    @if (canViewDependencySpikes()) {
+      <div class="readiness-section">
+        <app-dependency-spikes
+          [engagementId]="engagementId()!">
+        </app-dependency-spikes>
+      </div>
+    }
 
     <!-- Code Review & Architecture Analysis Card (Brownfield Only) -->
-    @if (isBrownfield()) {
+    @if (canViewBrownfieldReview()) {
       <div class="readiness-section">
         <app-brownfield-review
           [engagementId]="engagementId()!"

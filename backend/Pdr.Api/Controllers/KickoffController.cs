@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,12 +15,9 @@ namespace Pdr.Api.Controllers;
 /// </summary>
 [ApiController]
 [Authorize]
-[Route("api/engagements/{engagementId:int}/kickoff")]
+[Route("api/engagements/{engagementId:int}/workspace/kickoff")]
 [Produces("application/json")]
-public class KickoffController(
-    IKickoffService kickoffService,
-    IValidator<SaveKickoffRecordRequest> recordValidator,
-    IValidator<KickoffActionItemDto> actionItemValidator) : ControllerBase
+public class KickoffController(IKickoffService kickoffService) : ControllerBase
 {
     private string? GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -31,7 +27,7 @@ public class KickoffController(
     /// <param name="engagementId">The engagement ID.</param>
     /// <returns>The kickoff record with action items and outcomes.</returns>
     [HttpGet]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.PreSales)]
+    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.PreSales, RoleEnum.Leadership)]
     [EndpointSummary("Get kickoff record")]
     [ProducesResponseType(typeof(KickoffRecordDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -57,13 +53,6 @@ public class KickoffController(
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<KickoffRecordDto>> SaveKickoffRecord(int engagementId, [FromBody] SaveKickoffRecordRequest request)
     {
-        var validationResult = await recordValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
-            return BadRequest(new { errors });
-        }
-
         var savedRecord = await kickoffService.SaveKickoffRecordAsync(engagementId, request, GetUserId());
         return Ok(savedRecord);
     }
@@ -74,7 +63,7 @@ public class KickoffController(
     /// <param name="engagementId">The engagement ID.</param>
     /// <returns>List of open action items.</returns>
     [HttpGet("actions/open")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.PreSales)]
+    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.PreSales, RoleEnum.Leadership)]
     [EndpointSummary("Get open action items")]
     [ProducesResponseType(typeof(IEnumerable<KickoffActionItemDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -100,13 +89,6 @@ public class KickoffController(
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<KickoffActionItemDto>> CreateActionItem(int engagementId, [FromBody] KickoffActionItemDto dto)
     {
-        var validationResult = await actionItemValidator.ValidateAsync(dto);
-        if (!validationResult.IsValid)
-        {
-            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
-            return BadRequest(new { errors });
-        }
-
         var created = await kickoffService.CreateActionItemAsync(engagementId, dto, GetUserId());
         return CreatedAtAction(nameof(GetKickoffRecord), new { engagementId }, created);
     }
@@ -149,16 +131,7 @@ public class KickoffController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<KickoffActionItemDto>> UpdateActionItem(int engagementId, int actionItemId, [FromBody] KickoffActionItemDto dto)
     {
-        var validationResult = await actionItemValidator.ValidateAsync(dto);
-        if (!validationResult.IsValid)
-        {
-            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
-            return BadRequest(new { errors });
-        }
-
         var updated = await kickoffService.UpdateActionItemAsync(engagementId, actionItemId, dto, GetUserId());
         return Ok(updated);
     }
-
-   
 }

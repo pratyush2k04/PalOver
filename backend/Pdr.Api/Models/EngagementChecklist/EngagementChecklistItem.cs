@@ -1,5 +1,7 @@
 using Pdr.Api.Models;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.MasterChecklist;
+using Pdr.Api.Models.People;
 
 namespace Pdr.Api.Models.EngagementChecklist;
 
@@ -27,12 +29,20 @@ public class EngagementChecklistItem : BaseAuditableEntity
 
     // Owner assignment
     public int? OwnerId { get; set; }
-    public Person? Owner { get; set; }
 
     // Blocking
     public string? BlockReason { get; set; }
 
+    // Evidence tracking (FTR-026 / US-045)
+    public bool EvidenceRequired { get; set; } = false;
+    public string? EvidenceNote { get; set; }
+    public string? EvidenceLink { get; set; }
+    public DateTime? EvidenceSubmittedAt { get; set; }
+    public int? EvidenceSubmittedById { get; set; }
+
     // Navigation properties
+    public User? Owner { get; set; }
+    public User? EvidenceSubmittedBy { get; set; }
     [System.Text.Json.Serialization.JsonIgnore]
     public EngagementChecklist EngagementChecklist { get; set; } = null!;
     public MasterChecklistCategory Category { get; set; } = null!;

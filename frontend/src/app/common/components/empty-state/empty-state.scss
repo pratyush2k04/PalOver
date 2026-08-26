@@ -1,15 +1,30 @@
+@use '../../../../styles/tokens' as *;
+
 :host {
   display: block;
 }
 
 .empty-state {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 0.75rem;
   padding: 2.5rem 1rem;
-  border: 1px dashed #d1d5db;
+  border: 1px dashed $color-gray-300;
   border-radius: 8px;
-  color: #9aa4b2;
+  color: $color-text-placeholder;
   font-size: 0.9rem;
   text-align: center;
+}
+
+.empty-state__icon {
+  display: flex;
+  width: 2.5rem;
+  height: 2.5rem;
+
+  ::ng-deep svg {
+    width: 100%;
+    height: 100%;
+  }
 }

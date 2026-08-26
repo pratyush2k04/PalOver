@@ -1,0 +1,163 @@
+@use '../../../../../../../styles/mixins' as *;
+
+.loading-box {
+  padding: $spacing-4;
+  @include flex-center;
+}
+
+.comments-list {
+  @include flex-column($spacing-3);
+
+  .comment-item {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-3;
+    background: $color-surface-hover;
+    border-radius: $radius-lg;
+    padding: $spacing-3 $spacing-4;
+    border: 1px solid $color-border-soft;
+    transition: background-color $transition-fast;
+
+    &.is-editing {
+      background: $color-surface;
+      border-color: $color-primary;
+    }
+
+    .comment-content-block {
+      flex: 1;
+
+      .comment-meta-row {
+        @include flex-between;
+        margin-bottom: $spacing-1;
+
+        .author-details {
+          display: flex;
+          align-items: center;
+          gap: $spacing-2;
+
+          .author-name {
+            font-size: $font-size-sm;
+            font-weight: $font-weight-bold;
+            color: $color-text;
+          }
+
+          .edited-badge {
+            font-size: $font-size-xs;
+            color: $color-text-fainter;
+            font-style: italic;
+          }
+        }
+
+        .time-and-actions {
+          display: flex;
+          align-items: center;
+          gap: $spacing-3;
+
+          .comment-time {
+            font-size: $font-size-xs;
+            color: $color-text-faint;
+          }
+
+          .edit-link-btn {
+            background: transparent;
+            border: none;
+            color: $color-primary;
+            font-size: $font-size-xs;
+            font-weight: $font-weight-semibold;
+            cursor: pointer;
+            padding: 0;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+
+      .comment-text {
+        font-size: $font-size-sm;
+        color: $color-text-muted;
+        line-height: 1.45;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .inline-edit-box {
+        @include flex-column($spacing-2);
+        margin-top: $spacing-2;
+
+        .edit-actions {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: $spacing-2;
+        }
+      }
+    }
+  }
+}
+
+.add-comment-row {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-3;
+  margin-top: $spacing-3;
+
+  .textarea-container {
+    flex: 1;
+    position: relative;
+
+    .mention-dropdown {
+      position: absolute;
+      bottom: calc(100% + #{$spacing-1});
+      left: 0;
+      width: 260px;
+      max-height: 180px;
+      overflow-y: auto;
+      background: $color-surface;
+      border: 1px solid $color-border-input;
+      border-radius: $radius-md;
+      box-shadow: $shadow-card;
+      z-index: 100;
+      padding: $spacing-1 0;
+
+      .dropdown-header {
+        padding: $spacing-1 $spacing-3;
+        font-size: $font-size-xs;
+        font-weight: $font-weight-semibold;
+        color: $color-text-faint;
+        text-transform: uppercase;
+        border-bottom: 1px solid $color-border-soft;
+      }
+
+      .no-members {
+        padding: $spacing-2 $spacing-3;
+        font-size: $font-size-xs;
+        color: $color-text-fainter;
+      }
+
+      .members-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        .member-item {
+          padding: $spacing-2 $spacing-3;
+          font-size: $font-size-sm;
+          color: $color-text;
+          cursor: pointer;
+          transition: background-color $transition-fast;
+
+          &:hover {
+            background-color: $color-primary-light;
+            color: $color-primary;
+          }
+        }
+      }
+    }
+  }
+
+  .post-button-wrapper {
+    padding-top: $spacing-1;
+  }
+}

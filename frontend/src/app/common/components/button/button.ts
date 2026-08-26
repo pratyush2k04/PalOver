@@ -20,4 +20,5 @@ export class ButtonComponent {
   readonly loading = input(false);
   readonly fullWidth = input(false);
   readonly ariaLabel = input<string | null>(null);
+  readonly title = input<string | null>(null);
 }

@@ -1,4 +1,3 @@
-using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,9 +15,7 @@ namespace Pdr.Api.Controllers;
 [Authorize]
 [Route("api/architecture-validation/features")]
 [Produces("application/json")]
-public class DiscoveryFeatureItemController(
-    IArchitectureValidationService service,
-    IValidator<UpdateDiscoveryFeatureItemRequest> updateValidator) : ControllerBase
+public class DiscoveryFeatureItemController(IArchitectureValidationService service) : ControllerBase
 {
     /// <summary>
     /// Updates an existing discovery feature item (Tech Lead only).
@@ -38,13 +35,6 @@ public class DiscoveryFeatureItemController(
         int featureId,
         [FromBody] UpdateDiscoveryFeatureItemRequest request)
     {
-        var validationResult = await updateValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
-            return BadRequest(new { errors });
-        }
-
         var result = await service.UpdateFeatureItemAsync(featureId, request);
         return Ok(result);
     }

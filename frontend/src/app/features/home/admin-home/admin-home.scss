@@ -1,3 +1,5 @@
+@use '../../../../styles/tokens' as *;
+
 :host {
   display: block;
 }
@@ -12,6 +14,6 @@
   h1 {
     margin: 0;
     font-size: 1.5rem;
-    color: #1a1a1a;
+    color: $color-text;
   }
 }

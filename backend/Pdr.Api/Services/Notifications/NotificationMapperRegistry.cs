@@ -12,6 +12,20 @@ public static class NotificationMapperRegistry
         services.AddScoped<INotificationTemplateMapper, PMAllocatedMapper>();
         services.AddScoped<INotificationTemplateMapper, HandoverSubmittedMapper>();
         services.AddScoped<INotificationTemplateMapper, KickoffReadinessReminderMapper>();
+        services.AddScoped<INotificationTemplateMapper, BlockerEscalatedPMMapper>();
+        services.AddScoped<INotificationTemplateMapper, BlockerEscalatedLeadershipMapper>();
+        services.AddScoped<INotificationTemplateMapper, RiskCommentMentionMapper>();
+        services.AddScoped<INotificationTemplateMapper, ResourceRequestRaisedMapper>();
+        services.AddScoped<INotificationTemplateMapper, LeadershipAssignedMapper>();
+        services.AddScoped<INotificationTemplateMapper, PMAssignedMapper>();
+        services.AddScoped<INotificationTemplateMapper, TechLeadAssignedMapper>();
+        services.AddScoped<INotificationTemplateMapper, DocumentUploadedMapper>();
+        services.AddScoped<INotificationTemplateMapper, ResourceRequestAllocatedMapper>();
+        services.AddScoped<INotificationTemplateMapper, ResourceRequestConfirmedMapper>();
+        services.AddScoped<INotificationTemplateMapper, ResourceRequestReopenedMapper>();
+        services.AddScoped<INotificationTemplateMapper, ResourcingGapFlaggedNotificationMapper>();
+        services.AddScoped<INotificationTemplateMapper, CommitmentVarianceEscalatedNotificationMapper>();
+        services.AddScoped<INotificationTemplateMapper, HandoverDraftFirstSavedMapper>();
 
         // Add new mappers here when adding new notification types.
 
