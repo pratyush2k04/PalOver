@@ -7,7 +7,13 @@
           <span class="status-report-text">{{ handover()?.status || 'Not Started' }}</span>
         </div>
         @if (isPreSales()) {
-          <app-button variant="flat" [disabled]="isSaving() || isSubmitted()" (click)="submitHandover()">{{ HANDOVER_BUTTONS.SUBMIT_HANDOVER }}</app-button>
+          <app-button
+            variant="flat"
+            [disabled]="!isHandoverReadyToSubmit() || isSaving() || isSubmitted()"
+            (click)="submitHandover()"
+          >
+            {{ HANDOVER_BUTTONS.SUBMIT_HANDOVER }}
+          </app-button>
         }
       </div>
     </app-section-header>
@@ -18,8 +24,41 @@
       </app-alert>
     }
 
-    @if (kickoffReadiness()) {
-      <app-flagged-items-banner [items]="handoverFlaggedItems()"></app-flagged-items-banner>
+    @if (!isSubmitted() && kickoffReadiness(); as r) {
+      <div class="readiness-banner" [class.readiness-ready]="isHandoverReadyToSubmit()" [class.readiness-incomplete]="!isHandoverReadyToSubmit()">
+        <div class="banner-header">
+          @if (isHandoverReadyToSubmit()) {
+            <svg class="banner-icon-svg ready-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span class="banner-title">Handover is ready for submission</span>
+          } @else {
+            <svg class="banner-icon-svg warning-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <span class="banner-title">Not yet able to submit handover</span>
+          }
+        </div>
+
+        <div class="readiness-metrics">
+          <div class="metric-item">
+            <span class="metric-label">Client context fields:</span>
+            <span class="metric-value">{{ r.handoverFieldsPassed }}/{{ r.handoverFieldsApplicable }}</span>
+          </div>
+
+          <div class="metric-item">
+            <span class="metric-label">Commitments acknowledged:</span>
+            <span class="metric-value">{{ r.commitmentsPassed }}/{{ r.commitmentsApplicable }}</span>
+          </div>
+
+          <div class="metric-item">
+            <span class="metric-label">Checklist items complete:</span>
+            <span class="metric-value">{{ r.checklistItemsPassed }}/{{ r.checklistItemsApplicable }}</span>
+          </div>
+        </div>
+      </div>
     }
 
     @if (isPreSales()) {

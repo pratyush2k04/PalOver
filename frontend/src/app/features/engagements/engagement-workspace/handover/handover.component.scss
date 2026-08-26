@@ -41,6 +41,80 @@
   font-weight: 600;
 }
 
+.readiness-banner {
+  border-radius: $radius-lg;
+  padding: $spacing-4 $spacing-5;
+  margin-bottom: $spacing-6;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
+
+  &.readiness-incomplete {
+    background-color: $color-warning-bg;
+    border: 1px solid $color-warning-border;
+    color: $color-warning-text;
+
+    .banner-title,
+    .banner-icon-svg,
+    .metric-label,
+    .metric-value {
+      color: $color-warning-text !important;
+    }
+  }
+
+  &.readiness-ready {
+    background-color: $color-success-bg;
+    border: 1px solid $color-success-border;
+    color: $color-success-text;
+
+    .banner-title,
+    .banner-icon-svg,
+    .metric-label,
+    .metric-value {
+      color: $color-success-text !important;
+    }
+  }
+
+  .banner-header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+
+    .banner-icon-svg {
+      width: 1.125rem;
+      height: 1.125rem;
+      flex-shrink: 0;
+    }
+
+    .banner-title {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+    }
+  }
+
+  .readiness-metrics {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: $spacing-6;
+
+    .metric-item {
+      display: flex;
+      align-items: center;
+      gap: $spacing-2;
+      font-size: $font-size-sm;
+
+      .metric-label {
+        font-weight: $font-weight-normal;
+      }
+
+      .metric-value {
+        font-weight: $font-weight-medium;
+      }
+    }
+  }
+}
+
 .section {
   @include card-surface($spacing-6, $radius-md);
   margin-bottom: $spacing-8;

@@ -121,6 +121,17 @@ export class HandoverComponent {
   isError = signal(false);
 
   kickoffReadiness = signal<KickoffReadinessDto | null>(null);
+
+  isHandoverReadyToSubmit = computed(() => {
+    const r = this.kickoffReadiness();
+    if (!r) return false;
+    return (
+      r.handoverFieldsPassed >= r.handoverFieldsApplicable &&
+      r.commitmentsPassed >= r.commitmentsApplicable &&
+      r.checklistItemsPassed >= r.checklistItemsApplicable
+    );
+  });
+
   handoverFlaggedItems = computed<FlaggedItem[]>(() => {
     const r = this.kickoffReadiness();
     if (!r) return [];
@@ -323,12 +334,6 @@ export class HandoverComponent {
         const errorMessage = this.extractErrorMessage(err, HANDOVER_MESSAGES.SUBMIT_ERROR);
         this.showMessage(errorMessage, true);
         this.isSaving.set(false);
-
-        if (errorMessage === HandoverComponent.KICKOFF_NOT_READY_MESSAGE) {
-          setTimeout(() => {
-            this.router.navigate(['../', ENGAGEMENT_ROUTES.KICKOFF], { relativeTo: this.route });
-          }, 1500);
-        }
       }
     });
   }
