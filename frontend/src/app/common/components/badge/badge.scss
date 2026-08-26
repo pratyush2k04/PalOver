@@ -1,3 +1,5 @@
+@use '../../../../styles/tokens' as *;
+
 :host {
   display: inline-block;
 }
@@ -7,8 +9,8 @@
   align-items: center;
   padding: 0.3rem 0.75rem;
   border-radius: 999px;
-  background: #eef2ff;
-  color: #3730a3;
+  background: $color-indigo-50;
+  color: $color-indigo-800;
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.03em;

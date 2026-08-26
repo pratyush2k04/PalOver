@@ -18,51 +18,150 @@ $font-weight-medium: 500;
 $font-weight-semibold: 600;
 $font-weight-bold: 700;
 
-// Color Tokens - Primary / Brand
+// Base Colors
+$color-white: #ffffff;
+$color-black: #000000;
+
+// Slate Palette
+$color-slate-50: #f8fafc;
+$color-slate-100: #f1f5f9;
+$color-slate-200: #e2e8f0;
+$color-slate-300: #cbd5e1;
+$color-slate-400: #94a3b8;
+$color-slate-500: #64748b;
+$color-slate-600: #475569;
+$color-slate-700: #334155;
+$color-slate-800: #1e293b;
+$color-slate-900: #0f172a;
+$color-slate-gray: #4a5568;
+
+// Gray Palette
+$color-gray-50: #f9fafb;
+$color-gray-100: #f3f4f6;
+$color-gray-200: #e5e7eb;
+$color-gray-300: #d1d5db;
+$color-gray-400: #9ca3af;
+$color-gray-500: #6b7280;
+$color-gray-600: #4b5563;
+$color-gray-700: #374151;
+$color-gray-800: #1f2937;
+$color-gray-900: #111827;
+$color-gray-950: #101828;
+
+// Color Tokens - Primary / Brand / Blues
 $color-primary: #2563eb;
 $color-primary-hover: #1d4ed8;
 $color-primary-light: #eff6ff;
+$color-primary-subtle: #dbeafe;
+$color-primary-border: #bfdbfe;
 $color-primary-disabled: #93c5fd;
-$color-primary-focus-ring: rgba(37, 99, 235, 0.15);
+$color-primary-active: #3b82f6;
+$color-primary-dark: #1e40af;
+$color-primary-darkest: #1e3a8a;
+$color-primary-focus-ring: #2563eb26;
+$color-brand-dark: #1e2a5e;
+$color-blue-deep: #1e3a5f;
+$color-blue-soft: #edf4ff;
+$color-blue-soft-alt: #eff4ff;
 
-// Color Tokens - Accent / Secondary (Amber / Orange)
+// Color Tokens - Accent / Amber / Orange
 $color-accent-amber: #f59e0b;
 $color-accent-amber-hover: #d97706;
 $color-accent-amber-disabled: #fcd34d;
+$color-accent-amber-light: #fef3c7;
+$color-accent-amber-border: #fde68a;
 $color-accent-orange: #f5a623;
+$color-amber-50: #fffbeb;
+$color-amber-700: #b45309;
+$color-orange-50: #fff7ed;
+$color-orange-200: #fed7aa;
+$color-orange-700: #c2410c;
+$color-orange-800: #b54708;
+$color-orange-brand: #ea8a00;
+$color-yellow-200: #fef08a;
 
-// Color Tokens - Status & Feedback
+// Color Tokens - Status & Feedback: Success
 $color-success: #16a34a;
 $color-success-bg: #f0fdf4;
+$color-success-bg-alt: #ecfdf5;
+$color-success-light: #dcfce7;
 $color-success-border: #bbf7d0;
+$color-success-border-alt: #a7f3d0;
 $color-success-text: #15803d;
+$color-success-dark: #166534;
+$color-emerald-700: #047857;
 
+// Color Tokens - Status & Feedback: Warning
 $color-warning: #ca8a04;
 $color-warning-bg: #fefce8;
+$color-warning-bg-light: #fef9eb;
 $color-warning-border: #fde68a;
 $color-warning-text: #854d0e;
+$color-warning-dark: #92400e;
 
+// Color Tokens - Status & Feedback: Danger / Red
 $color-danger: #dc2626;
 $color-danger-hover: #b91c1c;
 $color-danger-bg: #fef2f2;
+$color-danger-light: #fee2e2;
+$color-danger-light-alt: #fee4e2;
 $color-danger-border: #fecaca;
+$color-danger-border-alt: #fca5a5;
 $color-danger-text: #991b1b;
+$color-danger-dark: #912018;
+$color-danger-brand: #d92d20;
+$color-danger-400: #f87171;
+$color-danger-500: #ef4444;
+$color-danger-crimson: #c0392b;
+
+// Color Tokens - Rose
+$color-rose-50: #fff1f2;
+$color-rose-200: #fecdd3;
+$color-rose-600: #e11d48;
+$color-rose-700: #be123c;
+$color-rose-800: #9f1239;
+$color-rose-900: #881337;
+
+// Color Tokens - Purple / Indigo / Roles
+$color-role-admin-bg: #f3e8ff;
+$color-role-admin-border: #e9d5ff;
+$color-role-admin-text: #7e22ce;
+$color-indigo-50: #eef2ff;
+$color-indigo-100: #e0e7ff;
+$color-indigo-200: #c7d2fe;
+$color-indigo-300: #aab3d6;
+$color-indigo-700: #4338ca;
+$color-indigo-800: #3730a3;
 
 // Color Tokens - Surfaces & Backgrounds
 $color-bg: #f4f6f9;
 $color-surface: #ffffff;
 $color-surface-hover: #f8fafc;
+$color-surface-gray: #fafafa;
+$color-surface-soft: #f8f9fb;
+$color-surface-alt: #f0f2f5;
+$color-surface-subtle-alt: #eaedf2;
 
 // Color Tokens - Borders
 $color-border-soft: #e5e9ef;
 $color-border: #cccccc;
 $color-border-input: #d0d5dd;
+$color-border-table: #eaecf0;
+$color-border-divider: #eef2f6;
+$color-border-light-gray: #edf0f3;
+$color-border-subtle: #d7dce2;
+$color-border-dark: #b3b9c2;
+$color-border-default: #e0e0e0;
 
 // Color Tokens - Text
 $color-text: #1a1a1a;
 $color-text-muted: #333333;
+$color-text-subdued: #555555;
 $color-text-faint: #666666;
+$color-text-light: #888888;
 $color-text-fainter: #8b95a3;
+$color-text-placeholder: #9aa4b2;
+$color-text-gray: #667085;
 
 // Spacing Tokens (rem based)
 $spacing-1: 0.25rem;  // 4px
@@ -81,10 +180,10 @@ $radius-xl: 0.625rem;  // 10px
 $radius-full: 9999px;
 
 // Shadow Tokens
-$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-$shadow-card: 0 4px 12px rgba(0, 0, 0, 0.08);
-$shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-$shadow-modal: 0 8px 24px rgba(0, 0, 0, 0.15);
+$shadow-sm: 0 1px 2px #0000000d;
+$shadow-card: 0 4px 12px #00000014;
+$shadow-md: 0 4px 12px #00000014;
+$shadow-modal: 0 8px 24px #00000026;
 
 // Transition Tokens
 $transition-fast: 0.15s ease;

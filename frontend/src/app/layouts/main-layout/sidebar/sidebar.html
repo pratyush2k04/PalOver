@@ -1,4 +1,4 @@
-<aside class="sidebar">
+<aside class="sidebar" [class.mobile-open]="layoutService.isMobileSidebarOpen()">
   <div class="logo">
     <img src="image.png" alt="Project Delivery Readiness" class="logo-image" title="Project Delivery Readiness" />
   </div>
@@ -7,7 +7,8 @@
     @for (item of navItems(); track item.label) {
       <a class="nav-item"
          [routerLink]="item.route"
-         routerLinkActive="active">
+         routerLinkActive="active"
+         (click)="layoutService.closeSidebar()">
         <div class="icon-wrapper">
           <span [inlineSVG]="'assets/icons/' + item.icon + '.svg'"></span>
         </div>

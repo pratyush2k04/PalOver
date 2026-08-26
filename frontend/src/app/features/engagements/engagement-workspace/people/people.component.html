@@ -18,43 +18,45 @@
       <p>Loading people directory...</p>
     </div>
     } @else {
-    <table class="people-table">
-      <thead>
-        <tr>
-          <th scope="col" class="th-name">NAME</th>
-          <th scope="col" class="th-role">ROLE</th>
-          <th scope="col" class="th-org">ORG</th>
-          <th scope="col" class="th-actions">ACTIONS</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (person of people(); track person.personId) {
-        <tr>
-          <td class="col-name">{{ person.name }}</td>
-          <td class="col-role">{{ person.role }}</td>
-          <td class="col-org">{{ getOrgLabel(person.personType) }}</td>
-          <td class="col-actions">
-            <div class="action-buttons">
-              <app-button type="button" variant="icon" class="edit-btn" ariaLabel="Edit person" [appTooltip]="'Edit person'"
-                (click)="onEditPerson(person)">
-                <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
-              </app-button>
-              <app-button type="button" variant="icon" class="delete-btn" ariaLabel="Delete person"
-                [appTooltip]="'Delete person'" (click)="onDeletePerson(person)">
-                <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
-              </app-button>
-            </div>
-          </td>
-        </tr>
-        } @empty {
-        <tr>
-          <td colspan="4" class="empty-state">
-            No contacts found for this engagement.
-          </td>
-        </tr>
-        }
-      </tbody>
-    </table>
+    <div class="table-responsive">
+      <table class="people-table">
+        <thead>
+          <tr>
+            <th scope="col" class="th-name">NAME</th>
+            <th scope="col" class="th-role">ROLE</th>
+            <th scope="col" class="th-org">ORG</th>
+            <th scope="col" class="th-actions">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (person of people(); track person.personId) {
+          <tr>
+            <td class="col-name">{{ person.name }}</td>
+            <td class="col-role">{{ person.role }}</td>
+            <td class="col-org">{{ getOrgLabel(person.personType) }}</td>
+            <td class="col-actions">
+              <div class="action-buttons">
+                <app-button type="button" variant="icon" class="edit-btn" ariaLabel="Edit person" [appTooltip]="'Edit person'"
+                  (click)="onEditPerson(person)">
+                  <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                </app-button>
+                <app-button type="button" variant="icon" class="delete-btn" ariaLabel="Delete person"
+                  [appTooltip]="'Delete person'" (click)="onDeletePerson(person)">
+                  <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
+                </app-button>
+              </div>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="4" class="empty-state">
+              No contacts found for this engagement.
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
     }
   </div>
 </div>

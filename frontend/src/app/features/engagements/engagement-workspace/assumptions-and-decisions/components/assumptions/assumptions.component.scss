@@ -1,4 +1,3 @@
-@use '../../../../../../../styles/tokens' as *;
 @use '../../../../../../../styles/mixins' as *;
 
 :host {
@@ -18,27 +17,27 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    background-color: #fee4e2;
-    color: #912018;
+    background-color: $color-danger-light-alt;
+    color: $color-danger-dark;
     padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--border-light, #eaecf0);
+    border-bottom: 1px solid var(--border-light, $color-border-table);
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
     font-weight: 500;
     font-size: 0.95rem;
 
     &.danger {
-      background-color: #fef2f2;
-      color: #991b1b;
+      background-color: $color-danger-bg;
+      color: $color-danger-text;
     }
   }
 
   .panel-header {
     @include flex-between;
     padding: 1.25rem 1.5rem;
-    background-color: var(--color-header-bg, #f8f9fb);
+    background-color: var(--color-header-bg, $color-surface-soft);
     /* Premium light gray */
-    border-bottom: 1px solid var(--border-light, #eaecf0);
+    border-bottom: 1px solid var(--border-light, $color-border-table);
 
     .title-section {
       display: flex;
@@ -49,7 +48,7 @@
         margin: 0;
         font-size: 1.125rem;
         font-weight: 600;
-        color: var(--text-primary, #101828);
+        color: var(--text-primary, $color-gray-950);
         letter-spacing: -0.3px;
       }
     }
@@ -57,12 +56,12 @@
     /* Soft pastel style for + Add button */
     .btn-add {
       ::ng-deep button {
-        background-color: #eff6ff !important;
-        border-color: #bfdbfe !important;
-        color: #1d4ed8 !important;
+        background-color: $color-primary-light !important;
+        border-color: $color-primary-border !important;
+        color: $color-primary-hover !important;
 
         &:hover {
-          background-color: #dbeafe !important;
+          background-color: $color-primary-subtle !important;
         }
       }
     }
@@ -85,10 +84,40 @@
   .list-item {
     @include flex-between;
     align-items: flex-start;
-    padding: 0.5rem 1rem;
-    /* Extremely tight padding to fit 5 items */
-    border-bottom: 1px solid var(--border-light, #eaecf0);
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid var(--border-light, $color-border-table);
     transition: background-color 0.2s ease;
+
+    @media screen and (max-width: 768px) {
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: stretch;
+      padding: 0.875rem 1.25rem;
+
+      .item-right {
+        margin-left: 0;
+        align-items: stretch;
+        width: 100%;
+        gap: 0.5rem;
+      }
+
+      .owner-container {
+        font-size: 0.8125rem;
+      }
+
+      .item-actions {
+        margin-left: 0;
+        width: 100%;
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+
+        app-button {
+          flex: 1;
+          min-width: 4.5rem;
+        }
+      }
+    }
 
     &:last-child {
       border-bottom: none;
@@ -96,7 +125,7 @@
 
     /* Reveal actions gracefully on hover */
     &:hover {
-      background-color: var(--surface-hover, #f9fafb);
+      background-color: var(--surface-hover, $color-gray-50);
     }
 
     .item-main {
@@ -107,11 +136,12 @@
         display: flex;
         align-items: center;
         gap: 1rem;
+        flex-wrap: wrap;
         margin-bottom: 0.5rem;
 
         .description {
           font-size: 0.95rem;
-          color: var(--text-primary, #101828);
+          color: var(--text-primary, $color-gray-950);
           font-weight: 600;
           /* Distinct header weight */
         }
@@ -120,13 +150,13 @@
           display: flex;
           align-items: center;
           gap: 0.35rem;
-          color: var(--color-warning-600, #b54708);
+          color: var(--color-warning-600, $color-orange-800);
           font-weight: 500;
           font-size: 0.85rem;
         }
 
         .warning-link {
-          color: var(--color-danger-600, #d92d20);
+          color: var(--color-danger-600, $color-danger-brand);
         }
       }
 
@@ -137,7 +167,7 @@
         .rationale {
           font-size: 0.8rem;
           /* Smaller text */
-          color: var(--text-secondary, #667085);
+          color: var(--text-secondary, $color-text-gray);
           line-height: 1.3;
         }
       }
@@ -156,7 +186,7 @@
       align-items: center;
       gap: 0.25rem;
       font-size: 0.75rem;
-      color: var(--text-secondary, #667085);
+      color: var(--text-secondary, $color-text-gray);
     }
 
     .item-actions {
@@ -186,12 +216,12 @@
       /* Soft pastel style for Edit button */
       .btn-edit {
         ::ng-deep button {
-          background-color: #f8fafc !important;
-          border-color: #e2e8f0 !important;
-          color: #334155 !important;
+          background-color: $color-slate-50 !important;
+          border-color: $color-slate-200 !important;
+          color: $color-slate-700 !important;
 
           &:hover {
-            background-color: #f1f5f9 !important;
+            background-color: $color-slate-100 !important;
           }
         }
       }
@@ -199,12 +229,12 @@
       /* Soft pastel style for Validate button */
       .btn-validate {
         ::ng-deep button {
-          background-color: #f0fdf4 !important;
-          border-color: #bbf7d0 !important;
-          color: #166534 !important;
+          background-color: $color-success-bg !important;
+          border-color: $color-success-border !important;
+          color: $color-success-dark !important;
 
           &:hover {
-            background-color: #dcfce7 !important;
+            background-color: $color-success-light !important;
           }
         }
       }
