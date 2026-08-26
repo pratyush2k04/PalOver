@@ -3,6 +3,19 @@ import { CommonModule } from '@angular/common';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DashboardCard } from '@shared/models/app-context.model';
 
+const CARD_TYPE_STYLE: Record<string, { icon: string; class: string }> = {
+  engagement: { icon: 'assets/icons/briefcase.svg', class: 'text-primary' },
+  blocker: { icon: 'assets/icons/lock.svg', class: 'text-danger' },
+  handover: { icon: 'assets/icons/file.svg', class: 'text-primary' },
+  'draft-handover': { icon: 'assets/icons/edit.svg', class: 'text-warning' },
+  'complete-handover': { icon: 'assets/icons/check-circle.svg', class: 'text-success' },
+  checklist: { icon: 'assets/icons/checklist.svg', class: 'text-success' },
+  'tech-queue': { icon: 'assets/icons/briefcase.svg', class: 'text-primary' },
+  'access-item': { icon: 'assets/icons/alert-circle.svg', class: 'text-success' },
+  escalation: { icon: 'assets/icons/alert-triangle.svg', class: 'text-danger' }
+};
+const DEFAULT_CARD_STYLE = { icon: 'assets/icons/info.svg', class: 'text-info' };
+
 @Component({
   selector: 'app-dashboard-kpi-card',
   standalone: true,
@@ -13,48 +26,8 @@ import { DashboardCard } from '@shared/models/app-context.model';
 export class DashboardKpiCardComponent {
   @Input({ required: true }) card!: DashboardCard;
 
-  readonly iconPath = computed(() => {
-    switch (this.card.type) {
-      case 'engagement':
-        return 'assets/icons/briefcase.svg';
-      case 'blocker':
-        return 'assets/icons/lock.svg';
-      case 'handover':
-        return 'assets/icons/file.svg';
-      case 'draft-handover':
-        return 'assets/icons/edit.svg';
-      case 'complete-handover':
-        return 'assets/icons/check-circle.svg';
-      case 'checklist':
-        return 'assets/icons/checklist.svg';
-      case 'tech-queue':
-        return 'assets/icons/briefcase.svg';
-      case 'access-item':
-        return 'assets/icons/alert-circle.svg';
-      case 'escalation':
-        return 'assets/icons/alert-triangle.svg';
-      default:
-        return 'assets/icons/info.svg';
-    }
-  });
-  
-  readonly iconClass = computed(() => {
-    switch (this.card.type) {
-      case 'blocker':
-      case 'escalation':
-        return 'text-danger';
-      case 'engagement':
-      case 'handover':
-      case 'tech-queue':
-        return 'text-primary';
-      case 'checklist':
-      case 'access-item':
-      case 'complete-handover':
-        return 'text-success';
-      case 'draft-handover':
-        return 'text-warning';
-      default:
-        return 'text-info';
-    }
-  });
+  private readonly style = computed(() => CARD_TYPE_STYLE[this.card.type] ?? DEFAULT_CARD_STYLE);
+
+  readonly iconPath = computed(() => this.style().icon);
+  readonly iconClass = computed(() => this.style().class);
 }
