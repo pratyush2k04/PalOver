@@ -12,6 +12,7 @@ export type InputType = 'text' | 'email' | 'password' | 'date' | 'number';
 export class InputComponent extends BaseControlComponent<string> {
   readonly id = input.required<string>();
   readonly label = input<string | null>(null);
+  readonly prefixText = input<string | null>(null);
   readonly type = input<InputType>('text');
   readonly placeholder = input<string>('');
   readonly maxLength = input<number | null>(null);

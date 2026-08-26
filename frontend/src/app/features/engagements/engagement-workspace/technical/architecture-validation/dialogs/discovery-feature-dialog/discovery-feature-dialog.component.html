@@ -34,10 +34,12 @@
           <app-input
             id="target-sprint"
             label="Target Sprint"
+            type="number"
+            prefixText="Sprint: "
+            [min]="1"
             [ngModel]="targetSprint()"
             (ngModelChange)="onTargetSprintChange($event)"
             name="targetSprint"
-            placeholder="e.g., Sprint 1"
             [extraError]="targetSprintError() || null"
           />
         </div>
