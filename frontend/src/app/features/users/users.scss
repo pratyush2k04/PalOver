@@ -23,10 +23,10 @@
 
   app-page-header {
     display: block;
-    margin-bottom: 0;
+    margin-bottom: $spacing-4;
 
     ::ng-deep .page-header {
-      margin-bottom: -0.75rem;
+      margin-bottom: 0;
     }
   }
 
@@ -37,6 +37,12 @@
     gap: $spacing-4;
     flex-wrap: wrap;
     margin-bottom: $spacing-4;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: stretch;
+      gap: $spacing-2;
+    }
 
     .search-box {
       position: relative;
@@ -76,6 +82,10 @@
     .role-filter-box {
       width: 11.25rem;
 
+      @media (max-width: 768px) {
+        width: 100%;
+      }
+
       ::ng-deep .app-field {
         margin-bottom: 0;
       }
@@ -93,6 +103,13 @@
     width: 16.25rem;
     min-width: 16.25rem;
     box-shadow: $shadow-sm;
+
+    @media (max-width: 768px) {
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      padding: $spacing-4;
+    }
 
     .card-icon {
       width: 3rem;
@@ -245,6 +262,24 @@
       padding: 0.65rem $spacing-5;
       background: $color-surface;
       border-top: 1px solid $color-border-soft;
+
+      @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: center;
+        gap: $spacing-3;
+        padding: $spacing-4;
+
+        .showing-text {
+          text-align: center;
+          width: 100%;
+        }
+
+        .pagination-controls {
+          width: 100%;
+          display: flex;
+          justify-content: center;
+        }
+      }
 
       .showing-text {
         font-size: $font-size-sm;
