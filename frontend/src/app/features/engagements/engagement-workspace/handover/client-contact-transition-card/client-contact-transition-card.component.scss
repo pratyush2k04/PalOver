@@ -1,97 +1,183 @@
-.client-contact-transition-card {
-  border: 0.0625rem solid #e2e8f0;
-  border-radius: 0.5rem;
-  background: #ffffff;
-  overflow: hidden;
+@use '../../../../../../styles/tokens' as *;
+@use '../../../../../../styles/mixins' as *;
 
-  .card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    background: #f8fafc;
-    border-bottom: 0.0625rem solid #e2e8f0;
-    padding: 1rem;
+:host {
+  display: block;
+  width: 100%;
+}
 
-    h3 {
-      margin: 0;
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: #0f172a;
+.section.transition-section {
+  @include card-surface($spacing-6, $radius-md);
+  margin-bottom: $spacing-8;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    padding: $spacing-4;
+  }
+}
+
+.transition-header {
+  @include flex-between;
+  border-bottom: 1px solid $color-border-soft;
+  padding-bottom: $spacing-3;
+  margin-bottom: $spacing-4;
+  width: 100%;
+
+  h3 {
+    margin: 0;
+    color: $color-text;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  .add-button {
+    flex-shrink: 0;
+  }
+}
+
+.loading-container {
+  @include flex-center;
+  padding: $spacing-4;
+}
+
+.transition-cards {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+  width: 100%;
+}
+
+.transition-flow-card {
+  @include flex-between;
+  width: 100%;
+  background: linear-gradient(135deg, $color-primary-light 0%, $color-bg 100%);
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-lg;
+  padding: $spacing-4 $spacing-6;
+
+  &.empty-flow-card {
+    background: $color-bg;
+    justify-content: flex-start;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-4;
+    padding: $spacing-4;
+  }
+}
+
+.contact-party {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  flex: 0 0 16rem;
+  width: 16rem;
+
+  &.incoming-party {
+    justify-content: flex-start;
+  }
+
+  @media (max-width: 768px) {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .avatar {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: $radius-full;
+    @include flex-center;
+    font-weight: $font-weight-bold;
+    font-size: $font-size-sm;
+    flex-shrink: 0;
+
+    &.avatar-teal {
+      background-color: $color-success-bg;
+      color: $color-success-text;
     }
 
-    .add-button {
-      flex-shrink: 0;
+    &.avatar-purple {
+      background-color: $color-role-admin-bg;
+      color: $color-role-admin-text;
+    }
+
+    &.avatar-blue {
+      background-color: $color-primary-light;
+      color: $color-primary;
     }
   }
 
-  .card-content {
-    padding: 1.5rem;
+  .contact-details {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-1;
+    overflow: hidden;
 
-    .loading-text {
-      color: #64748b;
-      font-size: 0.875rem;
-      margin: 0;
+    .party-label {
+      font-size: $font-size-xs;
+      color: $color-text-fainter;
+      font-weight: $font-weight-medium;
     }
 
-    .history-container {
-      .history-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
+    .contact-name {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      color: $color-text;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-        .transition-item {
-          background: #f8fafc;
-          border: 0.0625rem solid #e2e8f0;
-          border-radius: 0.375rem;
-          padding: 0.875rem 1rem;
+    .contact-role {
+      font-size: $font-size-xs;
+      color: $color-text-fainter;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
 
-          .transition-row {
-            margin: 0 0 0.5rem 0;
-            font-size: 0.875rem;
-            display: flex;
-            gap: 0.5rem;
+.flow-connector {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  margin: 0 $spacing-4;
 
-            .label {
-              font-weight: 600;
-              color: #334155;
-              min-width: 6.25rem;
-            }
+  @media (max-width: 768px) {
+    width: 100%;
+    margin: $spacing-1 0;
+    justify-content: center;
+  }
 
-            .contact-info {
-              color: #475569;
-            }
+  .line {
+    flex: 1;
+    height: 1px;
+    background-color: $color-border-soft;
+  }
 
-            &:last-child {
-              margin-bottom: 0;
-            }
-          }
-        }
-      }
+  .arrow-badge {
+    width: 2rem;
+    height: 2rem;
+    border-radius: $radius-full;
+    background: $color-surface;
+    border: 1px solid $color-border-soft;
+    @include flex-center;
+    box-shadow: $shadow-sm;
+    flex-shrink: 0;
 
-      .empty-state {
-        background: #f8fafc;
-        border: 0.0625rem solid #e2e8f0;
-        border-radius: 0.375rem;
-        padding: 1rem;
+    .arrow-icon {
+      color: $color-primary;
+      width: 1rem;
+      height: 1rem;
+    }
 
-        .present-contact {
-          margin: 0;
-          font-size: 0.875rem;
-          display: flex;
-          gap: 0.5rem;
-
-          .label {
-            font-weight: 600;
-            color: #334155;
-            min-width: 6.25rem;
-          }
-
-          .contact-info {
-            color: #475569;
-          }
-        }
-      }
+    @media (max-width: 768px) {
+      transform: rotate(90deg);
     }
   }
 }

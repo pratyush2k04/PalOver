@@ -351,9 +351,9 @@
 
 @media print {
   :host { height: auto !important; overflow: visible !important; }
-  body, html { background: #fff !important; margin: 0 !important; padding: 0 !important; }
+  body, html { background: $color-surface !important; margin: 0 !important; padding: 0 !important; }
   .no-print { display: none !important; }
-  .print-page-wrapper { background: #fff !important; padding: 0 !important; min-height: auto !important; }
+  .print-page-wrapper { background: $color-surface !important; padding: 0 !important; min-height: auto !important; }
   .print-document { margin: 0 !important; padding: 0 !important; max-width: 100% !important; box-shadow: none !important; border-radius: 0 !important; }
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   .section-container {

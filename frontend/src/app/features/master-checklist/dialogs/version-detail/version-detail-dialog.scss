@@ -1,4 +1,4 @@
-@use '../../../../../styles/mixins' as *;
+@use '../../../../../styles/tokens' as *;
 
 :host {
   display: flex;
@@ -18,7 +18,7 @@
 
     /* Custom internal scrollbar */
     scrollbar-width: thin;
-    scrollbar-color: #cbd5e1 transparent;
+    scrollbar-color: $color-slate-300 transparent;
 
     &::-webkit-scrollbar {
       width: 6px;
@@ -29,11 +29,11 @@
     }
 
     &::-webkit-scrollbar-thumb {
-      background-color: #cbd5e1;
+      background-color: $color-slate-300;
       border-radius: 6px;
 
       &:hover {
-        background-color: #94a3b8;
+        background-color: $color-slate-400;
       }
     }
   }

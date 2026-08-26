@@ -41,7 +41,6 @@ import { SectionHeaderComponent } from '@common/components/section-header/sectio
     EmptyStateComponent,
     StatusBadgeComponent,
     AlertComponent,
-    LoadingSpinnerComponent,
     SectionHeaderComponent,
   ],
   templateUrl: './resources.component.html',

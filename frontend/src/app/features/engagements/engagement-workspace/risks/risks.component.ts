@@ -37,7 +37,6 @@ import { RiskFormDialogComponent, RiskFormDialogResult } from './components/risk
     ReactiveFormsModule,
     FormsModule,
     RouterLink,
-    LoadingSpinnerComponent,
     ButtonComponent,
     AlertComponent,
     StatusBadgeComponent,

@@ -1,10 +1,5 @@
-<!-- Loading State -->
-@if (isLoading()) {
-  <app-loading-spinner label="Loading checklist..." />
-}
-
 <!-- Error State -->
-@if (!isLoading() && error()) {
+@if (error()) {
   <div class="checklist-error">
     <span class="error-icon" [inlineSVG]="'assets/icons/alert-circle.svg'"></span>
     <p>{{ error() }}</p>
@@ -12,7 +7,7 @@
 }
 
 <!-- Checklist Content -->
-@if (!isLoading() && !error() && checklist()) {
+@if (!error() && (checklist() || !isLoading())) {
   <div class="checklist-container">
 
     <!-- Header -->
@@ -128,154 +123,156 @@
           <span class="category-count">{{ category.items.length }} item{{ category.items.length !== 1 ? 's' : '' }}</span>
         </div>
 
-        <table class="checklist-table">
-          <thead>
-            <tr>
-              <th class="col-item">ITEM</th>
-              <th class="col-owner">OWNER</th>
-              <th class="col-evidence">EVIDENCE</th>
-              <th class="col-status">STATUS</th>
-              @if (canPerformAnyAction()) {
-                <th class="col-actions">ACTIONS</th>
-              }
-            </tr>
-          </thead>
-          <tbody>
-            @for (item of category.items; track item.id) {
-              @if (item.isApplicable) {
-                <tr class="checklist-row" [class.row-blocked]="item.status === 'Blocked'">
-                  <td class="cell-item">
-                    <div class="item-title-wrapper">
-                      <span class="item-title">
-                        {{ item.title }}
-                      </span>
-                      @if (item.isMandatory) {
-                        <app-status-badge tone="danger">Mandatory</app-status-badge>
-                      } @else {
-                        <app-status-badge tone="neutral">Optional</app-status-badge>
-                      }
-                    </div>
-
-                    @if (item.blockReason) {
-                      <div class="item-reason-note">
-                        <span class="reason-label">Blocked:</span> {{ item.blockReason }}
-                      </div>
-                    }
-
-                    @if (item.exemptionStatus === 'Rejected' && item.exemptionRejectionReason) {
-                      <div class="item-reason-note">
-                        <span class="reason-label">Exemption Rejected:</span> {{ item.exemptionRejectionReason }}
-                      </div>
-                    }
-                  </td>
-
-                  <td class="cell-owner">
-                    @if (canToggleStatus()) {
-                      <select
-                        class="owner-select"
-                        [disabled]="isUpdating()"
-                        (change)="onOwnerChange(item, $any($event.target).value)">
-                        <option value="" [selected]="!item.ownerId">Unassigned</option>
-                        @for (user of assignedUsers(); track user.userId) {
-                          <option [value]="user.userId" [selected]="item.ownerId === user.userId">{{ user.fullName }}</option>
+        <div class="table-responsive">
+          <table class="checklist-table">
+            <thead>
+              <tr>
+                <th class="col-item">ITEM</th>
+                <th class="col-owner">OWNER</th>
+                <th class="col-evidence">EVIDENCE</th>
+                <th class="col-status">STATUS</th>
+                @if (canPerformAnyAction()) {
+                  <th class="col-actions">ACTIONS</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of category.items; track item.id) {
+                @if (item.isApplicable) {
+                  <tr class="checklist-row" [class.row-blocked]="item.status === 'Blocked'">
+                    <td class="cell-item">
+                      <div class="item-title-wrapper">
+                        <span class="item-title">
+                          {{ item.title }}
+                        </span>
+                        @if (item.isMandatory) {
+                          <app-status-badge tone="danger">Mandatory</app-status-badge>
+                        } @else {
+                          <app-status-badge tone="neutral">Optional</app-status-badge>
                         }
-                      </select>
-                    } @else {
-                      {{ item.ownerName || 'Unassigned' }}
-                    }
-                  </td>
+                      </div>
 
-                  <td class="cell-evidence">
-                    @if (item.evidenceNote || item.evidenceLink) {
-                      <button
-                        type="button"
-                        class="btn-evidence-view"
-                        (click)="openAttachEvidenceDialog(item, false)"
-                        [title]="item.evidenceNote || item.evidenceLink || 'View Evidence'">
-                        <span class="evidence-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
-                        <span class="evidence-text">{{ item.evidenceNote ? (item.evidenceNote | slice:0:20) + (item.evidenceNote.length > 20 ? '...' : '') : 'View Link' }}</span>
-                      </button>
-                    } @else if (item.evidenceRequired) {
-                      <div class="evidence-required-wrapper">
-                        <app-status-badge tone="warning" [appTooltip]="'Evidence is required to complete this item'">
-                          Required
-                        </app-status-badge>
+                      @if (item.blockReason) {
+                        <div class="item-reason-note">
+                          <span class="reason-label">Blocked:</span> {{ item.blockReason }}
+                        </div>
+                      }
+
+                      @if (item.exemptionStatus === 'Rejected' && item.exemptionRejectionReason) {
+                        <div class="item-reason-note">
+                          <span class="reason-label">Exemption Rejected:</span> {{ item.exemptionRejectionReason }}
+                        </div>
+                      }
+                    </td>
+
+                    <td class="cell-owner">
+                      @if (canToggleStatus()) {
+                        <select
+                          class="owner-select"
+                          [disabled]="isUpdating()"
+                          (change)="onOwnerChange(item, $any($event.target).value)">
+                          <option value="" [selected]="!item.ownerId">Unassigned</option>
+                          @for (user of assignedUsers(); track user.userId) {
+                            <option [value]="user.userId" [selected]="item.ownerId === user.userId">{{ user.fullName }}</option>
+                          }
+                        </select>
+                      } @else {
+                        {{ item.ownerName || 'Unassigned' }}
+                      }
+                    </td>
+
+                    <td class="cell-evidence">
+                      @if (item.evidenceNote || item.evidenceLink) {
+                        <button
+                          type="button"
+                          class="btn-evidence-view"
+                          (click)="openAttachEvidenceDialog(item, false)"
+                          [title]="item.evidenceNote || item.evidenceLink || 'View Evidence'">
+                          <span class="evidence-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
+                          <span class="evidence-text">{{ item.evidenceNote ? (item.evidenceNote | slice:0:20) + (item.evidenceNote.length > 20 ? '...' : '') : 'View Link' }}</span>
+                        </button>
+                      } @else if (item.evidenceRequired) {
+                        <div class="evidence-required-wrapper">
+                          <app-status-badge tone="warning" [appTooltip]="'Evidence is required to complete this item'">
+                            Required
+                          </app-status-badge>
+                          @if (canToggleStatus()) {
+                            <button type="button" class="btn-evidence-add" (click)="openAttachEvidenceDialog(item, false)">
+                              + Attach
+                            </button>
+                          }
+                        </div>
+                      } @else {
                         @if (canToggleStatus()) {
                           <button type="button" class="btn-evidence-add" (click)="openAttachEvidenceDialog(item, false)">
-                            + Attach
+                            + Add
                           </button>
+                        } @else {
+                          <span class="text-faint">&mdash;</span>
                         }
-                      </div>
-                    } @else {
-                      @if (canToggleStatus()) {
-                        <button type="button" class="btn-evidence-add" (click)="openAttachEvidenceDialog(item, false)">
-                          + Add
-                        </button>
-                      } @else {
-                        <span class="text-faint">&mdash;</span>
                       }
-                    }
-                  </td>
-
-                  <td class="cell-status">
-                    @if (item.exemptionStatus === 'Pending') {
-                      <app-status-badge tone="warning">Pending Approval</app-status-badge>
-                    } @else if (item.status === 'Blocked') {
-                      <app-status-badge tone="danger">Blocked</app-status-badge>
-                    } @else if (item.status === 'Complete') {
-                      <app-status-badge tone="success">Complete</app-status-badge>
-                    } @else {
-                      <app-status-badge tone="neutral">Incomplete</app-status-badge>
-                    }
-                  </td>
-
-                  @if (canPerformAnyAction()) {
-                    <td class="cell-actions">
-                      <div class="actions-group">
-                        <!-- Status Toggle / Unblock (PM & Tech Lead) -->
-                        @if (canToggleStatus()) {
-                          @if (item.status === 'Blocked') {
-                            <app-button type="button" variant="danger" [disabled]="isUpdating()" (click)="unblockItem(item)">
-                              Unblock
-                            </app-button>
-                          } @else if (item.status === 'Complete') {
-                            <app-button type="button" variant="stroked" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
-                              Reopen
-                            </app-button>
-                          } @else {
-                            <app-button type="button" variant="stroked" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
-                              Complete
-                            </app-button>
-                          }
-
-                          @if (item.status !== 'Blocked') {
-                            <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openBlockDialog(item)" ariaLabel="Flag as Blocked" [appTooltip]="'Flag as Blocked'">
-                              <span class="action-icon" [inlineSVG]="'assets/icons/flag.svg'"></span>
-                            </app-button>
-                          }
-                        }
-
-                        <!-- Applicability Actions (PM only) -->
-                        @if (canChangeApplicability() && item.exemptionStatus !== 'Pending') {
-                          <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openMarkNaDialog(item)" ariaLabel="Mark Not Applicable" [appTooltip]="'Mark Not Applicable'">
-                            <span class="action-icon" [inlineSVG]="'assets/icons/close.svg'"></span>
-                          </app-button>
-                        }
-
-                        <!-- Leadership Exemption Review -->
-                        @if (isLeadership() && item.exemptionStatus === 'Pending') {
-                          <app-button type="button" variant="flat" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
-                            Review Request
-                          </app-button>
-                        }
-                      </div>
                     </td>
-                  }
-                </tr>
+
+                    <td class="cell-status">
+                      @if (item.exemptionStatus === 'Pending') {
+                        <app-status-badge tone="warning">Pending Approval</app-status-badge>
+                      } @else if (item.status === 'Blocked') {
+                        <app-status-badge tone="danger">Blocked</app-status-badge>
+                      } @else if (item.status === 'Complete') {
+                        <app-status-badge tone="success">Complete</app-status-badge>
+                      } @else {
+                        <app-status-badge tone="neutral">Incomplete</app-status-badge>
+                      }
+                    </td>
+
+                    @if (canPerformAnyAction()) {
+                      <td class="cell-actions">
+                        <div class="actions-group">
+                          <!-- Status Toggle / Unblock (PM & Tech Lead) -->
+                          @if (canToggleStatus()) {
+                            @if (item.status === 'Blocked') {
+                              <app-button type="button" variant="danger" [disabled]="isUpdating()" (click)="unblockItem(item)">
+                                Unblock
+                              </app-button>
+                            } @else if (item.status === 'Complete') {
+                              <app-button type="button" variant="stroked" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
+                                Reopen
+                              </app-button>
+                            } @else {
+                              <app-button type="button" variant="stroked" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
+                                Complete
+                              </app-button>
+                            }
+
+                            @if (item.status !== 'Blocked') {
+                              <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openBlockDialog(item)" ariaLabel="Flag as Blocked" [appTooltip]="'Flag as Blocked'">
+                                <span class="action-icon" [inlineSVG]="'assets/icons/flag.svg'"></span>
+                              </app-button>
+                            }
+                          }
+
+                          <!-- Applicability Actions (PM only) -->
+                          @if (canChangeApplicability() && item.exemptionStatus !== 'Pending') {
+                            <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openMarkNaDialog(item)" ariaLabel="Mark Not Applicable" [appTooltip]="'Mark Not Applicable'">
+                              <span class="action-icon" [inlineSVG]="'assets/icons/close.svg'"></span>
+                            </app-button>
+                          }
+
+                          <!-- Leadership Exemption Review -->
+                          @if (isLeadership() && item.exemptionStatus === 'Pending') {
+                            <app-button type="button" variant="flat" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
+                              Review Request
+                            </app-button>
+                          }
+                        </div>
+                      </td>
+                    }
+                  </tr>
+                }
               }
-            }
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       </div>
     }
 
@@ -287,65 +284,67 @@
           <span class="category-count">{{ notApplicableItems().length }} item{{ notApplicableItems().length !== 1 ? 's' : '' }}</span>
         </div>
 
-        <table class="checklist-table">
-          <thead>
-            <tr>
-              <th class="col-item">ITEM</th>
-              <th class="col-category">CATEGORY</th>
-              <th class="col-reason">REASON</th>
-              @if (canPerformNaAction()) {
-                <th class="col-actions">ACTIONS</th>
-              }
-            </tr>
-          </thead>
-          <tbody>
-            @for (item of notApplicableItems(); track item.id) {
-              <tr class="checklist-row row-not-applicable">
-                <td class="cell-item">
-                  <div class="item-title-wrapper">
-                    <span class="item-title" [class.text-strikethrough]="item.exemptionStatus === 'Approved'">
-                      {{ item.title }}
-                    </span>
-                    @if (item.isMandatory) {
-                      <app-status-badge tone="danger">Mandatory</app-status-badge>
-                    } @else {
-                      <app-status-badge tone="neutral">Optional</app-status-badge>
-                    }
-                  </div>
-                </td>
-
-                <td class="cell-category">{{ item.categoryName }}</td>
-
-                <td class="cell-reason">
-                  @if (item.notApplicableReason) {
-                    <span class="reason-label">Reason:</span> {{ item.notApplicableReason }}
-                    @if (item.exemptionStatus === 'Rejected' && item.exemptionRejectionReason) {
-                      <span class="rejection-note">(Rejected: {{ item.exemptionRejectionReason }})</span>
-                    }
-                  }
-                </td>
-
+        <div class="table-responsive">
+          <table class="checklist-table">
+            <thead>
+              <tr>
+                <th class="col-item">ITEM</th>
+                <th class="col-category">CATEGORY</th>
+                <th class="col-reason">REASON</th>
                 @if (canPerformNaAction()) {
-                  <td class="cell-actions">
-                    <div class="actions-group">
-                      @if (canChangeApplicability()) {
-                        <app-button type="button" variant="stroked" [disabled]="isUpdating()" (click)="makeItemApplicable(item)">
-                          Make Applicable
-                        </app-button>
-                      }
-
-                      @if (isLeadership() && item.exemptionStatus === 'Pending') {
-                        <app-button type="button" variant="flat" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
-                          Review Request
-                        </app-button>
+                  <th class="col-actions">ACTIONS</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of notApplicableItems(); track item.id) {
+                <tr class="checklist-row row-not-applicable">
+                  <td class="cell-item">
+                    <div class="item-title-wrapper">
+                      <span class="item-title" [class.text-strikethrough]="item.exemptionStatus === 'Approved'">
+                        {{ item.title }}
+                      </span>
+                      @if (item.isMandatory) {
+                        <app-status-badge tone="danger">Mandatory</app-status-badge>
+                      } @else {
+                        <app-status-badge tone="neutral">Optional</app-status-badge>
                       }
                     </div>
                   </td>
-                }
-              </tr>
-            }
-          </tbody>
-        </table>
+
+                  <td class="cell-category">{{ item.categoryName }}</td>
+
+                  <td class="cell-reason">
+                    @if (item.notApplicableReason) {
+                      <span class="reason-label">Reason:</span> {{ item.notApplicableReason }}
+                      @if (item.exemptionStatus === 'Rejected' && item.exemptionRejectionReason) {
+                        <span class="rejection-note">(Rejected: {{ item.exemptionRejectionReason }})</span>
+                      }
+                    }
+                  </td>
+
+                  @if (canPerformNaAction()) {
+                    <td class="cell-actions">
+                      <div class="actions-group">
+                        @if (canChangeApplicability()) {
+                          <app-button type="button" variant="stroked" [disabled]="isUpdating()" (click)="makeItemApplicable(item)">
+                            Make Applicable
+                          </app-button>
+                        }
+
+                        @if (isLeadership() && item.exemptionStatus === 'Pending') {
+                          <app-button type="button" variant="flat" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
+                            Review Request
+                          </app-button>
+                        }
+                      </div>
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
       </div>
     }
 

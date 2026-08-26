@@ -1,9 +1,9 @@
-@use '../../../../../../styles/mixins' as *;
+@use '../../../../../../styles/tokens' as *;
 
 .dialog-container {
   width: 520px;
   max-width: calc(100vw - 48px);
-  background: #ffffff;
+  background: $color-surface;
   border-radius: 0.75rem;
   overflow: hidden;
   display: flex;
@@ -46,7 +46,7 @@
   label {
     font-size: $font-size-sm;
     font-weight: $font-weight-semibold;
-    color: #334155;
+    color: $color-slate-700;
 
     .required {
       color: $color-danger;
@@ -57,7 +57,7 @@
     width: 100%;
     padding: $spacing-2 $spacing-3;
     font-size: $font-size-sm;
-    border: 1px solid #cbd5e1;
+    border: 1px solid $color-slate-300;
     border-radius: $radius-md;
     color: $color-text;
     outline: none;

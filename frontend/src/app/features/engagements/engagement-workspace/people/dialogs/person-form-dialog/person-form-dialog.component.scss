@@ -3,6 +3,8 @@
 .dialog-container {
   @include modal-card(35rem);
   width: 35rem;
+  max-width: 100%;
+  box-sizing: border-box;
   padding: 0;
 }
 

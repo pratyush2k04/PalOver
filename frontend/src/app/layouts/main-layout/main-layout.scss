@@ -1,3 +1,5 @@
+@use '../../../styles/tokens' as *;
+
 :host {
   display: block;
   height: 100vh;
@@ -25,6 +27,25 @@
   flex: 1;
   overflow-y: auto;
   scrollbar-gutter: stable;
-  background-color: #eaedf2;
+  background-color: $color-surface-subtle-alt;
   box-sizing: border-box;
 }
+
+.mobile-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba($color-black, 0.5);
+  z-index: 999;
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+

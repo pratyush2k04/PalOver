@@ -66,14 +66,14 @@
         <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="cancelConfirm()">
           {{ buttonLabels.BACK }}
         </app-button>
-        <app-button type="button" variant="accent" [disabled]="isSubmitting()" (click)="confirmAndSave()">
+        <app-button type="button" variant="flat" [disabled]="isSubmitting()" (click)="confirmAndSave()">
           {{ isSubmitting() ? buttonLabels.SAVING : buttonLabels.CONFIRM_SAVE }}
         </app-button>
       } @else {
         <app-button type="button" variant="stroked" (click)="onCancel()">
           {{ buttonLabels.CANCEL }}
         </app-button>
-        <app-button type="submit" variant="accent" [disabled]="isSubmitting()">
+        <app-button type="submit" variant="flat" [disabled]="isSubmitting()">
           {{ buttonLabels.REVIEW_CONFIRM }}
         </app-button>
       }

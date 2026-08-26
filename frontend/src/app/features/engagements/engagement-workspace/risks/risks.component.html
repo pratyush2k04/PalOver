@@ -43,13 +43,7 @@
     </div>
   </div>
 
-  <!-- Loading Indicator -->
-  @if (isLoading()) {
-    <div class="loading-container">
-      <app-loading-spinner label="Loading risk register..." />
-    </div>
-  } @else {
-    <!-- Risks List -->
+  <!-- Risks List -->
     @if (filteredRisks().length === 0) {
       <app-empty-state message="No risks match the selected filters or none have been logged yet for this engagement." />
     } @else {
@@ -152,7 +146,6 @@
         }
       </div>
     }
-  }
 
   <!-- Close Risk Modal -->
   @if (showCloseModal()) {

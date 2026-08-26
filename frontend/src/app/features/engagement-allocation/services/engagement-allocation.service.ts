@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { EngagementAllocationItem, LeadershipUserItem } from '../models/engagement-allocation.model';
+import { EngagementAllocationItem, HandoverDraftStatus, LeadershipUserItem } from '../models/engagement-allocation.model';
 import { ENGAGEMENT_API_ENDPOINTS } from '@shared/constants/app.constants';
 
 @Injectable({
@@ -20,6 +20,10 @@ export class EngagementAllocationService {
 
   getAvailableLeadershipUsers(): Observable<LeadershipUserItem[]> {
     return this.http.get<LeadershipUserItem[]>(ENGAGEMENT_API_ENDPOINTS.LEADERSHIP_ROLE_USERS);
+  }
+
+  getHandoverDraftStatus(engagementId: number): Observable<HandoverDraftStatus> {
+    return this.http.get<HandoverDraftStatus>(ENGAGEMENT_API_ENDPOINTS.HANDOVER_DRAFT_STATUS(engagementId));
   }
 
   assignLeadershipUser(engagementId: number, userId: number): Observable<LeadershipUserItem[]> {
