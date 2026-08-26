@@ -286,7 +286,7 @@ public class EngagementsController(
     /// </summary>
     /// <returns>Leadership dashboard data with readiness score, open blocker count, days-to-kickoff, and computed status.</returns>
     [HttpGet("leadership-dashboard")]
-    [Authorize]
+    [AuthorizeRoles(RoleEnum.Leadership)]
     [EndpointSummary("Get leadership portfolio dashboard engagements")]
     [ProducesResponseType(typeof(IEnumerable<LeadershipEngagementListItemDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
