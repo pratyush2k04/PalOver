@@ -119,7 +119,7 @@ The renderer will automatically pick up the mapper when a notification with this
 
 ## 3. Fire the notification from a service
 
-You have **two ways** to create a notification, depending on whether the recipient is determined by a role on an engagement or is a specific, known user.
+You have **three ways** to create a notification: recipient determined by a role on an engagement, a single specific known user, or a batch of specific known users.
 
 ### Option A – Notify a role on an engagement (most domain events)
 
@@ -183,6 +183,37 @@ Task CreateFromTemplateAsync(
     string data,
     DateTime scheduledFor,
     NotificationPriority? priorityOverride = null,
+    CancellationToken cancellationToken = default);
+```
+
+### Option C – Notify a batch of specific users directly
+
+Use this when the same event needs to notify several known users at once — e.g. everyone in a leadership group, or all watchers of a record — rather than a single role or a single user. It's the same idea as Option B but for many `receiverUserId`s in one call, without looping `CreateFromTemplateAsync` per user.
+
+```csharp
+var leadershipAssignments = await resourceRequestRepository.GetLeadershipAssignmentsAsync(engagementId);
+
+await notificationService.CreateFromTemplateAsync(
+    templateKey: "ResourceRequestRaised",
+    receiverUserIds: leadershipAssignments.Select(a => a.UserId),
+    data: JsonSerializer.Serialize(new ResourceRequestRaisedMapper.ResourceRequestRaisedData(
+        resourceRequestId, engagementId)),
+    scheduledFor: DateTime.UtcNow);
+```
+
+**What happens internally:**
+- Looks up the template by key; throws `NotificationTemplateNotFoundException` if missing (same as Option B).
+- Creates one `Notification` row per user ID via `AddRangeAsync`.
+- Unlike Options A and B, there is **no `priorityOverride` parameter** — every row uses the template's `DefaultPriority`.
+
+**Method signature:**
+
+```csharp
+Task CreateFromTemplateAsync(
+    string templateKey,
+    IEnumerable<int> receiverUserIds,
+    string data,
+    DateTime scheduledFor,
     CancellationToken cancellationToken = default);
 ```
 
