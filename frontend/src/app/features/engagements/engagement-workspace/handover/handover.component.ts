@@ -8,7 +8,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { HandoverService } from '../../services/handover.service';
 import { EngagementService } from '../../services/engagement.service';
@@ -16,7 +16,6 @@ import { catchError, of } from 'rxjs';
 import { AuthService } from '@shared/services/auth';
 import { KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
 import { EngagementInfoDto } from '../../models/engagement.model';
-import { ENGAGEMENT_ROUTES } from '@shared/constants/app.constants';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { AddCommitmentDialogComponent, AddCommitmentDialogData } from './dialogs/add-commitment-dialog/add-commitment-dialog.component';
 import {
@@ -95,7 +94,6 @@ export class HandoverComponent {
   engagementInfo = signal<EngagementInfoDto | null>(null);
 
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
   private handoverService = inject(HandoverService);
   private engagementService = inject(EngagementService);
   private kickoffReadinessService = inject(KickoffReadinessService);

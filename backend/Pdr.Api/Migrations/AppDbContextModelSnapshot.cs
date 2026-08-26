@@ -4902,6 +4902,19 @@ namespace Pdr.Api.Migrations
                             LinkPattern = "/engagement-allocation",
                             Title = "Allocate leadership for engagement {EngagementName}",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 96837,
+                            Body = "{EngagementName} still has open mandatory items with kickoff in {DaysBeforeKickoff} days.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 2,
+                            IsDeleted = false,
+                            Key = "KickoffReadinessReminder",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/{TabKey}",
+                            Title = "{DaysBeforeKickoff} days until kickoff — {EngagementName} readiness incomplete",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 

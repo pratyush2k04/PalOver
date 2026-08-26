@@ -1,6 +1,7 @@
 using Pdr.Api.DTOs.Common;
 using Pdr.Api.DTOs.Notifications;
 using Pdr.Api.Models.LoginEntity;
+using Pdr.Api.Models.Notifications;
 
 namespace Pdr.Api.Services.Interfaces;
 
@@ -12,6 +13,7 @@ public interface INotificationService
         RoleEnum receiverRole,
         string data,
         DateTime scheduledFor,
+        NotificationPriority? priorityOverride = null,
         CancellationToken cancellationToken = default);
 
     Task CreateFromTemplateAsync(
@@ -19,6 +21,7 @@ public interface INotificationService
         int receiverUserId,
         string data,
         DateTime scheduledFor,
+        NotificationPriority? priorityOverride = null,
         CancellationToken cancellationToken = default);
 
     Task CreateFromTemplateAsync(

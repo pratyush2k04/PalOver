@@ -24,7 +24,10 @@ export type AuditAction =
   | 'DependencyUpdated'
   | 'DependencyDeleted'
   | 'DependencyEscalated'
-  | 'ReadinessOnePagerGenerated';
+  | 'ReadinessOnePagerGenerated'
+  | 'KickoffReadyMarked'
+  | 'KickoffReadyReverted'
+  | 'AccessItemBlocked';
 export interface AuditLogDto {
   id: number;
   userId: number;

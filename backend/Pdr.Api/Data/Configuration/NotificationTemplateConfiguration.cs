@@ -254,6 +254,19 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",
                 IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 96837,
+                Key = "KickoffReadinessReminder",
+                Title = "{DaysBeforeKickoff} days until kickoff — {EngagementName} readiness incomplete",
+                Body = "{EngagementName} still has open mandatory items with kickoff in {DaysBeforeKickoff} days.",
+                DefaultPriority = NotificationPriority.Medium,
+                LinkPattern = "/engagements/{EngagementId}/workspace/{TabKey}",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
             }
         );
     }

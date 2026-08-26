@@ -35,6 +35,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IRiskRepository, RiskRepository>();
         services.AddScoped<IRiskCommentRepository, RiskCommentRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<IKickoffReminderRepository, KickoffReminderRepository>();
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
         services.AddScoped<IArchitectureValidationRepository, ArchitectureValidationRepository>();
         services.AddScoped<ISearchRepository, SearchRepository>();
@@ -55,6 +56,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ICommitmentService, CommitmentService>();
         services.AddScoped<IRealisticCommitmentService, RealisticCommitmentService>();
         services.AddScoped<IKickoffReadinessService, KickoffReadinessService>();
+        services.AddScoped<IKickoffReminderService, KickoffReminderService>();
         services.AddScoped<IMasterChecklistService, MasterChecklistService>();
         services.AddScoped<IHomeService, HomeService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();

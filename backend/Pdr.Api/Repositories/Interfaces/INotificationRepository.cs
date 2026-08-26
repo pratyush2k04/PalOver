@@ -14,6 +14,7 @@ public interface INotificationRepository
     Task<int> GetUnreadCountAsync(int userId);
     Task BulkDeleteAsync(IEnumerable<int> ids);
     Task<NotificationTemplate?> GetTemplateByKeyAsync(string templateKey);
+    Task SaveChangesAsync();
 
     // Raw int priority, not NotificationPriority — priority 4 has no enum member yet.
     // TODO: accept NotificationPriority once the priority-4 escalation-notifications feature lands.
