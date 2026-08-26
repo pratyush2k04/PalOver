@@ -11,6 +11,7 @@ public static class NotificationMapperRegistry
         services.AddScoped<INotificationTemplateMapper, AccessItemBlockedMapper>();
         services.AddScoped<INotificationTemplateMapper, PMAllocatedMapper>();
         services.AddScoped<INotificationTemplateMapper, HandoverSubmittedMapper>();
+        services.AddScoped<INotificationTemplateMapper, KickoffReadinessReminderMapper>();
         services.AddScoped<INotificationTemplateMapper, BlockerEscalatedPMMapper>();
         services.AddScoped<INotificationTemplateMapper, BlockerEscalatedLeadershipMapper>();
         services.AddScoped<INotificationTemplateMapper, RiskCommentMentionMapper>();

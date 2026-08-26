@@ -64,6 +64,12 @@ public class KickoffReadinessService(
         var totalPassed = checks.Sum(c => c.Passed);
         var score = totalApplicable == 0 ? 100 : (int)Math.Round(totalPassed * 100.0 / totalApplicable);
 
+        var nextIncompleteTabKey =
+            handoverCheck.Passed < handoverCheck.Applicable ? "handover" :
+            commitmentsCheck.Passed < commitmentsCheck.Applicable ? "handover" :
+            checklistCheck.Passed < checklistCheck.Applicable ? "technical-readiness" :
+            null;
+
         var dto = new KickoffReadinessDto(
             score,
             totalApplicable,
@@ -73,7 +79,8 @@ public class KickoffReadinessService(
             commitmentsCheck.Applicable,
             commitmentsCheck.Passed,
             checklistCheck.Applicable,
-            checklistCheck.Passed);
+            checklistCheck.Passed,
+            nextIncompleteTabKey);
 
         return new ReadinessComputation(
             dto,
