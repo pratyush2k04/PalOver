@@ -21,6 +21,7 @@ public interface IEngagementService
     Task<List<LeadershipUserDto>> AssignLeadershipUserAsync(int engagementId, int userId);
     Task<List<LeadershipUserDto>> AssignLeadershipUsersAsync(int engagementId, List<int> userIds);
     Task<List<LeadershipUserDto>> RemoveLeadershipUserAsync(int engagementId, int userId);
+    Task<HandoverDraftStatusDto> GetHandoverDraftStatusAsync(int engagementId);
     Task<List<LeadershipEngagementListItemDto>> GetLeadershipDashboardAsync();
     Task<EngagementOpenItemsSummaryDto?> GetOpenItemsSummaryAsync(int engagementId);
     Task<DayOneSignOffDto> SignOffDayOneAsync(int engagementId, DayOneSignOffRequest request);

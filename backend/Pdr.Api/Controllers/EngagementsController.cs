@@ -236,6 +236,23 @@ public class EngagementsController(
     }
 
     /// <summary>
+    /// Gets whether an engagement has a handover draft and its content, for use in the leadership allocation flow (Admin only).
+    /// </summary>
+    /// <param name="id">The engagement ID.</param>
+    /// <returns>Handover draft status and content, independent of the caller's engagement assignment.</returns>
+    /// <response code="200">Handover draft status returned successfully.</response>
+    /// <response code="404">Engagement was not found.</response>
+    [HttpGet("{id:int}/handover-draft-status")]
+    [Authorize(Policy = "AdminOnly")]
+    [ProducesResponseType(typeof(HandoverDraftStatusDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<HandoverDraftStatusDto>> GetHandoverDraftStatus(int id)
+    {
+        var status = await engagementService.GetHandoverDraftStatusAsync(id);
+        return Ok(status);
+    }
+
+    /// <summary>
     /// Assigns one or more Leadership users to an engagement.
     /// </summary>
     /// <param name="id">The engagement ID.</param>
