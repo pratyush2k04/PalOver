@@ -18,20 +18,37 @@
 
   .kpi-cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
     width: 100%;
     margin-bottom: 1.5rem;
+    
+    @media (max-width: 1024px) {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
   }
 
   .main-content-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
     width: 100%;
+    align-items: start;
+
+    .main-left {
+      grid-column: span 2;
+    }
+    
+    .main-right {
+      grid-column: span 1;
+    }
     
     @media (max-width: 1024px) {
       grid-template-columns: 1fr;
+      
+      .main-left, .main-right {
+        grid-column: span 1;
+      }
     }
   }
 }

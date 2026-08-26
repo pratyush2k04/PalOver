@@ -36,7 +36,6 @@
 .list-content {
   overflow-y: auto;
   max-height: 400px;
-  min-height: 250px;
 }
 
 .blockers-list {
@@ -75,7 +74,7 @@
 
 .engagement-name {
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-color, #111827);
   white-space: nowrap;
   overflow: hidden;

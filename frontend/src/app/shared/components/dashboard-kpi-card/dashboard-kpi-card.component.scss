@@ -39,7 +39,7 @@
     span {
       display: flex;
     }
-    
+
     ::ng-deep svg {
       width: 28px;
       height: 28px;
@@ -47,23 +47,47 @@
 
     &.text-primary {
       background-color: #EEF2FF;
-      ::ng-deep svg { stroke: #4F46E5; fill: none; }
+
+      ::ng-deep svg {
+        stroke: #4F46E5;
+        fill: none;
+      }
     }
+
     &.text-danger {
       background-color: #FEF2F2;
-      ::ng-deep svg { stroke: #EF4444; fill: none; }
+
+      ::ng-deep svg {
+        stroke: #EF4444;
+        fill: none;
+      }
     }
+
     &.text-success {
       background-color: #ECFCCB; // Light green/lime from original design
-      ::ng-deep svg { stroke: #65A30D; fill: none; }
+
+      ::ng-deep svg {
+        stroke: #65A30D;
+        fill: none;
+      }
     }
+
     &.text-warning {
       background-color: #FEF3C7; // Light yellow/orange
-      ::ng-deep svg { stroke: #D97706; fill: none; }
+
+      ::ng-deep svg {
+        stroke: #D97706;
+        fill: none;
+      }
     }
+
     &.text-info {
       background-color: #F0F9FF;
-      ::ng-deep svg { stroke: #0EA5E9; fill: none; }
+
+      ::ng-deep svg {
+        stroke: #0EA5E9;
+        fill: none;
+      }
     }
   }
 
@@ -75,7 +99,7 @@
 
   .count {
     font-size: 2.25rem;
-    font-weight: 800;
+    font-weight: 700;
     line-height: 1;
     color: #111827;
     margin-bottom: 0.15rem;

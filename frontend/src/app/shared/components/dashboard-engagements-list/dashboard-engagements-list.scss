@@ -16,7 +16,7 @@
 
   h3 {
     margin: 0;
-    font-size: 1rem;
+    font-size: 1.125rem;
     font-weight: 700;
     color: var(--text-color, #111827);
   }
@@ -43,7 +43,6 @@
 .list-content {
   overflow-y: auto;
   max-height: 450px;
-  min-height: 250px;
 }
 
 .engagements-list {
@@ -94,7 +93,7 @@
 }
 
 .engagement-name {
-  font-weight: 600;
+  font-weight: 500;
   font-size: 0.95rem;
   color: var(--text-color, #111827);
   white-space: nowrap;
