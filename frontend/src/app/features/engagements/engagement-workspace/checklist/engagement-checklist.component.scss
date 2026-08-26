@@ -50,6 +50,12 @@
   gap: $spacing-3;
   flex-wrap: wrap;
 
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-2;
+  }
+
   .search-input {
     flex: 1;
     min-width: 200px;
@@ -61,6 +67,12 @@
     color: $color-text;
     background-color: $color-surface;
     transition: border-color 0.15s, box-shadow 0.15s;
+
+    @media screen and (max-width: 768px) {
+      max-width: 100%;
+      width: 100%;
+      box-sizing: border-box;
+    }
 
     &::placeholder {
       color: $color-text-fainter;
@@ -88,6 +100,11 @@
     cursor: pointer;
     transition: border-color 0.15s;
 
+    @media screen and (max-width: 768px) {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
     &:hover {
       border-color: $color-border;
     }
@@ -96,6 +113,12 @@
       outline: none;
       border-color: $color-primary;
       box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+    }
+  }
+
+  app-button {
+    @media screen and (max-width: 768px) {
+      width: 100%;
     }
   }
 }
@@ -258,9 +281,16 @@
   color: $color-text-fainter;
 }
 
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 // Table
 .checklist-table {
   width: 100%;
+  min-width: 50rem;
   border-collapse: collapse;
 
   thead tr {
@@ -275,6 +305,7 @@
     letter-spacing: 0.5px;
     text-align: left;
     background: $color-surface;
+    white-space: nowrap;
   }
 
   tbody tr {
@@ -300,18 +331,19 @@
   }
 }
 
-.col-item { width: 36%; }
-.col-owner { width: 16%; }
-.col-evidence { width: 18%; }
-.col-status { width: 14%; }
-.col-actions { width: 16%; }
-.col-category { width: 20%; }
-.col-reason { width: 30%; }
+.col-item { width: 36%; min-width: 14rem; }
+.col-owner { width: 16%; min-width: 8.5rem; }
+.col-evidence { width: 18%; min-width: 9rem; }
+.col-status { width: 14%; min-width: 8rem; }
+.col-actions { width: 16%; min-width: 9rem; }
+.col-category { width: 20%; min-width: 10rem; }
+.col-reason { width: 30%; min-width: 12rem; }
 
 .cell-item {
   font-size: $font-size-sm;
   color: $color-text;
   line-height: 1.4;
+  min-width: 14rem;
 }
 
 .item-title-wrapper {
