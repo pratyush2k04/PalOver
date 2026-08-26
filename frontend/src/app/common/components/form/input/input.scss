@@ -7,71 +7,50 @@
 .app-field {
   display: flex;
   flex-direction: column;
-  gap: $spacing-1;
-  margin-bottom: $spacing-3;
+  gap: 4px;
+  margin-bottom: 12px;
 
   label {
-    font-size: $font-size-xs;
-    font-weight: $font-weight-medium;
+    font-size: 12px;
+    font-weight: 500;
     color: $color-text-faint;
   }
 }
 
-.input-wrapper {
-  display: flex;
-  align-items: center;
+input {
   width: 100%;
+  font-family: inherit;
+  font-size: 14px;
+  color: $color-text;
   background-color: $color-surface;
   border: 1px solid $color-border-input;
-  border-radius: $radius-md;
-  padding: 0 $spacing-3;
+  border-radius: 6px;
+  padding: 8px 12px;
+  outline: none;
   box-sizing: border-box;
 
-  &:focus-within {
+  &:focus {
     border-color: $color-primary;
-    box-shadow: 0 0 0 2px $color-primary-focus-ring;
+    box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
   }
 
   &.is-invalid {
     border-color: $color-danger;
 
-    &:focus-within {
-      box-shadow: 0 0 0 2px $color-danger-focus-ring;
+    &:focus {
+      box-shadow: 0 0 0 2px rgba($color-danger, 0.15);
     }
   }
 
-  &.is-disabled {
+  &:disabled {
     background-color: $color-bg;
     cursor: not-allowed;
   }
 }
 
-.input-prefix {
-  font-size: $font-size-sm;
-  color: $color-text-faint;
-  margin-right: $spacing-1;
-  white-space: nowrap;
-}
-
-input {
-  flex: 1;
-  width: 100%;
-  font-family: inherit;
-  font-size: $font-size-sm;
-  color: $color-text;
-  background: transparent;
-  border: none;
-  padding: $spacing-2 0;
-  outline: none;
-
-  &:disabled {
-    cursor: not-allowed;
-  }
-}
-
 .char-counter {
-  margin-top: 0.125rem;
-  font-size: $font-size-xs;
+  margin-top: 2px;
+  font-size: 12px;
   color: $color-text-fainter;
   text-align: right;
 
@@ -82,5 +61,5 @@ input {
 
 .app-field__error {
   color: $color-danger;
-  font-size: $font-size-xs;
+  font-size: 12px;
 }

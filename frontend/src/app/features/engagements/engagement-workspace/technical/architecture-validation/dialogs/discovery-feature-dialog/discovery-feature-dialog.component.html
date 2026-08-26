@@ -34,17 +34,19 @@
         </div>
 
         <div class="form-group flex-1">
-          <app-input
-            id="target-sprint"
-            label="Target Sprint"
-            type="number"
-            prefixText="Sprint: "
-            [min]="1"
-            [ngModel]="targetSprint()"
-            (ngModelChange)="onTargetSprintChange($event)"
-            name="targetSprint"
-            [extraError]="targetSprintError() || null"
-          />
+          <div class="sprint-input-wrapper">
+            <span class="sprint-prefix">Sprint:</span>
+            <app-input
+              id="target-sprint"
+              label="Target Sprint"
+              type="number"
+              [min]="1"
+              [ngModel]="targetSprint()"
+              (ngModelChange)="onTargetSprintChange($event)"
+              name="targetSprint"
+              [extraError]="targetSprintError() || null"
+            />
+          </div>
         </div>
       </div>
     </div>
