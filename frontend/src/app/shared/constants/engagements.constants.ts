@@ -15,6 +15,7 @@ export const ENGAGEMENT_API_ENDPOINTS = {
   LEADERSHIP_USERS: (id: number) => `/api/Engagements/${id}/leadership-users`,
   LEADERSHIP_ROLE_USERS: '/api/Roles/4/users',
   DELETE_LEADERSHIP_USER: (id: number, userId: number) => `/api/Engagements/${id}/leadership-users/${userId}`,
+  HANDOVER_DRAFT_STATUS: (id: number) => `/api/Engagements/${id}/handover-draft-status`,
   ENGAGEMENT_CHECKLIST: (id: number) => `/api/engagements/${id}/workspace/checklist`,
   CHECKLIST_ITEM_EVIDENCE: (engagementId: number, itemId: number) => `/api/engagements/${engagementId}/workspace/checklist/items/${itemId}/evidence`,
   ENGAGEMENT_DOCUMENTS: (id: number) => `/api/documents/engagement/${id}`,

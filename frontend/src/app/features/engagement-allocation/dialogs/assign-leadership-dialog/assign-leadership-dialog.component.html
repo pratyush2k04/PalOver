@@ -12,7 +12,7 @@
       <label class="input-label">Handover Draft Details</label>
       @if (isLoadingHandover()) {
         <app-loading-spinner size="sm" [inline]="true" label="Loading handover details..." />
-      } @else if (handover()) {
+      } @else if (handover()?.hasHandoverDraft) {
         <div class="handover-summary-grid">
           <div class="handover-field">
             <span class="handover-field-label">Status</span>

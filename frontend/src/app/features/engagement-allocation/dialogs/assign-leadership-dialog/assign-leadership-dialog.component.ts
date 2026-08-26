@@ -11,9 +11,7 @@ import { AlertComponent } from '@common/components/alert/alert';
 import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { ToastService } from '@common/services/toast/toast';
 import { EngagementAllocationService } from '../../services/engagement-allocation.service';
-import { EngagementAllocationItem, LeadershipUserItem } from '../../models/engagement-allocation.model';
-import { HandoverService } from '@features/engagements/services/handover.service';
-import { HandoverInfoDto } from '@features/engagements/models/handover.model';
+import { EngagementAllocationItem, HandoverDraftStatus, LeadershipUserItem } from '../../models/engagement-allocation.model';
 
 export interface AssignLeadershipDialogData {
   engagement: EngagementAllocationItem;
@@ -39,7 +37,6 @@ export interface AssignLeadershipDialogData {
 export class AssignLeadershipDialogComponent implements OnInit {
   private dialogRef = inject<DialogRef<LeadershipUserItem[]>>(DialogRef);
   private allocationService = inject(EngagementAllocationService);
-  private handoverService = inject(HandoverService);
   private toastService = inject(ToastService);
   readonly data = inject<AssignLeadershipDialogData>(DIALOG_DATA);
 
@@ -48,13 +45,13 @@ export class AssignLeadershipDialogComponent implements OnInit {
   modalLeadershipUsers = signal<LeadershipUserItem[]>([...(this.data.engagement.leadershipUsers || [])]);
   modalSearchTerm = signal<string>('');
   isSaving = signal<boolean>(false);
-  readonly handover = signal<HandoverInfoDto | null>(null);
+  readonly handover = signal<HandoverDraftStatus | null>(null);
   readonly isLoadingHandover = signal<boolean>(true);
 
   ngOnInit(): void {
-    this.handoverService.getHandover(this.engagement.engagementId).subscribe({
-      next: (dto) => {
-        this.handover.set(dto);
+    this.allocationService.getHandoverDraftStatus(this.engagement.engagementId).subscribe({
+      next: (status) => {
+        this.handover.set(status);
         this.isLoadingHandover.set(false);
       },
       error: () => {

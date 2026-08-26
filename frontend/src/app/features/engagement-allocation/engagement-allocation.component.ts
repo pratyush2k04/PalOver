@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { EngagementAllocationService } from './services/engagement-allocation.service';
 import { EngagementAllocationItem, LeadershipUserItem } from './models/engagement-allocation.model';
-import { HandoverService } from '@features/engagements/services/handover.service';
 import { ToastService } from '@common/services/toast/toast';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
@@ -33,7 +32,6 @@ import {
 })
 export class EngagementAllocationComponent implements OnInit {
   private allocationService = inject(EngagementAllocationService);
-  private handoverService = inject(HandoverService);
   private toastService = inject(ToastService);
   private dialog = inject(DialogService);
 
@@ -115,12 +113,12 @@ export class EngagementAllocationComponent implements OnInit {
 
         // Fetch handover draft status for each engagement
         items.forEach(eng => {
-          this.handoverService.getHandover(eng.engagementId).subscribe({
-            next: (dto) => {
+          this.allocationService.getHandoverDraftStatus(eng.engagementId).subscribe({
+            next: (status) => {
               this.engagements.update(list =>
                 list.map(item =>
                   item.engagementId === eng.engagementId
-                    ? { ...item, hasHandoverDraft: dto.handoverId > 0, isLoadingHandover: false }
+                    ? { ...item, hasHandoverDraft: status.hasHandoverDraft, isLoadingHandover: false }
                     : item
                 )
               );

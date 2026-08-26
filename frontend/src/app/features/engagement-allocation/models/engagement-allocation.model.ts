@@ -4,6 +4,14 @@ export interface LeadershipUserItem {
   email: string;
 }
 
+export interface HandoverDraftStatus {
+  hasHandoverDraft: boolean;
+  status?: string;
+  clientBackground?: string;
+  businessProblem?: string;
+  clientSentiment?: string;
+}
+
 export interface EngagementAllocationItem {
   engagementId: number;
   engagementName: string;
