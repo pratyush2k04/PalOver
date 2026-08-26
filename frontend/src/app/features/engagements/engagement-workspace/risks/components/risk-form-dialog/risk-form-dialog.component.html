@@ -1,0 +1,85 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h3>{{ isEditMode ? 'Edit Risk' : 'Record New Risk' }}</h3>
+    <app-button type="button" variant="icon" ariaLabel="Close" (click)="onCancel()">&times;</app-button>
+  </div>
+
+  <form [formGroup]="riskForm" (ngSubmit)="onSubmit()">
+    <div class="dialog-body">
+      <app-input
+        id="title"
+        label="Risk Title"
+        formControlName="title"
+        placeholder="Short descriptive title of the risk"
+        [maxLength]="300"
+      />
+
+      <app-textarea
+        id="description"
+        label="Description"
+        formControlName="description"
+        [rows]="3"
+        placeholder="Detailed explanation of potential risk impact and context"
+        [maxLength]="2000"
+      />
+
+      <div class="form-row">
+        <div class="form-group col">
+          <app-select
+            id="impact"
+            label="Impact"
+            formControlName="impact"
+            [options]="impactOptions"
+          />
+        </div>
+
+        <div class="form-group col">
+          <app-select
+            id="likelihood"
+            label="Likelihood"
+            formControlName="likelihood"
+            [options]="likelihoodOptions"
+          />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col">
+          <app-select
+            id="ownerId"
+            label="Owner *"
+            formControlName="ownerId"
+            [options]="ownerSelectOptions"
+          />
+        </div>
+
+        @if (isEditMode) {
+          <div class="form-group col">
+            <app-select
+              id="status"
+              label="Status"
+              formControlName="status"
+              [options]="statusEditOptions"
+            />
+          </div>
+        }
+      </div>
+
+      <app-textarea
+        id="mitigation"
+        label="Mitigation Plan"
+        formControlName="mitigation"
+        [rows]="3"
+        placeholder="Actions taken or planned to reduce or eliminate the risk"
+        [maxLength]="2000"
+      />
+    </div>
+
+    <div class="dialog-footer">
+      <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+      <app-button type="submit" variant="flat">
+        {{ isEditMode ? 'Update Risk' : 'Save Risk' }}
+      </app-button>
+    </div>
+  </form>
+</div>
