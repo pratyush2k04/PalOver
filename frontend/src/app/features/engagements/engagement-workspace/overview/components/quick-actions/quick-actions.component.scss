@@ -2,6 +2,8 @@
 @use '../../../../../../../styles/mixins' as *;
 
 .quick-actions-card {
+  display: flex;
+  flex-direction: column;
   background-color: $color-surface;
   border: 1px solid $color-border-soft;
   border-radius: $radius-lg;
@@ -19,7 +21,20 @@
 }
 
 .tiles-grid {
+  flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: $spacing-3;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-4;
+
+  @media (max-width: 992px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
 }
