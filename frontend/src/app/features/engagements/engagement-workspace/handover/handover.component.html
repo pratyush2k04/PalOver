@@ -111,36 +111,40 @@
       <div class="section client-context client-context-readonly">
         <h3>{{ HANDOVER_LABELS.CLIENT_CONTEXT }}</h3>
 
-        <div class="readonly-field">
-          <span class="readonly-label">{{ HANDOVER_LABELS.CLIENT_BACKGROUND }}</span>
-          <p class="readonly-value" [class.readonly-value-empty]="!handover()?.clientBackground">
-            {{ handover()?.clientBackground || HANDOVER_LABELS.NOT_PROVIDED }}
-          </p>
-        </div>
+        <div class="readonly-grid">
+          <div class="readonly-card full-width">
+            <span class="readonly-label">Client Background</span>
+            <p class="readonly-value" [class.readonly-value-empty]="!handover()?.clientBackground">
+              {{ handover()?.clientBackground || HANDOVER_LABELS.NOT_PROVIDED }}
+            </p>
+          </div>
 
-        <div class="readonly-field">
-          <span class="readonly-label">{{ HANDOVER_LABELS.BUSINESS_PROBLEM }}</span>
-          <p class="readonly-value" [class.readonly-value-empty]="!handover()?.businessProblem">
-            {{ handover()?.businessProblem || HANDOVER_LABELS.NOT_PROVIDED }}
-          </p>
-        </div>
+          <div class="readonly-card full-width">
+            <span class="readonly-label">Business Problem</span>
+            <p class="readonly-value" [class.readonly-value-empty]="!handover()?.businessProblem">
+              {{ handover()?.businessProblem || HANDOVER_LABELS.NOT_PROVIDED }}
+            </p>
+          </div>
 
-        <div class="readonly-field">
-          <span class="readonly-label">{{ HANDOVER_LABELS.CLIENT_SENTIMENT }}</span>
-          @if (handover()?.clientSentiment) {
-            <app-status-badge [tone]="getSentimentTone(handover()?.clientSentiment)">
-              {{ handover()?.clientSentiment }}
-            </app-status-badge>
-          } @else {
-            <p class="readonly-value readonly-value-empty">{{ HANDOVER_LABELS.NOT_PROVIDED }}</p>
-          }
-        </div>
+          <div class="readonly-card">
+            <span class="readonly-label">Client Sentiment</span>
+            <div class="readonly-badge-container">
+              @if (handover()?.clientSentiment) {
+                <app-status-badge [tone]="getSentimentTone(handover()?.clientSentiment)">
+                  {{ handover()?.clientSentiment }}
+                </app-status-badge>
+              } @else {
+                <p class="readonly-value readonly-value-empty">{{ HANDOVER_LABELS.NOT_PROVIDED }}</p>
+              }
+            </div>
+          </div>
 
-        <div class="readonly-field">
-          <span class="readonly-label">{{ HANDOVER_LABELS.DEAL_ORIGIN }}</span>
-          <p class="readonly-value" [class.readonly-value-empty]="!handover()?.dealOrigin">
-            {{ handover()?.dealOrigin || HANDOVER_LABELS.NOT_PROVIDED }}
-          </p>
+          <div class="readonly-card">
+            <span class="readonly-label">Deal Origin</span>
+            <p class="readonly-value" [class.readonly-value-empty]="!handover()?.dealOrigin">
+              {{ handover()?.dealOrigin || HANDOVER_LABELS.NOT_PROVIDED }}
+            </p>
+          </div>
         </div>
       </div>
     }

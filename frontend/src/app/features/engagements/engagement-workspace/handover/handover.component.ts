@@ -16,7 +16,6 @@ import { catchError, of } from 'rxjs';
 import { AuthService } from '@shared/services/auth';
 import { KickoffReadinessDto, KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
 import { EngagementInfoDto } from '../../models/engagement.model';
-import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
 import { ENGAGEMENT_ROUTES } from '@shared/constants/app.constants';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { AddCommitmentDialogComponent, AddCommitmentDialogData } from './dialogs/add-commitment-dialog/add-commitment-dialog.component';
@@ -72,7 +71,6 @@ interface RealisticEditForm {
     ReactiveFormsModule,
     FormsModule,
     SectionHeaderComponent,
-    FlaggedItemsBannerComponent,
     AlertComponent,
     ButtonComponent,
     InputComponent,
@@ -132,14 +130,6 @@ export class HandoverComponent {
     );
   });
 
-  handoverFlaggedItems = computed<FlaggedItem[]>(() => {
-    const r = this.kickoffReadiness();
-    if (!r) return [];
-    return [
-      { label: 'mandatory handover field(s) incomplete', count: r.handoverFieldsApplicable - r.handoverFieldsPassed },
-      { label: 'commitment(s) missing acknowledgement', count: r.commitmentsApplicable - r.commitmentsPassed }
-    ];
-  });
 
   readonly sentimentOptions: SelectOption[] = HANDOVER_SENTIMENT_OPTIONS.map((value) => ({ value, label: value }));
   readonly timelineUnits = HANDOVER_TIMELINE_UNITS;

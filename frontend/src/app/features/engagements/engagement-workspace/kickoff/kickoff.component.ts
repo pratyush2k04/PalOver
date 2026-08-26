@@ -14,14 +14,12 @@ import {
   OverrideKickoffReadyDialogData,
   OverrideKickoffReadyDialogResult
 } from './dialogs/override-kickoff-ready-dialog/override-kickoff-ready-dialog.component';
-import { ButtonComponent } from '@common/components/button/button';
 import { KICKOFF_MESSAGES } from '@shared/constants/kickoff.constants';
-import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 
 @Component({
   selector: 'app-kickoff',
   standalone: true,
-  imports: [CommonModule, GovernanceProcessComponent, ChangeRequestsComponent, MeetingRecordComponent, ButtonComponent, LoadingSpinnerComponent],
+  imports: [CommonModule, GovernanceProcessComponent, ChangeRequestsComponent, MeetingRecordComponent],
   templateUrl: './kickoff.component.html',
   styleUrl: './kickoff.component.scss'
 })
