@@ -14,12 +14,7 @@
   </div>
 
   <!-- Section Content -->
-  @if (isLoading()) {
-    <div class="loading-container">
-      <app-loading-spinner label="Loading client contact transitions..."></app-loading-spinner>
-    </div>
-  } @else {
-    <div class="transition-cards">
+  <div class="transition-cards">
       @if (transitions().length > 0) {
         @for (t of transitions(); track t.id) {
           <div class="transition-flow-card">
@@ -76,5 +71,4 @@
         </div>
       }
     </div>
-  }
 </div>

@@ -1,4 +1,4 @@
-@if (!isLoading()) {
+@if (!isLoading() || handover()) {
   <div class="handover-container">
     <app-section-header [title]="HANDOVER_LABELS.TITLE">
       <div class="header-status-group">
@@ -435,12 +435,6 @@
       [clientName]="engagementInfo()?.clientName || ''"
       (onSaved)="onClientContactSaved()">
     </app-client-contact-transition-card>
-  </div>
-}
-
-@if (isLoading()) {
-  <div class="loading-container">
-    <app-loading-spinner label="Loading handover details..."></app-loading-spinner>
   </div>
 }
 

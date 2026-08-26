@@ -79,7 +79,6 @@ interface RealisticEditForm {
     StatusBadgeComponent,
     EmptyStateComponent,
     ClientContactTransitionCardComponent,
-    LoadingSpinnerComponent,
     ConfirmDialogComponent,
   ],
   templateUrl: './handover.component.html',

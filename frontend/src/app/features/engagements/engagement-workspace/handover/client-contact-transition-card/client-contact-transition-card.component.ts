@@ -23,7 +23,6 @@ import { AddClientContactTransitionDialogComponent, AddClientContactTransitionDi
   imports: [
     CommonModule,
     ButtonComponent,
-    LoadingSpinnerComponent,
   ],
   templateUrl: './client-contact-transition-card.component.html',
   styleUrl: './client-contact-transition-card.component.scss',
