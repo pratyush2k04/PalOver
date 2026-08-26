@@ -267,6 +267,19 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",
                 IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 20,
+                Key = NotificationConstants.TemplateKeys.PresalesCommitmentAdded,
+                Title = "New Presales Commitment — {EngagementName}",
+                Body = "Presales added commitment '{CommitmentTitle}' for {EngagementName}. Please review and add realistic commitments.",
+                DefaultPriority = NotificationPriority.High,
+                LinkPattern = "/engagements/{EngagementId}/workspace/handover",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
             }
         );
     }

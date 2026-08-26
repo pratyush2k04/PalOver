@@ -19,6 +19,7 @@ public static class NotificationConstants
         public const string DocumentUploaded = "DocumentUploaded";
         public const string ResourcingGapFlagRaised = "ResourcingGapFlagRaised";
         public const string CommitmentVarianceEscalated = "CommitmentVarianceEscalated";
+        public const string PresalesCommitmentAdded = "PresalesCommitmentAdded";
     }
 
     public static class RiskCommentMention
