@@ -8,14 +8,12 @@ using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
-using Pdr.Api.Services.Notifications.Mappers;
 
 namespace Pdr.Api.Services;
 
 public class AccessTrackerService(
     IAccessTrackerRepository repository,
     IRiskService riskService,
-    INotificationService notificationService,
     ICurrentUserService currentUserService,
     IAuditLogService auditLogService) : IAccessTrackerService
 {
@@ -122,13 +120,6 @@ public class AccessTrackerService(
         if (request.Status == AccessItemStatus.Blocked)
         {
             var actorUserId = currentUserService.GetUserId();
-
-            await notificationService.CreateFromTemplateAsync(
-                "AccessItemBlocked",
-                item.EngagementId,
-                RoleEnum.TechLead,
-                JsonSerializer.Serialize(new AccessItemBlockedMapper.AccessItemBlockedData(AccessItemId: item.Id, TriggerUserId: actorUserId)),
-                DateTime.UtcNow);
 
             await auditLogService.LogAsync(
                 AuditActionEnum.AccessItemBlocked,
