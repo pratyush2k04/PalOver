@@ -35,4 +35,6 @@ export class QuickActionsComponent {
   readonly canAddCommitment = computed(() => this.hasRole(USER_ROLES.PRE_SALES));
 
   readonly canAddPerson = computed(() => this.hasRole(USER_ROLES.PRE_SALES));
+
+  readonly canAddFeature = computed(() => this.hasRole(USER_ROLES.TECH_LEAD));
 }

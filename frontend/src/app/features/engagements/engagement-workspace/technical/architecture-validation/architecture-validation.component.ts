@@ -2,6 +2,7 @@ import { LoadingSpinnerComponent } from '@common/components/loading-spinner/load
 import { Component, inject, input, output, signal, computed, effect, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { TooltipDirective } from '@common/directives/tooltip.directive';
@@ -51,6 +52,7 @@ export class ArchitectureValidationComponent {
   private authService = inject(AuthService);
   private dialog = inject(DialogService);
   private destroyRef = inject(DestroyRef);
+  private route = inject(ActivatedRoute);
 
   ArchitectureStatus = ArchitectureStatus;
 
@@ -106,6 +108,10 @@ export class ArchitectureValidationComponent {
         this.rationale.set(res.rationale ?? '');
         this.validationUpdated.emit(res);
         this.isLoading.set(false);
+
+        if (this.isTechLead() && this.route.snapshot.queryParamMap.get('action') === 'create') {
+          this.onAddFeature();
+        }
       },
       error: () => {
         this.isLoading.set(false);

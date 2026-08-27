@@ -66,5 +66,15 @@
         [queryParams]="{ action: 'create' }"
       />
     }
+
+    @if (canAddFeature()) {
+      <app-action-tile
+        icon="layers"
+        label="Add Feature"
+        tone="neutral"
+        [routerLink]="['../technical-readiness']"
+        [queryParams]="{ action: 'create' }"
+      />
+    }
   </div>
 </div>
