@@ -57,7 +57,7 @@ public class HandoverReadinessService(
             throw new EngagementNotFoundException(engagementId);
 
         if (string.IsNullOrWhiteSpace(request.Name))
-            throw new AppException("Item name is required.", 400);
+            throw new HandoverReadinessItemNameRequiredException();
 
         var preSalesOwnerId = await repository.GetPreSalesOwnerIdAsync(engagementId) ?? 1;
 
@@ -89,7 +89,7 @@ public class HandoverReadinessService(
 
         if (request.Status == HandoverReadinessStatus.Blocked && string.IsNullOrWhiteSpace(request.BlockReason))
         {
-            throw new AppException("Block reason is required when status is set to Blocked.", 400);
+            throw new HandoverReadinessBlockReasonRequiredException();
         }
 
         item.Status = request.Status;
@@ -129,7 +129,7 @@ public class HandoverReadinessService(
     {
         if (!currentUserService.IsInRole(RoleEnum.PreSales))
         {
-            throw new AppException("Only Pre-Sales can modify Handover Readiness items.", 403);
+            throw new HandoverReadinessAccessDeniedException();
         }
     }
 
