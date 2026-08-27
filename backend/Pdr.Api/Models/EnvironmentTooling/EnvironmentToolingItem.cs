@@ -25,8 +25,5 @@ namespace Pdr.Api.Models.EnvironmentTooling
 
         // Required when Status = NotApplicable
         public string? NotApplicableReason { get; set; }
-
-        // Required when item is blocked
-        public string? BlockReason { get; set; }
     }
 }

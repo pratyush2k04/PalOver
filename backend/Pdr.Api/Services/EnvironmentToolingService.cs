@@ -86,7 +86,6 @@ public class EnvironmentToolingService(
             item.NotApplicableReason = null;
         }
 
-        item.BlockReason = request.BlockReason;
         item.Status = request.Status;
         await repository.SaveChangesAsync();
 
@@ -131,7 +130,6 @@ public class EnvironmentToolingService(
             OwnerFullName = item.Owner?.FullName ?? string.Empty,
             CustomName = item.CustomName,
             Status = item.Status,
-            NotApplicableReason = item.NotApplicableReason,
-            BlockReason = item.BlockReason
+            NotApplicableReason = item.NotApplicableReason
         };
 }

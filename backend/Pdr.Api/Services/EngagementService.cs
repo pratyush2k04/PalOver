@@ -441,6 +441,11 @@ public class EngagementService(
             userId,
             System.Text.Json.JsonSerializer.Serialize(new LeadershipAssignedMapper.LeadershipAssignedPayload(EngagementId: engagementId)),
             DateTime.UtcNow);
+        await notificationService.CreateFromTemplateAsync(
+            NotificationConstants.TemplateKeys.LeadershipActionRequired,
+            userId,
+            System.Text.Json.JsonSerializer.Serialize(new LeadershipActionRequiredMapper.LeadershipActionRequiredPayload(EngagementId: engagementId)),
+            DateTime.UtcNow);
 
         var actorUserId = currentUserService.GetUserId();
         await auditLogService.LogAsync(

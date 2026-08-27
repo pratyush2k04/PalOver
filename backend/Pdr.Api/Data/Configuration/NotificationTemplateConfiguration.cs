@@ -267,6 +267,32 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",
                 IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 19,
+                Key = NotificationConstants.TemplateKeys.LeadershipActionRequired,
+                Title = "Action Required: Assign PM & TL — {EngagementName}",
+                Body = "You have been assigned as Engagement Leader for {EngagementName}. Please assign a Project Manager and Tech Lead to the engagement.",
+                DefaultPriority = NotificationPriority.High,
+                LinkPattern = "/engagements/{EngagementId}/workspace/overview",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 20,
+                Key = NotificationConstants.TemplateKeys.PresalesCommitmentAdded,
+                Title = "New Presales Commitment — {EngagementName}",
+                Body = "Presales added commitment '{CommitmentTitle}' for {EngagementName}. Please review and add realistic commitments.",
+                DefaultPriority = NotificationPriority.High,
+                LinkPattern = "/engagements/{EngagementId}/workspace/handover",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
             }
         );
     }
