@@ -21,11 +21,9 @@ export interface HandoverQueryDto {
   referenceId?: number;
   question: string;
   raisedByName: string;
-  raisedByRole?: string;
   raisedAt: string;
   responseText?: string;
   respondedByName?: string;
-  respondedByRole?: string;
   respondedAt?: string;
   isResolved: boolean;
   resolvedByName?: string;

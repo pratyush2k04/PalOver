@@ -40,11 +40,11 @@
     </div>
 
     <p class="query-question">{{ query.question }}</p>
-    <p class="query-meta">Raised by {{ query.raisedByName }}<span *ngIf="query.raisedByRole"> ({{ query.raisedByRole }})</span> on {{ query.raisedAt | date: 'medium' }}</p>
+    <p class="query-meta">Raised by {{ query.raisedByName }} on {{ query.raisedAt | date: 'medium' }}</p>
 
     <ng-container *ngIf="query.responseText; else noResponse">
       <p class="query-response">{{ query.responseText }}</p>
-      <p class="query-meta">Responded by {{ query.respondedByName }}<span *ngIf="query.respondedByRole"> ({{ query.respondedByRole }})</span> on {{ query.respondedAt | date: 'medium' }}</p>
+      <p class="query-meta">Responded by {{ query.respondedByName }} on {{ query.respondedAt | date: 'medium' }}</p>
     </ng-container>
     <ng-template #noResponse>
       <div class="query-response-form" *ngIf="isPreSales()">
