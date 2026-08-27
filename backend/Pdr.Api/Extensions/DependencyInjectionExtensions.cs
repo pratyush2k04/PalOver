@@ -36,15 +36,24 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IPersonRepository, PersonRepository>();
         services.AddScoped<IClientContactTransitionRepository, ClientContactTransitionRepository>();
         services.AddScoped<IRiskRepository, RiskRepository>();
+        services.AddScoped<IRiskCommentRepository, RiskCommentRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<IKickoffReminderRepository, KickoffReminderRepository>();
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
         services.AddScoped<IArchitectureValidationRepository, ArchitectureValidationRepository>();
         services.AddScoped<ISearchRepository, SearchRepository>();
+        services.AddScoped<IResourceRequestRepository, ResourceRequestRepository>();
+        services.AddScoped<IDependencyRepository, DependencyRepository>();
+        services.AddScoped<IAssumptionRepository, AssumptionRepository>();
+        services.AddScoped<IDependencySpikeRepository, DependencySpikeRepository>();
+        services.AddScoped<IHomeRepository, HomeRepository>();
 
         // Services
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserManagementService, UserManagementService>();
+        services.AddScoped<IProfileService, ProfileService>();
+        services.AddScoped<IEngagementAccessService, EngagementAccessService>();
         services.AddScoped<IEngagementService, EngagementService>();
         services.AddScoped<IHandoverAccessService, HandoverAccessService>();
         services.AddScoped<IHandoverService, HandoverService>();
@@ -52,6 +61,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IRealisticCommitmentService, RealisticCommitmentService>();
         services.AddScoped<IHandoverQueriesService, HandoverQueriesService>();
         services.AddScoped<IKickoffReadinessService, KickoffReadinessService>();
+        services.AddScoped<IKickoffReminderService, KickoffReminderService>();
         services.AddScoped<IMasterChecklistService, MasterChecklistService>();
         services.AddScoped<IHomeService, HomeService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
@@ -65,12 +75,21 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IPersonService, PersonService>();
         services.AddScoped<IClientContactTransitionService, ClientContactTransitionService>();
         services.AddScoped<IRiskService, RiskService>();
+        services.AddScoped<IRiskCommentService, RiskCommentService>();
         services.AddScoped<IKickoffRepository, KickoffRepository>();
         services.AddScoped<IKickoffService, KickoffService>();
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IBlockerEscalationService, BlockerEscalationService>();
+        services.AddHostedService<BlockerEscalationBackgroundService>();
         services.AddScoped<IAuditLogService, AuditLogService>();
         services.AddScoped<IArchitectureValidationService, ArchitectureValidationService>();
         services.AddScoped<ISearchService, SearchService>();
+        services.AddScoped<IResourceRequestService, ResourceRequestService>();
+        services.AddScoped<ITechnicalSummaryService, TechnicalSummaryService>();
+        services.AddScoped<IDependencyService, DependencyService>();
+        services.AddScoped<IAssumptionService, AssumptionService>();
+        services.AddScoped<IDependencySpikeService, DependencySpikeService>();
+        services.AddScoped<IKpiReportService, KpiReportService>();
         services.AddScoped<TemplateMapperResolver<INotificationTemplateMapper>>();
         services.AddScoped<TemplateMapperResolver<IAuditTemplateMapper>>();
         services.AddSingleton<TemplateRenderer>();

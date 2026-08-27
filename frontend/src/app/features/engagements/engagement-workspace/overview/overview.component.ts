@@ -1,22 +1,24 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { AuthService } from '../../../../services/auth';
+import { AuthService } from '@shared/services/auth';
+import { USER_ROLES } from '@shared/constants/app.constants';
 import { EngagementDetailComponent } from './components/engagement-detail/engagement-detail';
 import { OpenItemsByAreaComponent } from './components/open-items-by-area/open-items-by-area.component';
+import { QuickActionsComponent } from './components/quick-actions/quick-actions.component';
 
 @Component({
   selector: 'app-overview',
   standalone: true,
-  imports: [CommonModule, EngagementDetailComponent, OpenItemsByAreaComponent],
+  imports: [CommonModule, EngagementDetailComponent, OpenItemsByAreaComponent, QuickActionsComponent],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.scss'
 })
 export class OverviewComponent {
-  private authService = inject(AuthService);
   private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
 
-  readonly isLeadership = computed(() => this.authService.hasRole('Leadership'));
+  readonly isLeadership = computed(() => this.authService.hasRole(USER_ROLES.LEADERSHIP));
   engagementId = signal<number | null>(null);
 
   constructor() {

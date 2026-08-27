@@ -1,7 +1,6 @@
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { AlertComponent } from '@common/components/alert/alert';
@@ -20,7 +19,7 @@ export interface VersionHistoryDialogData {
 @Component({
   selector: 'app-version-history-dialog',
   standalone: true,
-  imports: [CommonModule, InlineSVGModule, AlertComponent, ButtonComponent, LoadingSpinnerComponent, StatusBadgeComponent],
+  imports: [CommonModule, AlertComponent, ButtonComponent, LoadingSpinnerComponent, StatusBadgeComponent],
   templateUrl: './version-history-dialog.component.html',
   styleUrl: './version-history-dialog.component.scss'
 })

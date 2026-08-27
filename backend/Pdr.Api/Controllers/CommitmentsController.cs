@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
-using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,38 +16,15 @@ namespace Pdr.Api.Controllers;
 [Authorize]
 [Route("api/engagements/{engagementId:int}/handover/commitments")]
 [Produces("application/json")]
-public class CommitmentsController : ControllerBase
+public class CommitmentsController(
+    ICommitmentService commitmentService,
+    IRealisticCommitmentService realisticCommitmentService,
+    IHandoverAccessService accessService) : ControllerBase
 {
-    private readonly ICommitmentService _commitmentService;
-    private readonly IRealisticCommitmentService _realisticCommitmentService;
-    private readonly IHandoverAccessService _accessService;
-    private readonly IValidator<CreateCommitmentRequest> _createValidator;
-    private readonly IValidator<UpdateCommitmentRequest> _updateValidator;
-    private readonly IValidator<CreateRealisticCommitmentRequest> _createRealisticValidator;
-    private readonly IValidator<UpdateRealisticCommitmentRequest> _updateRealisticValidator;
-
-    public CommitmentsController(
-        ICommitmentService commitmentService,
-        IRealisticCommitmentService realisticCommitmentService,
-        IHandoverAccessService accessService,
-        IValidator<CreateCommitmentRequest> createValidator,
-        IValidator<UpdateCommitmentRequest> updateValidator,
-        IValidator<CreateRealisticCommitmentRequest> createRealisticValidator,
-        IValidator<UpdateRealisticCommitmentRequest> updateRealisticValidator)
-    {
-        _commitmentService = commitmentService;
-        _realisticCommitmentService = realisticCommitmentService;
-        _accessService = accessService;
-        _createValidator = createValidator;
-        _updateValidator = updateValidator;
-        _createRealisticValidator = createRealisticValidator;
-        _updateRealisticValidator = updateRealisticValidator;
-    }
-
     private async Task CheckAccessAsync(int engagementId, string requiredRole)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        await _accessService.CanAccessHandoverAsync(engagementId, userId, requiredRole);
+        await accessService.CanAccessHandoverAsync(engagementId, userId, requiredRole);
     }
 
     private string GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
@@ -71,7 +47,7 @@ public class CommitmentsController : ControllerBase
     {
         await CheckAccessAsync(engagementId, RoleConstants.PreSales);
 
-        var dto = await _commitmentService.AddCommitmentAsync(engagementId, request, GetUserId());
+        var dto = await commitmentService.AddCommitmentAsync(engagementId, request, GetUserId());
         return CreatedAtAction(nameof(AddCommitment), new { engagementId, commitmentId = dto.CommitmentId }, dto);
     }
 
@@ -93,7 +69,7 @@ public class CommitmentsController : ControllerBase
     {
         await CheckAccessAsync(engagementId, RoleConstants.PreSales);
 
-        var dto = await _commitmentService.UpdateCommitmentAsync(engagementId, commitmentId, request, GetUserId());
+        var dto = await commitmentService.UpdateCommitmentAsync(engagementId, commitmentId, request, GetUserId());
         return Ok(dto);
     }
 
@@ -113,7 +89,7 @@ public class CommitmentsController : ControllerBase
     {
         await CheckAccessAsync(engagementId, RoleConstants.PreSales);
 
-        await _commitmentService.DeleteCommitmentAsync(engagementId, commitmentId);
+        await commitmentService.DeleteCommitmentAsync(engagementId, commitmentId);
         return NoContent();
     }
 
@@ -136,14 +112,7 @@ public class CommitmentsController : ControllerBase
     {
         await CheckAccessAsync(engagementId, RoleConstants.ProjectManagement);
 
-        var validationResult = await _createRealisticValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? CreateRealisticCommitmentRequestConstants.InvalidRequest;
-            return BadRequest(new { message = firstError });
-        }
-
-        var dto = await _realisticCommitmentService.CreateRealisticCommitmentAsync(engagementId, commitmentId, request, GetUserId());
+        var dto = await realisticCommitmentService.CreateRealisticCommitmentAsync(engagementId, commitmentId, request, GetUserId());
         return CreatedAtAction(nameof(CreateRealisticCommitment), new { engagementId, commitmentId }, dto);
     }
 
@@ -165,14 +134,7 @@ public class CommitmentsController : ControllerBase
     {
         await CheckAccessAsync(engagementId, RoleConstants.ProjectManagement);
 
-        var validationResult = await _updateRealisticValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? CreateRealisticCommitmentRequestConstants.InvalidRequest;
-            return BadRequest(new { message = firstError });
-        }
-
-        var dto = await _realisticCommitmentService.UpdateRealisticCommitmentAsync(engagementId, commitmentId, request, GetUserId());
+        var dto = await realisticCommitmentService.UpdateRealisticCommitmentAsync(engagementId, commitmentId, request, GetUserId());
         return Ok(dto);
     }
 }

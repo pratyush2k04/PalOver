@@ -1,9 +1,11 @@
+@use '../../../../../../styles/tokens' as *;
+
 .card-container {
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  padding: 1.25rem;
+  background-color: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  padding: $spacing-6;
 
   .card-header {
     display: flex;
@@ -19,7 +21,7 @@
       h3 {
         font-size: 1.125rem;
         font-weight: 600;
-        color: #111827;
+        color: $color-gray-900;
         margin: 0;
       }
 
@@ -29,13 +31,27 @@
         gap: 0.5rem;
       }
     }
+
+    .btn-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1rem;
+      height: 1rem;
+
+      ::ng-deep svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+    }
   }
 
   .loading-state,
   .empty-state {
     padding: 2rem;
     text-align: center;
-    color: #6b7280;
+    color: $color-gray-500;
     font-size: 0.875rem;
   }
 
@@ -51,18 +67,18 @@
       th {
         font-size: 0.75rem;
         font-weight: 600;
-        color: #6b7280;
+        color: $color-gray-500;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         padding: 0.75rem 1rem;
-        border-bottom: 1px solid #e5e7eb;
-        background-color: #f9fafb;
+        border-bottom: 1px solid $color-gray-200;
+        background-color: $color-gray-50;
       }
 
       td {
         padding: 0.875rem 1rem;
-        border-bottom: 1px solid #f3f4f6;
-        color: #374151;
+        border-bottom: 1px solid $color-gray-100;
+        color: $color-gray-700;
         vertical-align: middle;
       }
 
@@ -72,13 +88,13 @@
         gap: 0.25rem;
 
         strong {
-          color: #111827;
+          color: $color-gray-900;
           font-weight: 600;
         }
 
         p {
           margin: 0;
-          color: #6b7280;
+          color: $color-gray-500;
           font-size: 0.825rem;
           line-height: 1.3;
         }
@@ -86,7 +102,7 @@
 
       .doc-link {
         font-size: 0.825rem;
-        color: #2563eb;
+        color: $color-primary;
         font-weight: 500;
         display: inline-flex;
         align-items: center;
@@ -95,7 +111,7 @@
         .file-icon {
           width: 16px;
           height: 16px;
-          color: #64748b;
+          color: $color-slate-500;
           flex-shrink: 0;
           display: inline-flex;
           align-items: center;
@@ -111,7 +127,7 @@
 
       .no-doc {
         font-size: 0.825rem;
-        color: #9ca3af;
+        color: $color-gray-400;
       }
 
       .decision-group {
@@ -123,12 +139,40 @@
           display: flex;
           align-items: center;
           gap: 0.35rem;
+
+          .btn-accept {
+            ::ng-deep .btn:hover:not(:disabled) {
+              background-color: $color-success-bg-alt;
+              color: $color-emerald-700;
+              border-color: $color-success-border-alt;
+            }
+          }
+
+          .btn-defer {
+            ::ng-deep .btn:hover:not(:disabled) {
+              background-color: $color-orange-50;
+              color: $color-orange-700;
+              border-color: $color-orange-200;
+            }
+          }
         }
       }
 
       .actions-col {
         text-align: right;
         width: 60px;
+
+        .btn-remove {
+          ::ng-deep .btn {
+            color: $color-gray-500;
+            transition: color 0.15s ease, background-color 0.15s ease;
+
+            &:hover {
+              color: $color-danger;
+              background-color: $color-danger-light;
+            }
+          }
+        }
       }
     }
   }
@@ -147,6 +191,6 @@
 }
 
 .btn-remove:hover {
-  color: #ef4444;
-  background-color: #fef2f2;
+  color: $color-danger-500;
+  background-color: $color-danger-bg;
 }

@@ -1,8 +1,10 @@
 <div class="modal-backdrop" (click)="onBackdropClick()">
   <div class="modal-card" (click)="onDialogClick($event)">
     <div class="modal-header">
-      <h3>{{ title }}</h3>
-      <app-button type="button" variant="icon" ariaLabel="Close" (click)="cancelled.emit()">✕</app-button>
+      <h3>{{ title() }}</h3>
+      <!--
+        <app-button type="button" variant="icon" ariaLabel="Close" (click)="cancelled.emit()">✕</app-button>
+      -->
     </div>
 
     <div class="modal-body">
@@ -10,16 +12,16 @@
     </div>
 
     <div class="modal-actions">
-      <app-button type="button" variant="stroked" [disabled]="isBusy" (click)="cancelled.emit()">
-        {{ cancelLabel }}
+      <app-button type="button" variant="stroked" [disabled]="isBusy()" (click)="cancelled.emit()">
+        {{ cancelLabel() }}
       </app-button>
       <app-button
         type="button"
-        [variant]="isDestructive ? 'danger' : 'flat'"
-        [loading]="isBusy"
+        [variant]="isDestructive() ? 'danger' : 'flat'"
+        [loading]="isBusy()"
         (click)="confirmed.emit()"
       >
-        {{ confirmLabel }}
+        {{ confirmLabel() }}
       </app-button>
     </div>
   </div>

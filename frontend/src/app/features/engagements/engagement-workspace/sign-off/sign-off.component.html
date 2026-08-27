@@ -1,0 +1,44 @@
+<div class="sign-off-container">
+  @if (snapshot(); as s) {
+    <app-alert variant="success">
+      Day-1 readiness signed off by <strong>{{ s.signedOffByUserName }}</strong> on {{ s.signedOffAt | date: 'dd MMM yyyy' }}
+    </app-alert>
+
+    <div class="evidence-snapshot-card">
+      <div class="evidence-snapshot-header">
+        <h3>Evidence Snapshot</h3>
+      </div>
+      <p class="evidence-snapshot-meta">
+        Taken {{ s.signedOffAt | date: 'dd MMM yyyy' }} &middot; Billing date referenced: {{ s.billingStartDate | date: 'dd MMM yyyy' }}
+      </p>
+
+      @if (s.items.length) {
+        <div class="table-responsive">
+          <table class="evidence-item-table">
+            <thead>
+              <tr>
+                <th>Checklist Item</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of s.items; track item.title) {
+                <tr>
+                  <td>{{ item.title }}</td>
+                  <td><app-status-badge [tone]="statusTone(item.statusAtSignOff)">{{ statusLabel(item.statusAtSignOff) }}</app-status-badge></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <p class="evidence-empty">No checklist items required evidence for this engagement.</p>
+      }
+
+      <app-button variant="stroked" (click)="exportSnapshot()">
+        <span class="export-btn-icon" [inlineSVG]="'assets/icons/share.svg'"></span>
+        Export snapshot
+      </app-button>
+    </div>
+  }
+</div>

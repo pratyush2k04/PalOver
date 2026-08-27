@@ -1,9 +1,11 @@
+@use '../../../../../../styles/tokens' as *;
+
 .environment-tooling-card {
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  padding: 1.25rem;
+  background-color: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  padding: $spacing-6;
 
   .card-header {
     display: flex;
@@ -19,7 +21,7 @@
       h3 {
         font-size: 1.125rem;
         font-weight: 600;
-        color: #111827;
+        color: $color-gray-900;
         margin: 0;
       }
     }
@@ -27,13 +29,27 @@
     .action-group {
       display: flex;
       gap: 0.5rem;
+
+      .btn-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1rem;
+        height: 1rem;
+
+        ::ng-deep svg {
+          width: 100%;
+          height: 100%;
+          display: block;
+        }
+      }
     }
   }
 
   .loading-container {
     padding: 2rem;
     text-align: center;
-    color: #6b7280;
+    color: $color-gray-500;
   }
 
   .table-responsive {
@@ -48,24 +64,67 @@
       th {
         font-size: 0.75rem;
         font-weight: 600;
-        color: #6b7280;
+        color: $color-gray-500;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         padding: 0.75rem 1rem;
-        border-bottom: 1px solid #e5e7eb;
-        background-color: #f9fafb;
+        border-bottom: 1px solid $color-gray-200;
+        background-color: $color-gray-50;
       }
 
       td {
         padding: 0.875rem 1rem;
-        border-bottom: 1px solid #f3f4f6;
-        color: #374151;
+        border-bottom: 1px solid $color-gray-100;
+        color: $color-gray-700;
         vertical-align: middle;
       }
 
       .item-name-cell {
         font-weight: 500;
-        color: #111827;
+        color: $color-gray-900;
+      }
+
+      .owner-cell {
+        .owner-content {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+      }
+
+      .btn-action {
+        ::ng-deep .btn {
+          color: $color-gray-500;
+          transition: color 0.15s ease, background-color 0.15s ease;
+
+          &:hover {
+            color: $color-primary;
+            background-color: $color-primary-light;
+          }
+        }
+
+        &.btn-danger {
+          ::ng-deep .btn {
+            &:hover {
+              color: $color-danger;
+              background-color: $color-danger-light;
+            }
+          }
+        }
+      }
+
+      .action-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+
+        ::ng-deep svg,
+        svg {
+          width: 16px;
+          height: 16px;
+        }
       }
 
       .status-cell {
@@ -78,14 +137,20 @@
 
         .na-reason-text {
           font-size: 0.8rem;
-          color: #6b7280;
+          color: $color-gray-500;
           font-style: italic;
+        }
+      }
+
+      .actions-cell {
+        .status-select {
+          max-width: 150px;
         }
       }
 
       .empty-cell {
         text-align: center;
-        color: #9ca3af;
+        color: $color-gray-400;
         padding: 2rem;
       }
     }
@@ -98,12 +163,12 @@
   font-weight: 500;
   border-radius: 6px;
   padding: 0.3rem 0.6rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid $color-gray-300;
   outline: none;
   cursor: pointer;
-  background-color: #ffffff;
+  background-color: $color-surface;
 
   &:focus {
-    border-color: #2563eb;
+    border-color: $color-primary;
   }
 }

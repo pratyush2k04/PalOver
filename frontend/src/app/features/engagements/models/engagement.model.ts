@@ -44,6 +44,21 @@ export interface GetCommercialModelsResponse {
   commercialModels: CommercialModelOption[];
 }
 
+export interface DayOneSignOffRequest {
+  billingStartDate: string;
+  isException: boolean;
+  exceptionJustification?: string;
+}
+
+export interface DayOneSignOffDto {
+  billingStartDate: string;
+  isException: boolean;
+  exceptionJustification?: string;
+  signedOffAt: string;
+  signedOffByUserId: number;
+  signedOffByUserName: string;
+}
+
 export interface EngagementInfo {
   engagementId: number;
   engagementName: string;
@@ -55,6 +70,7 @@ export interface EngagementInfo {
   billingStartDate?: string;
   status: string;
   isKickoffReady: boolean;
+  dayOneSignOff?: DayOneSignOffDto;
 }
 
 export interface EngagementInfoDto {
@@ -70,6 +86,7 @@ export interface EngagementInfoDto {
   handoverStatus?: string;
   handoverReviewedAt?: string;
   handoverReviewedByName?: string;
+  dayOneSignOff?: DayOneSignOffDto;
 }
 
 export interface EngagementOwners {
@@ -88,6 +105,7 @@ export interface EngagementListItem {
   kickoffDate: string;
   daysToKickoff: number;
   readinessScore: number | null;
+  isSignedOff: boolean;
 }
 
 export interface EngagementListResponse {

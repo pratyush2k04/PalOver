@@ -1,0 +1,14 @@
+<div class="kpi-card">
+  <div class="card-body">
+    
+    <div class="kpi-header">
+      <div class="icon-wrapper" [ngClass]="iconClass()">
+        <span [inlineSVG]="iconPath()"></span>
+      </div>
+      
+      <div class="kpi-details">
+        <div class="count">{{ card.count }}</div>
+        <div class="title">{{ card.title }}</div>
+      </div>
+  </div>
+</div>

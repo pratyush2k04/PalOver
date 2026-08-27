@@ -4,7 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
-import { KickoffActionItem } from '../../../../../../models/kickoff.model';
+import { KickoffActionItem } from '@shared/models/kickoff.model';
 import { KICKOFF_MESSAGES } from '@shared/constants/kickoff.constants';
 
 export type AddActionDialogResult = Pick<KickoffActionItem, 'title' | 'ownerName' | 'dueDate'>;

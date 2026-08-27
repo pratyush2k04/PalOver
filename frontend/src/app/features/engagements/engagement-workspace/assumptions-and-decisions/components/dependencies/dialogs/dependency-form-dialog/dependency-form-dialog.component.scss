@@ -1,0 +1,54 @@
+@use '../../../../../../../../../styles/tokens' as *;
+
+.dialog-container {
+  display: flex;
+  flex-direction: column;
+  width: 550px;
+  max-width: 90vw;
+  background: var(--surface-default);
+  border-radius: 8px;
+
+  .dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-light);
+
+    h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      color: var(--text-primary);
+    }
+  }
+
+  .dialog-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    .form-row {
+      display: flex;
+      gap: 1rem;
+      width: 100%;
+    }
+
+    .flex-1 {
+      flex: 1;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-light);
+  }
+}

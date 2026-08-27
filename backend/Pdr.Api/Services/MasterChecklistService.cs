@@ -1,12 +1,16 @@
 using Pdr.Api.Constants;
 using Pdr.Api.DTOs.MasterChecklist;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.MasterChecklist;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services;
 
-public class MasterChecklistService(IMasterChecklistRepository checklistRepository) : IMasterChecklistService
+public class MasterChecklistService(
+    IMasterChecklistRepository checklistRepository,
+    IAuditLogService auditLogService,
+    ICurrentUserService currentUserService) : IMasterChecklistService
 {
     public async Task<MasterChecklistVersionResponseDto?> GetCurrentDraftVersionAsync()
     {
@@ -68,6 +72,7 @@ public class MasterChecklistService(IMasterChecklistRepository checklistReposito
             Description = request.Description,
             CategoryId = request.CategoryId,
             IsMandatory = request.IsMandatory,
+            EvidenceRequired = request.EvidenceRequired,
             DisplayOrder = request.DisplayOrder,
             IsRetired = false
         };
@@ -101,6 +106,7 @@ public class MasterChecklistService(IMasterChecklistRepository checklistReposito
         item.Description = request.Description;
         item.CategoryId = request.CategoryId;
         item.IsMandatory = request.IsMandatory;
+        item.EvidenceRequired = request.EvidenceRequired;
 
         await checklistRepository.UpdateChecklistItemAsync(item);
 
@@ -215,6 +221,7 @@ public class MasterChecklistService(IMasterChecklistRepository checklistReposito
                     CategoryId = i.CategoryId,
                     Category = i.Category,
                     IsMandatory = i.IsMandatory,
+                    EvidenceRequired = i.EvidenceRequired,
                     DisplayOrder = i.DisplayOrder,
                     IsRetired = false
                 })
@@ -222,6 +229,16 @@ public class MasterChecklistService(IMasterChecklistRepository checklistReposito
         };
 
         await checklistRepository.PublishVersionAsync(draftVersion, newDraftVersion);
+
+        var actorUserId = currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            AuditActionEnum.MasterChecklistPublished,
+            new Dictionary<string, object?>
+            {
+                ["Version"] = draftVersion.VersionNumber,
+                ["ActorUserId"] = actorUserId
+            },
+            actingUserId: actorUserId > 0 ? actorUserId : null);
 
         return ChecklistResultDto<MasterChecklistVersionResponseDto>.Success(MapVersion(draftVersion));
     }
@@ -263,6 +280,7 @@ public class MasterChecklistService(IMasterChecklistRepository checklistReposito
             CategoryId = item.CategoryId,
             CategoryName = item.Category.CategoryName,
             IsMandatory = item.IsMandatory,
+            EvidenceRequired = item.EvidenceRequired,
             DisplayOrder = item.DisplayOrder,
             IsRetired = item.IsRetired
         };

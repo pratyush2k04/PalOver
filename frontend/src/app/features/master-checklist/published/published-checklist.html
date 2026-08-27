@@ -1,27 +1,4 @@
 <div class="published-checklist">
-  <div class="published-checklist__header">
-    <h1>Published Checklist</h1>
-    @if (version(); as v) {
-      <app-badge [text]="'Active: v' + v.versionNumber + ', published ' + (v.updatedAt | date:'mediumDate')" />
-    }
-  </div>
-
-  <div class="published-checklist__toolbar">
-    <div class="published-checklist__field published-checklist__category">
-      <label for="category-select">Category</label>
-      <select
-        id="category-select"
-        [ngModel]="selectedCategory()"
-        (ngModelChange)="selectedCategory.set($event)"
-      >
-        <option value="all">All Categories</option>
-        @for (category of categories(); track category) {
-          <option [value]="category">{{ category }}</option>
-        }
-      </select>
-    </div>
-  </div>
-
   @if (loading()) {
     <app-loading-spinner label="Loading published checklist..." />
   } @else if (notFound()) {
@@ -29,6 +6,31 @@
   } @else if (error()) {
     <app-alert variant="danger">{{ error() }}</app-alert>
   } @else {
+    <div class="published-checklist__card">
+      <div class="published-checklist__header">
+        <div class="published-checklist__header-title">
+          <h1>Published Checklist</h1>
+          @if (version(); as v) {
+            <app-badge [text]="'Active: v' + v.versionNumber + ', published ' + (v.updatedAt | date:'mediumDate')" />
+          }
+        </div>
+
+        <div class="published-checklist__toolbar">
+          <div class="published-checklist__field published-checklist__category">
+            <label for="category-select">Category</label>
+            <select
+              id="category-select"
+              [ngModel]="selectedCategory()"
+              (ngModelChange)="selectedCategory.set($event)"
+            >
+              <option value="all">All Categories</option>
+              @for (category of categories(); track category) {
+                <option [value]="category">{{ category }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      </div>
     <div class="checklist-container">
       @for (category of groupedCategories(); track category.categoryId) {
         <div class="category-card">
@@ -42,6 +44,7 @@
               <thead>
                 <tr>
                   <th class="col-item">ITEM</th>
+                  <th class="col-evidence">EVIDENCE</th>
                   <th class="col-status">STATUS</th>
                   <th class="col-actions" aria-label="expand"></th>
                 </tr>
@@ -58,6 +61,14 @@
                           <app-status-badge tone="neutral">Optional</app-status-badge>
                         }
                       </div>
+                    </td>
+
+                    <td class="cell-evidence">
+                      @if (item.evidenceRequired) {
+                        <app-status-badge tone="warning">Required</app-status-badge>
+                      } @else {
+                        <app-status-badge tone="neutral">Not Required</app-status-badge>
+                      }
                     </td>
 
                     <td class="cell-status">
@@ -81,7 +92,7 @@
                   </tr>
                   @if (isExpanded(item)) {
                     <tr class="checklist-detail-row">
-                      <td colspan="3">
+                      <td colspan="4">
                         <div class="description-card">
                           <h4>Description</h4>
                           <p>{{ item.description || 'No description provided.' }}</p>
@@ -102,5 +113,6 @@
         </div>
       }
     </div>
-  }
+  </div>
+}
 </div>

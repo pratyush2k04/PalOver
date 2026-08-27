@@ -21,6 +21,7 @@ export interface ItemFormDialogResult {
   description: string | null;
   categoryId: number;
   isMandatory: boolean;
+  evidenceRequired: boolean;
 }
 
 @Component({
@@ -40,6 +41,7 @@ export class ItemFormDialogComponent {
     description: [this.data.item?.description ?? ''],
     categoryId: [this.data.item?.categoryId ?? this.data.categories[0]?.id ?? null, [Validators.required]],
     isMandatory: [this.data.item?.isMandatory ?? true],
+    evidenceRequired: [this.data.item?.evidenceRequired ?? false],
   });
 
   get isEdit(): boolean {
@@ -67,6 +69,7 @@ export class ItemFormDialogComponent {
       description: value.description || null,
       categoryId: value.categoryId as number,
       isMandatory: value.isMandatory,
+      evidenceRequired: value.evidenceRequired,
     };
     this.dialogRef.close(result);
   }

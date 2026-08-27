@@ -1,10 +1,14 @@
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { Component, inject, input, output, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
+import { ToastService } from '@common/services/toast/toast';
+import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
 import { DialogService } from '@common/services/dialog/dialog.service';
-import { AuthService } from 'src/app/services/auth';
+import { AuthService } from '@shared/services/auth';
 import { TECHNICAL_READINESS_ROLES } from '@shared/constants/technical-readiness.constants';
 import { BrownfieldFindingDto, BrownfieldReadinessResponse } from '@features/engagements/models/brownfield-review/brownfield-review.dtos';
 import { BrownfieldSeverity, ClientDecision } from '@features/engagements/models/brownfield-review/brownfield-review.enums';
@@ -18,7 +22,15 @@ import {
 @Component({
   selector: 'app-brownfield-review',
   standalone: true,
-  imports: [CommonModule, InlineSVGModule, StatusBadgeComponent, ButtonComponent],
+  imports: [
+    LoadingSpinnerComponent,
+    CommonModule,
+    InlineSVGModule,
+    TooltipDirective,
+    ConfirmDialogComponent,
+    StatusBadgeComponent,
+    ButtonComponent
+  ],
   templateUrl: './brownfield-review.component.html',
   styleUrl: './brownfield-review.component.scss'
 })
@@ -27,11 +39,14 @@ export class BrownfieldReviewComponent {
   readinessUpdated = output<BrownfieldReadinessResponse>();
 
   private brownfieldService = inject(BrownfieldReviewService);
+  private toastService = inject(ToastService);
   private authService = inject(AuthService);
   private dialog = inject(DialogService);
 
   readinessResponse = signal<BrownfieldReadinessResponse | null>(null);
   isLoading = signal<boolean>(true);
+  findingToDelete = signal<BrownfieldFindingDto | null>(null);
+  isDeleting = signal<boolean>(false);
 
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
   findings = computed(() => this.readinessResponse()?.items ?? []);
@@ -63,7 +78,7 @@ export class BrownfieldReviewComponent {
   onAddFinding(): void {
     const dialogRef = this.dialog.open<AddFindingDialogComponent, AddFindingDialogData, AddFindingDialogResult>(
       AddFindingDialogComponent,
-      { data: { engagementId: this.engagementId() } }
+      { data: { engagementId: this.engagementId() }, disableClose: true }
     );
 
     dialogRef.afterClosed().subscribe((result: AddFindingDialogResult | undefined) => {
@@ -81,12 +96,33 @@ export class BrownfieldReviewComponent {
     });
   }
 
-  onDeleteFinding(findingId: number): void {
-    if (confirm('Are you sure you want to delete this finding?')) {
-      this.brownfieldService.deleteFinding(findingId).subscribe({
-        next: () => this.loadFindings()
-      });
-    }
+  onDeleteFinding(finding: BrownfieldFindingDto): void {
+    if (!this.isTechLead()) return;
+    this.findingToDelete.set(finding);
+  }
+
+  cancelDeleteFinding(): void {
+    this.findingToDelete.set(null);
+  }
+
+  confirmDeleteFinding(): void {
+    const finding = this.findingToDelete();
+    if (!finding) return;
+
+    this.isDeleting.set(true);
+    this.brownfieldService.deleteFinding(finding.id).subscribe({
+      next: () => {
+        this.toastService.success(`Finding "${finding.title}" deleted successfully`);
+        this.isDeleting.set(false);
+        this.findingToDelete.set(null);
+        this.loadFindings();
+      },
+      error: (err: unknown) => {
+        this.toastService.error(`Failed to delete finding "${finding.title}"`);
+        console.error('API delete finding failed', err);
+        this.isDeleting.set(false);
+      }
+    });
   }
 
   getSeverityLabel(severity: BrownfieldSeverity): string {

@@ -1,9 +1,11 @@
+@use '../../../../../../styles/tokens' as *;
+
 .architecture-validation-card {
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  padding: 1.5rem;
+  background-color: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  padding: $spacing-6;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -13,7 +15,7 @@
     align-items: center;
     justify-content: space-between;
     padding-bottom: 1rem;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid $color-gray-100;
 
     .title-group {
       display: flex;
@@ -23,7 +25,7 @@
       h3 {
         font-size: 1.125rem;
         font-weight: 600;
-        color: #111827;
+        color: $color-gray-900;
         margin: 0;
       }
     }
@@ -37,7 +39,7 @@
   .loading-state {
     padding: 2rem;
     text-align: center;
-    color: #6b7280;
+    color: $color-gray-500;
   }
 }
 
@@ -53,18 +55,32 @@
       justify-content: space-between;
       gap: 1rem;
       flex-wrap: wrap;
+
+      .btn-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1rem;
+        height: 1rem;
+
+        ::ng-deep svg {
+          width: 100%;
+          height: 100%;
+          display: block;
+        }
+      }
     }
 
     h4 {
       font-size: 0.95rem;
       font-weight: 600;
-      color: #374151;
+      color: $color-gray-700;
       margin: 0 0 0.2rem 0;
     }
 
     .section-desc {
       font-size: 0.825rem;
-      color: #6b7280;
+      color: $color-gray-500;
       margin: 0;
     }
   }
@@ -72,8 +88,8 @@
 
 /* Section 1: Architecture Status */
 .status-section {
-  background-color: #f9fafb;
-  border: 1px solid #f3f4f6;
+  background-color: $color-gray-50;
+  border: 1px solid $color-gray-100;
   border-radius: 8px;
   padding: 1.25rem;
 
@@ -96,8 +112,8 @@
     display: flex;
     align-items: flex-start;
     gap: 0.75rem;
-    background-color: #ffffff;
-    border: 1.5px solid #e5e7eb;
+    background-color: $color-surface;
+    border: 1.5px solid $color-gray-200;
     border-radius: 8px;
     padding: 0.75rem 1rem;
     cursor: pointer;
@@ -112,7 +128,7 @@
       width: 18px;
       height: 18px;
       border-radius: 50%;
-      border: 2px solid #d1d5db;
+      border: 2px solid $color-gray-300;
       display: inline-block;
       margin-top: 2px;
       flex-shrink: 0;
@@ -127,33 +143,97 @@
 
       strong {
         font-size: 0.875rem;
-        color: #1f2937;
+        color: $color-gray-800;
       }
 
       span {
         font-size: 0.75rem;
-        color: #6b7280;
+        color: $color-gray-500;
       }
     }
 
     &.selected {
-      border-color: #2563eb;
-      background-color: #eff6ff;
+      border-color: $color-primary;
+      background-color: $color-primary-light;
 
       .radio-custom {
-        border-color: #2563eb;
-        background-color: #2563eb;
-        box-shadow: inset 0 0 0 3px #ffffff;
+        border-color: $color-primary;
+        background-color: $color-primary;
+        box-shadow: inset 0 0 0 3px $color-surface;
       }
 
       .option-text strong {
-        color: #1e40af;
+        color: $color-primary-dark;
       }
     }
 
     &.disabled {
       cursor: default;
       opacity: 0.85;
+    }
+  }
+
+  .status-readonly-display {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .status-readonly-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    border: 1.5px solid $color-gray-200;
+    background-color: $color-surface;
+    min-width: 240px;
+
+    &.valid {
+      border-color: $color-success-border;
+      background-color: $color-success-bg;
+      strong {
+        color: $color-success-dark;
+      }
+    }
+
+    &.modified {
+      border-color: $color-primary-border;
+      background-color: $color-primary-light;
+      strong {
+        color: $color-primary-dark;
+      }
+    }
+
+    .status-readonly-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      strong {
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+
+      &.valid {
+        background-color: $color-success;
+      }
+
+      &.modified {
+        background-color: $color-primary;
+      }
+    }
+
+    .status-readonly-desc {
+      font-size: 0.8rem;
+      color: $color-gray-500;
     }
   }
 
@@ -170,8 +250,8 @@
     gap: 1rem;
 
     .kpi-card {
-      background-color: #f9fafb;
-      border: 1px solid #e5e7eb;
+      background-color: $color-gray-50;
+      border: 1px solid $color-gray-200;
       border-radius: 8px;
       padding: 1rem 1.25rem;
       display: flex;
@@ -179,8 +259,8 @@
       gap: 0.35rem;
 
       &.risk-border {
-        border-color: #fca5a5;
-        background-color: #fef2f2;
+        border-color: $color-danger-border-alt;
+        background-color: $color-danger-bg;
       }
 
       .kpi-label {
@@ -188,7 +268,7 @@
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: #6b7280;
+        color: $color-gray-500;
       }
 
       .kpi-value-row {
@@ -200,18 +280,18 @@
       .kpi-value {
         font-size: 1.5rem;
         font-weight: 700;
-        color: #111827;
+        color: $color-gray-900;
 
         .kpi-unit {
           font-size: 0.95rem;
           font-weight: 500;
-          color: #6b7280;
+          color: $color-gray-500;
         }
       }
 
       .kpi-subtext {
         font-size: 0.75rem;
-        color: #6b7280;
+        color: $color-gray-500;
       }
     }
   }
@@ -220,11 +300,11 @@
     display: flex;
     align-items: flex-start;
     gap: 0.75rem;
-    background-color: #fff1f2;
-    border: 1px solid #fecdd3;
+    background-color: $color-rose-50;
+    border: 1px solid $color-rose-200;
     border-radius: 8px;
     padding: 0.875rem 1rem;
-    color: #9f1239;
+    color: $color-rose-800;
     margin-top: 0.5rem;
 
     .alert-icon {
@@ -243,7 +323,7 @@
 
       p {
         margin: 0;
-        color: #881337;
+        color: $color-rose-900;
       }
     }
   }
@@ -254,9 +334,9 @@
   .empty-state {
     text-align: center;
     padding: 2.5rem;
-    border: 1px dashed #d1d5db;
+    border: 1px dashed $color-gray-300;
     border-radius: 8px;
-    background-color: #fafafa;
+    background-color: $color-surface-gray;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -264,14 +344,14 @@
 
     p {
       margin: 0;
-      color: #6b7280;
+      color: $color-gray-500;
       font-size: 0.875rem;
     }
   }
 
   .table-responsive {
     overflow-x: auto;
-    border: 1px solid #e5e7eb;
+    border: 1px solid $color-gray-200;
     border-radius: 8px;
 
     .features-table {
@@ -283,18 +363,18 @@
       th {
         font-size: 0.75rem;
         font-weight: 600;
-        color: #6b7280;
+        color: $color-gray-500;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         padding: 0.75rem 1rem;
-        border-bottom: 1px solid #e5e7eb;
-        background-color: #f9fafb;
+        border-bottom: 1px solid $color-gray-200;
+        background-color: $color-gray-50;
       }
 
       td {
         padding: 0.875rem 1rem;
-        border-bottom: 1px solid #f3f4f6;
-        color: #374151;
+        border-bottom: 1px solid $color-gray-100;
+        color: $color-gray-700;
         vertical-align: middle;
       }
 
@@ -304,7 +384,7 @@
 
       .feature-name-cell {
         strong {
-          color: #111827;
+          color: $color-gray-900;
           font-weight: 500;
         }
       }
@@ -313,8 +393,8 @@
         .weeks-badge {
           display: inline-block;
           font-weight: 600;
-          color: #1e40af;
-          background-color: #eff6ff;
+          color: $color-primary-dark;
+          background-color: $color-primary-light;
           padding: 0.2rem 0.5rem;
           border-radius: 4px;
           font-size: 0.8rem;
@@ -325,8 +405,8 @@
         .sprint-tag {
           display: inline-block;
           font-weight: 500;
-          color: #4b5563;
-          background-color: #f3f4f6;
+          color: $color-gray-600;
+          background-color: $color-gray-100;
           padding: 0.2rem 0.5rem;
           border-radius: 4px;
           font-size: 0.8rem;
@@ -345,15 +425,23 @@
       }
 
       .btn-action {
-        color: #6b7280;
-        transition: color 0.15s ease;
+        ::ng-deep .btn {
+          color: $color-gray-500;
+          transition: color 0.15s ease, background-color 0.15s ease;
 
-        &:hover {
-          color: #2563eb;
+          &:hover {
+            color: $color-primary;
+            background-color: $color-primary-light;
+          }
         }
 
-        &.btn-danger:hover {
-          color: #dc2626;
+        &.btn-danger {
+          ::ng-deep .btn {
+            &:hover {
+              color: $color-danger;
+              background-color: $color-danger-light;
+            }
+          }
         }
       }
 

@@ -1,90 +1,75 @@
+@use '../../../styles/mixins' as *;
+
 .allocation-page {
-  padding: 2rem;
+  padding: $spacing-8;
   max-width: 1400px;
   margin: 0 auto;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  color: #1e293b;
+  font-family: $font-family-base;
+  color: $color-text;
 
-  .page-header {
-    margin-bottom: 2rem;
-
-    h1 {
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: #0f172a;
-      margin: 0 0 0.5rem 0;
-      letter-spacing: -0.02em;
-    }
-
-    .subtitle {
-      font-size: 0.95rem;
-      color: #64748b;
-      margin: 0;
-    }
+  @media (max-width: 768px) {
+    padding: $spacing-4;
   }
 }
 
 /* Summary Metrics */
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.25rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(16.25rem, 1fr));
+  gap: $spacing-5;
+  margin-bottom: $spacing-8;
 
   .metric-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1.25rem 1.5rem;
+    background: $color-surface;
+    border: 1px solid $color-border-soft;
+    border-radius: $radius-lg;
+    padding: $spacing-5 $spacing-6;
     display: flex;
     align-items: center;
-    gap: 1.25rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    gap: $spacing-5;
+    box-shadow: $shadow-sm;
 
     .metric-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 3rem;
+      height: 3rem;
+      border-radius: $radius-md;
+      @include flex-center;
 
       ::ng-deep svg,
       svg {
-        width: 24px;
-        height: 24px;
+        width: 1.5rem;
+        height: 1.5rem;
       }
 
       &.total {
-        background: #eff6ff;
-        color: #2563eb;
+        background: $color-primary-light;
+        color: $color-primary;
       }
       &.warning {
-        background: #fff7ed;
-        color: #ea580c;
+        background: $color-warning-bg;
+        color: $color-warning-text;
       }
       &.success {
-        background: #f0fdf4;
-        color: #16a34a;
+        background: $color-success-bg;
+        color: $color-success;
       }
     }
 
     .metric-content {
-      display: flex;
-      flex-direction: column;
+      @include flex-column;
 
       .metric-value {
         font-size: 1.75rem;
-        font-weight: 700;
-        color: #0f172a;
+        font-weight: $font-weight-bold;
+        color: $color-text;
         line-height: 1.2;
       }
 
       .metric-label {
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: #64748b;
-        margin-top: 0.25rem;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        color: $color-text-faint;
+        margin-top: $spacing-1;
       }
     }
   }
@@ -92,79 +77,77 @@
 
 /* Controls Bar */
 .controls-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  @include flex-between;
+  gap: $spacing-4;
+  margin-bottom: $spacing-6;
   flex-wrap: wrap;
 
   .search-box {
     position: relative;
     flex: 1;
-    min-width: 300px;
-    max-width: 480px;
+    min-width: 18.75rem;
+    max-width: 30rem;
 
     .search-icon {
       position: absolute;
-      left: 1rem;
+      left: $spacing-4;
       top: 50%;
       transform: translateY(-50%);
-      color: #94a3b8;
+      color: $color-text-fainter;
       display: flex;
       align-items: center;
 
       ::ng-deep svg,
       svg {
-        width: 18px;
-        height: 18px;
+        width: 1.125rem;
+        height: 1.125rem;
       }
     }
 
     input {
       width: 100%;
-      padding: 0.65rem 1rem 0.65rem 2.75rem;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      color: #1e293b;
-      background: #ffffff;
+      padding: 0.65rem $spacing-4 0.65rem 2.75rem;
+      border: 1px solid $color-border-input;
+      border-radius: $radius-md;
+      font-size: $font-size-sm;
+      color: $color-text;
+      background: $color-surface;
       outline: none;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      transition: border-color $transition-fast, box-shadow $transition-fast;
 
       &:focus {
-        border-color: #2563eb;
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        border-color: $color-primary;
+        box-shadow: 0 0 0 3px $color-primary-focus-ring;
       }
     }
   }
 
   .filter-tabs {
     display: flex;
-    background: #f1f5f9;
-    padding: 0.25rem;
-    border-radius: 8px;
-    gap: 0.25rem;
+    background: $color-surface-hover;
+    padding: $spacing-1;
+    border-radius: $radius-md;
+    gap: $spacing-1;
 
     .tab-btn {
-      padding: 0.5rem 1rem;
+      padding: $spacing-2 $spacing-4;
       border: none;
       background: transparent;
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: #64748b;
-      border-radius: 6px;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      color: $color-text-faint;
+      border-radius: $radius-sm;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all $transition-fast;
 
       &.active {
-        background: #ffffff;
-        color: #2563eb;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        background: $color-surface;
+        color: $color-primary;
+        box-shadow: $shadow-sm;
       }
 
       &:hover:not(.active) {
-        color: #1e293b;
+        color: $color-text;
       }
     }
   }
@@ -172,34 +155,36 @@
 
 /* Table Card */
 .table-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+  background: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 
   .engagements-table {
     width: 100%;
+    min-width: 48rem;
     border-collapse: collapse;
     text-align: left;
 
     th {
-      background: #f8fafc;
-      padding: 1rem 1.25rem;
-      font-size: 0.75rem;
-      font-weight: 700;
+      background: $color-surface-hover;
+      padding: $spacing-4 $spacing-5;
+      font-size: $font-size-xs;
+      font-weight: $font-weight-bold;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: #475569;
-      border-bottom: 1px solid #e2e8f0;
+      color: $color-text-muted;
+      border-bottom: 1px solid $color-border-soft;
       vertical-align: middle;
     }
 
     td {
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid #f1f5f9;
+      padding: $spacing-4 $spacing-5;
+      border-bottom: 1px solid $color-border-soft;
       vertical-align: middle;
-      font-size: 0.9rem;
+      font-size: $font-size-sm;
     }
 
     tr:last-child td {
@@ -207,17 +192,17 @@
     }
 
     tr:hover td {
-      background: #f8fafc;
+      background: $color-surface-hover;
     }
 
     .engagement-name-cell {
       .eng-title {
-        font-weight: 600;
-        color: #0f172a;
+        font-weight: $font-weight-semibold;
+        color: $color-text;
       }
       .client-name {
-        font-size: 0.8rem;
-        color: #64748b;
+        font-size: $font-size-xs;
+        color: $color-text-faint;
         margin-top: 0.15rem;
       }
     }
@@ -226,53 +211,52 @@
       &[data-type="Greenfield"],
       &[data-type="greenfield"] {
         ::ng-deep .status-badge {
-          background-color: #f0fdf4;
-          color: #16a34a;
-          border: 1px solid #bbf7d0;
+          background-color: $color-success-bg;
+          color: $color-success;
+          border: 1px solid $color-success-border;
         }
       }
 
       &[data-type="Brownfield"],
       &[data-type="brownfield"] {
         ::ng-deep .status-badge {
-          background-color: #fff7ed;
-          color: #c2410c;
-          border: 1px solid #ffedd5;
+          background-color: $color-warning-bg;
+          color: $color-warning-text;
+          border: 1px solid $color-warning-border;
         }
       }
     }
 
     .model-sub {
-      font-size: 0.78rem;
-      color: #64748b;
+      font-size: $font-size-xs;
+      color: $color-text-faint;
       margin-top: 0.2rem;
     }
 
     .contacts-chips {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.4rem;
+      gap: $spacing-2;
 
       .leadership-chip {
         display: inline-flex;
         align-items: center;
-        gap: 0.35rem;
-        padding: 0.25rem 0.6rem;
-        background: #eff6ff;
-        color: #1d4ed8;
-        border: 1px solid #bfdbfe;
-        border-radius: 6px;
-        font-size: 0.8rem;
-        font-weight: 500;
+        gap: $spacing-1;
+        padding: $spacing-1 $spacing-2;
+        background: $color-primary-light;
+        color: $color-primary-hover;
+        border: 1px solid $color-primary-disabled;
+        border-radius: $radius-sm;
+        font-size: $font-size-xs;
+        font-weight: $font-weight-medium;
 
         ::ng-deep svg,
         svg {
-          width: 14px;
-          height: 14px;
+          width: $font-size-xs;
+          height: $font-size-xs;
         }
       }
     }
-
 
     .col-engagement {
       width: 26%;
@@ -293,14 +277,12 @@
     }
 
     .assign-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      @include flex-center;
 
       ::ng-deep svg,
       svg {
-        width: 16px;
-        height: 16px;
+        width: $font-size-sm;
+        height: $font-size-sm;
       }
     }
   }
@@ -310,27 +292,25 @@
 .loading-container,
 .empty-state {
   text-align: center;
-  padding: 4rem 2rem;
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  padding: $spacing-8 $spacing-6;
+  background: $color-surface;
+  border-radius: $radius-lg;
+  border: 1px solid $color-border-soft;
 
   p {
-    color: #64748b;
-    margin-top: 1rem;
+    color: $color-text-faint;
+    margin-top: $spacing-4;
   }
 
   .empty-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #94a3b8;
-    margin-bottom: 0.5rem;
+    @include flex-center;
+    color: $color-text-fainter;
+    margin-bottom: $spacing-2;
 
     ::ng-deep svg,
     svg {
-      width: 48px;
-      height: 48px;
+      width: 3rem;
+      height: 3rem;
     }
   }
 }

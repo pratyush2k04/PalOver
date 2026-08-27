@@ -1,0 +1,58 @@
+@use '../../../../../../../styles/tokens' as *;
+@use '../../../../../../../styles/mixins' as *;
+
+.dialog-container {
+  display: flex;
+  flex-direction: column;
+  width: 600px;
+  max-width: 90vw;
+}
+
+.dialog-header {
+  @include flex-between;
+  padding: $spacing-4 $spacing-5;
+  border-bottom: 1px solid $color-border-soft;
+  background: $color-surface-hover;
+
+  h3 {
+    margin: 0;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text;
+  }
+}
+
+.dialog-body {
+  padding: $spacing-5;
+  @include flex-column($spacing-4);
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.dialog-footer {
+  padding: $spacing-3 $spacing-5;
+  border-top: 1px solid $color-border-soft;
+  background: $color-surface-hover;
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-3;
+}
+
+.form-group {
+  @include flex-column($spacing-1);
+
+  label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-muted;
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: $spacing-4;
+
+  .col {
+    flex: 1;
+  }
+}

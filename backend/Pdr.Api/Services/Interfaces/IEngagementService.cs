@@ -16,10 +16,14 @@ public interface IEngagementService
 
     Task<EngagementOwnersDto> AssignProjectManagerAsync(int engagementId, int userId);
     Task<EngagementOwnersDto> AssignTechLeadAsync(int engagementId, int userId);
+    Task<IEnumerable<Pdr.Api.DTOs.Users.UserListItemDto>> GetEngagementUsersAsync(int engagementId);
     Task<List<LeadershipUserDto>> GetLeadershipUsersAsync(int engagementId);
     Task<List<LeadershipUserDto>> AssignLeadershipUserAsync(int engagementId, int userId);
     Task<List<LeadershipUserDto>> AssignLeadershipUsersAsync(int engagementId, List<int> userIds);
     Task<List<LeadershipUserDto>> RemoveLeadershipUserAsync(int engagementId, int userId);
+    Task<HandoverDraftStatusDto> GetHandoverDraftStatusAsync(int engagementId);
     Task<List<LeadershipEngagementListItemDto>> GetLeadershipDashboardAsync();
     Task<EngagementOpenItemsSummaryDto?> GetOpenItemsSummaryAsync(int engagementId);
+    Task<DayOneSignOffDto> SignOffDayOneAsync(int engagementId, DayOneSignOffRequest request);
+    Task<EvidenceSnapshotDto> GetEvidenceSnapshotAsync(int engagementId);
 }

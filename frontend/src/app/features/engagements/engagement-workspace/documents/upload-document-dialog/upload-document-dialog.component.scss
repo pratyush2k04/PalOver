@@ -1,5 +1,7 @@
+@use '../../../../../../styles/tokens' as *;
+
 .dialog-container {
-  background: #ffffff;
+  background: $color-surface;
   border-radius: 12px;
   width: 100%;
   max-width: 440px;
@@ -16,7 +18,7 @@
     margin: 0;
     font-size: 1.125rem;
     font-weight: 600;
-    color: #0f172a;
+    color: $color-slate-900;
   }
 }
 
@@ -31,7 +33,7 @@
     display: block;
     font-size: 0.8125rem;
     font-weight: 500;
-    color: #475569;
+    color: $color-slate-600;
     margin-bottom: 0.375rem;
   }
 
@@ -39,9 +41,9 @@
     width: 100%;
     padding: 0.55rem 0.75rem;
     font-size: 0.8125rem;
-    color: #1e293b;
-    background-color: #ffffff;
-    border: 1px solid #cbd5e1;
+    color: $color-slate-800;
+    background-color: $color-surface;
+    border: 1px solid $color-slate-300;
     border-radius: 8px;
     box-sizing: border-box;
     cursor: pointer;
@@ -49,8 +51,8 @@
 
     &:focus {
       outline: none;
-      border-color: #f59e0b;
-      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+      border-color: $color-accent-amber;
+      box-shadow: 0 0 0 3px rgba($color-accent-amber, 0.15);
     }
   }
 }
@@ -60,7 +62,7 @@
   margin-bottom: 0;
   font-size: 0.75rem;
   line-height: 1.4;
-  color: #64748b;
+  color: $color-slate-500;
 }
 
 .modal-footer {
@@ -74,8 +76,8 @@
 // Multi-file selection list
 .selected-files-list {
   margin: -0.25rem 0 0.75rem;
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background-color: $color-slate-50;
+  border: 1px solid $color-slate-200;
   border-radius: 8px;
   padding: 0.625rem 0.875rem;
 
@@ -83,7 +85,7 @@
     margin: 0 0 0.375rem;
     font-size: 0.8rem;
     font-weight: 600;
-    color: #64748b;
+    color: $color-slate-500;
   }
 
   ul {
@@ -93,7 +95,7 @@
 
     li {
       font-size: 0.8rem;
-      color: #334155;
+      color: $color-slate-700;
       padding: 0.1rem 0;
       word-break: break-all;
     }

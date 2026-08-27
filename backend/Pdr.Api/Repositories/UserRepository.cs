@@ -30,6 +30,14 @@ public class UserRepository(AppDbContext context) : IUserRepository
             .ToListAsync();
     }
 
+    public async Task<List<User>> GetAdminsAsync()
+    {
+        return await context.Users
+            .AsNoTracking()
+            .Where(u => u.IsAdmin)
+            .ToListAsync();
+    }
+
     public async Task<(List<User> Users, int TotalCount)> SearchAsync(string? search, int page, int pageSize)
     {
         var query = context.Users.Include(u => u.Role).AsQueryable();

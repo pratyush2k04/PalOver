@@ -11,6 +11,4 @@ public class RealisticCommitment : BaseAuditableEntity
     public CommitmentTimelineUnitEnum TimelineUnit { get; set; }
 
     public string? AcknowledgementMessage { get; set; }
-
-    public bool IsPossible { get; set; } = true;
 }

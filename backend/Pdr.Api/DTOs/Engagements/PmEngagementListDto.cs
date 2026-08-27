@@ -8,6 +8,7 @@ public record EngagementListItemDto(
     string CommercialModelName,
     DateOnly KickoffDate,
     int DaysToKickoff,
-    int? ReadinessScore);
+    int? ReadinessScore,
+    bool IsSignedOff);
 
 public record EngagementListResponse(List<EngagementListItemDto> Engagements);

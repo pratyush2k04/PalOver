@@ -4,6 +4,7 @@ using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Documents;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.Documents;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.Handover;
@@ -26,7 +27,9 @@ public class DocumentService(
     ICurrentUserService currentUserService,
     IUserRepository userRepository,
     INotificationService notificationService,
-    IValidator<DocumentUploadDto> uploadValidator) : IDocumentService
+    IValidator<DocumentUploadDto> uploadValidator,
+    IAuditLogService auditLogService,
+    IEngagementAccessService engagementAccessService) : IDocumentService
 {
     // ── Helper methods ──────────────────────────────────────────────────────
 
@@ -160,6 +163,21 @@ public class DocumentService(
 
         await NotifyDocumentUploadedAsync(reloaded);
 
+        // await NotifyDocumentUploadedAsync(reloaded);
+
+        var actorUserId = currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            AuditActionEnum.DocumentUploaded,
+            new Dictionary<string, object?>
+            {
+                ["DocumentId"] = reloaded.Id,
+                ["CategoryId"] = reloaded.CategoryId,
+                ["ActorUserId"] = actorUserId,
+                ["DocumentName"] = reloaded.FileName,
+            },
+            engagementId: dto.EngagementId,
+            actingUserId: actorUserId);
+
         var uploaderNames = await GetUploaderNamesAsync([reloaded.CreatedBy]);
         return MapToResponseDto(reloaded, uploaderNames);
     }
@@ -218,6 +236,8 @@ public class DocumentService(
 
     public async Task<IEnumerable<DocumentResponseDto>> GetDocumentsByEngagementAsync(int engagementId)
     {
+        await engagementAccessService.ValidateAccessAsync(engagementId);
+
         var userRoleId = currentUserService.GetRoleId();
         var isAdmin = currentUserService.IsAdmin();
         var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
@@ -234,6 +254,8 @@ public class DocumentService(
         {
             throw new DocumentNotFoundException(id);
         }
+
+        await engagementAccessService.ValidateAccessAsync(doc.EngagementId);
 
         if (!File.Exists(doc.FilePath))
         {
@@ -372,6 +394,19 @@ public class DocumentService(
 
         var updated = await repository.AddVersionAsync(doc, newVersion);
         var reloaded = await repository.GetByIdAsync(updated.Id) ?? updated;
+
+        var actorUserId = currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            AuditActionEnum.DocumentVersioned,
+            new Dictionary<string, object?>
+            {
+                ["DocumentId"] = reloaded.Id,
+                ["Version"] = newVersion.VersionNumber,
+                ["ActorUserId"] = actorUserId,
+                ["DocumentName"] = reloaded.FileName
+            },
+            engagementId: reloaded.EngagementId,
+            actingUserId: actorUserId);
 
         var uploaderNames = await GetUploaderNamesAsync([reloaded.CreatedBy]);
         return MapToResponseDto(reloaded, uploaderNames);

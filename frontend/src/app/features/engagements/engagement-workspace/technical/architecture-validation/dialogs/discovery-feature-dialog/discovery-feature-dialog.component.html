@@ -22,6 +22,9 @@
           <app-input
             id="estimate-weeks"
             label="Estimate (Weeks)"
+            type="number"
+            [min]="0"
+            step="any"
             [ngModel]="estimateWeeks()"
             (ngModelChange)="onEstimateWeeksChange($event)"
             name="estimateWeeks"
@@ -31,15 +34,19 @@
         </div>
 
         <div class="form-group flex-1">
-          <app-input
-            id="target-sprint"
-            label="Target Sprint"
-            [ngModel]="targetSprint()"
-            (ngModelChange)="onTargetSprintChange($event)"
-            name="targetSprint"
-            placeholder="e.g., Sprint 1"
-            [extraError]="targetSprintError() || null"
-          />
+          <div class="sprint-input-wrapper">
+            <span class="sprint-prefix">Sprint:</span>
+            <app-input
+              id="target-sprint"
+              label="Target Sprint"
+              type="number"
+              [min]="1"
+              [ngModel]="targetSprint()"
+              (ngModelChange)="onTargetSprintChange($event)"
+              name="targetSprint"
+              [extraError]="targetSprintError() || null"
+            />
+          </div>
         </div>
       </div>
     </div>

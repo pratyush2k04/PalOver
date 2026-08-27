@@ -1,34 +1,135 @@
 <div class="workspace-container">
-  <div class="workspace-header" *ngIf="!isLoading() && engagement()">
-    <div class="header-info">
-      <h1>{{ engagement()!.engagementName }}</h1>
-      <p><strong>Type:</strong> {{ engagement()!.engagementType }}</p>
-    </div>
-    <div class="header-metrics">
-      <p><strong>Kickoff Date:</strong> {{ engagement()!.kickoffDate }}</p>
-      <p><strong>Billing Date:</strong> {{ engagement()!.billingStartDate || '—' }}</p>
-      <p>
-        <strong>Readiness Score:</strong> {{ readiness()?.score ?? '—' }}
-        <span class="kickoff-ready-badge" *ngIf="engagement()!.isKickoffReady">Kickoff-ready</span>
-        <app-status-badge
-          *ngIf="engagement()!.handoverReviewedAt"
-          tone="success"
-          [title]="'Reviewed on ' + (engagement()!.handoverReviewedAt | date: 'medium')"
-        >
-          Reviewed
-        </app-status-badge>
-      </p>
-      <p><strong>Client Contact:</strong> {{ engagement()!.clientName }}</p>
-    </div>
-  </div>
+  @if (!isLoading() && engagement()) {
+    <div class="workspace-header-card">
+      <div class="header-main-info">
+        <div class="briefcase-icon-box">
+          <span class="briefcase-icon" [inlineSVG]="'assets/icons/briefcase.svg'"></span>
+        </div>
 
-  <div class="workspace-header" *ngIf="isLoading()">
-    <p>Loading engagement details...</p>
-  </div>
+        <div class="title-and-metadata">
+          <div class="title-with-badge">
+            <h1 class="engagement-title">{{ engagement()!.engagementName }}</h1>
+            <span
+              class="type-badge"
+              [class.type-badge--brownfield]="isBrownfield()"
+              [class.type-badge--greenfield]="isGreenfield()"
+            >
+              {{ engagement()!.engagementType }}
+            </span>
+            @if (engagement()!.handoverReviewedAt) {
+              <app-status-badge
+                tone="success"
+                [title]="'Reviewed on ' + (engagement()!.handoverReviewedAt | date: 'medium')"
+              >
+                Reviewed
+              </app-status-badge>
+            }
+          </div>
 
-  <app-tabs [tabs]="tabs()" [activeId]="activeTabId()" />
+          <div class="metadata-row">
+            <span class="meta-item">
+              <span class="meta-icon" [inlineSVG]="'assets/icons/user.svg'"></span>
+              <span class="meta-label">Client:</span>
+              <span class="meta-val">{{ engagement()!.clientName }}</span>
+            </span>
+            <span class="meta-dot">·</span>
+            <span class="meta-item">
+              <span class="meta-icon" [inlineSVG]="'assets/icons/calendar.svg'"></span>
+              <span class="meta-label">Kickoff:</span>
+              <span class="meta-val">{{ engagement()!.kickoffDate | date: 'dd MMM yyyy' }}</span>
+            </span>
+            @if (engagement()!.billingStartDate) {
+              <span class="meta-dot">·</span>
+              <span class="meta-item">
+                <span class="meta-icon" [inlineSVG]="'assets/icons/calendar.svg'"></span>
+                <span class="meta-label">Billing:</span>
+                <span class="meta-val">{{ engagement()!.billingStartDate | date: 'dd MMM yyyy' }}</span>
+              </span>
+            }
+          </div>
+
+          <div class="metadata-row metadata-row--owners">
+            <span class="meta-item">
+              <span class="meta-icon" [inlineSVG]="'assets/icons/user.svg'"></span>
+              <span class="meta-label">PM:</span>
+              <span class="meta-val">{{ owners()?.projectManagerName || 'Unassigned' }}</span>
+            </span>
+            <span class="meta-item">
+              <span class="meta-icon" [inlineSVG]="'assets/icons/user.svg'"></span>
+              <span class="meta-label">TL:</span>
+              <span class="meta-val">{{ owners()?.techLeadName || 'Unassigned' }}</span>
+            </span>
+          </div>
+
+
+        </div>
+      </div>
+
+      @if (engagement()!.dayOneSignOff || isAuthorizedForSignOff()) {
+        <div class="header-divider"></div>
+
+        <div class="header-day-one-actions">
+          @if (engagement()!.dayOneSignOff) {
+            <div class="day-one-signed-badge" [class.exception-badge]="engagement()!.dayOneSignOff!.isException">
+              <span class="badge-icon" [inlineSVG]="engagement()!.dayOneSignOff!.isException ? 'assets/icons/alert-circle.svg' : 'assets/icons/check-circle.svg'"></span>
+              <div class="badge-content">
+                <strong>Day-1 Signed Off</strong>
+                @if (engagement()!.dayOneSignOff!.isException) {
+                  <span class="exception-tag" [title]="engagement()!.dayOneSignOff!.exceptionJustification || 'Signed off with exception'">Exception</span>
+                }
+              </div>
+            </div>
+          } @else if (isAuthorizedForSignOff()) {
+            <app-button
+              variant="flat"
+              [disabled]="!isFullyReady()"
+              (click)="openSignOffDialog()">
+              Sign Off Day-1
+            </app-button>
+          }
+        </div>
+      }
+
+      <div class="header-divider"></div>
+
+      <div
+        class="header-readiness-status"
+        role="button"
+        tabindex="0"
+        aria-label="View kickoff readiness one-pager"
+        (click)="openReadinessOnePager()"
+        (keydown.enter)="openReadinessOnePager()"
+      >
+        <app-readiness-circle [score]="scorePercent()" size="lg" />
+
+        <div class="readiness-details">
+          <span class="readiness-label">Readiness</span>
+          <span
+            class="status-badge"
+            [class.status-badge--ready]="isFullyReady()"
+            [class.status-badge--not-ready]="!isFullyReady()"
+          >
+            {{ isFullyReady() ? 'Kickoff ready' : 'Not ready' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  }
+
+
+  @if (isLoading()) {
+    <div class="workspace-header-skeleton">
+      <app-loading-spinner label="Loading engagement details..."></app-loading-spinner>
+    </div>
+  }
+
+  <div class="workspace-tabs-wrapper">
+    <app-tabs [tabs]="tabs()" [activeId]="activeTabId()" />
+  </div>
 
   <div class="workspace-content">
     <router-outlet></router-outlet>
   </div>
 </div>
+
+

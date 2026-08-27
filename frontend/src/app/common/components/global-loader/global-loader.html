@@ -1,0 +1,30 @@
+@if (loader.isLoading()) {
+  <div
+    class="loader-backdrop"
+    [class.is-full-page]="fullPage()"
+    [class.is-sub-tab]="isSubTabLoading()"
+    role="status"
+    aria-live="polite"
+    aria-label="Loading">
+    <div class="loader-card">
+      <svg class="loader-mark" viewBox="0 0 56 56" aria-hidden="true">
+        <defs>
+          <mask id="loader-orange-reveal">
+            <path class="loader-reveal" pathLength="1" d="M30 42H20Q14 42 14 36V10" />
+          </mask>
+          <mask id="loader-blue-reveal">
+            <path class="loader-reveal loader-reveal--delayed" pathLength="1" d="M22 14H36Q42 14 42 20V46" />
+          </mask>
+        </defs>
+        <path
+          class="loader-shape loader-shape--orange"
+          mask="url(#loader-orange-reveal)"
+          d="M10 10H18V38H30V46H22C15.37 46 10 40.63 10 34Z" />
+        <path
+          class="loader-shape loader-shape--blue"
+          mask="url(#loader-blue-reveal)"
+          d="M22 10H34C40.63 10 46 15.37 46 22V46H38V18H22Z" />
+      </svg>
+    </div>
+  </div>
+}

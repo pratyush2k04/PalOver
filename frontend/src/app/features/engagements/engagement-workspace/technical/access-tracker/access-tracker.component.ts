@@ -1,19 +1,22 @@
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { Component, inject, input, output, signal, computed, effect, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { catchError, of } from 'rxjs';
 import { TECHNICAL_READINESS_ROLES } from '@shared/constants/app.constants';
 import { TechnicalReadinessService } from '@features/engagements/services/technical-readiness.service';
-import { AuthService } from 'src/app/services/auth';
+import { AuthService } from '@shared/services/auth';
 import { AccessItemDto } from '@features/engagements/models/access-tracker/access-tracker.dtos';
 import { AccessItemStatus } from '@features/engagements/models/access-tracker/access-tracker.enums';
-import { KickoffReadinessDto, KickoffReadinessService } from 'src/app/services/kickoff-readiness.service';
+import { KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
 import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
+import { ToastService } from '@common/services/toast/toast';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
+import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import {
   AddAccessItemDialogComponent,
@@ -24,17 +27,25 @@ import {
   BlockAccessItemDialogData,
   BlockAccessItemDialogResult
 } from './dialogs/block-access-item-dialog/block-access-item-dialog.component';
+import {
+  EditOwnerDialogComponent,
+  EditOwnerDialogData,
+  EditOwnerDialogResult
+} from '../dialogs/edit-owner-dialog/edit-owner-dialog.component';
 
 @Component({
   selector: 'app-access-tracker',
   standalone: true,
   imports: [
+    LoadingSpinnerComponent,
     CommonModule,
     FormsModule,
     InlineSVGModule,
+    TooltipDirective,
     FlaggedItemsBannerComponent,
     StatusBadgeComponent,
-    ButtonComponent
+    ButtonComponent,
+    ConfirmDialogComponent
   ],
   templateUrl: './access-tracker.component.html',
   styleUrl: './access-tracker.component.scss'
@@ -44,6 +55,7 @@ export class AccessTrackerComponent {
   itemsUpdated = output<AccessItemDto[]>();
 
   private readinessService = inject(TechnicalReadinessService);
+  private toastService = inject(ToastService);
   private kickoffReadinessService = inject(KickoffReadinessService);
   private authService = inject(AuthService);
   private destroyRef = inject(DestroyRef);
@@ -53,7 +65,10 @@ export class AccessTrackerComponent {
   isLoading = signal<boolean>(true);
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
 
-  kickoffReadiness = signal<KickoffReadinessDto | null>(null);
+  itemToDelete = signal<AccessItemDto | null>(null);
+  isDeleting = signal<boolean>(false);
+
+  kickoffReadiness = this.kickoffReadinessService.readiness;
   blockedItems = computed(() => this.accessItems().filter(i => i.status === 'Blocked'));
   accessTrackerFlaggedItems = computed<FlaggedItem[]>(() => [
     { label: 'access item(s) blocked', count: this.blockedItems().length }
@@ -70,16 +85,9 @@ export class AccessTrackerComponent {
       const id = this.engagementId();
       if (id) {
         this.loadItems(id);
-        this.loadKickoffReadiness(id);
+        this.kickoffReadinessService.track(id);
       }
     });
-  }
-
-  private loadKickoffReadiness(id: number) {
-    this.kickoffReadinessService.getReadiness(id).pipe(
-      takeUntilDestroyed(this.destroyRef),
-      catchError(() => of(null))
-    ).subscribe(data => this.kickoffReadiness.set(data));
   }
 
   loadItems(id: number) {
@@ -119,7 +127,7 @@ export class AccessTrackerComponent {
   private openBlockDialog(item: AccessItemDto): void {
     const dialogRef = this.dialog.open<BlockAccessItemDialogComponent, BlockAccessItemDialogData, BlockAccessItemDialogResult>(
       BlockAccessItemDialogComponent,
-      { data: { itemName: item.name, currentReason: item.blockReason } }
+      { data: { itemName: item.name, currentReason: item.blockReason }, disableClose: true }
     );
 
     dialogRef.closed$.subscribe((result) => {
@@ -149,8 +157,10 @@ export class AccessTrackerComponent {
         );
         this.accessItems.set(updatedList);
         this.itemsUpdated.emit(updatedList);
+        this.toastService.success(`Status updated for ${item.name}`);
       },
       error: (err) => {
+        this.toastService.error(`Failed to update status for ${item.name}`);
         console.warn('API update status failed, updating local state for testing', err);
         const updatedList = this.accessItems().map(i => {
           if (i.id === item.id) {
@@ -168,41 +178,59 @@ export class AccessTrackerComponent {
     });
   }
 
-  getStatusBadgeClass(status: string): string {
-    switch (status) {
-      case 'Granted':
-      case '2':
-        return 'badge-granted';
-      case 'Blocked':
-      case '3':
-        return 'badge-blocked';
+  getStatusNumericValue(status: AccessItemStatus | string | number): AccessItemStatus {
+    if (status === AccessItemStatus.Granted || status === 'Granted' || +status === AccessItemStatus.Granted) {
+      return AccessItemStatus.Granted;
+    }
+    if (status === AccessItemStatus.Blocked || status === 'Blocked' || +status === AccessItemStatus.Blocked) {
+      return AccessItemStatus.Blocked;
+    }
+    return AccessItemStatus.InProgress;
+  }
+
+  getStatusLabel(status: AccessItemStatus | string | number): string {
+    const num = this.getStatusNumericValue(status);
+    switch (num) {
+      case AccessItemStatus.Granted:
+        return 'Granted';
+      case AccessItemStatus.Blocked:
+        return 'Blocked';
+      case AccessItemStatus.InProgress:
       default:
-        return 'badge-inprogress';
+        return 'In Progress';
     }
   }
 
-  getStatusTone(status: string): StatusBadgeTone {
-    switch (status) {
-      case 'Granted':
-      case '2':
+  getStatusTone(status: AccessItemStatus | string | number): StatusBadgeTone {
+    const num = this.getStatusNumericValue(status);
+    switch (num) {
+      case AccessItemStatus.Granted:
         return 'success';
-      case 'Blocked':
-      case '3':
+      case AccessItemStatus.Blocked:
         return 'danger';
+      case AccessItemStatus.InProgress:
       default:
         return 'info';
     }
   }
 
-  getStatusNumericValue(status: string): number {
-    if (status === 'Granted' || status === '2') return AccessItemStatus.Granted;
-    if (status === 'Blocked' || status === '3') return AccessItemStatus.Blocked;
-    return AccessItemStatus.InProgress;
+  getStatusBadgeClass(status: AccessItemStatus | string | number): string {
+    const num = this.getStatusNumericValue(status);
+    switch (num) {
+      case AccessItemStatus.Granted:
+        return 'badge-granted';
+      case AccessItemStatus.Blocked:
+        return 'badge-blocked';
+      case AccessItemStatus.InProgress:
+      default:
+        return 'badge-inprogress';
+    }
   }
 
   openAddModal(): void {
     const dialogRef = this.dialog.open<AddAccessItemDialogComponent, undefined, AddAccessItemDialogResult>(
-      AddAccessItemDialogComponent
+      AddAccessItemDialogComponent,
+      { disableClose: true }
     );
 
     dialogRef.closed$.subscribe((result) => {
@@ -211,12 +239,52 @@ export class AccessTrackerComponent {
     });
   }
 
+  openEditOwnerModal(item: AccessItemDto): void {
+    const dialogRef = this.dialog.open<EditOwnerDialogComponent, EditOwnerDialogData, EditOwnerDialogResult>(
+      EditOwnerDialogComponent,
+      { 
+        data: { 
+          itemName: item.name, 
+          engagementId: this.engagementId(),
+          currentOwnerId: item.ownerId 
+        },
+        disableClose: true
+      }
+    );
+
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+      this.updateOwner(item, result.ownerId);
+    });
+  }
+
+  private updateOwner(item: AccessItemDto, ownerId: number) {
+    this.readinessService.updateAccessItemOwner(item.id, { ownerId }).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (updatedItem) => {
+        const updatedList = this.accessItems().map(i =>
+          i.id === updatedItem.id ? updatedItem : i
+        );
+        this.accessItems.set(updatedList);
+        this.itemsUpdated.emit(updatedList);
+        this.toastService.success(`Owner updated for ${item.name}`);
+      },
+      error: (err) => {
+        this.toastService.error(`Failed to update owner for ${item.name}`);
+        console.error('API update owner failed', err);
+      }
+    });
+  }
+
   private submitAddItem(result: AddAccessItemDialogResult) {
+    const currentUserId = this.authService.getUserId() ?? 1;
+    const currentUser = this.authService.currentUser();
     const requestData = {
       name: result.name,
       isClientSide: result.isClientSide,
       timeZoneNote: result.timeZoneNote,
-      ownerId: 1 // Default to Rahul Verma (ID 1)
+      ownerId: currentUserId
     };
 
     this.readinessService.addCustomAccessItem(this.engagementId(), requestData).pipe(
@@ -226,6 +294,7 @@ export class AccessTrackerComponent {
         const updatedList = [...this.accessItems(), newItem];
         this.accessItems.set(updatedList);
         this.itemsUpdated.emit(updatedList);
+        this.toastService.success(`Access item "${newItem.name}" added successfully`);
       },
       error: (err) => {
         console.warn('API add item failed, adding item locally for testing', err);
@@ -233,8 +302,8 @@ export class AccessTrackerComponent {
           id: Date.now(),
           name: requestData.name,
           isClientSide: requestData.isClientSide,
-          ownerId: 1,
-          ownerFullName: 'Rahul Verma',
+          ownerId: currentUserId,
+          ownerFullName: currentUser?.fullName ?? 'Tech Lead',
           status: 'InProgress',
           timeZoneNote: requestData.timeZoneNote,
           daysUntilBillingDate: 5,
@@ -243,6 +312,39 @@ export class AccessTrackerComponent {
         const updatedList = [...this.accessItems(), localNewItem];
         this.accessItems.set(updatedList);
         this.itemsUpdated.emit(updatedList);
+      }
+    });
+  }
+
+  onDeleteItem(item: AccessItemDto): void {
+    if (!this.isTechLead()) return;
+    this.itemToDelete.set(item);
+  }
+
+  cancelDelete(): void {
+    this.itemToDelete.set(null);
+  }
+
+  confirmDelete(): void {
+    const item = this.itemToDelete();
+    if (!item) return;
+
+    this.isDeleting.set(true);
+    this.readinessService.deleteAccessItem(item.id).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: () => {
+        const updatedList = this.accessItems().filter(i => i.id !== item.id);
+        this.accessItems.set(updatedList);
+        this.itemsUpdated.emit(updatedList);
+        this.toastService.success(`Access item "${item.name}" deleted successfully`);
+        this.isDeleting.set(false);
+        this.itemToDelete.set(null);
+      },
+      error: (err) => {
+        this.toastService.error(`Failed to delete "${item.name}"`);
+        console.error('API delete access item failed', err);
+        this.isDeleting.set(false);
       }
     });
   }

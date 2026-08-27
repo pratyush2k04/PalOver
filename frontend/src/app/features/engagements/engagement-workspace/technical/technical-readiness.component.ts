@@ -2,7 +2,8 @@ import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TECHNICAL_READINESS_ALERTS } from '@shared/constants/app.constants';
+import { AuthService } from '@shared/services/auth';
+import { TECHNICAL_READINESS_ROLES } from '@shared/constants/technical-readiness.constants';
 import { AccessItemDto } from '@features/engagements/models/access-tracker/access-tracker.dtos';
 import { AccessItemStatus } from '@features/engagements/models/access-tracker/access-tracker.enums';
 import { EnvironmentToolingItemDto } from '@features/engagements/models/environment-tooling/environment-tooling.dtos';
@@ -15,6 +16,7 @@ import { AccessTrackerComponent } from './access-tracker/access-tracker.componen
 import { EnvironmentToolingComponent } from './environment-tooling/environment-tooling.component';
 import { BrownfieldReviewComponent } from './brownfield-review/brownfield-review.component';
 import { ArchitectureValidationComponent } from './architecture-validation/architecture-validation.component';
+import { DependencySpikesComponent } from './dependency-spikes/dependency-spikes.component';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 
@@ -27,7 +29,8 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
     AccessTrackerComponent,
     EnvironmentToolingComponent,
     BrownfieldReviewComponent,
-    ArchitectureValidationComponent
+    ArchitectureValidationComponent,
+    DependencySpikesComponent
   ],
   templateUrl: './technical-readiness.component.html',
   styleUrl: './technical-readiness.component.scss'
@@ -35,8 +38,19 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
 export class TechnicalReadinessComponent {
   private route = inject(ActivatedRoute);
   private engagementService = inject(EngagementService);
+  private authService = inject(AuthService);
 
   private parentParamMap = toSignal(this.route.parent!.paramMap);
+
+  isPreSales = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.PRE_SALES));
+  isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+
+  canViewDayOneBanner = computed(() => !this.isPreSales());
+  canViewAccessTracker = computed(() => !this.isPreSales());
+  canViewEnvironmentTooling = computed(() => !this.isPreSales());
+  canViewArchitectureValidation = computed(() => true);
+  canViewBrownfieldReview = computed(() => !this.isPreSales() && this.isBrownfield());
+  canViewDependencySpikes = computed(() => !this.isPreSales());
 
   engagementId = computed(() => {
     const idStr = this.parentParamMap()?.get('id');
@@ -143,7 +157,9 @@ export class TechnicalReadinessComponent {
     this.architectureValidation.set(val);
   }
 
-  shareSummary() {
-    alert(TECHNICAL_READINESS_ALERTS.SHARE_SUMMARY);
+  shareSummary(): void {
+    const id = this.engagementId();
+    if (!id) return;
+    window.open(`/engagements/${id}/day-one-summary-print`, '_blank');
   }
 }

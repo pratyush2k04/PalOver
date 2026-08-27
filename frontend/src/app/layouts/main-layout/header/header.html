@@ -1,23 +1,41 @@
 <header class="header">
-  <app-global-search />
+  <div class="header-left">
+    <button type="button" class="mobile-logo-btn" (click)="layoutService.toggleSidebar()" aria-label="Toggle navigation menu">
+      <img src="image.png" alt="Project Delivery Readiness" class="mobile-logo-img" />
+    </button>
+    <app-global-search />
+  </div>
 
   @if (user(); as currentUser) {
     <div class="header-actions">
-      @if (workspace()?.welcomeMessage; as welcomeMsg) {
-        <div class="welcome-message">{{ welcomeMsg }}</div>
-      }
+
 
       <app-notifications-dropdown />
 
-      <div class="user-info">
-        <app-avatar [name]="currentUser.fullName" />
-        <div class="user-text">
-          <span class="user-name">{{ currentUser.fullName }}</span>
-          <span class="user-role">{{ currentUser.role }}</span>
+      <div class="user-menu-container">
+        <div class="user-info" (click)="toggleUserMenu()" [class.active]="isUserMenuOpen()">
+          <app-avatar [name]="currentUser.fullName" />
+          <div class="user-text">
+            <span class="user-name">{{ currentUser.fullName }}</span>
+            <span class="user-role">{{ currentUser.role }}</span>
+          </div>
+          <span class="chevron" [class.open]="isUserMenuOpen()">
+            <span [inlineSVG]="'assets/icons/chevron-down.svg'"></span>
+          </span>
         </div>
-        <span class="chevron">
-          <span [inlineSVG]="'assets/icons/chevron-down.svg'"></span>
-        </span>
+
+        @if (isUserMenuOpen()) {
+          <div class="user-dropdown">
+            <button type="button" class="user-dropdown-item" (click)="onProfileClick()">
+              <span class="dropdown-icon" [inlineSVG]="'assets/icons/user.svg'"></span>
+              <span>Profile</span>
+            </button>
+            <button type="button" class="user-dropdown-item sign-out-btn" (click)="onLogOut()">
+              <span class="dropdown-icon" [inlineSVG]="'assets/icons/log-out.svg'"></span>
+              <span>Log Out</span>
+            </button>
+          </div>
+        }
       </div>
     </div>
   }

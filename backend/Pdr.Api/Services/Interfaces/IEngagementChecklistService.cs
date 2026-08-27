@@ -12,4 +12,5 @@ public interface IEngagementChecklistService
     Task<EngagementChecklistResponseDto> UpdateItemOwnerAsync(int engagementId, int itemId, UpdateItemOwnerRequestDto dto);
     Task<EngagementChecklistResponseDto> BlockItemAsync(int engagementId, int itemId, BlockChecklistItemRequestDto dto);
     Task<EngagementChecklistResponseDto> UnblockItemAsync(int engagementId, int itemId);
+    Task<EngagementChecklistResponseDto> SaveItemEvidenceAsync(int engagementId, int itemId, SaveChecklistItemEvidenceRequestDto dto);
 }

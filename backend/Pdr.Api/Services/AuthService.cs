@@ -17,6 +17,11 @@ public class AuthService(
 
         if (user is null)
         {
+            await auditLogService.LogAsync(
+                AuditActionEnum.UnauthorizedAccess,
+                new Dictionary<string, object?> { ["Email"] = request.Email, ["UserId"] = null },
+                actingUserId: null);
+
             return new AuthResultDto
             {
                 IsSuccess = false,
@@ -27,6 +32,11 @@ public class AuthService(
         // Check if user is currently locked out
         if (user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow)
         {
+            await auditLogService.LogAsync(
+                AuditActionEnum.UnauthorizedAccess,
+                new Dictionary<string, object?> { ["Email"] = request.Email, ["UserId"] = user.Id },
+                actingUserId: user.Id);
+
             return new AuthResultDto
             {
                 IsSuccess = false,
@@ -45,6 +55,16 @@ public class AuthService(
                 user.LockoutEnd = DateTimeOffset.UtcNow.AddMinutes(AuthConstants.LockoutDurationMinutes);
                 await userRepository.UpdateAsync(user);
 
+                await auditLogService.LogAsync(
+                    AuditActionEnum.AccountLockout,
+                    new Dictionary<string, object?> { ["UserId"] = user.Id },
+                    actingUserId: user.Id);
+
+                await auditLogService.LogAsync(
+                    AuditActionEnum.UnauthorizedAccess,
+                    new Dictionary<string, object?> { ["Email"] = request.Email, ["UserId"] = user.Id },
+                    actingUserId: user.Id);
+
                 return new AuthResultDto
                 {
                     IsSuccess = false,
@@ -55,6 +75,11 @@ public class AuthService(
 
             await userRepository.UpdateAsync(user);
 
+            await auditLogService.LogAsync(
+                AuditActionEnum.UnauthorizedAccess,
+                new Dictionary<string, object?> { ["Email"] = request.Email, ["UserId"] = user.Id },
+                actingUserId: user.Id);
+
             return new AuthResultDto
             {
                 IsSuccess = false,
@@ -62,13 +87,11 @@ public class AuthService(
             };
         }
 
-        // Credentials valid -> Reset failed attempts and lockout
-        if (user.FailedAttemptCount > 0 || user.LockoutEnd.HasValue)
-        {
-            user.FailedAttemptCount = 0;
-            user.LockoutEnd = null;
-            await userRepository.UpdateAsync(user);
-        }
+        // Credentials valid -> Reset failed attempts and lockout, stamp last login
+        user.FailedAttemptCount = 0;
+        user.LockoutEnd = null;
+        user.LastLoginAt = DateTimeOffset.UtcNow;
+        await userRepository.UpdateAsync(user);
 
         var token = jwtTokenGenerator.GenerateToken(user);
 

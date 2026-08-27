@@ -1,0 +1,26 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h3>{{ isEditing ? 'Edit Assumption' : 'Add Assumption' }}</h3>
+    <app-button type="button" variant="icon" ariaLabel="Close" (click)="onCancel()">&times;</app-button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="dialog-body">
+      <div class="form-group">
+        <app-textarea id="description" label="Description" placeholder="Enter your assumption..."
+          formControlName="description" />
+      </div>
+
+      <div class="form-group">
+        <app-textarea id="rationale" label="Rationale" placeholder="Give the reason..." formControlName="rationale" />
+      </div>
+    </div>
+
+    <div class="dialog-footer">
+      <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+      <app-button type="submit" variant="flat">
+        {{ isEditing ? 'Update' : 'Add' }}
+      </app-button>
+    </div>
+  </form>
+</div>

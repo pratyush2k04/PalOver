@@ -2,40 +2,4 @@
   <app-governance-process></app-governance-process>
   <app-change-requests></app-change-requests>
   <app-meeting-record></app-meeting-record>
-
-  <div class="section kickoff-ready-section">
-    <h3>Kickoff Readiness</h3>
-
-    <div *ngIf="message()" class="alert" [ngClass]="{'alert-error': isError(), 'alert-success': !isError()}">
-      {{ message() }}
-    </div>
-
-    <ng-container *ngIf="!isLoading(); else loadingState">
-      <ng-container *ngIf="readiness(); else failedState">
-        <p class="score-line">Score: {{ readiness()!.score }}%</p>
-        <ul class="readiness-breakdown">
-          <li>Handover fields: {{ readiness()!.handoverFieldsPassed }}/{{ readiness()!.handoverFieldsApplicable }}</li>
-          <li>Commitments acknowledged: {{ readiness()!.commitmentsPassed }}/{{ readiness()!.commitmentsApplicable }}</li>
-          <li>Access items unblocked: {{ readiness()!.accessItemsPassed }}/{{ readiness()!.accessItemsApplicable }}</li>
-        </ul>
-
-        <app-button *ngIf="canMarkReady() && !isLeadership()" variant="flat" [disabled]="isSaving() || readiness()!.score !== 100"
-          (click)="markReady()">
-          Mark kickoff-ready
-        </app-button>
-
-        <app-button *ngIf="isLeadership()" variant="warning" [disabled]="isSaving()" (click)="openOverrideDialog()">
-          Override to be kickoff ready
-        </app-button>
-      </ng-container>
-    </ng-container>
-
-    <ng-template #loadingState>
-      <p>Loading kickoff readiness...</p>
-    </ng-template>
-
-    <ng-template #failedState>
-      <p class="score-line">Unable to load kickoff readiness. Please try again.</p>
-    </ng-template>
-  </div>
 </div>

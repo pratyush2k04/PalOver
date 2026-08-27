@@ -1,0 +1,61 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h3>{{ isEditMode ? 'Edit Dependency Spike' : 'Add Dependency Spike' }}</h3>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="dialog-body">
+      <app-input
+        id="dependencyName"
+        label="Dependency Name *"
+        placeholder="e.g. Auth0 SDK, Stripe Payments, SendGrid"
+        [maxLength]="200"
+        formControlName="dependencyName"
+      />
+
+      <app-textarea
+        id="objective"
+        label="PoC Objective *"
+        placeholder="Describe what this proof of concept aims to evaluate..."
+        [rows]="3"
+        [maxLength]="1000"
+        formControlName="objective"
+      />
+
+      <app-select
+        id="status"
+        label="Status *"
+        [options]="statusOptions"
+        formControlName="status"
+      />
+
+      <app-textarea
+        id="outcomeFindings"
+        label="Outcome & Findings"
+        placeholder="Document technical findings, feasibility notes, or failure reasons..."
+        [rows]="3"
+        [maxLength]="2000"
+        formControlName="outcomeFindings"
+      />
+    </div>
+
+    <div class="dialog-footer">
+      <app-button
+        type="button"
+        variant="stroked"
+        [disabled]="isSubmitting()"
+        (click)="onCancel()"
+      >
+        Cancel
+      </app-button>
+      <app-button
+        type="submit"
+        variant="flat"
+        [loading]="isSubmitting()"
+        [disabled]="isSubmitting()"
+      >
+        {{ isEditMode ? 'Save Changes' : 'Create Spike' }}
+      </app-button>
+    </div>
+  </form>
+</div>

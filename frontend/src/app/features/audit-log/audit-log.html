@@ -1,0 +1,95 @@
+<div class="audit-log" [class.workspace-tab]="engagementId() != null">
+  @if (engagementId() != null) {
+    <app-section-header title="Audit Log">
+      <div class="header-actions-group">
+        <app-select
+          [id]="'audit-user-select'"
+          [options]="userOptions()"
+          [(ngModel)]="filterUserId"
+          (ngModelChange)="onFilterChange()"
+        ></app-select>
+        <app-select
+          [id]="'audit-category-select'"
+          [options]="categoryOptions"
+          [(ngModel)]="filterCategory"
+          (ngModelChange)="onFilterChange()"
+        ></app-select>
+        <app-button variant="stroked" (click)="exportCsv()">Export</app-button>
+      </div>
+    </app-section-header>
+  } @else {
+    <app-page-header
+      title="Audit Log"
+      description="Track system activities, access events, and administrative changes across the platform."
+    >
+      <div class="header-actions-group">
+        <app-input
+          [id]="'audit-log-from-date'"
+          type="date"
+          [(ngModel)]="filterFromDate"
+          (ngModelChange)="onFilterChange()"
+        />
+        <app-input
+          [id]="'audit-log-to-date'"
+          type="date"
+          [(ngModel)]="filterToDate"
+          (ngModelChange)="onFilterChange()"
+        />
+        <app-select
+          [id]="'audit-category-select'"
+          [options]="categoryOptions"
+          [(ngModel)]="filterCategory"
+          (ngModelChange)="onFilterChange()"
+        ></app-select>
+        <app-button variant="stroked" (click)="exportCsv()">Export</app-button>
+      </div>
+    </app-page-header>
+  }
+
+  @if (errorMessage()) {
+    <app-alert>{{ errorMessage() }}</app-alert>
+  }
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-date">Date/Time</th>
+          @if (showUserColumn()) {
+            <th class="col-user">User</th>
+          }
+          <th class="col-action">Event Type</th>
+          <th class="col-details">Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (log of pagedLogs(); track log.id) {
+          <tr>
+            <td class="col-date" [title]="log.createdAt | date: 'full'">{{ log.createdAt | date: 'medium' }}</td>
+            @if (showUserColumn()) {
+              <td class="col-user">{{ log.userName || '' }}</td>
+            }
+            <td class="col-action">{{ getEventCategory(log.action) }}</td>
+            <td class="col-details">{{ log.details }}</td>
+          </tr>
+        } @empty {
+          @if (!isLoading()) {
+            <tr>
+              <td [attr.colspan]="showUserColumn() ? 4 : 3" class="empty-row">
+                <app-empty-state [message]="emptyStateMessage()" />
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+
+    @if (isLoading()) {
+      <app-loading-spinner label="Loading audit log..." />
+    }
+  </div>
+
+  @if (pagedLogs().length > 0) {
+    <app-paginator [page]="page()" [totalPages]="totalPages()" (pageChange)="goToPage($event)" />
+  }
+</div>

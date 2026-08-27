@@ -19,4 +19,21 @@ public interface IEngagementRepository
     Task RemoveAssignmentAsync(EngagementAssignment assignment);
     Task AddAssignmentAsync(int engagementId, int userId);
     Task<EngagementOpenItemsSummaryDto> GetOpenItemsSummaryAsync(int engagementId);
+    Task<Dictionary<int, Engagement>> GetByIdsAsync(IEnumerable<int> engagementIds);
+    Task<IEnumerable<EngagementTypeDto>> GetEngagementTypesAsync();
+    Task<IEnumerable<CommercialModelDto>> GetCommercialModelsAsync();
+    Task<bool> EngagementTypeExistsAsync(int id);
+    Task<bool> CommercialModelExistsAsync(int id);
+    Task<bool> EngagementExistsAsync(int id);
+    Task<Engagement?> GetMatchingEngagementAsync(string name, string client, int typeId);
+    Task<int> GetStatusIdByNameAsync(string statusName);
+    Task AddEngagementAsync(Engagement engagement);
+    Task<EngagementInfoDto?> GetEngagementInfoAsync(int id);
+    Task<IEnumerable<EngagementInfoDto>> GetAllEngagementInfosAsync();
+    Task AssignTechLeadOwnerItemsAsync(int engagementId, int userId);
+    Task InitializeTechnicalReadinessItemsAsync(int engagementId, int ownerId);
+    Task<EvidenceSnapshotDto> GetEvidenceSnapshotAsync(int engagementId);
+    Task<bool> IsUserAssignedAsync(int engagementId, int userId);
+    Task<List<EngagementReportInfoDto>> GetEngagementReportInfoAsync(List<int> engagementIds);
+    Task<List<EngagementAssignment>> GetAssignmentsForEngagementsAsync(List<int> engagementIds);
 }

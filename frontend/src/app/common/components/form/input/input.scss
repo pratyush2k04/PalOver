@@ -1,3 +1,5 @@
+@use '../../../../../styles/tokens' as *;
+
 :host {
   display: block;
 }
@@ -5,59 +7,59 @@
 .app-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-bottom: 12px;
+  gap: $spacing-1;
+  margin-bottom: $spacing-3;
 
   label {
-    font-size: 12px;
-    font-weight: 500;
-    color: #666666;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+    color: $color-text-faint;
   }
 }
 
 input {
   width: 100%;
   font-family: inherit;
-  font-size: 14px;
-  color: #1a1a1a;
-  background-color: #ffffff;
-  border: 1px solid #d0d5dd;
-  border-radius: 6px;
-  padding: 8px 12px;
+  font-size: $font-size-sm;
+  color: $color-text;
+  background-color: $color-surface;
+  border: 1px solid $color-border-input;
+  border-radius: $radius-md;
+  padding: $spacing-2 $spacing-3;
   outline: none;
   box-sizing: border-box;
 
   &:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+    border-color: $color-primary;
+    box-shadow: 0 0 0 2px $color-primary-focus-ring;
   }
 
   &.is-invalid {
-    border-color: #dc2626;
+    border-color: $color-danger;
 
     &:focus {
-      box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.15);
+      box-shadow: 0 0 0 2px $color-danger-focus-ring;
     }
   }
 
   &:disabled {
-    background-color: #f4f6f9;
+    background-color: $color-bg;
     cursor: not-allowed;
   }
 }
 
 .char-counter {
-  margin-top: 2px;
-  font-size: 12px;
-  color: #8b95a3;
+  margin-top: 0.125rem;
+  font-size: $font-size-xs;
+  color: $color-text-fainter;
   text-align: right;
 
   &--danger {
-    color: #dc2626;
+    color: $color-danger;
   }
 }
 
 .app-field__error {
-  color: #dc2626;
-  font-size: 12px;
+  color: $color-danger;
+  font-size: $font-size-xs;
 }

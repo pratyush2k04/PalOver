@@ -1,0 +1,80 @@
+<div class="quick-actions-card">
+  <h3 class="section-title">Quick Actions</h3>
+
+  <div class="tiles-grid">
+    <app-action-tile
+      icon="alert-triangle"
+      label="Log a Risk"
+      tone="danger"
+      [routerLink]="['../' + ENGAGEMENT_ROUTES.RISKS]"
+      [queryParams]="{ action: 'create' }"
+    />
+
+    @if (canUpdateChecklist()) {
+      <app-action-tile
+        icon="checklist"
+        label="Update Checklist"
+        tone="info"
+        [routerLink]="['../' + ENGAGEMENT_ROUTES.CHECKLIST]"
+      />
+    }
+
+    @if (canRequestResourcing()) {
+      <app-action-tile
+        icon="users"
+        label="Request Resourcing"
+        tone="success"
+        [routerLink]="['../' + ENGAGEMENT_ROUTES.RESOURCES]"
+        [queryParams]="{ action: 'create' }"
+      />
+    }
+
+    @if (canAddDependency()) {
+      <app-action-tile
+        icon="share"
+        label="Add Dependency"
+        tone="warning"
+        [routerLink]="['../' + ENGAGEMENT_ROUTES.ASSUMPTIONS]"
+        [queryParams]="{ action: 'create' }"
+      />
+    }
+
+    <app-action-tile
+      icon="upload"
+      label="Upload Document"
+      tone="neutral"
+      [routerLink]="['../' + ENGAGEMENT_ROUTES.DOCUMENTS]"
+      [queryParams]="{ action: 'create' }"
+    />
+
+    @if (canAddCommitment()) {
+      <app-action-tile
+        icon="clipboard"
+        label="Add Commitment"
+        tone="info"
+        [routerLink]="['../' + ENGAGEMENT_ROUTES.HANDOVER]"
+        [queryParams]="{ action: 'create' }"
+      />
+    }
+
+    @if (canAddPerson()) {
+      <app-action-tile
+        icon="user-plus"
+        label="Add Person"
+        tone="success"
+        [routerLink]="['../' + ENGAGEMENT_ROUTES.PEOPLE]"
+        [queryParams]="{ action: 'create' }"
+      />
+    }
+
+    @if (canAddFeature()) {
+      <app-action-tile
+        icon="layers"
+        label="Add Feature"
+        tone="neutral"
+        [routerLink]="['../' + ENGAGEMENT_ROUTES.TECHNICAL_READINESS]"
+        [queryParams]="{ action: 'create' }"
+      />
+    }
+  </div>
+</div>

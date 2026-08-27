@@ -1,111 +1,183 @@
-.client-contact-transition-card {
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  background: var(--color-background);
-  overflow: hidden;
+@use '../../../../../../styles/tokens' as *;
+@use '../../../../../../styles/mixins' as *;
 
-  .card-header {
-    background: var(--color-surface);
-    border-bottom: 1px solid var(--color-border);
-    padding: 16px;
+:host {
+  display: block;
+  width: 100%;
+}
 
-    h3 {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--color-text);
+.section.transition-section {
+  @include card-surface($spacing-6, $radius-md);
+  margin-bottom: $spacing-8;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    padding: $spacing-4;
+  }
+}
+
+.transition-header {
+  @include flex-between;
+  border-bottom: 1px solid $color-border-soft;
+  padding-bottom: $spacing-3;
+  margin-bottom: $spacing-4;
+  width: 100%;
+
+  h3 {
+    margin: 0;
+    color: $color-text;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  .add-button {
+    flex-shrink: 0;
+  }
+}
+
+.loading-container {
+  @include flex-center;
+  padding: $spacing-4;
+}
+
+.transition-cards {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+  width: 100%;
+}
+
+.transition-flow-card {
+  @include flex-between;
+  width: 100%;
+  background: linear-gradient(135deg, $color-primary-light 0%, $color-bg 100%);
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-lg;
+  padding: $spacing-4 $spacing-6;
+
+  &.empty-flow-card {
+    background: $color-bg;
+    justify-content: flex-start;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-4;
+    padding: $spacing-4;
+  }
+}
+
+.contact-party {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  flex: 0 0 16rem;
+  width: 16rem;
+
+  &.incoming-party {
+    justify-content: flex-start;
+  }
+
+  @media (max-width: 768px) {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .avatar {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: $radius-full;
+    @include flex-center;
+    font-weight: $font-weight-bold;
+    font-size: $font-size-sm;
+    flex-shrink: 0;
+
+    &.avatar-teal {
+      background-color: $color-success-bg;
+      color: $color-success-text;
+    }
+
+    &.avatar-purple {
+      background-color: $color-role-admin-bg;
+      color: $color-role-admin-text;
+    }
+
+    &.avatar-blue {
+      background-color: $color-primary-light;
+      color: $color-primary;
     }
   }
 
-  .alert-container {
-    margin: 16px;
-  }
+  .contact-details {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-1;
+    overflow: hidden;
 
-  .presales-actions {
-    border-top: 1px solid var(--color-border);
-    padding: 24px;
+    .party-label {
+      font-size: $font-size-xs;
+      color: $color-text-fainter;
+      font-weight: $font-weight-medium;
+    }
 
-    .add-button {
-      width: 100%;
+    .contact-name {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      color: $color-text;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .contact-role {
+      font-size: $font-size-xs;
+      color: $color-text-fainter;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
+}
 
-  .card-content {
-    padding: 24px;
+.flow-connector {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  margin: 0 $spacing-4;
 
-    .loading-text {
-      color: var(--color-text-secondary);
-      font-size: 14px;
-      margin: 0;
+  @media (max-width: 768px) {
+    width: 100%;
+    margin: $spacing-1 0;
+    justify-content: center;
+  }
+
+  .line {
+    flex: 1;
+    height: 1px;
+    background-color: $color-border-soft;
+  }
+
+  .arrow-badge {
+    width: 2rem;
+    height: 2rem;
+    border-radius: $radius-full;
+    background: $color-surface;
+    border: 1px solid $color-border-soft;
+    @include flex-center;
+    box-shadow: $shadow-sm;
+    flex-shrink: 0;
+
+    .arrow-icon {
+      color: $color-primary;
+      width: 1rem;
+      height: 1rem;
     }
 
-    .history-container {
-      margin-bottom: 24px;
-
-      .history-list {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-
-        .transition-item {
-          background: var(--color-surface);
-          border: 1px solid var(--color-border);
-          border-radius: 6px;
-          padding: 12px;
-
-          .transition-row {
-            margin: 0 0 8px 0;
-            font-size: 14px;
-            display: flex;
-            gap: 8px;
-
-            .label {
-              font-weight: 600;
-              color: var(--color-text);
-              min-width: 100px;
-            }
-
-            .contact-info {
-              color: var(--color-text);
-            }
-
-            &:last-child {
-              margin-bottom: 0;
-            }
-          }
-
-          .divider {
-            border: none;
-            border-top: 1px solid var(--color-border);
-            margin: 12px 0;
-          }
-        }
-      }
-
-      .empty-state {
-        background: var(--color-surface);
-        border: 1px solid var(--color-border);
-        border-radius: 6px;
-        padding: 16px;
-
-        .present-contact {
-          margin: 0;
-          font-size: 14px;
-          display: flex;
-          gap: 8px;
-
-          .label {
-            font-weight: 600;
-            color: var(--color-text);
-            min-width: 100px;
-          }
-
-          .contact-info {
-            color: var(--color-text);
-          }
-        }
-      }
+    @media (max-width: 768px) {
+      transform: rotate(90deg);
     }
-
   }
 }

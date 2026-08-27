@@ -1,7 +1,8 @@
-@use '../../../../../styles/mixins' as *;
+@use '../../../../../styles/tokens' as *;
 
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   font-family: $font-family-base;
   width: 100%;
   max-width: 35rem; // 560px
@@ -11,6 +12,30 @@
   &__content {
     width: 100%;
     box-sizing: border-box;
+    overflow-y: auto;
+    padding-top: $spacing-4;
+    padding-right: $spacing-3;
+
+    /* Custom internal scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: $color-slate-300 transparent;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: $color-slate-300;
+      border-radius: 6px;
+
+      &:hover {
+        background-color: $color-slate-400;
+      }
+    }
   }
 
   &__group {

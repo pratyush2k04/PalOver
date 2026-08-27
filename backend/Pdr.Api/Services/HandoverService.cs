@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Pdr.Api.Constants;
@@ -19,6 +20,7 @@ public class HandoverService : IHandoverService
     private readonly IRealisticCommitmentRepository _realisticCommitmentRepository;
     private readonly IKickoffReadinessService _kickoffReadinessService;
     private readonly INotificationService _notificationService;
+    private readonly IEngagementAccessService _engagementAccessService;
     private readonly IUserRepository _userRepository;
 
     public HandoverService(
@@ -27,6 +29,7 @@ public class HandoverService : IHandoverService
         IRealisticCommitmentRepository realisticCommitmentRepository,
         IKickoffReadinessService kickoffReadinessService,
         INotificationService notificationService,
+        IEngagementAccessService engagementAccessService,
         IUserRepository userRepository)
     {
         _handoverRepository = handoverRepository;
@@ -34,11 +37,14 @@ public class HandoverService : IHandoverService
         _realisticCommitmentRepository = realisticCommitmentRepository;
         _kickoffReadinessService = kickoffReadinessService;
         _notificationService = notificationService;
+        _engagementAccessService = engagementAccessService;
         _userRepository = userRepository;
     }
 
     public async Task<HandoverInfoDto> GetHandoverAsync(int engagementId)
     {
+        await _engagementAccessService.ValidateAccessAsync(engagementId);
+
         var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
 
         if (handover == null)
@@ -84,9 +90,17 @@ public class HandoverService : IHandoverService
                     Description = realistic.Description,
                     Timeline = realistic.Timeline,
                     TimelineUnit = realistic.TimelineUnit,
-                    AcknowledgementMessage = realistic.AcknowledgementMessage,
-                    IsPossible = realistic.IsPossible
+                    AcknowledgementMessage = realistic.AcknowledgementMessage
                 };
+
+                var variance = RealisticCommitmentService.CalculateVariance(
+                    commitmentDto.Timeline,
+                    commitmentDto.TimelineUnit,
+                    realistic.Timeline,
+                    realistic.TimelineUnit);
+
+                commitmentDto.IsVarianceFlagged = variance.IsFlagged;
+                commitmentDto.VarianceDescription = variance.Description;
             }
         }
 
@@ -113,7 +127,10 @@ public class HandoverService : IHandoverService
 
     public async Task<HandoverInfoDto> SaveHandoverDraftAsync(int engagementId, SaveHandoverDraftRequest request, string userIdStr)
     {
+        await _engagementAccessService.ValidateAccessAsync(engagementId);
+
         var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
+        var isFirstDraft = handover == null;
 
         if (handover == null)
         {
@@ -138,11 +155,29 @@ public class HandoverService : IHandoverService
 
         await _handoverRepository.SaveChangesAsync();
 
+        if (isFirstDraft)
+        {
+            var admins = await _userRepository.GetAdminsAsync();
+            if (admins.Count > 0)
+            {
+                await _notificationService.CreateFromTemplateAsync(
+                    NotificationConstants.TemplateKeys.HandoverDraftFirstSaved,
+                    admins.Select(a => a.Id),
+                    JsonSerializer.Serialize(new HandoverDraftFirstSavedMapper.HandoverDraftFirstSavedPayload(
+                        HandoverId: handover.HandoverId,
+                        TriggerUserId: int.Parse(userIdStr),
+                        EngagementId: engagementId)),
+                    DateTime.UtcNow);
+            }
+        }
+
         return await GetHandoverAsync(engagementId);
     }
 
     public async Task<HandoverInfoDto> SubmitHandoverAsync(int engagementId, string userIdStr)
     {
+        await _engagementAccessService.ValidateAccessAsync(engagementId);
+
         var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
 
         if (handover == null)

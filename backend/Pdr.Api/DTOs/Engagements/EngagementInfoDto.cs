@@ -1,3 +1,5 @@
+using System;
+
 namespace Pdr.Api.DTOs.Engagements;
 
 public record EngagementInfoDto(
@@ -13,4 +15,5 @@ public record EngagementInfoDto(
     bool IsKickoffReady,
     string? HandoverStatus,
     DateTime? HandoverReviewedAt,
-    string? HandoverReviewedByName);
+    string? HandoverReviewedByName,
+    DayOneSignOffDto? DayOneSignOff = null);

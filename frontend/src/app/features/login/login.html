@@ -1,0 +1,37 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h2>Log In</h2>
+      <p>Enter your credentials to access your workspace</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+      @if (errorMessage()) {
+        <app-alert>{{ errorMessage() }}</app-alert>
+      }
+
+      <app-input
+        id="email"
+        type="email"
+        label="Work Email"
+        placeholder="name@company.com"
+        formControlName="email"
+        [errorMessages]="{ required: 'Email is required.', email: 'Enter a valid work email address.' }"
+      />
+
+      <app-input
+        id="password"
+        type="password"
+        label="Password"
+        placeholder="Enter your password"
+        formControlName="password"
+        [errorMessages]="{ required: 'Password is required.' }"
+      />
+
+      <app-button type="submit" variant="flat" [fullWidth]="true">
+       Log In
+      </app-button>
+    </form>
+  </div>
+  <app-global-loader />
+</div>

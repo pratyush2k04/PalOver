@@ -17,7 +17,6 @@ namespace Pdr.Api.Models.AccessTracker
         public AccessItemDefinition? AccessItemDefinition { get; set; }
         public bool IsClientSide { get; set; }
         public string? TimeZoneNote { get; set; }
-        public int? ExpectedTurnaroundDays { get; set; }
         public DateOnly? GrantedDate { get; set; }
         public string? BlockReason { get; set; }
     }

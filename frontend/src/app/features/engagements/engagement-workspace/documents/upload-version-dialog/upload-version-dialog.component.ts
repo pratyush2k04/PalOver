@@ -2,7 +2,6 @@ import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { AlertComponent } from '@common/components/alert/alert';
@@ -19,7 +18,7 @@ export interface UploadVersionDialogData {
 @Component({
   selector: 'app-upload-version-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, InlineSVGModule, AlertComponent, ButtonComponent, TextareaComponent],
+  imports: [CommonModule, FormsModule, AlertComponent, ButtonComponent, TextareaComponent],
   templateUrl: './upload-version-dialog.component.html',
   styleUrl: './upload-version-dialog.component.scss'
 })

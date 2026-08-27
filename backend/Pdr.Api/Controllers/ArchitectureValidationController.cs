@@ -1,4 +1,3 @@
-using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,10 +15,7 @@ namespace Pdr.Api.Controllers;
 [Authorize]
 [Route("api/engagements/{engagementId:int}/architecture-validation")]
 [Produces("application/json")]
-public class ArchitectureValidationController(
-    IArchitectureValidationService service,
-    IValidator<SaveArchitectureValidationRequest> saveValidator,
-    IValidator<CreateDiscoveryFeatureItemRequest> createFeatureValidator) : ControllerBase
+public class ArchitectureValidationController(IArchitectureValidationService service) : ControllerBase
 {
     /// <summary>
     /// Retrieves the architecture validation details and discovery breakdown for an engagement.
@@ -27,7 +23,7 @@ public class ArchitectureValidationController(
     /// <param name="engagementId">The engagement ID.</param>
     /// <returns>The architecture validation details with sizing calculations and risk evaluation.</returns>
     [HttpGet]
-    [AuthorizeRoles(RoleEnum.TechLead, RoleEnum.ProjectManagement, RoleEnum.Leadership)]
+    [AuthorizeRoles(RoleEnum.TechLead, RoleEnum.ProjectManagement, RoleEnum.Leadership, RoleEnum.PreSales)]
     [EndpointSummary("Get architecture validation & discovery breakdown")]
     [ProducesResponseType(typeof(ArchitectureValidationDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -57,13 +53,6 @@ public class ArchitectureValidationController(
         int engagementId,
         [FromBody] SaveArchitectureValidationRequest request)
     {
-        var validationResult = await saveValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
-            return BadRequest(new { errors });
-        }
-
         var result = await service.SaveValidationAsync(engagementId, request);
         return Ok(result);
     }
@@ -86,13 +75,6 @@ public class ArchitectureValidationController(
         int engagementId,
         [FromBody] CreateDiscoveryFeatureItemRequest request)
     {
-        var validationResult = await createFeatureValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
-            return BadRequest(new { errors });
-        }
-
         var result = await service.AddFeatureItemAsync(engagementId, request);
         return CreatedAtAction(nameof(GetValidation), new { engagementId }, result);
     }

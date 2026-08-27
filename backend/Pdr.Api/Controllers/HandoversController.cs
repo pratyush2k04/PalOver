@@ -67,7 +67,7 @@ public class HandoversController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<HandoverInfoDto>> SaveDraft(int engagementId, [FromBody] SaveHandoverDraftRequest request)
     {
-        await _accessService.CanAccessHandoverAsync(engagementId, GetUserId());
+        await _accessService.CanAccessHandoverAsync(engagementId, GetUserId(), RoleConstants.PreSales);
 
         var dto = await _handoverService.SaveHandoverDraftAsync(engagementId, request, GetUserIdString());
         return Ok(dto);
@@ -87,7 +87,7 @@ public class HandoversController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<HandoverInfoDto>> Submit(int engagementId)
     {
-        await _accessService.CanAccessHandoverAsync(engagementId, GetUserId());
+        await _accessService.CanAccessHandoverAsync(engagementId, GetUserId(), RoleConstants.PreSales);
 
         var dto = await _handoverService.SubmitHandoverAsync(engagementId, GetUserIdString());
         return Ok(dto);

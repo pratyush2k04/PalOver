@@ -9,6 +9,7 @@ namespace Pdr.Api.Models.MasterChecklist
         public string? Description { get; set; }
         public int CategoryId { get; set; }
         public bool IsMandatory { get; set; } = true;
+        public bool EvidenceRequired { get; set; } = false;
         public int DisplayOrder { get; set; }
         public bool IsRetired { get; set; } = false;
 

@@ -8,5 +8,9 @@ public record LeadershipEngagementListItemDto(
     int ReadinessScore,
     int OpenBlockerCount,
     int DaysToKickoff,
-    string Status);
-
+    string Status,
+    bool HasResourcingGap,
+    int UnconfirmedResourceCount,
+    int? DaysToBilling,
+    bool IsDayOneSignedOff = false,
+    bool DayOneSignOffIsException = false);

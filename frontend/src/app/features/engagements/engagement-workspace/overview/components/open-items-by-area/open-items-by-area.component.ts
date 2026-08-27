@@ -1,10 +1,11 @@
-import { Component, Input, OnChanges, SimpleChanges, inject, signal } from '@angular/core';
+import { Component, effect, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AlertComponent } from '@common/components/alert/alert';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { EngagementService, EngagementOpenItemsSummary } from '../../../../services/engagement.service';
 import { OPEN_ITEMS_ERROR_MESSAGES } from '@shared/constants/engagements.constants';
+import { APP_ROUTES, ENGAGEMENT_ROUTES, TECHNICAL_READINESS_ROUTES, RISK_ROUTES } from '@shared/constants/app.constants';
 
 @Component({
   selector: 'app-open-items-by-area',
@@ -13,8 +14,13 @@ import { OPEN_ITEMS_ERROR_MESSAGES } from '@shared/constants/engagements.constan
   templateUrl: './open-items-by-area.component.html',
   styleUrls: ['./open-items-by-area.component.scss']
 })
-export class OpenItemsByAreaComponent implements OnChanges {
-  @Input() engagementId?: number;
+export class OpenItemsByAreaComponent {
+  readonly engagementId = input<number | undefined>();
+
+  readonly APP_ROUTES = APP_ROUTES;
+  readonly ENGAGEMENT_ROUTES = ENGAGEMENT_ROUTES;
+  readonly TECHNICAL_READINESS_ROUTES = TECHNICAL_READINESS_ROUTES;
+  readonly RISK_ROUTES = RISK_ROUTES;
 
   private engagementService = inject(EngagementService);
 
@@ -22,10 +28,13 @@ export class OpenItemsByAreaComponent implements OnChanges {
   isLoading = signal<boolean>(false);
   error = signal<string | null>(null);
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['engagementId'] && this.engagementId) {
-      this.loadSummary(this.engagementId);
-    }
+  constructor() {
+    effect(() => {
+      const id = this.engagementId();
+      if (id) {
+        this.loadSummary(id);
+      }
+    });
   }
 
   loadSummary(id: number): void {

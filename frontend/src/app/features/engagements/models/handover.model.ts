@@ -5,7 +5,6 @@ export interface RealisticCommitmentDto {
   timeline: number;
   timelineUnit: string;
   acknowledgementMessage?: string;
-  isPossible: boolean;
 }
 
 export interface CreateRealisticCommitmentRequest {
@@ -13,7 +12,6 @@ export interface CreateRealisticCommitmentRequest {
   timeline: number;
   timelineUnit: string;
   acknowledgementMessage?: string | null;
-  isPossible: boolean;
 }
 
 export interface UpdateRealisticCommitmentRequest {
@@ -21,7 +19,6 @@ export interface UpdateRealisticCommitmentRequest {
   timeline: number;
   timelineUnit: string;
   acknowledgementMessage?: string | null;
-  isPossible: boolean;
 }
 
 export interface CommitmentDto {
@@ -33,6 +30,8 @@ export interface CommitmentDto {
   timeline: number;
   timelineUnit: string;
   realisticCommitment?: RealisticCommitmentDto;
+  isVarianceFlagged?: boolean;
+  varianceDescription?: string;
 }
 
 export interface HandoverInfoDto {

@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { workspaceGuard } from '../../guards/workspace.guard';
+import { workspaceGuard } from '@shared/guards/workspace.guard';
 import { HOME_ROUTES_CONFIG } from '@shared/constants/app.constants';
 
 export const HOME_ROUTES: Routes = [
@@ -34,11 +34,5 @@ export const HOME_ROUTES: Routes = [
       import('./leadership-home/leadership-home').then(
         (m) => m.LeadershipHomeComponent
       ),
-  },
-  {
-    path: HOME_ROUTES_CONFIG.USER_DIRECTORY,
-    canActivate: [workspaceGuard],
-    loadComponent: () =>
-      import('./admin-home/admin-home').then((m) => m.AdminHomeComponent),
   },
 ];

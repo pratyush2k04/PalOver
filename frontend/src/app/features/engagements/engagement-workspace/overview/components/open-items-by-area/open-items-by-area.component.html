@@ -11,7 +11,7 @@
     <div class="cards-grid">
       <div
         class="item-card clickable"
-        [routerLink]="['/engagements', engagementId, 'workspace', 'checklist']"
+        [routerLink]="[APP_ROUTES.ENGAGEMENTS, engagementId(), ENGAGEMENT_ROUTES.WORKSPACE, ENGAGEMENT_ROUTES.CHECKLIST]"
       >
         <div class="count-value">{{ summary()?.checklistOpenCount ?? 0 }}</div>
         <div class="count-label">Checklist open</div>
@@ -19,7 +19,7 @@
 
       <div
         class="item-card clickable"
-        [routerLink]="['/engagements', engagementId, 'workspace', 'technical-readiness']"
+        [routerLink]="[APP_ROUTES.ENGAGEMENTS, engagementId(), ENGAGEMENT_ROUTES.WORKSPACE, TECHNICAL_READINESS_ROUTES.BASE]"
       >
         <div class="count-value">{{ summary()?.accessOpenCount ?? 0 }}</div>
         <div class="count-label">Access open</div>
@@ -27,7 +27,7 @@
 
       <div
         class="item-card clickable"
-        [routerLink]="['/engagements', engagementId, 'workspace', 'risks']"
+        [routerLink]="[APP_ROUTES.ENGAGEMENTS, engagementId(), ENGAGEMENT_ROUTES.WORKSPACE, RISK_ROUTES.BASE]"
       >
         <div class="count-value">{{ summary()?.openRisksCount ?? 0 }}</div>
         <div class="count-label">Open risks</div>
@@ -35,7 +35,7 @@
 
       <div
         class="item-card clickable"
-        [routerLink]="['/engagements', engagementId, 'workspace', 'resourcing']"
+        [routerLink]="[APP_ROUTES.ENGAGEMENTS, engagementId(), ENGAGEMENT_ROUTES.WORKSPACE, ENGAGEMENT_ROUTES.RESOURCES]"
       >
         <div class="count-value">{{ summary()?.resourcingOpenCount ?? 0 }}</div>
         <div class="count-label">Resourcing open</div>

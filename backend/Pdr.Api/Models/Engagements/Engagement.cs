@@ -42,6 +42,10 @@ public class Engagement : BaseAuditableEntity
 
     public KickoffRecord? KickoffRecord { get; set; }
 
+    public DayOneSignOffRecord? DayOneSignOffRecord { get; set; }
+
+    public EvidenceSnapshot? EvidenceSnapshot { get; set; }
+
     public Handover.HandoverInfo? HandoverInfo { get; set; }
 
     public ICollection<EngagementAssignment.EngagementAssignment> EngagementAssignments { get; set; } = new List<EngagementAssignment.EngagementAssignment>();

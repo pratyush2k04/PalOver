@@ -17,7 +17,6 @@ public class RealisticCommitmentConfiguration : IEntityTypeConfiguration<Realist
         builder.Property(rc => rc.Timeline).HasColumnName("timeline").IsRequired();
         builder.Property(rc => rc.TimelineUnit).HasColumnName("timeline_unit").HasConversion<string>().HasMaxLength(20).IsRequired();
         builder.Property(rc => rc.AcknowledgementMessage).HasColumnName("acknowledgement_message").HasMaxLength(2000);
-        builder.Property(rc => rc.IsPossible).HasColumnName("is_possible").HasDefaultValue(true);
 
         // BaseAuditableEntity Column Mappings
         builder.Property(rc => rc.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
