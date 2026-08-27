@@ -10,7 +10,6 @@ export interface EnvironmentToolingItemDto {
   customName?: string;
   status: EnvironmentToolingStatus;
   notApplicableReason?: string;
-  blockReason?: string;
 }
 
 export interface EnvironmentToolingReadinessResponse {

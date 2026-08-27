@@ -13,6 +13,5 @@ namespace Pdr.Api.DTOs.EnvironmentTooling
         public string? CustomName { get; set; }
         public EnvironmentToolingStatus Status { get; set; }
         public string? NotApplicableReason { get; set; }
-        public string? BlockReason { get; set; }
     }
 }

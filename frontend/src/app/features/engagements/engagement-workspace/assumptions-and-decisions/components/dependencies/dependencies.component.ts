@@ -57,6 +57,10 @@ export class DependenciesComponent implements OnInit {
       if (id) {
         this.engagementId.set(+id);
         this.loadDependencies();
+
+        if (this.route.snapshot.queryParamMap.get('action') === 'create') {
+          this.openDependencyDialog();
+        }
       }
     });
   }
