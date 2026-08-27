@@ -5,8 +5,6 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { RiskService } from './services/risk.service';
 import {
   Risk,
-  RiskImpact,
-  RiskLikelihood,
   RiskStatus,
   OwnerOption,
   CreateRiskRequest,
@@ -21,15 +19,16 @@ import { AlertComponent } from '@common/components/alert/alert';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { SectionHeaderComponent } from '@common/components/section-header/section-header';
-import { InputComponent } from '@common/components/form/input/input';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { APP_ROUTES, ENGAGEMENT_ROUTES, TECHNICAL_READINESS_ROUTES } from '@shared/constants/app.constants';
-import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
+import { DialogService } from '@common/services/dialog/dialog.service';
 import { ToastService } from '@common/services/toast/toast';
 import { RISK_MESSAGES } from '@shared/constants/app.constants';
 
 import { RiskCommentsComponent } from './components/risk-comments/risk-comments.component';
+import { RiskFormDialogComponent, RiskFormDialogResult } from './components/risk-form-dialog/risk-form-dialog.component';
+import { RISK_STATUSES } from '@shared/constants/risk.constants';
 
 @Component({
   selector: 'app-risks',
@@ -43,7 +42,6 @@ import { RiskCommentsComponent } from './components/risk-comments/risk-comments.
     AlertComponent,
     StatusBadgeComponent,
     EmptyStateComponent,
-    InputComponent,
     SelectComponent,
     TextareaComponent,
     RiskCommentsComponent,
@@ -60,53 +58,28 @@ export class RisksComponent implements OnInit {
   private userService = inject(UserService);
   private fb = inject(FormBuilder);
   private toastService = inject(ToastService);
+  private dialogService = inject(DialogService);
 
   engagementId = signal<number | null>(null);
   risks = signal<Risk[]>([]);
   owners = signal<OwnerOption[]>([]);
   isLoading = signal<boolean>(true);
   isSubmitting = signal<boolean>(false);
-  formSubmitted = signal<boolean>(false);
   closeFormSubmitted = signal<boolean>(false);
 
   // Filter signals
   statusFilter = signal<RiskStatus | 'ALL'>('ALL');
   ownerFilter = signal<number | 'ALL'>('ALL');
 
-  readonly impactOptions: SelectOption[] = [
-    { value: 'Low', label: 'Low' },
-    { value: 'Medium', label: 'Medium' },
-    { value: 'High', label: 'High' }
-  ];
-
-  readonly likelihoodOptions: SelectOption[] = [
-    { value: 'Low', label: 'Low' },
-    { value: 'Medium', label: 'Medium' },
-    { value: 'High', label: 'High' }
-  ];
-
-  readonly statusEditOptions: SelectOption[] = [
-    { value: 'Open', label: 'Open' },
-    { value: 'Mitigating', label: 'Mitigating' }
-  ];
-
   readonly statusFilterOptions: SelectOption[] = [
     { value: 'ALL', label: 'All Statuses' },
-    { value: 'Open', label: 'Open' },
-    { value: 'Mitigating', label: 'Mitigating' },
-    { value: 'Closed', label: 'Closed' }
+    { value: RISK_STATUSES.OPEN, label: 'Open' },
+    { value: RISK_STATUSES.MITIGATING, label: 'Mitigating' },
+    { value: RISK_STATUSES.CLOSED, label: 'Closed' }
   ];
 
   readonly ownerFilterOptions = computed<SelectOption[]>(() => [
     { value: 'ALL', label: 'All Owners' },
-    ...this.owners().map(o => ({
-      value: o.id,
-      label: o.role ? `${o.name} (${o.role})` : o.name
-    }))
-  ]);
-
-  readonly ownerSelectOptions = computed<SelectOption[]>(() => [
-    { value: null, label: '-- Select Owner --' },
     ...this.owners().map(o => ({
       value: o.id,
       label: o.role ? `${o.name} (${o.role})` : o.name
@@ -159,24 +132,10 @@ export class RisksComponent implements OnInit {
   });
 
   // Modal State
-  showFormModal = signal<boolean>(false);
-  isEditMode = signal<boolean>(false);
-  editingRiskId = signal<number | null>(null);
-
   showCloseModal = signal<boolean>(false);
   closingRisk = signal<Risk | null>(null);
 
   // Reactive Forms
-  riskForm: FormGroup = this.fb.group({
-    title: ['', [Validators.required, Validators.maxLength(300)]],
-    description: ['', [Validators.required, Validators.maxLength(2000)]],
-    impact: ['Medium', [Validators.required]],
-    likelihood: ['Medium', [Validators.required]],
-    ownerId: [null, [Validators.required]],
-    mitigation: ['', [Validators.maxLength(2000)]],
-    status: ['Open', [Validators.required]]
-  });
-
   closeForm: FormGroup = this.fb.group({
     resolutionNote: ['', [Validators.required, Validators.maxLength(2000)]]
   });
@@ -283,32 +242,20 @@ export class RisksComponent implements OnInit {
         }
 
         this.owners.set(options);
+
+        if (this.route.snapshot.queryParamMap.get('action') === 'create') {
+          this.openCreateModal();
+        }
       },
       error: () => this.owners.set([])
     });
   }
 
   openCreateModal(): void {
-    this.isEditMode.set(false);
-    this.editingRiskId.set(null);
-    this.formSubmitted.set(false);
-    this.riskForm.reset({
-      title: '',
-      description: '',
-      impact: 'Medium',
-      likelihood: 'Medium',
-      ownerId: null,
-      mitigation: '',
-      status: 'Open'
-    });
-    this.showFormModal.set(true);
+    this.openRiskDialog(null);
   }
 
   openEditModal(risk: Risk): void {
-    this.isEditMode.set(true);
-    this.editingRiskId.set(risk.id);
-    this.formSubmitted.set(false);
-
     const numericOwnerId = risk.ownerId != null ? Number(risk.ownerId) : null;
 
     if (numericOwnerId && !this.owners().some(o => Number(o.id) === numericOwnerId)) {
@@ -318,87 +265,47 @@ export class RisksComponent implements OnInit {
       ]);
     }
 
-    this.showFormModal.set(true);
-
-    this.riskForm.patchValue({
-      title: risk.title,
-      description: risk.description,
-      impact: risk.impact,
-      likelihood: risk.likelihood,
-      ownerId: numericOwnerId,
-      mitigation: risk.mitigation ?? '',
-      status: risk.status
-    });
+    this.openRiskDialog(risk);
   }
 
-  closeFormModal(): void {
-    this.showFormModal.set(false);
-    this.formSubmitted.set(false);
-    this.riskForm.reset();
-  }
-
-  saveRisk(): void {
-    this.formSubmitted.set(true);
-
-    if (this.riskForm.invalid) {
-      this.riskForm.markAllAsTouched();
-      return;
-    }
-
+  private openRiskDialog(risk: Risk | null): void {
     const engagementId = this.engagementId();
     if (!engagementId) return;
 
-    const val = this.riskForm.value;
-    this.isSubmitting.set(true);
+    const dialogRef = this.dialogService.open<RiskFormDialogComponent, unknown, RiskFormDialogResult>(
+      RiskFormDialogComponent,
+      { data: { engagementId, risk, owners: this.owners() }, disableClose: true }
+    );
 
-    if (this.isEditMode() && this.editingRiskId()) {
-      const updateReq: UpdateRiskRequest = {
-        title: val.title,
-        description: val.description,
-        impact: val.impact as RiskImpact,
-        likelihood: val.likelihood as RiskLikelihood,
-        ownerId: val.ownerId ? +val.ownerId : null,
-        mitigation: val.mitigation,
-        status: val.status as RiskStatus
-      };
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
 
-      this.riskService.updateRisk(engagementId, this.editingRiskId()!, updateReq).subscribe({
-        next: () => {
-          this.toastService.success(RISK_MESSAGES.UPDATE_SUCCESS);
-          this.closeFormModal();
-          this.loadRisks(engagementId);
-          this.isSubmitting.set(false);
-        },
-        error: (err) => {
-          console.error(err);
-          this.toastService.error(RISK_MESSAGES.UPDATE_ERROR);
-          this.isSubmitting.set(false);
-        }
-      });
-    } else {
-      const createReq: CreateRiskRequest = {
-        title: val.title,
-        description: val.description,
-        impact: val.impact as RiskImpact,
-        likelihood: val.likelihood as RiskLikelihood,
-        ownerId: val.ownerId ? +val.ownerId : null,
-        mitigation: val.mitigation
-      };
-
-      this.riskService.createRisk(engagementId, createReq).subscribe({
-        next: () => {
-          this.toastService.success(RISK_MESSAGES.CREATE_SUCCESS);
-          this.closeFormModal();
-          this.loadRisks(engagementId);
-          this.isSubmitting.set(false);
-        },
-        error: (err) => {
-          console.error(err);
-          this.toastService.error(RISK_MESSAGES.CREATE_ERROR);
-          this.isSubmitting.set(false);
-        }
-      });
-    }
+      if (risk) {
+        const updateReq: UpdateRiskRequest = { ...result, status: result.status! };
+        this.riskService.updateRisk(engagementId, risk.id, updateReq).subscribe({
+          next: () => {
+            this.toastService.success(RISK_MESSAGES.UPDATE_SUCCESS);
+            this.loadRisks(engagementId);
+          },
+          error: (err) => {
+            console.error(err);
+            this.toastService.error(RISK_MESSAGES.UPDATE_ERROR);
+          }
+        });
+      } else {
+        const createReq: CreateRiskRequest = result;
+        this.riskService.createRisk(engagementId, createReq).subscribe({
+          next: () => {
+            this.toastService.success(RISK_MESSAGES.CREATE_SUCCESS);
+            this.loadRisks(engagementId);
+          },
+          error: (err) => {
+            console.error(err);
+            this.toastService.error(RISK_MESSAGES.CREATE_ERROR);
+          }
+        });
+      }
+    });
   }
 
   openCloseModal(risk: Risk): void {

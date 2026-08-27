@@ -43,3 +43,20 @@ export const RISK_COMMENT_CONSTANTS = {
   INPUT_PLACEHOLDER: "Add a comment, @mention a teammate..."
 } as const;
 
+export const RISK_IMPACT_LEVELS = {
+  LOW: 'Low',
+  MEDIUM: 'Medium',
+  HIGH: 'High'
+} as const;
+
+export const RISK_LIKELIHOOD_LEVELS = {
+  LOW: 'Low',
+  MEDIUM: 'Medium',
+  HIGH: 'High'
+} as const;
+
+export const RISK_STATUSES = {
+  OPEN: 'Open',
+  MITIGATING: 'Mitigating',
+  CLOSED: 'Closed'
+} as const;
