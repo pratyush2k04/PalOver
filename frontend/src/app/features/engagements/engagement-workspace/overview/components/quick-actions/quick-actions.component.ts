@@ -1,6 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
 import { AuthService } from '@shared/services/auth';
-import { USER_ROLES } from '@shared/constants/app.constants';
+import { USER_ROLES, ENGAGEMENT_ROUTES } from '@shared/constants/app.constants';
 import { ActionTileComponent } from '@common/components/action-tile/action-tile';
 
 @Component({
@@ -11,6 +11,8 @@ import { ActionTileComponent } from '@common/components/action-tile/action-tile'
   styleUrl: './quick-actions.component.scss'
 })
 export class QuickActionsComponent {
+  readonly ENGAGEMENT_ROUTES = ENGAGEMENT_ROUTES;
+
   private authService = inject(AuthService);
 
   private readonly hasRole = (role: string) => this.authService.hasRole(role);

@@ -6,7 +6,7 @@
       icon="alert-triangle"
       label="Log a Risk"
       tone="danger"
-      [routerLink]="['../risks']"
+      [routerLink]="['../' + ENGAGEMENT_ROUTES.RISKS]"
       [queryParams]="{ action: 'create' }"
     />
 
@@ -15,7 +15,7 @@
         icon="checklist"
         label="Update Checklist"
         tone="info"
-        [routerLink]="['../checklist']"
+        [routerLink]="['../' + ENGAGEMENT_ROUTES.CHECKLIST]"
       />
     }
 
@@ -24,7 +24,7 @@
         icon="users"
         label="Request Resourcing"
         tone="success"
-        [routerLink]="['../resources']"
+        [routerLink]="['../' + ENGAGEMENT_ROUTES.RESOURCES]"
         [queryParams]="{ action: 'create' }"
       />
     }
@@ -34,7 +34,7 @@
         icon="share"
         label="Add Dependency"
         tone="warning"
-        [routerLink]="['../assumptions-and-decisions']"
+        [routerLink]="['../' + ENGAGEMENT_ROUTES.ASSUMPTIONS]"
         [queryParams]="{ action: 'create' }"
       />
     }
@@ -43,7 +43,7 @@
       icon="upload"
       label="Upload Document"
       tone="neutral"
-      [routerLink]="['../documents']"
+      [routerLink]="['../' + ENGAGEMENT_ROUTES.DOCUMENTS]"
       [queryParams]="{ action: 'create' }"
     />
 
@@ -52,7 +52,7 @@
         icon="clipboard"
         label="Add Commitment"
         tone="info"
-        [routerLink]="['../handover']"
+        [routerLink]="['../' + ENGAGEMENT_ROUTES.HANDOVER]"
         [queryParams]="{ action: 'create' }"
       />
     }
@@ -62,7 +62,7 @@
         icon="user-plus"
         label="Add Person"
         tone="success"
-        [routerLink]="['../people']"
+        [routerLink]="['../' + ENGAGEMENT_ROUTES.PEOPLE]"
         [queryParams]="{ action: 'create' }"
       />
     }
@@ -72,7 +72,7 @@
         icon="layers"
         label="Add Feature"
         tone="neutral"
-        [routerLink]="['../technical-readiness']"
+        [routerLink]="['../' + ENGAGEMENT_ROUTES.TECHNICAL_READINESS]"
         [queryParams]="{ action: 'create' }"
       />
     }
