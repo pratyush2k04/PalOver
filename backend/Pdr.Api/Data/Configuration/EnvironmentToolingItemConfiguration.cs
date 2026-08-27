@@ -17,9 +17,6 @@ namespace Pdr.Api.Data.Configuration
             builder.Property(x => x.NotApplicableReason)
                 .HasMaxLength(500);
 
-            builder.Property(x => x.BlockReason)
-                .HasMaxLength(500);
-
             builder.HasQueryFilter(x => !x.IsDeleted);
 
             builder.HasOne(x => x.Engagement)
