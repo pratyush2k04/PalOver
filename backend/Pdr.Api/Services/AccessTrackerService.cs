@@ -15,7 +15,8 @@ public class AccessTrackerService(
     IAccessTrackerRepository repository,
     IRiskService riskService,
     ICurrentUserService currentUserService,
-    IAuditLogService auditLogService) : IAccessTrackerService
+    IAuditLogService auditLogService,
+    ITechnicalReadinessNotificationService readinessNotificationService) : IAccessTrackerService
 {
     // -------------------------------------------------------------------------
     // State machine: defines which transitions are allowed
@@ -95,6 +96,8 @@ public class AccessTrackerService(
             string.IsNullOrWhiteSpace(request.BlockReason))
             throw new BlockReasonRequiredException();
 
+        var wasReady = await readinessNotificationService.IsReadyAsync(item.EngagementId);
+
         item.Status = request.Status;
 
         switch (request.Status)
@@ -128,6 +131,8 @@ public class AccessTrackerService(
                 actingUserId: actorUserId);
         }
 
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(item.EngagementId, wasReady);
+
         return MapToDto(item);
     }
 
@@ -160,8 +165,12 @@ public class AccessTrackerService(
         var item = await repository.GetAccessItemByIdAsync(accessItemId)
             ?? throw new AccessItemNotFoundException(accessItemId);
 
+        var wasReady = await readinessNotificationService.IsReadyAsync(item.EngagementId);
+
         item.IsDeleted = true;
         await repository.SaveChangesAsync();
+
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(item.EngagementId, wasReady);
     }
 
     // -------------------------------------------------------------------------

@@ -9,7 +9,8 @@ namespace Pdr.Api.Services;
 
 public class DependencySpikeService(
     IDependencySpikeRepository repository,
-    IEngagementRepository engagementRepository) : IDependencySpikeService
+    IEngagementRepository engagementRepository,
+    ITechnicalReadinessNotificationService readinessNotificationService) : IDependencySpikeService
 {
     public async Task<List<DependencySpikeDto>> GetSpikesByEngagementIdAsync(int engagementId)
     {
@@ -38,6 +39,8 @@ public class DependencySpikeService(
             ownerId = techLeadAssignment?.UserId;
         }
 
+        var wasReady = await readinessNotificationService.IsReadyAsync(engagementId);
+
         var spike = new DependencySpike
         {
             EngagementId = engagementId,
@@ -51,6 +54,8 @@ public class DependencySpikeService(
         await repository.AddAsync(spike);
         await repository.SaveChangesAsync();
 
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(engagementId, wasReady);
+
         var created = await repository.GetByIdAsync(spike.Id);
         return MapToDto(created!);
     }
@@ -63,6 +68,8 @@ public class DependencySpikeService(
             throw new DependencySpikeNotFoundException(spikeId);
         }
 
+        var wasReady = await readinessNotificationService.IsReadyAsync(spike.EngagementId);
+
         spike.DependencyName = request.DependencyName;
         spike.Objective = request.Objective;
         spike.Status = request.Status;
@@ -70,6 +77,8 @@ public class DependencySpikeService(
         spike.OutcomeFindings = request.OutcomeFindings;
 
         await repository.SaveChangesAsync();
+
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(spike.EngagementId, wasReady);
 
         var updated = await repository.GetByIdAsync(spikeId);
         return MapToDto(updated!);
@@ -83,8 +92,12 @@ public class DependencySpikeService(
             throw new DependencySpikeNotFoundException(spikeId);
         }
 
+        var wasReady = await readinessNotificationService.IsReadyAsync(spike.EngagementId);
+
         spike.IsDeleted = true;
         await repository.SaveChangesAsync();
+
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(spike.EngagementId, wasReady);
     }
 
     private static DependencySpikeDto MapToDto(DependencySpike spike) =>
