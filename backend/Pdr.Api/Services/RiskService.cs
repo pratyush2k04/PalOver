@@ -147,6 +147,7 @@ public class RiskService(
         var accessBlockers = await riskRepository.GetActiveAccessBlockersAsync(engagementId);
         var toolingBlockers = await riskRepository.GetActiveToolingBlockersAsync(engagementId);
         var checklistBlockers = await riskRepository.GetActiveChecklistBlockersAsync(engagementId);
+        var handoverReadinessBlockers = await riskRepository.GetActiveHandoverReadinessBlockersAsync(engagementId);
         var resourceGapBlocker = await riskRepository.GetActiveResourceGapBlockerAsync(
             engagementId,
             ResourceRequestConstants.BillingGapThresholdDays);
@@ -154,6 +155,7 @@ public class RiskService(
         var currentBlockers = accessBlockers
             .Concat(toolingBlockers)
             .Concat(checklistBlockers)
+            .Concat(handoverReadinessBlockers)
             .Concat(resourceGapBlocker != null ? [resourceGapBlocker] : Enumerable.Empty<RiskBlockerSourceItem>())
             .ToList();
 

@@ -7,6 +7,7 @@ using Pdr.Api.Constants;
 using Pdr.Api.Data;
 using Pdr.Api.Models.AccessTracker;
 using Pdr.Api.Models.EnvironmentTooling;
+using Pdr.Api.Models.HandoverReadiness;
 using Pdr.Api.Models.ResourceRequests;
 using Pdr.Api.Models.Risks;
 using Pdr.Api.Repositories.Interfaces;
@@ -123,6 +124,22 @@ public class RiskRepository(AppDbContext context) : IRiskRepository
                 c.Title,
                 c.BlockReason ?? string.Empty,
                 (int?)c.OwnerId))
+            .ToListAsync();
+    }
+
+    public async Task<List<RiskBlockerSourceItem>> GetActiveHandoverReadinessBlockersAsync(int engagementId)
+    {
+        return await context.HandoverReadinessItems
+            .AsNoTracking()
+            .Where(h => h.EngagementId == engagementId &&
+                        h.Status == HandoverReadinessStatus.Blocked &&
+                        !h.IsDeleted)
+            .Select(h => new RiskBlockerSourceItem(
+                RiskConstants.SourceTypes.HandoverReadiness,
+                h.Id,
+                h.Name,
+                h.BlockReason ?? "Handover readiness item is blocked",
+                (int?)h.OwnerId))
             .ToListAsync();
     }
 

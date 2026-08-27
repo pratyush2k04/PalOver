@@ -4,7 +4,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 
 import { ClientContactTransitionService } from '../../../services/client-contact-transition.service';
-import { TransitionResponse } from '../../../models/client-contact-transition.model';
+import { TransitionResponse, AddClientContactTransitionDialogData } from '../../../models/client-contact-transition.model';
 
 import { AuthService } from '@shared/services/auth';
 import { DialogService } from '@common/services/dialog/dialog.service';
@@ -15,7 +15,7 @@ import {
   DIALOG_LABELS,
   STATUS_MESSAGES,
 } from '@shared/constants/client-contact-transition.constants';
-import { AddClientContactTransitionDialogComponent, AddClientContactTransitionDialogData } from '../dialogs/add-client-contact-transition-dialog/add-client-contact-transition-dialog.component';
+import { AddClientContactTransitionDialogComponent } from '../dialogs/add-client-contact-transition-dialog/add-client-contact-transition-dialog.component';
 
 @Component({
   selector: 'app-client-contact-transition-card',
@@ -30,6 +30,7 @@ import { AddClientContactTransitionDialogComponent, AddClientContactTransitionDi
 export class ClientContactTransitionCardComponent {
   engagementId = input.required<number>();
   clientName = input<string>('');
+  isSubmitted = input<boolean>(false);
   onSaved = output<void>();
 
   private transitionService = inject(ClientContactTransitionService);

@@ -4,6 +4,8 @@ using Pdr.Api.Models.EnvironmentTooling;
 using Pdr.Api.Models.Kickoff;
 using Pdr.Api.Models.People;
 
+using Pdr.Api.Models.HandoverReadiness;
+
 namespace Pdr.Api.Models.Engagements;
 
 public class Engagement : BaseAuditableEntity
@@ -57,4 +59,6 @@ public class Engagement : BaseAuditableEntity
         = new List<EnvironmentToolingItem>();
 
     public ICollection<KickoffActionItem> KickoffActionItems { get; set; } = new List<KickoffActionItem>();
+
+    public ICollection<HandoverReadinessItem> HandoverReadinessItems { get; set; } = new List<HandoverReadinessItem>();
 }

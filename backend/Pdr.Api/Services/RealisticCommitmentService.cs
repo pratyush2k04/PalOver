@@ -92,13 +92,13 @@ public class RealisticCommitmentService : IRealisticCommitmentService
         return handover;
     }
 
-    private async Task EnsureNotSubmittedAsync(HandoverInfo handover)
+    private async Task EnsureSubmittedAsync(HandoverInfo handover)
     {
         var status = await _handoverRepository.GetStatusByIdAsync(handover.StatusId);
 
-        if (status?.StatusName == HandoverStatusNames.Submitted)
+        if (status?.StatusName != HandoverStatusNames.Submitted)
         {
-            throw new HandoverSubmittedException(HandoverValidationConstants.AlreadySubmitted);
+            throw new HandoverIncompleteException(HandoverValidationConstants.RealisticCommitmentRequiresSubmitted);
         }
     }
 
@@ -118,7 +118,7 @@ public class RealisticCommitmentService : IRealisticCommitmentService
     {
         var commitment = await GetCommitmentOrThrowAsync(engagementId, commitmentId);
         var handover = await GetHandoverOrThrowAsync(engagementId);
-        await EnsureNotSubmittedAsync(handover);
+        await EnsureSubmittedAsync(handover);
 
         var existing = await _realisticCommitmentRepository.GetByCommitmentIdAsync(commitmentId);
 
@@ -186,7 +186,7 @@ public class RealisticCommitmentService : IRealisticCommitmentService
     {
         var commitment = await GetCommitmentOrThrowAsync(engagementId, commitmentId);
         var handover = await GetHandoverOrThrowAsync(engagementId);
-        await EnsureNotSubmittedAsync(handover);
+        await EnsureSubmittedAsync(handover);
 
         var realistic = await _realisticCommitmentRepository.GetByCommitmentIdAsync(commitmentId);
 

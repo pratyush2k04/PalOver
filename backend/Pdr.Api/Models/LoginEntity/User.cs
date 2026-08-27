@@ -1,3 +1,5 @@
+using Pdr.Api.Models.HandoverReadiness;
+
 namespace Pdr.Api.Models.LoginEntity;
 
 using Pdr.Api.Models.EnvironmentTooling;
@@ -38,4 +40,8 @@ public class User : BaseAuditableEntity
     [System.Text.Json.Serialization.JsonIgnore]
     public ICollection<EnvironmentToolingItem> EnvironmentToolingItems { get; set; }
         = new List<EnvironmentToolingItem>();
+
+    [System.Text.Json.Serialization.JsonIgnore]
+    public ICollection<HandoverReadinessItem> HandoverReadinessItems { get; set; }
+        = new List<HandoverReadinessItem>();
 }

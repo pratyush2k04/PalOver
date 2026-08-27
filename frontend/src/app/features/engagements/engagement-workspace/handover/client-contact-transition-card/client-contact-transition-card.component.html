@@ -2,7 +2,7 @@
   <!-- Section Header -->
   <div class="transition-header">
     <h3>{{ formLabels.CARD_TITLE }}</h3>
-    @if (isPreSales()) {
+    @if (isPreSales() && !isSubmitted()) {
       <app-button
         variant="flat"
         (click)="openAddTransitionDialog()"

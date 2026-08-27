@@ -1,0 +1,197 @@
+<div class="readiness-card">
+  <div class="card-header">
+    <h3 class="card-title">Readiness Checklist</h3>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <app-loading-spinner size="md"></app-loading-spinner>
+      <span>Loading readiness checklist...</span>
+    </div>
+  } @else {
+    <div class="readiness-content">
+      <!-- COMMERCIAL AREA SECTION -->
+      <div class="area-section">
+        <div class="area-header">
+          <div class="area-badge-group">
+            <span class="area-badge commercial">COMMERCIAL</span>
+            <span class="area-count">{{ commercialItems().length }} Items</span>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="readiness-table">
+            <thead>
+              <tr>
+                <th class="col-item">Item</th>
+                <th class="col-owner">Owner</th>
+                <th class="col-status">Status</th>
+                @if (isPreSales() && !isSubmitted()) {
+                  <th class="col-actions">Actions</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of commercialItems(); track item.id) {
+                <tr [class.blocked-row]="item.status === 'Blocked'">
+                  <td class="col-item">
+                    <div class="item-name-group">
+                      <span class="item-name">{{ item.name }}</span>
+                      @if (item.status === 'Blocked' && item.blockReason) {
+                        <div class="block-reason-callout">
+                          <svg class="warning-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                          </svg>
+                          <span><strong>Block Reason:</strong> {{ item.blockReason }}</span>
+                        </div>
+                      }
+                    </div>
+                  </td>
+                  <td class="col-owner">
+                    <span class="owner-name">{{ item.ownerFullName }}</span>
+                  </td>
+                  <td class="col-status">
+                    @if (isPreSales() && !isSubmitted()) {
+                      <select
+                        class="status-select"
+                        [class]="item.status.toLowerCase()"
+                        [ngModel]="item.status"
+                        (change)="onStatusChange(item, $event)"
+                      >
+                        <option value="InProgress">In Progress</option>
+                        <option value="Granted">Granted</option>
+                        <option value="Blocked">Blocked</option>
+                      </select>
+                    } @else {
+                      <app-status-badge [tone]="getStatusTone(item.status)">
+                        {{ getStatusLabel(item.status) }}
+                      </app-status-badge>
+                    }
+                  </td>
+                  @if (isPreSales() && !isSubmitted()) {
+                    <td class="col-actions">
+                      <button
+                        type="button"
+                        class="delete-btn"
+                        (click)="onDeleteItem(item)"
+                        title="Delete Item"
+                        aria-label="Delete item"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                      </button>
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- HANDOVER AREA SECTION -->
+      <div class="area-section">
+        <div class="area-header">
+          <div class="area-badge-group">
+            <span class="area-badge handover">HANDOVER</span>
+            <span class="area-count">{{ handoverItems().length }} Items</span>
+          </div>
+          @if (isPreSales() && !isSubmitted()) {
+            <app-button variant="flat" size="sm" (click)="openAddModal()">
+              + Add Item
+            </app-button>
+          }
+        </div>
+
+        <div class="table-wrapper">
+          <table class="readiness-table">
+            <thead>
+              <tr>
+                <th class="col-item">Item</th>
+                <th class="col-owner">Owner</th>
+                <th class="col-status">Status</th>
+                @if (isPreSales() && !isSubmitted()) {
+                  <th class="col-actions">Actions</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of handoverItems(); track item.id) {
+                <tr [class.blocked-row]="item.status === 'Blocked'">
+                  <td class="col-item">
+                    <div class="item-name-group">
+                      <span class="item-name">{{ item.name }}</span>
+                      @if (item.status === 'Blocked' && item.blockReason) {
+                        <div class="block-reason-callout">
+                          <svg class="warning-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                          </svg>
+                          <span><strong>Block Reason:</strong> {{ item.blockReason }}</span>
+                        </div>
+                      }
+                    </div>
+                  </td>
+                  <td class="col-owner">
+                    <span class="owner-name">{{ item.ownerFullName }}</span>
+                  </td>
+                  <td class="col-status">
+                    @if (isPreSales() && !isSubmitted()) {
+                      <select
+                        class="status-select"
+                        [class]="item.status.toLowerCase()"
+                        [ngModel]="item.status"
+                        (change)="onStatusChange(item, $event)"
+                      >
+                        <option value="InProgress">In Progress</option>
+                        <option value="Granted">Granted</option>
+                        <option value="Blocked">Blocked</option>
+                      </select>
+                    } @else {
+                      <app-status-badge [tone]="getStatusTone(item.status)">
+                        {{ getStatusLabel(item.status) }}
+                      </app-status-badge>
+                    }
+                  </td>
+                  @if (isPreSales() && !isSubmitted()) {
+                    <td class="col-actions">
+                      <button
+                        type="button"
+                        class="delete-btn"
+                        (click)="onDeleteItem(item)"
+                        title="Delete Item"
+                        aria-label="Delete item"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                      </button>
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+@if (pendingDeleteItem(); as item) {
+  <app-confirm-dialog
+    title="Delete Handover Item"
+    confirmLabel="Delete"
+    [isBusy]="isDeletingItem()"
+    (confirmed)="confirmDeleteItem(item)"
+    (cancelled)="cancelDeleteItem()"
+  >
+    Are you sure you want to delete "{{ item.name }}"?
+  </app-confirm-dialog>
+}
