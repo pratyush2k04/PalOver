@@ -101,8 +101,13 @@ public class DependencyService(
 
         var currentUserId = currentUserService.GetUserId();
         var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
+        var isMarkingMet = dependency.Status != DependencyStatus.Met && dto.Status == DependencyStatus.Met;
 
-        if (dependency.Owner?.UserId != currentUserId && !isPm)
+        var isAuthorized = isMarkingMet
+            ? dependency.Owner?.UserId == currentUserId || isPm
+            : dependency.CreatedBy == currentUserId.ToString();
+
+        if (!isAuthorized)
             throw new DependencyUnauthorizedException();
 
         dependency.Description = dto.Description;
@@ -226,6 +231,7 @@ public class DependencyService(
             Type = dependency.Type,
             OwnerId = dependency.OwnerId,
             OwnerName = dependency.Owner?.Name ?? string.Empty,
+            OwnerUserId = dependency.Owner?.UserId,
             NeededByDate = dependency.NeededByDate,
             Status = dependency.Status,
             LinkedRiskId = dependency.LinkedRiskId,

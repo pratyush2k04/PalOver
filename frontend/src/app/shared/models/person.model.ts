@@ -9,4 +9,5 @@ export interface PersonDto {
   name: string;
   role: string;
   personType: PersonType | string;
+  userId?: number | null;
 }

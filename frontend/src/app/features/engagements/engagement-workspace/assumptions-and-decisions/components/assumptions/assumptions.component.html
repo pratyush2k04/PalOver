@@ -49,8 +49,10 @@
                 }
 
                 <div class="item-actions">
-                  <app-button class="btn-edit" variant="stroked" (click)="openAssumptionDialog(item)">Edit</app-button>
-                  @if (item.status === AssumptionStatus.Unvalidated) {
+                  @if (canEdit(item)) {
+                    <app-button class="btn-edit" variant="stroked" (click)="openAssumptionDialog(item)">Edit</app-button>
+                  }
+                  @if (item.status === AssumptionStatus.Unvalidated && isPm()) {
                     <app-button class="btn-validate" variant="stroked" (click)="validateAssumption(item.id, AssumptionStatus.Validated)">Validate</app-button>
                     <app-button variant="danger" (click)="markInvalid(item.id)">Mark invalid</app-button>
                   }
