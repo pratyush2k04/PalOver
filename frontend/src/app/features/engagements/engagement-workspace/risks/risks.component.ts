@@ -122,6 +122,9 @@ export class RisksComponent implements OnInit {
     if (sourceType === 'ResourceRequest') {
       return [APP_ROUTES.ENGAGEMENTS, id.toString(), ENGAGEMENT_ROUTES.WORKSPACE, ENGAGEMENT_ROUTES.RESOURCES];
     }
+    if (sourceType === 'HandoverReadiness' || sourceType === 'Handover') {
+      return [APP_ROUTES.ENGAGEMENTS, id.toString(), ENGAGEMENT_ROUTES.WORKSPACE, ENGAGEMENT_ROUTES.HANDOVER];
+    }
     return [APP_ROUTES.ENGAGEMENTS, id.toString(), ENGAGEMENT_ROUTES.WORKSPACE, TECHNICAL_READINESS_ROUTES.BASE];
   }
 

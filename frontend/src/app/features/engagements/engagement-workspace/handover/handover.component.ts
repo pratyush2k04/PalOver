@@ -48,6 +48,7 @@ import { ToastService } from '@common/services/toast/toast';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
+import { HandoverReadinessComponent } from './handover-readiness/handover-readiness.component';
 
 const MAX_FREE_TEXT_LENGTH = 2000;
 
@@ -79,6 +80,7 @@ interface RealisticEditForm {
     EmptyStateComponent,
     ClientContactTransitionCardComponent,
     ConfirmDialogComponent,
+    HandoverReadinessComponent,
   ],
   templateUrl: './handover.component.html',
   styleUrl: './handover.component.scss',

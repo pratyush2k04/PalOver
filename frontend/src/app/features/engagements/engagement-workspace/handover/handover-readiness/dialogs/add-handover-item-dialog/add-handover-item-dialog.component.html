@@ -1,0 +1,26 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h3>Add Custom Handover Item</h3>
+  </div>
+
+  <form (ngSubmit)="onSubmit()">
+    <div class="dialog-body">
+      <div class="form-group">
+        <app-input
+          id="handover-item-name"
+          label="Item Name *"
+          [ngModel]="name()"
+          (ngModelChange)="onNameChange($event)"
+          name="itemName"
+          placeholder="e.g., Transfer key client contacts"
+          [extraError]="nameError() || null"
+        />
+      </div>
+    </div>
+
+    <div class="dialog-footer">
+      <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+      <app-button type="submit" variant="flat">Add Item</app-button>
+    </div>
+  </form>
+</div>

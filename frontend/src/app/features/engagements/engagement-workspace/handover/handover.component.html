@@ -428,6 +428,10 @@
         </div>
       }
     </div>
+    <!-- Handover Readiness Section -->
+    <app-handover-readiness
+      [engagementId]="engagementId()!">
+    </app-handover-readiness>
 
     <!-- Client Contact Transition Section -->
     <app-client-contact-transition-card
@@ -435,6 +439,7 @@
       [clientName]="engagementInfo()?.clientName || ''"
       (onSaved)="onClientContactSaved()">
     </app-client-contact-transition-card>
+
   </div>
 }
 
