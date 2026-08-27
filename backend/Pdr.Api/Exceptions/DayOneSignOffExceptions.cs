@@ -2,12 +2,6 @@ using Pdr.Api.Constants;
 
 namespace Pdr.Api.Exceptions;
 
-public class EngagementNotKickoffReadyException : AppException
-{
-    public EngagementNotKickoffReadyException()
-        : base(EngagementValidationConstants.Messages.EngagementNotKickoffReady, 400) { }
-}
-
 public class DayOneTechnicalBlockersRemainingException : AppException
 {
     public DayOneTechnicalBlockersRemainingException()

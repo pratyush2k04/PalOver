@@ -585,9 +585,6 @@ public class EngagementService(
         var engagement = await engagementRepository.GetByIdAsync(engagementId)
             ?? throw new EngagementNotFoundException(engagementId);
 
-        if (!engagement.IsKickoffReady)
-            throw new EngagementNotKickoffReadyException();
-
         if (request.BillingStartDate < engagement.KickoffDate)
             throw new BillingBeforeKickoffException();
 
