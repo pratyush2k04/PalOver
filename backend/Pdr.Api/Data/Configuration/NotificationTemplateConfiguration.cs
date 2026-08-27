@@ -306,6 +306,19 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",
                 IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 22,
+                Key = NotificationConstants.TemplateKeys.TechnicalReadinessComplete,
+                Title = "Technical Readiness 100% — {EngagementName}",
+                Body = "Technical readiness has reached 100% for {EngagementName}. You can now proceed with Day 1 sign-off.",
+                DefaultPriority = NotificationPriority.High,
+                LinkPattern = "/engagements/{EngagementId}/workspace/overview",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
             }
         );
     }
