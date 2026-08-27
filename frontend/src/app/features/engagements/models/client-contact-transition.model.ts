@@ -14,3 +14,7 @@ export interface TransitionResponse {
   incomingContactRole: string;
   createdAt?: string;
 }
+
+export interface AddClientContactTransitionDialogData {
+  engagementId: number;
+}

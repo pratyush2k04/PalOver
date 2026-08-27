@@ -21,6 +21,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEngagementRepository, EngagementRepository>();
         services.AddScoped<IDocumentRepository, DocumentRepository>();
         services.AddScoped<IHandoverRepository, HandoverRepository>();
+        services.AddScoped<IHandoverReadinessRepository, HandoverReadinessRepository>();
         services.AddScoped<ICommitmentRepository, CommitmentRepository>();
         services.AddScoped<IRealisticCommitmentRepository, RealisticCommitmentRepository>();
         services.AddScoped<IMasterChecklistRepository, MasterChecklistRepository>();
@@ -54,6 +55,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEngagementService, EngagementService>();
         services.AddScoped<IHandoverAccessService, HandoverAccessService>();
         services.AddScoped<IHandoverService, HandoverService>();
+        services.AddScoped<IHandoverReadinessService, HandoverReadinessService>();
         services.AddScoped<ICommitmentService, CommitmentService>();
         services.AddScoped<IRealisticCommitmentService, RealisticCommitmentService>();
         services.AddScoped<IKickoffReadinessService, KickoffReadinessService>();
@@ -82,6 +84,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ISearchService, SearchService>();
         services.AddScoped<IResourceRequestService, ResourceRequestService>();
         services.AddScoped<ITechnicalSummaryService, TechnicalSummaryService>();
+        services.AddScoped<ITechnicalReadinessNotificationService, TechnicalReadinessNotificationService>();
         services.AddScoped<IDependencyService, DependencyService>();
         services.AddScoped<IAssumptionService, AssumptionService>();
         services.AddScoped<IDependencySpikeService, DependencySpikeService>();
