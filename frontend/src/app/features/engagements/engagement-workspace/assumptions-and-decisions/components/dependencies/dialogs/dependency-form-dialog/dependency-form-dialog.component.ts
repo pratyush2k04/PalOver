@@ -11,6 +11,7 @@ import { DependencyDto, DependencyType, DependencyStatus } from '../../../../../
 import { PersonService } from '@shared/services/person.service';
 import { ToastService } from '@common/services/toast/toast';
 import { PersonDto, PersonType } from '@shared/models/person.model';
+import { AuthService } from '@shared/services/auth';
 
 export interface DependencyFormDialogData {
   dependency: DependencyDto | null;
@@ -38,6 +39,7 @@ export class DependencyFormDialogComponent implements OnInit {
   readonly data = inject<DependencyFormDialogData>(DIALOG_DATA);
   private personService = inject(PersonService);
   private toastService = inject(ToastService);
+  private authService = inject(AuthService);
 
   typeOptions: SelectOption[] = [
     { value: DependencyType.Internal, label: 'Internal' },
@@ -102,7 +104,11 @@ export class DependencyFormDialogComponent implements OnInit {
     // Assuming PersonDto has a way to distinguish internal vs external.
     // Let's assume it has an isExternal flag or similar. If not, we list all.
     // Typically, internal users have a userId, external don't.
+    const currentUserId = this.authService.getUserId();
+
     const filtered = this.allPeople.filter(p => {
+      if (p.userId === currentUserId) return false;
+
       if (type === DependencyType.Internal) {
         return p.personType === PersonType.Internal || p.personType === 'Internal';
       } else {

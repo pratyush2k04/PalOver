@@ -226,6 +226,7 @@ public class DependencyService(
             Type = dependency.Type,
             OwnerId = dependency.OwnerId,
             OwnerName = dependency.Owner?.Name ?? string.Empty,
+            OwnerUserId = dependency.Owner?.UserId,
             NeededByDate = dependency.NeededByDate,
             Status = dependency.Status,
             LinkedRiskId = dependency.LinkedRiskId,

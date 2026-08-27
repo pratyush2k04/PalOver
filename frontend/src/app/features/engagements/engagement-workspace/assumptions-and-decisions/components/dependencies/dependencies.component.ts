@@ -12,6 +12,7 @@ import { DialogService } from '@common/services/dialog/dialog.service';
 import { ToastService } from '@common/services/toast/toast';
 import { DependencyFormDialogComponent, DependencyFormDialogResult } from './dialogs/dependency-form-dialog/dependency-form-dialog.component';
 import { DEPENDENCY_MESSAGES } from '@shared/constants/app.constants';
+import { AuthService } from '@shared/services/auth';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
 
@@ -35,6 +36,7 @@ export class DependenciesComponent implements OnInit {
   private dependencyService = inject(DependencyService);
   private toastService = inject(ToastService);
   private dialogService = inject(DialogService);
+  private authService = inject(AuthService);
 
   engagementId = signal<number>(0);
   dependencies = signal<DependencyDto[]>([]);
@@ -125,6 +127,15 @@ export class DependenciesComponent implements OnInit {
         });
       }
     });
+  }
+
+  canEdit(dependency: DependencyDto): boolean {
+    return dependency.createdBy === String(this.authService.getUserId());
+  }
+
+  canMarkMet(dependency: DependencyDto): boolean {
+    return dependency.ownerUserId === this.authService.getUserId()
+      || this.authService.hasRole('Project Management');
   }
 
   markAsMet(dependency: DependencyDto) {

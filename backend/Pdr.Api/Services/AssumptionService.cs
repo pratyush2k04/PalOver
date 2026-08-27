@@ -72,9 +72,8 @@ public class AssumptionService(
             throw new AssumptionNotFoundException(assumptionId);
 
         var currentUserId = currentUserService.GetUserId();
-        var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
 
-        if (assumption.OwnerId != currentUserId && !isPm)
+        if (assumption.OwnerId != currentUserId)
             throw new AssumptionUnauthorizedException();
 
         assumption.Description = updateDto.Description;
@@ -95,10 +94,9 @@ public class AssumptionService(
         if (assumption == null || assumption.EngagementId != engagementId)
             throw new AssumptionNotFoundException(assumptionId);
 
-        var currentUserId = currentUserService.GetUserId();
         var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
 
-        if (assumption.OwnerId != currentUserId && !isPm)
+        if (!isPm)
             throw new AssumptionUnauthorizedException();
 
         if (assumption.Status != AssumptionStatus.Unvalidated)
