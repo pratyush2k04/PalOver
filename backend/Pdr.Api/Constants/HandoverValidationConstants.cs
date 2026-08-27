@@ -23,6 +23,7 @@ public static class HandoverValidationConstants
     }
 
     public static string ActionRequiresRole(string role) => $"This action requires the '{role}' role.";
+    public static string ActionRequiresAnyRole(IEnumerable<string> roles) => $"This action requires one of the following roles: {string.Join(", ", roles)}.";
     public static string NotFoundForEngagement(int engagementId) => $"No handover draft exists yet for engagement {engagementId}. Save the Client Context section first.";
     public static string CommitmentNotFound(int id) => $"Commitment with ID {id} was not found.";
     public static string RealisticCommitmentNotFound(int id) => $"Realistic commitment for commitment ID {id} was not found.";

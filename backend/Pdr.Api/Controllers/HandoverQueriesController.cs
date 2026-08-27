@@ -130,7 +130,7 @@ public class HandoverQueriesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<HandoverQueryDto>> ToggleResolution(int engagementId, int queryId)
     {
-        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId());
+        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId(), RoleConstants.PreSales, RoleConstants.ProjectManagement);
 
         var dto = await _handoverQueriesService.ToggleResolutionAsync(engagementId, queryId, _currentUserService.GetUserId().ToString());
         return Ok(dto);
