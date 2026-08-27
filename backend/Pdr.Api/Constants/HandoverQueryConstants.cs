@@ -14,8 +14,6 @@ public static class HandoverQueryConstants
     public const string ResponseTextMaxLength = "Response cannot exceed 2000 characters.";
     public const string AlreadyResponded = "This query has already been responded to and cannot be changed.";
     public const string NotYetResponded = "This query cannot be resolved until Pre Sales has responded.";
-    public const string InvalidRequest = "Invalid handover query request.";
-    public const string InvalidResponse = "Invalid response.";
 
     public static string NotFound(int queryId) => $"Handover query with ID {queryId} was not found.";
 }

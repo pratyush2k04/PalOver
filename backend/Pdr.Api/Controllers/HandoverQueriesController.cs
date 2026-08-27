@@ -74,12 +74,7 @@ public class HandoverQueriesController : ControllerBase
     {
         await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId(), RoleConstants.ProjectManagement);
 
-        var validationResult = await _createValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? HandoverQueryConstants.InvalidRequest;
-            return BadRequest(new { message = firstError });
-        }
+        await _createValidator.ValidateAndThrowAsync(request);
 
         var dto = await _handoverQueriesService.RaiseQueryAsync(engagementId, request, _currentUserService.GetUserId().ToString());
         return CreatedAtAction(nameof(GetQueries), new { engagementId }, dto);
@@ -104,12 +99,7 @@ public class HandoverQueriesController : ControllerBase
     {
         await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId(), RoleConstants.PreSales);
 
-        var validationResult = await _respondValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            var firstError = validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? HandoverQueryConstants.InvalidResponse;
-            return BadRequest(new { message = firstError });
-        }
+        await _respondValidator.ValidateAndThrowAsync(request);
 
         var dto = await _handoverQueriesService.RespondToQueryAsync(engagementId, queryId, request, _currentUserService.GetUserId().ToString());
         return Ok(dto);
