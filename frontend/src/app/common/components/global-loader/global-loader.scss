@@ -22,10 +22,6 @@
   z-index: 9990;
   animation: loader-fade-in 0.18s ease-out;
 
-  &.is-sub-tab {
-    top: 20rem;
-  }
-
   &.is-full-page {
     top: 0;
     left: 0;
@@ -34,10 +30,6 @@
   @media (max-width: 768px) {
     left: 0;
     top: 4rem;
-
-    &.is-sub-tab {
-      top: 12rem;
-    }
   }
 }
 

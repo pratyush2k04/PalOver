@@ -5,8 +5,6 @@ import { Injectable, signal } from '@angular/core';
 })
 export class LoaderService {
   readonly isLoading = signal<boolean>(false);
-  readonly isInitialWorkspaceLoad = signal<boolean>(false);
-
   show(): void {
     this.isLoading.set(true);
   }
@@ -17,9 +15,5 @@ export class LoaderService {
 
   setLoading(isLoading: boolean): void {
     this.isLoading.set(isLoading);
-  }
-
-  setInitialWorkspaceLoad(isInitial: boolean): void {
-    this.isInitialWorkspaceLoad.set(isInitial);
   }
 }
