@@ -5,7 +5,7 @@
     {{ message() }}
   </app-alert>
 
-  <app-empty-state *ngIf="!isLoading() && !loadError() && queries().length === 0" message="No queries raised yet" />
+  <app-empty-state *ngIf="!isLoading() && !loadError() && queries().length === 0" message="No queries raised" />
 
   <ng-container *ngIf="!loadError() && queries().length > 0">
     <div class="query-section" *ngIf="openQueries().length > 0">
