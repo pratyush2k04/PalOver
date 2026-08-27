@@ -28,6 +28,7 @@ import { RISK_MESSAGES } from '@shared/constants/app.constants';
 
 import { RiskCommentsComponent } from './components/risk-comments/risk-comments.component';
 import { RiskFormDialogComponent, RiskFormDialogResult } from './components/risk-form-dialog/risk-form-dialog.component';
+import { RISK_STATUSES } from '@shared/constants/risk.constants';
 
 @Component({
   selector: 'app-risks',
@@ -72,9 +73,9 @@ export class RisksComponent implements OnInit {
 
   readonly statusFilterOptions: SelectOption[] = [
     { value: 'ALL', label: 'All Statuses' },
-    { value: 'Open', label: 'Open' },
-    { value: 'Mitigating', label: 'Mitigating' },
-    { value: 'Closed', label: 'Closed' }
+    { value: RISK_STATUSES.OPEN, label: 'Open' },
+    { value: RISK_STATUSES.MITIGATING, label: 'Mitigating' },
+    { value: RISK_STATUSES.CLOSED, label: 'Closed' }
   ];
 
   readonly ownerFilterOptions = computed<SelectOption[]>(() => [

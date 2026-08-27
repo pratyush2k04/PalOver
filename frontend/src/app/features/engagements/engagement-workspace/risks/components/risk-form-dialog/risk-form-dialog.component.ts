@@ -8,6 +8,7 @@ import { InputComponent } from '@common/components/form/input/input';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { Risk, RiskImpact, RiskLikelihood, RiskStatus, OwnerOption } from '../../models/risk.model';
+import { RISK_IMPACT_LEVELS, RISK_LIKELIHOOD_LEVELS, RISK_STATUSES } from '@shared/constants/risk.constants';
 
 export interface RiskFormDialogData {
   engagementId: number;
@@ -39,21 +40,13 @@ export class RiskFormDialogComponent {
 
   readonly isEditMode = !!this.data.risk;
 
-  readonly impactOptions: SelectOption[] = [
-    { value: 'Low', label: 'Low' },
-    { value: 'Medium', label: 'Medium' },
-    { value: 'High', label: 'High' }
-  ];
+  readonly impactOptions: SelectOption[] = Object.values(RISK_IMPACT_LEVELS).map((value) => ({ value, label: value }));
 
-  readonly likelihoodOptions: SelectOption[] = [
-    { value: 'Low', label: 'Low' },
-    { value: 'Medium', label: 'Medium' },
-    { value: 'High', label: 'High' }
-  ];
+  readonly likelihoodOptions: SelectOption[] = Object.values(RISK_LIKELIHOOD_LEVELS).map((value) => ({ value, label: value }));
 
   readonly statusEditOptions: SelectOption[] = [
-    { value: 'Open', label: 'Open' },
-    { value: 'Mitigating', label: 'Mitigating' }
+    { value: RISK_STATUSES.OPEN, label: 'Open' },
+    { value: RISK_STATUSES.MITIGATING, label: 'Mitigating' }
   ];
 
   readonly ownerSelectOptions: SelectOption[] = [
@@ -67,11 +60,11 @@ export class RiskFormDialogComponent {
   riskForm: FormGroup = this.fb.group({
     title: [this.data.risk?.title ?? '', [Validators.required, Validators.maxLength(300)]],
     description: [this.data.risk?.description ?? '', [Validators.required, Validators.maxLength(2000)]],
-    impact: [this.data.risk?.impact ?? 'Medium', [Validators.required]],
-    likelihood: [this.data.risk?.likelihood ?? 'Medium', [Validators.required]],
+    impact: [this.data.risk?.impact ?? RISK_IMPACT_LEVELS.MEDIUM, [Validators.required]],
+    likelihood: [this.data.risk?.likelihood ?? RISK_LIKELIHOOD_LEVELS.MEDIUM, [Validators.required]],
     ownerId: [this.data.risk?.ownerId != null ? Number(this.data.risk.ownerId) : null, [Validators.required]],
     mitigation: [this.data.risk?.mitigation ?? '', [Validators.maxLength(2000)]],
-    status: [this.data.risk?.status ?? 'Open', [Validators.required]]
+    status: [this.data.risk?.status ?? RISK_STATUSES.OPEN, [Validators.required]]
   });
 
   onCancel(): void {
