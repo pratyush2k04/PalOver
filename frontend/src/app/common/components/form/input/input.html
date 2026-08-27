@@ -2,23 +2,19 @@
   @if (label()) {
     <label [for]="id()">{{ label() }}</label>
   }
-  <div class="input-wrapper" [class.is-invalid]="showError" [class.is-disabled]="disabled()">
-    @if (prefixText()) {
-      <span class="input-prefix">{{ prefixText() }}</span>
-    }
-    <input
-      [id]="id()"
-      [type]="type()"
-      [placeholder]="placeholder()"
-      [attr.maxlength]="maxLength()"
-      [attr.min]="min()"
-      [attr.step]="step()"
-      [value]="value"
-      [disabled]="disabled()"
-      (input)="onInput($any($event.target).value)"
-      (blur)="markTouched()"
-    />
-  </div>
+  <input
+    [id]="id()"
+    [type]="type()"
+    [placeholder]="placeholder()"
+    [attr.maxlength]="maxLength()"
+    [attr.min]="min()"
+    [attr.step]="step()"
+    [value]="value"
+    [disabled]="disabled()"
+    [class.is-invalid]="showError"
+    (input)="onInput($any($event.target).value)"
+    (blur)="markTouched()"
+  />
   @if (showCounter()) {
     <div class="char-counter" [class.char-counter--danger]="counterDanger()">
       {{ value.length }}/{{ maxLength() }}

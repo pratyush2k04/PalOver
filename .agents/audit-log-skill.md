@@ -34,7 +34,6 @@ public enum AuditActionEnum
     UserCreated = 2,
     UserUpdated = 3,
     UserDeleted = 4,
-    // Add your new value with the next unused int, e.g.:
     EngagementArchived = 5
 }
 ```

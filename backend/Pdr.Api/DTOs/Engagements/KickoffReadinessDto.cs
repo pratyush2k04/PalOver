@@ -9,4 +9,5 @@ public record KickoffReadinessDto(
     int CommitmentsApplicable,
     int CommitmentsPassed,
     int ChecklistItemsApplicable,
-    int ChecklistItemsPassed);
+    int ChecklistItemsPassed,
+    string? NextIncompleteTabKey);

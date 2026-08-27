@@ -128,7 +128,10 @@ export class AuditLogComponent implements OnInit {
     DependencyUpdated: 'Risk',
     DependencyDeleted: 'Risk',
     DependencyEscalated: 'Escalation',
-    ReadinessOnePagerGenerated: 'Technical Readiness'
+    ReadinessOnePagerGenerated: 'Technical Readiness',
+    KickoffReadyMarked: 'Technical Readiness',
+    KickoffReadyReverted: 'Technical Readiness',
+    AccessItemBlocked: 'Technical Readiness'
   };
 
   getEventCategory(action: string): string {

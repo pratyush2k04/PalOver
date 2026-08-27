@@ -29,7 +29,8 @@ public class EngagementService(
     IAuditLogService auditLogService,
     ITechnicalSummaryService technicalSummaryService,
     IEngagementAccessService engagementAccessService,
-    IHandoverRepository handoverRepository) : IEngagementService
+    IHandoverRepository handoverRepository,
+    IKickoffReminderService kickoffReminderService) : IEngagementService
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
 
@@ -123,6 +124,11 @@ public class EngagementService(
             // Allowed for unauthenticated/system-driven SOW signing
         }
 
+        // Runs after the PreSales assignment bookkeeping above, so a brand-new engagement's
+        // signing PreSales user is already visible when ScheduleRemindersAsync checks role assignments.
+        await kickoffReminderService.ScheduleRemindersAsync(engagement.EngagementId, engagement.KickoffDate);
+
+        // Apply master checklist snapshot and technical readiness items for new engagements
         if (existing is null)
         {
             await engagementChecklistService.ApplyMasterChecklistToEngagementAsync(engagement.EngagementId);
@@ -176,6 +182,10 @@ public class EngagementService(
         engagement.StatusId = activeStatusId;
 
         await engagementRepository.SaveChangesAsync();
+
+        if (request.KickoffDate is not null)
+            await kickoffReminderService.ScheduleRemindersAsync(id, request.KickoffDate.Value);
+
         return true;
     }
 
@@ -279,6 +289,10 @@ public class EngagementService(
                 userId,
                 System.Text.Json.JsonSerializer.Serialize(new PMAssignedMapper.PMAssignedPayload(EngagementId: engagementId)),
                 DateTime.UtcNow);
+
+            var engagementForReminder = await engagementRepository.GetByIdAsync(engagementId);
+            if (engagementForReminder is not null)
+                await kickoffReminderService.ScheduleRemindersAsync(engagementId, engagementForReminder.KickoffDate);
         }
         else if (requiredRole == RoleEnum.TechLead)
         {
@@ -289,6 +303,10 @@ public class EngagementService(
                 DateTime.UtcNow);
 
             await engagementRepository.AssignTechLeadOwnerItemsAsync(engagementId, userId);
+
+            var engagementForReminder = await engagementRepository.GetByIdAsync(engagementId);
+            if (engagementForReminder is not null)
+                await kickoffReminderService.ScheduleRemindersAsync(engagementId, engagementForReminder.KickoffDate);
         }
 
         return await GetEngagementOwnersAsync(engagementId);
@@ -422,6 +440,11 @@ public class EngagementService(
             NotificationConstants.TemplateKeys.LeadershipAssigned,
             userId,
             System.Text.Json.JsonSerializer.Serialize(new LeadershipAssignedMapper.LeadershipAssignedPayload(EngagementId: engagementId)),
+            DateTime.UtcNow);
+        await notificationService.CreateFromTemplateAsync(
+            NotificationConstants.TemplateKeys.LeadershipActionRequired,
+            userId,
+            System.Text.Json.JsonSerializer.Serialize(new LeadershipActionRequiredMapper.LeadershipActionRequiredPayload(EngagementId: engagementId)),
             DateTime.UtcNow);
 
         var actorUserId = currentUserService.GetUserId();

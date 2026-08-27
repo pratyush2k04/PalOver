@@ -85,4 +85,6 @@ public class NotificationRepository(AppDbContext context) : INotificationReposit
             .Where(n => (int)n.Priority == priority)
             .Select(n => new NotificationLiteDto(n.Data, n.CreatedAt))
             .ToListAsync();
+
+    public async Task SaveChangesAsync() => await context.SaveChangesAsync();
 }

@@ -2,7 +2,12 @@ export interface HomeUser {
   id: number;
   fullName: string;
   role: string;
-  isAdmin: boolean;
+}
+
+export interface DashboardCard {
+  title: string;
+  count: number;
+  type: string;
 }
 
 export interface WorkspaceMetadata {
@@ -10,6 +15,24 @@ export interface WorkspaceMetadata {
   title: string;
   welcomeMessage: string;
   emptyState: string;
+  cards: DashboardCard[];
+  engagements: DashboardEngagement[];
+  criticalBlockers: DashboardBlocker[];
+}
+
+export interface DashboardEngagement {
+  engagementId: number;
+  engagementName: string;
+  kickoffDate: string;
+  daysToGo: number;
+  readinessPercentage: number;
+  status: string;
+}
+
+export interface DashboardBlocker {
+  riskId: number;
+  projectName: string;
+  dueDate: string;
 }
 
 export interface HomeResponse {

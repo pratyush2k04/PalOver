@@ -17,4 +17,5 @@ public static class LeadershipDashboardConstants
         public const int Tier1To3 = 85;
         public const int TierDay0OrPast = 95;
     }
+
 }

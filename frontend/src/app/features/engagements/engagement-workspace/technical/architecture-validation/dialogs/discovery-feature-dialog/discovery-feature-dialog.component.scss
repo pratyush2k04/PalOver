@@ -46,6 +46,25 @@
   gap: 1rem;
 }
 
+.sprint-input-wrapper {
+  position: relative;
+  display: block;
+
+  .sprint-prefix {
+    position: absolute;
+    top: 26px; /* align with input text, roughly */
+    left: 12px;
+    font-size: 14px;
+    color: $color-text-faint;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  ::ng-deep input {
+    padding-left: 60px !important;
+  }
+}
+
 .dialog-footer {
   display: flex;
   align-items: center;
