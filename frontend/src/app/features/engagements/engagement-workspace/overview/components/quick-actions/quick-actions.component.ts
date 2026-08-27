@@ -31,4 +31,8 @@ export class QuickActionsComponent {
       this.hasRole(USER_ROLES.PRE_SALES) ||
       this.hasRole(USER_ROLES.LEADERSHIP)
   );
+
+  readonly canAddCommitment = computed(() => this.hasRole(USER_ROLES.PRE_SALES));
+
+  readonly canAddPerson = computed(() => this.hasRole(USER_ROLES.PRE_SALES));
 }

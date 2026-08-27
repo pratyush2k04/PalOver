@@ -46,5 +46,25 @@
       [routerLink]="['../documents']"
       [queryParams]="{ action: 'create' }"
     />
+
+    @if (canAddCommitment()) {
+      <app-action-tile
+        icon="clipboard"
+        label="Add Commitment"
+        tone="info"
+        [routerLink]="['../handover']"
+        [queryParams]="{ action: 'create' }"
+      />
+    }
+
+    @if (canAddPerson()) {
+      <app-action-tile
+        icon="user-plus"
+        label="Add Person"
+        tone="success"
+        [routerLink]="['../people']"
+        [queryParams]="{ action: 'create' }"
+      />
+    }
   </div>
 </div>
