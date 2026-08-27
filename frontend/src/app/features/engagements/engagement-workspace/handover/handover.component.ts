@@ -274,6 +274,14 @@ export class HandoverComponent {
         if (this.isSubmitted()) {
           this.clientContextForm.disable();
         }
+
+        if (
+          this.isPreSales() &&
+          !this.isSubmitted() &&
+          this.route.snapshot.queryParamMap.get('action') === 'create'
+        ) {
+          this.openAddCommitmentDialog();
+        }
       },
       error: (err) => {
         if (err.status === 404) {
