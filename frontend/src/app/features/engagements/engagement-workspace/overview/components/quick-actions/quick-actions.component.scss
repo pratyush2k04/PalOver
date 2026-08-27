@@ -1,0 +1,33 @@
+@use '../../../../../../../styles/tokens' as *;
+@use '../../../../../../../styles/mixins' as *;
+
+:host {
+  display: block;
+  align-self: flex-start;
+}
+
+.quick-actions-card {
+  background-color: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-lg;
+  padding: $spacing-6;
+  box-shadow: $shadow-sm;
+}
+
+.section-title {
+  font-size: 1.35rem;
+  font-weight: $font-weight-bold;
+  color: $color-text;
+  letter-spacing: -0.01em;
+  margin: 0 0 $spacing-4;
+}
+
+.tiles-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-4;
+
+  > * {
+    flex: 1 1 120px;
+  }
+}

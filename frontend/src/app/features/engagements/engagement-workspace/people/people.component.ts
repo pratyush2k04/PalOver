@@ -63,6 +63,10 @@ export class PeopleComponent {
       const id = this.engagementId();
       if (id) {
         this.loadPeople(id);
+
+        if (this.route.snapshot.queryParamMap.get('action') === 'create') {
+          this.onAddPerson();
+        }
       }
     });
   }
