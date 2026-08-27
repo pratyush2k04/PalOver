@@ -31,7 +31,8 @@ public class EngagementService(
     IEngagementAccessService engagementAccessService,
     IHandoverRepository handoverRepository,
     ICommitmentRepository commitmentRepository,
-    IKickoffReminderService kickoffReminderService) : IEngagementService
+    IKickoffReminderService kickoffReminderService,
+    IEngagementChecklistRepository engagementChecklistRepository) : IEngagementService
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
 
@@ -606,14 +607,57 @@ public class EngagementService(
         var currentUser = await userRepository.GetByIdAsync(currentUserId)
             ?? throw new UserNotFoundException(currentUserId);
 
+        var now = DateTime.UtcNow;
         engagement.BillingStartDate = request.BillingStartDate;
+
+        engagement.DayOneSignOffRecord = new DayOneSignOffRecord
+        {
+            EngagementId = engagementId,
+            SignedOffByUserId = currentUserId,
+            BillingStartDate = request.BillingStartDate,
+            SignedOffAt = now,
+            IsException = request.IsException,
+            ExceptionJustification = request.IsException ? request.ExceptionJustification?.Trim() : null
+        };
+
+        var checklist = await engagementChecklistRepository.GetByEngagementIdAsync(engagementId);
+        if (checklist != null)
+        {
+            engagement.EvidenceSnapshot = new EvidenceSnapshot
+            {
+                EngagementId = engagementId,
+                SignedOffByUserId = currentUserId,
+                SignedOffByUserName = currentUser.FullName,
+                SignedOffAt = now,
+                BillingStartDate = request.BillingStartDate,
+                Items = checklist.Items
+                    .Where(i => i.EvidenceRequired)
+                    .Select(i => new EvidenceSnapshotItem
+                    {
+                        SourceChecklistItemId = i.Id,
+                        Title = i.Title,
+                        CategoryName = i.Category?.CategoryName ?? string.Empty,
+                        DisplayOrder = i.DisplayOrder,
+                        StatusAtSignOff = !i.IsApplicable
+                            ? EvidenceSnapshotItemStatus.NotApplicable
+                            : i.Status == "Complete"
+                                ? EvidenceSnapshotItemStatus.Complete
+                                : EvidenceSnapshotItemStatus.Open,
+                        EvidenceNote = i.EvidenceNote,
+                        EvidenceLink = i.EvidenceLink,
+                        EvidenceSubmittedAt = i.EvidenceSubmittedAt,
+                        EvidenceSubmittedByName = i.EvidenceSubmittedBy?.FullName
+                    }).ToList()
+            };
+        }
+
         await engagementRepository.SaveChangesAsync();
 
         return new DayOneSignOffDto(
             currentUserId,
             currentUser.FullName,
             request.BillingStartDate,
-            DateTime.UtcNow,
+            now,
             request.IsException,
             request.IsException ? request.ExceptionJustification?.Trim() : null);
     }
