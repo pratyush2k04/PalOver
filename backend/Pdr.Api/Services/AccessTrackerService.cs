@@ -8,16 +8,15 @@ using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
-using Pdr.Api.Services.Notifications.Mappers;
 
 namespace Pdr.Api.Services;
 
 public class AccessTrackerService(
     IAccessTrackerRepository repository,
     IRiskService riskService,
-    INotificationService notificationService,
     ICurrentUserService currentUserService,
-    IAuditLogService auditLogService) : IAccessTrackerService
+    IAuditLogService auditLogService,
+    ITechnicalReadinessNotificationService readinessNotificationService) : IAccessTrackerService
 {
     // -------------------------------------------------------------------------
     // State machine: defines which transitions are allowed
@@ -97,6 +96,8 @@ public class AccessTrackerService(
             string.IsNullOrWhiteSpace(request.BlockReason))
             throw new BlockReasonRequiredException();
 
+        var wasReady = await readinessNotificationService.IsReadyAsync(item.EngagementId);
+
         item.Status = request.Status;
 
         switch (request.Status)
@@ -123,19 +124,14 @@ public class AccessTrackerService(
         {
             var actorUserId = currentUserService.GetUserId();
 
-            await notificationService.CreateFromTemplateAsync(
-                "AccessItemBlocked",
-                item.EngagementId,
-                RoleEnum.TechLead,
-                JsonSerializer.Serialize(new AccessItemBlockedMapper.AccessItemBlockedData(AccessItemId: item.Id, TriggerUserId: actorUserId)),
-                DateTime.UtcNow);
-
             await auditLogService.LogAsync(
                 AuditActionEnum.AccessItemBlocked,
                 new Dictionary<string, object?> { ["AccessItemId"] = item.Id, ["ActorUserId"] = actorUserId },
                 engagementId: item.EngagementId,
                 actingUserId: actorUserId);
         }
+
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(item.EngagementId, wasReady);
 
         return MapToDto(item);
     }
@@ -169,8 +165,12 @@ public class AccessTrackerService(
         var item = await repository.GetAccessItemByIdAsync(accessItemId)
             ?? throw new AccessItemNotFoundException(accessItemId);
 
+        var wasReady = await readinessNotificationService.IsReadyAsync(item.EngagementId);
+
         item.IsDeleted = true;
         await repository.SaveChangesAsync();
+
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(item.EngagementId, wasReady);
     }
 
     // -------------------------------------------------------------------------

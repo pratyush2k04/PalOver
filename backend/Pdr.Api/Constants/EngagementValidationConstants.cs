@@ -24,7 +24,6 @@ public static class EngagementValidationConstants
         public static string PersonNotFound(int personId, int engagementId) => $"Person with ID {personId} for Engagement {engagementId} was not found.";
 
         // Day-1 Readiness Sign-off
-        public const string EngagementNotKickoffReady = "Day-1 readiness cannot be signed off until the engagement is marked Kickoff-Ready.";
         public const string DayOneTechnicalBlockersRemaining = "Cannot sign off Day-1 readiness: all applicable technical items must be ready unless a leadership exception is recorded.";
         public const string DayOneLeadershipExceptionForbidden = "Only Leadership can record an exception to sign off Day-1 readiness with open items.";
         public const string DayOneExceptionJustificationTooShort = "Leadership exception justification must be at least 20 characters.";

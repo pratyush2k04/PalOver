@@ -13,6 +13,11 @@ public class CommitmentRepository(AppDbContext context) : ICommitmentRepository
             .Where(c => c.HandoverId == handoverId)
             .ToListAsync();
 
+    public async Task<int> GetCountByHandoverIdAsync(int handoverId) =>
+        await context.Commitments
+            .Where(c => c.HandoverId == handoverId)
+            .CountAsync();
+
     public async Task<Commitment?> GetByIdAsync(int commitmentId, int handoverId) =>
         await context.Commitments
             .FirstOrDefaultAsync(c => c.CommitmentId == commitmentId && c.HandoverId == handoverId);

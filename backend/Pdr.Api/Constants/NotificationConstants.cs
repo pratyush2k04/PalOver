@@ -20,6 +20,8 @@ public static class NotificationConstants
         public const string ResourcingGapFlagRaised = "ResourcingGapFlagRaised";
         public const string CommitmentVarianceEscalated = "CommitmentVarianceEscalated";
         public const string PresalesCommitmentAdded = "PresalesCommitmentAdded";
+        public const string PendingCommitmentsSummary = "PendingCommitmentsSummary";
+        public const string TechnicalReadinessComplete = "TechnicalReadinessComplete";
     }
 
     public static class RiskCommentMention

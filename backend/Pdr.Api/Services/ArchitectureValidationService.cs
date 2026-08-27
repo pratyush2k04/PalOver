@@ -11,7 +11,8 @@ namespace Pdr.Api.Services;
 public class ArchitectureValidationService(
     IArchitectureValidationRepository repository,
     IAuditLogService auditLogService,
-    ICurrentUserService currentUserService) : IArchitectureValidationService
+    ICurrentUserService currentUserService,
+    ITechnicalReadinessNotificationService readinessNotificationService) : IArchitectureValidationService
 {
     public async Task<ArchitectureValidationDto> GetByEngagementIdAsync(int engagementId)
     {
@@ -49,6 +50,8 @@ public class ArchitectureValidationService(
             throw new RationaleRequiredWhenArchitectureModifiedException();
         }
 
+        var wasReady = await readinessNotificationService.IsReadyAsync(engagementId);
+
         var validation = await repository.GetByEngagementIdAsync(engagementId);
         if (validation is null)
         {
@@ -67,6 +70,8 @@ public class ArchitectureValidationService(
         }
 
         await repository.SaveChangesAsync();
+
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(engagementId, wasReady);
 
         var committedTimelineWeeks = await repository.GetCommittedTimelineWeeksAsync(engagementId);
         return BuildDto(validation, engagementId, committedTimelineWeeks);
@@ -91,6 +96,8 @@ public class ArchitectureValidationService(
             await repository.SaveChangesAsync();
         }
 
+        var wasReady = await readinessNotificationService.IsReadyAsync(engagementId);
+
         var item = new DiscoveryFeatureItem
         {
             ArchitectureValidationId = validation.Id,
@@ -114,6 +121,8 @@ public class ArchitectureValidationService(
             engagementId: engagementId,
             actingUserId: actorUserId > 0 ? actorUserId : null);
 
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(engagementId, wasReady);
+
         return MapFeatureToDto(item);
     }
 
@@ -125,11 +134,19 @@ public class ArchitectureValidationService(
             throw new DiscoveryFeatureItemNotFoundException(featureId);
         }
 
+        var engagementId = item.ArchitectureValidation?.EngagementId ?? 0;
+        var wasReady = engagementId > 0 && await readinessNotificationService.IsReadyAsync(engagementId);
+
         item.FeatureName = request.FeatureName.Trim();
         item.EstimateWeeks = request.EstimateWeeks;
         item.TargetSprint = request.TargetSprint.Trim();
 
         await repository.SaveChangesAsync();
+
+        if (engagementId > 0)
+        {
+            await readinessNotificationService.CheckAndNotifyIfReadyAsync(engagementId, wasReady);
+        }
 
         return MapFeatureToDto(item);
     }
@@ -142,8 +159,16 @@ public class ArchitectureValidationService(
             throw new DiscoveryFeatureItemNotFoundException(featureId);
         }
 
+        var engagementId = item.ArchitectureValidation?.EngagementId ?? 0;
+        var wasReady = engagementId > 0 && await readinessNotificationService.IsReadyAsync(engagementId);
+
         item.IsDeleted = true;
         await repository.SaveChangesAsync();
+
+        if (engagementId > 0)
+        {
+            await readinessNotificationService.CheckAndNotifyIfReadyAsync(engagementId, wasReady);
+        }
     }
 
     private static ArchitectureValidationDto BuildDto(ArchitectureValidation? validation, int engagementId, decimal committedTimelineWeeks)
