@@ -18,6 +18,8 @@ public class HandoverQueryConfiguration : IEntityTypeConfiguration<HandoverQuery
         builder.Property(q => q.FieldSectionId).HasColumnName("field_section_id").IsRequired();
         builder.Property(q => q.ReferenceId).HasColumnName("reference_id");
         builder.Property(q => q.IsResolved).HasColumnName("is_resolved").HasDefaultValue(false);
+        builder.Property(q => q.RaisedByUserId).HasColumnName("raised_by_user_id").IsRequired();
+        builder.Property(q => q.RespondedByUserId).HasColumnName("responded_by_user_id");
         builder.Property(q => q.ResolvedByUserId).HasColumnName("resolved_by_user_id");
         builder.Property(q => q.ResolvedAt).HasColumnName("resolved_at");
 
@@ -38,6 +40,16 @@ public class HandoverQueryConfiguration : IEntityTypeConfiguration<HandoverQuery
         builder.HasOne(q => q.FieldSection)
             .WithMany()
             .HasForeignKey(q => q.FieldSectionId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(q => q.RaisedByUser)
+            .WithMany()
+            .HasForeignKey(q => q.RaisedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(q => q.RespondedByUser)
+            .WithMany()
+            .HasForeignKey(q => q.RespondedByUserId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(q => q.ResolvedByUser)

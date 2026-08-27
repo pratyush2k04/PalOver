@@ -11,6 +11,8 @@ public class HandoverQueryRepository(AppDbContext context) : IHandoverQueryRepos
         await context.HandoverQueries
             .AsNoTracking()
             .Include(q => q.FieldSection)
+            .Include(q => q.RaisedByUser)
+            .Include(q => q.RespondedByUser)
             .Include(q => q.ResolvedByUser).ThenInclude(u => u!.Role)
             .Where(q => q.HandoverId == handoverId)
             .OrderBy(q => q.CreatedAt)

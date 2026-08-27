@@ -3183,6 +3183,10 @@ namespace Pdr.Api.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("is_resolved");
 
+                    b.Property<int>("RaisedByUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("raised_by_user_id");
+
                     b.Property<int?>("ReferenceId")
                         .HasColumnType("integer")
                         .HasColumnName("reference_id");
@@ -3194,6 +3198,10 @@ namespace Pdr.Api.Migrations
                     b.Property<int?>("ResolvedByUserId")
                         .HasColumnType("integer")
                         .HasColumnName("resolved_by_user_id");
+
+                    b.Property<int?>("RespondedByUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("responded_by_user_id");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -3210,7 +3218,11 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("FieldSectionId");
 
+                    b.HasIndex("RaisedByUserId");
+
                     b.HasIndex("ResolvedByUserId");
+
+                    b.HasIndex("RespondedByUserId");
 
                     b.HasIndex("HandoverId", "IsResolved");
 
@@ -6128,14 +6140,29 @@ namespace Pdr.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "RaisedByUser")
+                        .WithMany()
+                        .HasForeignKey("RaisedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Pdr.Api.Models.LoginEntity.User", "ResolvedByUser")
                         .WithMany()
                         .HasForeignKey("ResolvedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "RespondedByUser")
+                        .WithMany()
+                        .HasForeignKey("RespondedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("FieldSection");
 
+                    b.Navigation("RaisedByUser");
+
                     b.Navigation("ResolvedByUser");
+
+                    b.Navigation("RespondedByUser");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Handover.HandoverQueryQuestion", b =>

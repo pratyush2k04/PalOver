@@ -14,11 +14,19 @@ public class HandoverQuery : BaseAuditableEntity
 
     public bool IsResolved { get; set; } = false;
 
+    public int RaisedByUserId { get; set; }
+
+    public int? RespondedByUserId { get; set; }
+
     public int? ResolvedByUserId { get; set; }
 
     public DateTime? ResolvedAt { get; set; }
 
     public HandoverQueryFieldSection FieldSection { get; set; } = null!;
+
+    public User RaisedByUser { get; set; } = null!;
+
+    public User? RespondedByUser { get; set; }
 
     public User? ResolvedByUser { get; set; }
 
