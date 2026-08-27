@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Pdr.Api.DTOs.HandoverReadiness;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.HandoverReadiness;
-using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
@@ -13,8 +12,7 @@ namespace Pdr.Api.Services;
 
 public class HandoverReadinessService(
     IHandoverReadinessRepository repository,
-    IRiskService riskService,
-    ICurrentUserService currentUserService) : IHandoverReadinessService
+    IRiskService riskService) : IHandoverReadinessService
 {
     public async Task<List<HandoverReadinessItemDto>> GetItemsAsync(int engagementId)
     {
@@ -51,8 +49,6 @@ public class HandoverReadinessService(
 
     public async Task<HandoverReadinessItemDto> AddCustomItemAsync(int engagementId, AddCustomHandoverReadinessItemRequest request)
     {
-        EnsurePreSalesPermission();
-
         if (!await repository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
@@ -85,8 +81,6 @@ public class HandoverReadinessService(
         var item = await repository.GetByIdAsync(id)
             ?? throw new HandoverReadinessItemNotFoundException(id);
 
-        EnsurePreSalesPermission();
-
         if (request.Status == HandoverReadinessStatus.Blocked && string.IsNullOrWhiteSpace(request.BlockReason))
         {
             throw new HandoverReadinessBlockReasonRequiredException();
@@ -117,20 +111,10 @@ public class HandoverReadinessService(
         var item = await repository.GetByIdAsync(id)
             ?? throw new HandoverReadinessItemNotFoundException(id);
 
-        EnsurePreSalesPermission();
-
         item.IsDeleted = true;
         await repository.SaveChangesAsync();
 
         await riskService.SyncAutoCreatedRisksAsync(item.EngagementId);
-    }
-
-    private void EnsurePreSalesPermission()
-    {
-        if (!currentUserService.IsInRole(RoleEnum.PreSales))
-        {
-            throw new HandoverReadinessAccessDeniedException();
-        }
     }
 
     private static HandoverReadinessItemDto MapToDto(HandoverReadinessItem item)
