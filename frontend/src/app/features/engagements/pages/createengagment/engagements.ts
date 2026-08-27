@@ -13,6 +13,7 @@ import { CommercialModelOption, EngagementTypeOption } from '../../models/engage
 import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
+import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { ToastService } from '@common/services/toast/toast';
 
@@ -30,7 +31,7 @@ function billingNotBeforeKickoffValidator(group: AbstractControl): ValidationErr
 @Component({
   selector: 'app-engagements',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AlertComponent, ButtonComponent, InputComponent, SelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, AlertComponent, ButtonComponent, InputComponent, TextareaComponent, SelectComponent],
   templateUrl: './engagements.html',
   styleUrl: './engagements.scss'
 })
