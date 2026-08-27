@@ -120,7 +120,6 @@ public class HandoverService : IHandoverService
         await _engagementAccessService.ValidateAccessAsync(engagementId);
 
         var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
-        var isFirstDraft = handover == null;
 
         if (handover == null)
         {
@@ -144,22 +143,6 @@ public class HandoverService : IHandoverService
         handover.DealOrigin = request.DealOrigin;
 
         await _handoverRepository.SaveChangesAsync();
-
-        if (isFirstDraft)
-        {
-            var admins = await _userRepository.GetAdminsAsync();
-            if (admins.Count > 0)
-            {
-                await _notificationService.CreateFromTemplateAsync(
-                    NotificationConstants.TemplateKeys.HandoverDraftFirstSaved,
-                    admins.Select(a => a.Id),
-                    JsonSerializer.Serialize(new HandoverDraftFirstSavedMapper.HandoverDraftFirstSavedPayload(
-                        HandoverId: handover.HandoverId,
-                        TriggerUserId: int.Parse(userIdStr),
-                        EngagementId: engagementId)),
-                    DateTime.UtcNow);
-            }
-        }
 
         return await GetHandoverAsync(engagementId);
     }
@@ -191,6 +174,21 @@ public class HandoverService : IHandoverService
 
         await _handoverRepository.SaveChangesAsync();
 
+        // Notify Admins to allocate leadership once Handover is submitted
+        var admins = await _userRepository.GetAdminsAsync();
+        if (admins.Count > 0)
+        {
+            await _notificationService.CreateFromTemplateAsync(
+                NotificationConstants.TemplateKeys.HandoverDraftFirstSaved,
+                admins.Select(a => a.Id),
+                JsonSerializer.Serialize(new HandoverDraftFirstSavedMapper.HandoverDraftFirstSavedPayload(
+                    HandoverId: handover.HandoverId,
+                    TriggerUserId: int.Parse(userIdStr),
+                    EngagementId: engagementId)),
+                DateTime.UtcNow);
+        }
+
+        // Notify PM team
         await _notificationService.CreateFromTemplateAsync(
             "HandoverSubmitted",
             engagementId,

@@ -379,7 +379,7 @@ public class EngagementService(
             throw new EngagementNotFoundException(engagementId);
 
         var handover = await handoverRepository.GetByEngagementIdAsync(engagementId);
-        if (handover == null)
+        if (handover == null || handover.StatusId != (int)HandoverStatusEnum.Submitted)
             return new HandoverDraftStatusDto(false, null, null, null, null);
 
         var status = await handoverRepository.GetStatusByIdAsync(handover.StatusId);
@@ -409,7 +409,7 @@ public class EngagementService(
             throw new EngagementNotFoundException(engagementId);
 
         var handover = await handoverRepository.GetByEngagementIdAsync(engagementId);
-        if (handover == null)
+        if (handover == null || handover.StatusId != (int)HandoverStatusEnum.Submitted)
             throw new HandoverIncompleteException(HandoverValidationConstants.NotFoundForLeadershipAllocation);
 
         var user = await userRepository.GetByIdAsync(userId)

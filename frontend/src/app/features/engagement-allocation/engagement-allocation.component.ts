@@ -118,7 +118,11 @@ export class EngagementAllocationComponent implements OnInit {
               this.engagements.update(list =>
                 list.map(item =>
                   item.engagementId === eng.engagementId
-                    ? { ...item, hasHandoverDraft: status.hasHandoverDraft, isLoadingHandover: false }
+                    ? {
+                        ...item,
+                        hasHandoverDraft: !!status.hasHandoverDraft && status.status?.toLowerCase() === 'submitted',
+                        isLoadingHandover: false
+                      }
                     : item
                 )
               );
