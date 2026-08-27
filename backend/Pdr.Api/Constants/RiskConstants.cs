@@ -43,5 +43,6 @@ public static class RiskConstants
         public const string AccessTracker = "AccessTracker";
         public const string EnvironmentTooling = "EnvironmentTooling";
         public const string ResourceRequest = "ResourceRequest";
+        public const string HandoverReadiness = "HandoverReadiness";
     }
 }
