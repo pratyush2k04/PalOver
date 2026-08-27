@@ -101,8 +101,13 @@ public class DependencyService(
 
         var currentUserId = currentUserService.GetUserId();
         var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
+        var isMarkingMet = dependency.Status != DependencyStatus.Met && dto.Status == DependencyStatus.Met;
 
-        if (dependency.Owner?.UserId != currentUserId && !isPm)
+        var isAuthorized = isMarkingMet
+            ? dependency.Owner?.UserId == currentUserId || isPm
+            : dependency.CreatedBy == currentUserId.ToString();
+
+        if (!isAuthorized)
             throw new DependencyUnauthorizedException();
 
         dependency.Description = dto.Description;
