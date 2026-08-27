@@ -223,6 +223,7 @@ public class HandoverService : IHandoverService
         {
             handover.ReviewedAt = DateTime.UtcNow;
             handover.ReviewedByUserId = int.Parse(userIdStr);
+            handover.StatusId = (int)HandoverStatusEnum.Reviewed;
             handover.UpdatedBy = userIdStr;
 
             await _handoverRepository.SaveChangesAsync();
