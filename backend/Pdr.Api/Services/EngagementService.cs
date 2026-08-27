@@ -30,6 +30,7 @@ public class EngagementService(
     ITechnicalSummaryService technicalSummaryService,
     IEngagementAccessService engagementAccessService,
     IHandoverRepository handoverRepository,
+    ICommitmentRepository commitmentRepository,
     IKickoffReminderService kickoffReminderService) : IEngagementService
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
@@ -289,6 +290,20 @@ public class EngagementService(
                 userId,
                 System.Text.Json.JsonSerializer.Serialize(new PMAssignedMapper.PMAssignedPayload(EngagementId: engagementId)),
                 DateTime.UtcNow);
+
+            var handover = await handoverRepository.GetByEngagementIdAsync(engagementId);
+            if (handover is not null)
+            {
+                var pendingCommitmentsCount = await commitmentRepository.GetCountByHandoverIdAsync(handover.HandoverId);
+                if (pendingCommitmentsCount > 0)
+                {
+                    await notificationService.CreateFromTemplateAsync(
+                        NotificationConstants.TemplateKeys.PendingCommitmentsSummary,
+                        userId,
+                        System.Text.Json.JsonSerializer.Serialize(new PendingCommitmentsSummaryMapper.PendingCommitmentsSummaryPayload(engagementId, pendingCommitmentsCount)),
+                        DateTime.UtcNow);
+                }
+            }
 
             var engagementForReminder = await engagementRepository.GetByIdAsync(engagementId);
             if (engagementForReminder is not null)

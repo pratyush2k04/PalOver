@@ -293,6 +293,19 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",
                 IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 21,
+                Key = NotificationConstants.TemplateKeys.PendingCommitmentsSummary,
+                Title = "Action Required: {Count} commitments require your review",
+                Body = "There are {Count} presales commitments on engagement {EngagementName} that need realistic estimates.",
+                DefaultPriority = NotificationPriority.High,
+                LinkPattern = "/engagements/{EngagementId}/workspace/handover",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
             }
         );
     }
