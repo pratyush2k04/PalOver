@@ -38,6 +38,7 @@ const FIELD_SECTION_LABELS: Record<HandoverQueryFieldSection, string> = {
 export class HandoverQueriesComponent {
   engagementId = input.required<number>();
   commitments = input<CommitmentDto[]>([]);
+  isReviewed = input<boolean>(false);
 
   private handoverQueryService = inject(HandoverQueryService);
   private authService = inject(AuthService);

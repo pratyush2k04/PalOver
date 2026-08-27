@@ -456,10 +456,11 @@
       (onSaved)="onClientContactSaved()">
     </app-client-contact-transition-card>
 
-    @if (isSubmitted()) {
+    @if (hasBeenSubmitted()) {
       <app-handover-queries
         [engagementId]="engagementId()!"
         [commitments]="commitments()"
+        [isReviewed]="isReviewed()"
       ></app-handover-queries>
     }
   </div>

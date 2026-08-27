@@ -193,6 +193,8 @@ export class HandoverComponent {
   }));
 
   isSubmitted = computed(() => this.handover()?.status === 'Submitted');
+  isReviewed = computed(() => this.handover()?.status === 'Reviewed');
+  hasBeenSubmitted = computed(() => this.isSubmitted() || this.isReviewed());
   hasHandoverDraft = computed(() => !!this.handover()?.handoverId);
   newCommitmentTouched = signal(false);
 
@@ -251,13 +253,13 @@ export class HandoverComponent {
         });
         this.commitments.set(data.commitments || []);
         this.isLoading.set(false);
-        if (this.isSubmitted()) {
+        if (this.hasBeenSubmitted()) {
           this.clientContextForm.disable();
         }
 
         if (
           this.isPreSales() &&
-          !this.isSubmitted() &&
+          !this.hasBeenSubmitted() &&
           this.route.snapshot.queryParamMap.get('action') === 'create'
         ) {
           this.openAddCommitmentDialog();

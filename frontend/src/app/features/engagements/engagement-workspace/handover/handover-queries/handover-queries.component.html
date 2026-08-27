@@ -23,7 +23,7 @@
     </div>
   </ng-container>
 
-  <div class="raise-query-actions" *ngIf="!loadError() && isProjectManagement()">
+  <div class="raise-query-actions" *ngIf="!loadError() && isProjectManagement() && !isReviewed()">
     <app-button variant="flat" (click)="openRaiseQueryDialog()">Raise another query</app-button>
   </div>
 </div>
