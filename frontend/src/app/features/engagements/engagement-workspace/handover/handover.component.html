@@ -54,8 +54,8 @@
           </div>
 
           <div class="metric-item">
-            <span class="metric-label">Checklist items complete:</span>
-            <span class="metric-value">{{ r.checklistItemsPassed }}/{{ r.checklistItemsApplicable }}</span>
+            <span class="metric-label">Readiness Checklist:</span>
+            <span class="metric-value">{{ readinessItemsPassed() }}/{{ readinessItemsApplicable() }}</span>
           </div>
         </div>
       </div>
@@ -430,7 +430,8 @@
     </div>
     <!-- Handover Readiness Section -->
     <app-handover-readiness
-      [engagementId]="engagementId()!">
+      [engagementId]="engagementId()!"
+      (itemsUpdated)="onHandoverReadinessItemsUpdated($event)">
     </app-handover-readiness>
 
     <!-- Client Contact Transition Section -->

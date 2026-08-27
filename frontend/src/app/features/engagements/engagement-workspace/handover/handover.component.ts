@@ -35,6 +35,7 @@ import {
   UpdateRealisticCommitmentRequest,
   CommitmentDto
 } from '../../models/handover.model';
+import { HandoverReadinessItemDto } from '../../models/handover-readiness.model';
 import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
@@ -116,8 +117,27 @@ export class HandoverComponent {
   isSaving = signal(false);
   message = signal('');
   isError = signal(false);
+  handoverReadinessItems = signal<HandoverReadinessItemDto[]>([]);
 
   kickoffReadiness = this.kickoffReadinessService.readiness;
+
+  onHandoverReadinessItemsUpdated(items: HandoverReadinessItemDto[]): void {
+    this.handoverReadinessItems.set(items);
+  }
+
+  readonly readinessItemsApplicable = computed(() =>
+    this.handoverReadinessItems().filter(i => i.status !== 'Blocked').length
+  );
+
+  readonly readinessItemsPassed = computed(() =>
+    this.handoverReadinessItems().filter(i => i.status === 'Granted').length
+  );
+
+  readonly isReadinessChecklistComplete = computed(() => {
+    const applicable = this.readinessItemsApplicable();
+    const passed = this.readinessItemsPassed();
+    return applicable > 0 && passed === applicable;
+  });
 
   isHandoverReadyToSubmit = computed(() => {
     const r = this.kickoffReadiness();
@@ -125,7 +145,7 @@ export class HandoverComponent {
     return (
       r.handoverFieldsPassed >= r.handoverFieldsApplicable &&
       r.commitmentsPassed >= r.commitmentsApplicable &&
-      r.checklistItemsPassed >= r.checklistItemsApplicable
+      this.isReadinessChecklistComplete()
     );
   });
 
