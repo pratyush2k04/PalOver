@@ -6,14 +6,7 @@ import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 
-export interface BlockHandoverItemDialogData {
-  itemName: string;
-  currentReason?: string;
-}
-
-export interface BlockHandoverItemDialogResult {
-  reason: string;
-}
+import { BlockHandoverItemDialogData, BlockHandoverItemDialogResult } from '@features/engagements/models/handover-readiness.model';
 
 @Component({
   selector: 'app-block-handover-item-dialog',

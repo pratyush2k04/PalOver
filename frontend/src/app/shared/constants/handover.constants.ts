@@ -9,6 +9,7 @@ export const HANDOVER_API_ENDPOINTS = {
     `/api/engagements/${engagementId}/handover/commitments/${commitmentId}/realistic`,
 } as const;
 
+export const MAX_FREE_TEXT_LENGTH = 2000;
 export const HANDOVER_SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
 export const HANDOVER_TIMELINE_UNITS = ['Days', 'Weeks', 'Months'] as const;
 

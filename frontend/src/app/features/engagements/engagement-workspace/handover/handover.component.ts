@@ -17,7 +17,7 @@ import { AuthService } from '@shared/services/auth';
 import { KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
 import { EngagementInfoDto } from '../../models/engagement.model';
 import { DialogService } from '@common/services/dialog/dialog.service';
-import { AddCommitmentDialogComponent, AddCommitmentDialogData } from './dialogs/add-commitment-dialog/add-commitment-dialog.component';
+import { AddCommitmentDialogComponent } from './dialogs/add-commitment-dialog/add-commitment-dialog.component';
 import {
   HANDOVER_MESSAGES,
   HANDOVER_SENTIMENT_OPTIONS,
@@ -25,6 +25,7 @@ import {
   HANDOVER_LABELS,
   HANDOVER_PLACEHOLDERS,
   HANDOVER_BUTTONS,
+  MAX_FREE_TEXT_LENGTH,
 } from '@shared/constants/handover.constants';
 import {
   HandoverInfoDto,
@@ -33,7 +34,8 @@ import {
   UpdateCommitmentRequest,
   CreateRealisticCommitmentRequest,
   UpdateRealisticCommitmentRequest,
-  CommitmentDto
+  CommitmentDto,
+  AddCommitmentDialogData
 } from '../../models/handover.model';
 import { HandoverReadinessItemDto } from '../../models/handover-readiness.model';
 import { AlertComponent } from '@common/components/alert/alert';
@@ -50,8 +52,6 @@ import { LoadingSpinnerComponent } from '@common/components/loading-spinner/load
 
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { HandoverReadinessComponent } from './handover-readiness/handover-readiness.component';
-
-const MAX_FREE_TEXT_LENGTH = 2000;
 
 function timelinesMatch(timeline1: number, unit1: string, timeline2: number, unit2: string): boolean {
   return timeline1 === timeline2 && unit1 === unit2;
@@ -144,7 +144,6 @@ export class HandoverComponent {
     if (!r) return false;
     return (
       r.handoverFieldsPassed >= r.handoverFieldsApplicable &&
-      r.commitmentsPassed >= r.commitmentsApplicable &&
       this.isReadinessChecklistComplete()
     );
   });
@@ -212,7 +211,7 @@ export class HandoverComponent {
     label: t.name
   }));
 
-  isSubmitted = computed(() => this.handover()?.status === 'Submitted');
+  isSubmitted = computed(() => this.handover()?.status?.toLowerCase() === 'submitted');
   hasHandoverDraft = computed(() => !!this.handover()?.handoverId);
   newCommitmentTouched = signal(false);
 

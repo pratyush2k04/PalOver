@@ -4,10 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
-
-export interface AddHandoverItemDialogResult {
-  name: string;
-}
+import { AddHandoverItemDialogResult } from '@features/engagements/models/handover-readiness.model';
 
 @Component({
   selector: 'app-add-handover-item-dialog',

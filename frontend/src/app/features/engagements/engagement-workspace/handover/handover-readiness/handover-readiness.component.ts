@@ -2,7 +2,13 @@ import { Component, OnInit, inject, input, output, signal, computed } from '@ang
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HandoverReadinessService } from '../../../services/handover-readiness.service';
-import { HandoverReadinessItemDto, HandoverReadinessStatus } from '../../../models/handover-readiness.model';
+import {
+  HandoverReadinessItemDto,
+  HandoverReadinessStatus,
+  AddHandoverItemDialogResult,
+  BlockHandoverItemDialogData,
+  BlockHandoverItemDialogResult,
+} from '../../../models/handover-readiness.model';
 import { AuthService } from '@shared/services/auth';
 import { ToastService } from '@common/services/toast/toast';
 import { DialogService } from '@common/services/dialog/dialog.service';
@@ -10,8 +16,8 @@ import { ButtonComponent } from '@common/components/button/button';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
-import { AddHandoverItemDialogComponent, AddHandoverItemDialogResult } from './dialogs/add-handover-item-dialog/add-handover-item-dialog.component';
-import { BlockHandoverItemDialogComponent, BlockHandoverItemDialogData, BlockHandoverItemDialogResult } from './dialogs/block-handover-item-dialog/block-handover-item-dialog.component';
+import { AddHandoverItemDialogComponent } from './dialogs/add-handover-item-dialog/add-handover-item-dialog.component';
+import { BlockHandoverItemDialogComponent } from './dialogs/block-handover-item-dialog/block-handover-item-dialog.component';
 
 @Component({
   selector: 'app-handover-readiness',
@@ -34,6 +40,7 @@ export class HandoverReadinessComponent implements OnInit {
   private dialogService = inject(DialogService);
 
   readonly engagementId = input.required<number>();
+  readonly isSubmitted = input<boolean>(false);
   readonly itemsUpdated = output<HandoverReadinessItemDto[]>();
 
   items = signal<HandoverReadinessItemDto[]>([]);

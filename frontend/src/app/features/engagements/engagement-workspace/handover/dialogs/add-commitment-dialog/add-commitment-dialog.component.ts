@@ -9,7 +9,7 @@ import { InputComponent } from '@common/components/form/input/input';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { HandoverService } from '../../../../services/handover.service';
-import { CommitmentDto, CreateCommitmentRequest } from '../../../../models/handover.model';
+import { CommitmentDto, CreateCommitmentRequest, AddCommitmentDialogData } from '../../../../models/handover.model';
 import {
   HANDOVER_LABELS,
   HANDOVER_PLACEHOLDERS,
@@ -17,11 +17,6 @@ import {
   HANDOVER_MESSAGES,
   HANDOVER_TIMELINE_UNITS,
 } from '@shared/constants/handover.constants';
-
-export interface AddCommitmentDialogData {
-  engagementId: number;
-  commitment?: CommitmentDto;
-}
 
 @Component({
   selector: 'app-add-commitment-dialog',
@@ -118,3 +113,4 @@ export class AddCommitmentDialogComponent {
     });
   }
 }
+
