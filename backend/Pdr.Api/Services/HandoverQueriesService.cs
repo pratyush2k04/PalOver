@@ -18,7 +18,6 @@ public class HandoverQueriesService : IHandoverQueriesService
     private readonly IHandoverQueryRepository _queryRepository;
     private readonly IHandoverQueryQuestionRepository _questionRepository;
     private readonly IHandoverQueryResponseRepository _responseRepository;
-    private readonly IUserRepository _userRepository;
     private readonly IAuditLogService _auditLogService;
     private readonly INotificationService _notificationService;
 
@@ -28,7 +27,6 @@ public class HandoverQueriesService : IHandoverQueriesService
         IHandoverQueryRepository queryRepository,
         IHandoverQueryQuestionRepository questionRepository,
         IHandoverQueryResponseRepository responseRepository,
-        IUserRepository userRepository,
         IAuditLogService auditLogService,
         INotificationService notificationService)
     {
@@ -37,7 +35,6 @@ public class HandoverQueriesService : IHandoverQueriesService
         _queryRepository = queryRepository;
         _questionRepository = questionRepository;
         _responseRepository = responseRepository;
-        _userRepository = userRepository;
         _auditLogService = auditLogService;
         _notificationService = notificationService;
     }
@@ -82,6 +79,7 @@ public class HandoverQueriesService : IHandoverQueriesService
             HandoverId = handover.HandoverId,
             FieldSectionId = (int)fieldSection,
             ReferenceId = request.ReferenceId,
+            RaisedByUserId = int.Parse(userIdStr),
             CreatedBy = userIdStr,
             UpdatedBy = userIdStr
         };
@@ -142,6 +140,10 @@ public class HandoverQueriesService : IHandoverQueriesService
         };
         await _responseRepository.AddAsync(response);
         await _responseRepository.SaveChangesAsync();
+
+        query.RespondedByUserId = int.Parse(userIdStr);
+        query.UpdatedBy = userIdStr;
+        await _queryRepository.SaveChangesAsync();
 
         var actorUserId = int.Parse(userIdStr);
         await _auditLogService.LogAsync(
@@ -208,33 +210,10 @@ public class HandoverQueriesService : IHandoverQueriesService
         var questionsByQueryId = await _questionRepository.GetByQueryIdsAsync(queryIds);
         var responsesByQueryId = await _responseRepository.GetByQueryIdsAsync(queryIds);
 
-        var actorIds = questionsByQueryId.Values.Select(q => q.CreatedBy)
-            .Concat(responsesByQueryId.Values.Select(r => r.CreatedBy))
-            .Where(id => id != null)
-            .Select(id => int.TryParse(id, out var parsed) ? parsed : (int?)null)
-            .Where(id => id.HasValue)
-            .Select(id => id!.Value)
-            .Distinct()
-            .ToList();
-
-        var actors = await _userRepository.GetByIdsAsync(actorIds);
-        var actorsById = actors.ToDictionary(u => u.Id);
-
-        (string Name, string? Role) ResolveActor(string? actorIdStr)
-        {
-            if (actorIdStr != null && int.TryParse(actorIdStr, out var id) && actorsById.TryGetValue(id, out var user))
-                return (user.FullName, user.Role?.Name);
-
-            return (actorIdStr ?? string.Empty, null);
-        }
-
         return queries.Select(q =>
         {
             questionsByQueryId.TryGetValue(q.QueryId, out var question);
             responsesByQueryId.TryGetValue(q.QueryId, out var response);
-
-            var raisedBy = ResolveActor(question?.CreatedBy);
-            var respondedBy = response != null ? ResolveActor(response.CreatedBy) : ((string, string?)?)null;
 
             return new HandoverQueryDto
             {
@@ -243,12 +222,10 @@ public class HandoverQueriesService : IHandoverQueriesService
                 FieldSection = q.FieldSection.Name,
                 ReferenceId = q.ReferenceId,
                 Question = question?.QuestionText ?? string.Empty,
-                RaisedByName = raisedBy.Name,
-                RaisedByRole = raisedBy.Role,
+                RaisedByName = q.RaisedByUser.FullName,
                 RaisedAt = question?.CreatedAt ?? q.CreatedAt,
                 ResponseText = response?.ResponseText,
-                RespondedByName = respondedBy?.Item1,
-                RespondedByRole = respondedBy?.Item2,
+                RespondedByName = q.RespondedByUser?.FullName,
                 RespondedAt = response?.CreatedAt,
                 IsResolved = q.IsResolved,
                 ResolvedByName = q.ResolvedByUser?.FullName,
