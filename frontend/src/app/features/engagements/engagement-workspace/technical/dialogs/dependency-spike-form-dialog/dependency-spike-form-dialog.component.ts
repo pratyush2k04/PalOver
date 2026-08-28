@@ -8,6 +8,7 @@ import { InputComponent } from '@common/components/form/input/input';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { ToastService } from '@common/services/toast/toast';
+import { AuthService } from '@shared/services/auth';
 import { DependencySpikeService } from '../../../../services/dependency-spike.service';
 import {
   DependencySpikeDto,
@@ -41,6 +42,7 @@ export class DependencySpikeFormDialogComponent implements OnInit {
   readonly data = inject<DependencySpikeDialogData>(DIALOG_DATA);
   private spikeService = inject(DependencySpikeService);
   private toastService = inject(ToastService);
+  private authService = inject(AuthService);
 
   isSubmitting = signal(false);
   form!: FormGroup;
@@ -90,12 +92,14 @@ export class DependencySpikeFormDialogComponent implements OnInit {
 
     this.isSubmitting.set(true);
     const formValue = this.form.value;
+    const currentUserId = this.authService.getUserId() ?? undefined;
 
     const payload: CreateDependencySpikeRequest | UpdateDependencySpikeRequest = {
       dependencyName: formValue.dependencyName.trim(),
       objective: formValue.objective.trim(),
       status: Number(formValue.status),
-      outcomeFindings: formValue.outcomeFindings?.trim() || null
+      outcomeFindings: formValue.outcomeFindings?.trim() || null,
+      ownerId: this.isEditMode ? undefined : currentUserId
     };
 
     if (this.isEditMode && this.data.spike?.id) {
