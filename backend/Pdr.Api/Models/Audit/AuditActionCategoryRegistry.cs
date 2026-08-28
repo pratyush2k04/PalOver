@@ -6,6 +6,8 @@ public static class AuditActionCategoryRegistry
     {
         [AuditActionEnum.DocumentVersioned] = AuditCategoryEnum.Document,
         [AuditActionEnum.DocumentUploaded] = AuditCategoryEnum.Document,
+        [AuditActionEnum.DocumentDeleted] = AuditCategoryEnum.Document,
+        [AuditActionEnum.DocumentVisibilityChanged] = AuditCategoryEnum.Document,
         [AuditActionEnum.MasterChecklistPublished] = AuditCategoryEnum.Checklist,
         [AuditActionEnum.UnauthorizedAccess] = AuditCategoryEnum.Access,
         [AuditActionEnum.AccountLockout] = AuditCategoryEnum.Access,
