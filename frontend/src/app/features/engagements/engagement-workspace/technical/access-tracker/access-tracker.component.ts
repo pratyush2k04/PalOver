@@ -117,14 +117,14 @@ export class AccessTrackerComponent {
     if (newStatusNum === AccessItemStatus.Blocked) {
       // Temporarily revert select dropdown display until block reason confirmed
       selectElement.value = this.getStatusNumericValue(item.status).toString();
-      this.openBlockDialog(item);
+      this.openBlockDialog(item, selectElement);
       return;
     }
 
-    this.updateStatus(item, newStatusNum);
+    this.updateStatus(item, newStatusNum, selectElement);
   }
 
-  private openBlockDialog(item: AccessItemDto): void {
+  private openBlockDialog(item: AccessItemDto, selectElement?: HTMLSelectElement): void {
     const dialogRef = this.dialog.open<BlockAccessItemDialogComponent, BlockAccessItemDialogData, BlockAccessItemDialogResult>(
       BlockAccessItemDialogComponent,
       { data: { itemName: item.name, currentReason: item.blockReason }, disableClose: true }
@@ -132,11 +132,11 @@ export class AccessTrackerComponent {
 
     dialogRef.closed$.subscribe((result) => {
       if (!result) return;
-      this.updateStatus(item, AccessItemStatus.Blocked, result.reason);
+      this.updateStatus(item, AccessItemStatus.Blocked, selectElement, result.reason);
     });
   }
 
-  private updateStatus(item: AccessItemDto, newStatusNum: AccessItemStatus, blockReason?: string) {
+  private updateStatus(item: AccessItemDto, newStatusNum: AccessItemStatus, selectElement?: HTMLSelectElement, blockReason?: string) {
     const statusTextMap: Record<number, string> = {
       [AccessItemStatus.InProgress]: 'InProgress',
       [AccessItemStatus.Granted]: 'Granted',
@@ -161,19 +161,11 @@ export class AccessTrackerComponent {
       },
       error: (err) => {
         this.toastService.error(`Failed to update status for ${item.name}`);
-        console.warn('API update status failed, updating local state for testing', err);
-        const updatedList = this.accessItems().map(i => {
-          if (i.id === item.id) {
-            return {
-              ...i,
-              status: statusTextMap[newStatusNum] || 'InProgress',
-              blockReason: newStatusNum === AccessItemStatus.Blocked ? blockReason : undefined
-            };
-          }
-          return i;
-        });
-        this.accessItems.set(updatedList);
-        this.itemsUpdated.emit(updatedList);
+        
+        // Revert the dropdown UI back to its original state
+        if (selectElement) {
+          selectElement.value = this.getStatusNumericValue(item.status).toString();
+        }
       }
     });
   }
