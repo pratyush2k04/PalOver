@@ -30,5 +30,7 @@ public enum AuditActionEnum
     KickoffReadyMarked = 26,
     KickoffReadyReverted = 27,
     AccessItemBlocked = 28,
-    ReadinessOnePagerGenerated = 29
+    ReadinessOnePagerGenerated = 29,
+    DocumentDeleted = 30,
+    DocumentVisibilityChanged = 31
 }

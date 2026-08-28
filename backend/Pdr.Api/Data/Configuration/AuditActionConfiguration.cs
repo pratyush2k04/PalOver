@@ -200,6 +200,18 @@ public class AuditActionConfiguration : IEntityTypeConfiguration<AuditAction>
                 Id = (int)AuditActionEnum.ReadinessOnePagerGenerated,
                 Action = AuditActionEnum.ReadinessOnePagerGenerated.ToString(),
                 Details = "Kickoff-readiness one-pager generated for engagement {engagementName} by {actorName}"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.DocumentDeleted,
+                Action = AuditActionEnum.DocumentDeleted.ToString(),
+                Details = "Document {documentName} removed by {actorName} ({reason})"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.DocumentVisibilityChanged,
+                Action = AuditActionEnum.DocumentVisibilityChanged.ToString(),
+                Details = "Document {documentName} visibility changed to {visibility} by {actorName}"
             });
     }
 }
