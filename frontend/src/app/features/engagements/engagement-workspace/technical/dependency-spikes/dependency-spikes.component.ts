@@ -1,5 +1,5 @@
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
-import { Component, OnInit, inject, input, signal, computed, effect } from '@angular/core';
+import { Component, OnInit, inject, input, signal, computed, effect, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { TooltipDirective } from '@common/directives/tooltip.directive';
@@ -45,6 +45,7 @@ import {
 })
 export class DependencySpikesComponent implements OnInit {
   engagementId = input.required<number>();
+  itemsUpdated = output<DependencySpikeDto[]>();
 
   private spikeService = inject(DependencySpikeService);
   private toastService = inject(ToastService);
@@ -65,6 +66,10 @@ export class DependencySpikesComponent implements OnInit {
       if (id) {
         this.loadSpikes(id);
       }
+    });
+
+    effect(() => {
+      this.itemsUpdated.emit(this.spikes());
     });
   }
 

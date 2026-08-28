@@ -40,10 +40,16 @@ public class ArchitectureValidationRepository(AppDbContext context) : IArchitect
             return 0m;
         }
 
-        var commitments = await context.Commitments
-            .AsNoTracking()
-            .Where(c => c.HandoverId == handover.HandoverId)
-            .ToListAsync();
+        var commitments = await (
+            from c in context.Commitments.AsNoTracking().Where(c => c.HandoverId == handover.HandoverId)
+            join rc in context.RealisticCommitments.AsNoTracking() on c.CommitmentId equals rc.CommitmentId into rcGroup
+            from rc in rcGroup.DefaultIfEmpty()
+            select new
+            {
+                Timeline = rc != null ? rc.Timeline : c.Timeline,
+                TimelineUnit = rc != null ? rc.TimelineUnit : c.TimelineUnit
+            }
+        ).ToListAsync();
 
         if (commitments.Count == 0)
         {
