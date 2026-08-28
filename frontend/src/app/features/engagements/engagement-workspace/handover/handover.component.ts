@@ -213,6 +213,10 @@ export class HandoverComponent {
     label: t.name
   }));
 
+  isDraft = computed(() => {
+    const status = this.handover()?.status?.toLowerCase();
+    return !status || status === 'draft';
+  });
   isSubmitted = computed(() => this.handover()?.status?.toLowerCase() === 'submitted');
   isReviewed = computed(() => this.handover()?.status === 'Reviewed');
   hasBeenSubmitted = computed(() => this.isSubmitted() || this.isReviewed());
