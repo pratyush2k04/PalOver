@@ -113,12 +113,12 @@ export class HandoverQueriesComponent {
 
   submitResponse(query: HandoverQueryDto): void {
     const id = this.engagementId();
-    const responseText = this.responseDraft(query.queryId).trim();
+    const responseText = this.responseDraft(query.id).trim();
     if (!responseText) return;
 
-    this.handoverQueryService.respondToQuery(id, query.queryId, { responseText }).subscribe({
+    this.handoverQueryService.respondToQuery(id, query.id, { responseText }).subscribe({
       next: (updated) => {
-        this.queries.update((qs) => qs.map((q) => (q.queryId === updated.queryId ? updated : q)));
+        this.queries.update((qs) => qs.map((q) => (q.id === updated.id ? updated : q)));
         this.showMessage('Response submitted.', false);
       },
       error: (err) => this.showMessage(this.extractErrorMessage(err, 'Failed to submit response.'), true),
@@ -126,20 +126,20 @@ export class HandoverQueriesComponent {
   }
 
   toggleResolve(query: HandoverQueryDto): void {
-    if (this.pendingResolutionToggles().has(query.queryId)) return;
+    if (this.pendingResolutionToggles().has(query.id)) return;
 
     const id = this.engagementId();
-    this.pendingResolutionToggles.update((s) => new Set(s).add(query.queryId));
+    this.pendingResolutionToggles.update((s) => new Set(s).add(query.id));
 
-    this.handoverQueryService.toggleQueryResolution(id, query.queryId).subscribe({
+    this.handoverQueryService.toggleQueryResolution(id, query.id).subscribe({
       next: (updated) => {
-        this.queries.update((qs) => qs.map((q) => (q.queryId === updated.queryId ? updated : q)));
+        this.queries.update((qs) => qs.map((q) => (q.id === updated.id ? updated : q)));
       },
       error: (err) => this.showMessage(this.extractErrorMessage(err, 'Failed to update query.'), true),
       complete: () => {
         this.pendingResolutionToggles.update((s) => {
           const next = new Set(s);
-          next.delete(query.queryId);
+          next.delete(query.id);
           return next;
         });
       },

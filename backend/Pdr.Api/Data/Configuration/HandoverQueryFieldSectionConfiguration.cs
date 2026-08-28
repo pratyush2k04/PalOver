@@ -13,17 +13,17 @@ public class HandoverQueryFieldSectionConfiguration : IEntityTypeConfiguration<H
     {
         builder.ToTable("handover_query_field_sections");
 
-        builder.HasKey(s => s.HandoverQueryFieldSectionId);
-        builder.Property(s => s.HandoverQueryFieldSectionId).HasColumnName("handover_query_field_section_id").UseIdentityAlwaysColumn();
+        builder.HasKey(s => s.Id);
+        builder.Property(s => s.Id).HasColumnName("id").UseIdentityAlwaysColumn();
 
         builder.Property(s => s.Name).HasColumnName("name").HasMaxLength(50).IsRequired();
 
         builder.HasData(
-            new HandoverQueryFieldSection { HandoverQueryFieldSectionId = (int)HandoverQueryFieldSectionEnum.ClientBackground, Name = HandoverQueryFieldSectionNames.ClientBackground },
-            new HandoverQueryFieldSection { HandoverQueryFieldSectionId = (int)HandoverQueryFieldSectionEnum.BusinessProblem, Name = HandoverQueryFieldSectionNames.BusinessProblem },
-            new HandoverQueryFieldSection { HandoverQueryFieldSectionId = (int)HandoverQueryFieldSectionEnum.ClientSentiment, Name = HandoverQueryFieldSectionNames.ClientSentiment },
-            new HandoverQueryFieldSection { HandoverQueryFieldSectionId = (int)HandoverQueryFieldSectionEnum.DealOrigin, Name = HandoverQueryFieldSectionNames.DealOrigin },
-            new HandoverQueryFieldSection { HandoverQueryFieldSectionId = (int)HandoverQueryFieldSectionEnum.Commitment, Name = HandoverQueryFieldSectionNames.Commitment }
+            new HandoverQueryFieldSection { Id = (int)HandoverQueryFieldSectionEnum.ClientBackground, Name = HandoverQueryFieldSectionNames.ClientBackground },
+            new HandoverQueryFieldSection { Id = (int)HandoverQueryFieldSectionEnum.BusinessProblem, Name = HandoverQueryFieldSectionNames.BusinessProblem },
+            new HandoverQueryFieldSection { Id = (int)HandoverQueryFieldSectionEnum.ClientSentiment, Name = HandoverQueryFieldSectionNames.ClientSentiment },
+            new HandoverQueryFieldSection { Id = (int)HandoverQueryFieldSectionEnum.DealOrigin, Name = HandoverQueryFieldSectionNames.DealOrigin },
+            new HandoverQueryFieldSection { Id = (int)HandoverQueryFieldSectionEnum.Commitment, Name = HandoverQueryFieldSectionNames.Commitment }
         );
     }
 }

@@ -15,7 +15,7 @@ export const HANDOVER_SECTION_FRAGMENT_IDS: Record<HandoverQueryFieldSection, st
 };
 
 export interface HandoverQueryDto {
-  queryId: number;
+  id: number;
   handoverId: number;
   fieldSection: HandoverQueryFieldSection;
   referenceId?: number;

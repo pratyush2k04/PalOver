@@ -4,7 +4,7 @@ namespace Pdr.Api.Models.Handover;
 
 public class HandoverQuery : BaseAuditableEntity
 {
-    public int QueryId { get; set; }
+    public int Id { get; set; }
 
     public int HandoverId { get; set; }
 

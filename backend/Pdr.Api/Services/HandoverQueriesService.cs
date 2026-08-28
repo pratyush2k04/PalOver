@@ -88,7 +88,7 @@ public class HandoverQueriesService : IHandoverQueriesService
 
         var question = new HandoverQueryQuestion
         {
-            QueryId = query.QueryId,
+            QueryId = query.Id,
             QuestionText = request.Question,
             CreatedBy = userIdStr,
             UpdatedBy = userIdStr
@@ -101,7 +101,7 @@ public class HandoverQueriesService : IHandoverQueriesService
             AuditActionEnum.HandoverQueryRaised,
             new Dictionary<string, object?>
             {
-                ["QueryId"] = query.QueryId,
+                ["QueryId"] = query.Id,
                 ["HandoverId"] = handover.HandoverId,
                 ["EngagementId"] = engagementId,
                 ["ActorUserId"] = actorUserId
@@ -113,10 +113,10 @@ public class HandoverQueriesService : IHandoverQueriesService
             engagementId,
             RoleEnum.PreSales,
             JsonSerializer.Serialize(new HandoverQueryRaisedMapper.HandoverQueryRaisedData(
-                QueryId: query.QueryId, HandoverId: handover.HandoverId, TriggerUserId: actorUserId, EngagementId: engagementId)),
+                QueryId: query.Id, HandoverId: handover.HandoverId, TriggerUserId: actorUserId, EngagementId: engagementId)),
             DateTime.UtcNow);
 
-        return await GetSingleDtoOrThrowAsync(engagementId, query.QueryId);
+        return await GetSingleDtoOrThrowAsync(engagementId, query.Id);
     }
 
     public async Task<HandoverQueryDto> RespondToQueryAsync(int engagementId, int queryId, RespondHandoverQueryRequest request, string userIdStr)
@@ -201,23 +201,23 @@ public class HandoverQueriesService : IHandoverQueriesService
     private async Task<HandoverQueryDto> GetSingleDtoOrThrowAsync(int engagementId, int queryId)
     {
         var dtos = await GetQueriesAsync(engagementId);
-        return dtos.First(d => d.QueryId == queryId);
+        return dtos.First(d => d.Id == queryId);
     }
 
     private async Task<List<HandoverQueryDto>> MapToDtosAsync(List<HandoverQuery> queries)
     {
-        var queryIds = queries.Select(q => q.QueryId).ToList();
+        var queryIds = queries.Select(q => q.Id).ToList();
         var questionsByQueryId = await _questionRepository.GetByQueryIdsAsync(queryIds);
         var responsesByQueryId = await _responseRepository.GetByQueryIdsAsync(queryIds);
 
         return queries.Select(q =>
         {
-            questionsByQueryId.TryGetValue(q.QueryId, out var question);
-            responsesByQueryId.TryGetValue(q.QueryId, out var response);
+            questionsByQueryId.TryGetValue(q.Id, out var question);
+            responsesByQueryId.TryGetValue(q.Id, out var response);
 
             return new HandoverQueryDto
             {
-                QueryId = q.QueryId,
+                Id = q.Id,
                 HandoverId = q.HandoverId,
                 FieldSection = q.FieldSection.Name,
                 ReferenceId = q.ReferenceId,

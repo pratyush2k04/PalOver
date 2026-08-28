@@ -2,7 +2,7 @@ namespace Pdr.Api.DTOs.Handovers;
 
 public class HandoverQueryDto
 {
-    public int QueryId { get; set; }
+    public int Id { get; set; }
     public int HandoverId { get; set; }
     public string FieldSection { get; set; } = string.Empty;
     public int? ReferenceId { get; set; }

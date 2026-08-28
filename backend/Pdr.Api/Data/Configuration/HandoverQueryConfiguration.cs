@@ -11,8 +11,8 @@ public class HandoverQueryConfiguration : IEntityTypeConfiguration<HandoverQuery
     {
         builder.ToTable("handover_queries");
 
-        builder.HasKey(q => q.QueryId);
-        builder.Property(q => q.QueryId).HasColumnName("query_id").UseIdentityAlwaysColumn();
+        builder.HasKey(q => q.Id);
+        builder.Property(q => q.Id).HasColumnName("id").UseIdentityAlwaysColumn();
 
         builder.Property(q => q.HandoverId).HasColumnName("handover_id").IsRequired();
         builder.Property(q => q.FieldSectionId).HasColumnName("field_section_id").IsRequired();

@@ -3145,12 +3145,12 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.Handover.HandoverQuery", b =>
                 {
-                    b.Property<int>("QueryId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("query_id");
+                        .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("QueryId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -3214,7 +3214,7 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("updated_by");
 
-                    b.HasKey("QueryId");
+                    b.HasKey("Id");
 
                     b.HasIndex("FieldSectionId");
 
@@ -3231,12 +3231,12 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.Handover.HandoverQueryFieldSection", b =>
                 {
-                    b.Property<int>("HandoverQueryFieldSectionId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("handover_query_field_section_id");
+                        .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("HandoverQueryFieldSectionId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -3244,34 +3244,34 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("name");
 
-                    b.HasKey("HandoverQueryFieldSectionId");
+                    b.HasKey("Id");
 
                     b.ToTable("handover_query_field_sections", (string)null);
 
                     b.HasData(
                         new
                         {
-                            HandoverQueryFieldSectionId = 1,
+                            Id = 1,
                             Name = "ClientBackground"
                         },
                         new
                         {
-                            HandoverQueryFieldSectionId = 2,
+                            Id = 2,
                             Name = "BusinessProblem"
                         },
                         new
                         {
-                            HandoverQueryFieldSectionId = 3,
+                            Id = 3,
                             Name = "ClientSentiment"
                         },
                         new
                         {
-                            HandoverQueryFieldSectionId = 4,
+                            Id = 4,
                             Name = "DealOrigin"
                         },
                         new
                         {
-                            HandoverQueryFieldSectionId = 5,
+                            Id = 5,
                             Name = "Commitment"
                         });
                 });

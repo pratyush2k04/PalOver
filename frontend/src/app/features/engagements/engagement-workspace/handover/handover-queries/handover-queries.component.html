@@ -49,17 +49,17 @@
     <ng-template #noResponse>
       <div class="query-response-form" *ngIf="isPreSales()">
         <app-textarea
-          [id]="'response-' + query.queryId"
+          [id]="'response-' + query.id"
           placeholder="Type your response..."
           [rows]="2"
-          [ngModel]="responseDraft(query.queryId)"
-          (ngModelChange)="updateResponseDraft(query.queryId, $event)"
+          [ngModel]="responseDraft(query.id)"
+          (ngModelChange)="updateResponseDraft(query.id, $event)"
           [ngModelOptions]="{ standalone: true }"
         />
         <app-button
           variant="flat"
           size="sm"
-          [disabled]="!responseDraft(query.queryId).trim()"
+          [disabled]="!responseDraft(query.id).trim()"
           (click)="submitResponse(query)"
         >
           Submit Response
@@ -72,7 +72,7 @@
       <app-button
         variant="stroked"
         size="sm"
-        [disabled]="pendingResolutionToggles().has(query.queryId) || (!query.isResolved && !query.responseText)"
+        [disabled]="pendingResolutionToggles().has(query.id) || (!query.isResolved && !query.responseText)"
         [title]="!query.isResolved && !query.responseText ? 'Awaiting a response before this can be resolved' : ''"
         (click)="toggleResolve(query)"
       >
