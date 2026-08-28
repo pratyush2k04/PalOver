@@ -1,6 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 import {
   CommercialModelOption,
   EngagementInfo,
@@ -30,6 +30,9 @@ export interface EngagementOpenItemsSummary {
 export class EngagementService {
   private http = inject(HttpClient);
 
+  private ownersState = signal<EngagementOwners | null>(null);
+  readonly owners = this.ownersState.asReadonly();
+
   markSowSigned(request: MarkSowSignedRequest): Observable<MarkSowSignedResponse> {
     return this.http.post<MarkSowSignedResponse>(ENGAGEMENT_API_ENDPOINTS.MARK_SOW_SIGNED, request);
   }
@@ -51,7 +54,9 @@ export class EngagementService {
   }
 
   getEngagementOwners(id: number): Observable<EngagementOwners> {
-    return this.http.get<EngagementOwners>(ENGAGEMENT_API_ENDPOINTS.ENGAGEMENT_OWNERS(id));
+    return this.http
+      .get<EngagementOwners>(ENGAGEMENT_API_ENDPOINTS.ENGAGEMENT_OWNERS(id))
+      .pipe(tap((owners) => this.ownersState.set(owners)));
   }
 
   getEngagementUsers(id: number): Observable<any[]> {
@@ -59,11 +64,15 @@ export class EngagementService {
   }
 
   assignProjectManager(id: number, userId: number): Observable<EngagementOwners> {
-    return this.http.put<EngagementOwners>(ENGAGEMENT_API_ENDPOINTS.ASSIGN_PROJECT_MANAGER(id), { userId });
+    return this.http
+      .put<EngagementOwners>(ENGAGEMENT_API_ENDPOINTS.ASSIGN_PROJECT_MANAGER(id), { userId })
+      .pipe(tap((owners) => this.ownersState.set(owners)));
   }
 
   assignTechLead(id: number, userId: number): Observable<EngagementOwners> {
-    return this.http.put<EngagementOwners>(ENGAGEMENT_API_ENDPOINTS.ASSIGN_TECH_LEAD(id), { userId });
+    return this.http
+      .put<EngagementOwners>(ENGAGEMENT_API_ENDPOINTS.ASSIGN_TECH_LEAD(id), { userId })
+      .pipe(tap((owners) => this.ownersState.set(owners)));
   }
 
   getMyEngagements(sortBy: EngagementSortBy = 'kickoff'): Observable<EngagementListResponse> {

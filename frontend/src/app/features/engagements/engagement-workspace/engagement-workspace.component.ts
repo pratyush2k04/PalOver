@@ -11,7 +11,7 @@ import { ToastService } from '@common/services/toast/toast';
 import { LoaderService } from '@shared/services/loader.service';
 import { ENGAGEMENT_WORKSPACE_CONFIG } from '@shared/constants/engagements.constants';
 import { USER_ROLES } from '@shared/constants/users.constants';
-import { DayOneSignOffRequest, EngagementInfoDto, EngagementOwners } from '../models/engagement.model';
+import { DayOneSignOffRequest, EngagementInfoDto } from '../models/engagement.model';
 import { ENGAGEMENT_ROUTES } from '@shared/constants/routes.constants';
 import { TabItem, TabsComponent } from '@common/components/tabs/tabs';
 import { ReadinessCircleComponent } from '@shared/readiness-circle/readiness-circle';
@@ -57,7 +57,7 @@ export class EngagementWorkspaceComponent {
 
   engagement = signal<EngagementInfoDto | null>(null);
   readiness = this.kickoffReadinessService.readiness;
-  owners = signal<EngagementOwners | null>(null);
+  readonly owners = this.engagementService.owners;
   isLoading = signal<boolean>(true);
 
   readonly isAuthorizedForSignOff = computed(() => {
@@ -155,8 +155,7 @@ export class EngagementWorkspaceComponent {
     this.kickoffReadinessService.track(id);
 
     this.engagementService.getEngagementOwners(id).subscribe({
-      next: (owners) => this.owners.set(owners),
-      error: () => this.owners.set(null)
+      error: () => {}
     });
   }
 
