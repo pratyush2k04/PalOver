@@ -13,7 +13,7 @@ using Pdr.Api.Data;
 namespace Pdr.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260827071002_AddHandoverReadinessTable")]
+    [Migration("20260828023453_AddHandoverReadinessTable")]
     partial class AddHandoverReadinessTable
     {
         /// <inheritdoc />
@@ -5077,6 +5077,32 @@ namespace Pdr.Api.Migrations
                             Key = "PresalesCommitmentAdded",
                             LinkPattern = "/engagements/{EngagementId}/workspace/handover",
                             Title = "New Presales Commitment — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Body = "There are {Count} presales commitments on engagement {EngagementName} that need realistic estimates.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 3,
+                            IsDeleted = false,
+                            Key = "PendingCommitmentsSummary",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/handover",
+                            Title = "Action Required: {Count} commitments require your review",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Body = "Technical readiness has reached 100% for {EngagementName}. You can now proceed with Day 1 sign-off.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 3,
+                            IsDeleted = false,
+                            Key = "TechnicalReadinessComplete",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/overview",
+                            Title = "Technical Readiness 100% — {EngagementName}",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
