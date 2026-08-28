@@ -12,6 +12,7 @@ import { BrownfieldReadinessResponse } from '@features/engagements/models/brownf
 import { ArchitectureValidationDto } from '@features/engagements/models/architecture-validation/architecture-validation.dtos';
 import { EngagementService } from '@features/engagements/services/engagement.service';
 import { EngagementInfoDto } from '@features/engagements/models/engagement.model';
+import { DependencySpikeDto, DependencySpikeStatus } from '@features/engagements/models/dependency-spikes/dependency-spike.model';
 import { AccessTrackerComponent } from './access-tracker/access-tracker.component';
 import { EnvironmentToolingComponent } from './environment-tooling/environment-tooling.component';
 import { BrownfieldReviewComponent } from './brownfield-review/brownfield-review.component';
@@ -130,6 +131,14 @@ export class TechnicalReadinessComponent {
   sizingRiskSummary = computed(() => this.architectureValidation()?.riskSummary ?? null);
   isArchitectureReady = computed(() => !this.isSizingRiskRaised());
 
+  // Dependency Spikes Readiness
+  dependencySpikes = signal<DependencySpikeDto[]>([]);
+  isDependencySpikesReady = computed(() => {
+    const spikes = this.dependencySpikes();
+    if (spikes.length === 0) return true;
+    return spikes.every(s => s.status === 'Passed' || +s.status === DependencySpikeStatus.Passed);
+  });
+
   // Total readiness check
   totalRequired = computed(() => this.accessTotalCount() + this.toolingTotalCount());
   totalReady = computed(() => this.accessGrantedCount() + this.toolingReadyCount());
@@ -138,7 +147,9 @@ export class TechnicalReadinessComponent {
     !this.hasBlockers() &&
     this.totalRequired() > 0 &&
     this.totalReady() === this.totalRequired() &&
-    this.isBrownfieldReady()
+    this.isBrownfieldReady() &&
+    this.isArchitectureReady() &&
+    this.isDependencySpikesReady()
   );
 
   onAccessItemsUpdated(items: AccessItemDto[]) {
@@ -155,6 +166,10 @@ export class TechnicalReadinessComponent {
 
   onArchitectureValidationUpdated(val: ArchitectureValidationDto) {
     this.architectureValidation.set(val);
+  }
+
+  onDependencySpikesUpdated(items: DependencySpikeDto[]) {
+    this.dependencySpikes.set(items);
   }
 
   shareSummary(): void {
