@@ -47,7 +47,11 @@
               <li>
                 <span class="gate-item-title">{{ gateItem.title }}</span>
                 <span class="gate-item-status-separator">&mdash;</span>
-                <span class="gate-item-status">{{ gateItem.status }}</span>
+                @if (gateItem.status === 'Blocked') {
+                  <app-status-badge tone="danger">Blocked</app-status-badge>
+                } @else {
+                  <app-status-badge tone="neutral">Incomplete</app-status-badge>
+                }
               </li>
             }
           </ul>
