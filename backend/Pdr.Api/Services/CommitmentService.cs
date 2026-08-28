@@ -1,14 +1,11 @@
 using System;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Handovers;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Handover;
-using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
-using Pdr.Api.Services.Notifications.Mappers;
 
 namespace Pdr.Api.Services;
 
@@ -16,16 +13,13 @@ public class CommitmentService : ICommitmentService
 {
     private readonly IHandoverRepository _handoverRepository;
     private readonly ICommitmentRepository _commitmentRepository;
-    private readonly INotificationService _notificationService;
 
     public CommitmentService(
         IHandoverRepository handoverRepository,
-        ICommitmentRepository commitmentRepository,
-        INotificationService notificationService)
+        ICommitmentRepository commitmentRepository)
     {
         _handoverRepository = handoverRepository;
         _commitmentRepository = commitmentRepository;
-        _notificationService = notificationService;
     }
 
     private async Task<HandoverInfo> GetHandoverOrThrowAsync(int engagementId)
@@ -67,17 +61,6 @@ public class CommitmentService : ICommitmentService
 
         await _commitmentRepository.AddAsync(commitment);
         await _commitmentRepository.SaveChangesAsync();
-
-        await _notificationService.CreateFromTemplateAsync(
-            NotificationConstants.TemplateKeys.PresalesCommitmentAdded,
-            engagementId,
-            RoleEnum.ProjectManagement,
-            JsonSerializer.Serialize(new PresalesCommitmentAddedMapper.PresalesCommitmentAddedPayload(
-                EngagementId: engagementId,
-                CommitmentId: commitment.CommitmentId,
-                CommitmentTitle: commitment.Title
-            )),
-            DateTime.UtcNow);
 
         return new CommitmentDto
         {

@@ -10,7 +10,8 @@ namespace Pdr.Api.Services;
 public class BrownfieldFindingService(
     IBrownfieldFindingRepository repository,
     IAuditLogService auditLogService,
-    ICurrentUserService currentUserService) : IBrownfieldFindingService
+    ICurrentUserService currentUserService,
+    ITechnicalReadinessNotificationService readinessNotificationService) : IBrownfieldFindingService
 {
     public async Task<BrownfieldReadinessResponse> GetFindingsByEngagementIdAsync(int engagementId)
     {
@@ -46,6 +47,8 @@ public class BrownfieldFindingService(
             throw new DocumentNotFoundException(request.DocumentId.Value);
         }
 
+        var wasReady = await readinessNotificationService.IsReadyAsync(engagementId);
+
         var finding = new BrownfieldFinding
         {
             EngagementId = engagementId,
@@ -73,6 +76,8 @@ public class BrownfieldFindingService(
             engagementId: engagementId,
             actingUserId: actorUserId > 0 ? actorUserId : null);
 
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(engagementId, wasReady);
+
         return MapToDto(created!);
     }
 
@@ -84,8 +89,12 @@ public class BrownfieldFindingService(
             throw new BrownfieldFindingNotFoundException(findingId);
         }
 
+        var wasReady = await readinessNotificationService.IsReadyAsync(finding.EngagementId);
+
         finding.ClientDecision = request.ClientDecision;
         await repository.SaveChangesAsync();
+
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(finding.EngagementId, wasReady);
 
         return MapToDto(finding);
     }
@@ -98,8 +107,12 @@ public class BrownfieldFindingService(
             throw new BrownfieldFindingNotFoundException(findingId);
         }
 
+        var wasReady = await readinessNotificationService.IsReadyAsync(finding.EngagementId);
+
         finding.IsDeleted = true;
         await repository.SaveChangesAsync();
+
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(finding.EngagementId, wasReady);
     }
 
     private static BrownfieldFindingDto MapToDto(BrownfieldFinding finding) =>

@@ -69,19 +69,14 @@
           </div>
 
           <div class="metric-item">
-            <span class="metric-label">Commitments acknowledged:</span>
-            <span class="metric-value">{{ r.commitmentsPassed }}/{{ r.commitmentsApplicable }}</span>
-          </div>
-
-          <div class="metric-item">
-            <span class="metric-label">Checklist items complete:</span>
-            <span class="metric-value">{{ r.checklistItemsPassed }}/{{ r.checklistItemsApplicable }}</span>
+            <span class="metric-label">Readiness Checklist:</span>
+            <span class="metric-value">{{ readinessItemsPassed() }}/{{ readinessItemsApplicable() }}</span>
           </div>
         </div>
       </div>
     }
 
-    @if (isPreSales()) {
+    @if (isPreSales() && !isSubmitted()) {
       <form [formGroup]="clientContextForm">
         <div class="section client-context">
           <h3>{{ HANDOVER_LABELS.CLIENT_CONTEXT }}</h3>
@@ -127,7 +122,7 @@
       </form>
     }
 
-    @if (!isPreSales()) {
+    @if (!isPreSales() || isSubmitted()) {
       <div class="section client-context client-context-readonly">
         <h3>{{ HANDOVER_LABELS.CLIENT_CONTEXT }}</h3>
 
@@ -296,7 +291,7 @@
                   <span class="square-label">{{ HANDOVER_LABELS.REALISTIC }}</span>
                   @if (
                     isProjectManagement() &&
-                    !isSubmitted() &&
+                    isSubmitted() &&
                     c.realisticCommitment &&
                     editingRealisticCommitmentId() !== c.commitmentId
                   ) {
@@ -357,7 +352,7 @@
                       commitmentNeedsAcknowledgement(c) &&
                       !c.realisticCommitment.acknowledgementMessage &&
                       isProjectManagement() &&
-                      !isSubmitted()
+                      isSubmitted()
                     ) {
                       <app-button
                         variant="warning"
@@ -368,15 +363,14 @@
                       </app-button>
                     }
                   } @else {
-                    @if (isProjectManagement() && !isSubmitted()) {
+                    @if (isProjectManagement() && isSubmitted()) {
                       <button
                         class="click-to-edit-placeholder"
                         (click)="startEditRealisticCommitment(c)"
                       >
                         {{ HANDOVER_LABELS.CLICK_TO_EDIT }}
                       </button>
-                    }
-                    @if (!isProjectManagement()) {
+                    } @else {
                       <p class="empty-state">{{ HANDOVER_LABELS.NOT_YET_PROVIDED }}</p>
                     }
                   }
@@ -448,11 +442,18 @@
         </div>
       }
     </div>
+    <!-- Handover Readiness Section -->
+    <app-handover-readiness
+      [engagementId]="engagementId()!"
+      [isSubmitted]="isSubmitted()"
+      (itemsUpdated)="onHandoverReadinessItemsUpdated($event)">
+    </app-handover-readiness>
 
     <!-- Client Contact Transition Section -->
     <app-client-contact-transition-card
       [engagementId]="engagementId()!"
       [clientName]="engagementInfo()?.clientName || ''"
+      [isSubmitted]="isSubmitted()"
       (onSaved)="onClientContactSaved()">
     </app-client-contact-transition-card>
 

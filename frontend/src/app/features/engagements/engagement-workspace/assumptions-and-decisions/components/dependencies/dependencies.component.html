@@ -47,8 +47,10 @@
                 }
                 
                 <div class="item-actions">
-                  <app-button class="btn-edit" variant="stroked" (click)="openDependencyDialog(item)">Edit</app-button>
-                  @if (item.status !== DependencyStatus.Met) {
+                  @if (canEdit(item)) {
+                    <app-button class="btn-edit" variant="stroked" (click)="openDependencyDialog(item)">Edit</app-button>
+                  }
+                  @if (item.status !== DependencyStatus.Met && canMarkMet(item)) {
                     <app-button class="btn-met" type="button" variant="stroked" (click)="markAsMet(item)">Mark Met</app-button>
                   }
                 </div>

@@ -6,10 +6,12 @@ public static class HandoverValidationConstants
     public const string AlreadySubmitted = "This handover has already been submitted and its commitments can no longer be changed.";
     public const string NotYetSubmitted = "This action requires the handover to be submitted first.";
     public const string NotFoundForSubmit = "Cannot submit a handover that does not exist.";
-    public const string NotFoundForLeadershipAllocation = "Cannot allocate leadership for an engagement that has no handover draft.";
+    public const string NotFoundForLeadershipAllocation = "Cannot allocate leadership for an engagement until its handover has been submitted.";
     public const string BusinessProblemRequiredSubmit = "Business Problem is required to submit.";
     public const string ClientSentimentRequiredSubmit = "Client Sentiment is required to submit.";
     public const string NotKickoffReadySubmit = "Engagement is not kickoff-ready. All mandatory items must be complete before submitting the handover.";
+    public const string ReadinessChecklistNotGrantedSubmit = "All non-blocked Readiness Checklist items must be Granted before submitting the handover.";
+    public const string RealisticCommitmentRequiresSubmitted = "Realistic commitments can only be provided after the handover has been submitted.";
     public const string RealisticTimelineDiffersAcknowledgementRequired = "The realistic timeline differs from the promised timeline. Please provide an acknowledgement message.";
     public const string UpdatedAcknowledgementRequired = "The estimation gap between the promised and realistic timelines still exceeds the threshold. Please provide an updated acknowledgement message.";
 

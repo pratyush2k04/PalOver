@@ -1,7 +1,6 @@
 <div class="dialog-container">
   <div class="dialog-header">
     <h3>{{ isEditing ? 'Edit Dependency' : 'Add Dependency' }}</h3>
-    <app-button type="button" variant="icon" ariaLabel="Close" (click)="onCancel()">&times;</app-button>
   </div>
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()">

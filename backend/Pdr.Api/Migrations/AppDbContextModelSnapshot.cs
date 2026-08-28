@@ -3197,6 +3197,147 @@ namespace Pdr.Api.Migrations
                     b.ToTable("realistic_commitments", (string)null);
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.HandoverReadiness.HandoverReadinessDefinition", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Area")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("HandoverReadinessDefinitions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Area = "COMMERCIAL",
+                            DisplayOrder = 1,
+                            IsActive = true,
+                            Name = "Sign commercial contract"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Area = "COMMERCIAL",
+                            DisplayOrder = 2,
+                            IsActive = true,
+                            Name = "Confirm engagement budget"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Area = "COMMERCIAL",
+                            DisplayOrder = 3,
+                            IsActive = true,
+                            Name = "Confirm billing schedule"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Area = "HANDOVER",
+                            DisplayOrder = 4,
+                            IsActive = true,
+                            Name = "Complete sales-to-delivery handover call"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Area = "HANDOVER",
+                            DisplayOrder = 5,
+                            IsActive = true,
+                            Name = "Share CRM opportunity notes"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Area = "HANDOVER",
+                            DisplayOrder = 6,
+                            IsActive = true,
+                            Name = "Transfer key client contacts"
+                        });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.HandoverReadiness.HandoverReadinessItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Area")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("BlockReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("EngagementId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("HandoverReadinessDefinitionId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EngagementId");
+
+                    b.HasIndex("HandoverReadinessDefinitionId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("HandoverReadinessItems");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Kickoff.KickoffActionItem", b =>
                 {
                     b.Property<int>("KickoffActionItemId")
@@ -3685,7 +3826,7 @@ namespace Pdr.Api.Migrations
                     b.Property<bool>("IsMandatory")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
-                        .HasDefaultValue(true)
+                        .HasDefaultValue(false)
                         .HasColumnName("is_mandatory");
 
                     b.Property<bool>("IsRetired")
@@ -4934,6 +5075,32 @@ namespace Pdr.Api.Migrations
                             LinkPattern = "/engagements/{EngagementId}/workspace/handover",
                             Title = "New Presales Commitment — {EngagementName}",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Body = "There are {Count} presales commitments on engagement {EngagementName} that need realistic estimates.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 3,
+                            IsDeleted = false,
+                            Key = "PendingCommitmentsSummary",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/handover",
+                            Title = "Action Required: {Count} commitments require your review",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Body = "Technical readiness has reached 100% for {EngagementName}. You can now proceed with Day 1 sign-off.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 3,
+                            IsDeleted = false,
+                            Key = "TechnicalReadinessComplete",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/overview",
+                            Title = "Technical Readiness 100% — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -5847,6 +6014,32 @@ namespace Pdr.Api.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.HandoverReadiness.HandoverReadinessItem", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Engagements.Engagement", "Engagement")
+                        .WithMany("HandoverReadinessItems")
+                        .HasForeignKey("EngagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.HandoverReadiness.HandoverReadinessDefinition", "HandoverReadinessDefinition")
+                        .WithMany("HandoverReadinessItems")
+                        .HasForeignKey("HandoverReadinessDefinitionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "Owner")
+                        .WithMany("HandoverReadinessItems")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Engagement");
+
+                    b.Navigation("HandoverReadinessDefinition");
+
+                    b.Navigation("Owner");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Kickoff.KickoffActionItem", b =>
                 {
                     b.HasOne("Pdr.Api.Models.LoginEntity.User", "AssignedToUser")
@@ -6083,6 +6276,8 @@ namespace Pdr.Api.Migrations
 
                     b.Navigation("HandoverInfo");
 
+                    b.Navigation("HandoverReadinessItems");
+
                     b.Navigation("KickoffActionItems");
 
                     b.Navigation("KickoffRecord");
@@ -6105,6 +6300,11 @@ namespace Pdr.Api.Migrations
                     b.Navigation("EnvironmentToolingItems");
                 });
 
+            modelBuilder.Entity("Pdr.Api.Models.HandoverReadiness.HandoverReadinessDefinition", b =>
+                {
+                    b.Navigation("HandoverReadinessItems");
+                });
+
             modelBuilder.Entity("Pdr.Api.Models.Kickoff.KickoffRecord", b =>
                 {
                     b.Navigation("ActionItems");
@@ -6122,6 +6322,8 @@ namespace Pdr.Api.Migrations
                     b.Navigation("EngagementAssignments");
 
                     b.Navigation("EnvironmentToolingItems");
+
+                    b.Navigation("HandoverReadinessItems");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.MasterChecklistVersion", b =>

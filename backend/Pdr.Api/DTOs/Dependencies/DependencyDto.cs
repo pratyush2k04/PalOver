@@ -10,6 +10,7 @@ public class DependencyDto
     public DependencyType Type { get; set; }
     public int? OwnerId { get; set; }
     public string OwnerName { get; set; } = string.Empty;
+    public int? OwnerUserId { get; set; }
     public DateTime NeededByDate { get; set; }
     public DependencyStatus Status { get; set; }
     public int? LinkedRiskId { get; set; }

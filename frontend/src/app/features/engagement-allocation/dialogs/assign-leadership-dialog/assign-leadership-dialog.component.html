@@ -4,15 +4,14 @@
       <h2>Assign Leadership Contacts</h2>
       <p class="eng-sub">{{ engagement.engagementName }} ({{ engagement.clientName }})</p>
     </div>
-    <app-button type="button" variant="icon" ariaLabel="Close" (click)="onClose()">&times;</app-button>
   </div>
 
   <div class="modal-body">
     <div class="handover-summary">
-      <label class="input-label">Handover Draft Details</label>
+      <label class="input-label">Handover Details</label>
       @if (isLoadingHandover()) {
         <app-loading-spinner size="sm" [inline]="true" label="Loading handover details..." />
-      } @else if (handover()?.hasHandoverDraft) {
+      } @else if (handover()?.hasHandoverDraft && handover()?.status?.toLowerCase() === 'submitted') {
         <div class="handover-summary-grid">
           <div class="handover-field">
             <span class="handover-field-label">Status</span>
@@ -34,7 +33,7 @@
           </div>
         </div>
       } @else {
-        <app-alert variant="warning">No handover draft found for this engagement.</app-alert>
+        <app-alert variant="warning">Handover has not been submitted for this engagement yet.</app-alert>
       }
     </div>
 

@@ -71,3 +71,8 @@ export interface UpdateCommitmentRequest {
   timeline: number;
   timelineUnit: string;
 }
+
+export interface AddCommitmentDialogData {
+  engagementId: number;
+  commitment?: CommitmentDto;
+}

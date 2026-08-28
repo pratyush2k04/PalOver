@@ -31,7 +31,7 @@
       <app-button
         type="submit"
         variant="accent"
-        [disabled]="isSubmitting() || form.invalid"
+        [disabled]="isSubmitting()"
         [loading]="isSubmitting()"
       >
         {{ constants.BTN_CONFIRM }}

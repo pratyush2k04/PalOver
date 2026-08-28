@@ -7,6 +7,7 @@ using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Models.MasterChecklist;
 using Pdr.Api.Models.Handover;
+using Pdr.Api.Models.HandoverReadiness;
 using Pdr.Api.Models.EngagementChecklist;
 using Pdr.Api.Models.Documents;
 using Pdr.Api.Models.Cadence;
@@ -106,6 +107,10 @@ public class AppDbContext : DbContext
 
     // Dependencies
     public DbSet<Models.Engagements.Dependencies.Dependency> Dependencies => Set<Models.Engagements.Dependencies.Dependency>();
+
+    // Handover Readiness
+    public DbSet<HandoverReadinessItem> HandoverReadinessItems => Set<HandoverReadinessItem>();
+    public DbSet<HandoverReadinessDefinition> HandoverReadinessDefinitions => Set<HandoverReadinessDefinition>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

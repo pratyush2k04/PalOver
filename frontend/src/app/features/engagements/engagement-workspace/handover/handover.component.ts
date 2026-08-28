@@ -17,7 +17,7 @@ import { AuthService } from '@shared/services/auth';
 import { KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
 import { EngagementInfoDto } from '../../models/engagement.model';
 import { DialogService } from '@common/services/dialog/dialog.service';
-import { AddCommitmentDialogComponent, AddCommitmentDialogData } from './dialogs/add-commitment-dialog/add-commitment-dialog.component';
+import { AddCommitmentDialogComponent } from './dialogs/add-commitment-dialog/add-commitment-dialog.component';
 import {
   HANDOVER_MESSAGES,
   HANDOVER_SENTIMENT_OPTIONS,
@@ -25,6 +25,7 @@ import {
   HANDOVER_LABELS,
   HANDOVER_PLACEHOLDERS,
   HANDOVER_BUTTONS,
+  MAX_FREE_TEXT_LENGTH,
 } from '@shared/constants/handover.constants';
 import {
   HandoverInfoDto,
@@ -33,8 +34,10 @@ import {
   UpdateCommitmentRequest,
   CreateRealisticCommitmentRequest,
   UpdateRealisticCommitmentRequest,
-  CommitmentDto
+  CommitmentDto,
+  AddCommitmentDialogData
 } from '../../models/handover.model';
+import { HandoverReadinessItemDto } from '../../models/handover-readiness.model';
 import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
@@ -49,8 +52,7 @@ import { ToastService } from '@common/services/toast/toast';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
-
-const MAX_FREE_TEXT_LENGTH = 2000;
+import { HandoverReadinessComponent } from './handover-readiness/handover-readiness.component';
 
 function timelinesMatch(timeline1: number, unit1: string, timeline2: number, unit2: string): boolean {
   return timeline1 === timeline2 && unit1 === unit2;
@@ -81,6 +83,7 @@ interface RealisticEditForm {
     ClientContactTransitionCardComponent,
     HandoverQueriesComponent,
     ConfirmDialogComponent,
+    HandoverReadinessComponent,
   ],
   templateUrl: './handover.component.html',
   styleUrl: './handover.component.scss',
@@ -116,16 +119,34 @@ export class HandoverComponent {
   isSaving = signal(false);
   message = signal('');
   isError = signal(false);
+  handoverReadinessItems = signal<HandoverReadinessItemDto[]>([]);
 
   kickoffReadiness = this.kickoffReadinessService.readiness;
+
+  onHandoverReadinessItemsUpdated(items: HandoverReadinessItemDto[]): void {
+    this.handoverReadinessItems.set(items);
+  }
+
+  readonly readinessItemsApplicable = computed(() =>
+    this.handoverReadinessItems().filter(i => i.status !== 'Blocked').length
+  );
+
+  readonly readinessItemsPassed = computed(() =>
+    this.handoverReadinessItems().filter(i => i.status === 'Granted').length
+  );
+
+  readonly isReadinessChecklistComplete = computed(() => {
+    const applicable = this.readinessItemsApplicable();
+    const passed = this.readinessItemsPassed();
+    return applicable > 0 && passed === applicable;
+  });
 
   isHandoverReadyToSubmit = computed(() => {
     const r = this.kickoffReadiness();
     if (!r) return false;
     return (
       r.handoverFieldsPassed >= r.handoverFieldsApplicable &&
-      r.commitmentsPassed >= r.commitmentsApplicable &&
-      r.checklistItemsPassed >= r.checklistItemsApplicable
+      this.isReadinessChecklistComplete()
     );
   });
 
@@ -192,7 +213,7 @@ export class HandoverComponent {
     label: t.name
   }));
 
-  isSubmitted = computed(() => this.handover()?.status === 'Submitted');
+  isSubmitted = computed(() => this.handover()?.status?.toLowerCase() === 'submitted');
   isReviewed = computed(() => this.handover()?.status === 'Reviewed');
   hasBeenSubmitted = computed(() => this.isSubmitted() || this.isReviewed());
   hasHandoverDraft = computed(() => !!this.handover()?.handoverId);

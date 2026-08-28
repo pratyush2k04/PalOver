@@ -25,8 +25,6 @@
 .dialog-body {
   padding: $spacing-5;
   @include flex-column($spacing-4);
-  max-height: 70vh;
-  overflow-y: auto;
 }
 
 .dialog-footer {

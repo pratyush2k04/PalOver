@@ -30,7 +30,9 @@ public class EngagementService(
     ITechnicalSummaryService technicalSummaryService,
     IEngagementAccessService engagementAccessService,
     IHandoverRepository handoverRepository,
-    IKickoffReminderService kickoffReminderService) : IEngagementService
+    ICommitmentRepository commitmentRepository,
+    IKickoffReminderService kickoffReminderService,
+    IEngagementChecklistRepository engagementChecklistRepository) : IEngagementService
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
 
@@ -290,6 +292,20 @@ public class EngagementService(
                 System.Text.Json.JsonSerializer.Serialize(new PMAssignedMapper.PMAssignedPayload(EngagementId: engagementId)),
                 DateTime.UtcNow);
 
+            var handover = await handoverRepository.GetByEngagementIdAsync(engagementId);
+            if (handover is not null)
+            {
+                var pendingCommitmentsCount = await commitmentRepository.GetCountByHandoverIdAsync(handover.HandoverId);
+                if (pendingCommitmentsCount > 0)
+                {
+                    await notificationService.CreateFromTemplateAsync(
+                        NotificationConstants.TemplateKeys.PendingCommitmentsSummary,
+                        userId,
+                        System.Text.Json.JsonSerializer.Serialize(new PendingCommitmentsSummaryMapper.PendingCommitmentsSummaryPayload(engagementId, pendingCommitmentsCount)),
+                        DateTime.UtcNow);
+                }
+            }
+
             var engagementForReminder = await engagementRepository.GetByIdAsync(engagementId);
             if (engagementForReminder is not null)
                 await kickoffReminderService.ScheduleRemindersAsync(engagementId, engagementForReminder.KickoffDate);
@@ -379,7 +395,7 @@ public class EngagementService(
             throw new EngagementNotFoundException(engagementId);
 
         var handover = await handoverRepository.GetByEngagementIdAsync(engagementId);
-        if (handover == null)
+        if (handover == null || handover.StatusId != (int)HandoverStatusEnum.Submitted)
             return new HandoverDraftStatusDto(false, null, null, null, null);
 
         var status = await handoverRepository.GetStatusByIdAsync(handover.StatusId);
@@ -409,7 +425,7 @@ public class EngagementService(
             throw new EngagementNotFoundException(engagementId);
 
         var handover = await handoverRepository.GetByEngagementIdAsync(engagementId);
-        if (handover == null)
+        if (handover == null || handover.StatusId != (int)HandoverStatusEnum.Submitted)
             throw new HandoverIncompleteException(HandoverValidationConstants.NotFoundForLeadershipAllocation);
 
         var user = await userRepository.GetByIdAsync(userId)
@@ -570,9 +586,6 @@ public class EngagementService(
         var engagement = await engagementRepository.GetByIdAsync(engagementId)
             ?? throw new EngagementNotFoundException(engagementId);
 
-        if (!engagement.IsKickoffReady)
-            throw new EngagementNotKickoffReadyException();
-
         if (request.BillingStartDate < engagement.KickoffDate)
             throw new BillingBeforeKickoffException();
 
@@ -594,14 +607,57 @@ public class EngagementService(
         var currentUser = await userRepository.GetByIdAsync(currentUserId)
             ?? throw new UserNotFoundException(currentUserId);
 
+        var now = DateTime.UtcNow;
         engagement.BillingStartDate = request.BillingStartDate;
+
+        engagement.DayOneSignOffRecord = new DayOneSignOffRecord
+        {
+            EngagementId = engagementId,
+            SignedOffByUserId = currentUserId,
+            BillingStartDate = request.BillingStartDate,
+            SignedOffAt = now,
+            IsException = request.IsException,
+            ExceptionJustification = request.IsException ? request.ExceptionJustification?.Trim() : null
+        };
+
+        var checklist = await engagementChecklistRepository.GetByEngagementIdAsync(engagementId);
+        if (checklist != null)
+        {
+            engagement.EvidenceSnapshot = new EvidenceSnapshot
+            {
+                EngagementId = engagementId,
+                SignedOffByUserId = currentUserId,
+                SignedOffByUserName = currentUser.FullName,
+                SignedOffAt = now,
+                BillingStartDate = request.BillingStartDate,
+                Items = checklist.Items
+                    .Where(i => i.EvidenceRequired)
+                    .Select(i => new EvidenceSnapshotItem
+                    {
+                        SourceChecklistItemId = i.Id,
+                        Title = i.Title,
+                        CategoryName = i.Category?.CategoryName ?? string.Empty,
+                        DisplayOrder = i.DisplayOrder,
+                        StatusAtSignOff = !i.IsApplicable
+                            ? EvidenceSnapshotItemStatus.NotApplicable
+                            : i.Status == "Complete"
+                                ? EvidenceSnapshotItemStatus.Complete
+                                : EvidenceSnapshotItemStatus.Open,
+                        EvidenceNote = i.EvidenceNote,
+                        EvidenceLink = i.EvidenceLink,
+                        EvidenceSubmittedAt = i.EvidenceSubmittedAt,
+                        EvidenceSubmittedByName = i.EvidenceSubmittedBy?.FullName
+                    }).ToList()
+            };
+        }
+
         await engagementRepository.SaveChangesAsync();
 
         return new DayOneSignOffDto(
             currentUserId,
             currentUser.FullName,
             request.BillingStartDate,
-            DateTime.UtcNow,
+            now,
             request.IsException,
             request.IsException ? request.ExceptionJustification?.Trim() : null);
     }

@@ -15,6 +15,9 @@ public class AssumptionConfiguration : IEntityTypeConfiguration<Assumption>
 
         builder.Property(a => a.Status)
             .HasDefaultValue(AssumptionStatus.Unvalidated)
+            .HasSentinel((AssumptionStatus)0)
             .IsRequired();
+
+        builder.HasQueryFilter(a => !a.IsDeleted);
     }
 }
