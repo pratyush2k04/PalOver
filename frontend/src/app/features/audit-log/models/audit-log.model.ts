@@ -27,7 +27,9 @@ export type AuditAction =
   | 'ReadinessOnePagerGenerated'
   | 'KickoffReadyMarked'
   | 'KickoffReadyReverted'
-  | 'AccessItemBlocked';
+  | 'AccessItemBlocked'
+  | 'DocumentDeleted'
+  | 'DocumentVisibilityChanged';
 export interface AuditLogDto {
   id: number;
   userId: number;

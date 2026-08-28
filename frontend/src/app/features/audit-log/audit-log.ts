@@ -105,6 +105,8 @@ export class AuditLogComponent implements OnInit {
   private readonly actionCategoryMap: Record<string, string> = {
     DocumentVersioned: 'Document',
     DocumentUploaded: 'Document',
+    DocumentDeleted: 'Document',
+    DocumentVisibilityChanged: 'Document',
     MasterChecklistPublished: 'Checklist',
     UnauthorizedAccess: 'Access',
     AccountLockout: 'Access',
