@@ -148,6 +148,9 @@ public class HandoverService : IHandoverService
         }
         else
         {
+            if (handover.StatusId != (int)HandoverStatusEnum.Draft)
+                throw new HandoverSubmittedException(HandoverValidationConstants.AlreadySubmitted);
+
             handover.UpdatedBy = userIdStr;
         }
 
@@ -169,6 +172,9 @@ public class HandoverService : IHandoverService
 
         if (handover == null)
             throw new HandoverIncompleteException(HandoverValidationConstants.NotFoundForSubmit);
+
+        if (handover.StatusId != (int)HandoverStatusEnum.Draft)
+            throw new HandoverSubmittedException(HandoverValidationConstants.AlreadySubmitted);
 
         if (string.IsNullOrWhiteSpace(handover.BusinessProblem))
             throw new HandoverIncompleteException(HandoverValidationConstants.BusinessProblemRequiredSubmit);

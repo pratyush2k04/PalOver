@@ -6,10 +6,10 @@
           <span class="status-report-dot"></span>
           <span class="status-report-text">{{ handover()?.status || 'Not Started' }}</span>
         </div>
-        @if (isPreSales()) {
+        @if (isPreSales() && isDraft()) {
           <app-button
             variant="flat"
-            [disabled]="!isHandoverReadyToSubmit() || isSaving() || isSubmitted()"
+            [disabled]="!isHandoverReadyToSubmit() || isSaving()"
             (click)="submitHandover()"
           >
             {{ HANDOVER_BUTTONS.SUBMIT_HANDOVER }}

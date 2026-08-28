@@ -278,13 +278,13 @@ export class HandoverComponent {
         });
         this.commitments.set(data.commitments || []);
         this.isLoading.set(false);
-        if (this.hasBeenSubmitted()) {
+        if (!this.isDraft()) {
           this.clientContextForm.disable();
         }
 
         if (
           this.isPreSales() &&
-          !this.hasBeenSubmitted() &&
+          this.isDraft() &&
           this.route.snapshot.queryParamMap.get('action') === 'create'
         ) {
           this.openAddCommitmentDialog();
@@ -304,7 +304,7 @@ export class HandoverComponent {
 
   saveDraft() {
     const id = this.engagementId();
-    if (!id) return;
+    if (!id || !this.isDraft()) return;
 
     const { businessProblem, clientSentiment } = this.clientContextForm.getRawValue();
     if (!businessProblem || !clientSentiment) {
@@ -332,7 +332,7 @@ export class HandoverComponent {
 
   submitHandover() {
     const id = this.engagementId();
-    if (!id) return;
+    if (!id || !this.isDraft()) return;
 
     if (!this.isValidForSubmit()) {
       this.clientContextForm.markAllAsTouched();
