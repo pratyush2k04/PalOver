@@ -223,6 +223,17 @@
   margin: 0;
 }
 
+.gate-group-title {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: $color-danger-text;
+  margin: $spacing-2 0 $spacing-1 0;
+
+  &--amber {
+    color: $color-amber-700;
+  }
+}
+
 .gate-incomplete-list {
   margin: $spacing-1 0 $spacing-3 0;
   padding-left: $spacing-4;
@@ -240,11 +251,11 @@
 
   .gate-item-title {
     font-weight: $font-weight-semibold;
+    color: $color-danger-600;
   }
 
-  .gate-item-status-separator {
-    margin: 0 $spacing-1;
-    color: $color-danger-400;
+  &--amber .gate-item-title {
+    color: $color-amber-600;
   }
 }
 
