@@ -36,7 +36,6 @@ export class RemoveAllocationDialogComponent {
   reason = signal<string>('');
   isSubmitting = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
-  submitted = signal<boolean>(false);
 
   trimmedReason = computed(() => this.reason().trim());
   isValidReason = computed(() => {
@@ -45,7 +44,7 @@ export class RemoveAllocationDialogComponent {
   });
   minLengthError = computed(() => {
     const len = this.trimmedReason().length;
-    return len < 10 && (len > 0 || this.submitted()) ? this.constants.MSG_REMOVAL_REASON_LENGTH : null;
+    return len > 0 && len < 10 ? this.constants.MSG_REMOVAL_REASON_LENGTH : null;
   });
 
   onReasonChange(value: string): void {
@@ -62,10 +61,7 @@ export class RemoveAllocationDialogComponent {
   }
 
   onSubmit(): void {
-    if (!this.isValidReason() || this.isSubmitting()) {
-      this.submitted.set(true);
-      return;
-    }
+    if (!this.isValidReason() || this.isSubmitting()) return;
 
     this.isSubmitting.set(true);
     this.errorMessage.set(null);

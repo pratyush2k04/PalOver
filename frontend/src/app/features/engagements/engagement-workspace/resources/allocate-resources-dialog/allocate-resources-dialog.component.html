@@ -30,7 +30,7 @@
       <app-button
         type="submit"
         variant="accent"
-        [disabled]="isSubmitting()"
+        [disabled]="isSubmitting() || namesArray.invalid"
         [loading]="isSubmitting()"
       >
         {{ constants.BTN_ALLOCATE }}

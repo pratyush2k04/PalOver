@@ -88,7 +88,7 @@
       <app-button
         type="submit"
         variant="accent"
-        [disabled]="isSubmitting()"
+        [disabled]="isSubmitting() || form.invalid || selectedSkills().length === 0"
         [loading]="isSubmitting()"
       >
         {{ constants.BTN_RAISE }}
