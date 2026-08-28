@@ -35,7 +35,7 @@
       <app-button
         type="submit"
         variant="danger"
-        [disabled]="isSubmitting()"
+        [disabled]="!isValidReason()"
         [loading]="isSubmitting()"
       >
         {{ constants.BTN_REMOVE }}
