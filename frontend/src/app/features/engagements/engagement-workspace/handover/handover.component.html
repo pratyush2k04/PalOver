@@ -2,7 +2,7 @@
   <div class="handover-container">
     <app-section-header [title]="HANDOVER_LABELS.TITLE">
       <div class="header-status-group">
-        <div class="status-report" [ngClass]="{'submitted': isSubmitted(), 'draft': !isSubmitted()}">
+        <div class="status-report" [ngClass]="{'submitted': isSubmitted(), 'reviewed': isReviewed(), 'draft': !hasBeenSubmitted()}">
           <span class="status-report-dot"></span>
           <span class="status-report-text">{{ handover()?.status || 'Not Started' }}</span>
         </div>

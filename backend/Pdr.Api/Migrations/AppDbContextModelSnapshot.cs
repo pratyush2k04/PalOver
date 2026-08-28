@@ -3395,6 +3395,11 @@ namespace Pdr.Api.Migrations
                         {
                             HandoverStatusId = 2,
                             StatusName = "Submitted"
+                        },
+                        new
+                        {
+                            HandoverStatusId = 3,
+                            StatusName = "Reviewed"
                         });
                 });
 
