@@ -3826,7 +3826,7 @@ namespace Pdr.Api.Migrations
                     b.Property<bool>("IsMandatory")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
-                        .HasDefaultValue(true)
+                        .HasDefaultValue(false)
                         .HasColumnName("is_mandatory");
 
                     b.Property<bool>("IsRetired")
