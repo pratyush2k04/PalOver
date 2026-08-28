@@ -17,6 +17,7 @@
       <div class="form-group">
         <app-textarea
           id="remove-allocation-reason"
+          name="reason"
           [label]="constants.LABEL_REMOVAL_REASON"
           [rows]="4"
           [maxLength]="500"
@@ -35,7 +36,7 @@
       <app-button
         type="submit"
         variant="danger"
-        [disabled]="!isValidReason()"
+        [disabled]="isSubmitting()"
         [loading]="isSubmitting()"
       >
         {{ constants.BTN_REMOVE }}

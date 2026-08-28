@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EngagementService } from '../../../../services/engagement.service';
-import { EngagementInfo, EngagementOwners, OwnerChange, OwnerKind } from '../../../../models/engagement.model';
+import { EngagementInfo, OwnerChange, OwnerKind } from '../../../../models/engagement.model';
 import { UserDirectoryService } from '@features/users/services/user.service';
 import { UserListItem } from '@features/users/models/user.model';
 import { AuthService } from '@shared/services/auth';
@@ -32,7 +32,7 @@ export class EngagementDetailComponent implements OnInit {
   engagementId = Number(this.route.parent?.snapshot.paramMap.get('id') || this.route.snapshot.paramMap.get('id'));
 
   engagement = signal<EngagementInfo | null>(null);
-  owners = signal<EngagementOwners | null>(null);
+  readonly owners = this.engagementService.owners;
   canAssignOwners = this.authService.hasRole(USER_ROLES.LEADERSHIP);
 
   showAssignModal = signal(false);
@@ -64,9 +64,7 @@ export class EngagementDetailComponent implements OnInit {
   }
 
   private loadOwners(): void {
-    this.engagementService.getEngagementOwners(this.engagementId).subscribe({
-      next: (owners) => this.owners.set(owners)
-    });
+    this.engagementService.getEngagementOwners(this.engagementId).subscribe();
   }
 
   get hasAnyOwnerAssigned(): boolean {
@@ -194,8 +192,7 @@ export class EngagementDetailComponent implements OnInit {
         : this.engagementService.assignTechLead(this.engagementId, change.userId);
 
     request$.subscribe({
-      next: (owners) => {
-        this.owners.set(owners);
+      next: () => {
         this.toastService.success(ENGAGEMENT_MESSAGES.ASSIGNMENT_SUCCESS(change.userName, change.label));
         onSaved?.();
         this.processNextChange();

@@ -42,15 +42,28 @@
         <span class="callout-icon" [inlineSVG]="'assets/icons/alert-circle.svg'"></span>
         <div class="callout-body">
           <h2 class="callout-headline">Clear these to go kickoff-ready</h2>
-          <ul class="gate-incomplete-list">
-            @for (gateItem of checklist()!.incompleteMandatoryItems; track gateItem.id) {
-              <li>
-                <span class="gate-item-title">{{ gateItem.title }}</span>
-                <span class="gate-item-status-separator">&mdash;</span>
-                <span class="gate-item-status">{{ gateItem.status }}</span>
-              </li>
-            }
-          </ul>
+
+          @if (blockedGateItems().length > 0) {
+            <h3 class="gate-group-title">Blocked</h3>
+            <ul class="gate-incomplete-list">
+              @for (gateItem of blockedGateItems(); track gateItem.id) {
+                <li>
+                  <span class="gate-item-title">{{ gateItem.title }}</span>
+                </li>
+              }
+            </ul>
+          }
+
+          @if (incompleteGateItems().length > 0) {
+            <h3 class="gate-group-title gate-group-title--amber">Incomplete</h3>
+            <ul class="gate-incomplete-list gate-incomplete-list--amber">
+              @for (gateItem of incompleteGateItems(); track gateItem.id) {
+                <li>
+                  <span class="gate-item-title">{{ gateItem.title }}</span>
+                </li>
+              }
+            </ul>
+          }
         </div>
       </div>
     } @else {
