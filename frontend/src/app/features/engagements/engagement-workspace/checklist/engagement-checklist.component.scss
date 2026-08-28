@@ -146,8 +146,8 @@
   border-radius: $radius-lg;
 
   &.callout-warning {
-    background: $color-danger-bg;
-    border: 1px solid $color-danger-border;
+    background: $color-surface;
+    border: 1px solid $color-border-soft;
     border-left: 5px solid $color-danger;
 
     .callout-icon ::ng-deep svg {
@@ -181,8 +181,8 @@
 }
 
 .callout-icon {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -190,8 +190,8 @@
   margin-top: 1px;
 
   ::ng-deep svg {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 1.5rem;
+    height: 1.5rem;
   }
 }
 
