@@ -21,7 +21,10 @@ public class DependencyConfiguration : IEntityTypeConfiguration<Dependency>
         builder.Property(x => x.Status)
             .HasConversion<string>()
             .HasDefaultValue(DependencyStatus.Open)
+            .HasSentinel((DependencyStatus)0)
             .IsRequired();
+
+        builder.HasQueryFilter(x => !x.IsDeleted);
 
         builder.HasOne(x => x.Engagement)
             .WithMany()

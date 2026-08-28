@@ -16,9 +16,11 @@ export interface DependencyDto {
   type: DependencyType;
   ownerId: number;
   ownerName: string;
+  ownerUserId?: number | null;
   neededByDate: string; // ISO string
   status: DependencyStatus;
   linkedRiskId?: number | null;
+  createdBy?: string | null;
 }
 
 export interface CreateDependencyDto {

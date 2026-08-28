@@ -20,6 +20,7 @@ public class ArchitectureValidationRepository(AppDbContext context) : IArchitect
 
     public async Task<DiscoveryFeatureItem?> GetFeatureItemByIdAsync(int featureId) =>
         await context.DiscoveryFeatureItems
+            .Include(f => f.ArchitectureValidation)
             .FirstOrDefaultAsync(f => f.Id == featureId);
 
     public async Task AddValidationAsync(ArchitectureValidation validation) =>

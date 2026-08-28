@@ -10,7 +10,8 @@ namespace Pdr.Api.Services;
 
 public class EnvironmentToolingService(
     IEnvironmentToolingRepository repository,
-    IRiskService riskService) : IEnvironmentToolingService
+    IRiskService riskService,
+    ITechnicalReadinessNotificationService readinessNotificationService) : IEnvironmentToolingService
 {
     public async Task<EnvironmentToolingReadinessResponse> GetItemsByEngagementIdAsync(int engagementId)
     {
@@ -86,10 +87,14 @@ public class EnvironmentToolingService(
             item.NotApplicableReason = null;
         }
 
+        var wasReady = await readinessNotificationService.IsReadyAsync(item.EngagementId);
+
         item.Status = request.Status;
         await repository.SaveChangesAsync();
 
         await riskService.SyncAutoCreatedRisksAsync(item.EngagementId);
+
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(item.EngagementId, wasReady);
 
         return MapToDto(item);
     }

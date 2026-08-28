@@ -239,7 +239,8 @@ public class PersonService(
             EngagementId = person.EngagementId,
             Name = person.Name,
             Role = person.Role,
-            PersonType = person.PersonType
+            PersonType = person.PersonType,
+            UserId = person.UserId
         };
     }
 }

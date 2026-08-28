@@ -28,6 +28,8 @@ public static class NotificationMapperRegistry
         services.AddScoped<INotificationTemplateMapper, CommitmentVarianceEscalatedNotificationMapper>();
         services.AddScoped<INotificationTemplateMapper, HandoverDraftFirstSavedMapper>();
         services.AddScoped<INotificationTemplateMapper, PresalesCommitmentAddedMapper>();
+        services.AddScoped<INotificationTemplateMapper, PendingCommitmentsSummaryMapper>();
+        services.AddScoped<INotificationTemplateMapper, TechnicalReadinessCompleteMapper>();
 
         // Add new mappers here when adding new notification types.
 

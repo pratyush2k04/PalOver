@@ -84,6 +84,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ISearchService, SearchService>();
         services.AddScoped<IResourceRequestService, ResourceRequestService>();
         services.AddScoped<ITechnicalSummaryService, TechnicalSummaryService>();
+        services.AddScoped<ITechnicalReadinessNotificationService, TechnicalReadinessNotificationService>();
         services.AddScoped<IDependencyService, DependencyService>();
         services.AddScoped<IAssumptionService, AssumptionService>();
         services.AddScoped<IDependencySpikeService, DependencySpikeService>();

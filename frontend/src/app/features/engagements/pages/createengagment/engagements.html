@@ -6,7 +6,6 @@
     <div class="modal-card">
       <div class="modal-header">
         <h3>Mark SOW Signed</h3>
-        <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close">&times;</button>
       </div>
 
       <form [formGroup]="engagementForm" (ngSubmit)="onSubmit()" novalidate>
@@ -36,7 +35,7 @@
           </div>
 
           <div class="form-group">
-            <app-input id="engagementDescription" label="Engagement description *" formControlName="engagementDescription" />
+            <app-textarea id="engagementDescription" label="Engagement description *" formControlName="engagementDescription" />
           </div>
 
           <div class="form-row">

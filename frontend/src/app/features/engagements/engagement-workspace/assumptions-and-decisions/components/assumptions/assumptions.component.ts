@@ -13,6 +13,7 @@ import { DialogService } from '@common/services/dialog/dialog.service';
 import { ToastService } from '@common/services/toast/toast';
 import { AssumptionFormDialogComponent, AssumptionFormDialogResult } from './dialogs/assumption-form-dialog/assumption-form-dialog.component';
 import { ASSUMPTION_MESSAGES } from '@shared/constants/app.constants';
+import { AuthService } from '@shared/services/auth';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
 
@@ -36,6 +37,7 @@ export class AssumptionsComponent implements OnInit {
   private assumptionService = inject(AssumptionService);
   private toastService = inject(ToastService);
   private dialogService = inject(DialogService);
+  private authService = inject(AuthService);
 
   engagementId = signal<number>(0);
   assumptions = signal<AssumptionDto[]>([]);
@@ -90,6 +92,14 @@ export class AssumptionsComponent implements OnInit {
       case AssumptionStatus.Invalid: return 'Invalid';
       default: return 'Unknown';
     }
+  }
+
+  canEdit(assumption: AssumptionDto): boolean {
+    return assumption.ownerId === this.authService.getUserId();
+  }
+
+  isPm(): boolean {
+    return this.authService.hasRole('Project Management');
   }
 
   openAssumptionDialog(assumption?: AssumptionDto) {
