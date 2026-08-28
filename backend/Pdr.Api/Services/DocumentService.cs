@@ -64,19 +64,19 @@ public class DocumentService(
         return false;
     }
 
-    private async Task NotifyDocumentUploadedAsync(Document doc)
+    private async Task<List<int>> GetNotifiableAssigneeIdsAsync(Document doc, int excludeUserId)
     {
-        var currentUserId = currentUserService.GetUserId();
-
         var assignments = await engagementRepository.GetAssignmentsAsync(doc.EngagementId);
-        if (assignments == null || !assignments.Any()) return;
+        if (assignments == null || !assignments.Any())
+        {
+            return new List<int>();
+        }
 
-        var payload = JsonSerializer.Serialize(
-            new DocumentUploadedMapper.DocumentUploadedPayload(doc.Id, doc.EngagementId, currentUserId));
+        var notifiableIds = new List<int>();
 
         foreach (var assignment in assignments)
         {
-            if (assignment.UserId == currentUserId) continue;
+            if (assignment.UserId == excludeUserId) continue;
 
             bool canAccess = false;
             if (doc.Visibility == DocumentVisibilityNames.TeamWide)
@@ -96,13 +96,72 @@ public class DocumentService(
 
             if (canAccess)
             {
-                await notificationService.CreateFromTemplateAsync(
-                    NotificationConstants.TemplateKeys.DocumentUploaded,
-                    assignment.UserId,
-                    payload,
-                    DateTime.UtcNow);
+                notifiableIds.Add(assignment.UserId);
             }
         }
+
+        return notifiableIds;
+    }
+
+    private async Task NotifyDocumentUploadedAsync(Document doc)
+    {
+        var currentUserId = currentUserService.GetUserId();
+        var recipientIds = await GetNotifiableAssigneeIdsAsync(doc, currentUserId);
+        if (recipientIds.Count == 0) return;
+
+        var payload = JsonSerializer.Serialize(
+            new DocumentUploadedMapper.DocumentUploadedPayload(doc.Id, doc.EngagementId, currentUserId));
+
+        await notificationService.CreateFromTemplateAsync(
+            NotificationConstants.TemplateKeys.DocumentUploaded,
+            recipientIds,
+            payload,
+            DateTime.UtcNow);
+    }
+
+    private async Task NotifyDocumentDeletedAsync(Document doc, int actorUserId)
+    {
+        var recipientIds = await GetNotifiableAssigneeIdsAsync(doc, actorUserId);
+        if (recipientIds.Count == 0) return;
+
+        var payload = JsonSerializer.Serialize(
+            new DocumentDeletedMapper.DocumentDeletedPayload(doc.Id, doc.EngagementId, actorUserId, doc.FileName));
+
+        await notificationService.CreateFromTemplateAsync(
+            NotificationConstants.TemplateKeys.DocumentDeleted,
+            recipientIds,
+            payload,
+            DateTime.UtcNow);
+    }
+
+    private async Task NotifyDocumentVisibilityChangedAsync(Document doc, int actorUserId, string visibility)
+    {
+        var recipientIds = await GetNotifiableAssigneeIdsAsync(doc, actorUserId);
+        if (recipientIds.Count == 0) return;
+
+        var payload = JsonSerializer.Serialize(
+            new DocumentVisibilityChangedMapper.DocumentVisibilityChangedPayload(doc.Id, doc.EngagementId, actorUserId, visibility));
+
+        await notificationService.CreateFromTemplateAsync(
+            NotificationConstants.TemplateKeys.DocumentVisibilityChanged,
+            recipientIds,
+            payload,
+            DateTime.UtcNow);
+    }
+
+    private async Task NotifyDocumentVersionUploadedAsync(Document doc, int actorUserId, int version)
+    {
+        var recipientIds = await GetNotifiableAssigneeIdsAsync(doc, actorUserId);
+        if (recipientIds.Count == 0) return;
+
+        var payload = JsonSerializer.Serialize(
+            new DocumentVersionUploadedMapper.DocumentVersionUploadedPayload(doc.Id, doc.EngagementId, actorUserId, version));
+
+        await notificationService.CreateFromTemplateAsync(
+            NotificationConstants.TemplateKeys.DocumentVersionUploaded,
+            recipientIds,
+            payload,
+            DateTime.UtcNow);
     }
 
     private static string GetCategoryDefaultVisibility(string? categoryName)
@@ -162,8 +221,6 @@ public class DocumentService(
         var reloaded = await repository.GetByIdAsync(saved.Id) ?? saved;
 
         await NotifyDocumentUploadedAsync(reloaded);
-
-        // await NotifyDocumentUploadedAsync(reloaded);
 
         var actorUserId = currentUserService.GetUserId();
         await auditLogService.LogAsync(
@@ -312,7 +369,24 @@ public class DocumentService(
         }
 
         var updatedBy = userEmail ?? userIdStr;
-        return await repository.SoftDeleteAsync(doc, reason, updatedBy);
+        var result = await repository.SoftDeleteAsync(doc, reason, updatedBy);
+
+        var actorUserId = currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            AuditActionEnum.DocumentDeleted,
+            new Dictionary<string, object?>
+            {
+                ["DocumentId"] = doc.Id,
+                ["ActorUserId"] = actorUserId,
+                ["Reason"] = reason,
+                ["DocumentName"] = doc.FileName,
+            },
+            engagementId: doc.EngagementId,
+            actingUserId: actorUserId);
+
+        await NotifyDocumentDeletedAsync(doc, actorUserId);
+
+        return result;
     }
 
     public async Task<DocumentResponseDto> UpdateDocumentVisibilityAsync(int id, UpdateDocumentVisibilityDto dto)
@@ -344,7 +418,20 @@ public class DocumentService(
 
         var updated = await repository.UpdateVisibilityAsync(doc, targetVisibility, allowedRoles, updatedBy);
 
-        await NotifyDocumentUploadedAsync(updated);
+        var actorUserId = currentUserService.GetUserId();
+        await auditLogService.LogAsync(
+            AuditActionEnum.DocumentVisibilityChanged,
+            new Dictionary<string, object?>
+            {
+                ["DocumentId"] = updated.Id,
+                ["ActorUserId"] = actorUserId,
+                ["Visibility"] = targetVisibility,
+                ["DocumentName"] = updated.FileName,
+            },
+            engagementId: updated.EngagementId,
+            actingUserId: actorUserId);
+
+        await NotifyDocumentVisibilityChangedAsync(updated, actorUserId, targetVisibility);
 
         var uploaderNames = await GetUploaderNamesAsync([updated.CreatedBy]);
         return MapToResponseDto(updated, uploaderNames);
@@ -407,6 +494,8 @@ public class DocumentService(
             },
             engagementId: reloaded.EngagementId,
             actingUserId: actorUserId);
+
+        await NotifyDocumentVersionUploadedAsync(reloaded, actorUserId, newVersion.VersionNumber);
 
         var uploaderNames = await GetUploaderNamesAsync([reloaded.CreatedBy]);
         return MapToResponseDto(reloaded, uploaderNames);
