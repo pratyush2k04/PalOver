@@ -1,37 +1,14 @@
-@use 'styles/mixins' as *;
+@use 'styles/tokens' as *;
 
-.dialog-container {
+:host {
+  display: block;
   width: 32.5rem;
   max-width: calc(100vw - 3rem);
-  background: $color-surface;
-  border-radius: $radius-xl;
-  box-shadow: $shadow-modal;
-  overflow: hidden;
-  font-family: $font-family-base;
-}
-
-.dialog-header {
-  @include flex-between;
-  padding: $spacing-5 $spacing-6;
-  border-bottom: 1px solid $color-border-soft;
-  background: $color-surface-hover;
-
-  h2 {
-    font-size: $font-size-lg;
-    font-weight: $font-weight-bold;
-    color: $color-text;
-    margin: 0;
-  }
-}
-
-.dialog-body {
-  padding: $spacing-6;
 }
 
 .item-title-preview {
   font-size: $font-size-sm;
   color: $color-text-muted;
-  margin-bottom: $spacing-5;
   padding: $spacing-3 $spacing-4;
   background: $color-bg;
   border-radius: $radius-md;
@@ -43,7 +20,6 @@
 }
 
 .form-group {
-  margin-bottom: $spacing-5;
   position: relative;
 }
 
@@ -51,7 +27,7 @@
   font-size: $font-size-xs;
   color: $color-text-faint;
   text-align: right;
-  margin-top: $spacing-1;
+  margin-top: 0.125rem;
 
   &.limit-reached {
     color: $color-danger;
@@ -65,16 +41,8 @@
   padding: $spacing-2 $spacing-3;
   background: $color-bg;
   border-radius: $radius-sm;
-  margin-bottom: $spacing-5;
 
   strong {
     color: $color-text-muted;
   }
-}
-
-.dialog-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: $spacing-3;
-  margin-top: $spacing-6;
 }

@@ -1,46 +1,38 @@
-<div class="dialog-container">
-  <div class="dialog-header">
-    <h2>Flag as Blocked</h2>
-  </div>
+<h2 class="app-dialog__title">Flag as Blocked</h2>
 
-  <div class="dialog-body">
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
     <p class="item-title-preview">
       <strong>Item:</strong> {{ data.itemTitle }}
     </p>
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <app-textarea
-          id="block-reason"
-          label="Reason for blocking"
-          [required]="true"
-          formControlName="reason"
-          [rows]="4"
-          [maxLength]="500"
-          placeholder="Describe what's blocking this item..."
-          [errorMessages]="{
-            required: 'A reason is required.',
-            minlength: 'Reason must be at least 10 characters long.',
-            maxlength: 'Reason cannot exceed 500 characters.'
-          }"
-        />
-      </div>
+    <app-textarea
+      id="block-reason"
+      label="Reason for blocking"
+      [required]="true"
+      formControlName="reason"
+      [rows]="4"
+      [maxLength]="500"
+      placeholder="Describe what's blocking this item..."
+      [errorMessages]="{
+        required: 'A reason is required.',
+        minlength: 'Reason must be at least 10 characters long.',
+        maxlength: 'Reason cannot exceed 500 characters.'
+      }"
+    />
 
-      <div class="form-group">
-        <app-select
-          id="block-owner"
-          label="Owner"
-          [required]="true"
-          formControlName="personId"
-          [options]="ownerOptions"
-          [errorMessages]="{ required: 'An owner is required.' }"
-        />
-      </div>
-
-      <div class="dialog-actions">
-        <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
-        <app-button type="submit" variant="flat" [disabled]="form.invalid">Flag as Blocked</app-button>
-      </div>
-    </form>
+    <app-select
+      id="block-owner"
+      label="Owner"
+      [required]="true"
+      formControlName="personId"
+      [options]="ownerOptions"
+      [errorMessages]="{ required: 'An owner is required.' }"
+    />
   </div>
-</div>
+
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+    <app-button type="submit" variant="flat" [disabled]="form.invalid">Flag as Blocked</app-button>
+  </div>
+</form>

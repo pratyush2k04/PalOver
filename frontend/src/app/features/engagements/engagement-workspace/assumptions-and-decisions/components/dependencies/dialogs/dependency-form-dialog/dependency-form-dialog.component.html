@@ -1,34 +1,50 @@
-<div class="dialog-container">
-  <div class="dialog-header">
-    <h3>{{ isEditing ? 'Edit Dependency' : 'Add Dependency' }}</h3>
+<h2 class="app-dialog__title">{{ isEditing ? 'Edit Dependency' : 'Add Dependency' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
+    <app-textarea
+      id="description"
+      label="Description"
+      placeholder="Enter dependency description..."
+      [required]="true"
+      formControlName="description"
+    />
+
+    <div class="form-row">
+      <div class="flex-1">
+        <app-select
+          id="type"
+          label="Type"
+          [options]="typeOptions"
+          [required]="true"
+          formControlName="type"
+        />
+      </div>
+      <div class="flex-1">
+        <app-select
+          id="ownerId"
+          label="Owner"
+          [options]="ownerOptions()"
+          [required]="true"
+          formControlName="ownerId"
+          placeholder="Select an owner"
+        />
+      </div>
+    </div>
+
+    <app-input
+      id="neededByDate"
+      label="Needed By Date"
+      type="date"
+      [required]="true"
+      formControlName="neededByDate"
+    />
   </div>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <div class="dialog-body">
-      <div class="form-group">
-        <app-textarea id="description" label="Description" placeholder="Enter dependency description..."
-          [required]="true" formControlName="description" />
-      </div>
-
-      <div class="form-row">
-        <div class="form-group flex-1">
-          <app-select id="type" label="Type" [options]="typeOptions" [required]="true" formControlName="type" />
-        </div>
-        <div class="form-group flex-1">
-          <app-select id="ownerId" label="Owner" [options]="ownerOptions()" [required]="true" formControlName="ownerId" placeholder="Select an owner" />
-        </div>
-      </div>
-
-      <div class="form-group">
-        <app-input id="neededByDate" label="Needed By Date" type="date" [required]="true" formControlName="neededByDate" />
-      </div>
-    </div>
-
-    <div class="dialog-footer">
-      <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
-      <app-button type="submit" variant="flat">
-        {{ isEditing ? 'Update' : 'Add' }}
-      </app-button>
-    </div>
-  </form>
-</div>
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+    <app-button type="submit" variant="flat">
+      {{ isEditing ? 'Update' : 'Add' }}
+    </app-button>
+  </div>
+</form>

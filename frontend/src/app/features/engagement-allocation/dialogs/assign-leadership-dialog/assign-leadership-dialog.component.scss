@@ -1,144 +1,102 @@
 @use 'styles/mixins' as *;
 
-.dialog-container {
-  background: $color-surface;
-  width: 100%;
-  max-width: 36.25rem;
-  border-radius: $radius-2xl;
-  box-shadow: $shadow-modal;
-  overflow: visible;
-  position: relative;
+:host {
+  display: block;
+  width: 36.25rem;
+  max-width: calc(100vw - 3rem);
+}
 
-  .modal-header {
-    padding: $spacing-5 $spacing-6;
-    border-bottom: 1px solid $color-slate-200;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+.eng-sub {
+  font-size: $font-size-sm;
+  color: $color-slate-500;
+  font-weight: $font-weight-normal;
+}
 
-    h2 {
-      font-size: $font-size-xl;
-      font-weight: $font-weight-bold;
-      color: $color-slate-900;
+.handover-summary {
+  @include card-surface($padding: $spacing-4, $radius: $radius-lg);
+
+  .handover-summary-grid {
+    @include flex-column($gap: $spacing-3);
+  }
+
+  .handover-field {
+    @include flex-column($gap: $spacing-1);
+
+    .handover-field-label {
+      font-size: $font-size-xs;
+      font-weight: $font-weight-semibold;
+      color: $color-text-fainter;
+      text-transform: uppercase;
+    }
+
+    .handover-field-value {
+      font-size: $font-size-sm;
+      color: $color-text;
       margin: 0;
     }
+  }
+}
 
-    .eng-sub {
-      font-size: $font-size-sm;
-      color: $color-slate-500;
-      margin: 0.25rem 0 0 0;
-    }
+.input-label {
+  display: block;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-slate-700;
+}
+
+.tag-input-wrapper {
+  background: $color-surface;
+  border: 1px solid $color-slate-300;
+  border-radius: $radius-xl;
+  padding: $spacing-3;
+  min-height: 6.25rem;
+  position: relative;
+  transition: border-color $transition-base, box-shadow $transition-base;
+
+  &:focus-within {
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.12);
   }
 
-  .modal-body {
-    padding: $spacing-6;
-
-    .handover-summary {
-      @include card-surface($padding: $spacing-4, $radius: $radius-lg);
-      margin-bottom: $spacing-5;
-
-      .handover-summary-grid {
-        @include flex-column($gap: $spacing-3);
-      }
-
-      .handover-field {
-        @include flex-column($gap: $spacing-1);
-
-        .handover-field-label {
-          font-size: $font-size-xs;
-          font-weight: $font-weight-semibold;
-          color: $color-text-fainter;
-          text-transform: uppercase;
-        }
-
-        .handover-field-value {
-          font-size: $font-size-sm;
-          color: $color-text;
-          margin: 0;
-        }
-      }
-    }
-
-    .input-label {
-      display: block;
-      font-size: $font-size-sm;
-      font-weight: $font-weight-semibold;
-      color: $color-slate-700;
-      margin-bottom: $spacing-3;
-    }
-
-    .tag-input-wrapper {
-      background: $color-surface;
-      border: 1px solid $color-slate-300;
-      border-radius: $radius-xl;
-      padding: $spacing-3;
-      min-height: 6.25rem;
-      position: relative;
-      transition: border-color $transition-base, box-shadow $transition-base;
-
-      &:focus-within {
-        border-color: $color-primary;
-        box-shadow: 0 0 0 3px rgba($color-primary, 0.12);
-      }
-
-      .chips-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: $spacing-2;
-        margin-bottom: $spacing-3;
-
-        .tag-chip {
-          display: inline-flex;
-          align-items: center;
-          background: $color-slate-100;
-          border: 1px solid $color-slate-200;
-          border-radius: $radius-md;
-          padding: 0.35rem 0.65rem;
-          font-size: $font-size-sm;
-          font-weight: $font-weight-medium;
-          color: $color-slate-700;
-
-          .chip-text {
-            margin-right: 0.4rem;
-          }
-
-          .chip-remove {
-            background: transparent;
-            border: none;
-            color: $color-slate-500;
-            font-size: $font-size-base;
-            line-height: 1;
-            cursor: pointer;
-            padding: 0;
-            margin-left: 0.2rem;
-
-            &:hover {
-              color: $color-danger-500;
-            }
-          }
-        }
-      }
-
-      .search-input-container {
-        position: relative;
-      }
-    }
-
-    .field-hint {
-      font-size: 0.8rem;
-      color: $color-slate-500;
-      margin-top: 0.65rem;
-    }
-  }
-
-  .modal-actions {
-    padding: $spacing-4 $spacing-6;
-    background: $color-slate-50;
-    border-top: 1px solid $color-slate-200;
-    border-bottom-left-radius: $radius-2xl;
-    border-bottom-right-radius: $radius-2xl;
+  .chips-container {
     display: flex;
-    justify-content: flex-end;
-    gap: $spacing-3;
+    flex-wrap: wrap;
+    gap: $spacing-2;
+    margin-bottom: $spacing-3;
+
+    .tag-chip {
+      display: inline-flex;
+      align-items: center;
+      background: $color-slate-100;
+      border: 1px solid $color-slate-200;
+      border-radius: $radius-md;
+      padding: 0.35rem 0.65rem;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+      color: $color-slate-700;
+
+      .chip-text {
+        margin-right: 0.4rem;
+      }
+
+      .chip-remove {
+        background: transparent;
+        border: none;
+        color: $color-slate-500;
+        font-size: $font-size-base;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0;
+        margin-left: 0.2rem;
+
+        &:hover {
+          color: $color-danger-500;
+        }
+      }
+    }
+  }
+
+  .search-input-container {
+    position: relative;
   }
 }
