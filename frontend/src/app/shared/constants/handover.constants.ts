@@ -9,8 +9,8 @@ export const HANDOVER_API_ENDPOINTS = {
     `/api/engagements/${engagementId}/handover/commitments/${commitmentId}/realistic`,
   HANDOVER_REVIEW: (id: number) => `/api/engagements/${id}/handover/review`,
   HANDOVER_QUERIES: (id: number) => `/api/engagements/${id}/handover/queries`,
-  HANDOVER_QUERY_RESPOND: (engagementId: number, queryId: number) =>
-    `/api/engagements/${engagementId}/handover/queries/${queryId}/respond`,
+  HANDOVER_QUERY_MESSAGES: (engagementId: number, queryId: number) =>
+    `/api/engagements/${engagementId}/handover/queries/${queryId}/messages`,
   HANDOVER_QUERY_TOGGLE_RESOLUTION: (engagementId: number, queryId: number) =>
     `/api/engagements/${engagementId}/handover/queries/${queryId}/toggle-resolution`,
 } as const;
