@@ -40,17 +40,6 @@
               <td class="owner-cell">
                 <div class="owner-content">
                   <span>{{ item.ownerFullName || 'Unassigned' }}</span>
-                  @if (canManage()) {
-                    <app-button
-                      type="button"
-                      variant="icon"
-                      class="btn-action"
-                      ariaLabel="Change owner"
-                      [appTooltip]="'Change owner'"
-                      (click)="openEditOwnerModal(item)">
-                      <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
-                    </app-button>
-                  }
                 </div>
               </td>
               <td class="status-cell">
