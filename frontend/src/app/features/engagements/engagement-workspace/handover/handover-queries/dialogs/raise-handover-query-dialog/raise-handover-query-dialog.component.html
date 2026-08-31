@@ -1,7 +1,6 @@
 <div class="dialog-container">
   <div class="dialog-header">
     <h3>Raise a Query</h3>
-    <app-button type="button" variant="icon" ariaLabel="Close" (click)="onCancel()">&times;</app-button>
   </div>
 
   <div class="dialog-body">
@@ -14,15 +13,16 @@
       [ngModelOptions]="{ standalone: true }"
     />
 
-    <app-select
-      *ngIf="isCommitmentSection()"
-      id="query-commitment"
-      label="Commitment"
-      [options]="commitmentOptions()"
-      [ngModel]="referenceId()"
-      (ngModelChange)="referenceId.set($event)"
-      [ngModelOptions]="{ standalone: true }"
-    />
+    @if (isCommitmentSection()) {
+      <app-select
+        id="query-commitment"
+        label="Commitment"
+        [options]="commitmentOptions()"
+        [ngModel]="referenceId()"
+        (ngModelChange)="referenceId.set($event)"
+        [ngModelOptions]="{ standalone: true }"
+      />
+    }
 
     <app-textarea
       id="query-question"
@@ -35,12 +35,14 @@
       [ngModelOptions]="{ standalone: true }"
     />
 
-    <app-alert *ngIf="errorMessage()" variant="danger">{{ errorMessage() }}</app-alert>
+    @if (errorMessage()) {
+      <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+    }
   </div>
 
   <div class="dialog-footer">
     <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="onCancel()">Cancel</app-button>
-    <app-button type="button" variant="accent" [disabled]="!canSubmit() || isSubmitting()" (click)="onSubmit()">
+    <app-button type="button" variant="flat" [disabled]="!canSubmit() || isSubmitting()" (click)="onSubmit()">
       {{ isSubmitting() ? 'Raising...' : 'Raise Query' }}
     </app-button>
   </div>

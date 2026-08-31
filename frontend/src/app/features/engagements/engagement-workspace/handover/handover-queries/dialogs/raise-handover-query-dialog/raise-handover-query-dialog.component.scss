@@ -1,43 +1,68 @@
+@use 'styles/tokens' as *;
+
 .dialog-container {
-  background-color: #ffffff;
-  border-radius: 0.75rem;
-  width: 100%;
-  max-width: 500px;
+  background-color: $color-surface;
+  border-radius: $radius-lg;
+  width: min(32rem, calc(100vw - 2rem));
   overflow: hidden;
+
+  @media (max-width: 640px) {
+    width: calc(100vw - 1rem);
+    border-radius: $radius-md;
+  }
 }
 
 .dialog-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #f1f5f9;
+  padding: $spacing-5 $spacing-6;
+  border-bottom: 1px solid $color-border-soft;
+
+  @media (max-width: 640px) {
+    padding: $spacing-4;
+  }
 
   h3 {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #0f172a;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text;
     margin: 0;
   }
 }
 
 .dialog-body {
-  padding: 2rem;
+  padding: $spacing-6;
+  max-height: 70vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: $spacing-4;
+
+  @media (max-width: 640px) {
+    padding: $spacing-4;
+    gap: $spacing-3;
+  }
 }
 
 .dialog-footer {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 1rem;
-  padding: 1.5rem 2rem;
-  background-color: #f8fafc;
-  border-top: 1px solid #e2e8f0;
+  gap: $spacing-3;
+  padding: $spacing-4 $spacing-6;
+  background-color: $color-bg;
+  border-top: 1px solid $color-border-soft;
+
+  @media (max-width: 640px) {
+    padding: $spacing-3 $spacing-4;
+    flex-direction: column-reverse;
+    align-items: stretch;
+
+    app-button {
+      width: 100%;
+      min-width: 100%;
+    }
+  }
 
   app-button {
-    min-width: 120px;
+    min-width: 6.25rem;
   }
 }

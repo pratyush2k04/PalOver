@@ -18,7 +18,8 @@
         @if (isProjectManagement() && isSubmitted() && !handover()?.reviewedAt) {
           <app-button
             variant="flat"
-            [disabled]="isSaving()"
+            [disabled]="isSaving() || hasUnresolvedQueries()"
+            [title]="hasUnresolvedQueries() ? 'All queries must be resolved before marking handover as reviewed' : ''"
             (click)="markReviewed()"
           >
             Mark Reviewed
@@ -30,11 +31,6 @@
     @if (isSubmitted() && handover()?.submittedAt) {
       <p class="submitted-info">
         Submitted by {{ handover()?.submittedByName || 'Unknown' }} on {{ handover()?.submittedAt | date: 'medium' }}
-      </p>
-    }
-    @if (handover()?.reviewedAt) {
-      <p class="reviewed-info">
-        Reviewed by {{ handover()?.reviewedByName || 'Unknown' }} on {{ handover()?.reviewedAt | date: 'medium' }}
       </p>
     }
 
@@ -462,6 +458,7 @@
         [engagementId]="engagementId()!"
         [commitments]="commitments()"
         [isReviewed]="isReviewed()"
+        (queriesChange)="queries.set($event)"
       ></app-handover-queries>
     }
   </div>

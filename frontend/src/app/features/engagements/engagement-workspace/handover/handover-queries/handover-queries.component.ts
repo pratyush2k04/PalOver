@@ -1,4 +1,4 @@
-import { Component, inject, input, signal, computed, effect } from '@angular/core';
+import { Component, inject, input, output, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '@shared/services/auth';
@@ -39,6 +39,7 @@ export class HandoverQueriesComponent {
   engagementId = input.required<number>();
   commitments = input<CommitmentDto[]>([]);
   isReviewed = input<boolean>(false);
+  queriesChange = output<HandoverQueryDto[]>();
 
   private handoverQueryService = inject(HandoverQueryService);
   private authService = inject(AuthService);
@@ -75,6 +76,7 @@ export class HandoverQueriesComponent {
     this.handoverQueryService.getQueries(id).subscribe({
       next: (data) => {
         this.queries.set(data);
+        this.queriesChange.emit(data);
         this.isLoading.set(false);
       },
       error: (err) => {
@@ -128,7 +130,11 @@ export class HandoverQueriesComponent {
 
     this.handoverQueryService.addMessage(id, query.id, { messageText: text }).subscribe({
       next: (updated) => {
-        this.queries.update((qs) => qs.map((q) => (q.id === updated.id ? updated : q)));
+        this.queries.update((qs) => {
+          const next = qs.map((q) => (q.id === updated.id ? updated : q));
+          this.queriesChange.emit(next);
+          return next;
+        });
         this.updateMessageDraft(query.id, '');
         this.showMessage('Message submitted.', false);
       },
@@ -159,7 +165,11 @@ export class HandoverQueriesComponent {
 
     this.handoverQueryService.toggleQueryResolution(id, query.id).subscribe({
       next: (updated) => {
-        this.queries.update((qs) => qs.map((q) => (q.id === updated.id ? updated : q)));
+        this.queries.update((qs) => {
+          const next = qs.map((q) => (q.id === updated.id ? updated : q));
+          this.queriesChange.emit(next);
+          return next;
+        });
       },
       error: (err) => this.showMessage(this.extractErrorMessage(err, 'Failed to update query.'), true),
       complete: () => {
@@ -185,7 +195,11 @@ export class HandoverQueriesComponent {
 
     dialogRef.afterClosed().subscribe((created) => {
       if (created) {
-        this.queries.update((qs) => [...qs, created]);
+        this.queries.update((qs) => {
+          const next = [...qs, created];
+          this.queriesChange.emit(next);
+          return next;
+        });
       }
     });
   }

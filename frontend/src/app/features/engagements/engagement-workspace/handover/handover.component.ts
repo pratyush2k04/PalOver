@@ -47,6 +47,8 @@ import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { SectionHeaderComponent } from '@common/components/section-header/section-header';
 import { ClientContactTransitionCardComponent } from './client-contact-transition-card/client-contact-transition-card.component';
+import { HandoverQueryService } from '../../services/handover-query.service';
+import { HandoverQueryDto } from '../../models/handover-query.model';
 import { HandoverQueriesComponent } from './handover-queries/handover-queries.component';
 import { ToastService } from '@common/services/toast/toast';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
@@ -100,6 +102,7 @@ export class HandoverComponent {
 
   private route = inject(ActivatedRoute);
   private handoverService = inject(HandoverService);
+  private handoverQueryService = inject(HandoverQueryService);
   private engagementService = inject(EngagementService);
   private kickoffReadinessService = inject(KickoffReadinessService);
   private authService = inject(AuthService);
@@ -115,11 +118,14 @@ export class HandoverComponent {
   });
 
   handover = signal<HandoverInfoDto | null>(null);
+  queries = signal<HandoverQueryDto[]>([]);
   isLoading = signal(true);
   isSaving = signal(false);
   message = signal('');
   isError = signal(false);
   handoverReadinessItems = signal<HandoverReadinessItemDto[]>([]);
+
+  hasUnresolvedQueries = computed(() => this.queries().some((q) => !q.isResolved));
 
   kickoffReadiness = this.kickoffReadinessService.readiness;
 
@@ -281,6 +287,10 @@ export class HandoverComponent {
         this.isLoading.set(false);
         if (!this.isDraft()) {
           this.clientContextForm.disable();
+          this.handoverQueryService.getQueries(id).subscribe({
+            next: (qs) => this.queries.set(qs),
+            error: () => {},
+          });
         }
 
         if (
