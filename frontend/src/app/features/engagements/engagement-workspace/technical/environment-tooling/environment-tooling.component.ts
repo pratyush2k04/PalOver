@@ -25,11 +25,6 @@ import {
   NotApplicableReasonDialogData,
   NotApplicableReasonDialogResult
 } from './dialogs/not-applicable-reason-dialog/not-applicable-reason-dialog.component';
-import {
-  EditOwnerDialogComponent,
-  EditOwnerDialogData,
-  EditOwnerDialogResult
-} from '../dialogs/edit-owner-dialog/edit-owner-dialog.component';
 
 @Component({
   selector: 'app-environment-tooling',
@@ -39,7 +34,6 @@ import {
     CommonModule,
     FormsModule,
     InlineSVGModule,
-    TooltipDirective,
     StatusBadgeComponent,
     ButtonComponent
   ],
@@ -186,43 +180,7 @@ export class EnvironmentToolingComponent {
     });
   }
 
-  openEditOwnerModal(item: EnvironmentToolingItemDto): void {
-    const dialogRef = this.dialog.open<EditOwnerDialogComponent, EditOwnerDialogData, EditOwnerDialogResult>(
-      EditOwnerDialogComponent,
-      { 
-        data: { 
-          itemName: item.name, 
-          engagementId: this.engagementId(),
-          currentOwnerId: item.ownerId 
-        },
-        disableClose: true
-      }
-    );
 
-    dialogRef.closed$.subscribe((result) => {
-      if (!result) return;
-      this.updateOwner(item, result.ownerId);
-    });
-  }
-
-  private updateOwner(item: EnvironmentToolingItemDto, ownerId: number) {
-    this.service.updateOwner(item.id, { ownerId }).pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (updatedItem) => {
-        const updatedList = this.items().map(i =>
-          i.id === updatedItem.id ? updatedItem : i
-        );
-        this.items.set(updatedList);
-        this.itemsUpdated.emit(updatedList);
-        this.toastService.success(`Owner updated for ${item.name}`);
-      },
-      error: (err) => {
-        this.toastService.error(`Failed to update owner for ${item.name}`);
-        console.error('API update owner failed', err);
-      }
-    });
-  }
 
   private submitAddItem(result: AddEnvironmentItemDialogResult) {
     const currentUserId = this.authService.getUserId() ?? 1;
