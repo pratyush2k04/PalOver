@@ -1,83 +1,73 @@
-<div class="dialog-container">
-    <div class="modal-header">
-      <h3 class="modal-title">Upload document</h3>
+<h2 class="app-dialog__title">Upload document</h2>
+
+<div class="app-dialog__content">
+  @if (errorMessage()) {
+    <app-alert>{{ errorMessage() }}</app-alert>
+  }
+
+  <div class="form-group">
+    <label for="file-picker">Select File(s) <span class="required-asterisk">*</span></label>
+    <input
+      id="file-picker"
+      type="file"
+      class="file-input"
+      multiple
+      accept=".pdf,.docx,.xlsx,.pptx,.png,.jpg,.jpeg,.msg,.eml"
+      (change)="onFileSelected($event)"
+    />
+  </div>
+
+  <!-- Show selected file list when multiple files are chosen -->
+  @if (selectedFiles().length > 1) {
+    <div class="selected-files-list">
+      <p class="selected-files-label">{{ selectedFiles().length }} files selected:</p>
+      <ul>
+        @for (f of selectedFiles(); track f.name) {
+          <li>{{ f.name }}</li>
+        }
+      </ul>
     </div>
+  }
 
-    <div class="modal-body">
-      @if (errorMessage()) {
-        <app-alert>{{ errorMessage() }}</app-alert>
-      }
+  <!-- Rename field — only for single-file uploads -->
+  @if (isSingleFile()) {
+    <app-input
+      id="file-name"
+      label="File name (simulated)"
+      [ngModel]="simulatedFileName()"
+      (ngModelChange)="onSimulatedNameChange($event)"
+      placeholder="e.g. Document.pdf"
+    />
+  }
 
-      <div class="form-group">
-        <label for="file-picker">Select File(s) <span class="required-asterisk">*</span></label>
-        <input
-          id="file-picker"
-          type="file"
-          class="file-input"
-          multiple
-          accept=".pdf,.docx,.xlsx,.pptx,.png,.jpg,.jpeg,.msg,.eml"
-          (change)="onFileSelected($event)"
-        />
-      </div>
+  <app-select
+    id="doc-category"
+    label="Category"
+    [required]="true"
+    [ngModel]="selectedCategoryId()"
+    (ngModelChange)="onCategoryChange($event)"
+    [options]="categoryOptions()"
+  />
 
-      <!-- Show selected file list when multiple files are chosen -->
-      @if (selectedFiles().length > 1) {
-        <div class="selected-files-list">
-          <p class="selected-files-label">{{ selectedFiles().length }} files selected:</p>
-          <ul>
-            @for (f of selectedFiles(); track f.name) {
-              <li>{{ f.name }}</li>
-            }
-          </ul>
-        </div>
-      }
+  <app-select
+    id="doc-visibility"
+    label="Visibility"
+    [required]="true"
+    [ngModel]="selectedVisibility()"
+    (ngModelChange)="onVisibilityChange($event)"
+    [options]="visibilityOptions"
+  />
 
-      <!-- Rename field — only for single-file uploads -->
-      @if (isSingleFile()) {
-        <div class="form-group">
-          <app-input
-            id="file-name"
-            label="File name (simulated)"
-            [ngModel]="simulatedFileName()"
-            (ngModelChange)="onSimulatedNameChange($event)"
-            placeholder="e.g. Document.pdf"
-          />
-        </div>
-      }
+  <p class="format-note">
+    Accepted formats: PDF, DOCX, XLSX, PPTX, PNG, JPG, MSG, EML up to 50 MB each.
+  </p>
+</div>
 
-      <div class="form-group">
-        <app-select
-          id="doc-category"
-          label="Category"
-          [required]="true"
-          [ngModel]="selectedCategoryId()"
-          (ngModelChange)="onCategoryChange($event)"
-          [options]="categoryOptions()"
-        />
-      </div>
-
-      <div class="form-group">
-        <app-select
-          id="doc-visibility"
-          label="Visibility"
-          [required]="true"
-          [ngModel]="selectedVisibility()"
-          (ngModelChange)="onVisibilityChange($event)"
-          [options]="visibilityOptions"
-        />
-      </div>
-
-      <p class="format-note">
-        Accepted formats: PDF, DOCX, XLSX, PPTX, PNG, JPG, MSG, EML up to 50 MB each.
-      </p>
-    </div>
-
-    <div class="modal-footer">
-      <app-button type="button" variant="stroked" [disabled]="isUploading()" (click)="onClose()">
-        Cancel
-      </app-button>
-      <app-button type="button" variant="flat" [loading]="isUploading()" (click)="onSubmit()">
-        Upload
-      </app-button>
-    </div>
+<div class="app-dialog__actions">
+  <app-button type="button" variant="stroked" [disabled]="isUploading()" (click)="onClose()">
+    Cancel
+  </app-button>
+  <app-button type="button" variant="flat" [loading]="isUploading()" (click)="onSubmit()">
+    Upload
+  </app-button>
 </div>

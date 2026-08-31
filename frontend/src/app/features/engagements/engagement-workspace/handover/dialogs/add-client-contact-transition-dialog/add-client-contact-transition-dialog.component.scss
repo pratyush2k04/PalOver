@@ -1,46 +1,9 @@
 @use 'styles/tokens' as *;
-@use 'styles/mixins' as *;
 
-.dialog-container {
-  background-color: $color-surface;
-  border-radius: $radius-lg;
-  width: min(31.25rem, calc(100vw - 2rem));
-  overflow: hidden;
-
-  @media (max-width: 640px) {
-    width: calc(100vw - 1rem);
-    border-radius: $radius-md;
-  }
-}
-
-.dialog-header {
-  padding: $spacing-5 $spacing-6;
-  border-bottom: 1px solid $color-border-soft;
-
-  @media (max-width: 640px) {
-    padding: $spacing-4;
-  }
-
-  h3 {
-    font-size: $font-size-lg;
-    font-weight: $font-weight-semibold;
-    color: $color-text;
-    margin: 0;
-  }
-}
-
-.dialog-body {
-  padding: $spacing-6;
-  max-height: 70vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-5;
-
-  @media (max-width: 640px) {
-    padding: $spacing-4;
-    gap: $spacing-4;
-  }
+:host {
+  display: block;
+  width: 31.25rem;
+  max-width: calc(100vw - 3rem);
 }
 
 .form-section {
@@ -53,27 +16,20 @@
     font-weight: $font-weight-bold;
     color: $color-text;
     margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  app-select,
-  app-input {
-    margin-bottom: 0;
   }
 }
 
 .confirm-section {
   border: 1px solid $color-border-soft;
   border-radius: $radius-md;
-  padding: $spacing-5;
+  padding: $spacing-4;
   background-color: $color-bg;
 }
 
 .confirm-message {
   font-size: $font-size-sm;
   color: $color-text-muted;
-  margin: 0 0 $spacing-4 0;
+  margin: 0 0 $spacing-3 0;
   line-height: 1.5;
   font-weight: $font-weight-medium;
 }
@@ -81,7 +37,7 @@
 .confirm-details {
   display: flex;
   flex-direction: column;
-  gap: $spacing-3;
+  gap: $spacing-2;
 }
 
 .detail-row {
@@ -99,30 +55,5 @@
 
   .contact-info {
     color: $color-text;
-  }
-}
-
-.dialog-footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: $spacing-3;
-  padding: $spacing-4 $spacing-6;
-  background-color: $color-bg;
-  border-top: 1px solid $color-border-soft;
-
-  @media (max-width: 640px) {
-    padding: $spacing-3 $spacing-4;
-    flex-direction: column-reverse;
-    align-items: stretch;
-
-    app-button {
-      width: 100%;
-      min-width: 100%;
-    }
-  }
-
-  app-button {
-    min-width: 6.25rem;
   }
 }

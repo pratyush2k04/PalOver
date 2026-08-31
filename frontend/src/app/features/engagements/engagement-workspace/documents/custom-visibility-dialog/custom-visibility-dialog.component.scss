@@ -1,32 +1,9 @@
 @use 'styles/tokens' as *;
 
-.dialog-container {
-  background-color: $color-surface;
-  border-radius: $radius-2xl;
-  width: 100%;
-  max-width: 32.5rem;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.modal-header {
-  padding: $spacing-5 $spacing-6;
-  border-bottom: 1px solid $color-slate-200;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  .modal-title {
-    margin: 0;
-    font-size: $font-size-lg;
-    font-weight: $font-weight-semibold;
-    color: $color-slate-900;
-  }
-}
-
-.modal-body {
-  padding: $spacing-6;
+:host {
+  display: block;
+  width: 32.5rem;
+  max-width: calc(100vw - 3rem);
 }
 
 .doc-info-banner {
@@ -34,7 +11,6 @@
   border: 1px solid $color-slate-200;
   border-radius: $radius-lg;
   padding: $spacing-4;
-  margin-bottom: $spacing-5;
 
   .doc-name-row {
     display: flex;
@@ -68,7 +44,7 @@
     margin-top: 0.5rem;
     display: flex;
     gap: 1.25rem;
-    font-size: 0.8125rem;
+    font-size: $font-size-xs;
     color: $color-slate-500;
   }
 }
@@ -77,13 +53,12 @@
   display: block;
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
-  letter-spacing: 0.05em;
   color: $color-slate-600;
   margin-bottom: 0.25rem;
 }
 
 .section-hint {
-  font-size: 0.8125rem;
+  font-size: $font-size-xs;
   color: $color-slate-500;
   margin: 0 0 0.75rem 0;
 }
@@ -97,7 +72,7 @@
   border-radius: $radius-md;
   padding: 0.5rem 0.75rem;
   margin-bottom: $spacing-4;
-  font-size: 0.8125rem;
+  font-size: $font-size-xs;
   font-weight: $font-weight-medium;
   color: $color-success-dark;
 
@@ -118,17 +93,14 @@
   }
 }
 
-.modal-footer {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid $color-slate-200;
+.custom-visibility-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
 
   .footer-actions {
     display: flex;
-    gap: 0.75rem;
+    gap: $spacing-3;
     margin-left: auto;
   }
 }

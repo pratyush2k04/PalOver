@@ -1,45 +1,35 @@
-<div class="dialog-container">
-  <div class="dialog-header">
-    <h2>Add action item</h2>
+<h2 class="app-dialog__title">Add action item</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
+    <app-input
+      id="action-title"
+      label="Action"
+      [required]="true"
+      formControlName="title"
+      [errorMessages]="{ required: messages.ACTION_TITLE_REQUIRED }"
+    />
+
+    <app-input
+      id="action-owner"
+      label="Owner"
+      [required]="true"
+      formControlName="ownerName"
+      [errorMessages]="{ required: messages.OWNER_NAME_REQUIRED }"
+    />
+
+    <app-input
+      id="action-due-date"
+      type="date"
+      label="Due date"
+      [required]="true"
+      formControlName="dueDate"
+      [errorMessages]="{ required: messages.DUE_DATE_REQUIRED }"
+    />
   </div>
 
-  <div class="dialog-body">
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <app-input
-          id="action-title"
-          label="Action"
-          [required]="true"
-          formControlName="title"
-          [errorMessages]="{ required: messages.ACTION_TITLE_REQUIRED }"
-        />
-      </div>
-
-      <div class="form-group">
-        <app-input
-          id="action-owner"
-          label="Owner"
-          [required]="true"
-          formControlName="ownerName"
-          [errorMessages]="{ required: messages.OWNER_NAME_REQUIRED }"
-        />
-      </div>
-
-      <div class="form-group">
-        <app-input
-          id="action-due-date"
-          type="date"
-          label="Due date"
-          [required]="true"
-          formControlName="dueDate"
-          [errorMessages]="{ required: messages.DUE_DATE_REQUIRED }"
-        />
-      </div>
-
-      <div class="dialog-actions">
-        <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
-        <app-button type="submit" variant="flat">Add</app-button>
-      </div>
-    </form>
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+    <app-button type="submit" variant="flat">Add</app-button>
   </div>
-</div>
+</form>

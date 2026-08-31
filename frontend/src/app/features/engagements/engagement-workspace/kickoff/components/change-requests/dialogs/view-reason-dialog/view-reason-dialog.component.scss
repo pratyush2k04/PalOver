@@ -1,46 +1,15 @@
 @use 'styles/tokens' as *;
 
-.dialog-container {
-  background-color: $color-surface;
-  border-radius: 0.75rem;
-  width: 100%;
-  max-width: 24rem;
-  overflow: hidden;
-}
-
-.dialog-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid $color-slate-100;
-
-  h3 {
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: $color-slate-900;
-    margin: 0;
-  }
-}
-
-.dialog-body {
-  padding: 1.5rem;
+:host {
+  display: block;
+  width: 26rem;
+  max-width: calc(100vw - 3rem);
 }
 
 .reason-text {
-  font-size: 0.9375rem;
-  color: $color-slate-700;
+  font-size: $font-size-sm;
+  color: $color-text;
   line-height: 1.5;
   margin: 0;
   word-break: break-word;
-}
-
-.dialog-footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  padding: 1.25rem 1.5rem;
-  background-color: $color-surface;
-  border-top: 1px solid $color-slate-100;
 }
