@@ -3,9 +3,9 @@
 .meeting-record-card {
   background: $color-surface;
   border: 1px solid $color-border-soft;
-  border-radius: $radius-lg;
+  border-radius: $radius-2xl;
   padding: $spacing-6;
-  box-shadow: $shadow-sm;
+  box-shadow: $shadow-card;
 }
 
 .title {

@@ -8,7 +8,7 @@
 
 .panel-card {
   width: 100%;
-  @include card-surface(0, 12px);
+  @include card-surface(0, $radius-2xl);
   @include flex-column;
   height: 100%;
   max-height: 100%;
@@ -21,8 +21,8 @@
     color: $color-danger-dark;
     padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--border-light, $color-border-table);
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
+    border-top-left-radius: $radius-2xl;
+    border-top-right-radius: $radius-2xl;
     font-weight: 500;
     font-size: 0.95rem;
 

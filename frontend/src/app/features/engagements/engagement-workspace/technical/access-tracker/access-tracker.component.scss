@@ -3,8 +3,8 @@
 .access-tracker-card {
   background-color: $color-surface;
   border: 1px solid $color-border-soft;
-  border-radius: $radius-lg;
-  box-shadow: $shadow-sm;
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-card;
   padding: $spacing-6;
 
   .card-header {
