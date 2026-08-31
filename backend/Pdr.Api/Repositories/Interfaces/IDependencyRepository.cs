@@ -9,6 +9,4 @@ public interface IDependencyRepository
     Task AddAsync(Dependency dependency);
     void Update(Dependency dependency);
     void Delete(Dependency dependency);
-    Task<int> SaveChangesAsync();
-    Task<bool> IsEngagementSignedOffAsync(int engagementId);
-}
+    Task<int> SaveChangesAsync();}

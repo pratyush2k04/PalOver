@@ -8,6 +8,7 @@ using Pdr.Api.Services.Interfaces;
 namespace Pdr.Api.Services;
 
 public class PersonService(
+    IEngagementRepository engagementRepository,
     
     IPersonRepository personRepository,
     IClientContactTransitionRepository transitionRepository,
@@ -34,10 +35,7 @@ public class PersonService(
             throw new EngagementNotFoundException(engagementId);
         }
 
-        if (await personRepository.IsEngagementSignedOffAsync(engagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var person = new Person
         {
@@ -80,10 +78,7 @@ public class PersonService(
             throw new EngagementNotFoundException(engagementId);
         }
 
-        if (await personRepository.IsEngagementSignedOffAsync(engagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var person = await personRepository.GetByIdAsync(personId);
         if (person is null || person.EngagementId != engagementId)
@@ -149,10 +144,7 @@ public class PersonService(
             throw new EngagementNotFoundException(engagementId);
         }
 
-        if (await personRepository.IsEngagementSignedOffAsync(engagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var person = await personRepository.GetByIdAsync(personId);
         if (person is null || person.EngagementId != engagementId)
@@ -173,10 +165,7 @@ public class PersonService(
             throw new EngagementNotFoundException(engagementId);
         }
 
-        if (await personRepository.IsEngagementSignedOffAsync(engagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var transitions = await transitionRepository.GetAllByEngagementIdAsync(engagementId);
         if (!transitions.Any())

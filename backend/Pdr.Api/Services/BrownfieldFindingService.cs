@@ -8,6 +8,7 @@ using Pdr.Api.Services.Interfaces;
 namespace Pdr.Api.Services;
 
 public class BrownfieldFindingService(
+    IEngagementRepository engagementRepository,
     IBrownfieldFindingRepository repository,
     IAuditLogService auditLogService,
     ICurrentUserService currentUserService,
@@ -42,10 +43,7 @@ public class BrownfieldFindingService(
             throw new EngagementNotFoundException(engagementId);
         }
 
-        if (await repository.IsEngagementSignedOffAsync(engagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         if (request.DocumentId.HasValue && !await repository.DocumentExistsAsync(request.DocumentId.Value))
         {
@@ -94,10 +92,7 @@ public class BrownfieldFindingService(
             throw new BrownfieldFindingNotFoundException(findingId);
         }
 
-        if (await repository.IsEngagementSignedOffAsync(finding.EngagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(finding.EngagementId);
 
         var wasReady = await readinessNotificationService.IsReadyAsync(finding.EngagementId);
 
@@ -117,10 +112,7 @@ public class BrownfieldFindingService(
             throw new BrownfieldFindingNotFoundException(findingId);
         }
 
-        if (await repository.IsEngagementSignedOffAsync(finding.EngagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(finding.EngagementId);
 
         var wasReady = await readinessNotificationService.IsReadyAsync(finding.EngagementId);
 

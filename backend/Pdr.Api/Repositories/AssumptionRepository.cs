@@ -52,8 +52,4 @@ public class AssumptionRepository(AppDbContext context) : IAssumptionRepository
     {
         return await context.Assumptions
             .CountAsync(a => a.EngagementId == engagementId && a.Status == AssumptionStatus.Invalid && a.LinkedRiskId == null);
-    }
-
-    public async Task<bool> IsEngagementSignedOffAsync(int engagementId) =>
-        await context.DayOneSignOffRecords.AsNoTracking().AnyAsync(r => r.EngagementId == engagementId);
-}
+    }}

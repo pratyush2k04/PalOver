@@ -20,7 +20,4 @@ public interface IDocumentRepository
 
     Task<DocumentVersion?> GetVersionByIdAsync(int documentId, int versionId);
 
-    Task<Document> AddVersionAsync(Document document, DocumentVersion newVersion);
-
-    Task<bool> IsEngagementSignedOffAsync(int engagementId);
-}
+    Task<Document> AddVersionAsync(Document document, DocumentVersion newVersion);}

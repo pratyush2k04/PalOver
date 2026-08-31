@@ -20,8 +20,4 @@ public class HandoverRepository(AppDbContext context) : IHandoverRepository
             .FirstOrDefaultAsync(s => s.HandoverStatusId == statusId);
 
     public async Task SaveChangesAsync() =>
-        await context.SaveChangesAsync();
-
-    public async Task<bool> IsEngagementSignedOffAsync(int engagementId) =>
-        await context.DayOneSignOffRecords.AsNoTracking().AnyAsync(r => r.EngagementId == engagementId);
-}
+        await context.SaveChangesAsync();}

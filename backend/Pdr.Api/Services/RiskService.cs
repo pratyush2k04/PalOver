@@ -13,6 +13,7 @@ using Pdr.Api.Services.Interfaces;
 namespace Pdr.Api.Services;
 
 public class RiskService(
+    IEngagementRepository engagementRepository,
     IRiskRepository riskRepository,
     ICurrentUserService currentUserService,
     IEngagementAccessService engagementAccessService) : IRiskService
@@ -39,10 +40,7 @@ public class RiskService(
 
     public async Task<RiskDto> CreateRiskAsync(int engagementId, CreateRiskDto dto)
     {
-        if (await riskRepository.IsEngagementSignedOffAsync(engagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var risk = new Risk
         {
@@ -65,10 +63,7 @@ public class RiskService(
 
     public async Task<RiskDto> UpdateRiskAsync(int engagementId, int riskId, UpdateRiskDto dto)
     {
-        if (await riskRepository.IsEngagementSignedOffAsync(engagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var risk = await riskRepository.GetByIdAsync(riskId)
             ?? throw new RiskNotFoundException(riskId);
@@ -99,10 +94,7 @@ public class RiskService(
 
     public async Task<RiskDto> CloseRiskAsync(int engagementId, int riskId, CloseRiskDto dto)
     {
-        if (await riskRepository.IsEngagementSignedOffAsync(engagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var risk = await riskRepository.GetByIdAsync(riskId)
             ?? throw new RiskNotFoundException(riskId);
@@ -138,10 +130,7 @@ public class RiskService(
 
     public async Task<RiskDto> ReopenRiskAsync(int engagementId, int riskId)
     {
-        if (await riskRepository.IsEngagementSignedOffAsync(engagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var risk = await riskRepository.GetByIdAsync(riskId)
             ?? throw new RiskNotFoundException(riskId);

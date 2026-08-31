@@ -20,6 +20,4 @@ public interface IAccessTrackerRepository
     Task<Engagement?> GetEngagementAsync(int engagementId);
 
     // Returns the UserId of the Tech Lead assigned to the engagement, or null if not yet assigned
-    Task<int?> GetTechLeadUserIdAsync(int engagementId);
-    Task<bool> IsEngagementSignedOffAsync(int engagementId);
-}
+    Task<int?> GetTechLeadUserIdAsync(int engagementId);}

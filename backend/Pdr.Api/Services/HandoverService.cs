@@ -16,6 +16,7 @@ namespace Pdr.Api.Services;
 
 public class HandoverService : IHandoverService
 {
+    private readonly IEngagementRepository _engagementRepository;
     private readonly IHandoverRepository _handoverRepository;
     private readonly ICommitmentRepository _commitmentRepository;
     private readonly IRealisticCommitmentRepository _realisticCommitmentRepository;
@@ -26,6 +27,7 @@ public class HandoverService : IHandoverService
     private readonly IHandoverReadinessRepository _handoverReadinessRepository;
 
     public HandoverService(
+        IEngagementRepository engagementRepository,
         IHandoverRepository handoverRepository,
         ICommitmentRepository commitmentRepository,
         IRealisticCommitmentRepository realisticCommitmentRepository,
@@ -35,6 +37,7 @@ public class HandoverService : IHandoverService
         IUserRepository userRepository,
         IHandoverReadinessRepository handoverReadinessRepository)
     {
+        _engagementRepository = engagementRepository;
         _handoverRepository = handoverRepository;
         _commitmentRepository = commitmentRepository;
         _realisticCommitmentRepository = realisticCommitmentRepository;
@@ -119,10 +122,7 @@ public class HandoverService : IHandoverService
     {
         await _engagementAccessService.ValidateAccessAsync(engagementId);
 
-        if (await _handoverRepository.IsEngagementSignedOffAsync(engagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await _engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
 
@@ -156,10 +156,7 @@ public class HandoverService : IHandoverService
     {
         await _engagementAccessService.ValidateAccessAsync(engagementId);
 
-        if (await _handoverRepository.IsEngagementSignedOffAsync(engagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await _engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
 

@@ -9,6 +9,7 @@ using Pdr.Api.Services.Interfaces;
 namespace Pdr.Api.Services;
 
 public class EnvironmentToolingService(
+    IEngagementRepository engagementRepository,
     IEnvironmentToolingRepository repository,
     IRiskService riskService,
     ITechnicalReadinessNotificationService readinessNotificationService) : IEnvironmentToolingService
@@ -44,10 +45,7 @@ public class EnvironmentToolingService(
             throw new EngagementNotFoundException(engagementId);
         }
 
-        if (await repository.IsEngagementSignedOffAsync(engagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         if (!await repository.UserExistsAsync(request.OwnerId))
         {
@@ -78,10 +76,7 @@ public class EnvironmentToolingService(
             throw new EnvironmentToolingItemNotFoundException(id);
         }
 
-        if (await repository.IsEngagementSignedOffAsync(item.EngagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(item.EngagementId);
 
         // Validate NotApplicableReason
         if (request.Status == EnvironmentToolingStatus.NotApplicable)
@@ -117,10 +112,7 @@ public class EnvironmentToolingService(
             throw new EnvironmentToolingItemNotFoundException(id);
         }
 
-        if (await repository.IsEngagementSignedOffAsync(item.EngagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(item.EngagementId);
 
         if (!await repository.UserExistsAsync(request.OwnerId))
         {

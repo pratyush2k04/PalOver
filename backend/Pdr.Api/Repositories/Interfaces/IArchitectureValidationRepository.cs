@@ -11,6 +11,4 @@ public interface IArchitectureValidationRepository
     Task AddFeatureItemAsync(DiscoveryFeatureItem item);
     Task<decimal> GetCommittedTimelineWeeksAsync(int engagementId);
     Task SaveChangesAsync();
-    Task<bool> EngagementExistsAsync(int engagementId);
-    Task<bool> IsEngagementSignedOffAsync(int engagementId);
-}
+    Task<bool> EngagementExistsAsync(int engagementId);}

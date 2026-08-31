@@ -16,6 +16,7 @@ using Pdr.Api.Services.Notifications.Mappers;
 namespace Pdr.Api.Services;
 
 public class ResourceRequestService(
+    IEngagementRepository engagementRepository,
     IResourceRequestRepository resourceRequestRepository,
     ICurrentUserService currentUserService,
     INotificationService notificationService,
@@ -26,10 +27,7 @@ public class ResourceRequestService(
         var engagement = await resourceRequestRepository.GetEngagementAsync(engagementId)
             ?? throw new EngagementNotFoundException(engagementId);
 
-        if (await resourceRequestRepository.IsEngagementSignedOffAsync(engagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var currentUserId = currentUserService.GetUserId();
         var assignment = await resourceRequestRepository.GetUserEngagementAssignmentAsync(engagementId, currentUserId);
@@ -88,10 +86,7 @@ public class ResourceRequestService(
     {
         var request = await GetOwnedRequestAsync(engagementId, id);
 
-        if (await resourceRequestRepository.IsEngagementSignedOffAsync(engagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         await EnsureLeadershipOrAdminAsync(engagementId);
 
@@ -144,10 +139,7 @@ public class ResourceRequestService(
     {
         var request = await GetOwnedRequestAsync(engagementId, id);
 
-        if (await resourceRequestRepository.IsEngagementSignedOffAsync(engagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         await EnsureLeadershipOrAdminAsync(engagementId);
 
@@ -185,10 +177,7 @@ public class ResourceRequestService(
     {
         var request = await GetOwnedRequestAsync(engagementId, id);
 
-        if (await resourceRequestRepository.IsEngagementSignedOffAsync(engagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         await EnsureLeadershipOrAdminAsync(engagementId);
 

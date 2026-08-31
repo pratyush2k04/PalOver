@@ -30,10 +30,7 @@ public class DependencySpikeService(
             throw new EngagementNotFoundException(engagementId);
         }
 
-        if (await repository.IsEngagementSignedOffAsync(engagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         int? ownerId = request.OwnerId;
 
@@ -73,10 +70,7 @@ public class DependencySpikeService(
             throw new DependencySpikeNotFoundException(spikeId);
         }
 
-        if (await repository.IsEngagementSignedOffAsync(spike.EngagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(spike.EngagementId);
 
         var wasReady = await readinessNotificationService.IsReadyAsync(spike.EngagementId);
 
@@ -102,10 +96,7 @@ public class DependencySpikeService(
             throw new DependencySpikeNotFoundException(spikeId);
         }
 
-        if (await repository.IsEngagementSignedOffAsync(spike.EngagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(spike.EngagementId);
 
         var wasReady = await readinessNotificationService.IsReadyAsync(spike.EngagementId);
 

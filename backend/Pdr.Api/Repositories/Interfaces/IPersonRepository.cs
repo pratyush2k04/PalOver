@@ -14,6 +14,4 @@ public interface IPersonRepository
     void Delete(Person person);
     Task<Person?> GetByNameAndRoleAndEngagementAsync(int engagementId, string name, string role);
     Task<IEnumerable<Person>> GetByNamesAndEngagementAsync(int engagementId, IEnumerable<string> names);
-    Task<bool> SaveChangesAsync();
-    Task<bool> IsEngagementSignedOffAsync(int engagementId);
-}
+    Task<bool> SaveChangesAsync();}

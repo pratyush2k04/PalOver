@@ -176,10 +176,7 @@ public class DocumentService(
 
     public async Task<DocumentResponseDto> UploadDocumentAsync(DocumentUploadDto dto)
     {
-        if (await repository.IsEngagementSignedOffAsync(dto.EngagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(dto.EngagementId);
 
         var engagementFolder = Path.Combine(environment.ContentRootPath, DocumentValidationConstants.UploadsFolder, dto.EngagementId.ToString());
         if (!Directory.Exists(engagementFolder))
@@ -351,10 +348,7 @@ public class DocumentService(
             throw new DocumentNotFoundException(id);
         }
 
-        if (await repository.IsEngagementSignedOffAsync(doc.EngagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(doc.EngagementId);
 
         var userIdStr = currentUserService.GetUserId().ToString();
         var userEmail = currentUserService.GetEmail();
@@ -412,10 +406,7 @@ public class DocumentService(
             throw new DocumentNotFoundException(id);
         }
 
-        if (await repository.IsEngagementSignedOffAsync(doc.EngagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(doc.EngagementId);
 
         var targetVisibility = dto.ResetToCategoryDefault
             ? GetCategoryDefaultVisibility(doc.Category?.CategoryName)
@@ -460,10 +451,7 @@ public class DocumentService(
             throw new DocumentNotFoundException(documentId);
         }
 
-        if (await repository.IsEngagementSignedOffAsync(doc.EngagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(doc.EngagementId);
 
         if (!CanAccessDocument(doc))
         {

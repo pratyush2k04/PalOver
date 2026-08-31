@@ -14,17 +14,20 @@ namespace Pdr.Api.Services;
 
 public class RealisticCommitmentService : IRealisticCommitmentService
 {
+    private readonly IEngagementRepository _engagementRepository;
     private readonly IHandoverRepository _handoverRepository;
     private readonly ICommitmentRepository _commitmentRepository;
     private readonly IRealisticCommitmentRepository _realisticCommitmentRepository;
     private readonly INotificationService _notificationService;
 
     public RealisticCommitmentService(
+        IEngagementRepository engagementRepository,
         IHandoverRepository handoverRepository,
         ICommitmentRepository commitmentRepository,
         IRealisticCommitmentRepository realisticCommitmentRepository,
         INotificationService notificationService)
     {
+        _engagementRepository = engagementRepository;
         _handoverRepository = handoverRepository;
         _commitmentRepository = commitmentRepository;
         _realisticCommitmentRepository = realisticCommitmentRepository;
@@ -84,8 +87,7 @@ public class RealisticCommitmentService : IRealisticCommitmentService
 
     private async Task<HandoverInfo> GetHandoverOrThrowAsync(int engagementId)
     {
-        if (await _handoverRepository.IsEngagementSignedOffAsync(engagementId))
-            throw new EngagementSignedOffException();
+        await _engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
 

@@ -9,6 +9,7 @@ using Pdr.Api.Services.Interfaces;
 namespace Pdr.Api.Services;
 
 public class RiskCommentService(
+    IEngagementRepository engagementRepository,
     IRiskCommentRepository commentRepository,
     IRiskRepository riskRepository,
     INotificationService notificationService) : IRiskCommentService
@@ -28,10 +29,7 @@ public class RiskCommentService(
 
     public async Task<RiskCommentDto> CreateCommentAsync(int engagementId, int riskId, CreateRiskCommentDto dto, int authorId)
     {
-        if (await riskRepository.IsEngagementSignedOffAsync(engagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var risk = await riskRepository.GetByIdAsync(riskId)
             ?? throw new RiskNotFoundException(riskId);
@@ -99,10 +97,7 @@ public class RiskCommentService(
 
     public async Task<RiskCommentDto> UpdateCommentAsync(int engagementId, int riskId, int commentId, UpdateRiskCommentDto dto, int currentUserId)
     {
-        if (await riskRepository.IsEngagementSignedOffAsync(engagementId))
-        {
-            throw new EngagementSignedOffException();
-        }
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var risk = await riskRepository.GetByIdAsync(riskId)
             ?? throw new RiskNotFoundException(riskId);

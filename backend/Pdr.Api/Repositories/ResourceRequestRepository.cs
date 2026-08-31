@@ -78,8 +78,4 @@ public class ResourceRequestRepository(AppDbContext context) : IResourceRequestR
     public async Task SaveChangesAsync()
     {
         await context.SaveChangesAsync();
-    }
-
-    public async Task<bool> IsEngagementSignedOffAsync(int engagementId) =>
-        await context.DayOneSignOffRecords.AsNoTracking().AnyAsync(r => r.EngagementId == engagementId);
-}
+    }}

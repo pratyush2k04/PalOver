@@ -76,8 +76,4 @@ public class PersonRepository(AppDbContext context) : IPersonRepository
     public async Task<bool> SaveChangesAsync()
     {
         return await context.SaveChangesAsync() > 0;
-    }
-
-    public async Task<bool> IsEngagementSignedOffAsync(int engagementId) =>
-        await context.DayOneSignOffRecords.AsNoTracking().AnyAsync(r => r.EngagementId == engagementId);
-}
+    }}
