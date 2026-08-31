@@ -370,7 +370,7 @@ select {
 
 .commitment-square {
   flex: 1 1 50%;
-  padding: $spacing-5 $spacing-4;
+  padding: $spacing-5 $spacing-4 $spacing-6;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -382,8 +382,8 @@ select {
     &::after {
       content: '';
       position: absolute;
-      top: $spacing-4;
-      bottom: $spacing-4;
+      top: $spacing-2;
+      bottom: $spacing-2;
       right: 0;
       width: 1px;
       background-color: $color-border-soft;
@@ -393,8 +393,8 @@ select {
       &::after {
         top: auto;
         bottom: 0;
-        left: $spacing-4;
-        right: $spacing-4;
+        left: $spacing-2;
+        right: $spacing-2;
         width: auto;
         height: 1px;
       }
