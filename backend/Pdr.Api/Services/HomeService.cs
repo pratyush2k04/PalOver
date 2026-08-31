@@ -1,4 +1,5 @@
 using Pdr.Api.Constants;
+using Pdr.Api.DTOs.Common;
 using Pdr.Api.DTOs.Home;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
@@ -31,7 +32,6 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
         var effectiveRole = (RoleEnum)user.RoleId;
 
         var cards = await GetDashboardCardsAsync(user.Id, effectiveRole, myEngagementIds);
-        var engagements = await GetDashboardEngagementsAsync(myEngagementIds);
         var blockers = await GetDashboardBlockersAsync(user.Id);
 
         var homeDto = new HomeDashboardDto
@@ -41,7 +41,6 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
             WelcomeMessage = BuildWelcomeMessage(user),
             EmptyState = ResolveEmptyState(effectiveRole),
             Cards = cards,
-            Engagements = engagements,
             CriticalBlockers = blockers
         };
 
@@ -148,14 +147,16 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
         };
     }
 
-    private async Task<List<DashboardEngagementDto>> GetDashboardEngagementsAsync(List<int> engagementIds)
+    public async Task<PagedResult<DashboardEngagementDto>> GetDashboardEngagementsPageAsync(int userId, int page, int pageSize)
     {
+        var myEngagementIds = await homeRepository.GetUserEngagementIdsAsync(userId);
+
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         var sevenDaysFromNow = today.AddDays(7);
 
-        var engagements = await homeRepository.GetUpcomingKickoffsAsync(engagementIds, sevenDaysFromNow);
+        var (items, totalCount) = await homeRepository.GetUpcomingKickoffsPageAsync(myEngagementIds, sevenDaysFromNow, page, pageSize);
 
-        foreach (var e in engagements)
+        foreach (var e in items)
         {
             var readiness = await kickoffReadinessService.GetReadinessAsync(e.EngagementId);
             var daysToKickoff = e.KickoffDate.DayNumber - today.DayNumber;
@@ -168,7 +169,13 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
             e.Status = LeadershipDashboardHelpers.DeriveStatus(readiness.Score, openBlockerCount, requiredThreshold);
         }
 
-        return engagements;
+        return new PagedResult<DashboardEngagementDto>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize
+        };
     }
 
     private async Task<List<DashboardBlockerDto>> GetDashboardBlockersAsync(int userId)

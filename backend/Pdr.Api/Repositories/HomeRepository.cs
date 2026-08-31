@@ -76,11 +76,18 @@ public class HomeRepository(AppDbContext db) : IHomeRepository
             .CountAsync();
     }
 
-    public async Task<List<DashboardEngagementDto>> GetUpcomingKickoffsAsync(List<int> engagementIds, DateOnly cutoffDate)
+    public async Task<(List<DashboardEngagementDto> Items, int TotalCount)> GetUpcomingKickoffsPageAsync(List<int> engagementIds, DateOnly cutoffDate, int page, int pageSize)
     {
-        return await db.Engagements
-            .Where(e => engagementIds.Contains(e.EngagementId) && e.KickoffDate <= cutoffDate)
+        var query = db.Engagements
+            .AsNoTracking()
+            .Where(e => engagementIds.Contains(e.EngagementId) && e.KickoffDate <= cutoffDate);
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
             .OrderBy(e => e.KickoffDate)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(e => new DashboardEngagementDto
             {
                 EngagementId = e.EngagementId,
@@ -88,6 +95,8 @@ public class HomeRepository(AppDbContext db) : IHomeRepository
                 KickoffDate = e.KickoffDate
             })
             .ToListAsync();
+
+        return (items, totalCount);
     }
 
     public async Task<int> GetEngagementOpenBlockerCountAsync(int engagementId)

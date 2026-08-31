@@ -8,7 +8,7 @@
 
 .home-workspace {
   @include flex-column();
-  padding: $spacing-8;
+  padding: $spacing-6 $spacing-8;
   max-width: 87.5rem;
   margin: 0 auto;
   font-family: $font-family-base;

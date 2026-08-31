@@ -4,9 +4,12 @@
     <a routerLink="/my-engagements" class="view-all-link">View all engagements &rarr;</a>
   </div>
 
-  <div class="list-content custom-scrollbar">
+  <div class="list-content">
+    @if (isLoading()) {
+    <app-loading-spinner />
+    } @else {
     <div class="engagements-list">
-      @for (engagement of engagements(); track engagement.engagementId) {
+      @for (engagement of pagedEngagements(); track engagement.engagementId) {
       <a [routerLink]="['/engagements', engagement.engagementId]" class="engagement-item clickable">
         <div class="engagement-details">
           <span class="engagement-name" [title]="engagement.engagementName">{{ engagement.engagementName }}</span>
@@ -38,5 +41,10 @@
       <div class="empty-state">No active engagements approaching kickoff.</div>
       }
     </div>
+    }
+  </div>
+
+  <div class="pagination-row">
+    <app-paginator [page]="page()" [totalPages]="totalPages()" (pageChange)="onPageChange($event)" />
   </div>
 </div>

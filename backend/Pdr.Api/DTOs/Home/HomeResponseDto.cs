@@ -17,7 +17,6 @@ public class HomeDashboardDto
     public string WelcomeMessage { get; set; } = string.Empty;
     public string EmptyState { get; set; } = string.Empty;
     public List<DashboardCardsDto> Cards { get; set; } = [];
-    public List<DashboardEngagementDto> Engagements { get; set; } = [];
     public List<DashboardBlockerDto> CriticalBlockers { get; set; } = [];
 }
 
