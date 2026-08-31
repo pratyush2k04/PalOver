@@ -1,5 +1,10 @@
 <div class="section handover-queries">
-  <h3>Handover Queries</h3>
+  <div class="queries-header">
+    <h3>Handover Queries</h3>
+    @if (!loadError() && isProjectManagement() && !isReviewed()) {
+      <app-button variant="flat" (click)="openRaiseQueryDialog()">+ Raise Query</app-button>
+    }
+  </div>
 
   @if (message()) {
     <app-alert [variant]="isError() ? 'danger' : 'neutral'">
@@ -33,12 +38,6 @@
         </div>
       </div>
     }
-  }
-
-  @if (!loadError() && isProjectManagement() && !isReviewed()) {
-    <div class="raise-query-actions">
-      <app-button variant="flat" (click)="openRaiseQueryDialog()">Raise another query</app-button>
-    </div>
   }
 </div>
 

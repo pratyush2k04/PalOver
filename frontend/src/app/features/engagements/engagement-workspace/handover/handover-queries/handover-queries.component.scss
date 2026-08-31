@@ -8,6 +8,20 @@
   margin-top: 1.5rem;
 }
 
+.queries-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid $color-border-soft;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+
+  h3 {
+    margin: 0;
+    color: $color-text;
+  }
+}
+
 .query-section + .query-section {
   margin-top: 1.5rem;
 }
@@ -231,8 +245,4 @@
   margin-top: 0.75rem;
   display: flex;
   justify-content: flex-end;
-}
-
-.raise-query-actions {
-  margin-top: 1.25rem;
 }
