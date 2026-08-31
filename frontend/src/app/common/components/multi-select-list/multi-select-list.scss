@@ -1,4 +1,4 @@
-@use '../../../../styles/tokens' as *;
+@use 'styles/tokens' as *;
 
 :host {
   display: block;
@@ -54,7 +54,7 @@
     gap: 0.625rem;
     padding: 0.75rem 1rem;
     border: 1.5px solid $color-slate-200;
-    border-radius: 8px;
+    border-radius: $radius-lg;
     transition: all 0.15s ease;
 
     input[type='checkbox'] {

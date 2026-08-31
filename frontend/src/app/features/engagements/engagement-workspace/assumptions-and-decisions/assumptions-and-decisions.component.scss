@@ -1,4 +1,4 @@
-@use '../../../../../styles/mixins' as *;
+@use 'styles/mixins' as *;
 
 :host {
   display: block;
@@ -24,8 +24,8 @@
   /* light red */
   color: $color-danger-dark;
   /* dark red */
-  padding: 1rem 1.5rem;
-  border-radius: 8px;
+  padding: $spacing-4 $spacing-6;
+  border-radius: $radius-lg;
   font-weight: 500;
   font-size: 0.95rem;
 

@@ -1,4 +1,4 @@
-@use '../../../../../../../../styles/tokens' as *;
+@use 'styles/tokens' as *;
 
 :host {
   display: block;
@@ -25,10 +25,10 @@
 }
 
 .blocker-count-badge {
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
   padding: 0.25rem 0.625rem;
-  border-radius: 9999px;
+  border-radius: $radius-full;
   background: $color-slate-100;
   color: $color-slate-600;
   white-space: nowrap;

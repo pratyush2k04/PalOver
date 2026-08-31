@@ -1,4 +1,4 @@
-@use '../../../../../styles/mixins' as *;
+@use 'styles/mixins' as *;
 
 .risks-container {
   padding: 0;
@@ -41,7 +41,7 @@
   padding: $spacing-4;
   background: $color-surface-hover;
   border: 1px solid $color-border-soft;
-  border-radius: $radius-lg;
+  border-radius: $radius-2xl;
 
   @media screen and (max-width: 768px) {
     flex-direction: column;
@@ -112,17 +112,15 @@
 .risk-card {
   background: $color-surface;
   border: 1px solid $color-border-soft;
-  border-radius: $radius-lg;
-  box-shadow: $shadow-sm;
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-card;
   transition: all $transition-base;
-  border-left: 4px solid $color-border-input;
 
   &:hover {
     box-shadow: $shadow-card;
   }
 
   &.top-priority {
-    border-left: 4px solid $color-danger;
     background: $color-danger-bg;
   }
 

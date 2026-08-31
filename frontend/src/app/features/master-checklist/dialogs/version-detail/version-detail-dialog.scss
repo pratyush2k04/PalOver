@@ -1,4 +1,4 @@
-@use '../../../../../styles/tokens' as *;
+@use 'styles/tokens' as *;
 
 :host {
   display: flex;
@@ -30,7 +30,7 @@
 
     &::-webkit-scrollbar-thumb {
       background-color: $color-slate-300;
-      border-radius: 6px;
+      border-radius: $radius-full;
 
       &:hover {
         background-color: $color-slate-400;

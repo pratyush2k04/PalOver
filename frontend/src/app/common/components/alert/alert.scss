@@ -1,14 +1,14 @@
-@use '../../../../styles/tokens' as *;
+@use 'styles/tokens' as *;
 
 :host {
   display: block;
 }
 
 .alert {
-  padding: 0.75rem 1rem;
-  margin-bottom: 1rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
+  padding: $spacing-3 $spacing-4;
+  margin-bottom: $spacing-4;
+  border-radius: $radius-lg;
+  font-size: $font-size-sm;
 
   &--danger {
     background-color: $color-danger-bg;

@@ -1,17 +1,17 @@
-@use '../../../../../../styles/tokens' as *;
+@use 'styles/tokens' as *;
 
 .dialog-container {
   background: $color-surface;
-  border-radius: 12px;
+  border-radius: $radius-2xl;
   width: 100%;
-  max-width: 520px;
+  max-width: 32.5rem;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
 .modal-header {
-  padding: 1.25rem 1.5rem;
+  padding: $spacing-5 $spacing-6;
   border-bottom: 1px solid $color-slate-200;
   display: flex;
   align-items: center;
@@ -19,23 +19,23 @@
 
   .modal-title {
     margin: 0;
-    font-size: 1.125rem;
-    font-weight: 600;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
     color: $color-slate-900;
   }
 }
 
 .modal-body {
-  padding: 1.5rem;
+  padding: $spacing-6;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: $spacing-5;
 
   .confirmation-warning {
     background-color: $color-danger-bg;
     border-left: 4px solid $color-danger-500;
-    padding: 0.875rem 1rem;
-    border-radius: 6px;
+    padding: $spacing-3 $spacing-4;
+    border-radius: $radius-md;
 
     p {
       margin: 0;
