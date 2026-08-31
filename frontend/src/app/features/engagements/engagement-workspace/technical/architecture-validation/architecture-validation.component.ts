@@ -126,6 +126,13 @@ export class ArchitectureValidationComponent {
     if (!this.isTechLead()) return;
     this.selectedStatus.set(status);
     this.rationaleError.set('');
+
+    if (+status === ArchitectureStatus.StillValid) {
+      this.rationale.set('');
+      if (this.hasStatusChanged()) {
+        this.onSaveStatus();
+      }
+    }
   }
 
   onRationaleChange(val: string): void {
