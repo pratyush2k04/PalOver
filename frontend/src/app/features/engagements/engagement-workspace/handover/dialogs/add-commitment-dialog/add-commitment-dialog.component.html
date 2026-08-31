@@ -8,7 +8,8 @@
       <div class="form-row">
         <app-input
           id="commitment-title"
-          [label]="HANDOVER_PLACEHOLDERS.TITLE + ' *'"
+          [label]="HANDOVER_PLACEHOLDERS.TITLE"
+          [required]="true"
           [placeholder]="HANDOVER_PLACEHOLDERS.TITLE_REQ"
           formControlName="title"
           [maxLength]="100"
@@ -17,7 +18,8 @@
         />
         <app-select
           id="commitment-type"
-          [label]="HANDOVER_LABELS.COMMITMENT_TYPE + ' *'"
+          [label]="HANDOVER_LABELS.COMMITMENT_TYPE"
+          [required]="true"
           formControlName="commitmentTypeId"
           [options]="commitmentTypeOptions"
           style="flex: 1"
@@ -26,7 +28,8 @@
 
       <app-textarea
         id="commitment-description"
-        [label]="HANDOVER_LABELS.DESCRIPTION + ' *'"
+        [label]="HANDOVER_LABELS.DESCRIPTION"
+        [required]="true"
         [placeholder]="HANDOVER_PLACEHOLDERS.DESCRIPTION_REQ"
         formControlName="description"
         [maxLength]="2000"
@@ -38,6 +41,7 @@
         <app-input
           id="commitment-timeline"
           [label]="HANDOVER_LABELS.TIMELINE"
+          [required]="true"
           type="number"
           [min]="1"
           formControlName="timeline"
@@ -46,6 +50,7 @@
         <app-select
           id="commitment-unit"
           [label]="HANDOVER_LABELS.UNIT"
+          [required]="true"
           formControlName="timelineUnit"
           [options]="timelineUnitOptions"
           style="flex: 1"

@@ -12,6 +12,7 @@
           <app-select
             id="outgoing-person"
             [label]="formLabels.OUTGOING_PERSON"
+            [required]="true"
             [placeholder]="formPlaceholders.OUTGOING_PERSON"
             [options]="outgoingContactOptions()"
             [errorMessages]="{ required: validationMessages.OUTGOING_PERSON_REQUIRED }"
@@ -25,6 +26,7 @@
           <app-input
             id="incoming-name"
             [label]="formLabels.INCOMING_NAME"
+            [required]="true"
             [placeholder]="formPlaceholders.INCOMING_NAME"
             formControlName="incomingContactName"
             [maxLength]="200"
@@ -32,6 +34,7 @@
           <app-input
             id="incoming-role"
             [label]="formLabels.INCOMING_ROLE"
+            [required]="true"
             [placeholder]="formPlaceholders.INCOMING_ROLE"
             formControlName="incomingContactRole"
             [maxLength]="200"

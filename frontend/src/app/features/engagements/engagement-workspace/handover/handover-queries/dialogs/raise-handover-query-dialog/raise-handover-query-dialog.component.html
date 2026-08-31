@@ -8,25 +8,29 @@
     <app-select
       id="query-field-section"
       label="Field"
+      [required]="true"
       [options]="fieldSectionOptions"
       [ngModel]="fieldSection()"
       (ngModelChange)="onFieldSectionChange($event)"
       [ngModelOptions]="{ standalone: true }"
     />
 
-    <app-select
-      *ngIf="isCommitmentSection()"
-      id="query-commitment"
-      label="Commitment"
-      [options]="commitmentOptions()"
-      [ngModel]="referenceId()"
-      (ngModelChange)="referenceId.set($event)"
-      [ngModelOptions]="{ standalone: true }"
-    />
+    @if (isCommitmentSection()) {
+      <app-select
+        id="query-commitment"
+        label="Commitment"
+        [required]="true"
+        [options]="commitmentOptions()"
+        [ngModel]="referenceId()"
+        (ngModelChange)="referenceId.set($event)"
+        [ngModelOptions]="{ standalone: true }"
+      />
+    }
 
     <app-textarea
       id="query-question"
       label="Question"
+      [required]="true"
       placeholder="What would you like to ask?"
       [rows]="4"
       [maxLength]="2000"
@@ -35,7 +39,9 @@
       [ngModelOptions]="{ standalone: true }"
     />
 
-    <app-alert *ngIf="errorMessage()" variant="danger">{{ errorMessage() }}</app-alert>
+    @if (errorMessage()) {
+      <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+    }
   </div>
 
   <div class="dialog-footer">

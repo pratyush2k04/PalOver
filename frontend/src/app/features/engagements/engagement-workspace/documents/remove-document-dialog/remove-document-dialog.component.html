@@ -17,6 +17,7 @@
         <app-textarea
           id="remove-reason"
           label="Reason for removal"
+          [required]="true"
           [rows]="4"
           [maxLength]="500"
           [ngModel]="reason()"

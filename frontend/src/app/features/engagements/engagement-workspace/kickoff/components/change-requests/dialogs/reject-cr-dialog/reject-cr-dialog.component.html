@@ -13,6 +13,7 @@
         <app-textarea
           id="rejectionReason"
           [label]="constants.LABEL_REASON_REQUIRED"
+          [required]="true"
           formControlName="rejectionReason"
           [rows]="4"
           [errorMessages]="{ required: constants.ERROR_REASON_REQUIRED }"

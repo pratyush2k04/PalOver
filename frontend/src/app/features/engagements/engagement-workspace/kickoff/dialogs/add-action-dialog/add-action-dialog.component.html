@@ -9,6 +9,7 @@
         <app-input
           id="action-title"
           label="Action"
+          [required]="true"
           formControlName="title"
           [errorMessages]="{ required: messages.ACTION_TITLE_REQUIRED }"
         />
@@ -18,6 +19,7 @@
         <app-input
           id="action-owner"
           label="Owner"
+          [required]="true"
           formControlName="ownerName"
           [errorMessages]="{ required: messages.OWNER_NAME_REQUIRED }"
         />
@@ -28,6 +30,7 @@
           id="action-due-date"
           type="date"
           label="Due date"
+          [required]="true"
           formControlName="dueDate"
           [errorMessages]="{ required: messages.DUE_DATE_REQUIRED }"
         />

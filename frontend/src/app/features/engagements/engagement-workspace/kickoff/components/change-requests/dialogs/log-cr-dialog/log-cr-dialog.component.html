@@ -13,6 +13,7 @@
         <app-textarea
           id="description"
           [label]="constants.LABEL_DESCRIPTION"
+          [required]="true"
           formControlName="description"
           [rows]="3"
           [errorMessages]="{ required: constants.ERROR_DESCRIPTION_REQUIRED }"
@@ -23,6 +24,7 @@
         <app-input
           id="impact"
           [label]="constants.LABEL_IMPACT"
+          [required]="true"
           formControlName="impact"
           [errorMessages]="{ required: constants.ERROR_IMPACT_REQUIRED }"
         />

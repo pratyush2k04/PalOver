@@ -10,6 +10,7 @@
         <app-input
           id="stakeholderRole"
           [label]="constants.LABEL_STAKEHOLDER_ROLE"
+          [required]="true"
           formControlName="stakeholderRole"
           [placeholder]="constants.PLACEHOLDER_STAKEHOLDER_ROLE"
           [errorMessages]="{ required: constants.ERROR_ROLE_REQUIRED }"
@@ -21,6 +22,7 @@
         <app-select
           id="cadenceSelect"
           [label]="constants.LABEL_CADENCE"
+          [required]="true"
           formControlName="cadence"
           [options]="cadenceOptions"
         />
@@ -28,7 +30,7 @@
 
       <!-- Participants Multi-Select -->
       <div class="form-group">
-        <label class="form-label">{{ constants.LABEL_PARTICIPANTS }}</label>
+        <label class="form-label">{{ constants.LABEL_PARTICIPANTS }} <span class="required-asterisk">*</span></label>
         <app-multi-select-list
           [options]="participantOptions"
           [selectedValues]="selectedParticipantUserIds()"

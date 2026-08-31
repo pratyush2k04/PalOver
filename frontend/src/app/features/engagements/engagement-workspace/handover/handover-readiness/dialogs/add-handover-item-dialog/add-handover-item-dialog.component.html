@@ -8,7 +8,8 @@
       <div class="form-group">
         <app-input
           id="handover-item-name"
-          label="Item Name *"
+          label="Item Name"
+          [required]="true"
           [ngModel]="name()"
           (ngModelChange)="onNameChange($event)"
           name="itemName"
