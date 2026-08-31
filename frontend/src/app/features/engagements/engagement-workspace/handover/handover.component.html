@@ -28,9 +28,14 @@
       </div>
     </app-section-header>
 
-    @if (isSubmitted() && handover()?.submittedAt) {
+    @if (isSubmitted() && handover()?.submittedAt && !handover()?.reviewedAt) {
       <p class="submitted-info">
         Submitted by {{ handover()?.submittedByName || 'Unknown' }} on {{ handover()?.submittedAt | date: 'medium' }}
+      </p>
+    }
+    @if (handover()?.reviewedAt) {
+      <p class="reviewed-info">
+        Reviewed by {{ handover()?.reviewedByName || 'Unknown' }} on {{ handover()?.reviewedAt | date: 'medium' }}
       </p>
     }
 

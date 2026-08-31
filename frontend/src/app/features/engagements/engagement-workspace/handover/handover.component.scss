@@ -136,9 +136,14 @@
 
 .submitted-info,
 .reviewed-info {
-  margin: -1rem 0 1.5rem;
-  font-size: 0.875rem;
+  margin: -$spacing-2 0 $spacing-5;
+  padding-left: $spacing-2;
+  font-size: $font-size-sm;
   color: $color-text-muted;
+
+  @media screen and (max-width: 768px) {
+    padding-left: 0;
+  }
 }
 
 .section {
