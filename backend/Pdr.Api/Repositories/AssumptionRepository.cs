@@ -52,5 +52,4 @@ public class AssumptionRepository(AppDbContext context) : IAssumptionRepository
     {
         return await context.Assumptions
             .CountAsync(a => a.EngagementId == engagementId && a.Status == AssumptionStatus.Invalid && a.LinkedRiskId == null);
-    }
-}
+    }}

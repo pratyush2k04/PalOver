@@ -337,4 +337,17 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
             .Include(a => a.User)
             .Where(a => engagementIds.Contains(a.EngagementId))
             .ToListAsync();
+
+    public async Task<bool> IsEngagementSignedOffAsync(int engagementId) =>
+        await context.DayOneSignOffRecords
+            .AsNoTracking()
+            .AnyAsync(r => r.EngagementId == engagementId);
+
+    public async Task EnsureNotSignedOffAsync(int engagementId)
+    {
+        if (await IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+    }
 }

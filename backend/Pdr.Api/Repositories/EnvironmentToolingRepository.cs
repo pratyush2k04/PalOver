@@ -35,5 +35,4 @@ public class EnvironmentToolingRepository(AppDbContext context) : IEnvironmentTo
         await context.Engagements.AnyAsync(e => e.EngagementId == engagementId);
 
     public async Task<bool> UserExistsAsync(int userId) =>
-        await context.Users.AnyAsync(u => u.Id == userId);
-}
+        await context.Users.AnyAsync(u => u.Id == userId);}

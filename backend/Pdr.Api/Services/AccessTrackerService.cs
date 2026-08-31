@@ -12,6 +12,7 @@ using Pdr.Api.Services.Interfaces;
 namespace Pdr.Api.Services;
 
 public class AccessTrackerService(
+    IEngagementRepository engagementRepository,
     IAccessTrackerRepository repository,
     IRiskService riskService,
     ICurrentUserService currentUserService,
@@ -50,6 +51,8 @@ public class AccessTrackerService(
         if (!await repository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         if (!await repository.UserExistsAsync(request.OwnerId))
             throw new UserNotFoundException(request.OwnerId);
 
@@ -82,6 +85,8 @@ public class AccessTrackerService(
     {
         var item = await repository.GetAccessItemByIdAsync(accessItemId)
             ?? throw new AccessItemNotFoundException(accessItemId);
+
+        await engagementRepository.EnsureNotSignedOffAsync(item.EngagementId);
 
         // Guard: same-status transition is never allowed
         if (item.Status == request.Status)
@@ -144,6 +149,8 @@ public class AccessTrackerService(
         var item = await repository.GetAccessItemByIdAsync(accessItemId)
             ?? throw new AccessItemNotFoundException(accessItemId);
 
+        await engagementRepository.EnsureNotSignedOffAsync(item.EngagementId);
+
         if (!await repository.UserExistsAsync(request.OwnerId))
             throw new UserNotFoundException(request.OwnerId);
 
@@ -164,6 +171,8 @@ public class AccessTrackerService(
     {
         var item = await repository.GetAccessItemByIdAsync(accessItemId)
             ?? throw new AccessItemNotFoundException(accessItemId);
+
+        await engagementRepository.EnsureNotSignedOffAsync(item.EngagementId);
 
         var wasReady = await readinessNotificationService.IsReadyAsync(item.EngagementId);
 
