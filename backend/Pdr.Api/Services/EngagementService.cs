@@ -219,8 +219,8 @@ public class EngagementService(
         var isSignedOff = status == "Past";
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
-        var activeCount = await engagementRepository.GetEngagementsForUserStatusCountAsync(userId, isSignedOff: false);
-        var pastCount = await engagementRepository.GetEngagementsForUserStatusCountAsync(userId, isSignedOff: true);
+        // The selected tab's count comes for free as totalCount below; only the other tab needs its own query.
+        var otherStatusCount = await engagementRepository.GetEngagementsForUserStatusCountAsync(userId, isSignedOff: !isSignedOff);
 
         List<EngagementListItemDto> items;
         int totalCount;
@@ -264,8 +264,8 @@ public class EngagementService(
             TotalCount = totalCount,
             Page = page,
             PageSize = pageSize,
-            ActiveCount = activeCount,
-            PastCount = pastCount
+            ActiveCount = isSignedOff ? otherStatusCount : totalCount,
+            PastCount = isSignedOff ? totalCount : otherStatusCount
         };
     }
 
