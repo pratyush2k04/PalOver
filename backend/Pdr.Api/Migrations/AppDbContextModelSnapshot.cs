@@ -508,6 +508,18 @@ namespace Pdr.Api.Migrations
                             Id = 29,
                             Action = "ReadinessOnePagerGenerated",
                             Details = "Kickoff-readiness one-pager generated for engagement {engagementName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            Action = "DocumentDeleted",
+                            Details = "Document {documentName} removed by {actorName} ({reason})"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            Action = "DocumentVisibilityChanged",
+                            Details = "Document {documentName} visibility changed to {visibility} by {actorName}"
                         });
                 });
 
@@ -5100,6 +5112,45 @@ namespace Pdr.Api.Migrations
                             Key = "TechnicalReadinessComplete",
                             LinkPattern = "/engagements/{EngagementId}/workspace/overview",
                             Title = "Technical Readiness 100% — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 471928,
+                            Body = "{ActorName} removed {DocumentName} from {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 2,
+                            IsDeleted = false,
+                            Key = "DocumentDeleted",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/documents",
+                            Title = "Document removed — {DocumentName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 583046,
+                            Body = "{UploaderName} uploaded version {Version} of {DocumentName} to {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 2,
+                            IsDeleted = false,
+                            Key = "DocumentVersionUploaded",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/documents",
+                            Title = "New version uploaded — {DocumentName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 692157,
+                            Body = "{ActorName} changed {DocumentName}'s visibility to {Visibility} in {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 1,
+                            IsDeleted = false,
+                            Key = "DocumentVisibilityChanged",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/documents",
+                            Title = "Document visibility changed — {DocumentName}",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });

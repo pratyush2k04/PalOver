@@ -98,6 +98,13 @@ export class EngagementChecklistComponent {
     return this.checklist()?.categories.map((c) => ({ id: c.categoryId, name: c.categoryName })) ?? [];
   });
 
+  blockedGateItems = computed(() =>
+    (this.checklist()?.incompleteMandatoryItems ?? []).filter((item) => item.status === 'Blocked')
+  );
+  incompleteGateItems = computed(() =>
+    (this.checklist()?.incompleteMandatoryItems ?? []).filter((item) => item.status !== 'Blocked')
+  );
+
   hasActiveFilters = computed(() => {
     return (
       this.searchTerm().trim() !== '' ||

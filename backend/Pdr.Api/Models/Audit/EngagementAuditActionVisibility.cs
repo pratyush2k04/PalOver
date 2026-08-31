@@ -29,8 +29,10 @@ public static class EngagementAuditActionVisibilityRegistry
         [AuditActionEnum.UnauthorizedAccess] = new(VisibleToRoles: null),
         [AuditActionEnum.AccountLockout] = new(VisibleToRoles: null),
         [AuditActionEnum.UserRoleAllocated] = new(VisibleToRoles: null),
-        [AuditActionEnum.DocumentVersioned] = new(VisibleToRoles: null),
-        [AuditActionEnum.DocumentUploaded] = new(VisibleToRoles: null),
+        [AuditActionEnum.DocumentVersioned] = new(VisibleToRoles: AllRoles),
+        [AuditActionEnum.DocumentUploaded] = new(VisibleToRoles: AllRoles),
+        [AuditActionEnum.DocumentDeleted] = new(VisibleToRoles: AllRoles),
+        [AuditActionEnum.DocumentVisibilityChanged] = new(VisibleToRoles: AllRoles),
         [AuditActionEnum.MasterChecklistPublished] = new(VisibleToRoles: null),
 
         [AuditActionEnum.BrownfieldItemAdded] = new(VisibleToRoles: AllRoles),

@@ -203,6 +203,18 @@ public class AuditActionConfiguration : IEntityTypeConfiguration<AuditAction>
             },
             new AuditAction
             {
+                Id = (int)AuditActionEnum.DocumentDeleted,
+                Action = AuditActionEnum.DocumentDeleted.ToString(),
+                Details = "Document {documentName} removed by {actorName} ({reason})"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.DocumentVisibilityChanged,
+                Action = AuditActionEnum.DocumentVisibilityChanged.ToString(),
+                Details = "Document {documentName} visibility changed to {visibility} by {actorName}"
+            },
+            new AuditAction
+            {
                 Id = (int)AuditActionEnum.HandoverQueryRaised,
                 Action = AuditActionEnum.HandoverQueryRaised.ToString(),
                 Details = "{actorName} raised a query on {fieldSection} for the handover on {engagementName}"

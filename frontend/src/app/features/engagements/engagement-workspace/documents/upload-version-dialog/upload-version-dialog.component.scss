@@ -3,8 +3,8 @@
 .dialog-container {
   background: $color-surface;
   border-radius: 12px;
-  width: 100%;
-  max-width: 520px;
+  width: 32.5rem;
+  max-width: calc(100vw - 3rem);
   display: flex;
   flex-direction: column;
   overflow: hidden;

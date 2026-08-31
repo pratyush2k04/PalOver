@@ -1,5 +1,6 @@
 import { Component, input, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { InlineSVGModule } from 'ng-inline-svg-2';
 
 export interface FlaggedItem {
   label: string;
@@ -9,7 +10,7 @@ export interface FlaggedItem {
 @Component({
   selector: 'app-flagged-items-banner',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, InlineSVGModule],
   templateUrl: './flagged-items-banner.component.html',
   styleUrl: './flagged-items-banner.component.scss'
 })

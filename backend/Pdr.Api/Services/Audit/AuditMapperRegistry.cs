@@ -37,6 +37,8 @@ public static class AuditMapperRegistry
         services.AddScoped<IAuditTemplateMapper, KickoffReadyMarkedMapper>();
         services.AddScoped<IAuditTemplateMapper, KickoffReadyRevertedMapper>();
         services.AddScoped<IAuditTemplateMapper, AccessItemBlockedAuditMapper>();
+        services.AddScoped<IAuditTemplateMapper, DocumentDeletedMapper>();
+        services.AddScoped<IAuditTemplateMapper, DocumentVisibilityChangedMapper>();
         services.AddScoped<IAuditTemplateMapper, HandoverQueryRaisedMapper>();
         services.AddScoped<IAuditTemplateMapper, HandoverQueryRespondedMapper>();
         services.AddScoped<IAuditTemplateMapper, HandoverQueryResolvedMapper>();

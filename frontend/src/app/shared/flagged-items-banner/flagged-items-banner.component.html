@@ -1,11 +1,17 @@
-<ng-container *ngIf="flaggedItems().length > 0; else allClear">
+@if (flaggedItems().length > 0) {
   <div class="flagged-items-banner">
-    <p *ngFor="let item of flaggedItems()">&#9888; {{ item.count }} {{ item.label }}</p>
+    @for (item of flaggedItems(); track item.label) {
+      <p>
+        <span class="icon" [inlineSVG]="'assets/icons/alert-triangle.svg'"></span>
+        <span>{{ item.count }} {{ item.label }}</span>
+      </p>
+    }
   </div>
-</ng-container>
-
-<ng-template #allClear>
+} @else {
   <div class="flagged-items-banner flagged-items-banner-clear">
-    <p>{{ allClearMessage() }}</p>
+    <p>
+      <span class="icon" [inlineSVG]="'assets/icons/check-circle.svg'"></span>
+      <span>{{ allClearMessage() }}</span>
+    </p>
   </div>
-</ng-template>
+}

@@ -322,6 +322,45 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             },
             new NotificationTemplate
             {
+                Id = 471928,
+                Key = NotificationConstants.TemplateKeys.DocumentDeleted,
+                Title = "Document removed — {DocumentName}",
+                Body = "{ActorName} removed {DocumentName} from {EngagementName}.",
+                DefaultPriority = NotificationPriority.Medium,
+                LinkPattern = "/engagements/{EngagementId}/workspace/documents",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 583046,
+                Key = NotificationConstants.TemplateKeys.DocumentVersionUploaded,
+                Title = "New version uploaded — {DocumentName}",
+                Body = "{UploaderName} uploaded version {Version} of {DocumentName} to {EngagementName}.",
+                DefaultPriority = NotificationPriority.Medium,
+                LinkPattern = "/engagements/{EngagementId}/workspace/documents",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 692157,
+                Key = NotificationConstants.TemplateKeys.DocumentVisibilityChanged,
+                Title = "Document visibility changed — {DocumentName}",
+                Body = "{ActorName} changed {DocumentName}'s visibility to {Visibility} in {EngagementName}.",
+                DefaultPriority = NotificationPriority.Low,
+                LinkPattern = "/engagements/{EngagementId}/workspace/documents",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            },
+            new NotificationTemplate
+            {
                 Id = 856017,
                 Key = "HandoverQueryRaised",
                 Title = "Handover Query Raised — {EngagementName}",

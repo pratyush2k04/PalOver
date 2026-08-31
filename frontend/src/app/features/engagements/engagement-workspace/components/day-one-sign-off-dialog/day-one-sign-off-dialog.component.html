@@ -73,12 +73,12 @@
     </app-button>
     <app-button
       type="button"
-      [variant]="isException() ? 'warning' : 'flat'"
+      [variant]="isException() && data.isLeadership ? 'warning' : 'flat'"
       [loading]="isBusy()"
       [disabled]="!canSubmit()"
       (click)="onSubmit()"
     >
-      {{ isException() ? 'Sign Off with Exception' : 'Confirm Sign-Off' }}
+      {{ isException() && data.isLeadership ? 'Sign Off with Exception' : 'Confirm Sign-Off' }}
     </app-button>
   </div>
 </div>

@@ -59,7 +59,8 @@
     @if (canViewDependencySpikes()) {
       <div class="readiness-section">
         <app-dependency-spikes
-          [engagementId]="engagementId()!">
+          [engagementId]="engagementId()!"
+          (itemsUpdated)="onDependencySpikesUpdated($event)">
         </app-dependency-spikes>
       </div>
     }

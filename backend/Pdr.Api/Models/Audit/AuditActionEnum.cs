@@ -31,6 +31,8 @@ public enum AuditActionEnum
     KickoffReadyReverted = 27,
     AccessItemBlocked = 28,
     ReadinessOnePagerGenerated = 29,
+    DocumentDeleted = 30,
+    DocumentVisibilityChanged = 31,
     HandoverQueryRaised = 856017,
     HandoverQueryResponded = 856018,
     HandoverQueryResolved = 856019

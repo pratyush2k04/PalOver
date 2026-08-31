@@ -31,6 +31,9 @@ public static class NotificationMapperRegistry
         services.AddScoped<INotificationTemplateMapper, PresalesCommitmentAddedMapper>();
         services.AddScoped<INotificationTemplateMapper, PendingCommitmentsSummaryMapper>();
         services.AddScoped<INotificationTemplateMapper, TechnicalReadinessCompleteMapper>();
+        services.AddScoped<INotificationTemplateMapper, DocumentDeletedMapper>();
+        services.AddScoped<INotificationTemplateMapper, DocumentVersionUploadedMapper>();
+        services.AddScoped<INotificationTemplateMapper, DocumentVisibilityChangedMapper>();
 
         // Add new mappers here when adding new notification types.
 
