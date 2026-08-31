@@ -10,7 +10,7 @@
     <div class="title-section">
       <h2>Assumptions</h2>
     </div>
-    <app-button class="btn-add" variant="stroked" (click)="openAssumptionDialog()">+ Add</app-button>
+    <app-button class="btn-add" variant="flat" (click)="openAssumptionDialog()">+ Add</app-button>
   </div>
 
   @if (isLoading()) {
@@ -53,7 +53,7 @@
                     <app-button class="btn-edit" variant="stroked" (click)="openAssumptionDialog(item)">Edit</app-button>
                   }
                   @if (item.status === AssumptionStatus.Unvalidated && isPm()) {
-                    <app-button class="btn-validate" variant="stroked" (click)="validateAssumption(item.id, AssumptionStatus.Validated)">Validate</app-button>
+                    <app-button class="btn-validate" variant="flat" (click)="validateAssumption(item.id, AssumptionStatus.Validated)">Validate</app-button>
                     <app-button variant="danger" (click)="markInvalid(item.id)">Mark invalid</app-button>
                   }
                 </div>

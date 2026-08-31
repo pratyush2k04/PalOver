@@ -53,17 +53,6 @@
       }
     }
 
-    .btn-add {
-      ::ng-deep button {
-        background-color: $color-primary-light !important;
-        border-color: $color-primary-border !important;
-        color: $color-primary-hover !important;
-
-        &:hover {
-          background-color: $color-primary-subtle !important;
-        }
-      }
-    }
   }
 
   .panel-content {

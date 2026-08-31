@@ -10,7 +10,7 @@
     <div class="title-section">
       <h2>Dependencies</h2>
     </div>
-    <app-button class="btn-add" variant="stroked" (click)="openDependencyDialog()">+ Add</app-button>
+    <app-button class="btn-add" variant="flat" (click)="openDependencyDialog()">+ Add</app-button>
   </div>
 
   @if (isLoading()) {
@@ -51,7 +51,7 @@
                     <app-button class="btn-edit" variant="stroked" (click)="openDependencyDialog(item)">Edit</app-button>
                   }
                   @if (item.status !== DependencyStatus.Met && canMarkMet(item)) {
-                    <app-button class="btn-met" type="button" variant="stroked" (click)="markAsMet(item)">Mark Met</app-button>
+                    <app-button class="btn-met" type="button" variant="flat" (click)="markAsMet(item)">Mark Met</app-button>
                   }
                 </div>
               </div>
