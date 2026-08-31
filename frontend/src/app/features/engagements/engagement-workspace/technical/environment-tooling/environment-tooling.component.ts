@@ -52,12 +52,14 @@ export class EnvironmentToolingComponent {
   private service = inject(EnvironmentToolingService);
   private toastService = inject(ToastService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
   private destroyRef = inject(DestroyRef);
   private dialog = inject(DialogService);
 
   items = signal<EnvironmentToolingItemDto[]>([]);
   isLoading = signal<boolean>(true);
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+  canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
 
   readonly statusOptions = [
     { label: 'Ready', value: EnvironmentToolingStatus.Ready },

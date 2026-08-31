@@ -41,6 +41,7 @@ export class BrownfieldReviewComponent {
   private brownfieldService = inject(BrownfieldReviewService);
   private toastService = inject(ToastService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
   private dialog = inject(DialogService);
 
   readinessResponse = signal<BrownfieldReadinessResponse | null>(null);
@@ -49,6 +50,7 @@ export class BrownfieldReviewComponent {
   isDeleting = signal<boolean>(false);
 
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+  canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
   findings = computed(() => this.readinessResponse()?.items ?? []);
   totalCount = computed(() => this.readinessResponse()?.totalCount ?? 0);
   highSeverityPendingCount = computed(() => this.readinessResponse()?.highSeverityPendingCount ?? 0);

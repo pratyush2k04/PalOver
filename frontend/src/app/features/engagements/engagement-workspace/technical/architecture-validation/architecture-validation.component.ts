@@ -50,6 +50,7 @@ export class ArchitectureValidationComponent {
   private service = inject(ArchitectureValidationService);
   private toastService = inject(ToastService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
   private dialog = inject(DialogService);
   private destroyRef = inject(DestroyRef);
   private route = inject(ActivatedRoute);
@@ -65,6 +66,7 @@ export class ArchitectureValidationComponent {
   rationaleError = signal<string>('');
 
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+  canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
   features = computed(() => this.validation()?.features ?? []);
   committedTimelineWeeks = computed(() => this.validation()?.committedTimelineWeeks ?? 0);
   totalEstimatedWeeks = computed(() => this.validation()?.totalEstimatedWeeks ?? 0);

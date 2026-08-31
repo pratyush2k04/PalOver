@@ -58,12 +58,14 @@ export class AccessTrackerComponent {
   private toastService = inject(ToastService);
   private kickoffReadinessService = inject(KickoffReadinessService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
   private destroyRef = inject(DestroyRef);
   private dialog = inject(DialogService);
 
   accessItems = signal<AccessItemDto[]>([]);
   isLoading = signal<boolean>(true);
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+  canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
 
   itemToDelete = signal<AccessItemDto | null>(null);
   isDeleting = signal<boolean>(false);

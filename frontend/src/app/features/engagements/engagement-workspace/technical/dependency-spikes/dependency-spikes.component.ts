@@ -50,6 +50,7 @@ export class DependencySpikesComponent implements OnInit {
   private spikeService = inject(DependencySpikeService);
   private toastService = inject(ToastService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
   private dialog = inject(DialogService);
 
   spikes = signal<DependencySpikeDto[]>([]);
@@ -58,7 +59,7 @@ export class DependencySpikesComponent implements OnInit {
   isDeleting = signal<boolean>(false);
 
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
-  canManage = computed(() => this.isTechLead());
+  canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
 
   constructor() {
     effect(() => {
