@@ -24,10 +24,17 @@
         id="billingStartDate"
         type="date"
         class="form-control"
+        [min]="minDate"
         formControlName="billingStartDate"
       />
       @if (form.get('billingStartDate')?.invalid && (form.get('billingStartDate')?.touched || form.get('billingStartDate')?.dirty)) {
-        <span class="error-text">Billing start date is required.</span>
+        <span class="error-text">
+          @if (form.get('billingStartDate')?.errors?.['required']) {
+            Billing start date is required.
+          } @else if (form.get('billingStartDate')?.errors?.['pastDate']) {
+            Date cannot be in the past.
+          }
+        </span>
       }
     </div>
 

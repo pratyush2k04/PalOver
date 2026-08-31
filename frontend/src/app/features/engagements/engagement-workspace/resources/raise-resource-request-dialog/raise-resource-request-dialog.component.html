@@ -45,6 +45,7 @@
       [label]="constants.LABEL_REQUIRED_BY"
       [required]="true"
       type="date"
+      [min]="minDate"
       formControlName="requiredByDate"
       [errorMessages]="{
         required: 'Please select a required-by date.',
