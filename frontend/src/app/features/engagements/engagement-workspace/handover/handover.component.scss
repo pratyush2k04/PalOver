@@ -377,11 +377,27 @@ select {
   gap: $spacing-3;
 
   &.promised-square {
-    border-right: 1px solid $color-border-soft;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: $spacing-4;
+      bottom: $spacing-4;
+      right: 0;
+      width: 1px;
+      background-color: $color-border-soft;
+    }
 
     @media (max-width: 768px) {
-      border-right: none;
-      border-bottom: 1px solid $color-border-soft;
+      &::after {
+        top: auto;
+        bottom: 0;
+        left: $spacing-4;
+        right: $spacing-4;
+        width: auto;
+        height: 1px;
+      }
     }
   }
 
