@@ -95,15 +95,20 @@ app-paginator {
   margin-top: $spacing-5;
 }
 
+$engagement-row-height: 4.75rem;
+
 .engagement-list {
   background: $color-surface;
   border-radius: $radius-2xl;
   box-shadow: $shadow-card;
   overflow: hidden;
+  height: calc(#{$engagement-row-height} * var(--page-size, 5));
 }
 
 .engagement-row {
   @include flex-between;
+  min-height: $engagement-row-height;
+  box-sizing: border-box;
   padding: $spacing-5 $spacing-6;
   cursor: pointer;
   transition: background-color $transition-fast;
