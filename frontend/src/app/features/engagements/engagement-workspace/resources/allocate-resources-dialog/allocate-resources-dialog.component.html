@@ -15,6 +15,7 @@
             <app-input
               [id]="'allocation-name-' + $index"
               [label]="slotLabel($index)"
+              [required]="true"
               [formControlName]="$index"
               [errorMessages]="{ required: constants.MSG_NAME_REQUIRED }"
             />

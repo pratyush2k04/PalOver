@@ -12,6 +12,7 @@
         <app-textarea
           id="na-reason"
           label="Reason"
+          [required]="true"
           [rows]="3"
           [ngModel]="reason()"
           (ngModelChange)="onReasonChange($event)"

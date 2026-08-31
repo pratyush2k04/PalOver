@@ -8,6 +8,7 @@
       <app-input
         id="title"
         label="Risk Title"
+        [required]="true"
         formControlName="title"
         placeholder="Short descriptive title of the risk"
         [maxLength]="300"
@@ -16,6 +17,7 @@
       <app-textarea
         id="description"
         label="Description"
+        [required]="true"
         formControlName="description"
         [rows]="3"
         placeholder="Detailed explanation of potential risk impact and context"
@@ -27,6 +29,7 @@
           <app-select
             id="impact"
             label="Impact"
+            [required]="true"
             formControlName="impact"
             [options]="impactOptions"
           />
@@ -36,6 +39,7 @@
           <app-select
             id="likelihood"
             label="Likelihood"
+            [required]="true"
             formControlName="likelihood"
             [options]="likelihoodOptions"
           />
@@ -46,7 +50,8 @@
         <div class="form-group col">
           <app-select
             id="ownerId"
-            label="Owner *"
+            label="Owner"
+            [required]="true"
             formControlName="ownerId"
             [options]="ownerSelectOptions"
           />
@@ -57,6 +62,7 @@
             <app-select
               id="status"
               label="Status"
+              [required]="true"
               formControlName="status"
               [options]="statusEditOptions"
             />

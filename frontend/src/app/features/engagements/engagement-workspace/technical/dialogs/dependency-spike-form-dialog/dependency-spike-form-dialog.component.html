@@ -7,7 +7,8 @@
     <div class="dialog-body">
       <app-input
         id="dependencyName"
-        label="Dependency Name *"
+        label="Dependency Name"
+        [required]="true"
         placeholder="e.g. Auth0 SDK, Stripe Payments, SendGrid"
         [maxLength]="200"
         formControlName="dependencyName"
@@ -15,7 +16,8 @@
 
       <app-textarea
         id="objective"
-        label="PoC Objective *"
+        label="PoC Objective"
+        [required]="true"
         placeholder="Describe what this proof of concept aims to evaluate..."
         [rows]="3"
         [maxLength]="1000"
@@ -24,7 +26,8 @@
 
       <app-select
         id="status"
-        label="Status *"
+        label="Status"
+        [required]="true"
         [options]="statusOptions"
         formControlName="status"
       />

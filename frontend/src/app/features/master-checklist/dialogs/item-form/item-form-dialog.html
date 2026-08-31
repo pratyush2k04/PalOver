@@ -5,6 +5,7 @@
     <app-input
       id="item-title"
       label="Title"
+      [required]="true"
       formControlName="title"
       [errorMessages]="{ required: 'Title is required.' }"
     />
@@ -14,6 +15,7 @@
     <app-select
       id="item-category"
       label="Category"
+      [required]="true"
       formControlName="categoryId"
       [options]="categoryOptions"
       [errorMessages]="{ required: 'Category is required.' }"

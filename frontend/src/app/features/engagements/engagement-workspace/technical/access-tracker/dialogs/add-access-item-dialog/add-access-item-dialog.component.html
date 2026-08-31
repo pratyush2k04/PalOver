@@ -9,6 +9,7 @@
         <app-input
           id="item-name"
           label="Item Name"
+          [required]="true"
           [ngModel]="name()"
           (ngModelChange)="onNameChange($event)"
           name="itemName"

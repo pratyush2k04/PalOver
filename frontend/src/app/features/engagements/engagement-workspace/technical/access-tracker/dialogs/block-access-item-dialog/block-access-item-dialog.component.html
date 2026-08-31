@@ -12,6 +12,7 @@
         <app-textarea
           id="block-reason"
           label="Block Reason"
+          [required]="true"
           [rows]="3"
           [ngModel]="reason()"
           (ngModelChange)="onReasonChange($event)"

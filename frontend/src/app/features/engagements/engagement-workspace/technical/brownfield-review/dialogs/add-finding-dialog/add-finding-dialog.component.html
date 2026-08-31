@@ -9,6 +9,7 @@
         <app-input
           id="finding-title"
           label="Title"
+          [required]="true"
           [ngModel]="title()"
           (ngModelChange)="onTitleChange($event)"
           name="findingTitle"
@@ -21,6 +22,7 @@
         <app-select
           id="finding-severity"
           label="Severity"
+          [required]="true"
           [options]="severityOptions"
           [ngModel]="severity()"
           (ngModelChange)="severity.set($event)"
@@ -32,6 +34,7 @@
         <app-textarea
           id="finding-desc"
           label="Description"
+          [required]="true"
           [ngModel]="description()"
           (ngModelChange)="onDescriptionChange($event)"
           name="findingDesc"
@@ -43,7 +46,7 @@
       <div class="form-group">
         <app-select
           id="finding-doc"
-          label="Link Document (Optional)"
+          label="Link Document"
           [options]="documentOptions()"
           [ngModel]="documentId()"
           (ngModelChange)="documentId.set($event)"

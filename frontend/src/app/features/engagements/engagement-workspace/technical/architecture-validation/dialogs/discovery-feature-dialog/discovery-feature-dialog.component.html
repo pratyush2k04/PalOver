@@ -9,6 +9,7 @@
         <app-input
           id="feature-name"
           label="Feature Name"
+          [required]="true"
           [ngModel]="featureName()"
           (ngModelChange)="onFeatureNameChange($event)"
           name="featureName"
@@ -22,6 +23,7 @@
           <app-input
             id="estimate-weeks"
             label="Estimate (Weeks)"
+            [required]="true"
             type="number"
             [min]="0"
             step="any"
@@ -39,6 +41,7 @@
             <app-input
               id="target-sprint"
               label="Target Sprint"
+              [required]="true"
               type="number"
               [min]="1"
               [ngModel]="targetSprint()"
