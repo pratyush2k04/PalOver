@@ -26,10 +26,12 @@ export class MeetingRecordComponent {
   private kickoffService = inject(KickoffService);
   private dialog = inject(DialogService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
 
   readonly messages = KICKOFF_MESSAGES;
 
-  isProjectManager = computed(() => this.authService.hasRole('Project Management'));
+  readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
+  isProjectManager = computed(() => !this.isSignedOff() && this.authService.hasRole('Project Management'));
 
   readonly statusOptions: SelectOption[] = [
     { value: 'Open', label: 'Open' },

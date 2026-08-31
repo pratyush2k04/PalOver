@@ -10,7 +10,9 @@
     <div class="title-section">
       <h2>Assumptions</h2>
     </div>
-    <app-button class="btn-add" variant="stroked" (click)="openAssumptionDialog()">+ Add</app-button>
+    @if (canAdd()) {
+      <app-button class="btn-add" variant="stroked" (click)="openAssumptionDialog()">+ Add</app-button>
+    }
   </div>
 
   @if (isLoading()) {

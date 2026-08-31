@@ -29,7 +29,7 @@
                 </div>
                 <div class="time-and-actions">
                   <span class="comment-time">{{ getRelativeTime(comment.createdAt) }}</span>
-                  @if (comment.canEdit && editingCommentId() !== comment.id) {
+                  @if (comment.canEdit && !isSignedOff() && editingCommentId() !== comment.id) {
                     <app-button variant="stroked" size="sm" (click)="startEditing(comment)">
                       Edit
                     </app-button>
@@ -64,8 +64,9 @@
   }
 
   <!-- Bottom Add Comment Row -->
-  <div class="add-comment-row">
-    <div class="textarea-container">
+  @if (!isSignedOff()) {
+    <div class="add-comment-row">
+      <div class="textarea-container">
       <app-textarea
         [id]="'new-comment-' + riskId"
         [rows]="1"
@@ -94,15 +95,16 @@
       }
     </div>
 
-    <div class="post-button-wrapper">
-      <app-button
-        variant="flat"
-        size="sm"
-        [disabled]="isSubmitting() || !newCommentText().trim()"
-        (click)="submitComment()"
-      >
-        {{ isSubmitting() ? 'Posting...' : 'Post' }}
-      </app-button>
+      <div class="post-button-wrapper">
+        <app-button
+          variant="flat"
+          size="sm"
+          [disabled]="isSubmitting() || !newCommentText().trim()"
+          (click)="submitComment()"
+        >
+          {{ isSubmitting() ? 'Posting...' : 'Post' }}
+        </app-button>
+      </div>
     </div>
-  </div>
+  }
 </app-accordion>

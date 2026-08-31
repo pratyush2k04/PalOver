@@ -215,8 +215,9 @@ export class HandoverComponent {
   hasHandoverDraft = computed(() => !!this.handover()?.handoverId);
   newCommitmentTouched = signal(false);
 
-  isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
-  isProjectManagement = computed(() => this.authService.hasRole('Project Management'));
+  readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
+  isPreSales = computed(() => !this.isSignedOff() && this.authService.hasRole('Pre Sales'));
+  isProjectManagement = computed(() => !this.isSignedOff() && this.authService.hasRole('Project Management'));
 
   originalAcknowledgementMessage = signal('');
 

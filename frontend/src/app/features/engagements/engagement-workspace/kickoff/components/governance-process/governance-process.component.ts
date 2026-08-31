@@ -26,11 +26,13 @@ export class GovernanceProcessComponent {
   private route = inject(ActivatedRoute);
   private cadenceService = inject(CommunicationCadenceService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
   private dialog = inject(DialogService);
 
   readonly constants = CADENCE_CONSTANTS;
 
-  isProjectManager = computed(() => this.authService.hasRole('Project Management'));
+  readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
+  isProjectManager = computed(() => !this.isSignedOff() && this.authService.hasRole('Project Management'));
 
   private paramMap = toSignal(this.route.paramMap);
   private parentParamMap = toSignal(this.route.parent?.paramMap ?? this.route.paramMap);

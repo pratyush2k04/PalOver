@@ -32,12 +32,14 @@ export class ChangeRequestsComponent {
   private route = inject(ActivatedRoute);
   private changeRequestService = inject(ChangeRequestService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
   private dialog = inject(DialogService);
 
   readonly constants = CHANGE_REQUEST_CONSTANTS;
 
-  isProjectManager = computed(() => this.authService.hasRole('Project Management'));
-  isLeadership = computed(() => this.authService.hasRole('Leadership'));
+  readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
+  isProjectManager = computed(() => !this.isSignedOff() && this.authService.hasRole('Project Management'));
+  isLeadership = computed(() => !this.isSignedOff() && this.authService.hasRole('Leadership'));
 
   private paramMap = toSignal(this.route.paramMap);
   private parentParamMap = toSignal(this.route.parent?.paramMap ?? this.route.paramMap);

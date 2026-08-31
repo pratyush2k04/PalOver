@@ -105,9 +105,14 @@ export class EngagementDocumentsComponent {
     );
   });
 
+  private engagementService = inject(EngagementService);
+
+  readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
+  readonly canUpload = computed(() => !this.isSignedOff());
+
   /** True for PM and Admin — can edit visibility inline */
   canManageVisibility = computed(
-    () => this.authService.hasRole('Project Management') || this.authService.isAdmin(),
+    () => !this.isSignedOff() && (this.authService.hasRole('Project Management') || this.authService.isAdmin()),
   );
 
   constructor() {

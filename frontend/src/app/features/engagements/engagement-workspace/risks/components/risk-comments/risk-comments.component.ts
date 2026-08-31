@@ -40,6 +40,9 @@ export class RiskCommentsComponent implements OnInit {
 
   private commentService = inject(RiskCommentService);
   private toastService = inject(ToastService);
+  private engagementService = inject(EngagementService);
+
+  readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
 
   comments = signal<RiskComment[]>([]);
   members = signal<EngagementMember[]>([]);
