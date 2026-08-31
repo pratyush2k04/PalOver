@@ -45,7 +45,7 @@
 $engagement-row-height: 4.25rem;
 
 .list-content {
-  height: $engagement-row-height * 5;
+  height: calc(#{$engagement-row-height} * var(--page-size, 5));
 }
 
 .pagination-row {

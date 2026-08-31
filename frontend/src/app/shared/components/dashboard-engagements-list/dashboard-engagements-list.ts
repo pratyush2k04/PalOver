@@ -17,10 +17,11 @@ import { LoadingSpinnerComponent } from '@common/components/loading-spinner/load
 export class DashboardEngagementsListComponent implements OnInit {
   private dashboardEngagementsService = inject(DashboardEngagementsService);
 
-  readonly pageSize = 5;
+  readonly pageSizeOptions = [5, 10, 15];
+  pageSize = signal(5);
   page = signal(1);
   totalCount = signal(0);
-  totalPages = computed(() => Math.max(1, Math.ceil(this.totalCount() / this.pageSize)));
+  totalPages = computed(() => Math.max(1, Math.ceil(this.totalCount() / this.pageSize())));
   pagedEngagements = signal<DashboardEngagement[]>([]);
   isLoading = signal(true);
 
@@ -36,9 +37,15 @@ export class DashboardEngagementsListComponent implements OnInit {
     this.loadPage();
   }
 
+  onPageSizeChange(size: number): void {
+    this.pageSize.set(size);
+    this.page.set(1);
+    this.loadPage();
+  }
+
   private loadPage(): void {
     this.isLoading.set(true);
-    this.dashboardEngagementsService.getPage(this.page(), this.pageSize).subscribe({
+    this.dashboardEngagementsService.getPage(this.page(), this.pageSize()).subscribe({
       next: (result) => {
         this.pagedEngagements.set(result.items);
         this.totalCount.set(result.totalCount);
