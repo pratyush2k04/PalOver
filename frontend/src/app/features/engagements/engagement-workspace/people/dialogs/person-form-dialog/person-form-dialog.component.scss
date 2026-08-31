@@ -1,8 +1,8 @@
 @use 'styles/mixins' as *;
 
 .dialog-container {
-  @include modal-card(35rem);
-  width: 35rem;
+  @include modal-card(25rem);
+  width: 25rem;
   max-width: 100%;
   box-sizing: border-box;
   padding: 0;
