@@ -1,55 +1,17 @@
 @use 'styles/tokens' as *;
 
-.dialog-container {
+:host {
+  display: block;
+  width: 34rem;
+  max-width: calc(100vw - 3rem);
+}
+
+.form-row {
   display: flex;
-  flex-direction: column;
-  width: 34.375rem;
-  max-width: 90vw;
-  background: $color-surface;
-  border-radius: $radius-2xl;
-  box-shadow: $shadow-modal;
+  gap: $spacing-4;
+  width: 100%;
 
-  .dialog-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--border-light);
-
-    h3 {
-      margin: 0;
-      font-size: 1.25rem;
-      color: var(--text-primary);
-    }
-  }
-
-  .dialog-body {
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-
-    .form-row {
-      display: flex;
-      gap: 1rem;
-      width: 100%;
-    }
-
-    .flex-1 {
-      flex: 1;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-    }
-  }
-
-  .dialog-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    padding: 1.5rem;
-    border-top: 1px solid var(--border-light);
+  .flex-1 {
+    flex: 1;
   }
 }

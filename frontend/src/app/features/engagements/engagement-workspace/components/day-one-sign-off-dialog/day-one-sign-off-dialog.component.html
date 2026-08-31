@@ -1,84 +1,87 @@
-<div class="dialog-container">
-  <div class="dialog-header">
-    <h3>Day-1 Readiness Sign-Off</h3>
-  </div>
+<h2 class="app-dialog__title">Day-1 Readiness Sign-Off</h2>
 
-  <div class="dialog-body">
-    @if (data.isAbleToStartDayOne) {
-      <app-alert variant="neutral">
-        All technical readiness criteria are met. You may proceed with the standard Day-1 sign-off.
+<div class="app-dialog__content">
+  @if (data.isAbleToStartDayOne) {
+    <app-alert variant="neutral">
+      All technical readiness criteria are met. You may proceed with the standard Day-1 sign-off.
+    </app-alert>
+  } @else {
+    @if (data.isLeadership) {
+      <app-alert variant="warning">
+        <strong>Technical Blockers Exist:</strong> As Leadership, you can override and sign off as an exception. Please provide a clear justification (minimum 20 characters).
       </app-alert>
     } @else {
-      @if (data.isLeadership) {
-        <app-alert variant="warning">
-          <strong>Technical Blockers Exist:</strong> As Leadership, you can override and sign off as an exception. Please provide a clear justification (minimum 20 characters).
-        </app-alert>
-      } @else {
-        <app-alert variant="danger">
-          <strong>Technical Blockers Exist:</strong> This engagement has open technical readiness blockers. Only members of Leadership can sign off with an exception.
-        </app-alert>
-      }
+      <app-alert variant="danger">
+        <strong>Technical Blockers Exist:</strong> This engagement has open technical readiness blockers. Only members of Leadership can sign off with an exception.
+      </app-alert>
     }
+  }
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="sign-off-form">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="sign-off-form">
+    <div class="form-group">
+      <label for="billingStartDate">Billing Start Date <span class="required-asterisk">*</span></label>
+      <input
+        id="billingStartDate"
+        type="date"
+        class="form-control"
+        [min]="minDate"
+        formControlName="billingStartDate"
+      />
+      @if (form.get('billingStartDate')?.invalid && (form.get('billingStartDate')?.touched || form.get('billingStartDate')?.dirty)) {
+        <span class="error-text">
+          @if (form.get('billingStartDate')?.errors?.['required']) {
+            Billing start date is required.
+          } @else if (form.get('billingStartDate')?.errors?.['pastDate']) {
+            Date cannot be in the past.
+          }
+        </span>
+      }
+    </div>
+
+    @if (isException() && data.isLeadership) {
       <div class="form-group">
-        <label for="billingStartDate">Billing Start Date <span class="required">*</span></label>
-        <input
-          id="billingStartDate"
-          type="date"
-          class="form-control"
-          formControlName="billingStartDate"
-        />
-        @if (form.get('billingStartDate')?.invalid && (form.get('billingStartDate')?.touched || form.get('billingStartDate')?.dirty)) {
-          <span class="error-text">Billing start date is required.</span>
+        <label for="exceptionJustification">Exception Justification <span class="required-asterisk">*</span></label>
+        <textarea
+          id="exceptionJustification"
+          class="form-control textarea"
+          rows="3"
+          placeholder="State the rationale and risk mitigation plan for signing off with blockers (min 20 characters)..."
+          formControlName="exceptionJustification"
+        ></textarea>
+        <div class="field-hint">
+          <span>Minimum 20 characters required.</span>
+          <span>{{ justificationLength() }}/20</span>
+        </div>
+        @if (form.get('exceptionJustification')?.invalid && (form.get('exceptionJustification')?.touched || form.get('exceptionJustification')?.dirty)) {
+          <span class="error-text">
+            @if (form.get('exceptionJustification')?.errors?.['required']) {
+              Justification is required for exceptions.
+            } @else if (form.get('exceptionJustification')?.errors?.['minlength']) {
+              Justification must be at least 20 characters.
+            }
+          </span>
         }
       </div>
+    }
+  </form>
+</div>
 
-      @if (isException() && data.isLeadership) {
-        <div class="form-group">
-          <label for="exceptionJustification">Exception Justification <span class="required">*</span></label>
-          <textarea
-            id="exceptionJustification"
-            class="form-control textarea"
-            rows="3"
-            placeholder="State the rationale and risk mitigation plan for signing off with blockers (min 20 characters)..."
-            formControlName="exceptionJustification"
-          ></textarea>
-          <div class="field-hint">
-            <span>Minimum 20 characters required.</span>
-            <span>{{ justificationLength() }}/20</span>
-          </div>
-          @if (form.get('exceptionJustification')?.invalid && (form.get('exceptionJustification')?.touched || form.get('exceptionJustification')?.dirty)) {
-            <span class="error-text">
-              @if (form.get('exceptionJustification')?.errors?.['required']) {
-                Justification is required for exceptions.
-              } @else if (form.get('exceptionJustification')?.errors?.['minlength']) {
-                Justification must be at least 20 characters.
-              }
-            </span>
-          }
-        </div>
-      }
-    </form>
-  </div>
-
-  <div class="dialog-footer">
-    <app-button
-      type="button"
-      variant="stroked"
-      [disabled]="isBusy()"
-      (click)="onCancel()"
-    >
-      Cancel
-    </app-button>
-    <app-button
-      type="button"
-      [variant]="isException() && data.isLeadership ? 'warning' : 'flat'"
-      [loading]="isBusy()"
-      [disabled]="!canSubmit()"
-      (click)="onSubmit()"
-    >
-      {{ isException() && data.isLeadership ? 'Sign Off with Exception' : 'Confirm Sign-Off' }}
-    </app-button>
-  </div>
+<div class="app-dialog__actions">
+  <app-button
+    type="button"
+    variant="stroked"
+    [disabled]="isBusy()"
+    (click)="onCancel()"
+  >
+    Cancel
+  </app-button>
+  <app-button
+    type="button"
+    [variant]="isException() && data.isLeadership ? 'warning' : 'flat'"
+    [loading]="isBusy()"
+    [disabled]="!canSubmit()"
+    (click)="onSubmit()"
+  >
+    {{ isException() && data.isLeadership ? 'Sign Off with Exception' : 'Confirm Sign-Off' }}
+  </app-button>
 </div>

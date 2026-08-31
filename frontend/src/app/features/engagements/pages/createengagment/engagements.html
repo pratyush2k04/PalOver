@@ -66,8 +66,9 @@
                 id="kickoffDate"
                 type="date"
                 label="Target kickoff date *"
+                [min]="minDate"
                 formControlName="kickoffDate"
-                [errorMessages]="{ required: 'Target kickoff date is required.' }"
+                [errorMessages]="{ required: 'Target kickoff date is required.', pastDate: 'Date cannot be in the past.' }"
               />
             </div>
 
@@ -76,8 +77,9 @@
                 id="billingStartDate"
                 type="date"
                 label="Billing start date *"
+                [min]="minDate"
                 formControlName="billingStartDate"
-                [errorMessages]="{ required: 'Billing start date is required.' }"
+                [errorMessages]="{ required: 'Billing start date is required.', pastDate: 'Date cannot be in the past.' }"
                 [extraError]="engagementForm.errors?.['billingBeforeKickoff'] ? 'Billing start cannot be before the kickoff date.' : null"
               />
             </div>

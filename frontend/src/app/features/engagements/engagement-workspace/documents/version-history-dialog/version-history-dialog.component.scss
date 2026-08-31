@@ -1,39 +1,9 @@
 @use 'styles/tokens' as *;
 
-.dialog-container {
-  background: $color-surface;
-  border-radius: $radius-2xl;
-  width: 100%;
-  max-width: 35rem;
-  max-height: 80vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.modal-header {
-  padding: $spacing-5 $spacing-6;
-  border-bottom: 1px solid $color-slate-200;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: $spacing-4;
-
-  .modal-title {
-    margin: 0;
-    font-size: $font-size-lg;
-    font-weight: $font-weight-semibold;
-    color: $color-slate-900;
-    word-break: break-word;
-  }
-}
-
-.modal-body {
-  padding: $spacing-6;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-4;
+:host {
+  display: block;
+  width: 35rem;
+  max-width: calc(100vw - 3rem);
 }
 
 .version-list {
@@ -83,7 +53,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.85rem;
+  font-size: $font-size-xs;
   color: $color-slate-600;
 
   .version-date::before {
@@ -94,15 +64,6 @@
 
 .version-note {
   margin: 0;
-  font-size: 0.875rem;
+  font-size: $font-size-sm;
   color: $color-slate-700;
-}
-
-.modal-footer {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid $color-slate-200;
-  background-color: $color-slate-50;
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
 }

@@ -19,7 +19,7 @@ export const CHANGE_REQUEST_CONSTANTS = {
   BTN_LOG: 'Log',
 
   MODAL_REJECT_TITLE: 'Reject change request',
-  LABEL_REASON_REQUIRED: 'Reason (required)',
+  LABEL_REASON_REQUIRED: 'Reason',
   BTN_REJECT: 'Reject',
   BTN_APPROVE: 'Approve',
 

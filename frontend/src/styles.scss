@@ -68,31 +68,52 @@ body.app-dialog-open {
 }
 
 .app-dialog__title {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
   color: $color-text;
   margin: 0;
-  padding: 20px 24px 0;
+  padding: $spacing-4 $spacing-6;
+  background-color: $color-slate-50;
+  border-bottom: 1px solid $color-border-soft;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: $spacing-3;
   flex-shrink: 0;
 }
 
-.app-dialog__content {
-  padding: 16px 24px;
+.app-dialog__hint {
+  margin: 0;
+  font-size: $font-size-sm;
   color: $color-text-muted;
-  font-size: 14px;
+  line-height: 1.5;
+}
+
+.app-dialog__content {
+  padding: $spacing-4 $spacing-6;
+  color: $color-text-muted;
+  font-size: $font-size-sm;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
 }
 
 .app-dialog__actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
-  padding: 12px 24px 20px;
+  gap: $spacing-3;
+  padding: $spacing-4 $spacing-6;
+  background-color: $color-slate-50;
+  border-top: 1px solid $color-border-soft;
+  flex-shrink: 0;
+}
+
+.required-asterisk {
+  color: $color-danger;
+  margin-left: 0.125rem;
+  font-weight: $font-weight-bold;
 }
 
 /* Responsive Utilities */
@@ -115,7 +136,7 @@ body.app-dialog-open {
   }
 
   .app-dialog__title {
-    padding: $spacing-4 $spacing-4 0;
+    padding: $spacing-4;
     font-size: $font-size-base;
   }
 
@@ -124,7 +145,7 @@ body.app-dialog-open {
   }
 
   .app-dialog__actions {
-    padding: $spacing-3 $spacing-4 $spacing-4;
+    padding: $spacing-4;
     flex-wrap: wrap;
   }
 }

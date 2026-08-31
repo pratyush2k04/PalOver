@@ -7,12 +7,12 @@ export const FORM_LABELS = {
   CARD_TITLE: 'Client Contact Transition',
   ADD_TRANSITION_TITLE: 'Add Client Contact Transition',
   OUTGOING_SECTION: 'Outgoing Contact',
-  OUTGOING_PERSON: 'Contact (Required)',
-  OUTGOING_NAME: 'Name (Required)',
-  OUTGOING_ROLE: 'Role (Required)',
+  OUTGOING_PERSON: 'Contact',
+  OUTGOING_NAME: 'Name',
+  OUTGOING_ROLE: 'Role',
   INCOMING_SECTION: 'Incoming Contact',
-  INCOMING_NAME: 'Name (Required)',
-  INCOMING_ROLE: 'Role (Required)',
+  INCOMING_NAME: 'Name',
+  INCOMING_ROLE: 'Role',
 } as const;
 
 export const FORM_PLACEHOLDERS = {
