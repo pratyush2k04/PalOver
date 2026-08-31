@@ -90,26 +90,22 @@
   }
 }
 
-app-paginator {
-  display: block;
-  margin-top: $spacing-5;
-}
-
-$engagement-row-height: 4.75rem;
-
-.engagement-list {
+.engagement-list-card {
   background: $color-surface;
   border-radius: $radius-2xl;
   box-shadow: $shadow-card;
   overflow: hidden;
-  height: calc(#{$engagement-row-height} * var(--page-size, 5));
+}
+
+.pagination-footer {
+  padding: $spacing-3 $spacing-5;
+  border-top: 1px solid $color-border-soft;
+  background-color: $color-surface-hover;
 }
 
 .engagement-row {
   @include flex-between;
-  min-height: $engagement-row-height;
-  box-sizing: border-box;
-  padding: $spacing-5 $spacing-6;
+  padding: $spacing-3 $spacing-6;
   cursor: pointer;
   transition: background-color $transition-fast;
 

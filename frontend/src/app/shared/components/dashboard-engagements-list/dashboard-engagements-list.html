@@ -4,7 +4,7 @@
     <a routerLink="/my-engagements" class="view-all-link">View all engagements &rarr;</a>
   </div>
 
-  <div class="list-content" [style.--page-size]="pageSize()">
+  <div class="list-content">
     @if (isLoading()) {
     <app-loading-spinner />
     } @else {
