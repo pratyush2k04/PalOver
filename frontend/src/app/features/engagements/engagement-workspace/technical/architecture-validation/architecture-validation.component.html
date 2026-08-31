@@ -17,7 +17,7 @@
       </div>
 
       <div class="status-selector-row">
-        @if (isTechLead()) {
+        @if (canManage()) {
           <div class="status-options">
             <label
               class="status-option-label"
@@ -65,7 +65,7 @@
             </div>
           }
         } @else {
-          <!-- Read-only view for PM & Leadership: Displays only the selected status -->
+          <!-- Read-only view for PM, Leadership, or Signed-off state: Displays only the selected status -->
           <div class="status-readonly-display">
             @if (!isModified()) {
               <div class="status-readonly-card valid">
@@ -98,7 +98,7 @@
             name="archRationale"
             placeholder="Explain why the architecture was modified, key design trade-offs, and new decisions..."
             [extraError]="rationaleError() || null"
-            [disabled]="!isTechLead()"
+            [disabled]="!canManage()"
           />
         </div>
       }
@@ -161,20 +161,24 @@
               <h4>Discovery Feature Breakdown</h4>
               <!-- <p class="section-desc">Individual feature scope breakdown sized into sprint deliverables.</p> -->
             </div>
-            <app-button
-              type="button"
-              variant="flat"
-              (click)="onAddFeature()">
-              <span class="btn-icon" [inlineSVG]="'assets/icons/plus.svg'"></span>
-              <span>Add Feature</span>
-            </app-button>
+            @if (canManage()) {
+              <app-button
+                type="button"
+                variant="flat"
+                (click)="onAddFeature()">
+                <span class="btn-icon" [inlineSVG]="'assets/icons/plus.svg'"></span>
+                <span>Add Feature</span>
+              </app-button>
+            }
           </div>
         </div>
 
         @if (features().length === 0) {
           <div class="empty-state">
             <p>No discovery feature items added yet.</p>
-            <p>Click the "Add Feature" button to get started.</p>
+            @if (canManage()) {
+              <p>Click the "Add Feature" button to get started.</p>
+            }
           </div>
         } @else {
           <div class="table-responsive">
@@ -184,7 +188,9 @@
                   <th>FEATURE NAME</th>
                   <th>ESTIMATE (WEEKS)</th>
                   <th>TARGET SPRINT</th>
-                  <th class="actions-col">ACTIONS</th>
+                  @if (canManage()) {
+                    <th class="actions-col">ACTIONS</th>
+                  }
                 </tr>
               </thead>
               <tbody>
@@ -199,28 +205,30 @@
                     <td class="sprint-cell">
                       <span class="sprint-tag">{{ item.targetSprint }}</span>
                     </td>
-                    <td class="actions-col">
-                      <div class="action-btn-group">
-                        <app-button
-                          type="button"
-                          variant="icon"
-                          class="btn-action"
-                          ariaLabel="Edit feature"
-                          [appTooltip]="'Edit feature'"
-                          (click)="onEditFeature(item)">
-                          <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
-                        </app-button>
-                        <app-button
-                          type="button"
-                          variant="icon"
-                          class="btn-action btn-danger"
-                          ariaLabel="Delete feature"
-                          [appTooltip]="'Delete feature'"
-                          (click)="onDeleteFeature(item)">
-                          <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
-                        </app-button>
-                      </div>
-                    </td>
+                    @if (canManage()) {
+                      <td class="actions-col">
+                        <div class="action-btn-group">
+                          <app-button
+                            type="button"
+                            variant="icon"
+                            class="btn-action"
+                            ariaLabel="Edit feature"
+                            [appTooltip]="'Edit feature'"
+                            (click)="onEditFeature(item)">
+                            <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                          </app-button>
+                          <app-button
+                            type="button"
+                            variant="icon"
+                            class="btn-action btn-danger"
+                            ariaLabel="Delete feature"
+                            [appTooltip]="'Delete feature'"
+                            (click)="onDeleteFeature(item)">
+                            <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
+                          </app-button>
+                        </div>
+                      </td>
+                    }
                   </tr>
                 }
               </tbody>

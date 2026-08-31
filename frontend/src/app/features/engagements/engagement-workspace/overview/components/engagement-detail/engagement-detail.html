@@ -2,7 +2,7 @@
   <div class="team-card">
     <div class="team-card-header">
       <h3>Team</h3>
-      @if (canAssignOwners) {
+      @if (canAssignOwners()) {
         <app-button type="button" variant="stroked" (click)="openAssignModal()">
           {{ assignButtonLabel }}
         </app-button>

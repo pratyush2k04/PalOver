@@ -43,5 +43,4 @@ public class DependencyRepository(AppDbContext context) : IDependencyRepository
     public async Task<int> SaveChangesAsync()
     {
         return await context.SaveChangesAsync();
-    }
-}
+    }}

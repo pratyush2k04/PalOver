@@ -11,5 +11,9 @@ public class HandoverInfoDto
     public string BusinessProblem { get; set; } = string.Empty;
     public string ClientSentiment { get; set; } = string.Empty;
     public string? DealOrigin { get; set; }
+    public DateTime? SubmittedAt { get; set; }
+    public string? SubmittedByName { get; set; }
+    public DateTime? ReviewedAt { get; set; }
+    public string? ReviewedByName { get; set; }
     public List<CommitmentDto> Commitments { get; set; } = new();
 }

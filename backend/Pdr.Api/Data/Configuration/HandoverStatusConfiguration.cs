@@ -20,7 +20,8 @@ public class HandoverStatusConfiguration : IEntityTypeConfiguration<HandoverStat
 
         builder.HasData(
             new HandoverStatus { HandoverStatusId = (int)HandoverStatusEnum.Draft, StatusName = HandoverStatusNames.Draft },
-            new HandoverStatus { HandoverStatusId = (int)HandoverStatusEnum.Submitted, StatusName = HandoverStatusNames.Submitted }
+            new HandoverStatus { HandoverStatusId = (int)HandoverStatusEnum.Submitted, StatusName = HandoverStatusNames.Submitted },
+            new HandoverStatus { HandoverStatusId = (int)HandoverStatusEnum.Reviewed, StatusName = HandoverStatusNames.Reviewed }
         );
     }
 }

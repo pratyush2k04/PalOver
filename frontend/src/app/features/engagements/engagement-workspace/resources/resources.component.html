@@ -1,6 +1,6 @@
 <div class="resources-container">
   <app-section-header title="Resource Requests">
-    @if (isProjectManager()) {
+    @if (canRaiseRequest()) {
       <app-button variant="flat" (click)="openRaiseModal()">
         {{ constants.BTN_RAISE_REQUEST }}
       </app-button>
@@ -39,12 +39,12 @@
           </div>
 
           @if (request.status !== 'Raised') {
-            <div class="allocations-table" [class.allocations-table--readonly]="!isLeadershipOrAdmin()">
+            <div class="allocations-table" [class.allocations-table--readonly]="!canManageAllocations()">
               <div class="allocations-row allocations-row--header">
                 <span>Resource name</span>
                 <span>Allocated on</span>
                 <span>Confirmed on</span>
-                @if (isLeadershipOrAdmin()) {
+                @if (canManageAllocations()) {
                   <span>Actions</span>
                 }
               </div>
@@ -59,7 +59,7 @@
                       <span class="allocation-pending">{{ constants.PENDING_CONFIRMATION }}</span>
                     }
                   </span>
-                  @if (isLeadershipOrAdmin()) {
+                  @if (canManageAllocations()) {
                     <span class="allocation-actions">
                       @if (!allocation.isConfirmed) {
                         <app-button variant="flat" size="sm" (click)="openConfirmDialog(request, allocation)">
@@ -77,7 +77,7 @@
             </div>
           }
 
-          @if (isLeadershipOrAdmin() && request.status !== 'Confirmed') {
+          @if (canManageAllocations() && request.status !== 'Confirmed') {
             <div class="card-footer">
               <app-button variant="stroked" size="sm" (click)="openAllocateModal(request)">
                 {{ constants.BTN_ALLOCATE }}

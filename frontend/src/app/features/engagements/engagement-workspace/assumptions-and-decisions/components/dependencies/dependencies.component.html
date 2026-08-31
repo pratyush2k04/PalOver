@@ -10,7 +10,9 @@
     <div class="title-section">
       <h2>Dependencies</h2>
     </div>
-    <app-button class="btn-add" variant="flat" (click)="openDependencyDialog()">+ Add</app-button>
+    @if (canAdd()) {
+      <app-button class="btn-add" variant="flat" (click)="openDependencyDialog()">+ Add</app-button>
+    }
   </div>
 
   @if (isLoading()) {

@@ -7,6 +7,7 @@ using Pdr.Api.Models.AccessTracker;
 using Pdr.Api.Models.EngagementAssignment;
 using Pdr.Api.Models.EngagementChecklist;
 using Pdr.Api.Models.Engagements;
+using Pdr.Api.Models.Handover;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.ResourceRequests;
 using Pdr.Api.Models.Risks;
@@ -180,6 +181,13 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
                 e.BillingStartDate,
                 e.Status.StatusName,
                 e.IsKickoffReady,
+                e.HandoverInfo == null
+                    ? null
+                    : e.HandoverInfo.StatusId == (int)HandoverStatusEnum.Submitted
+                        ? HandoverStatusNames.Submitted
+                        : HandoverStatusNames.Draft,
+                e.HandoverInfo == null ? null : e.HandoverInfo.ReviewedAt,
+                e.HandoverInfo == null ? null : e.HandoverInfo.ReviewedByUser!.FullName,
                 e.DayOneSignOffRecord != null
                     ? new DayOneSignOffDto(
                         e.DayOneSignOffRecord.SignedOffByUserId,
@@ -205,6 +213,13 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
                 e.BillingStartDate,
                 e.Status.StatusName,
                 e.IsKickoffReady,
+                e.HandoverInfo == null
+                    ? null
+                    : e.HandoverInfo.StatusId == (int)HandoverStatusEnum.Submitted
+                        ? HandoverStatusNames.Submitted
+                        : HandoverStatusNames.Draft,
+                e.HandoverInfo == null ? null : e.HandoverInfo.ReviewedAt,
+                e.HandoverInfo == null ? null : e.HandoverInfo.ReviewedByUser!.FullName,
                 e.DayOneSignOffRecord != null
                     ? new DayOneSignOffDto(
                         e.DayOneSignOffRecord.SignedOffByUserId,
@@ -322,4 +337,17 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
             .Include(a => a.User)
             .Where(a => engagementIds.Contains(a.EngagementId))
             .ToListAsync();
+
+    public async Task<bool> IsEngagementSignedOffAsync(int engagementId) =>
+        await context.DayOneSignOffRecords
+            .AsNoTracking()
+            .AnyAsync(r => r.EngagementId == engagementId);
+
+    public async Task EnsureNotSignedOffAsync(int engagementId)
+    {
+        if (await IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+    }
 }

@@ -13,6 +13,7 @@ using Pdr.Api.Services.Interfaces;
 namespace Pdr.Api.Services;
 
 public class RiskService(
+    IEngagementRepository engagementRepository,
     IRiskRepository riskRepository,
     ICurrentUserService currentUserService,
     IEngagementAccessService engagementAccessService) : IRiskService
@@ -39,6 +40,8 @@ public class RiskService(
 
     public async Task<RiskDto> CreateRiskAsync(int engagementId, CreateRiskDto dto)
     {
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var risk = new Risk
         {
             EngagementId = engagementId,
@@ -60,6 +63,8 @@ public class RiskService(
 
     public async Task<RiskDto> UpdateRiskAsync(int engagementId, int riskId, UpdateRiskDto dto)
     {
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var risk = await riskRepository.GetByIdAsync(riskId)
             ?? throw new RiskNotFoundException(riskId);
 
@@ -89,6 +94,8 @@ public class RiskService(
 
     public async Task<RiskDto> CloseRiskAsync(int engagementId, int riskId, CloseRiskDto dto)
     {
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var risk = await riskRepository.GetByIdAsync(riskId)
             ?? throw new RiskNotFoundException(riskId);
 
@@ -123,6 +130,8 @@ public class RiskService(
 
     public async Task<RiskDto> ReopenRiskAsync(int engagementId, int riskId)
     {
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var risk = await riskRepository.GetByIdAsync(riskId)
             ?? throw new RiskNotFoundException(riskId);
 

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AssumptionService } from '../../../../services/assumption.service';
+import { EngagementService } from '../../../../services/engagement.service';
 import { AssumptionDto, AssumptionStatus } from '../../../../models/assumption.model';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { ButtonComponent } from '@common/components/button/button';
@@ -38,11 +39,13 @@ export class AssumptionsComponent implements OnInit {
   private toastService = inject(ToastService);
   private dialogService = inject(DialogService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
 
   engagementId = signal<number>(0);
   assumptions = signal<AssumptionDto[]>([]);
   unvalidatedCount = computed(() => this.assumptions().filter(a => a.status === AssumptionStatus.Unvalidated).length);
   isLoading = signal<boolean>(true);
+  readonly canAdd = computed(() => !this.engagementService.isSignedOff());
 
   AssumptionStatus = AssumptionStatus;
 
@@ -95,7 +98,7 @@ export class AssumptionsComponent implements OnInit {
   }
 
   canEdit(assumption: AssumptionDto): boolean {
-    return assumption.ownerId === this.authService.getUserId();
+    return !this.engagementService.isSignedOff() && assumption.ownerId === this.authService.getUserId();
   }
 
   isPm(): boolean {

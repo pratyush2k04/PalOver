@@ -20,5 +20,4 @@ public interface IDocumentRepository
 
     Task<DocumentVersion?> GetVersionByIdAsync(int documentId, int versionId);
 
-    Task<Document> AddVersionAsync(Document document, DocumentVersion newVersion);
-}
+    Task<Document> AddVersionAsync(Document document, DocumentVersion newVersion);}

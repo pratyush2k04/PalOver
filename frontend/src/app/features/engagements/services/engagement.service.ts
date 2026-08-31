@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, tap } from 'rxjs';
 import {
@@ -30,8 +30,16 @@ export interface EngagementOpenItemsSummary {
 export class EngagementService {
   private http = inject(HttpClient);
 
+  private currentEngagementState = signal<EngagementInfo | null>(null);
+  readonly currentEngagement = this.currentEngagementState.asReadonly();
+  readonly isSignedOff = computed(() => !!this.currentEngagementState()?.dayOneSignOff);
+
   private ownersState = signal<EngagementOwners | null>(null);
   readonly owners = this.ownersState.asReadonly();
+
+  setCurrentEngagement(info: EngagementInfo | null): void {
+    this.currentEngagementState.set(info);
+  }
 
   markSowSigned(request: MarkSowSignedRequest): Observable<MarkSowSignedResponse> {
     return this.http.post<MarkSowSignedResponse>(ENGAGEMENT_API_ENDPOINTS.MARK_SOW_SIGNED, request);
@@ -50,7 +58,9 @@ export class EngagementService {
   }
 
   getEngagementInfo(id: number): Observable<EngagementInfo> {
-    return this.http.get<EngagementInfo>(ENGAGEMENT_API_ENDPOINTS.ENGAGEMENT_INFO(id));
+    return this.http
+      .get<EngagementInfo>(ENGAGEMENT_API_ENDPOINTS.ENGAGEMENT_INFO(id))
+      .pipe(tap((info) => this.currentEngagementState.set(info)));
   }
 
   getEngagementOwners(id: number): Observable<EngagementOwners> {
@@ -86,7 +96,9 @@ export class EngagementService {
   }
 
   signOffDayOne(id: number, request: DayOneSignOffRequest): Observable<EngagementInfo> {
-    return this.http.post<EngagementInfo>(ENGAGEMENT_API_ENDPOINTS.DAY_ONE_SIGN_OFF(id), request);
+    return this.http
+      .post<EngagementInfo>(ENGAGEMENT_API_ENDPOINTS.DAY_ONE_SIGN_OFF(id), request)
+      .pipe(tap((info) => this.currentEngagementState.set(info)));
   }
 
   getEvidenceSnapshot(id: number): Observable<EvidenceSnapshot> {

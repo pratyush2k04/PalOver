@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { KickoffService } from '@shared/services/kickoff.service';
+import { EngagementService } from '@features/engagements/services/engagement.service';
 import { KickoffActionItem, KickoffActionItemStatus } from '@shared/models/kickoff.model';
 import { AuthService } from '@shared/services/auth';
 import { KICKOFF_MESSAGES } from '@shared/constants/kickoff.constants';
@@ -26,10 +27,12 @@ export class MeetingRecordComponent {
   private kickoffService = inject(KickoffService);
   private dialog = inject(DialogService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
 
   readonly messages = KICKOFF_MESSAGES;
 
-  isProjectManager = computed(() => this.authService.hasRole('Project Management'));
+  readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
+  isProjectManager = computed(() => !this.isSignedOff() && this.authService.hasRole('Project Management'));
 
   readonly statusOptions: SelectOption[] = [
     { value: 'Open', label: 'Open' },
