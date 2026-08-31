@@ -156,7 +156,7 @@ export class AccessTrackerComponent {
         );
         this.accessItems.set(updatedList);
         this.itemsUpdated.emit(updatedList);
-        this.toastService.success(`Status updated for ${item.name}`);
+        this.toastService.success('Status updated');
       },
       error: (err) => {
         this.toastService.error(`Failed to update status for ${item.name}`);
