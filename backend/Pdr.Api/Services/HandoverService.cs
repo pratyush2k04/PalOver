@@ -25,6 +25,7 @@ public class HandoverService : IHandoverService
     private readonly IEngagementAccessService _engagementAccessService;
     private readonly IUserRepository _userRepository;
     private readonly IHandoverReadinessRepository _handoverReadinessRepository;
+    private readonly IHandoverQueryRepository _queryRepository;
 
     public HandoverService(
         IEngagementRepository engagementRepository,
@@ -35,7 +36,8 @@ public class HandoverService : IHandoverService
         INotificationService notificationService,
         IEngagementAccessService engagementAccessService,
         IUserRepository userRepository,
-        IHandoverReadinessRepository handoverReadinessRepository)
+        IHandoverReadinessRepository handoverReadinessRepository,
+        IHandoverQueryRepository queryRepository)
     {
         _engagementRepository = engagementRepository;
         _handoverRepository = handoverRepository;
@@ -46,6 +48,7 @@ public class HandoverService : IHandoverService
         _engagementAccessService = engagementAccessService;
         _userRepository = userRepository;
         _handoverReadinessRepository = handoverReadinessRepository;
+        _queryRepository = queryRepository;
     }
 
     public async Task<HandoverInfoDto> GetHandoverAsync(int engagementId)
@@ -238,6 +241,10 @@ public class HandoverService : IHandoverService
         var status = await _handoverRepository.GetStatusByIdAsync(handover.StatusId);
         if (status?.StatusName != HandoverStatusNames.Submitted)
             throw new HandoverNotYetSubmittedException();
+
+        var queries = await _queryRepository.GetByHandoverIdAsync(handover.HandoverId);
+        if (queries.Any(q => !q.IsResolved))
+            throw new HandoverQueriesUnresolvedException();
 
         if (handover.ReviewedAt is null)
         {
