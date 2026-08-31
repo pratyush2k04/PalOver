@@ -114,7 +114,7 @@ export class HandoverReadinessComponent implements OnInit {
         this.items.update(current =>
           current.map(i => i.id === updatedItem.id ? updatedItem : i)
         );
-        this.toastService.success(`Status updated for "${item.name}"`);
+        this.toastService.success('Status updated');
         this.itemsUpdated.emit(this.items());
       },
       error: (err) => {
