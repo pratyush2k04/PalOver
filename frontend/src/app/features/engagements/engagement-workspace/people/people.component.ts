@@ -43,6 +43,7 @@ export class PeopleComponent {
   private dialog = inject(DialogService);
   public loaderService = inject(LoaderService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
 
   private paramMap = toSignal(this.route.parent?.paramMap ?? this.route.paramMap);
 
@@ -57,6 +58,7 @@ export class PeopleComponent {
   isImporting = signal(false);
   
   isLeadership = computed(() => this.authService.hasRole(USER_ROLES.LEADERSHIP));
+  canManage = computed(() => !this.isLeadership() && !this.engagementService.isSignedOff());
 
   constructor() {
     effect(() => {

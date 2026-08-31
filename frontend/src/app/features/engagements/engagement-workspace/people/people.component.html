@@ -1,6 +1,6 @@
 <div class="people-directory">
   <app-section-header title="People Directory">
-    @if (!isLeadership()) {
+    @if (canManage()) {
       <app-button type="button" variant="flat" [disabled]="isImporting()" (click)="onImportFromHandover()">
         Import from handover
       </app-button>
@@ -25,7 +25,9 @@
             <th scope="col" class="th-name">NAME</th>
             <th scope="col" class="th-role">ROLE</th>
             <th scope="col" class="th-org">ORG</th>
-            <th scope="col" class="th-actions">ACTIONS</th>
+            @if (canManage()) {
+              <th scope="col" class="th-actions">ACTIONS</th>
+            }
           </tr>
         </thead>
         <tbody>
@@ -34,22 +36,24 @@
             <td class="col-name">{{ person.name }}</td>
             <td class="col-role">{{ person.role }}</td>
             <td class="col-org">{{ getOrgLabel(person.personType) }}</td>
-            <td class="col-actions">
-              <div class="action-buttons">
-                <app-button type="button" variant="icon" class="edit-btn" ariaLabel="Edit person" [appTooltip]="'Edit person'"
-                  (click)="onEditPerson(person)">
-                  <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
-                </app-button>
-                <app-button type="button" variant="icon" class="delete-btn" ariaLabel="Delete person"
-                  [appTooltip]="'Delete person'" (click)="onDeletePerson(person)">
-                  <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
-                </app-button>
-              </div>
-            </td>
+            @if (canManage()) {
+              <td class="col-actions">
+                <div class="action-buttons">
+                  <app-button type="button" variant="icon" class="edit-btn" ariaLabel="Edit person" [appTooltip]="'Edit person'"
+                    (click)="onEditPerson(person)">
+                    <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                  </app-button>
+                  <app-button type="button" variant="icon" class="delete-btn" ariaLabel="Delete person"
+                    [appTooltip]="'Delete person'" (click)="onDeletePerson(person)">
+                    <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
+                  </app-button>
+                </div>
+              </td>
+            }
           </tr>
           } @empty {
           <tr>
-            <td colspan="4" class="empty-state">
+            <td [attr.colspan]="canManage() ? 4 : 3" class="empty-state">
               No contacts found for this engagement.
             </td>
           </tr>
