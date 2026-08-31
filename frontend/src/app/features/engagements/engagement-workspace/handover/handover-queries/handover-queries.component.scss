@@ -101,29 +101,6 @@
   margin-right: auto;
   margin-left: 0;
   background: $color-surface;
-  border-bottom-left-radius: 2px;
-
-  &::before {
-    content: '';
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    left: 14px;
-    bottom: -6px;
-    background: $color-border-soft;
-    transform: rotate(45deg);
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    left: 14px;
-    bottom: -4px;
-    background: $color-surface;
-    transform: rotate(45deg);
-  }
 }
 
 .message-turn-outgoing {
