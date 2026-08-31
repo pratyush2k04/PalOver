@@ -515,6 +515,33 @@ public class EngagementService(
         return await GetLeadershipUsersAsync(engagementId);
     }
 
+    public async Task<List<LeadershipUserDto>> UpdateLeadershipUsersAsync(int engagementId, List<int> userIds)
+    {
+        if (!await engagementRepository.EngagementExistsAsync(engagementId))
+            throw new EngagementNotFoundException(engagementId);
+
+        if (userIds == null || userIds.Count == 0)
+            throw new LastLeadershipUserRequiredException();
+
+        var currentAssignments = await engagementRepository.GetLeadershipAssignmentsAsync(engagementId);
+        var currentUserIds = currentAssignments.Select(a => a.UserId).ToList();
+
+        var toAdd = userIds.Except(currentUserIds).ToList();
+        var toRemove = currentUserIds.Except(userIds).ToList();
+
+        foreach (var userId in toAdd)
+        {
+            await AssignLeadershipUserAsync(engagementId, userId);
+        }
+
+        foreach (var userId in toRemove)
+        {
+            await RemoveLeadershipUserAsync(engagementId, userId);
+        }
+
+        return await GetLeadershipUsersAsync(engagementId);
+    }
+
     public async Task<List<LeadershipEngagementListItemDto>> GetLeadershipDashboardAsync()
     {
         var currentUserId = currentUserService.GetUserId();

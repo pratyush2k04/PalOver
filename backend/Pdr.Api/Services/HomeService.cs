@@ -173,11 +173,10 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
 
     private async Task<List<DashboardBlockerDto>> GetDashboardBlockersAsync(int userId)
     {
-        var result = await notificationService.GetForUserAsync(userId, null, 1, 50);
+        var result = await notificationService.GetForUserAsync(userId, null, 1, int.MaxValue);
         
         var blockers = result.Items
             .Where(n => n.Priority == NotificationPriority.High)
-            .Take(5)
             .Select(n => new DashboardBlockerDto
             {
                 RiskId = n.Id,

@@ -38,6 +38,9 @@
 
       .handover-summary-grid {
         @include flex-column($gap: $spacing-3);
+        max-height: 220px;
+        overflow-y: auto;
+        padding-right: $spacing-2;
       }
 
       .handover-field {

@@ -96,7 +96,7 @@
           />
 
           <div class="client-context-actions">
-            <app-button variant="stroked" [disabled]="isSaving() || isSubmitted()" (click)="saveDraft()">{{ HANDOVER_BUTTONS.SAVE_DRAFT }}</app-button>
+            <app-button variant="flat" [disabled]="isSubmitted()" (click)="saveDraft()">{{ HANDOVER_BUTTONS.SAVE_DRAFT }}</app-button>
           </div>
         </div>
       </form>
