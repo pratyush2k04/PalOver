@@ -1,41 +1,5 @@
-@use 'styles/mixins' as *;
-
-.dialog-container {
-  @include modal-card(35rem);
-  width: 35rem;
-  max-width: 100%;
-  box-sizing: border-box;
-  padding: 0;
-}
-
-.dialog-header {
-  @include flex-between;
-  padding: $spacing-4 $spacing-5;
-  border-bottom: 1px solid $color-border-soft;
-  background: $color-surface-hover;
-
-  h3 {
-    margin: 0;
-    font-size: $font-size-lg;
-    font-weight: $font-weight-semibold;
-    color: $color-text;
-  }
-}
-
-.dialog-body {
-  padding: $spacing-5;
-  @include flex-column($spacing-4);
-}
-
-.form-group {
-  @include flex-column($spacing-1);
-}
-
-.dialog-footer {
-  padding: $spacing-3 $spacing-5;
-  border-top: 1px solid $color-border-soft;
-  background: $color-surface-hover;
-  display: flex;
-  justify-content: flex-end;
-  gap: $spacing-3;
+:host {
+  display: block;
+  width: 32rem;
+  max-width: calc(100vw - 3rem);
 }

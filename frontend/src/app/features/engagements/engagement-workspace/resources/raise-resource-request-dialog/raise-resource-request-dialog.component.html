@@ -1,102 +1,90 @@
-<div class="dialog-container">
-  <div class="modal-header">
-    <h3 class="modal-title">{{ constants.MODAL_TITLE }}</h3>
+<h2 class="app-dialog__title">{{ constants.MODAL_TITLE }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
+    @if (errorMessage()) {
+      <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+    }
+
+    <app-select
+      id="standard-role"
+      [label]="constants.LABEL_STANDARD_ROLE"
+      [required]="true"
+      formControlName="standardRole"
+      [options]="roleOptions"
+    />
+
+    <div class="form-group">
+      <label class="form-label">{{ constants.LABEL_SKILLS }} <span class="required-asterisk">*</span></label>
+      <app-multi-select-list
+        [options]="skillOptions"
+        [selectedValues]="selectedSkills()"
+        variant="cards"
+        (selectedValuesChange)="onSkillsChange($event)"
+      />
+      @if (skillsTouched() && selectedSkills().length === 0) {
+        <span class="app-field__error">{{ constants.MSG_SKILL_REQUIRED }}</span>
+      }
+    </div>
+
+    <app-input
+      id="number-of-people"
+      [label]="constants.LABEL_NUMBER_OF_PEOPLE"
+      [required]="true"
+      type="number"
+      [min]="1"
+      formControlName="peopleNeeded"
+      [errorMessages]="{
+        required: constants.MSG_PEOPLE_NEEDED_POSITIVE,
+        min: constants.MSG_PEOPLE_NEEDED_POSITIVE
+      }"
+    />
+
+    <app-input
+      id="required-by-date"
+      [label]="constants.LABEL_REQUIRED_BY"
+      [required]="true"
+      type="date"
+      formControlName="requiredByDate"
+      [errorMessages]="{
+        required: 'Please select a required-by date.',
+        pastDate: constants.MSG_REQUIRED_DATE_PAST,
+        afterBillingDate: constants.MSG_REQUIRED_BEFORE_BILLING
+      }"
+    />
+
+    <app-textarea
+      id="job-description"
+      [label]="constants.LABEL_JOB_DESCRIPTION"
+      [required]="true"
+      formControlName="jobDescription"
+      [rows]="4"
+      [maxLength]="constants.MAX_JOB_DESCRIPTION_LENGTH"
+      placeholder="Provide a short description of the role responsibilities (15 to 500 characters)..."
+      [errorMessages]="{
+        required: constants.MSG_JOB_DESC_LENGTH,
+        minlength: constants.MSG_JOB_DESC_LENGTH,
+        maxlength: constants.MSG_JOB_DESC_LENGTH
+      }"
+    />
   </div>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="modal-form">
-    <div class="modal-body">
-      @if (errorMessage()) {
-        <app-alert variant="danger">{{ errorMessage() }}</app-alert>
-      }
-
-      <div class="form-group">
-        <app-select
-          id="standard-role"
-          [label]="constants.LABEL_STANDARD_ROLE"
-          [required]="true"
-          formControlName="standardRole"
-          [options]="roleOptions"
-        />
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">{{ constants.LABEL_SKILLS }} <span class="required-asterisk">*</span></label>
-        <app-multi-select-list
-          [options]="skillOptions"
-          [selectedValues]="selectedSkills()"
-          variant="cards"
-          (selectedValuesChange)="onSkillsChange($event)"
-        />
-        @if (skillsTouched() && selectedSkills().length === 0) {
-          <span class="app-field__error">{{ constants.MSG_SKILL_REQUIRED }}</span>
-        }
-      </div>
-
-      <div class="form-group">
-        <app-input
-          id="number-of-people"
-          [label]="constants.LABEL_NUMBER_OF_PEOPLE"
-          [required]="true"
-          type="number"
-          [min]="1"
-          formControlName="peopleNeeded"
-          [errorMessages]="{
-            required: constants.MSG_PEOPLE_NEEDED_POSITIVE,
-            min: constants.MSG_PEOPLE_NEEDED_POSITIVE
-          }"
-        />
-      </div>
-
-      <div class="form-group">
-        <app-input
-          id="required-by-date"
-          [label]="constants.LABEL_REQUIRED_BY"
-          [required]="true"
-          type="date"
-          formControlName="requiredByDate"
-          [errorMessages]="{
-            required: 'Please select a required-by date.',
-            pastDate: constants.MSG_REQUIRED_DATE_PAST,
-            afterBillingDate: constants.MSG_REQUIRED_BEFORE_BILLING
-          }"
-        />
-      </div>
-
-      <div class="form-group">
-        <app-textarea
-          id="job-description"
-          [label]="constants.LABEL_JOB_DESCRIPTION"
-          [required]="true"
-          formControlName="jobDescription"
-          [rows]="4"
-          [maxLength]="constants.MAX_JOB_DESCRIPTION_LENGTH"
-          placeholder="Provide a short description of the role responsibilities (15 to 500 characters)..."
-          [errorMessages]="{
-            required: constants.MSG_JOB_DESC_LENGTH,
-            minlength: constants.MSG_JOB_DESC_LENGTH,
-            maxlength: constants.MSG_JOB_DESC_LENGTH
-          }"
-        />
-      </div>
-    </div>
-
-    <div class="modal-footer">
-      <app-button
-        type="button"
-        variant="stroked"
-        (click)="onCancel()"
-        [disabled]="isSubmitting()"
-      >
-        {{ constants.BTN_CANCEL }}
-      </app-button>
-      <app-button
-        type="submit"
-        variant="flat"
-        [disabled]="isSubmitting()"
-        [loading]="isSubmitting()"
-      >
-        {{ constants.BTN_RAISE }}
-      </app-button>
-    </div>
-  </form>
-</div>
+  <div class="app-dialog__actions">
+    <app-button
+      type="button"
+      variant="stroked"
+      (click)="onCancel()"
+      [disabled]="isSubmitting()"
+    >
+      {{ constants.BTN_CANCEL }}
+    </app-button>
+    <app-button
+      type="submit"
+      variant="flat"
+      [disabled]="isSubmitting()"
+      [loading]="isSubmitting()"
+    >
+      {{ constants.BTN_RAISE }}
+    </app-button>
+  </div>
+</form>

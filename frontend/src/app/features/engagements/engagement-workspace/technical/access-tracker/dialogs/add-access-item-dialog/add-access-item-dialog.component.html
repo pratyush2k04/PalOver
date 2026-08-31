@@ -1,45 +1,37 @@
-<div class="dialog-container">
-  <div class="dialog-header">
-    <h3>Add New Access Item</h3>
+<h2 class="app-dialog__title">Add New Access Item</h2>
+
+<form (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
+    <app-input
+      id="item-name"
+      label="Item Name"
+      [required]="true"
+      [ngModel]="name()"
+      (ngModelChange)="onNameChange($event)"
+      name="itemName"
+      placeholder="e.g., Client VPN access"
+      [extraError]="nameError() || null"
+    />
+
+    <app-checkbox
+      label="Client-side dependency"
+      [ngModel]="isClientSide()"
+      (ngModelChange)="isClientSide.set($event)"
+      name="isClientSide"
+    />
+
+    <app-input
+      id="tz-note"
+      label="Notes / Timezone"
+      [ngModel]="timeZoneNote()"
+      (ngModelChange)="timeZoneNote.set($event)"
+      name="timeZoneNote"
+      placeholder="e.g., Client is IST"
+    />
   </div>
 
-  <form (ngSubmit)="onSubmit()">
-    <div class="dialog-body">
-      <div class="form-group">
-        <app-input
-          id="item-name"
-          label="Item Name"
-          [required]="true"
-          [ngModel]="name()"
-          (ngModelChange)="onNameChange($event)"
-          name="itemName"
-          placeholder="e.g., Client VPN access"
-          [extraError]="nameError() || null"
-        />
-      </div>
-      <div class="form-group checkbox-group">
-        <app-checkbox
-          label="Client-side dependency"
-          [ngModel]="isClientSide()"
-          (ngModelChange)="isClientSide.set($event)"
-          name="isClientSide"
-        />
-      </div>
-      <div class="form-group">
-        <app-input
-          id="tz-note"
-          label="Notes / Timezone"
-          [ngModel]="timeZoneNote()"
-          (ngModelChange)="timeZoneNote.set($event)"
-          name="timeZoneNote"
-          placeholder="e.g., Client is IST"
-        />
-      </div>
-    </div>
-
-    <div class="dialog-footer">
-      <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
-      <app-button type="submit" variant="flat">Save</app-button>
-    </div>
-  </form>
-</div>
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+    <app-button type="submit" variant="flat">Save</app-button>
+  </div>
+</form>
