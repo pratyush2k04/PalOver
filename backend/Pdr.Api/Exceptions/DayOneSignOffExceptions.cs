@@ -25,3 +25,9 @@ public class EvidenceSnapshotNotFoundException : AppException
     public EvidenceSnapshotNotFoundException(int engagementId)
         : base(EngagementValidationConstants.Messages.EvidenceSnapshotNotFound(engagementId), 404) { }
 }
+
+public class EngagementSignedOffException : AppException
+{
+    public EngagementSignedOffException()
+        : base(EngagementValidationConstants.Messages.EngagementAlreadySignedOff, 422) { }
+}

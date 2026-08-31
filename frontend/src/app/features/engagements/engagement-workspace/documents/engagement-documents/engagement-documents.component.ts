@@ -16,6 +16,7 @@ import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DocumentService } from '../../../services/document.service';
+import { EngagementService } from '../../../services/engagement.service';
 import { DocumentCategory, DocumentItem, DocumentVisibility } from '../../../models/document.model';
 import { AuthService } from '@shared/services/auth';
 import { DialogService } from '@common/services/dialog/dialog.service';
@@ -105,9 +106,14 @@ export class EngagementDocumentsComponent {
     );
   });
 
+  private engagementService = inject(EngagementService);
+
+  readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
+  readonly canUpload = computed(() => !this.isSignedOff());
+
   /** True for PM and Admin — can edit visibility inline */
   canManageVisibility = computed(
-    () => this.authService.hasRole('Project Management') || this.authService.isAdmin(),
+    () => !this.isSignedOff() && (this.authService.hasRole('Project Management') || this.authService.isAdmin()),
   );
 
   constructor() {

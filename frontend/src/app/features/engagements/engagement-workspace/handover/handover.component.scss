@@ -45,6 +45,15 @@
   font-weight: $font-weight-semibold;
 }
 
+.status-report.reviewed .status-report-dot {
+  background-color: $color-success;
+}
+
+.status-report.reviewed .status-report-text {
+  color: $color-success;
+  font-weight: $font-weight-semibold;
+}
+
 .readiness-banner {
   border-radius: $radius-lg;
   padding: $spacing-4 $spacing-5;
@@ -123,6 +132,13 @@
       gap: $spacing-2;
     }
   }
+}
+
+.submitted-info,
+.reviewed-info {
+  margin: -1rem 0 1.5rem;
+  font-size: 0.875rem;
+  color: $color-text-muted;
 }
 
 .section {

@@ -249,6 +249,8 @@ public class EngagementService(
         if (!await engagementRepository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var user = await userRepository.GetByIdAsync(userId)
             ?? throw new UserNotFoundException(userId);
 

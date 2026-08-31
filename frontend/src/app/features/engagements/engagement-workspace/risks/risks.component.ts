@@ -67,6 +67,9 @@ export class RisksComponent implements OnInit {
   isSubmitting = signal<boolean>(false);
   closeFormSubmitted = signal<boolean>(false);
 
+  readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
+  readonly canManage = computed(() => !this.isSignedOff());
+
   // Filter signals
   statusFilter = signal<RiskStatus | 'ALL'>('ALL');
   ownerFilter = signal<number | 'ALL'>('ALL');

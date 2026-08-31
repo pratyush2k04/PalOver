@@ -20,5 +20,4 @@ public interface IRiskRepository
     Task<List<Risk>> GetOpenRisksAsync();
     Task<List<RiskEscalationHistory>> GetEscalationHistoriesByRiskIdsAsync(IEnumerable<int> riskIds);
     Task<List<RiskEscalationHistory>> GetEscalationHistoryByRiskIdAsync(int riskId);
-    Task AddEscalationHistoryAsync(RiskEscalationHistory history);
-}
+    Task AddEscalationHistoryAsync(RiskEscalationHistory history);}

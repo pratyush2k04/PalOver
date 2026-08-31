@@ -1,9 +1,11 @@
 <div class="documents-container">
   <app-section-header title="Documents">
-    <app-button type="button" variant="flat" (click)="openUploadModal()">
-      <span class="upload-icon" [inlineSVG]="'assets/icons/upload.svg'"></span>
-      Upload
-    </app-button>
+    @if (canUpload()) {
+      <app-button type="button" variant="flat" (click)="openUploadModal()">
+        <span class="upload-icon" [inlineSVG]="'assets/icons/upload.svg'"></span>
+        Upload
+      </app-button>
+    }
   </app-section-header>
 
   @if (errorMessage()) {
@@ -41,7 +43,9 @@
               <th class="col-nowrap">VERSION</th>
               <th>UPLOADER</th>
               <th>DATE</th>
-              <th class="col-actions">ACTIONS</th>
+              @if (canUpload()) {
+                <th class="col-actions">ACTIONS</th>
+              }
             </tr>
           </thead>
           <tbody>
@@ -118,28 +122,30 @@
                 <td>
                   <span class="upload-date">{{ doc.uploadedAt | date:'dd MMM y' }}</span>
                 </td>
-                <td class="col-actions">
-                  <app-button
-                    type="button"
-                    variant="icon"
-                    class="btn-upload-version"
-                    ariaLabel="Upload new version"
-                    [appTooltip]="'Upload new version'"
-                    (click)="triggerVersionUpload(doc)"
-                  >
-                    <span class="upload-version-icon" [inlineSVG]="'assets/icons/upload.svg'"></span>
-                  </app-button>
-                  <app-button
-                    type="button"
-                    variant="icon"
-                    class="btn-remove"
-                    ariaLabel="Remove document"
-                    [appTooltip]="'Remove document'"
-                    (click)="openRemoveModal(doc)"
-                  >
-                    <span class="remove-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
-                  </app-button>
-                </td>
+                @if (canUpload()) {
+                  <td class="col-actions">
+                    <app-button
+                      type="button"
+                      variant="icon"
+                      class="btn-upload-version"
+                      ariaLabel="Upload new version"
+                      [appTooltip]="'Upload new version'"
+                      (click)="triggerVersionUpload(doc)"
+                    >
+                      <span class="upload-version-icon" [inlineSVG]="'assets/icons/upload.svg'"></span>
+                    </app-button>
+                    <app-button
+                      type="button"
+                      variant="icon"
+                      class="btn-remove"
+                      ariaLabel="Remove document"
+                      [appTooltip]="'Remove document'"
+                      (click)="openRemoveModal(doc)"
+                    >
+                      <span class="remove-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
+                    </app-button>
+                  </td>
+                }
               </tr>
             }
           </tbody>

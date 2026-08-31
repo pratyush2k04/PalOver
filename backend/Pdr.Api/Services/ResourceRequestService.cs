@@ -16,6 +16,7 @@ using Pdr.Api.Services.Notifications.Mappers;
 namespace Pdr.Api.Services;
 
 public class ResourceRequestService(
+    IEngagementRepository engagementRepository,
     IResourceRequestRepository resourceRequestRepository,
     ICurrentUserService currentUserService,
     INotificationService notificationService,
@@ -25,6 +26,8 @@ public class ResourceRequestService(
     {
         var engagement = await resourceRequestRepository.GetEngagementAsync(engagementId)
             ?? throw new EngagementNotFoundException(engagementId);
+
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var currentUserId = currentUserService.GetUserId();
         var assignment = await resourceRequestRepository.GetUserEngagementAssignmentAsync(engagementId, currentUserId);
@@ -83,6 +86,8 @@ public class ResourceRequestService(
     {
         var request = await GetOwnedRequestAsync(engagementId, id);
 
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         await EnsureLeadershipOrAdminAsync(engagementId);
 
         if (request.Status == ResourceRequestStatus.Confirmed)
@@ -134,6 +139,8 @@ public class ResourceRequestService(
     {
         var request = await GetOwnedRequestAsync(engagementId, id);
 
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         await EnsureLeadershipOrAdminAsync(engagementId);
 
         var allocation = request.Allocations.FirstOrDefault(a => a.Id == allocationId && a.RemovedAt == null)
@@ -169,6 +176,8 @@ public class ResourceRequestService(
     public async Task<ResourceRequestDto> RemoveAllocationAsync(int engagementId, int id, int allocationId, RemoveAllocationDto dto)
     {
         var request = await GetOwnedRequestAsync(engagementId, id);
+
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         await EnsureLeadershipOrAdminAsync(engagementId);
 

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ChangeRequestService } from '@features/engagements/services/change-request.service';
+import { EngagementService } from '@features/engagements/services/engagement.service';
 import { AuthService } from '@shared/services/auth';
 import { ChangeRequest } from '@features/engagements/models/change-request.model';
 import { CHANGE_REQUEST_CONSTANTS } from '@shared/constants/change-request.constants';
@@ -32,12 +33,14 @@ export class ChangeRequestsComponent {
   private route = inject(ActivatedRoute);
   private changeRequestService = inject(ChangeRequestService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
   private dialog = inject(DialogService);
 
   readonly constants = CHANGE_REQUEST_CONSTANTS;
 
-  isProjectManager = computed(() => this.authService.hasRole('Project Management'));
-  isLeadership = computed(() => this.authService.hasRole('Leadership'));
+  readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
+  isProjectManager = computed(() => !this.isSignedOff() && this.authService.hasRole('Project Management'));
+  isLeadership = computed(() => !this.isSignedOff() && this.authService.hasRole('Leadership'));
 
   private paramMap = toSignal(this.route.paramMap);
   private parentParamMap = toSignal(this.route.parent?.paramMap ?? this.route.paramMap);

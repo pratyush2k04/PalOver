@@ -33,5 +33,4 @@ public class BrownfieldFindingRepository(AppDbContext context) : IBrownfieldFind
         await context.Engagements.AnyAsync(e => e.EngagementId == engagementId);
 
     public async Task<bool> DocumentExistsAsync(int documentId) =>
-        await context.Documents.AnyAsync(d => d.Id == documentId);
-}
+        await context.Documents.AnyAsync(d => d.Id == documentId);}

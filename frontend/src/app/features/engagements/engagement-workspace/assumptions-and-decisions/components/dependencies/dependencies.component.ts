@@ -13,6 +13,7 @@ import { ToastService } from '@common/services/toast/toast';
 import { DependencyFormDialogComponent, DependencyFormDialogResult } from './dialogs/dependency-form-dialog/dependency-form-dialog.component';
 import { DEPENDENCY_MESSAGES } from '@shared/constants/app.constants';
 import { AuthService } from '@shared/services/auth';
+import { EngagementService } from '../../../../services/engagement.service';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
 
@@ -37,11 +38,13 @@ export class DependenciesComponent implements OnInit {
   private toastService = inject(ToastService);
   private dialogService = inject(DialogService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
 
   engagementId = signal<number>(0);
   dependencies = signal<DependencyDto[]>([]);
   atRiskCount = computed(() => this.dependencies().filter(d => d.status === DependencyStatus.AtRisk).length);
   isLoading = signal<boolean>(true);
+  readonly canAdd = computed(() => !this.engagementService.isSignedOff());
 
   DependencyStatus = DependencyStatus;
 
@@ -101,20 +104,19 @@ export class DependenciesComponent implements OnInit {
     const dialogRef = this.dialogService.open<DependencyFormDialogComponent, any, DependencyFormDialogResult>(
       DependencyFormDialogComponent,
       { 
-        data: { dependency, engagementId: this.engagementId() },
+        data: { dependency },
         disableClose: true
       }
     );
 
-    dialogRef.closed$.subscribe((result: DependencyFormDialogResult | undefined) => {
+    dialogRef.closed$.subscribe(result => {
       if (!result) return;
 
       if (dependency) {
-        const updateDto = {
+        this.dependencyService.updateDependency(this.engagementId(), dependency.id, {
           ...result,
-          status: result.status ?? DependencyStatus.Open
-        };
-        this.dependencyService.updateDependency(this.engagementId(), dependency.id, updateDto).subscribe({
+          status: result.status ?? dependency.status
+        }).subscribe({
           next: () => {
             this.toastService.success(DEPENDENCY_MESSAGES.UPDATE_SUCCESS);
             this.loadDependencies();
@@ -134,12 +136,14 @@ export class DependenciesComponent implements OnInit {
   }
 
   canEdit(dependency: DependencyDto): boolean {
-    return dependency.createdBy === String(this.authService.getUserId());
+    return !this.engagementService.isSignedOff() && dependency.createdBy === String(this.authService.getUserId());
   }
 
   canMarkMet(dependency: DependencyDto): boolean {
-    return dependency.ownerUserId === this.authService.getUserId()
-      || this.authService.hasRole('Project Management');
+    return !this.engagementService.isSignedOff() && (
+      dependency.ownerUserId === this.authService.getUserId()
+      || this.authService.hasRole('Project Management')
+    );
   }
 
   markAsMet(dependency: DependencyDto) {

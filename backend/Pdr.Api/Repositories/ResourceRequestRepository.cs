@@ -78,5 +78,4 @@ public class ResourceRequestRepository(AppDbContext context) : IResourceRequestR
     public async Task SaveChangesAsync()
     {
         await context.SaveChangesAsync();
-    }
-}
+    }}

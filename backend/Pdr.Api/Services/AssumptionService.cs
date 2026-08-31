@@ -47,6 +47,8 @@ public class AssumptionService(
         if (engagement == null)
             throw new EngagementNotFoundException(engagementId);
 
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var assumption = new Assumption
         {
             EngagementId = engagementId,
@@ -66,6 +68,8 @@ public class AssumptionService(
         var engagement = await engagementRepository.GetByIdAsync(engagementId);
         if (engagement == null)
             throw new EngagementNotFoundException(engagementId);
+
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var assumption = await assumptionRepository.GetByIdAsync(assumptionId);
         if (assumption == null || assumption.EngagementId != engagementId)
@@ -89,6 +93,8 @@ public class AssumptionService(
         var engagement = await engagementRepository.GetByIdAsync(engagementId);
         if (engagement == null)
             throw new EngagementNotFoundException(engagementId);
+
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var assumption = await assumptionRepository.GetByIdAsync(assumptionId);
         if (assumption == null || assumption.EngagementId != engagementId)

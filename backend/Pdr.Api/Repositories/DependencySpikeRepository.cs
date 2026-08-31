@@ -29,5 +29,4 @@ public class DependencySpikeRepository(AppDbContext context) : IDependencySpikeR
         await context.SaveChangesAsync();
 
     public async Task<bool> EngagementExistsAsync(int engagementId) =>
-        await context.Engagements.AnyAsync(e => e.EngagementId == engagementId);
-}
+        await context.Engagements.AnyAsync(e => e.EngagementId == engagementId);}
