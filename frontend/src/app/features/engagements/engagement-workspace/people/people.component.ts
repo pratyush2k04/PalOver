@@ -14,6 +14,7 @@ import { SectionHeaderComponent } from '@common/components/section-header/sectio
 import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { AuthService } from '@shared/services/auth';
+import { EngagementService } from '../../services/engagement.service';
 import { USER_ROLES } from '@shared/constants/app.constants';
 import { ClientContactTransitionCardComponent } from './client-contact-transition-card/client-contact-transition-card.component';
 import {
@@ -45,6 +46,7 @@ export class PeopleComponent {
   private dialog = inject(DialogService);
   public loaderService = inject(LoaderService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
 
   private paramMap = toSignal(this.route.parent?.paramMap ?? this.route.paramMap);
 
@@ -59,6 +61,7 @@ export class PeopleComponent {
   isImporting = signal(false);
   
   isLeadership = computed(() => this.authService.hasRole(USER_ROLES.LEADERSHIP));
+  canManage = computed(() => !this.isLeadership() && !this.engagementService.isSignedOff());
 
   constructor() {
     effect(() => {

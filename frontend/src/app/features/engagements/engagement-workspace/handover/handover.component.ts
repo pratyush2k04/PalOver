@@ -46,6 +46,8 @@ import { SelectComponent, SelectOption } from '@common/components/form/select/se
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { SectionHeaderComponent } from '@common/components/section-header/section-header';
+
+import { HandoverQueriesComponent } from './handover-queries/handover-queries.component';
 import { ToastService } from '@common/services/toast/toast';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 
@@ -78,6 +80,7 @@ interface RealisticEditForm {
     SelectComponent,
     StatusBadgeComponent,
     EmptyStateComponent,
+    HandoverQueriesComponent,
     ConfirmDialogComponent,
     HandoverReadinessComponent,
   ],
@@ -209,12 +212,19 @@ export class HandoverComponent {
     label: t.name
   }));
 
+  isDraft = computed(() => {
+    const status = this.handover()?.status?.toLowerCase();
+    return !status || status === 'draft';
+  });
   isSubmitted = computed(() => this.handover()?.status?.toLowerCase() === 'submitted');
+  isReviewed = computed(() => this.handover()?.status === 'Reviewed');
+  hasBeenSubmitted = computed(() => this.isSubmitted() || this.isReviewed());
   hasHandoverDraft = computed(() => !!this.handover()?.handoverId);
   newCommitmentTouched = signal(false);
 
-  isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
-  isProjectManagement = computed(() => this.authService.hasRole('Project Management'));
+  readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
+  isPreSales = computed(() => !this.isSignedOff() && this.authService.hasRole('Pre Sales'));
+  isProjectManagement = computed(() => !this.isSignedOff() && this.authService.hasRole('Project Management'));
 
   originalAcknowledgementMessage = signal('');
 
@@ -268,13 +278,13 @@ export class HandoverComponent {
         });
         this.commitments.set(data.commitments || []);
         this.isLoading.set(false);
-        if (this.isSubmitted()) {
+        if (!this.isDraft()) {
           this.clientContextForm.disable();
         }
 
         if (
           this.isPreSales() &&
-          !this.isSubmitted() &&
+          this.isDraft() &&
           this.route.snapshot.queryParamMap.get('action') === 'create'
         ) {
           this.openAddCommitmentDialog();
@@ -294,7 +304,7 @@ export class HandoverComponent {
 
   saveDraft() {
     const id = this.engagementId();
-    if (!id) return;
+    if (!id || !this.isDraft()) return;
 
     const { businessProblem, clientSentiment } = this.clientContextForm.getRawValue();
     if (!businessProblem || !clientSentiment) {
@@ -322,7 +332,7 @@ export class HandoverComponent {
 
   submitHandover() {
     const id = this.engagementId();
-    if (!id) return;
+    if (!id || !this.isDraft()) return;
 
     if (!this.isValidForSubmit()) {
       this.clientContextForm.markAllAsTouched();
@@ -345,6 +355,24 @@ export class HandoverComponent {
         this.showMessage(errorMessage, true);
         this.isSaving.set(false);
       }
+    });
+  }
+
+  markReviewed() {
+    const id = this.engagementId();
+    if (!id) return;
+
+    this.isSaving.set(true);
+    this.handoverService.markReviewed(id).subscribe({
+      next: (data) => {
+        this.handover.set(data);
+        this.showMessage('Handover marked reviewed', false);
+        this.isSaving.set(false);
+      },
+      error: (err) => {
+        this.showMessage(this.extractErrorMessage(err, 'Failed to mark handover reviewed'), true);
+        this.isSaving.set(false);
+      },
     });
   }
 

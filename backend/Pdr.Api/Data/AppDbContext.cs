@@ -35,6 +35,10 @@ public class AppDbContext : DbContext
     public DbSet<RealisticCommitment> RealisticCommitments => Set<RealisticCommitment>();
     public DbSet<CommitmentType> CommitmentTypes => Set<CommitmentType>();
     public DbSet<HandoverStatus> HandoverStatuses => Set<HandoverStatus>();
+    public DbSet<HandoverQuery> HandoverQueries => Set<HandoverQuery>();
+    public DbSet<HandoverQueryQuestion> HandoverQueryQuestions => Set<HandoverQueryQuestion>();
+    public DbSet<HandoverQueryResponse> HandoverQueryResponses => Set<HandoverQueryResponse>();
+    public DbSet<HandoverQueryFieldSection> HandoverQueryFieldSections => Set<HandoverQueryFieldSection>();
     public DbSet<CommercialModel> CommercialModels => Set<CommercialModel>();
     private readonly IHttpContextAccessor? _httpContextAccessor;
 

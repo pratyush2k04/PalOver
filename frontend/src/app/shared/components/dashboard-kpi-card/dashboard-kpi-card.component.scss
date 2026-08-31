@@ -1,17 +1,15 @@
-@use '../../../../styles/tokens' as *;
-@use '../../../../styles/mixins' as *;
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
 
 .kpi-card {
   height: 100%;
-  border-radius: 0.75rem;
+  border-radius: $radius-2xl;
   box-shadow: $shadow-card;
   border: 1px solid $color-border-soft;
   background-color: $color-surface !important;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform $transition-base, box-shadow $transition-base;
   position: relative;
   overflow: hidden;
-
-
 
   .card-body {
     padding: $spacing-6;
@@ -31,7 +29,7 @@
   .icon-wrapper {
     width: 3.75rem;
     height: 3.75rem;
-    border-radius: 1rem;
+    border-radius: $radius-3xl;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -82,10 +80,10 @@
     }
 
     &.text-info {
-      background-color: #F0F9FF; // No direct info token in tokens.scss
+      background-color: $color-info-bg;
 
       ::ng-deep svg {
-        stroke: #0EA5E9;
+        stroke: $color-info;
         fill: none;
       }
     }

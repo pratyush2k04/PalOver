@@ -76,5 +76,4 @@ public class PersonRepository(AppDbContext context) : IPersonRepository
     public async Task<bool> SaveChangesAsync()
     {
         return await context.SaveChangesAsync() > 0;
-    }
-}
+    }}

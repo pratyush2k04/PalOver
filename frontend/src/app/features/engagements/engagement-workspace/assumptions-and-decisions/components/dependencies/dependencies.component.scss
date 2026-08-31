@@ -1,4 +1,4 @@
-@use '../../../../../../../styles/mixins' as *;
+@use 'styles/mixins' as *;
 
 :host {
   display: block;
@@ -8,10 +8,11 @@
 
 .panel-card {
   width: 100%;
-  @include card-surface(0, 12px);
+  @include card-surface(0, $radius-2xl);
   @include flex-column;
   height: 100%;
   max-height: 100%;
+  overflow: hidden;
 
   .banner-alert {
     display: flex;
@@ -21,8 +22,8 @@
     color: $color-danger-dark;
     padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--border-light, $color-border-table);
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
+    border-top-left-radius: $radius-2xl;
+    border-top-right-radius: $radius-2xl;
     font-weight: 500;
     font-size: 0.95rem;
 
@@ -52,17 +53,6 @@
       }
     }
 
-    .btn-add {
-      ::ng-deep button {
-        background-color: $color-primary-light !important;
-        border-color: $color-primary-border !important;
-        color: $color-primary-hover !important;
-
-        &:hover {
-          background-color: $color-primary-subtle !important;
-        }
-      }
-    }
   }
 
   .panel-content {
@@ -140,12 +130,12 @@
         }
 
         .type-badge {
-          font-size: 0.75rem;
+          font-size: $font-size-xs;
           background: $color-slate-100;
           color: $color-slate-600;
-          padding: 2px 6px;
-          border-radius: 4px;
-          font-weight: 500;
+          padding: 0.125rem 0.375rem;
+          border-radius: $radius-sm;
+          font-weight: $font-weight-medium;
         }
       }
 

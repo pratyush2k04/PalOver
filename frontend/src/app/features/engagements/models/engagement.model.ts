@@ -83,6 +83,9 @@ export interface EngagementInfoDto {
   billingStartDate?: string;
   status: string;
   isKickoffReady: boolean;
+  handoverStatus?: string;
+  handoverReviewedAt?: string;
+  handoverReviewedByName?: string;
   dayOneSignOff?: DayOneSignOffDto;
 }
 

@@ -10,6 +10,7 @@ import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confir
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { ToastService } from '@common/services/toast/toast';
 import { AuthService } from '@shared/services/auth';
+import { EngagementService } from '../../../services/engagement.service';
 import { TECHNICAL_READINESS_ROLES } from '@shared/constants/technical-readiness.constants';
 import { DependencySpikeService } from '../../../services/dependency-spike.service';
 import {
@@ -50,6 +51,7 @@ export class DependencySpikesComponent implements OnInit {
   private spikeService = inject(DependencySpikeService);
   private toastService = inject(ToastService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
   private dialog = inject(DialogService);
 
   spikes = signal<DependencySpikeDto[]>([]);
@@ -58,7 +60,7 @@ export class DependencySpikesComponent implements OnInit {
   isDeleting = signal<boolean>(false);
 
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
-  canManage = computed(() => this.isTechLead());
+  canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
 
   constructor() {
     effect(() => {

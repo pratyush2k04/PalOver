@@ -2,21 +2,41 @@
   <div class="handover-container">
     <app-section-header [title]="HANDOVER_LABELS.TITLE">
       <div class="header-status-group">
-        <div class="status-report" [ngClass]="{'submitted': isSubmitted(), 'draft': !isSubmitted()}">
+        <div class="status-report" [ngClass]="{'submitted': isSubmitted(), 'reviewed': isReviewed(), 'draft': isDraft()}">
           <span class="status-report-dot"></span>
           <span class="status-report-text">{{ handover()?.status || 'Not Started' }}</span>
         </div>
-        @if (isPreSales()) {
+        @if (isPreSales() && isDraft()) {
           <app-button
             variant="flat"
-            [disabled]="!isHandoverReadyToSubmit() || isSaving() || isSubmitted()"
+            [disabled]="!isHandoverReadyToSubmit() || isSaving()"
             (click)="submitHandover()"
           >
             {{ HANDOVER_BUTTONS.SUBMIT_HANDOVER }}
           </app-button>
         }
+        @if (isProjectManagement() && isSubmitted() && !handover()?.reviewedAt) {
+          <app-button
+            variant="flat"
+            [disabled]="isSaving()"
+            (click)="markReviewed()"
+          >
+            Mark Reviewed
+          </app-button>
+        }
       </div>
     </app-section-header>
+
+    @if (isSubmitted() && handover()?.submittedAt) {
+      <p class="submitted-info">
+        Submitted by {{ handover()?.submittedByName || 'Unknown' }} on {{ handover()?.submittedAt | date: 'medium' }}
+      </p>
+    }
+    @if (handover()?.reviewedAt) {
+      <p class="reviewed-info">
+        Reviewed by {{ handover()?.reviewedByName || 'Unknown' }} on {{ handover()?.reviewedAt | date: 'medium' }}
+      </p>
+    }
 
     @if (message()) {
       <app-alert [variant]="isError() ? 'danger' : 'neutral'">
@@ -24,7 +44,7 @@
       </app-alert>
     }
 
-    @if (!isSubmitted() && kickoffReadiness(); as r) {
+    @if (isDraft() && kickoffReadiness(); as r) {
       <div class="readiness-banner" [class.readiness-ready]="isHandoverReadyToSubmit()" [class.readiness-incomplete]="!isHandoverReadyToSubmit()">
         <div class="banner-header">
           @if (isHandoverReadyToSubmit()) {
@@ -56,7 +76,7 @@
       </div>
     }
 
-    @if (isPreSales() && !isSubmitted()) {
+    @if (isPreSales() && isDraft()) {
       <form [formGroup]="clientContextForm">
         <div class="section client-context">
           <h3>{{ HANDOVER_LABELS.CLIENT_CONTEXT }}</h3>
@@ -96,13 +116,13 @@
           />
 
           <div class="client-context-actions">
-            <app-button variant="flat" [disabled]="isSubmitted()" (click)="saveDraft()">{{ HANDOVER_BUTTONS.SAVE_DRAFT }}</app-button>
+            <app-button variant="stroked" [disabled]="isSaving() || !isDraft()" (click)="saveDraft()">{{ HANDOVER_BUTTONS.SAVE_DRAFT }}</app-button>
           </div>
         </div>
       </form>
     }
 
-    @if (!isPreSales() || isSubmitted()) {
+    @if (!isPreSales() || !isDraft()) {
       <div class="section client-context client-context-readonly">
         <h3>{{ HANDOVER_LABELS.CLIENT_CONTEXT }}</h3>
 
@@ -148,7 +168,7 @@
     <div class="section commitments">
       <div class="commitments-header">
         <h3>{{ HANDOVER_LABELS.COMMITMENTS }}</h3>
-        @if (isPreSales() && !isSubmitted()) {
+        @if (isPreSales() && isDraft()) {
           <div class="header-action-group">
             @if (!hasHandoverDraft()) {
               <span class="save-draft-hint">{{ HANDOVER_MESSAGES.SAVE_DRAFT_FIRST }}</span>
@@ -175,7 +195,7 @@
               <div class="commitment-square promised-square">
                 <div class="square-header">
                   <span class="square-label">{{ HANDOVER_LABELS.PROMISED }}</span>
-                  @if (isPreSales() && !isSubmitted() && editingCommitmentId() !== c.commitmentId) {
+                  @if (isPreSales() && isDraft() && editingCommitmentId() !== c.commitmentId) {
                     <div class="card-header-actions">
                       <app-button
                         variant="stroked"
@@ -425,12 +445,18 @@
     <!-- Handover Readiness Section -->
     <app-handover-readiness
       [engagementId]="engagementId()!"
-      [isSubmitted]="isSubmitted()"
+      [isSubmitted]="!isDraft()"
       (itemsUpdated)="onHandoverReadinessItemsUpdated($event)">
     </app-handover-readiness>
 
 
-
+    @if (hasBeenSubmitted()) {
+      <app-handover-queries
+        [engagementId]="engagementId()!"
+        [commitments]="commitments()"
+        [isReviewed]="isReviewed()"
+      ></app-handover-queries>
+    }
   </div>
 }
 

@@ -1,11 +1,11 @@
-@use '../../../../../../../styles/tokens' as *;
+@use 'styles/tokens' as *;
 
 .dialog-container {
-  width: 520px;
-  max-width: calc(100vw - 48px);
+  width: 32.5rem;
+  max-width: calc(100vw - 3rem);
   background: $color-surface;
-  border-radius: 12px;
-  box-shadow: 0 20px 25px -5px rgba($color-black, 0.1), 0 10px 10px -5px rgba($color-black, 0.04);
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-modal;
   overflow: hidden;
 }
 
@@ -13,13 +13,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.25rem 1.5rem;
+  padding: $spacing-5 $spacing-6;
   border-bottom: 1px solid $color-gray-200;
   background: $color-gray-50;
 
   h2 {
-    font-size: 1.125rem;
-    font-weight: 700;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
     color: $color-gray-900;
     margin: 0;
   }
@@ -27,16 +27,16 @@
 }
 
 .dialog-body {
-  padding: 1.5rem;
+  padding: $spacing-6;
 }
 
 .item-title-preview {
-  font-size: 0.9375rem;
+  font-size: $font-size-sm;
   color: $color-gray-700;
-  margin: 0 0 1.25rem 0;
-  padding: 0.75rem 1rem;
+  margin: 0 0 $spacing-5 0;
+  padding: $spacing-3 $spacing-4;
   background: $color-gray-100;
-  border-radius: 8px;
+  border-radius: $radius-lg;
   border-left: 3px solid $color-primary-active;
 
   strong {

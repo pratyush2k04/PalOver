@@ -1,5 +1,5 @@
-@use '../../../../../styles/mixins' as *;
-@use '../../../../../styles/tokens' as *;
+@use 'styles/mixins' as *;
+@use 'styles/tokens' as *;
 
 .handover-container {
   font-family: $font-family-base;
@@ -42,6 +42,15 @@
 
 .status-report.submitted .status-report-text {
   color: $color-primary;
+  font-weight: $font-weight-semibold;
+}
+
+.status-report.reviewed .status-report-dot {
+  background-color: $color-success;
+}
+
+.status-report.reviewed .status-report-text {
+  color: $color-success;
   font-weight: $font-weight-semibold;
 }
 
@@ -125,8 +134,15 @@
   }
 }
 
+.submitted-info,
+.reviewed-info {
+  margin: -1rem 0 1.5rem;
+  font-size: 0.875rem;
+  color: $color-text-muted;
+}
+
 .section {
-  @include card-surface($spacing-6, $radius-md);
+  @include card-surface($spacing-6, $radius-2xl);
   margin-bottom: $spacing-8;
 
   @media (max-width: 768px) {
@@ -337,7 +353,7 @@ select {
   min-height: 7.5rem;
   background: $color-surface;
   border: 1px solid $color-border-soft;
-  border-radius: $radius-md;
+  border-radius: $radius-2xl;
   box-shadow: $shadow-card;
   border-top: 3px solid transparent;
   overflow: hidden;

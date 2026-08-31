@@ -36,4 +36,6 @@ public interface IEngagementRepository
     Task<bool> IsUserAssignedAsync(int engagementId, int userId);
     Task<List<EngagementReportInfoDto>> GetEngagementReportInfoAsync(List<int> engagementIds);
     Task<List<EngagementAssignment>> GetAssignmentsForEngagementsAsync(List<int> engagementIds);
+    Task<bool> IsEngagementSignedOffAsync(int engagementId);
+    Task EnsureNotSignedOffAsync(int engagementId);
 }

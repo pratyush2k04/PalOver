@@ -1,4 +1,4 @@
-@use '../../../../../styles/mixins' as *;
+@use 'styles/mixins' as *;
 
 .sign-off-container {
   display: flex;
@@ -8,7 +8,8 @@
 }
 
 .evidence-snapshot-card {
-  @include card-surface($padding: $spacing-5, $radius: $radius-lg);
+  @include card-surface($padding: $spacing-5, $radius: $radius-2xl);
+  box-shadow: $shadow-card;
 }
 
 .evidence-snapshot-header {

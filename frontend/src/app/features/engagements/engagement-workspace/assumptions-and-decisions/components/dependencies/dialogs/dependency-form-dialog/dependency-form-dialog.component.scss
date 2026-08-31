@@ -1,12 +1,13 @@
-@use '../../../../../../../../../styles/tokens' as *;
+@use 'styles/tokens' as *;
 
 .dialog-container {
   display: flex;
   flex-direction: column;
-  width: 550px;
+  width: 34.375rem;
   max-width: 90vw;
-  background: var(--surface-default);
-  border-radius: 8px;
+  background: $color-surface;
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-modal;
 
   .dialog-header {
     display: flex;

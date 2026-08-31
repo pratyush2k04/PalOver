@@ -9,5 +9,4 @@ public interface IDependencyRepository
     Task AddAsync(Dependency dependency);
     void Update(Dependency dependency);
     void Delete(Dependency dependency);
-    Task<int> SaveChangesAsync();
-}
+    Task<int> SaveChangesAsync();}

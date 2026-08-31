@@ -1,5 +1,5 @@
-@use '../../../../../../styles/tokens' as *;
-@use '../../../../../../styles/mixins' as *;
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
 
 :host {
   display: block;
@@ -7,7 +7,7 @@
 }
 
 .section.transition-section {
-  @include card-surface($spacing-6, $radius-md);
+  @include card-surface($spacing-6, $radius-2xl);
   margin-bottom: $spacing-8;
   width: 100%;
 
@@ -53,7 +53,7 @@
   width: 100%;
   background: linear-gradient(135deg, $color-primary-light 0%, $color-bg 100%);
   border: 1px solid $color-border-soft;
-  border-radius: $radius-lg;
+  border-radius: $radius-xl;
   padding: $spacing-4 $spacing-6;
 
   &.empty-flow-card {

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CommunicationCadenceService } from '../../../../services/communication-cadence.service';
+import { EngagementService } from '../../../../services/engagement.service';
 import { AuthService } from '@shared/services/auth';
 import { CommunicationCadence, EngagementParticipant } from '../../../../models/cadence.model';
 import { CADENCE_CONSTANTS } from '@shared/constants/cadence.constants';
@@ -26,11 +27,13 @@ export class GovernanceProcessComponent {
   private route = inject(ActivatedRoute);
   private cadenceService = inject(CommunicationCadenceService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
   private dialog = inject(DialogService);
 
   readonly constants = CADENCE_CONSTANTS;
 
-  isProjectManager = computed(() => this.authService.hasRole('Project Management'));
+  readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
+  isProjectManager = computed(() => !this.isSignedOff() && this.authService.hasRole('Project Management'));
 
   private paramMap = toSignal(this.route.paramMap);
   private parentParamMap = toSignal(this.route.parent?.paramMap ?? this.route.paramMap);

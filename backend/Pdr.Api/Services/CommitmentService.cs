@@ -11,19 +11,24 @@ namespace Pdr.Api.Services;
 
 public class CommitmentService : ICommitmentService
 {
+    private readonly IEngagementRepository _engagementRepository;
     private readonly IHandoverRepository _handoverRepository;
     private readonly ICommitmentRepository _commitmentRepository;
 
     public CommitmentService(
+        IEngagementRepository engagementRepository,
         IHandoverRepository handoverRepository,
         ICommitmentRepository commitmentRepository)
     {
+        _engagementRepository = engagementRepository;
         _handoverRepository = handoverRepository;
         _commitmentRepository = commitmentRepository;
     }
 
     private async Task<HandoverInfo> GetHandoverOrThrowAsync(int engagementId)
     {
+        await _engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
 
         if (handover == null)
@@ -36,7 +41,7 @@ public class CommitmentService : ICommitmentService
     {
         var status = await _handoverRepository.GetStatusByIdAsync(handover.StatusId);
 
-        if (status?.StatusName == HandoverStatusNames.Submitted)
+        if (HandoverStatusNames.IsSubmittedOrReviewed(status?.StatusName))
         {
             throw new HandoverSubmittedException(HandoverValidationConstants.AlreadySubmitted);
         }

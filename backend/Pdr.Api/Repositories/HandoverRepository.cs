@@ -20,5 +20,4 @@ public class HandoverRepository(AppDbContext context) : IHandoverRepository
             .FirstOrDefaultAsync(s => s.HandoverStatusId == statusId);
 
     public async Task SaveChangesAsync() =>
-        await context.SaveChangesAsync();
-}
+        await context.SaveChangesAsync();}

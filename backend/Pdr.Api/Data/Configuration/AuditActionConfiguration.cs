@@ -212,6 +212,24 @@ public class AuditActionConfiguration : IEntityTypeConfiguration<AuditAction>
                 Id = (int)AuditActionEnum.DocumentVisibilityChanged,
                 Action = AuditActionEnum.DocumentVisibilityChanged.ToString(),
                 Details = "Document {documentName} visibility changed to {visibility} by {actorName}"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.HandoverQueryRaised,
+                Action = AuditActionEnum.HandoverQueryRaised.ToString(),
+                Details = "{actorName} raised a query on {fieldSection} for the handover on {engagementName}"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.HandoverQueryResponded,
+                Action = AuditActionEnum.HandoverQueryResponded.ToString(),
+                Details = "{actorName} responded to a query on {fieldSection} for the handover on {engagementName}"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.HandoverQueryResolved,
+                Action = AuditActionEnum.HandoverQueryResolved.ToString(),
+                Details = "{actorName} marked a query on {fieldSection} resolved for the handover on {engagementName}"
             });
     }
 }

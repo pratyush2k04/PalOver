@@ -1,4 +1,4 @@
-@use '../../../../../styles/mixins' as *;
+@use 'styles/mixins' as *;
 
 .engagements-page {
   display: inline-block;
@@ -26,7 +26,7 @@
 }
 
 .modal-card {
-  @include modal-card(560px);
+  @include modal-card(35rem);
   padding: 0;
 
   .modal-header {
@@ -72,6 +72,11 @@
 .form-row {
   display: flex;
   gap: $spacing-4;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    gap: $spacing-3;
+  }
 
   .col {
     flex: 1;

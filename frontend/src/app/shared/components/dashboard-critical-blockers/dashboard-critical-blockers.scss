@@ -1,8 +1,8 @@
-@use '../../../../styles/tokens' as *;
+@use 'styles/tokens' as *;
 
 .list-card {
   background: $color-surface;
-  border-radius: 0.75rem;
+  border-radius: $radius-2xl;
   box-shadow: $shadow-card;
   padding: $spacing-6;
   display: flex;
@@ -105,7 +105,7 @@
   font-size: 0.65rem;
   font-weight: $font-weight-semibold;
   padding: 0.15rem 0.5rem;
-  border-radius: 0.75rem;
+  border-radius: $radius-full;
   text-transform: capitalize;
 }
 

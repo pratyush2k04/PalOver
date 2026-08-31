@@ -1,4 +1,4 @@
-@use '../../../../../../../styles/mixins' as *;
+@use 'styles/mixins' as *;
 
 :host {
   display: block;
@@ -8,10 +8,11 @@
 
 .panel-card {
   width: 100%;
-  @include card-surface(0, 12px);
+  @include card-surface(0, $radius-2xl);
   @include flex-column;
   height: 100%;
   max-height: 100%;
+  overflow: hidden;
 
   .banner-alert {
     display: flex;
@@ -21,8 +22,8 @@
     color: $color-danger-dark;
     padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--border-light, $color-border-table);
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
+    border-top-left-radius: $radius-2xl;
+    border-top-right-radius: $radius-2xl;
     font-weight: 500;
     font-size: 0.95rem;
 
@@ -53,18 +54,6 @@
       }
     }
 
-    /* Soft pastel style for + Add button */
-    .btn-add {
-      ::ng-deep button {
-        background-color: $color-primary-light !important;
-        border-color: $color-primary-border !important;
-        color: $color-primary-hover !important;
-
-        &:hover {
-          background-color: $color-primary-subtle !important;
-        }
-      }
-    }
   }
 
   .panel-content {

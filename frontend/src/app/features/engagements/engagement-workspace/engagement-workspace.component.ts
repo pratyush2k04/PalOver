@@ -19,6 +19,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
+import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 
 @Component({
   selector: 'app-engagement-workspace',
@@ -28,6 +29,7 @@ import { LoadingSpinnerComponent } from '@common/components/loading-spinner/load
     DatePipe, 
     RouterOutlet,
     TabsComponent,
+    StatusBadgeComponent,
     ButtonComponent,
     InlineSVGModule,
     ReadinessCircleComponent,

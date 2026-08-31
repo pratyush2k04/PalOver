@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TECHNICAL_READINESS_ROLES } from '@shared/constants/app.constants';
 import { TechnicalReadinessService } from '@features/engagements/services/technical-readiness.service';
+import { EngagementService } from '@features/engagements/services/engagement.service';
 import { AuthService } from '@shared/services/auth';
 import { AccessItemDto } from '@features/engagements/models/access-tracker/access-tracker.dtos';
 import { AccessItemStatus } from '@features/engagements/models/access-tracker/access-tracker.enums';
@@ -58,12 +59,14 @@ export class AccessTrackerComponent {
   private toastService = inject(ToastService);
   private kickoffReadinessService = inject(KickoffReadinessService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
   private destroyRef = inject(DestroyRef);
   private dialog = inject(DialogService);
 
   accessItems = signal<AccessItemDto[]>([]);
   isLoading = signal<boolean>(true);
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+  canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
 
   itemToDelete = signal<AccessItemDto | null>(null);
   isDeleting = signal<boolean>(false);
