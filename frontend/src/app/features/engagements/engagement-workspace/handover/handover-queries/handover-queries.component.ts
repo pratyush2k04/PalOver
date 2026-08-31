@@ -6,6 +6,7 @@ import { DialogService } from '@common/services/dialog/dialog.service';
 import { HandoverQueryService } from '../../../services/handover-query.service';
 import {
   HandoverQueryDto,
+  HandoverQueryMessageDto,
   HandoverQueryFieldSection,
   HANDOVER_SECTION_FRAGMENT_IDS
 } from '../../../models/handover-query.model';
@@ -103,7 +104,22 @@ export class HandoverQueriesComponent {
         ? `${baseId}-${query.referenceId}`
         : baseId;
 
-    document.getElementById(fragmentId)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const element = document.getElementById(fragmentId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      element.classList.add('field-highlight');
+      setTimeout(() => element.classList.remove('field-highlight'), 2000);
+    }
+  }
+
+  isMessageOutgoing(msg: HandoverQueryMessageDto): boolean {
+    if (this.isPreSales()) {
+      return msg.messageType === 'Response';
+    }
+    if (this.isProjectManagement()) {
+      return msg.messageType === 'Question';
+    }
+    return msg.messageType === 'Response';
   }
 
   messageDraft(queryId: number): string {

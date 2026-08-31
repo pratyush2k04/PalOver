@@ -85,10 +85,11 @@
 }
 
 .message-turn {
-  width: calc(100% - 2rem);
+  position: relative;
+  width: calc(100% - 2.5rem);
   box-sizing: border-box;
   padding: 0.75rem 1rem;
-  border-radius: $radius-md;
+  border-radius: $radius-lg;
   border: 1px solid $color-border-soft;
 
   @media (max-width: 640px) {
@@ -96,18 +97,62 @@
   }
 }
 
-.message-turn-question {
-  background: $color-surface-hover;
-  border-left: 3px solid $color-primary;
+.message-turn-incoming {
   margin-right: auto;
   margin-left: 0;
+  background: $color-surface-hover;
+  border-bottom-left-radius: 2px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: -6px;
+    width: 0;
+    height: 0;
+    border-bottom: 8px solid $color-border-soft;
+    border-left: 6px solid transparent;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: -5px;
+    width: 0;
+    height: 0;
+    border-bottom: 7px solid $color-surface-hover;
+    border-left: 5px solid transparent;
+  }
 }
 
-.message-turn-response {
-  background: $color-surface;
-  border-left: 3px solid $color-success-border;
+.message-turn-outgoing {
   margin-left: auto;
   margin-right: 0;
+  background: $color-surface;
+  border-bottom-right-radius: 2px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    right: -6px;
+    width: 0;
+    height: 0;
+    border-bottom: 8px solid $color-border-soft;
+    border-right: 6px solid transparent;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: -5px;
+    width: 0;
+    height: 0;
+    border-bottom: 7px solid $color-surface;
+    border-right: 5px solid transparent;
+  }
 }
 
 .message-turn-header {

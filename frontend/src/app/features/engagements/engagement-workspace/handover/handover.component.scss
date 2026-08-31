@@ -721,3 +721,18 @@ input.is-invalid, textarea.is-invalid, select.is-invalid {
     box-shadow: 0 0 0 3px rgba($color-danger, 0.2) !important;
   }
 }
+
+.field-highlight {
+  outline: 2px solid $color-primary !important;
+  outline-offset: 3px;
+  animation: fieldHighlightPulse 2s ease-out;
+}
+
+@keyframes fieldHighlightPulse {
+  0% {
+    box-shadow: 0 0 0 6px rgba($color-primary, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}

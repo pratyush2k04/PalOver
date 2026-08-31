@@ -64,6 +64,8 @@
       @for (msg of query.messages; track msg.id) {
         <div
           class="message-turn"
+          [class.message-turn-outgoing]="isMessageOutgoing(msg)"
+          [class.message-turn-incoming]="!isMessageOutgoing(msg)"
           [class.message-turn-question]="msg.messageType === 'Question'"
           [class.message-turn-response]="msg.messageType === 'Response'"
         >
