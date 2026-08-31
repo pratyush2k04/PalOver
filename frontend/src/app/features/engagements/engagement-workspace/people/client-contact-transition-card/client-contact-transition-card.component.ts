@@ -15,7 +15,7 @@ import {
   DIALOG_LABELS,
   STATUS_MESSAGES,
 } from '@shared/constants/client-contact-transition.constants';
-import { AddClientContactTransitionDialogComponent } from '../dialogs/add-client-contact-transition-dialog/add-client-contact-transition-dialog.component';
+import { AddClientContactTransitionDialogComponent } from '../../handover/dialogs/add-client-contact-transition-dialog/add-client-contact-transition-dialog.component';
 
 @Component({
   selector: 'app-client-contact-transition-card',
@@ -32,6 +32,7 @@ export class ClientContactTransitionCardComponent {
   clientName = input<string>('');
   isSubmitted = input<boolean>(false);
   onSaved = output<void>();
+  transitionsLoaded = output<TransitionResponse[]>();
 
   private transitionService = inject(ClientContactTransitionService);
   private authService = inject(AuthService);
@@ -62,6 +63,7 @@ export class ClientContactTransitionCardComponent {
     this.transitionService.getTransitions(this.engagementId()).subscribe({
       next: (data) => {
         this.transitions.set(data);
+        this.transitionsLoaded.emit(data);
         this.isLoading.set(false);
       },
       error: () => {
@@ -74,6 +76,7 @@ export class ClientContactTransitionCardComponent {
   openAddTransitionDialog(): void {
     const data: AddClientContactTransitionDialogData = {
       engagementId: this.engagementId(),
+      activeTransitions: this.transitions(),
     };
 
     const dialogRef = this.dialog.open<AddClientContactTransitionDialogComponent, AddClientContactTransitionDialogData, TransitionResponse>(

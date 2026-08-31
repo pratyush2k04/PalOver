@@ -13,6 +13,17 @@
     border-radius: $radius-2xl;
     box-shadow: $shadow-card;
     overflow: hidden;
+
+    .card-inner-header {
+      padding: $spacing-4 $spacing-6;
+      border-bottom: 1px solid $color-slate-200;
+      margin: 0;
+
+      ::ng-deep h2, ::ng-deep h3, ::ng-deep .section-title {
+        font-size: 1.25rem !important;
+        font-weight: 700;
+      }
+    }
   }
 
   &__loading {
@@ -20,6 +31,17 @@
     text-align: center;
     color: $color-slate-500;
     font-size: 0.875rem;
+  }
+}
+
+.people-layout-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: $spacing-6;
+  align-items: flex-start;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
   }
 }
 

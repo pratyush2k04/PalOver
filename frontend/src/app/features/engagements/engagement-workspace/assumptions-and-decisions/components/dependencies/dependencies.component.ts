@@ -104,7 +104,10 @@ export class DependenciesComponent implements OnInit {
     const dialogRef = this.dialogService.open<DependencyFormDialogComponent, any, DependencyFormDialogResult>(
       DependencyFormDialogComponent,
       { 
-        data: { dependency },
+        data: { 
+          dependency: dependency || null,
+          engagementId: this.engagementId()
+        },
         disableClose: true
       }
     );

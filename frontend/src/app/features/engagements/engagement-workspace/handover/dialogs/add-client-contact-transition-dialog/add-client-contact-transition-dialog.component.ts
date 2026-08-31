@@ -66,8 +66,10 @@ export class AddClientContactTransitionDialogComponent {
   constructor() {
     this.personService.getPeopleByEngagement(this.data.engagementId).subscribe({
       next: (people) => {
+        const outgoingNames = new Set(this.data.activeTransitions.map(t => t.outgoingContactName));
         const clients = people.filter(
-          (p) => p.personType === PersonType.Client || p.personType === 'Client' || Number(p.personType) === PersonType.Client
+          (p) => (p.personType === PersonType.Client || p.personType === 'Client' || Number(p.personType) === PersonType.Client)
+                 && !outgoingNames.has(p.name)
         );
         this.outgoingContactOptions.set(
           clients.map((p) => ({ value: p.personId, label: `${p.name} - ${p.role}` }))

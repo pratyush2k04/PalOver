@@ -33,4 +33,8 @@ export class EngagementAllocationService {
   removeLeadershipUser(engagementId: number, userId: number): Observable<LeadershipUserItem[]> {
     return this.http.delete<LeadershipUserItem[]>(ENGAGEMENT_API_ENDPOINTS.DELETE_LEADERSHIP_USER(engagementId, userId));
   }
+
+  updateLeadershipUsers(engagementId: number, userIds: number[]): Observable<LeadershipUserItem[]> {
+    return this.http.put<LeadershipUserItem[]>(ENGAGEMENT_API_ENDPOINTS.UPDATE_LEADERSHIP_USERS(engagementId), { userIds });
+  }
 }

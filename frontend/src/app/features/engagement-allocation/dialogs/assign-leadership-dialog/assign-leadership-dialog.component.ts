@@ -93,20 +93,8 @@ export class AssignLeadershipDialogComponent implements OnInit {
       return;
     }
 
-    this.isSaving.set(true);
-    this.allocationService.assignLeadershipUser(this.engagement.engagementId, user.id).subscribe({
-      next: (updatedUsers) => {
-        this.modalLeadershipUsers.set(updatedUsers);
-        this.toastService.success(`Assigned ${user.fullName} to ${this.engagement.engagementName}`);
-        this.modalSearchTerm.set('');
-        this.isSaving.set(false);
-      },
-      error: (err) => {
-        const errorMsg = err.error?.message || 'Failed to assign Leadership user.';
-        this.toastService.error(errorMsg);
-        this.isSaving.set(false);
-      }
-    });
+    this.modalLeadershipUsers.update(users => [...users, user]);
+    this.modalSearchTerm.set('');
   }
 
   removeTagChip(user: LeadershipUserItem): void {
@@ -115,22 +103,50 @@ export class AssignLeadershipDialogComponent implements OnInit {
       return;
     }
 
-    this.isSaving.set(true);
-    this.allocationService.removeLeadershipUser(this.engagement.engagementId, user.id).subscribe({
-      next: (updatedUsers) => {
-        this.modalLeadershipUsers.set(updatedUsers);
-        this.toastService.success(`Removed ${user.fullName} from ${this.engagement.engagementName}`);
-        this.isSaving.set(false);
-      },
-      error: (err) => {
-        const errorMsg = err.error?.message || 'Failed to remove Leadership user.';
-        this.toastService.error(errorMsg);
-        this.isSaving.set(false);
-      }
-    });
+    this.modalLeadershipUsers.update(users => users.filter(u => u.id !== user.id));
   }
 
   onClose(): void {
-    this.dialogRef.close(this.modalLeadershipUsers());
+    this.dialogRef.close();
+  }
+
+  saveAndClose(): void {
+    const originalIds = new Set(this.engagement.leadershipUsers?.map(u => u.id) || []);
+    const newIds = new Set(this.modalLeadershipUsers().map(u => u.id));
+    
+    // If no changes, just close
+    if (originalIds.size === newIds.size && [...originalIds].every(id => newIds.has(id))) {
+      this.dialogRef.close(this.modalLeadershipUsers());
+      return;
+    }
+
+    this.isSaving.set(true);
+    const userIds = Array.from(newIds);
+    this.allocationService.updateLeadershipUsers(this.engagement.engagementId, userIds).subscribe({
+      next: (updatedUsers) => {
+        this.isSaving.set(false);
+        this.modalLeadershipUsers.set(updatedUsers);
+        
+        const addedUsers = updatedUsers.filter(u => !originalIds.has(u.id));
+        const removedUsers = (this.engagement.leadershipUsers || []).filter(u => !newIds.has(u.id));
+
+        if (addedUsers.length > 0 && removedUsers.length === 0) {
+          const names = addedUsers.map(u => u.fullName).join(', ');
+          this.toastService.success(`Assigned ${names} to ${this.engagement.engagementName}`);
+        } else if (removedUsers.length > 0 && addedUsers.length === 0) {
+          const names = removedUsers.map(u => u.fullName).join(', ');
+          this.toastService.success(`Removed ${names} from ${this.engagement.engagementName}`);
+        } else if (addedUsers.length > 0 && removedUsers.length > 0) {
+          this.toastService.success(`Updated leadership contacts for ${this.engagement.engagementName}`);
+        }
+
+        this.dialogRef.close(this.modalLeadershipUsers());
+      },
+      error: (err) => {
+        this.isSaving.set(false);
+        const errorMsg = err.error?.message || 'Failed to update leadership contacts.';
+        this.toastService.error(errorMsg);
+      }
+    });
   }
 }

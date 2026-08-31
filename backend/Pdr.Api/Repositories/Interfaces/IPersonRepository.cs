@@ -13,5 +13,6 @@ public interface IPersonRepository
     void Update(Person person);
     void Delete(Person person);
     Task<Person?> GetByNameAndRoleAndEngagementAsync(int engagementId, string name, string role);
+    Task<Person?> GetByNameAndEngagementAsync(int engagementId, string name);
     Task<IEnumerable<Person>> GetByNamesAndEngagementAsync(int engagementId, IEnumerable<string> names);
     Task<bool> SaveChangesAsync();}
