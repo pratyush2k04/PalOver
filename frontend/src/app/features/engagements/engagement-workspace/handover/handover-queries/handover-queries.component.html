@@ -74,7 +74,9 @@
                 {{ msg.senderRole || msg.messageType }}
               </span>
             </div>
-            <span class="message-time">{{ msg.createdAt | date: 'medium' }}</span>
+            <span class="message-time" [title]="msg.createdAt | date: 'MMM d, y, h:mm:ss a'">
+              {{ msg.createdAt | date: 'MMM d - hh:mm a' }}
+            </span>
           </div>
           <div class="message-body">
             <p class="message-text">{{ msg.messageText }}</p>
