@@ -176,6 +176,8 @@ public class DocumentService(
 
     public async Task<DocumentResponseDto> UploadDocumentAsync(DocumentUploadDto dto)
     {
+        await engagementRepository.EnsureNotSignedOffAsync(dto.EngagementId);
+
         var engagementFolder = Path.Combine(environment.ContentRootPath, DocumentValidationConstants.UploadsFolder, dto.EngagementId.ToString());
         if (!Directory.Exists(engagementFolder))
         {
@@ -346,6 +348,8 @@ public class DocumentService(
             throw new DocumentNotFoundException(id);
         }
 
+        await engagementRepository.EnsureNotSignedOffAsync(doc.EngagementId);
+
         var userIdStr = currentUserService.GetUserId().ToString();
         var userEmail = currentUserService.GetEmail();
 
@@ -363,7 +367,8 @@ public class DocumentService(
         // Signed SOW Guard
         bool isSignedSow = doc.CategoryId == (int)DocumentCategoryEnum.SignedSow
             || string.Equals(doc.Category?.CategoryName, DocumentCategoryNames.SignedSow, StringComparison.OrdinalIgnoreCase);
-        if (isSignedSow && doc.Engagement?.HandoverInfo != null && doc.Engagement.HandoverInfo.StatusId == (int)HandoverStatusEnum.Submitted)
+        if (isSignedSow && doc.Engagement?.HandoverInfo != null &&
+            doc.Engagement.HandoverInfo.StatusId is (int)HandoverStatusEnum.Submitted or (int)HandoverStatusEnum.Reviewed)
         {
             throw new HandoverSubmittedException(DocumentValidationConstants.Messages.SignedSowRemoveDenied);
         }
@@ -401,6 +406,8 @@ public class DocumentService(
         {
             throw new DocumentNotFoundException(id);
         }
+
+        await engagementRepository.EnsureNotSignedOffAsync(doc.EngagementId);
 
         var targetVisibility = dto.ResetToCategoryDefault
             ? GetCategoryDefaultVisibility(doc.Category?.CategoryName)
@@ -444,6 +451,8 @@ public class DocumentService(
         {
             throw new DocumentNotFoundException(documentId);
         }
+
+        await engagementRepository.EnsureNotSignedOffAsync(doc.EngagementId);
 
         if (!CanAccessDocument(doc))
         {

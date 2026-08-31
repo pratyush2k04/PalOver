@@ -9,5 +9,4 @@ public interface IBrownfieldFindingRepository
     Task AddAsync(BrownfieldFinding finding);
     Task SaveChangesAsync();
     Task<bool> EngagementExistsAsync(int engagementId);
-    Task<bool> DocumentExistsAsync(int documentId);
-}
+    Task<bool> DocumentExistsAsync(int documentId);}

@@ -42,6 +42,10 @@ export interface HandoverInfoDto {
   businessProblem: string;
   clientSentiment: string;
   dealOrigin?: string;
+  submittedAt?: string;
+  submittedByName?: string;
+  reviewedAt?: string;
+  reviewedByName?: string;
   commitments: CommitmentDto[];
 }
 

@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TECHNICAL_READINESS_ROLES } from '@shared/constants/app.constants';
 import { EnvironmentToolingService } from '@features/engagements/services/environment-tooling.service';
+import { EngagementService } from '@features/engagements/services/engagement.service';
 import { AuthService } from '@shared/services/auth';
 import { EnvironmentToolingItemDto, EnvironmentToolingReadinessResponse } from '@features/engagements/models/environment-tooling/environment-tooling.dtos';
 import { EnvironmentToolingStatus } from '@features/engagements/models/environment-tooling/environment-tooling.enums';
@@ -24,11 +25,6 @@ import {
   NotApplicableReasonDialogData,
   NotApplicableReasonDialogResult
 } from './dialogs/not-applicable-reason-dialog/not-applicable-reason-dialog.component';
-import {
-  EditOwnerDialogComponent,
-  EditOwnerDialogData,
-  EditOwnerDialogResult
-} from '../dialogs/edit-owner-dialog/edit-owner-dialog.component';
 
 @Component({
   selector: 'app-environment-tooling',
@@ -38,7 +34,6 @@ import {
     CommonModule,
     FormsModule,
     InlineSVGModule,
-    TooltipDirective,
     StatusBadgeComponent,
     ButtonComponent
   ],
@@ -52,12 +47,14 @@ export class EnvironmentToolingComponent {
   private service = inject(EnvironmentToolingService);
   private toastService = inject(ToastService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
   private destroyRef = inject(DestroyRef);
   private dialog = inject(DialogService);
 
   items = signal<EnvironmentToolingItemDto[]>([]);
   isLoading = signal<boolean>(true);
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+  canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
 
   readonly statusOptions = [
     { label: 'Ready', value: EnvironmentToolingStatus.Ready },
@@ -183,43 +180,7 @@ export class EnvironmentToolingComponent {
     });
   }
 
-  openEditOwnerModal(item: EnvironmentToolingItemDto): void {
-    const dialogRef = this.dialog.open<EditOwnerDialogComponent, EditOwnerDialogData, EditOwnerDialogResult>(
-      EditOwnerDialogComponent,
-      { 
-        data: { 
-          itemName: item.name, 
-          engagementId: this.engagementId(),
-          currentOwnerId: item.ownerId 
-        },
-        disableClose: true
-      }
-    );
 
-    dialogRef.closed$.subscribe((result) => {
-      if (!result) return;
-      this.updateOwner(item, result.ownerId);
-    });
-  }
-
-  private updateOwner(item: EnvironmentToolingItemDto, ownerId: number) {
-    this.service.updateOwner(item.id, { ownerId }).pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (updatedItem) => {
-        const updatedList = this.items().map(i =>
-          i.id === updatedItem.id ? updatedItem : i
-        );
-        this.items.set(updatedList);
-        this.itemsUpdated.emit(updatedList);
-        this.toastService.success(`Owner updated for ${item.name}`);
-      },
-      error: (err) => {
-        this.toastService.error(`Failed to update owner for ${item.name}`);
-        console.error('API update owner failed', err);
-      }
-    });
-  }
 
   private submitAddItem(result: AddEnvironmentItemDialogResult) {
     const currentUserId = this.authService.getUserId() ?? 1;

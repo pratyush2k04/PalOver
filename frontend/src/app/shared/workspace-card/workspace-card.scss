@@ -1,24 +1,25 @@
-@use '../../../styles/tokens' as *;
+@use 'styles/tokens' as *;
 
 :host {
   display: block;
 }
 
 .workspace-card {
-  padding: 2rem;
+  padding: $spacing-8;
   border: 1px solid $color-border-soft;
-  border-radius: 12px;
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-card;
   background: $color-surface;
 
   h3 {
-    margin: 0 0 0.5rem;
-    font-size: 1rem;
+    margin: 0 0 $spacing-2;
+    font-size: $font-size-base;
     color: $color-text;
   }
 
   p {
-    margin: 0 0 1.5rem;
+    margin: 0 0 $spacing-6;
     color: $color-gray-500;
-    font-size: 0.875rem;
+    font-size: $font-size-sm;
   }
 }

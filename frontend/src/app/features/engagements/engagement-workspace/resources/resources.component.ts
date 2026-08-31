@@ -62,6 +62,10 @@ export class ResourcesComponent {
   // the current user to actually be the PM assigned to the engagement) — gate the button to match.
   readonly isProjectManager = computed(() => this.authService.hasRole('Project Management'));
 
+  readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
+  readonly canRaiseRequest = computed(() => !this.isSignedOff() && this.isProjectManager());
+  readonly canManageAllocations = computed(() => !this.isSignedOff() && this.isLeadershipOrAdmin());
+
   private paramMap = toSignal(this.route.parent?.paramMap ?? this.route.paramMap);
 
   readonly engagementId = computed(() => {

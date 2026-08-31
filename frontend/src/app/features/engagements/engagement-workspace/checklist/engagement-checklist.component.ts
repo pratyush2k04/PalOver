@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '@shared/services/auth';
+import { EngagementService } from '../../services/engagement.service';
 import { EngagementChecklistService } from '@features/engagements/services/engagement-checklist.service';
 import { EngagementChecklist, EngagementChecklistItem } from '../../models/engagement-checklist.model';
 import { ENGAGEMENT_CHECKLIST_MESSAGES } from '@shared/constants/engagements.constants';
@@ -58,6 +59,7 @@ export class EngagementChecklistComponent {
   private route = inject(ActivatedRoute);
   private checklistService = inject(EngagementChecklistService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
   private dialog = inject(DialogService);
   private cadenceService = inject(CommunicationCadenceService);
   private kickoffReadinessService = inject(KickoffReadinessService);
@@ -82,17 +84,18 @@ export class EngagementChecklistComponent {
   selectedEvidenceFilter = signal<string>('all');
   selectedOwnerId = signal<number | 'all' | 'unassigned'>('all');
 
-  // Role permissions
+  // Role permissions & sign-off state
+  readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
   isProjectManager = computed(() => this.authService.hasRole('Project Management') || this.authService.isAdmin());
   isLeadership = computed(() => this.authService.hasRole('Leadership') || this.authService.isAdmin());
   isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
   isTechLead = computed(() => this.authService.hasRole('Tech Lead'));
 
-  canToggleStatus = computed(() => this.isProjectManager() || this.isTechLead());
-  canChangeApplicability = computed(() => this.isProjectManager());
-  canPerformAnyAction = computed(() => this.canToggleStatus() || this.canChangeApplicability() || this.isLeadership());
-  canLeadershipReview = computed(() => this.isLeadership() && (this.checklist()?.pendingExemptionsCount ?? 0) > 0);
-  canPerformNaAction = computed(() => this.canChangeApplicability() || this.canLeadershipReview());
+  canToggleStatus = computed(() => !this.isSignedOff() && (this.isProjectManager() || this.isTechLead()));
+  canChangeApplicability = computed(() => !this.isSignedOff() && this.isProjectManager());
+  canPerformAnyAction = computed(() => !this.isSignedOff() && (this.canToggleStatus() || this.canChangeApplicability() || this.isLeadership()));
+  canLeadershipReview = computed(() => !this.isSignedOff() && this.isLeadership() && (this.checklist()?.pendingExemptionsCount ?? 0) > 0);
+  canPerformNaAction = computed(() => !this.isSignedOff() && (this.canChangeApplicability() || this.canLeadershipReview()));
 
   categoriesList = computed(() => {
     return this.checklist()?.categories.map((c) => ({ id: c.categoryId, name: c.categoryName })) ?? [];

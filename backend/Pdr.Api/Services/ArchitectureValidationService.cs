@@ -9,6 +9,7 @@ using Pdr.Api.Services.Interfaces;
 namespace Pdr.Api.Services;
 
 public class ArchitectureValidationService(
+    IEngagementRepository engagementRepository,
     IArchitectureValidationRepository repository,
     IAuditLogService auditLogService,
     ICurrentUserService currentUserService,
@@ -44,6 +45,8 @@ public class ArchitectureValidationService(
         {
             throw new EngagementNotFoundException(engagementId);
         }
+
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         if (request.Status == ArchitectureStatus.Modified && string.IsNullOrWhiteSpace(request.Rationale))
         {
@@ -83,6 +86,8 @@ public class ArchitectureValidationService(
         {
             throw new EngagementNotFoundException(engagementId);
         }
+
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var validation = await repository.GetByEngagementIdAsync(engagementId);
         if (validation is null)
@@ -135,6 +140,11 @@ public class ArchitectureValidationService(
         }
 
         var engagementId = item.ArchitectureValidation?.EngagementId ?? 0;
+        if (engagementId > 0)
+        {
+            await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+        }
+
         var wasReady = engagementId > 0 && await readinessNotificationService.IsReadyAsync(engagementId);
 
         item.FeatureName = request.FeatureName.Trim();
@@ -160,6 +170,11 @@ public class ArchitectureValidationService(
         }
 
         var engagementId = item.ArchitectureValidation?.EngagementId ?? 0;
+        if (engagementId > 0)
+        {
+            await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+        }
+
         var wasReady = engagementId > 0 && await readinessNotificationService.IsReadyAsync(engagementId);
 
         item.IsDeleted = true;

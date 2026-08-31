@@ -10,7 +10,7 @@
       </div>
     </div>
 
-    @if (isTechLead()) {
+    @if (canManage()) {
       <app-button type="button" variant="flat" (click)="onAddFinding()">
         <span class="btn-icon" [inlineSVG]="'assets/icons/plus.svg'"></span>
         <span>Add Finding</span>
@@ -33,7 +33,7 @@
             <th>SEVERITY</th>
             <th>LINKED DOCUMENT</th>
             <th>CLIENT DECISION</th>
-            @if (isTechLead()) {
+            @if (canManage()) {
               <th class="actions-col">ACTIONS</th>
             }
           </tr>
@@ -76,7 +76,7 @@
                     <app-status-badge tone="neutral">Open</app-status-badge>
                   }
 
-                  @if (isTechLead()) {
+                  @if (canManage()) {
                     <div class="btn-decision-actions">
                       <app-button
                         type="button"
@@ -98,7 +98,7 @@
                   }
                 </div>
               </td>
-              @if (isTechLead()) {
+              @if (canManage()) {
                 <td class="actions-col">
                   <app-button
                     type="button"

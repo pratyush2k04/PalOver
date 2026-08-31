@@ -218,5 +218,4 @@ public class RiskRepository(AppDbContext context) : IRiskRepository
     public async Task AddEscalationHistoryAsync(RiskEscalationHistory history)
     {
         await context.RiskEscalationHistories.AddAsync(history);
-    }
-}
+    }}

@@ -9,6 +9,7 @@ import { StatusBadgeComponent } from '@common/components/status-badge/status-bad
 import { ButtonComponent } from '@common/components/button/button';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { AuthService } from '@shared/services/auth';
+import { EngagementService } from '@features/engagements/services/engagement.service';
 import { TECHNICAL_READINESS_ROLES } from '@shared/constants/technical-readiness.constants';
 import { BrownfieldFindingDto, BrownfieldReadinessResponse } from '@features/engagements/models/brownfield-review/brownfield-review.dtos';
 import { BrownfieldSeverity, ClientDecision } from '@features/engagements/models/brownfield-review/brownfield-review.enums';
@@ -41,6 +42,7 @@ export class BrownfieldReviewComponent {
   private brownfieldService = inject(BrownfieldReviewService);
   private toastService = inject(ToastService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
   private dialog = inject(DialogService);
 
   readinessResponse = signal<BrownfieldReadinessResponse | null>(null);
@@ -49,6 +51,7 @@ export class BrownfieldReviewComponent {
   isDeleting = signal<boolean>(false);
 
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+  canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
   findings = computed(() => this.readinessResponse()?.items ?? []);
   totalCount = computed(() => this.readinessResponse()?.totalCount ?? 0);
   highSeverityPendingCount = computed(() => this.readinessResponse()?.highSeverityPendingCount ?? 0);

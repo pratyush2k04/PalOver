@@ -1,10 +1,10 @@
-@use '../../../../../../styles/tokens' as *;
+@use 'styles/tokens' as *;
 
 .environment-tooling-card {
   background-color: $color-surface;
   border: 1px solid $color-border-soft;
-  border-radius: $radius-lg;
-  box-shadow: $shadow-sm;
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-card;
   padding: $spacing-6;
 
   .card-header {
@@ -159,9 +159,9 @@
 
 /* Editable Status Select */
 .status-select {
-  font-size: 0.825rem;
-  font-weight: 500;
-  border-radius: 6px;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  border-radius: $radius-md;
   padding: 0.3rem 0.6rem;
   border: 1px solid $color-gray-300;
   outline: none;

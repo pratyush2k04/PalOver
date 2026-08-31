@@ -13,4 +13,7 @@ public record EngagementInfoDto(
     DateOnly? BillingStartDate,
     string Status,
     bool IsKickoffReady,
+    string? HandoverStatus,
+    DateTime? HandoverReviewedAt,
+    string? HandoverReviewedByName,
     DayOneSignOffDto? DayOneSignOff = null);

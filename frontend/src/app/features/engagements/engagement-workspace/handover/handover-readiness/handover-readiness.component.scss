@@ -1,8 +1,8 @@
-@use '../../../../../../styles/mixins' as *;
-@use '../../../../../../styles/tokens' as *;
+@use 'styles/mixins' as *;
+@use 'styles/tokens' as *;
 
 .readiness-card {
-  @include card-surface($padding: $spacing-6, $radius: $radius-md);
+  @include card-surface($padding: $spacing-6, $radius: $radius-2xl);
   margin-bottom: $spacing-8;
 
   @media (max-width: 768px) {

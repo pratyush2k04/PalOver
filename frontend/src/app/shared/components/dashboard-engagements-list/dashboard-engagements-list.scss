@@ -1,8 +1,8 @@
-@use '../../../../styles/tokens' as *;
+@use 'styles/tokens' as *;
 
 .list-card {
   background: $color-surface;
-  border-radius: 0.75rem;
+  border-radius: $radius-2xl;
   box-shadow: $shadow-card;
   padding: $spacing-4;
   display: flex;

@@ -1,4 +1,4 @@
-@use '../../../../../styles/mixins' as *;
+@use 'styles/mixins' as *;
 
 // Loading & Error states
 .checklist-error {
@@ -263,7 +263,7 @@
 .category-card {
   background: $color-surface;
   border: 1px solid $color-border-soft;
-  border-radius: $radius-lg;
+  border-radius: $radius-2xl;
   overflow: hidden;
   box-shadow: $shadow-card;
 }
@@ -500,6 +500,17 @@
     outline: none;
     border-color: $color-primary;
     box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
+  }
+}
+
+::ng-deep app-button.btn-complete .btn,
+.btn-complete {
+  ::ng-deep .btn {
+    &:hover:not(:disabled) {
+      background-color: rgba(37, 99, 235, 0.1) !important;
+      border-color: rgba(37, 99, 235, 0.4) !important;
+      color: #2563eb !important;
+    }
   }
 }
 

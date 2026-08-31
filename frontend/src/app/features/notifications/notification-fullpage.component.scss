@@ -1,4 +1,4 @@
-@use '../../../styles/mixins' as *;
+@use 'styles/mixins' as *;
 
 :host {
   display: block;
@@ -9,7 +9,7 @@
 
 .notifications-container {
   box-sizing: border-box;
-  max-width: 1400px;
+  max-width: 87.5rem;
   margin: 0 auto;
   padding: $spacing-8;
 
@@ -94,7 +94,8 @@
 }
 
 .notifications-list-card {
-  @include card-surface($padding: 0, $radius: $radius-lg);
+  @include card-surface($padding: 0, $radius: $radius-2xl);
+  box-shadow: $shadow-card;
   overflow: hidden;
 }
 
