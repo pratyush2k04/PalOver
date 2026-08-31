@@ -10,6 +10,7 @@ namespace Pdr.Api.Services;
 public class ClientContactTransitionService(
     IClientContactTransitionRepository repository,
     IAuditLogService auditLogService,
+    IPersonRepository personRepository,
     ICurrentUserService currentUserService) : IClientContactTransitionService
 {
     public async Task<ClientContactTransitionResponseDto> GetByEngagementIdAsync(int engagementId)
@@ -44,6 +45,19 @@ public class ClientContactTransitionService(
 
         await repository.AddAsync(transition);
         await repository.SaveChangesAsync();
+
+        var outgoingPerson = await personRepository.GetByNameAndRoleAndEngagementAsync(
+            engagementId, request.OutgoingContactName.Trim(), request.OutgoingContactRole.Trim());
+
+        if (outgoingPerson != null)
+        {
+            outgoingPerson.Name = request.IncomingContactName.Trim();
+            outgoingPerson.Role = request.IncomingContactRole.Trim();
+            outgoingPerson.UpdatedAt = DateTime.UtcNow;
+            outgoingPerson.UpdatedBy = currentUserId;
+            personRepository.Update(outgoingPerson);
+            await personRepository.SaveChangesAsync();
+        }
 
         var actorUserId = int.TryParse(currentUserId, out var uid) ? uid : currentUserService.GetUserId();
         await auditLogService.LogAsync(

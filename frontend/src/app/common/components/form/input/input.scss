@@ -48,11 +48,18 @@ input {
   }
 }
 
-.char-counter {
+.app-field__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-top: 0.125rem;
+  min-height: 1rem;
+}
+
+.char-counter {
   font-size: $font-size-xs;
   color: $color-text-fainter;
-  text-align: right;
+  margin-left: auto;
 
   &--danger {
     color: $color-danger;
@@ -62,4 +69,5 @@ input {
 .app-field__error {
   color: $color-danger;
   font-size: $font-size-xs;
+  margin-right: $spacing-2;
 }

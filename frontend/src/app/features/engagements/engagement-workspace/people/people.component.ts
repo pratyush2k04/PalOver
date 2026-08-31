@@ -22,6 +22,8 @@ import {
   PersonFormDialogData,
   PersonFormDialogResult
 } from './dialogs/person-form-dialog/person-form-dialog.component';
+import { ClientContactTransitionService } from '../../services/client-contact-transition.service';
+import { TransitionResponse } from '../../models/client-contact-transition.model';
 
 @Component({
   selector: 'app-people',
@@ -56,6 +58,13 @@ export class PeopleComponent {
   });
 
   people = signal<PersonDto[]>([]);
+  transitions = signal<TransitionResponse[]>([]);
+  
+  filteredPeople = computed(() => {
+    const t = this.transitions();
+    return this.people().filter(p => !t.some(x => x.outgoingContactName === p.name));
+  });
+
   isDeleting = signal(false);
   personToDelete = signal<PersonDto | null>(null);
   isImporting = signal(false);
@@ -90,6 +99,10 @@ export class PeopleComponent {
     });
   }
 
+  onTransitionsLoaded(data: TransitionResponse[]): void {
+    this.transitions.set(data);
+  }
+
   getOrgLabel(personType: PersonType | string | number): string {
     const num = Number(personType);
     if (personType === PersonType.Client || personType === 'Client' || num === 2) {
@@ -99,6 +112,10 @@ export class PeopleComponent {
       return 'Internal';
     }
     return String(personType);
+  }
+
+  canEditPerson(person: PersonDto): boolean {
+    return this.canManage() && this.getOrgLabel(person.personType) !== 'Internal';
   }
 
   onAddPerson(): void {
@@ -174,28 +191,10 @@ export class PeopleComponent {
     });
   }
 
-  onImportFromHandover(): void {
+  onTransitionSaved(): void {
     const engagementId = this.engagementId();
-    if (!engagementId) return;
-
-    this.isImporting.set(true);
-    this.personService.importFromHandover(engagementId).subscribe({
-      next: (response) => {
-        const messages: string[] = [];
-        if (response.added > 0) messages.push(`${response.added} added`);
-        if (response.alreadyPresent > 0) messages.push(`${response.alreadyPresent} already present`);
-        if (response.deleted > 0) messages.push(`${response.deleted} deleted`);
-
-        const toastMessage = messages.length > 0 ? messages.join(', ') : 'No contacts imported';
-        this.toastService.success(toastMessage);
-        this.isImporting.set(false);
-        this.loadPeople(engagementId);
-      },
-      error: (err) => {
-        console.error('Error importing contacts:', err);
-        this.toastService.error('Failed to import contacts from handover');
-        this.isImporting.set(false);
-      }
-    });
+    if (engagementId) {
+      this.loadPeople(engagementId);
+    }
   }
 }
