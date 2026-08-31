@@ -7,11 +7,12 @@
     <div class="dialog-body">
       <div class="form-group">
         <app-textarea id="description" label="Description" placeholder="Enter your assumption..."
-          formControlName="description" />
+          [required]="true" formControlName="description" />
       </div>
 
       <div class="form-group">
-        <app-textarea id="rationale" label="Rationale" placeholder="Give the reason..." formControlName="rationale" />
+        <app-textarea id="rationale" label="Rationale" placeholder="Give the reason..."
+          [required]="true" formControlName="rationale" />
       </div>
     </div>
 

@@ -22,7 +22,7 @@
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="sign-off-form">
       <div class="form-group">
-        <label for="billingStartDate">Billing Start Date <span class="required">*</span></label>
+        <label for="billingStartDate">Billing Start Date <span class="required-asterisk">*</span></label>
         <input
           id="billingStartDate"
           type="date"
@@ -36,7 +36,7 @@
 
       @if (isException() && data.isLeadership) {
         <div class="form-group">
-          <label for="exceptionJustification">Exception Justification <span class="required">*</span></label>
+          <label for="exceptionJustification">Exception Justification <span class="required-asterisk">*</span></label>
           <textarea
             id="exceptionJustification"
             class="form-control textarea"

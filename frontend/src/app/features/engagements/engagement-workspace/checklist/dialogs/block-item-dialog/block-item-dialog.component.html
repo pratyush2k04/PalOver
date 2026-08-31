@@ -13,6 +13,7 @@
         <app-textarea
           id="block-reason"
           label="Reason for blocking"
+          [required]="true"
           formControlName="reason"
           [rows]="4"
           [maxLength]="500"
@@ -29,6 +30,7 @@
         <app-select
           id="block-owner"
           label="Owner"
+          [required]="true"
           formControlName="personId"
           [options]="ownerOptions"
           [errorMessages]="{ required: 'An owner is required.' }"

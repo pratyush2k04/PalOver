@@ -7,20 +7,20 @@
     <div class="dialog-body">
       <div class="form-group">
         <app-textarea id="description" label="Description" placeholder="Enter dependency description..."
-          formControlName="description" />
+          [required]="true" formControlName="description" />
       </div>
 
       <div class="form-row">
         <div class="form-group flex-1">
-          <app-select id="type" label="Type" [options]="typeOptions" formControlName="type" />
+          <app-select id="type" label="Type" [options]="typeOptions" [required]="true" formControlName="type" />
         </div>
         <div class="form-group flex-1">
-          <app-select id="ownerId" label="Owner" [options]="ownerOptions()" formControlName="ownerId" placeholder="Select an owner" />
+          <app-select id="ownerId" label="Owner" [options]="ownerOptions()" [required]="true" formControlName="ownerId" placeholder="Select an owner" />
         </div>
       </div>
 
       <div class="form-group">
-        <app-input id="neededByDate" label="Needed By Date" type="date" formControlName="neededByDate" />
+        <app-input id="neededByDate" label="Needed By Date" type="date" [required]="true" formControlName="neededByDate" />
       </div>
     </div>
 
