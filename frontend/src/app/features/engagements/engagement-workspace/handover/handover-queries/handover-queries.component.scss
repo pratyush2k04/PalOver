@@ -129,7 +129,7 @@
 .message-turn-outgoing {
   margin-left: auto;
   margin-right: 0;
-  background: $color-surface-hover;
+  background: $color-slate-100;
   border-bottom-right-radius: 2px;
 
   &::before {
@@ -150,7 +150,7 @@
     height: 10px;
     right: 14px;
     bottom: -4px;
-    background: $color-surface-hover;
+    background: $color-slate-100;
     transform: rotate(45deg);
   }
 }
