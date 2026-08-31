@@ -37,11 +37,11 @@
 }
 
 .status-report.submitted .status-report-dot {
-  background-color: $color-primary;
+  background-color: $color-success;
 }
 
 .status-report.submitted .status-report-text {
-  color: $color-primary;
+  color: $color-success;
   font-weight: $font-weight-semibold;
 }
 
@@ -224,34 +224,61 @@
   }
 }
 
+.client-context-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid $color-border-soft;
+  padding-bottom: $spacing-3;
+  margin-bottom: $spacing-4;
+
+  h3 {
+    margin: 0;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+    color: $color-text;
+  }
+
+  .sentiment-badge-group {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+
+    .sentiment-label {
+      font-size: $font-size-xs;
+      font-weight: $font-weight-medium;
+      color: $color-text-muted;
+    }
+  }
+}
+
 .client-context-readonly {
   .readonly-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: $spacing-4;
     margin-top: $spacing-4;
 
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
       grid-template-columns: 1fr;
     }
 
     .readonly-card {
-      background-color: $color-surface-hover;
+      background-color: #ffffff;
       border: 1px solid $color-border-soft;
-      border-radius: $radius-md;
-      padding: $spacing-4;
+      border-radius: $radius-lg;
+      box-shadow: $shadow-card;
+      padding: $spacing-4 $spacing-5;
       display: flex;
       flex-direction: column;
       gap: $spacing-2;
-
-      &.full-width {
-        grid-column: 1 / -1;
-      }
+      flex: 1 1 0;
 
       .readonly-label {
         font-size: $font-size-xs;
-        font-weight: $font-weight-medium;
-        color: $color-text-muted;
+        font-weight: $font-weight-bold;
+        color: $color-text;
       }
 
       .readonly-value {
@@ -260,6 +287,8 @@
         line-height: 1.5;
         color: $color-text;
         white-space: pre-wrap;
+        word-break: break-word;
+        overflow-wrap: anywhere;
 
         &.readonly-value-empty {
           color: $color-text-muted;
