@@ -76,7 +76,13 @@
   </div>
 
   <div class="modal-actions">
-    <app-button type="button" variant="stroked" (click)="onClose()">Cancel</app-button>
-    <app-button type="button" variant="flat" (click)="onClose()">Done</app-button>
+    <app-button type="button" variant="stroked" (click)="onClose()" [disabled]="isSaving()">Cancel</app-button>
+    <app-button type="button" variant="flat" (click)="saveAndClose()" [disabled]="isSaving()">
+      @if (isSaving()) {
+        Saving...
+      } @else {
+        Done
+      }
+    </app-button>
   </div>
 </div>

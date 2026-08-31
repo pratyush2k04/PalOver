@@ -15,12 +15,14 @@
     (input)="onInput($any($event.target).value)"
     (blur)="markTouched()"
   />
-  @if (showCounter()) {
-    <div class="char-counter" [class.char-counter--danger]="counterDanger()">
-      {{ value.length }}/{{ maxLength() }}
-    </div>
-  }
-  @if (showError) {
-    <span class="app-field__error">{{ errorMessage }}</span>
-  }
+  <div class="app-field__footer">
+    @if (showError) {
+      <span class="app-field__error">{{ errorMessage }}</span>
+    }
+    @if (showCounter()) {
+      <div class="char-counter" [class.char-counter--danger]="counterDanger()">
+        {{ value.length }}/{{ maxLength() }}
+      </div>
+    }
+  </div>
 </div>

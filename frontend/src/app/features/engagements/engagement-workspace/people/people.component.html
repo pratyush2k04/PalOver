@@ -1,66 +1,78 @@
 <div class="people-directory">
-  <app-section-header title="People Directory">
-    @if (canManage()) {
-      <app-button type="button" variant="stroked" [disabled]="isImporting()" (click)="onImportFromHandover()">
-        Import from handover
-      </app-button>
-      <app-button type="button" variant="flat" (click)="onAddPerson()">
-        <span class="btn-icon">+</span>
-        <span>Add person</span>
-      </app-button>
-    }
-  </app-section-header>
+  <div class="people-layout-grid">
+    <!-- Table Card Section -->
+    <div class="people-directory__card">
+      <app-section-header title="People Directory" class="card-inner-header">
+        @if (!isLeadership()) {
+          <app-button type="button" variant="flat" (click)="onAddPerson()">
+            <span class="btn-icon">+</span>
+            <span>Add person</span>
+          </app-button>
+        }
+      </app-section-header>
 
-  <!-- Table Card Section -->
-  <div class="people-directory__card">
-    @if (loaderService.isLoading()) {
-    <div class="people-directory__loading">
-      <p>Loading people directory...</p>
-    </div>
-    } @else {
-    <div class="table-responsive">
-      <table class="people-table">
-        <thead>
-          <tr>
-            <th scope="col" class="th-name">NAME</th>
-            <th scope="col" class="th-role">ROLE</th>
-            <th scope="col" class="th-org">ORG</th>
-            @if (canManage()) {
-              <th scope="col" class="th-actions">ACTIONS</th>
-            }
-          </tr>
-        </thead>
-        <tbody>
-          @for (person of people(); track person.personId) {
-          <tr>
-            <td class="col-name">{{ person.name }}</td>
-            <td class="col-role">{{ person.role }}</td>
-            <td class="col-org">{{ getOrgLabel(person.personType) }}</td>
-            @if (canManage()) {
-              <td class="col-actions">
-                <div class="action-buttons">
-                  <app-button type="button" variant="icon" class="edit-btn" ariaLabel="Edit person" [appTooltip]="'Edit person'"
-                    (click)="onEditPerson(person)">
-                    <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
-                  </app-button>
-                  <app-button type="button" variant="icon" class="delete-btn" ariaLabel="Delete person"
-                    [appTooltip]="'Delete person'" (click)="onDeletePerson(person)">
-                    <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
-                  </app-button>
-                </div>
+      @if (loaderService.isLoading()) {
+      <div class="people-directory__loading">
+        <p>Loading people directory...</p>
+      </div>
+      } @else {
+      <div class="table-responsive">
+        <table class="people-table">
+          <thead>
+            <tr>
+              <th scope="col" class="th-name">NAME</th>
+              <th scope="col" class="th-role">ROLE</th>
+              <th scope="col" class="th-org">ORG</th>
+              @if (canManage()) {
+                <th scope="col" class="th-actions">ACTIONS</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (person of filteredPeople(); track person.personId) {
+            <tr>
+              <td class="col-name">{{ person.name }}</td>
+              <td class="col-role">{{ person.role }}</td>
+              <td class="col-org">{{ getOrgLabel(person.personType) }}</td>
+              @if (canManage()) {
+                <td class="col-actions">
+                  <div class="action-buttons">
+                    @if (canEditPerson(person)) {
+                      <app-button type="button" variant="icon" class="edit-btn" ariaLabel="Edit person" [appTooltip]="'Edit person'"
+                        (click)="onEditPerson(person)">
+                        <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                      </app-button>
+                    }
+                    <app-button type="button" variant="icon" class="delete-btn" ariaLabel="Delete person"
+                      [appTooltip]="'Delete person'" (click)="onDeletePerson(person)">
+                      <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
+                    </app-button>
+                  </div>
+                </td>
+              }
+            </tr>
+            } @empty {
+            <tr>
+              <td [attr.colspan]="canManage() ? 4 : 3" class="empty-state">
+                No contacts found for this engagement.
               </td>
+            </tr>
             }
-          </tr>
-          } @empty {
-          <tr>
-            <td [attr.colspan]="canManage() ? 4 : 3" class="empty-state">
-              No contacts found for this engagement.
-            </td>
-          </tr>
-          }
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
+      }
     </div>
+
+    <!-- Client Contact Transition Section -->
+    @if (engagementId()) {
+      <div class="people-directory__transition-section">
+        <app-client-contact-transition-card
+          [engagementId]="engagementId()!"
+          (onSaved)="onTransitionSaved()"
+          (transitionsLoaded)="onTransitionsLoaded($event)"
+        ></app-client-contact-transition-card>
+      </div>
     }
   </div>
 </div>

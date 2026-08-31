@@ -324,6 +324,26 @@ public class EngagementsController(
     }
 
     /// <summary>
+    /// Syncs the Leadership users assigned to an engagement.
+    /// </summary>
+    /// <param name="id">The engagement ID.</param>
+    /// <param name="request">Payload containing the final list of UserIds.</param>
+    /// <returns>Updated list of assigned Leadership users.</returns>
+    /// <response code="200">Leadership users updated successfully.</response>
+    /// <response code="400">Attempted to remove the last remaining Leadership contact, or invalid request.</response>
+    /// <response code="404">Engagement or User was not found.</response>
+    [HttpPut("{id:int}/leadership-users")]
+    [Authorize(Policy = "AdminOnly")]
+    [ProducesResponseType(typeof(IEnumerable<LeadershipUserDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IEnumerable<LeadershipUserDto>>> UpdateLeadershipUsers(int id, [FromBody] UpdateLeadershipUsersRequest request)
+    {
+        var updated = await engagementService.UpdateLeadershipUsersAsync(id, request.UserIds);
+        return Ok(updated);
+    }
+
+    /// <summary>
     /// Retrieves active engagements summary for Leadership dashboard.
     /// </summary>
     /// <returns>Leadership dashboard data with readiness score, open blocker count, days-to-kickoff, and computed status.</returns>
