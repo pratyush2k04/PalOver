@@ -101,6 +101,14 @@ public class RealisticCommitmentService : IRealisticCommitmentService
             throw new HandoverIncompleteException(HandoverValidationConstants.RealisticCommitmentRequiresSubmitted);
         }
     }
+private async Task EnsureNotSubmittedAsync(HandoverInfo handover)
+    {
+        var status = await _handoverRepository.GetStatusByIdAsync(handover.StatusId);
+        if (HandoverStatusNames.IsSubmittedOrReviewed(status?.StatusName))
+        {
+            throw new HandoverSubmittedException(HandoverValidationConstants.AlreadySubmitted);
+        }
+    }
 
     private async Task<Commitment> GetCommitmentOrThrowAsync(int engagementId, int commitmentId)
     {

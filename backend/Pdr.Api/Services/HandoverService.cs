@@ -63,6 +63,12 @@ public class HandoverService : IHandoverService
 
         var status = await _handoverRepository.GetStatusByIdAsync(handover.StatusId);
 
+        var actorIds = new[] { handover.SubmittedByUserId, handover.ReviewedByUserId }
+            .Where(id => id.HasValue)
+            .Select(id => id!.Value)
+            .Distinct();
+        var actorsById = (await _userRepository.GetByIdsAsync(actorIds)).ToDictionary(u => u.Id);
+
         var commitments = await _commitmentRepository.GetByHandoverIdAsync(handover.HandoverId);
 
         var commitmentDtos = commitments.Select(c => new CommitmentDto
@@ -111,6 +117,14 @@ public class HandoverService : IHandoverService
             BusinessProblem = handover.BusinessProblem,
             ClientSentiment = handover.ClientSentiment,
             DealOrigin = handover.DealOrigin,
+            SubmittedAt = handover.SubmittedAt,
+            SubmittedByName = handover.SubmittedByUserId.HasValue && actorsById.TryGetValue(handover.SubmittedByUserId.Value, out var submittedByUser)
+                ? submittedByUser.FullName
+                : null,
+            ReviewedAt = handover.ReviewedAt,
+            ReviewedByName = handover.ReviewedByUserId.HasValue && actorsById.TryGetValue(handover.ReviewedByUserId.Value, out var reviewedByUser)
+                ? reviewedByUser.FullName
+                : null,
             Commitments = commitmentDtos
         };
     }
@@ -134,6 +148,9 @@ public class HandoverService : IHandoverService
         }
         else
         {
+            if (handover.StatusId != (int)HandoverStatusEnum.Draft)
+                throw new HandoverSubmittedException(HandoverValidationConstants.AlreadySubmitted);
+
             handover.UpdatedBy = userIdStr;
         }
 
@@ -156,6 +173,9 @@ public class HandoverService : IHandoverService
         if (handover == null)
             throw new HandoverIncompleteException(HandoverValidationConstants.NotFoundForSubmit);
 
+        if (handover.StatusId != (int)HandoverStatusEnum.Draft)
+            throw new HandoverSubmittedException(HandoverValidationConstants.AlreadySubmitted);
+
         if (string.IsNullOrWhiteSpace(handover.BusinessProblem))
             throw new HandoverIncompleteException(HandoverValidationConstants.BusinessProblemRequiredSubmit);
 
@@ -170,6 +190,8 @@ public class HandoverService : IHandoverService
         }
 
         handover.StatusId = (int)HandoverStatusEnum.Submitted;
+        handover.SubmittedAt = DateTime.UtcNow;
+        handover.SubmittedByUserId = int.Parse(userIdStr);
         handover.UpdatedBy = userIdStr;
 
         await _handoverRepository.SaveChangesAsync();
@@ -195,6 +217,30 @@ public class HandoverService : IHandoverService
             RoleEnum.ProjectManagement,
             JsonSerializer.Serialize(new HandoverSubmittedMapper.HandoverSubmittedData(HandoverId: handover.HandoverId, TriggerUserId: int.Parse(userIdStr), EngagementId: engagementId)),
             DateTime.UtcNow);
+
+        return await GetHandoverAsync(engagementId);
+    }
+
+    public async Task<HandoverInfoDto> MarkReviewedAsync(int engagementId, string userIdStr)
+    {
+        var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
+
+        if (handover == null)
+            throw new HandoverNotFoundException(engagementId);
+
+        var status = await _handoverRepository.GetStatusByIdAsync(handover.StatusId);
+        if (status?.StatusName != HandoverStatusNames.Submitted)
+            throw new HandoverNotYetSubmittedException();
+
+        if (handover.ReviewedAt is null)
+        {
+            handover.ReviewedAt = DateTime.UtcNow;
+            handover.ReviewedByUserId = int.Parse(userIdStr);
+            handover.StatusId = (int)HandoverStatusEnum.Reviewed;
+            handover.UpdatedBy = userIdStr;
+
+            await _handoverRepository.SaveChangesAsync();
+        }
 
         return await GetHandoverAsync(engagementId);
     }

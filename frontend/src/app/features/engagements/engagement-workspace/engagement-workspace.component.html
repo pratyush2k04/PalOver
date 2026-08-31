@@ -16,6 +16,14 @@
             >
               {{ engagement()!.engagementType }}
             </span>
+            @if (engagement()!.handoverReviewedAt) {
+              <app-status-badge
+                tone="success"
+                [title]="'Reviewed on ' + (engagement()!.handoverReviewedAt | date: 'medium')"
+              >
+                Reviewed
+              </app-status-badge>
+            }
           </div>
 
           <div class="metadata-row">

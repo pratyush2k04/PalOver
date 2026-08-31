@@ -363,7 +363,8 @@ public class DocumentService(
         // Signed SOW Guard
         bool isSignedSow = doc.CategoryId == (int)DocumentCategoryEnum.SignedSow
             || string.Equals(doc.Category?.CategoryName, DocumentCategoryNames.SignedSow, StringComparison.OrdinalIgnoreCase);
-        if (isSignedSow && doc.Engagement?.HandoverInfo != null && doc.Engagement.HandoverInfo.StatusId == (int)HandoverStatusEnum.Submitted)
+        if (isSignedSow && doc.Engagement?.HandoverInfo != null &&
+            doc.Engagement.HandoverInfo.StatusId is (int)HandoverStatusEnum.Submitted or (int)HandoverStatusEnum.Reviewed)
         {
             throw new HandoverSubmittedException(DocumentValidationConstants.Messages.SignedSowRemoveDenied);
         }

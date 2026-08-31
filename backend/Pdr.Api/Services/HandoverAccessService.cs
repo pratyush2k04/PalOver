@@ -46,4 +46,22 @@ public class HandoverAccessService : IHandoverAccessService
 
         return true;
     }
+
+    public async Task<bool> CanAccessHandoverAsync(int engagementId, int userId, params string[] requiredRoles)
+    {
+        var assignment = await _engagementRepository.GetAssignmentByUserAsync(engagementId, userId);
+
+        if (assignment == null)
+        {
+            throw new HandoverAccessDeniedException(HandoverValidationConstants.AccessDenied);
+        }
+
+        var roleName = assignment.User.Role.Name;
+        if (!requiredRoles.Contains(roleName))
+        {
+            throw new HandoverAccessDeniedException(HandoverValidationConstants.ActionRequiresAnyRole(requiredRoles));
+        }
+
+        return true;
+    }
 }

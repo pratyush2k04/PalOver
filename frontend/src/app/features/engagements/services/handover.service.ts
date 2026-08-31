@@ -31,6 +31,10 @@ export class HandoverService {
     return this.http.post<HandoverInfoDto>(HANDOVER_API_ENDPOINTS.HANDOVER_SUBMIT(engagementId), {});
   }
 
+  markReviewed(engagementId: number): Observable<HandoverInfoDto> {
+    return this.http.post<HandoverInfoDto>(HANDOVER_API_ENDPOINTS.HANDOVER_REVIEW(engagementId), {});
+  }
+
   addCommitment(engagementId: number, request: CreateCommitmentRequest): Observable<CommitmentDto> {
     return this.http.post<CommitmentDto>(HANDOVER_API_ENDPOINTS.HANDOVER_COMMITMENTS(engagementId), request);
   }

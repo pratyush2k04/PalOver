@@ -39,6 +39,9 @@ public static class AuditMapperRegistry
         services.AddScoped<IAuditTemplateMapper, AccessItemBlockedAuditMapper>();
         services.AddScoped<IAuditTemplateMapper, DocumentDeletedMapper>();
         services.AddScoped<IAuditTemplateMapper, DocumentVisibilityChangedMapper>();
+        services.AddScoped<IAuditTemplateMapper, HandoverQueryRaisedMapper>();
+        services.AddScoped<IAuditTemplateMapper, HandoverQueryRespondedMapper>();
+        services.AddScoped<IAuditTemplateMapper, HandoverQueryResolvedMapper>();
 
         // Add new mappers here when adding new audit action types.
 

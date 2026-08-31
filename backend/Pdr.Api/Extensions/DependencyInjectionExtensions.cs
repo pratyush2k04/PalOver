@@ -24,6 +24,9 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IHandoverReadinessRepository, HandoverReadinessRepository>();
         services.AddScoped<ICommitmentRepository, CommitmentRepository>();
         services.AddScoped<IRealisticCommitmentRepository, RealisticCommitmentRepository>();
+        services.AddScoped<IHandoverQueryRepository, HandoverQueryRepository>();
+        services.AddScoped<IHandoverQueryQuestionRepository, HandoverQueryQuestionRepository>();
+        services.AddScoped<IHandoverQueryResponseRepository, HandoverQueryResponseRepository>();
         services.AddScoped<IMasterChecklistRepository, MasterChecklistRepository>();
         services.AddScoped<ICommunicationCadenceRepository, CommunicationCadenceRepository>();
         services.AddScoped<IEngagementChecklistRepository, EngagementChecklistRepository>();
@@ -58,6 +61,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IHandoverReadinessService, HandoverReadinessService>();
         services.AddScoped<ICommitmentService, CommitmentService>();
         services.AddScoped<IRealisticCommitmentService, RealisticCommitmentService>();
+        services.AddScoped<IHandoverQueriesService, HandoverQueriesService>();
         services.AddScoped<IKickoffReadinessService, KickoffReadinessService>();
         services.AddScoped<IKickoffReminderService, KickoffReminderService>();
         services.AddScoped<IMasterChecklistService, MasterChecklistService>();

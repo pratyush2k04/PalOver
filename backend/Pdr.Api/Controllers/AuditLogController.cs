@@ -23,6 +23,8 @@ public class AuditLogController(IAuditLogService auditLogService) : ControllerBa
     /// </summary>
     /// <param name="page">Page number</param>
     /// <param name="pageSize">Number of items per page</param>
+    /// <param name="categories">Optional list of categories to filter by</param>
+    /// <returns>A page of audit log entries</returns>
     [HttpGet]
     [ProducesResponseType(typeof(PagedResult<AuditLogDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

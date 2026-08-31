@@ -36,7 +36,7 @@ public class CommitmentService : ICommitmentService
     {
         var status = await _handoverRepository.GetStatusByIdAsync(handover.StatusId);
 
-        if (status?.StatusName == HandoverStatusNames.Submitted)
+        if (HandoverStatusNames.IsSubmittedOrReviewed(status?.StatusName))
         {
             throw new HandoverSubmittedException(HandoverValidationConstants.AlreadySubmitted);
         }
