@@ -3,10 +3,11 @@
 .dialog-container {
   display: flex;
   flex-direction: column;
-  width: 500px;
+  width: 31.25rem;
   max-width: 90vw;
-  background: var(--surface-default);
-  border-radius: 8px;
+  background: $color-surface;
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-modal;
 
   .dialog-header {
     display: flex;

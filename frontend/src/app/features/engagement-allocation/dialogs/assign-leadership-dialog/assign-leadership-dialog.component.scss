@@ -3,34 +3,35 @@
 .dialog-container {
   background: $color-surface;
   width: 100%;
-  max-width: 580px;
-  border-radius: 14px;
+  max-width: 36.25rem;
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-modal;
   overflow: visible;
   position: relative;
 
   .modal-header {
-    padding: 1.25rem 1.5rem;
+    padding: $spacing-5 $spacing-6;
     border-bottom: 1px solid $color-slate-200;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
 
     h2 {
-      font-size: 1.25rem;
-      font-weight: 700;
+      font-size: $font-size-xl;
+      font-weight: $font-weight-bold;
       color: $color-slate-900;
       margin: 0;
     }
 
     .eng-sub {
-      font-size: 0.875rem;
+      font-size: $font-size-sm;
       color: $color-slate-500;
       margin: 0.25rem 0 0 0;
     }
   }
 
   .modal-body {
-    padding: 1.5rem;
+    padding: $spacing-6;
 
     .handover-summary {
       @include card-surface($padding: $spacing-4, $radius: $radius-lg);
@@ -60,20 +61,20 @@
 
     .input-label {
       display: block;
-      font-size: 0.875rem;
-      font-weight: 600;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
       color: $color-slate-700;
-      margin-bottom: 0.75rem;
+      margin-bottom: $spacing-3;
     }
 
     .tag-input-wrapper {
       background: $color-surface;
       border: 1px solid $color-slate-300;
-      border-radius: 10px;
-      padding: 0.75rem;
-      min-height: 100px;
+      border-radius: $radius-xl;
+      padding: $spacing-3;
+      min-height: 6.25rem;
       position: relative;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      transition: border-color $transition-base, box-shadow $transition-base;
 
       &:focus-within {
         border-color: $color-primary;
@@ -83,18 +84,18 @@
       .chips-container {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-bottom: 0.75rem;
+        gap: $spacing-2;
+        margin-bottom: $spacing-3;
 
         .tag-chip {
           display: inline-flex;
           align-items: center;
           background: $color-slate-100;
           border: 1px solid $color-slate-200;
-          border-radius: 6px;
+          border-radius: $radius-md;
           padding: 0.35rem 0.65rem;
-          font-size: 0.875rem;
-          font-weight: 500;
+          font-size: $font-size-sm;
+          font-weight: $font-weight-medium;
           color: $color-slate-700;
 
           .chip-text {
@@ -105,7 +106,7 @@
             background: transparent;
             border: none;
             color: $color-slate-500;
-            font-size: 1rem;
+            font-size: $font-size-base;
             line-height: 1;
             cursor: pointer;
             padding: 0;
@@ -131,13 +132,13 @@
   }
 
   .modal-actions {
-    padding: 1rem 1.5rem;
+    padding: $spacing-4 $spacing-6;
     background: $color-slate-50;
     border-top: 1px solid $color-slate-200;
-    border-bottom-left-radius: 14px;
-    border-bottom-right-radius: 14px;
+    border-bottom-left-radius: $radius-2xl;
+    border-bottom-right-radius: $radius-2xl;
     display: flex;
     justify-content: flex-end;
-    gap: 0.75rem;
+    gap: $spacing-3;
   }
 }

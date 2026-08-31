@@ -8,7 +8,7 @@
 
 .profile-page {
   padding: $spacing-8;
-  max-width: 1400px;
+  max-width: 87.5rem;
   margin: 0 auto;
   font-family: $font-family-base;
   color: $color-text;
@@ -31,11 +31,11 @@
 }
 
 .profile-card {
-  flex: 1 1 360px;
-  min-width: 280px;
+  flex: 1 1 22.5rem;
+  min-width: 17.5rem;
   width: 100%;
-  @include card-surface($padding: $spacing-6, $radius: $radius-xl);
-  box-shadow: $shadow-sm;
+  @include card-surface($padding: $spacing-6, $radius: $radius-2xl);
+  box-shadow: $shadow-card;
 
   @media (max-width: 768px) {
     padding: $spacing-4;

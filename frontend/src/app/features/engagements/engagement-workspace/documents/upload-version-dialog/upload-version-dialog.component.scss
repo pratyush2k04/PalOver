@@ -2,7 +2,7 @@
 
 .dialog-container {
   background: $color-surface;
-  border-radius: 12px;
+  border-radius: $radius-2xl;
   width: 32.5rem;
   max-width: calc(100vw - 3rem);
   display: flex;

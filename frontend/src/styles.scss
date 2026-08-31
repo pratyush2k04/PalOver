@@ -37,10 +37,10 @@ body.app-dialog-open {
 
 .app-dialog-panel {
   background-color: $color-surface;
-  border-radius: 12px;
-  box-shadow: 0 16px 48px rgba($color-black, 0.2);
-  max-width: calc(100vw - 48px);
-  max-height: calc(100vh - 48px);
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-modal;
+  max-width: calc(100vw - 3rem);
+  max-height: calc(100vh - 3rem);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -108,23 +108,23 @@ body.app-dialog-open {
   }
 
   .app-dialog-panel {
-    max-width: calc(100vw - 24px);
-    max-height: calc(100vh - 24px);
-    border-radius: 8px;
+    max-width: calc(100vw - 1.5rem);
+    max-height: calc(100vh - 1.5rem);
+    border-radius: $radius-lg;
     width: 100%;
   }
 
   .app-dialog__title {
-    padding: 16px 16px 0;
-    font-size: 16px;
+    padding: $spacing-4 $spacing-4 0;
+    font-size: $font-size-base;
   }
 
   .app-dialog__content {
-    padding: 12px 16px;
+    padding: $spacing-3 $spacing-4;
   }
 
   .app-dialog__actions {
-    padding: 12px 16px 16px;
+    padding: $spacing-3 $spacing-4 $spacing-4;
     flex-wrap: wrap;
   }
 }
@@ -136,12 +136,12 @@ body.app-dialog-open {
   pointer-events: none;
   background-color: $color-slate-900;
   color: $color-slate-50;
-  font-size: 0.75rem;
-  font-weight: 500;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
   line-height: 1;
   padding: 0.375rem 0.625rem;
-  border-radius: 0.375rem;
-  box-shadow: 0 4px 12px rgba($color-black, 0.18), 0 1px 3px rgba($color-black, 0.12);
+  border-radius: $radius-md;
+  box-shadow: $shadow-md;
   white-space: nowrap;
   opacity: 0;
   transform: scale(0.94);
