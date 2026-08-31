@@ -1,6 +1,11 @@
 <div class="app-field" [class.app-field--invalid]="showError">
   @if (label()) {
-    <label [for]="id()">{{ label() }}</label>
+    <label [for]="id()">
+      {{ label() }}
+      @if (required()) {
+        <span class="required-asterisk">*</span>
+      }
+    </label>
   }
   <textarea
     [id]="id()"

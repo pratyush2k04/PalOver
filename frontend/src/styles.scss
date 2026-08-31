@@ -95,6 +95,12 @@ body.app-dialog-open {
   padding: 12px 24px 20px;
 }
 
+.required-asterisk {
+  color: $color-danger;
+  margin-left: 0.125rem;
+  font-weight: $font-weight-bold;
+}
+
 /* Responsive Utilities */
 .table-responsive {
   width: 100%;
