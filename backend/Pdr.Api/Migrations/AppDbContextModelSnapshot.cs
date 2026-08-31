@@ -85,7 +85,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("AccessItems", (string)null);
+                    b.ToTable("AccessItems");
 
                     b.HasData(
                         new
@@ -196,7 +196,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AccessItemDefinitions", (string)null);
+                    b.ToTable("AccessItemDefinitions");
 
                     b.HasData(
                         new
@@ -520,6 +520,24 @@ namespace Pdr.Api.Migrations
                             Id = 31,
                             Action = "DocumentVisibilityChanged",
                             Details = "Document {documentName} visibility changed to {visibility} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 856017,
+                            Action = "HandoverQueryRaised",
+                            Details = "{actorName} raised a query on {fieldSection} for the handover on {engagementName}"
+                        },
+                        new
+                        {
+                            Id = 856018,
+                            Action = "HandoverQueryResponded",
+                            Details = "{actorName} responded to a query on {fieldSection} for the handover on {engagementName}"
+                        },
+                        new
+                        {
+                            Id = 856019,
+                            Action = "HandoverQueryResolved",
+                            Details = "{actorName} marked a query on {fieldSection} resolved for the handover on {engagementName}"
                         });
                 });
 
@@ -2110,7 +2128,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Assumptions", (string)null);
+                    b.ToTable("Assumptions");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Engagements.CommercialModel", b =>
@@ -2282,7 +2300,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Dependencies", (string)null);
+                    b.ToTable("Dependencies");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Engagements.Engagement", b =>
@@ -2667,7 +2685,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EnvironmentToolingDefinitions", (string)null);
+                    b.ToTable("EnvironmentToolingDefinitions");
 
                     b.HasData(
                         new
@@ -2751,7 +2769,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("EnvironmentToolingItems", (string)null);
+                    b.ToTable("EnvironmentToolingItems");
 
                     b.HasData(
                         new
@@ -3078,9 +3096,25 @@ namespace Pdr.Api.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("is_deleted");
 
+                    b.Property<DateTime?>("ReviewedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("reviewed_at");
+
+                    b.Property<int?>("ReviewedByUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("reviewed_by_user_id");
+
                     b.Property<int>("StatusId")
                         .HasColumnType("integer")
                         .HasColumnName("status_id");
+
+                    b.Property<DateTime?>("SubmittedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("submitted_at");
+
+                    b.Property<int?>("SubmittedByUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("submitted_by_user_id");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -3097,6 +3131,10 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("EngagementId")
                         .IsUnique();
+
+                    b.HasIndex("ReviewedByUserId");
+
+                    b.HasIndex("SubmittedByUserId");
 
                     b.ToTable("handover_info", (string)null);
 
@@ -3115,6 +3153,229 @@ namespace Pdr.Api.Migrations
                             StatusId = 1,
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Handover.HandoverQuery", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<int>("FieldSectionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("field_section_id");
+
+                    b.Property<int>("HandoverId")
+                        .HasColumnType("integer")
+                        .HasColumnName("handover_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsResolved")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_resolved");
+
+                    b.Property<int>("RaisedByUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("raised_by_user_id");
+
+                    b.Property<int?>("ReferenceId")
+                        .HasColumnType("integer")
+                        .HasColumnName("reference_id");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("resolved_at");
+
+                    b.Property<int?>("ResolvedByUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("resolved_by_user_id");
+
+                    b.Property<int?>("RespondedByUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("responded_by_user_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FieldSectionId");
+
+                    b.HasIndex("RaisedByUserId");
+
+                    b.HasIndex("ResolvedByUserId");
+
+                    b.HasIndex("RespondedByUserId");
+
+                    b.HasIndex("HandoverId", "IsResolved");
+
+                    b.ToTable("handover_queries", (string)null);
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Handover.HandoverQueryFieldSection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("handover_query_field_sections", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "ClientBackground"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "BusinessProblem"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "ClientSentiment"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "DealOrigin"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Commitment"
+                        });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Handover.HandoverQueryQuestion", b =>
+                {
+                    b.Property<int>("QueryId")
+                        .HasColumnType("integer")
+                        .HasColumnName("query_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("QuestionText")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("question_text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("QueryId");
+
+                    b.ToTable("handover_query_questions", (string)null);
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Handover.HandoverQueryResponse", b =>
+                {
+                    b.Property<int>("QueryId")
+                        .HasColumnType("integer")
+                        .HasColumnName("query_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("ResponseText")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("response_text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("QueryId");
+
+                    b.ToTable("handover_query_responses", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Handover.HandoverStatus", b =>
@@ -3146,6 +3407,11 @@ namespace Pdr.Api.Migrations
                         {
                             HandoverStatusId = 2,
                             StatusName = "Submitted"
+                        },
+                        new
+                        {
+                            HandoverStatusId = 3,
+                            StatusName = "Reviewed"
                         });
                 });
 
@@ -3237,7 +3503,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HandoverReadinessDefinitions", (string)null);
+                    b.ToTable("HandoverReadinessDefinitions");
 
                     b.HasData(
                         new
@@ -3347,7 +3613,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("HandoverReadinessItems", (string)null);
+                    b.ToTable("HandoverReadinessItems");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Kickoff.KickoffActionItem", b =>
@@ -5152,6 +5418,19 @@ namespace Pdr.Api.Migrations
                             LinkPattern = "/engagements/{EngagementId}/workspace/documents",
                             Title = "Document visibility changed — {DocumentName}",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 856017,
+                            Body = "{TriggerUserName} raised a query on {FieldSection} for {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 3,
+                            IsDeleted = false,
+                            Key = "HandoverQueryRaised",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/handover",
+                            Title = "Handover Query Raised — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -6054,6 +6333,81 @@ namespace Pdr.Api.Migrations
                         .HasForeignKey("Pdr.Api.Models.Handover.HandoverInfo", "EngagementId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "ReviewedByUser")
+                        .WithMany()
+                        .HasForeignKey("ReviewedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "SubmittedByUser")
+                        .WithMany()
+                        .HasForeignKey("SubmittedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ReviewedByUser");
+
+                    b.Navigation("SubmittedByUser");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Handover.HandoverQuery", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Handover.HandoverQueryFieldSection", "FieldSection")
+                        .WithMany()
+                        .HasForeignKey("FieldSectionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.Handover.HandoverInfo", null)
+                        .WithMany()
+                        .HasForeignKey("HandoverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "RaisedByUser")
+                        .WithMany()
+                        .HasForeignKey("RaisedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "ResolvedByUser")
+                        .WithMany()
+                        .HasForeignKey("ResolvedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "RespondedByUser")
+                        .WithMany()
+                        .HasForeignKey("RespondedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("FieldSection");
+
+                    b.Navigation("RaisedByUser");
+
+                    b.Navigation("ResolvedByUser");
+
+                    b.Navigation("RespondedByUser");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Handover.HandoverQueryQuestion", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Handover.HandoverQuery", "Query")
+                        .WithOne("Question")
+                        .HasForeignKey("Pdr.Api.Models.Handover.HandoverQueryQuestion", "QueryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Query");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Handover.HandoverQueryResponse", b =>
+                {
+                    b.HasOne("Pdr.Api.Models.Handover.HandoverQuery", "Query")
+                        .WithOne("Response")
+                        .HasForeignKey("Pdr.Api.Models.Handover.HandoverQueryResponse", "QueryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Query");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Handover.RealisticCommitment", b =>
@@ -6349,6 +6703,13 @@ namespace Pdr.Api.Migrations
             modelBuilder.Entity("Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingDefinition", b =>
                 {
                     b.Navigation("EnvironmentToolingItems");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.Handover.HandoverQuery", b =>
+                {
+                    b.Navigation("Question");
+
+                    b.Navigation("Response");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.HandoverReadiness.HandoverReadinessDefinition", b =>
