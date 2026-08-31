@@ -115,14 +115,12 @@
   border-radius: $radius-2xl;
   box-shadow: $shadow-card;
   transition: all $transition-base;
-  border-left: 4px solid $color-border-input;
 
   &:hover {
     box-shadow: $shadow-card;
   }
 
   &.top-priority {
-    border-left: 4px solid $color-danger;
     background: $color-danger-bg;
   }
 
