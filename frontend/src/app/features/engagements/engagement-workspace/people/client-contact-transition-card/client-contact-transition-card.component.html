@@ -32,13 +32,9 @@
               </div>
             </div>
 
-            <!-- Flow Connector Line with Arrow Icon -->
+            <!-- Flow Connector Line -->
             <div class="flow-connector">
-              <div class="line"></div>
-              <div class="arrow-badge">
-                <img src="assets/icons/arrow-right.svg" class="arrow-icon" alt="Transition arrow" />
-              </div>
-              <div class="line"></div>
+              <div class="small-line"></div>
             </div>
 
             <!-- Incoming Contact -->
@@ -56,19 +52,6 @@
             </div>
           </div>
         }
-      } @else {
-        <div class="transition-flow-card empty-flow-card">
-          <div class="contact-party present-party">
-            <div class="avatar avatar-blue">
-              {{ getInitials(clientName()) }}
-            </div>
-            <div class="contact-details">
-              <span class="party-label">{{ dialogLabels.PRESENT }}</span>
-              <strong class="contact-name">{{ clientName() }}</strong>
-              <span class="contact-role">{{ dialogLabels.NO_ROLE }}</span>
-            </div>
-          </div>
-        </div>
       }
     </div>
 </div>

@@ -125,7 +125,17 @@
 
     @if (!isPreSales() || !isDraft()) {
       <div class="section client-context client-context-readonly">
-        <h3>{{ HANDOVER_LABELS.CLIENT_CONTEXT }}</h3>
+        <div class="client-context-header">
+          <h3>{{ HANDOVER_LABELS.CLIENT_CONTEXT }}</h3>
+          @if (handover()?.clientSentiment) {
+            <div class="sentiment-badge-group">
+              <span class="sentiment-label">Client Sentiment:</span>
+              <app-status-badge [tone]="getSentimentTone(handover()?.clientSentiment)">
+                {{ handover()?.clientSentiment }}
+              </app-status-badge>
+            </div>
+          }
+        </div>
 
         <div class="readonly-grid">
           <div id="handover-client-background" class="readonly-card full-width">
@@ -159,6 +169,13 @@
             <span class="readonly-label">Deal Origin</span>
             <p class="readonly-value" [class.readonly-value-empty]="!handover()?.dealOrigin">
               {{ handover()?.dealOrigin || HANDOVER_LABELS.NOT_PROVIDED }}
+            </p>
+          </div>
+
+          <div class="readonly-card">
+            <span class="readonly-label">Business Problem</span>
+            <p class="readonly-value" [class.readonly-value-empty]="!handover()?.businessProblem">
+              {{ handover()?.businessProblem || HANDOVER_LABELS.NOT_PROVIDED }}
             </p>
           </div>
         </div>
@@ -450,13 +467,6 @@
       (itemsUpdated)="onHandoverReadinessItemsUpdated($event)">
     </app-handover-readiness>
 
-    <!-- Client Contact Transition Section -->
-    <app-client-contact-transition-card
-      [engagementId]="engagementId()!"
-      [clientName]="engagementInfo()?.clientName || ''"
-      [isSubmitted]="!isDraft()"
-      (onSaved)="onClientContactSaved()">
-    </app-client-contact-transition-card>
 
     @if (hasBeenSubmitted()) {
       <app-handover-queries

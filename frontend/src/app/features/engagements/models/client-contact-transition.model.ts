@@ -17,4 +17,5 @@ export interface TransitionResponse {
 
 export interface AddClientContactTransitionDialogData {
   engagementId: number;
+  activeTransitions: TransitionResponse[];
 }

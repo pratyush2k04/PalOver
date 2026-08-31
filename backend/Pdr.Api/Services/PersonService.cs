@@ -86,8 +86,8 @@ public class PersonService(
             throw new PersonNotFoundException(personId, engagementId);
         }
 
-        var oldName = person.Name;
-        var oldRole = person.Role;
+        var oldName = person.Name?.Trim() ?? "";
+        var oldRole = person.Role?.Trim() ?? "";
         var isClient = person.PersonType == PersonType.Client || dto.PersonType == PersonType.Client;
 
         person.Name = dto.Name.Trim();
@@ -103,7 +103,7 @@ public class PersonService(
         {
             var actorUserId = int.TryParse(currentUserId, out var uid) ? uid : currentUserService.GetUserId();
 
-            if (!string.Equals(oldRole, person.Role, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(oldRole, person.Role?.Trim(), StringComparison.OrdinalIgnoreCase))
             {
                 await auditLogService.LogAsync(
                     AuditActionEnum.ClientPersonaChanged,
@@ -118,7 +118,7 @@ public class PersonService(
                     actingUserId: actorUserId > 0 ? actorUserId : null);
             }
 
-            if (!string.Equals(oldName, person.Name, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(oldName, person.Name?.Trim(), StringComparison.OrdinalIgnoreCase))
             {
                 await auditLogService.LogAsync(
                     AuditActionEnum.ClientContactDetailsChanged,
@@ -130,6 +130,39 @@ public class PersonService(
                     },
                     engagementId: engagementId,
                     actingUserId: actorUserId > 0 ? actorUserId : null);
+            }
+        }
+
+        if (!string.Equals(oldName, person.Name?.Trim(), StringComparison.OrdinalIgnoreCase) || 
+            !string.Equals(oldRole, person.Role?.Trim(), StringComparison.OrdinalIgnoreCase))
+        {
+            var transitions = await transitionRepository.GetAllByEngagementIdAsync(engagementId);
+            bool transitionsUpdated = false;
+
+            foreach (var t in transitions)
+            {
+                if (string.Equals(t.IncomingContactName?.Trim(), oldName, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(t.IncomingContactRole?.Trim(), oldRole, StringComparison.OrdinalIgnoreCase))
+                {
+                    t.IncomingContactName = person.Name;
+                    t.IncomingContactRole = person.Role;
+                    transitionRepository.Update(t);
+                    transitionsUpdated = true;
+                }
+                
+                if (string.Equals(t.OutgoingContactName?.Trim(), oldName, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(t.OutgoingContactRole?.Trim(), oldRole, StringComparison.OrdinalIgnoreCase))
+                {
+                    t.OutgoingContactName = person.Name;
+                    t.OutgoingContactRole = person.Role;
+                    transitionRepository.Update(t);
+                    transitionsUpdated = true;
+                }
+            }
+
+            if (transitionsUpdated)
+            {
+                await transitionRepository.SaveChangesAsync();
             }
         }
 
@@ -216,7 +249,7 @@ public class PersonService(
         var outgoingNames = transitions
             .Select(t => t.OutgoingContactName.Trim())
             .Where(name => !string.IsNullOrEmpty(name))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Distinct(StringComparer.Ordinal)
             .ToList();
 
         if (outgoingNames.Any())

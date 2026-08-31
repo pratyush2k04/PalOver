@@ -33,10 +33,6 @@
       flex: 1 1 100%;
       width: 100%;
     }
-
-    .header-divider:first-of-type {
-      display: none;
-    }
   }
 
   @media screen and (max-width: 768px) {
@@ -223,6 +219,29 @@
   }
 }
 
+.header-right-panel {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  @media screen and (max-width: 1180px) and (min-width: 769px) {
+    width: 100%;
+    justify-content: flex-end;
+
+    > .header-divider:first-child {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    width: 100%;
+    border-top: 1px solid $color-border-soft;
+    padding-top: $spacing-3;
+    gap: $spacing-3;
+  }
+}
+
 .header-divider {
   width: 1px;
   height: 3.5rem;
@@ -250,8 +269,6 @@
 
   @media screen and (max-width: 768px) {
     width: 100%;
-    padding-top: $spacing-3;
-    border-top: 1px solid $color-border-soft;
     justify-content: center;
     gap: $spacing-4;
   }
@@ -326,8 +343,6 @@
 
   @media screen and (max-width: 768px) {
     width: 100%;
-    padding-top: $spacing-3;
-    border-top: 1px solid $color-border-soft;
     justify-content: center;
 
     .day-one-signed-badge {

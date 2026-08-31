@@ -13,6 +13,7 @@ export const ENGAGEMENT_API_ENDPOINTS = {
   LEADERSHIP_DASHBOARD: '/api/engagements/leadership-dashboard',
   ALL_ENGAGEMENTS: '/api/Engagements',
   LEADERSHIP_USERS: (id: number) => `/api/Engagements/${id}/leadership-users`,
+  UPDATE_LEADERSHIP_USERS: (id: number) => `/api/Engagements/${id}/leadership-users`,
   LEADERSHIP_ROLE_USERS: '/api/Roles/4/users',
   DELETE_LEADERSHIP_USER: (id: number, userId: number) => `/api/Engagements/${id}/leadership-users/${userId}`,
   HANDOVER_DRAFT_STATUS: (id: number) => `/api/Engagements/${id}/handover-draft-status`,

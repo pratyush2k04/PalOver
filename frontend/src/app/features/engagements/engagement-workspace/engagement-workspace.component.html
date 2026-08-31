@@ -65,52 +65,54 @@
         </div>
       </div>
 
-      @if (engagement()!.dayOneSignOff || isAuthorizedForSignOff()) {
+      <div class="header-right-panel">
+        @if (engagement()!.dayOneSignOff || isAuthorizedForSignOff()) {
+          <div class="header-divider"></div>
+
+          <div class="header-day-one-actions">
+            @if (engagement()!.dayOneSignOff) {
+              <div class="day-one-signed-badge" [class.exception-badge]="engagement()!.dayOneSignOff!.isException">
+                <span class="badge-icon" [inlineSVG]="engagement()!.dayOneSignOff!.isException ? 'assets/icons/alert-circle.svg' : 'assets/icons/check-circle.svg'"></span>
+                <div class="badge-content">
+                  <strong>Day-1 Signed Off</strong>
+                  @if (engagement()!.dayOneSignOff!.isException) {
+                    <span class="exception-tag" [title]="engagement()!.dayOneSignOff!.exceptionJustification || 'Signed off with exception'">Exception</span>
+                  }
+                </div>
+              </div>
+            } @else if (isAuthorizedForSignOff()) {
+              <app-button
+                variant="flat"
+                [disabled]="!isFullyReady()"
+                (click)="openSignOffDialog()">
+                Sign Off Day-1
+              </app-button>
+            }
+          </div>
+        }
+
         <div class="header-divider"></div>
 
-        <div class="header-day-one-actions">
-          @if (engagement()!.dayOneSignOff) {
-            <div class="day-one-signed-badge" [class.exception-badge]="engagement()!.dayOneSignOff!.isException">
-              <span class="badge-icon" [inlineSVG]="engagement()!.dayOneSignOff!.isException ? 'assets/icons/alert-circle.svg' : 'assets/icons/check-circle.svg'"></span>
-              <div class="badge-content">
-                <strong>Day-1 Signed Off</strong>
-                @if (engagement()!.dayOneSignOff!.isException) {
-                  <span class="exception-tag" [title]="engagement()!.dayOneSignOff!.exceptionJustification || 'Signed off with exception'">Exception</span>
-                }
-              </div>
-            </div>
-          } @else if (isAuthorizedForSignOff()) {
-            <app-button
-              variant="flat"
-              [disabled]="!isFullyReady()"
-              (click)="openSignOffDialog()">
-              Sign Off Day-1
-            </app-button>
-          }
-        </div>
-      }
+        <div
+          class="header-readiness-status"
+          role="button"
+          tabindex="0"
+          aria-label="View kickoff readiness one-pager"
+          (click)="openReadinessOnePager()"
+          (keydown.enter)="openReadinessOnePager()"
+        >
+          <app-readiness-circle [score]="scorePercent()" size="lg" />
 
-      <div class="header-divider"></div>
-
-      <div
-        class="header-readiness-status"
-        role="button"
-        tabindex="0"
-        aria-label="View kickoff readiness one-pager"
-        (click)="openReadinessOnePager()"
-        (keydown.enter)="openReadinessOnePager()"
-      >
-        <app-readiness-circle [score]="scorePercent()" size="lg" />
-
-        <div class="readiness-details">
-          <span class="readiness-label">Readiness</span>
-          <span
-            class="status-badge"
-            [class.status-badge--ready]="isFullyReady()"
-            [class.status-badge--not-ready]="!isFullyReady()"
-          >
-            {{ isFullyReady() ? 'Kickoff ready' : 'Not ready' }}
-          </span>
+          <div class="readiness-details">
+            <span class="readiness-label">Readiness</span>
+            <span
+              class="status-badge"
+              [class.status-badge--ready]="isFullyReady()"
+              [class.status-badge--not-ready]="!isFullyReady()"
+            >
+              {{ isFullyReady() ? 'Kickoff ready' : 'Not ready' }}
+            </span>
+          </div>
         </div>
       </div>
     </div>

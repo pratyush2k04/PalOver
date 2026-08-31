@@ -77,8 +77,12 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
 
     public async Task RemoveAssignmentAsync(EngagementAssignment assignment)
     {
-        context.EngagementAssignments.Remove(assignment);
-        await context.SaveChangesAsync();
+        var tracked = await context.EngagementAssignments.FindAsync(assignment.UserId, assignment.EngagementId);
+        if (tracked != null)
+        {
+            context.EngagementAssignments.Remove(tracked);
+            await context.SaveChangesAsync();
+        }
     }
 
     public async Task AddAssignmentAsync(int engagementId, int userId)

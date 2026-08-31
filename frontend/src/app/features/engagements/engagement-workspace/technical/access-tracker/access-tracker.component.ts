@@ -28,11 +28,7 @@ import {
   BlockAccessItemDialogData,
   BlockAccessItemDialogResult
 } from './dialogs/block-access-item-dialog/block-access-item-dialog.component';
-import {
-  EditOwnerDialogComponent,
-  EditOwnerDialogData,
-  EditOwnerDialogResult
-} from '../dialogs/edit-owner-dialog/edit-owner-dialog.component';
+
 
 @Component({
   selector: 'app-access-tracker',
@@ -160,7 +156,7 @@ export class AccessTrackerComponent {
         );
         this.accessItems.set(updatedList);
         this.itemsUpdated.emit(updatedList);
-        this.toastService.success(`Status updated for ${item.name}`);
+        this.toastService.success('Status updated');
       },
       error: (err) => {
         this.toastService.error(`Failed to update status for ${item.name}`);
@@ -234,43 +230,7 @@ export class AccessTrackerComponent {
     });
   }
 
-  openEditOwnerModal(item: AccessItemDto): void {
-    const dialogRef = this.dialog.open<EditOwnerDialogComponent, EditOwnerDialogData, EditOwnerDialogResult>(
-      EditOwnerDialogComponent,
-      { 
-        data: { 
-          itemName: item.name, 
-          engagementId: this.engagementId(),
-          currentOwnerId: item.ownerId 
-        },
-        disableClose: true
-      }
-    );
 
-    dialogRef.closed$.subscribe((result) => {
-      if (!result) return;
-      this.updateOwner(item, result.ownerId);
-    });
-  }
-
-  private updateOwner(item: AccessItemDto, ownerId: number) {
-    this.readinessService.updateAccessItemOwner(item.id, { ownerId }).pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (updatedItem) => {
-        const updatedList = this.accessItems().map(i =>
-          i.id === updatedItem.id ? updatedItem : i
-        );
-        this.accessItems.set(updatedList);
-        this.itemsUpdated.emit(updatedList);
-        this.toastService.success(`Owner updated for ${item.name}`);
-      },
-      error: (err) => {
-        this.toastService.error(`Failed to update owner for ${item.name}`);
-        console.error('API update owner failed', err);
-      }
-    });
-  }
 
   private submitAddItem(result: AddAccessItemDialogResult) {
     const currentUserId = this.authService.getUserId() ?? 1;

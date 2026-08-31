@@ -82,7 +82,6 @@ interface RealisticEditForm {
     SelectComponent,
     StatusBadgeComponent,
     EmptyStateComponent,
-    ClientContactTransitionCardComponent,
     HandoverQueriesComponent,
     ConfirmDialogComponent,
     HandoverReadinessComponent,
@@ -164,8 +163,10 @@ export class HandoverComponent {
 
   getSentimentTone(sentiment: string | null | undefined): StatusBadgeTone {
     switch (sentiment) {
-      case 'Warm':
+      case 'New':
         return 'info';
+      case 'Warm':
+        return 'warning';
       case 'Strained':
         return 'danger';
       default:
