@@ -16,8 +16,6 @@ public class HandoverQuery : BaseAuditableEntity
 
     public int RaisedByUserId { get; set; }
 
-    public int? RespondedByUserId { get; set; }
-
     public int? ResolvedByUserId { get; set; }
 
     public DateTime? ResolvedAt { get; set; }
@@ -26,11 +24,7 @@ public class HandoverQuery : BaseAuditableEntity
 
     public User RaisedByUser { get; set; } = null!;
 
-    public User? RespondedByUser { get; set; }
-
     public User? ResolvedByUser { get; set; }
 
-    public HandoverQueryQuestion? Question { get; set; }
-
-    public HandoverQueryResponse? Response { get; set; }
+    public ICollection<HandoverQueryMessage> Messages { get; set; } = new List<HandoverQueryMessage>();
 }
