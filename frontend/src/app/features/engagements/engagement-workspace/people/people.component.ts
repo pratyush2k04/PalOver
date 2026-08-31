@@ -15,6 +15,7 @@ import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { AuthService } from '@shared/services/auth';
 import { USER_ROLES } from '@shared/constants/app.constants';
+import { ClientContactTransitionCardComponent } from './client-contact-transition-card/client-contact-transition-card.component';
 import {
   PersonFormDialogComponent,
   PersonFormDialogData,
@@ -32,6 +33,7 @@ import {
     ButtonComponent,
     SectionHeaderComponent,
     TooltipDirective,
+    ClientContactTransitionCardComponent,
   ],
   templateUrl: './people.component.html',
   styleUrl: './people.component.scss'

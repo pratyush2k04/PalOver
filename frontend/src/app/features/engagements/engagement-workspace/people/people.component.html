@@ -2,7 +2,7 @@
   <app-section-header title="People Directory">
     @if (!isLeadership()) {
       <app-button type="button" variant="flat" [disabled]="isImporting()" (click)="onImportFromHandover()">
-        Import from handover
+        Import from contact transition
       </app-button>
       <app-button type="button" variant="accent" (click)="onAddPerson()">
         <span class="btn-icon">+</span>
@@ -59,6 +59,15 @@
     </div>
     }
   </div>
+
+  <!-- Client Contact Transition Section -->
+  @if (engagementId()) {
+    <div class="people-directory__transition-section" style="margin-top: 2rem;">
+      <app-client-contact-transition-card
+        [engagementId]="engagementId()!"
+      ></app-client-contact-transition-card>
+    </div>
+  }
 </div>
 
 <!-- Delete Confirmation Dialog -->

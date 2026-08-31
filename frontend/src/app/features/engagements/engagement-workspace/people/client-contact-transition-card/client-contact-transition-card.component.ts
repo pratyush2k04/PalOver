@@ -15,7 +15,7 @@ import {
   DIALOG_LABELS,
   STATUS_MESSAGES,
 } from '@shared/constants/client-contact-transition.constants';
-import { AddClientContactTransitionDialogComponent } from '../dialogs/add-client-contact-transition-dialog/add-client-contact-transition-dialog.component';
+import { AddClientContactTransitionDialogComponent } from '../../handover/dialogs/add-client-contact-transition-dialog/add-client-contact-transition-dialog.component';
 
 @Component({
   selector: 'app-client-contact-transition-card',

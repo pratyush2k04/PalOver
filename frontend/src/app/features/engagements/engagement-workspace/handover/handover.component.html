@@ -429,13 +429,7 @@
       (itemsUpdated)="onHandoverReadinessItemsUpdated($event)">
     </app-handover-readiness>
 
-    <!-- Client Contact Transition Section -->
-    <app-client-contact-transition-card
-      [engagementId]="engagementId()!"
-      [clientName]="engagementInfo()?.clientName || ''"
-      [isSubmitted]="isSubmitted()"
-      (onSaved)="onClientContactSaved()">
-    </app-client-contact-transition-card>
+
 
   </div>
 }
