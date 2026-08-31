@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Notification, PagedResult } from '../models/notification.model';
 import { NOTIFICATIONS_API_ENDPOINTS } from '../constants/notification.constants';
+import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,9 @@ export class NotificationService {
   }
 
   getUnreadCount(): Observable<number> {
-    return this.http.get<number>(NOTIFICATIONS_API_ENDPOINTS.UNREAD_COUNT);
+    return this.http.get<number>(NOTIFICATIONS_API_ENDPOINTS.UNREAD_COUNT, {
+      context: new HttpContext().set(SKIP_LOADER, true)
+    });
   }
 
   markAsRead(id: number): Observable<void> {
