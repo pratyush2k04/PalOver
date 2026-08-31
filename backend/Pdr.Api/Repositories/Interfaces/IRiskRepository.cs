@@ -21,4 +21,5 @@ public interface IRiskRepository
     Task<List<RiskEscalationHistory>> GetEscalationHistoriesByRiskIdsAsync(IEnumerable<int> riskIds);
     Task<List<RiskEscalationHistory>> GetEscalationHistoryByRiskIdAsync(int riskId);
     Task AddEscalationHistoryAsync(RiskEscalationHistory history);
+    Task<bool> IsEngagementSignedOffAsync(int engagementId);
 }

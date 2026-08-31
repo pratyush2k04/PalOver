@@ -45,6 +45,11 @@ public class ArchitectureValidationService(
             throw new EngagementNotFoundException(engagementId);
         }
 
+        if (await repository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         if (request.Status == ArchitectureStatus.Modified && string.IsNullOrWhiteSpace(request.Rationale))
         {
             throw new RationaleRequiredWhenArchitectureModifiedException();
@@ -82,6 +87,11 @@ public class ArchitectureValidationService(
         if (!await repository.EngagementExistsAsync(engagementId))
         {
             throw new EngagementNotFoundException(engagementId);
+        }
+
+        if (await repository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
         }
 
         var validation = await repository.GetByEngagementIdAsync(engagementId);
@@ -135,6 +145,11 @@ public class ArchitectureValidationService(
         }
 
         var engagementId = item.ArchitectureValidation?.EngagementId ?? 0;
+        if (engagementId > 0 && await repository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         var wasReady = engagementId > 0 && await readinessNotificationService.IsReadyAsync(engagementId);
 
         item.FeatureName = request.FeatureName.Trim();
@@ -160,6 +175,11 @@ public class ArchitectureValidationService(
         }
 
         var engagementId = item.ArchitectureValidation?.EngagementId ?? 0;
+        if (engagementId > 0 && await repository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         var wasReady = engagementId > 0 && await readinessNotificationService.IsReadyAsync(engagementId);
 
         item.IsDeleted = true;

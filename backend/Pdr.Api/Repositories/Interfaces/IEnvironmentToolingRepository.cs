@@ -12,4 +12,5 @@ public interface IEnvironmentToolingRepository
     // Validation lookups (self-contained — no service touches DbContext directly)
     Task<bool> EngagementExistsAsync(int engagementId);
     Task<bool> UserExistsAsync(int userId);
+    Task<bool> IsEngagementSignedOffAsync(int engagementId);
 }

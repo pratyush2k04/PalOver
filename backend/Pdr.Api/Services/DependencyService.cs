@@ -53,6 +53,8 @@ public class DependencyService(
         if (engagement == null)
             throw new EngagementNotFoundException(engagementId);
 
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var dependency = new Dependency
         {
             EngagementId = engagementId,
@@ -94,6 +96,8 @@ public class DependencyService(
         var engagement = await engagementRepository.GetByIdAsync(engagementId);
         if (engagement == null)
             throw new EngagementNotFoundException(engagementId);
+
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var dependency = await dependencyRepository.GetByIdAsync(id);
         if (dependency == null || dependency.EngagementId != engagementId)

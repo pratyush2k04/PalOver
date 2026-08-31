@@ -60,6 +60,9 @@ public class AccessTrackerRepository(AppDbContext context) : IAccessTrackerRepos
             .Select(ea => (int?)ea.UserId)
             .FirstOrDefaultAsync();
 
+    public async Task<bool> IsEngagementSignedOffAsync(int engagementId) =>
+        await context.DayOneSignOffRecords.AsNoTracking().AnyAsync(r => r.EngagementId == engagementId);
+
     // Access items that have left the pending state (Granted or Blocked), for the KPI access-delay report
     public async Task<List<AccessItemDelayInfoDto>> GetResolvedAccessItemsByEngagementIdsAsync(List<int> engagementIds) =>
         await context.AccessItems

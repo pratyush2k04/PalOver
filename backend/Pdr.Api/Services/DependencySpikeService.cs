@@ -30,6 +30,11 @@ public class DependencySpikeService(
             throw new EngagementNotFoundException(engagementId);
         }
 
+        if (await repository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         int? ownerId = request.OwnerId;
 
         // Auto-assign Tech Lead if ownerId not provided
@@ -68,6 +73,11 @@ public class DependencySpikeService(
             throw new DependencySpikeNotFoundException(spikeId);
         }
 
+        if (await repository.IsEngagementSignedOffAsync(spike.EngagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         var wasReady = await readinessNotificationService.IsReadyAsync(spike.EngagementId);
 
         spike.DependencyName = request.DependencyName;
@@ -90,6 +100,11 @@ public class DependencySpikeService(
         if (spike is null)
         {
             throw new DependencySpikeNotFoundException(spikeId);
+        }
+
+        if (await repository.IsEngagementSignedOffAsync(spike.EngagementId))
+        {
+            throw new EngagementSignedOffException();
         }
 
         var wasReady = await readinessNotificationService.IsReadyAsync(spike.EngagementId);

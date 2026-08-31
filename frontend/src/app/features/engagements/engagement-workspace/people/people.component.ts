@@ -14,6 +14,7 @@ import { SectionHeaderComponent } from '@common/components/section-header/sectio
 import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { AuthService } from '@shared/services/auth';
+import { EngagementService } from '../../services/engagement.service';
 import { USER_ROLES } from '@shared/constants/app.constants';
 import {
   PersonFormDialogComponent,

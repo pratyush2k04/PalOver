@@ -9,6 +9,7 @@ import { StatusBadgeComponent } from '@common/components/status-badge/status-bad
 import { ButtonComponent } from '@common/components/button/button';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { AuthService } from '@shared/services/auth';
+import { EngagementService } from '@features/engagements/services/engagement.service';
 import { TECHNICAL_READINESS_ROLES } from '@shared/constants/technical-readiness.constants';
 import { BrownfieldFindingDto, BrownfieldReadinessResponse } from '@features/engagements/models/brownfield-review/brownfield-review.dtos';
 import { BrownfieldSeverity, ClientDecision } from '@features/engagements/models/brownfield-review/brownfield-review.enums';

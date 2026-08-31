@@ -16,6 +16,7 @@ import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DocumentService } from '../../../services/document.service';
+import { EngagementService } from '../../../services/engagement.service';
 import { DocumentCategory, DocumentItem, DocumentVisibility } from '../../../models/document.model';
 import { AuthService } from '@shared/services/auth';
 import { DialogService } from '@common/services/dialog/dialog.service';

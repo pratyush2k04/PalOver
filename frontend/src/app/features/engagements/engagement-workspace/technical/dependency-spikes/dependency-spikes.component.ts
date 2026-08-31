@@ -10,6 +10,7 @@ import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confir
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { ToastService } from '@common/services/toast/toast';
 import { AuthService } from '@shared/services/auth';
+import { EngagementService } from '../../../services/engagement.service';
 import { TECHNICAL_READINESS_ROLES } from '@shared/constants/technical-readiness.constants';
 import { DependencySpikeService } from '../../../services/dependency-spike.service';
 import {

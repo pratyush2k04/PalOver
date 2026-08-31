@@ -104,4 +104,7 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
         await context.SaveChangesAsync();
         return document;
     }
+
+    public async Task<bool> IsEngagementSignedOffAsync(int engagementId) =>
+        await context.DayOneSignOffRecords.AsNoTracking().AnyAsync(r => r.EngagementId == engagementId);
 }

@@ -42,6 +42,11 @@ public class BrownfieldFindingService(
             throw new EngagementNotFoundException(engagementId);
         }
 
+        if (await repository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         if (request.DocumentId.HasValue && !await repository.DocumentExistsAsync(request.DocumentId.Value))
         {
             throw new DocumentNotFoundException(request.DocumentId.Value);
@@ -89,6 +94,11 @@ public class BrownfieldFindingService(
             throw new BrownfieldFindingNotFoundException(findingId);
         }
 
+        if (await repository.IsEngagementSignedOffAsync(finding.EngagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         var wasReady = await readinessNotificationService.IsReadyAsync(finding.EngagementId);
 
         finding.ClientDecision = request.ClientDecision;
@@ -105,6 +115,11 @@ public class BrownfieldFindingService(
         if (finding is null)
         {
             throw new BrownfieldFindingNotFoundException(findingId);
+        }
+
+        if (await repository.IsEngagementSignedOffAsync(finding.EngagementId))
+        {
+            throw new EngagementSignedOffException();
         }
 
         var wasReady = await readinessNotificationService.IsReadyAsync(finding.EngagementId);

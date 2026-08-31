@@ -10,4 +10,5 @@ public interface IBrownfieldFindingRepository
     Task SaveChangesAsync();
     Task<bool> EngagementExistsAsync(int engagementId);
     Task<bool> DocumentExistsAsync(int documentId);
+    Task<bool> IsEngagementSignedOffAsync(int engagementId);
 }

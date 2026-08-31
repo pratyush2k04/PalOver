@@ -8,4 +8,5 @@ public interface IHandoverRepository
     Task AddAsync(HandoverInfo handover);
     Task<HandoverStatus?> GetStatusByIdAsync(int statusId);
     Task SaveChangesAsync();
+    Task<bool> IsEngagementSignedOffAsync(int engagementId);
 }

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '@shared/services/auth';
+import { EngagementService } from '../../services/engagement.service';
 import { EngagementChecklistService } from '@features/engagements/services/engagement-checklist.service';
 import { EngagementChecklist, EngagementChecklistItem } from '../../models/engagement-checklist.model';
 import { ENGAGEMENT_CHECKLIST_MESSAGES } from '@shared/constants/engagements.constants';

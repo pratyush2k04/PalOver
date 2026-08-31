@@ -30,4 +30,7 @@ public class DependencySpikeRepository(AppDbContext context) : IDependencySpikeR
 
     public async Task<bool> EngagementExistsAsync(int engagementId) =>
         await context.Engagements.AnyAsync(e => e.EngagementId == engagementId);
+
+    public async Task<bool> IsEngagementSignedOffAsync(int engagementId) =>
+        await context.DayOneSignOffRecords.AsNoTracking().AnyAsync(r => r.EngagementId == engagementId);
 }

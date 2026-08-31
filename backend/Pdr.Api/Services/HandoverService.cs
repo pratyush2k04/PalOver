@@ -119,6 +119,11 @@ public class HandoverService : IHandoverService
     {
         await _engagementAccessService.ValidateAccessAsync(engagementId);
 
+        if (await _handoverRepository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
 
         if (handover == null)
@@ -150,6 +155,11 @@ public class HandoverService : IHandoverService
     public async Task<HandoverInfoDto> SubmitHandoverAsync(int engagementId, string userIdStr)
     {
         await _engagementAccessService.ValidateAccessAsync(engagementId);
+
+        if (await _handoverRepository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
 
         var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
 

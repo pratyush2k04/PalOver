@@ -39,6 +39,11 @@ public class RiskService(
 
     public async Task<RiskDto> CreateRiskAsync(int engagementId, CreateRiskDto dto)
     {
+        if (await riskRepository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         var risk = new Risk
         {
             EngagementId = engagementId,
@@ -60,6 +65,11 @@ public class RiskService(
 
     public async Task<RiskDto> UpdateRiskAsync(int engagementId, int riskId, UpdateRiskDto dto)
     {
+        if (await riskRepository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         var risk = await riskRepository.GetByIdAsync(riskId)
             ?? throw new RiskNotFoundException(riskId);
 
@@ -89,6 +99,11 @@ public class RiskService(
 
     public async Task<RiskDto> CloseRiskAsync(int engagementId, int riskId, CloseRiskDto dto)
     {
+        if (await riskRepository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         var risk = await riskRepository.GetByIdAsync(riskId)
             ?? throw new RiskNotFoundException(riskId);
 
@@ -123,6 +138,11 @@ public class RiskService(
 
     public async Task<RiskDto> ReopenRiskAsync(int engagementId, int riskId)
     {
+        if (await riskRepository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         var risk = await riskRepository.GetByIdAsync(riskId)
             ?? throw new RiskNotFoundException(riskId);
 

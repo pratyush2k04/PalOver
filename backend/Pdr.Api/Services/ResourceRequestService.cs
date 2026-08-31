@@ -26,6 +26,11 @@ public class ResourceRequestService(
         var engagement = await resourceRequestRepository.GetEngagementAsync(engagementId)
             ?? throw new EngagementNotFoundException(engagementId);
 
+        if (await resourceRequestRepository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         var currentUserId = currentUserService.GetUserId();
         var assignment = await resourceRequestRepository.GetUserEngagementAssignmentAsync(engagementId, currentUserId);
         if (assignment == null || assignment.User.RoleId != (int)RoleEnum.ProjectManagement)
@@ -83,6 +88,11 @@ public class ResourceRequestService(
     {
         var request = await GetOwnedRequestAsync(engagementId, id);
 
+        if (await resourceRequestRepository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         await EnsureLeadershipOrAdminAsync(engagementId);
 
         if (request.Status == ResourceRequestStatus.Confirmed)
@@ -134,6 +144,11 @@ public class ResourceRequestService(
     {
         var request = await GetOwnedRequestAsync(engagementId, id);
 
+        if (await resourceRequestRepository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         await EnsureLeadershipOrAdminAsync(engagementId);
 
         var allocation = request.Allocations.FirstOrDefault(a => a.Id == allocationId && a.RemovedAt == null)
@@ -169,6 +184,11 @@ public class ResourceRequestService(
     public async Task<ResourceRequestDto> RemoveAllocationAsync(int engagementId, int id, int allocationId, RemoveAllocationDto dto)
     {
         var request = await GetOwnedRequestAsync(engagementId, id);
+
+        if (await resourceRequestRepository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
 
         await EnsureLeadershipOrAdminAsync(engagementId);
 

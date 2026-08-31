@@ -176,6 +176,11 @@ public class DocumentService(
 
     public async Task<DocumentResponseDto> UploadDocumentAsync(DocumentUploadDto dto)
     {
+        if (await repository.IsEngagementSignedOffAsync(dto.EngagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         var engagementFolder = Path.Combine(environment.ContentRootPath, DocumentValidationConstants.UploadsFolder, dto.EngagementId.ToString());
         if (!Directory.Exists(engagementFolder))
         {
@@ -346,6 +351,11 @@ public class DocumentService(
             throw new DocumentNotFoundException(id);
         }
 
+        if (await repository.IsEngagementSignedOffAsync(doc.EngagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         var userIdStr = currentUserService.GetUserId().ToString();
         var userEmail = currentUserService.GetEmail();
 
@@ -402,6 +412,11 @@ public class DocumentService(
             throw new DocumentNotFoundException(id);
         }
 
+        if (await repository.IsEngagementSignedOffAsync(doc.EngagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         var targetVisibility = dto.ResetToCategoryDefault
             ? GetCategoryDefaultVisibility(doc.Category?.CategoryName)
             : dto.Visibility ?? GetCategoryDefaultVisibility(doc.Category?.CategoryName);
@@ -443,6 +458,11 @@ public class DocumentService(
         if (doc == null)
         {
             throw new DocumentNotFoundException(documentId);
+        }
+
+        if (await repository.IsEngagementSignedOffAsync(doc.EngagementId))
+        {
+            throw new EngagementSignedOffException();
         }
 
         if (!CanAccessDocument(doc))

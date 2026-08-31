@@ -24,6 +24,9 @@ public class CommitmentService : ICommitmentService
 
     private async Task<HandoverInfo> GetHandoverOrThrowAsync(int engagementId)
     {
+        if (await _handoverRepository.IsEngagementSignedOffAsync(engagementId))
+            throw new EngagementSignedOffException();
+
         var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
 
         if (handover == null)

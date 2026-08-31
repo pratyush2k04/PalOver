@@ -219,4 +219,7 @@ public class RiskRepository(AppDbContext context) : IRiskRepository
     {
         await context.RiskEscalationHistories.AddAsync(history);
     }
+
+    public async Task<bool> IsEngagementSignedOffAsync(int engagementId) =>
+        await context.DayOneSignOffRecords.AsNoTracking().AnyAsync(r => r.EngagementId == engagementId);
 }

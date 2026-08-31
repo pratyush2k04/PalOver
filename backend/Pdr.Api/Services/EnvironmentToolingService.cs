@@ -44,6 +44,11 @@ public class EnvironmentToolingService(
             throw new EngagementNotFoundException(engagementId);
         }
 
+        if (await repository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         if (!await repository.UserExistsAsync(request.OwnerId))
         {
             throw new UserNotFoundException(request.OwnerId);
@@ -71,6 +76,11 @@ public class EnvironmentToolingService(
         if (item is null)
         {
             throw new EnvironmentToolingItemNotFoundException(id);
+        }
+
+        if (await repository.IsEngagementSignedOffAsync(item.EngagementId))
+        {
+            throw new EngagementSignedOffException();
         }
 
         // Validate NotApplicableReason
@@ -105,6 +115,11 @@ public class EnvironmentToolingService(
         if (item is null)
         {
             throw new EnvironmentToolingItemNotFoundException(id);
+        }
+
+        if (await repository.IsEngagementSignedOffAsync(item.EngagementId))
+        {
+            throw new EngagementSignedOffException();
         }
 
         if (!await repository.UserExistsAsync(request.OwnerId))

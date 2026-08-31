@@ -13,6 +13,7 @@ import { ToastService } from '@common/services/toast/toast';
 import { DependencyFormDialogComponent, DependencyFormDialogResult } from './dialogs/dependency-form-dialog/dependency-form-dialog.component';
 import { DEPENDENCY_MESSAGES } from '@shared/constants/app.constants';
 import { AuthService } from '@shared/services/auth';
+import { EngagementService } from '../../../../services/engagement.service';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
 
@@ -112,7 +113,10 @@ export class DependenciesComponent implements OnInit {
       if (!result) return;
 
       if (dependency) {
-        this.dependencyService.updateDependency(this.engagementId(), dependency.id, result).subscribe({
+        this.dependencyService.updateDependency(this.engagementId(), dependency.id, {
+          ...result,
+          status: result.status ?? dependency.status
+        }).subscribe({
           next: () => {
             this.toastService.success(DEPENDENCY_MESSAGES.UPDATE_SUCCESS);
             this.loadDependencies();

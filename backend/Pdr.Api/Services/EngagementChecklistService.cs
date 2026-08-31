@@ -79,6 +79,11 @@ public class EngagementChecklistService(
 
     public async Task<EngagementChecklistResponseDto> UpdateItemStatusAsync(int engagementId, int itemId, UpdateItemStatusRequestDto dto)
     {
+        if (await checklistRepository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         var item = await checklistRepository.GetItemByIdAsync(engagementId, itemId)
             ?? throw new EngagementChecklistItemNotFoundException(itemId);
 
@@ -123,6 +128,11 @@ public class EngagementChecklistService(
 
     public async Task<EngagementChecklistResponseDto> UpdateItemApplicabilityAsync(int engagementId, int itemId, UpdateItemApplicabilityRequestDto dto)
     {
+        if (await checklistRepository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         var item = await checklistRepository.GetItemByIdAsync(engagementId, itemId)
             ?? throw new EngagementChecklistItemNotFoundException(itemId);
 
@@ -189,6 +199,11 @@ public class EngagementChecklistService(
 
     public async Task<EngagementChecklistResponseDto> ReviewExemptionAsync(int engagementId, int itemId, ReviewExemptionRequestDto dto)
     {
+        if (await checklistRepository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         var item = await checklistRepository.GetItemByIdAsync(engagementId, itemId)
             ?? throw new EngagementChecklistItemNotFoundException(itemId);
 
@@ -230,6 +245,11 @@ public class EngagementChecklistService(
 
     public async Task<EngagementChecklistResponseDto> UpdateItemOwnerAsync(int engagementId, int itemId, UpdateItemOwnerRequestDto dto)
     {
+        if (await checklistRepository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         var item = await checklistRepository.GetItemByIdAsync(engagementId, itemId)
             ?? throw new EngagementChecklistItemNotFoundException(itemId);
 
@@ -259,6 +279,11 @@ public class EngagementChecklistService(
 
     public async Task<EngagementChecklistResponseDto> BlockItemAsync(int engagementId, int itemId, BlockChecklistItemRequestDto dto)
     {
+        if (await checklistRepository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         var item = await checklistRepository.GetItemByIdAsync(engagementId, itemId)
             ?? throw new EngagementChecklistItemNotFoundException(itemId);
 
@@ -292,6 +317,11 @@ public class EngagementChecklistService(
 
     public async Task<EngagementChecklistResponseDto> UnblockItemAsync(int engagementId, int itemId)
     {
+        if (await checklistRepository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         var item = await checklistRepository.GetItemByIdAsync(engagementId, itemId)
             ?? throw new EngagementChecklistItemNotFoundException(itemId);
 
@@ -317,6 +347,11 @@ public class EngagementChecklistService(
 
     public async Task<EngagementChecklistResponseDto> SaveItemEvidenceAsync(int engagementId, int itemId, SaveChecklistItemEvidenceRequestDto dto)
     {
+        if (await checklistRepository.IsEngagementSignedOffAsync(engagementId))
+        {
+            throw new EngagementSignedOffException();
+        }
+
         var item = await checklistRepository.GetItemByIdAsync(engagementId, itemId)
             ?? throw new EngagementChecklistItemNotFoundException(itemId);
 

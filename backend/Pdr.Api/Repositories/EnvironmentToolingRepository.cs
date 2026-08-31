@@ -36,4 +36,7 @@ public class EnvironmentToolingRepository(AppDbContext context) : IEnvironmentTo
 
     public async Task<bool> UserExistsAsync(int userId) =>
         await context.Users.AnyAsync(u => u.Id == userId);
+
+    public async Task<bool> IsEngagementSignedOffAsync(int engagementId) =>
+        await context.DayOneSignOffRecords.AsNoTracking().AnyAsync(r => r.EngagementId == engagementId);
 }

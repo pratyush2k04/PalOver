@@ -9,4 +9,5 @@ public interface IDependencySpikeRepository
     Task AddAsync(DependencySpike spike);
     Task SaveChangesAsync();
     Task<bool> EngagementExistsAsync(int engagementId);
+    Task<bool> IsEngagementSignedOffAsync(int engagementId);
 }

@@ -2,6 +2,7 @@ import { Component, OnInit, inject, input, signal, computed } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RiskCommentService } from '../../services/risk-comment.service';
+import { EngagementService } from '../../../../services/engagement.service';
 import { RiskComment, EngagementMember } from '../../models/risk.model';
 import { AccordionComponent } from '@common/components/accordion/accordion';
 import { AvatarComponent } from '@common/components/avatar/avatar';

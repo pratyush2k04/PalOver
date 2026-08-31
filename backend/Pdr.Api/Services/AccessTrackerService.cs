@@ -50,6 +50,9 @@ public class AccessTrackerService(
         if (!await repository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
+        if (await repository.IsEngagementSignedOffAsync(engagementId))
+            throw new EngagementSignedOffException();
+
         if (!await repository.UserExistsAsync(request.OwnerId))
             throw new UserNotFoundException(request.OwnerId);
 
@@ -82,6 +85,9 @@ public class AccessTrackerService(
     {
         var item = await repository.GetAccessItemByIdAsync(accessItemId)
             ?? throw new AccessItemNotFoundException(accessItemId);
+
+        if (await repository.IsEngagementSignedOffAsync(item.EngagementId))
+            throw new EngagementSignedOffException();
 
         // Guard: same-status transition is never allowed
         if (item.Status == request.Status)
@@ -144,6 +150,9 @@ public class AccessTrackerService(
         var item = await repository.GetAccessItemByIdAsync(accessItemId)
             ?? throw new AccessItemNotFoundException(accessItemId);
 
+        if (await repository.IsEngagementSignedOffAsync(item.EngagementId))
+            throw new EngagementSignedOffException();
+
         if (!await repository.UserExistsAsync(request.OwnerId))
             throw new UserNotFoundException(request.OwnerId);
 
@@ -164,6 +173,9 @@ public class AccessTrackerService(
     {
         var item = await repository.GetAccessItemByIdAsync(accessItemId)
             ?? throw new AccessItemNotFoundException(accessItemId);
+
+        if (await repository.IsEngagementSignedOffAsync(item.EngagementId))
+            throw new EngagementSignedOffException();
 
         var wasReady = await readinessNotificationService.IsReadyAsync(item.EngagementId);
 
