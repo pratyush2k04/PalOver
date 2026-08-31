@@ -2,20 +2,6 @@
 
 :host {
   display: block;
-  font-family: $font-family-base;
-  width: 100%;
-  max-width: 32rem; // 512px
-}
-
-.item-form-dialog {
-  &__content {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  &__checkbox {
-    margin: $spacing-1 0 $spacing-3;
-  }
+  width: 32rem;
+  max-width: calc(100vw - 3rem);
 }

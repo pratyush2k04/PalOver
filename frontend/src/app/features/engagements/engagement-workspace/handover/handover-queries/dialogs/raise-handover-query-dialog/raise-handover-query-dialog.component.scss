@@ -1,43 +1,7 @@
-.dialog-container {
-  background-color: #ffffff;
-  border-radius: 0.75rem;
-  width: 100%;
-  max-width: 500px;
-  overflow: hidden;
-}
+@use 'styles/tokens' as *;
 
-.dialog-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #f1f5f9;
-
-  h3 {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #0f172a;
-    margin: 0;
-  }
-}
-
-.dialog-body {
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.dialog-footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 1rem;
-  padding: 1.5rem 2rem;
-  background-color: #f8fafc;
-  border-top: 1px solid #e2e8f0;
-
-  app-button {
-    min-width: 120px;
-  }
+:host {
+  display: block;
+  width: 31.25rem;
+  max-width: calc(100vw - 3rem);
 }

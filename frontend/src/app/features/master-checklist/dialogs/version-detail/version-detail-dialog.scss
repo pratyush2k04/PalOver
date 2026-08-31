@@ -1,11 +1,9 @@
 @use 'styles/tokens' as *;
 
 :host {
-  display: flex;
-  flex-direction: column;
-  font-family: $font-family-base;
-  width: 100%;
-  max-width: 35rem; // 560px
+  display: block;
+  width: 35rem;
+  max-width: calc(100vw - 3rem);
 }
 
 .version-detail-dialog {
@@ -15,27 +13,6 @@
     overflow-y: auto;
     padding-top: $spacing-4;
     padding-right: $spacing-3;
-
-    /* Custom internal scrollbar */
-    scrollbar-width: thin;
-    scrollbar-color: $color-slate-300 transparent;
-
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background-color: $color-slate-300;
-      border-radius: $radius-full;
-
-      &:hover {
-        background-color: $color-slate-400;
-      }
-    }
   }
 
   &__group {
@@ -53,8 +30,6 @@
     margin: 0 0 $spacing-2;
     padding-bottom: $spacing-1;
     border-bottom: 1px solid $color-border-soft;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
   }
 
   &__item-list {

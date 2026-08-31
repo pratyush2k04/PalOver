@@ -1,81 +1,48 @@
 @use 'styles/tokens' as *;
 
-.dialog-container {
-  background: $color-surface;
-  border-radius: $radius-2xl;
-  width: 100%;
-  max-width: 27.5rem;
-  overflow: hidden;
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: $spacing-5 $spacing-6 $spacing-3;
-
-  .modal-title {
-    margin: 0;
-    font-size: $font-size-lg;
-    font-weight: $font-weight-semibold;
-    color: $color-slate-900;
-  }
-}
-
-.modal-body {
-  padding: $spacing-3 $spacing-6 $spacing-5;
+:host {
+  display: block;
+  width: 28rem;
+  max-width: calc(100vw - 3rem);
 }
 
 .form-group {
-  margin-bottom: $spacing-4;
-
   label {
     display: block;
-    font-size: 0.8125rem;
+    font-size: $font-size-xs;
     font-weight: $font-weight-medium;
-    color: $color-slate-600;
-    margin-bottom: 0.375rem;
+    color: $color-text-faint;
+    margin-bottom: $spacing-1;
   }
 
   .file-input {
     width: 100%;
     padding: 0.55rem 0.75rem;
-    font-size: 0.8125rem;
-    color: $color-slate-800;
+    font-size: $font-size-sm;
+    color: $color-text;
     background-color: $color-surface;
-    border: 1px solid $color-slate-300;
-    border-radius: $radius-lg;
+    border: 1px solid $color-border-input;
+    border-radius: $radius-md;
     box-sizing: border-box;
     cursor: pointer;
     transition: border-color $transition-fast, box-shadow $transition-fast;
 
     &:focus {
       outline: none;
-      border-color: $color-accent-amber;
-      box-shadow: 0 0 0 3px rgba($color-accent-amber, 0.15);
+      border-color: $color-primary;
+      box-shadow: 0 0 0 2px $color-primary-focus-ring;
     }
   }
 }
 
 .format-note {
-  margin-top: $spacing-4;
-  margin-bottom: 0;
+  margin: 0;
   font-size: $font-size-xs;
   line-height: 1.4;
-  color: $color-slate-500;
+  color: $color-text-muted;
 }
 
-.modal-footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: $spacing-3;
-  padding: 0.875rem $spacing-6 $spacing-5;
-}
-
-// Multi-file selection list
 .selected-files-list {
-  margin: -0.25rem 0 $spacing-3;
   background-color: $color-slate-50;
   border: 1px solid $color-slate-200;
   border-radius: $radius-lg;
@@ -83,7 +50,7 @@
 
   .selected-files-label {
     margin: 0 0 0.375rem;
-    font-size: 0.8rem;
+    font-size: $font-size-xs;
     font-weight: 600;
     color: $color-slate-500;
   }
@@ -94,7 +61,7 @@
     list-style: disc;
 
     li {
-      font-size: 0.8rem;
+      font-size: $font-size-xs;
       color: $color-slate-700;
       padding: 0.1rem 0;
       word-break: break-all;

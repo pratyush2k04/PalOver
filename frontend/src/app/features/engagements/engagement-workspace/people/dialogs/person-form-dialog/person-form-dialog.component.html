@@ -1,35 +1,28 @@
-<div class="dialog-container">
-  <div class="dialog-header">
-    <h3>{{ isEditing ? 'Edit Person' : 'Add Person' }}</h3>
+<h2 class="app-dialog__title">{{ isEditing ? 'Edit Person' : 'Add Person' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
+    <app-input
+      id="personName"
+      label="Name"
+      [required]="true"
+      placeholder="e.g. John Doe"
+      formControlName="name"
+    />
+
+    <app-input
+      id="personRole"
+      label="Role"
+      [required]="true"
+      placeholder="e.g. Tech Lead / Sponsor"
+      formControlName="role"
+    />
   </div>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <div class="dialog-body">
-      <div class="form-group">
-        <app-input
-          id="personName"
-          label="Name *"
-          placeholder="e.g. John Doe"
-          formControlName="name"
-        />
-      </div>
-
-      <div class="form-group">
-        <app-input
-          id="personRole"
-          label="Role *"
-          placeholder="e.g. Tech Lead / Sponsor"
-          formControlName="role"
-        />
-      </div>
-
-    </div>
-
-    <div class="dialog-footer">
-      <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
-      <app-button type="submit" variant="flat">
-        {{ isEditing ? 'Update' : 'Add' }}
-      </app-button>
-    </div>
-  </form>
-</div>
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+    <app-button type="submit" variant="flat">
+      {{ isEditing ? 'Update' : 'Add' }}
+    </app-button>
+  </div>
+</form>

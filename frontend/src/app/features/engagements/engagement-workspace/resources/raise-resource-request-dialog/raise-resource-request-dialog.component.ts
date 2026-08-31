@@ -28,20 +28,11 @@ import {
   StandardRoleEnum,
 } from '../../../models/resource-request.model';
 import { ResourceRequestService } from '../../../services/resource-request.service';
+import { futureDateValidator } from '@common/validators/date.validators';
 
 export interface RaiseResourceRequestDialogData {
   engagementId: number;
   billingStartDate?: string | null;
-}
-
-function notPastDateValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    if (!control.value) {
-      return null;
-    }
-    const todayStr = new Date().toISOString().split('T')[0];
-    return control.value < todayStr ? { pastDate: true } : null;
-  };
 }
 
 function notAfterBillingDateValidator(billingStartDate: string | null | undefined): ValidatorFn {
@@ -76,6 +67,7 @@ export class RaiseResourceRequestDialogComponent {
   private toastService = inject(ToastService);
   readonly data = inject<RaiseResourceRequestDialogData>(DIALOG_DATA);
 
+  readonly minDate = new Date().toISOString().split('T')[0];
   readonly constants = RESOURCE_REQUEST_CONSTANTS;
   readonly roleOptions: SelectOption[] = [...STANDARD_ROLE_OPTIONS];
   readonly skillOptions: SelectOption[] = [...SKILL_OPTIONS];
@@ -87,7 +79,7 @@ export class RaiseResourceRequestDialogComponent {
       '',
       [
         Validators.required,
-        notPastDateValidator(),
+        futureDateValidator,
         notAfterBillingDateValidator(this.data.billingStartDate),
       ],
     ],

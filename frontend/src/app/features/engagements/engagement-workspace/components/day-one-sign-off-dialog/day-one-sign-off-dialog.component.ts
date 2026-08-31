@@ -9,6 +9,7 @@ import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { EngagementService } from '@features/engagements/services/engagement.service';
 import { ToastService } from '@common/services/toast/toast';
+import { futureDateValidator } from '@common/validators/date.validators';
 
 @Component({
   selector: 'app-day-one-sign-off-dialog',
@@ -29,11 +30,12 @@ export class DayOneSignOffDialogComponent {
   private engagementService = inject(EngagementService);
   private toastService = inject(ToastService);
 
+  readonly minDate = new Date().toISOString().split('T')[0];
   readonly isBusy = signal<boolean>(false);
   readonly isException = computed(() => !this.data.isAbleToStartDayOne);
 
   readonly form: FormGroup = this.fb.group({
-    billingStartDate: [this.data.initialBillingStartDate || '', Validators.required],
+    billingStartDate: [this.data.initialBillingStartDate || '', [Validators.required, futureDateValidator]],
     exceptionJustification: ['']
   });
 
