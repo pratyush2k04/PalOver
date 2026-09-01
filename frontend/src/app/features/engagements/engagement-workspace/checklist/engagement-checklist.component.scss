@@ -314,6 +314,10 @@
     text-align: left;
     background: $color-surface;
     white-space: nowrap;
+
+    &:not(.col-item) {
+      text-align: center;
+    }
   }
 
   tbody tr {
@@ -394,12 +398,14 @@
 .cell-reason,
 .cell-actions {
   font-size: $font-size-sm;
+  text-align: center;
 }
 
 .cell-evidence {
   .evidence-required-wrapper {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: $spacing-2;
   }
 
@@ -518,7 +524,7 @@
 .actions-group {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   gap: $spacing-2;
 
   .action-icon {
