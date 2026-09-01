@@ -22,7 +22,7 @@
 
   app-page-header {
     display: block;
-    margin-bottom: $spacing-4;
+    margin-bottom: $spacing-2;
 
     ::ng-deep .page-header {
       margin-bottom: 0;
@@ -33,7 +33,7 @@
   .controls-row {
     display: flex;
     align-items: center;
-    gap: $spacing-4;
+    gap: $spacing-3;
     flex-wrap: wrap;
     margin-bottom: $spacing-4;
 
@@ -46,6 +46,8 @@
     .search-box {
       position: relative;
       width: 17.5rem;
+      display: flex;
+      align-items: center;
 
       @media (max-width: 768px) {
         width: 100%;
@@ -69,24 +71,41 @@
         }
       }
 
+      app-input {
+        width: 100%;
+      }
+
       ::ng-deep .app-field {
         margin-bottom: 0;
 
         input {
           padding-left: 2.5rem;
+          height: 2.375rem;
+          box-sizing: border-box;
         }
       }
     }
 
     .role-filter-box {
       width: 11.25rem;
+      display: flex;
+      align-items: center;
 
       @media (max-width: 768px) {
         width: 100%;
       }
 
+      app-select {
+        width: 100%;
+      }
+
       ::ng-deep .app-field {
         margin-bottom: 0;
+
+        select {
+          height: 2.375rem;
+          box-sizing: border-box;
+        }
       }
     }
   }
