@@ -1,5 +1,7 @@
 import { Component, inject, computed } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, NavigationEnd } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs';
 import { AppContextService } from '@shared/services/app-context';
 import { AuthService } from '@shared/services/auth';
 import { APP_ROUTES, USER_ROLES, MASTER_CHECKLIST_ROUTES } from '@shared/constants/app.constants';
@@ -17,7 +19,7 @@ export interface NavItem {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, InlineSVGModule],
+  imports: [RouterLink, InlineSVGModule],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss'
 })
@@ -29,6 +31,14 @@ export class SidebarComponent {
 
   readonly user = this.appContext.user;
   readonly workspace = this.appContext.workspace;
+
+  readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      map(() => this.router.url)
+    ),
+    { initialValue: this.router.url }
+  );
 
   readonly navItems = computed<NavItem[]>(() => {
     const currentUser = this.user();
@@ -85,4 +95,31 @@ export class SidebarComponent {
 
     return items;
   });
+
+  isItemActive(item: NavItem): boolean {
+    if (!item.route) return false;
+
+    const url = this.currentUrl() ?? '';
+    const cleanUrl = url.split('?')[0].split('#')[0];
+    const itemRoute = item.route.split('?')[0].split('#')[0];
+
+    // Special case for Engagements / My Engagements queue link:
+    // When inside an engagement workspace (/engagements/*), highlight the engagements queue nav item
+    if (item.label !== 'Home' && (itemRoute === APP_ROUTES.MY_ENGAGEMENTS || itemRoute === APP_ROUTES.ENGAGEMENTS)) {
+      if (cleanUrl.startsWith(APP_ROUTES.MY_ENGAGEMENTS) || cleanUrl.startsWith(APP_ROUTES.ENGAGEMENTS)) {
+        return true;
+      }
+    }
+
+    if (cleanUrl === itemRoute) {
+      return true;
+    }
+
+    if (itemRoute !== '/' && cleanUrl.startsWith(itemRoute + '/')) {
+      return true;
+    }
+
+    return false;
+  }
 }
+
