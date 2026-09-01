@@ -101,6 +101,8 @@ public class ResourceRequestService(
             throw new ResourceAllocationCountMismatchException();
         }
 
+        var gapBefore = await GetResourcingGapAsync(engagementId);
+
         var activeAllocations = request.Allocations
             .Where(a => a.RemovedAt == null)
             .OrderBy(a => a.Id)
@@ -115,52 +117,32 @@ public class ResourceRequestService(
                 var existing = activeAllocations[position];
                 if (existing.ConfirmedDate == null)
                 {
-                    existing.Name = name;
+                    if (name.Length > 0)
+                    {
+                        existing.Name = name;
+                    }
+                    else
+                    {
+                        request.Allocations.Remove(existing);
+                    }
                 }
                 // Confirmed positions are server-authoritative: the submitted name is ignored.
             }
-            else
+            else if (name.Length > 0)
             {
                 request.Allocations.Add(new ResourceAllocation { Name = name });
             }
         }
 
-        if (request.Status == ResourceRequestStatus.Raised)
+        var updatedActiveAllocations = request.Allocations.Where(a => a.RemovedAt == null).ToList();
+        if (updatedActiveAllocations.Count == request.PeopleNeeded)
         {
-            request.Status = ResourceRequestStatus.Allocated;
-            await NotifyPmOfAllocationAsync(request);
-        }
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            foreach (var allocation in updatedActiveAllocations.Where(a => a.ConfirmedDate == null))
+            {
+                allocation.ConfirmedDate = today;
+            }
 
-        await resourceRequestRepository.SaveChangesAsync();
-        return MapToDto(request);
-    }
-
-    public async Task<ResourceRequestDto> ConfirmAllocationAsync(int engagementId, int id, int allocationId, ConfirmAllocationDto dto)
-    {
-        var request = await GetOwnedRequestAsync(engagementId, id);
-
-        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
-
-        await EnsureLeadershipOrAdminAsync(engagementId);
-
-        var allocation = request.Allocations.FirstOrDefault(a => a.Id == allocationId && a.RemovedAt == null)
-            ?? throw new ResourceAllocationNotFoundException(allocationId);
-
-        if (allocation.ConfirmedDate != null)
-        {
-            throw new ResourceAllocationAlreadyConfirmedException();
-        }
-
-        var gapBefore = await GetResourcingGapAsync(engagementId);
-
-        allocation.ConfirmedDate = dto.ConfirmedDate;
-
-        var activeAllocations = request.Allocations.Where(a => a.RemovedAt == null).ToList();
-        var allConfirmed = activeAllocations.Count == request.PeopleNeeded
-            && activeAllocations.All(a => a.ConfirmedDate != null);
-
-        if (allConfirmed)
-        {
             request.Status = ResourceRequestStatus.Confirmed;
             await NotifyPmOfConfirmationAsync(request);
         }
@@ -196,7 +178,7 @@ public class ResourceRequestService(
 
         if (request.Status == ResourceRequestStatus.Confirmed)
         {
-            request.Status = ResourceRequestStatus.Allocated;
+            request.Status = ResourceRequestStatus.Raised;
             await NotifyPmOfReopeningAsync(request);
         }
 
@@ -233,18 +215,6 @@ public class ResourceRequestService(
         {
             throw new ResourceAllocationAccessDeniedException();
         }
-    }
-
-    private async Task NotifyPmOfAllocationAsync(ResourceRequest request)
-    {
-        var data = JsonSerializer.Serialize(
-            new ResourceRequestAllocatedMapper.ResourceRequestAllocatedData(request.Id, request.EngagementId));
-
-        await notificationService.CreateFromTemplateAsync(
-            "ResourceRequestAllocated",
-            request.RequestedById,
-            data,
-            DateTime.UtcNow);
     }
 
     private async Task NotifyPmOfConfirmationAsync(ResourceRequest request)
