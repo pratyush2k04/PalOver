@@ -86,7 +86,10 @@
           color: $color-slate-600;
           text-transform: uppercase;
           letter-spacing: 0.05em;
-          white-space: nowrap;
+          &.status-th,
+          &.actions-th {
+            text-align: center;
+          }
         }
       }
 
@@ -136,17 +139,27 @@
           }
 
           .status-cell {
+            text-align: center;
             white-space: nowrap;
+
+            app-status-badge {
+              ::ng-deep .status-badge {
+                min-width: 8.25rem;
+                justify-content: center;
+                box-sizing: border-box;
+              }
+            }
           }
 
           .actions-cell {
             white-space: nowrap;
             width: 100px;
-            text-align: right;
+            text-align: center;
 
             .action-btn-group {
               display: inline-flex;
               align-items: center;
+              justify-content: center;
               gap: 0.35rem;
             }
           }
