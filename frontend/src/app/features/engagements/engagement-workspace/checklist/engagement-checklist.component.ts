@@ -86,8 +86,8 @@ export class EngagementChecklistComponent {
 
   // Role permissions & sign-off state
   readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
-  isProjectManager = computed(() => this.authService.hasRole('Project Management') || this.authService.isAdmin());
-  isLeadership = computed(() => this.authService.hasRole('Leadership') || this.authService.isAdmin());
+  isProjectManager = computed(() => this.authService.hasRole('Project Management'));
+  isLeadership = computed(() => this.authService.hasRole('Leadership'));
   isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
   isTechLead = computed(() => this.authService.hasRole('Tech Lead'));
 
