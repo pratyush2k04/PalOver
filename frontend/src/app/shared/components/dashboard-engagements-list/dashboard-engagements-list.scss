@@ -44,12 +44,13 @@
 }
 
 .list-content {
-  padding: 0 $spacing-4 $spacing-4;
+  padding: $spacing-2 $spacing-4 $spacing-6;
 }
 
 .engagements-list {
   display: flex;
   flex-direction: column;
+  padding: $spacing-1 0;
 }
 
 .engagement-item {
