@@ -129,6 +129,19 @@
         }
       }
 
+      th.status-th,
+      .status-cell {
+        text-align: center;
+
+        app-status-badge {
+          ::ng-deep .status-badge {
+            min-width: 8.25rem;
+            justify-content: center;
+            box-sizing: border-box;
+          }
+        }
+      }
+
       .actions-cell {
         text-align: right;
         width: 80px;

@@ -92,6 +92,27 @@
         }
       }
 
+      th.status-th,
+      .status-cell {
+        text-align: center;
+
+        .cell-content {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+        }
+
+        app-status-badge {
+          ::ng-deep .status-badge {
+            min-width: 8.25rem;
+            justify-content: center;
+            box-sizing: border-box;
+          }
+        }
+      }
+
       .btn-action {
         ::ng-deep .btn {
           color: $color-gray-500;

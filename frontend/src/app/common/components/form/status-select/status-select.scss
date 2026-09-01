@@ -13,8 +13,10 @@
 .status-select-trigger {
   display: inline-flex;
   align-items: center;
+  justify-content: space-between;
+  min-width: 8.25rem;
   gap: $spacing-1;
-  padding: 0.2rem 0.5rem 0.2rem 0.625rem;
+  padding: 0.25rem 0.5rem 0.25rem 0.75rem;
   border-radius: $radius-full;
   font-family: inherit;
   font-size: $font-size-xs;
@@ -24,6 +26,7 @@
   outline: none;
   cursor: pointer;
   user-select: none;
+  box-sizing: border-box;
   transition: opacity $transition-fast, box-shadow $transition-fast, transform $transition-fast;
 
   &:hover:not(:disabled) {
@@ -67,6 +70,8 @@
   }
 
   &__text {
+    flex: 1;
+    text-align: center;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -78,6 +83,7 @@
     justify-content: center;
     opacity: 0.75;
     flex-shrink: 0;
+    margin-left: 0.25rem;
     transition: transform $transition-base, opacity $transition-fast;
 
     ::ng-deep svg,
@@ -96,7 +102,7 @@
 .status-select-dropdown {
   z-index: 1050;
   margin: 0;
-  min-width: 100%;
+  min-width: 9.5rem;
   width: max-content;
   max-width: 16rem;
   background-color: $color-surface;
