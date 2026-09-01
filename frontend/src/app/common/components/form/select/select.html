@@ -35,13 +35,13 @@
         @for (option of options(); track option.value; let i = $index) {
           <div
             class="select-option"
-            [class.is-selected]="selectedIndex === i"
+            [class.is-selected]="selectedIndex() === i"
             role="option"
-            [attr.aria-selected]="selectedIndex === i"
+            [attr.aria-selected]="selectedIndex() === i"
             (click)="selectOption(i)"
           >
             <span class="select-option__label">{{ option.label }}</span>
-            @if (selectedIndex === i) {
+            @if (selectedIndex() === i) {
               <span class="select-option__check" [inlineSVG]="'assets/icons/check.svg'"></span>
             }
           </div>

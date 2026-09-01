@@ -10,6 +10,11 @@
   gap: $spacing-1;
   margin-bottom: $spacing-3;
 
+  &:last-child,
+  &:only-child {
+    margin-bottom: 0;
+  }
+
   label {
     font-size: $font-size-xs;
     font-weight: $font-weight-medium;
@@ -108,14 +113,17 @@
   position: absolute;
   top: calc(100% + 0.375rem);
   left: 0;
-  right: 0;
+  z-index: 1050;
+  margin: 0;
+  min-width: 100%;
+  width: max-content;
+  max-width: 90vw;
   background-color: $color-surface;
   border: 1px solid $color-border-soft;
   border-radius: $radius-lg;
   box-shadow: 0 10px 25px -5px rgba($color-black, 0.12), 0 8px 10px -6px rgba($color-black, 0.05);
-  max-height: 15rem;
+  max-height: 16rem;
   overflow-y: auto;
-  z-index: 1000;
   padding: 0.375rem;
   box-sizing: border-box;
   animation: select-dropdown-fade 0.15s cubic-bezier(0.16, 1, 0.3, 1);
@@ -142,7 +150,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: $spacing-2;
+  gap: $spacing-5;
   padding: 0.5rem 0.75rem;
   font-size: $font-size-sm;
   color: $color-slate-700;

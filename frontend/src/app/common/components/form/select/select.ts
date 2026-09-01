@@ -34,12 +34,13 @@ export class SelectComponent extends BaseControlComponent<unknown> {
 
   readonly isOpen = signal<boolean>(false);
   value: unknown = null;
-  selectedIndex: number | null = null;
+  readonly selectedIndex = signal<number | null>(null);
 
   readonly selectedOption = computed(() => {
     const opts = this.options();
-    if (this.selectedIndex !== null && opts && opts[this.selectedIndex]) {
-      return opts[this.selectedIndex];
+    const idx = this.selectedIndex();
+    if (idx !== null && opts && opts[idx]) {
+      return opts[idx];
     }
     return null;
   });
@@ -61,8 +62,9 @@ export class SelectComponent extends BaseControlComponent<unknown> {
     effect(() => {
       // Re-sync selectedIndex whenever options() changes
       this.options();
+      // Use untracked to prevent circular effect loops when modifying signals
       this.syncSelectedIndex();
-    });
+    }, { allowSignalWrites: true });
   }
 
   @HostListener('document:click', ['$event'])
@@ -89,7 +91,7 @@ export class SelectComponent extends BaseControlComponent<unknown> {
   private syncSelectedIndex(): void {
     const opts = this.options();
     if (!opts || opts.length === 0) {
-      this.selectedIndex = null;
+      this.selectedIndex.set(null);
       return;
     }
 
@@ -99,14 +101,14 @@ export class SelectComponent extends BaseControlComponent<unknown> {
       (option.value != null && val != null && String(option.value) === String(val))
     );
 
-    this.selectedIndex = idx >= 0 ? idx : null;
+    this.selectedIndex.set(idx >= 0 ? idx : null);
   }
 
   toggleDropdown(): void {
     if (this.disabled()) {
       return;
     }
-    this.isOpen.update(open => !open);
+    this.isOpen.update((open) => !open);
     if (!this.isOpen()) {
       this.markTouched();
     }
@@ -116,7 +118,7 @@ export class SelectComponent extends BaseControlComponent<unknown> {
     if (this.disabled()) {
       return;
     }
-    this.selectedIndex = index;
+    this.selectedIndex.set(index);
     const option = this.options()[index];
     this.value = option ? option.value : null;
     this.onChange(this.value);
