@@ -25,47 +25,45 @@
         </button>
       </div>
 
-      <div class="readiness-metrics">
-        <div class="metric-item">
-          <span class="metric-label">Access Tracker:</span>
-          <span class="metric-value">{{ accessGrantedCount() }}/{{ accessTotalCount() }}</span>
-        </div>
+      <ul class="readiness-bullets">
+        <li class="bullet-item">
+          <span class="bullet-label">Access Tracker:</span>
+          <span class="bullet-value">
+            {{ accessGrantedCount() }}/{{ accessTotalCount() }} granted@if (accessInProgressCount() > 0) {, {{ accessInProgressCount() }} in progress}
+          </span>
+          @if (accessBlockedCount() > 0) {
+            <span class="bullet-danger">({{ accessBlockedCount() }} blocked)</span>
+          }
+        </li>
 
-        @if (accessBlockedCount() > 0) {
-          <div class="metric-item metric-danger">
-            <span class="metric-label">Blocked access items:</span>
-            <span class="metric-value">{{ accessBlockedCount() }}</span>
-          </div>
-        }
-
-        <div class="metric-item">
-          <span class="metric-label">Tooling:</span>
-          <span class="metric-value">{{ toolingReadyCount() }}/{{ toolingTotalCount() }}</span>
-        </div>
+        <li class="bullet-item">
+          <span class="bullet-label">Environment & Tooling:</span>
+          <span class="bullet-value">{{ toolingReadyCount() }}/{{ toolingTotalCount() }} ready</span>
+        </li>
 
         @if (dependencySpikesTotalCount() > 0) {
-          <div class="metric-item">
-            <span class="metric-label">Dependency Spikes:</span>
-            <span class="metric-value">
+          <li class="bullet-item">
+            <span class="bullet-label">Dependency Spikes:</span>
+            <span class="bullet-value">
               {{ dependencySpikesPassedCount() }}/{{ dependencySpikesTotalCount() }} passed@if (dependencySpikesInProgressCount() > 0) {, {{ dependencySpikesInProgressCount() }} in progress}
             </span>
-          </div>
+            @if (dependencySpikesFailedCount() > 0) {
+              <span class="bullet-danger">({{ dependencySpikesFailedCount() }} failed)</span>
+            }
+          </li>
         }
 
-        @if (dependencySpikesFailedCount() > 0) {
-          <div class="metric-item metric-danger">
-            <span class="metric-label">Failed spikes:</span>
-            <span class="metric-value">{{ dependencySpikesFailedCount() }}</span>
-          </div>
+        @if (isBrownfield()) {
+          <li class="bullet-item">
+            <span class="bullet-label">Code Review & Architecture Analysis:</span>
+            @if (brownfieldHighPriorityCount() > 0) {
+              <span class="bullet-danger">{{ brownfieldHighPriorityCount() }} high priority findings pending decision</span>
+            } @else {
+              <span class="bullet-value">All findings resolved</span>
+            }
+          </li>
         }
-
-        @if (isBrownfield() && brownfieldHighPriorityCount() > 0) {
-          <div class="metric-item metric-danger">
-            <span class="metric-label">High priority review items:</span>
-            <span class="metric-value">{{ brownfieldHighPriorityCount() }}</span>
-          </div>
-        }
-      </div>
+      </ul>
     </div>
   }
 

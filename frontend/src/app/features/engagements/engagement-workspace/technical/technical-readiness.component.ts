@@ -95,6 +95,9 @@ export class TechnicalReadinessComponent {
   accessGrantedCount = computed(() =>
     this.accessItems().filter(i => this.isGranted(i.status)).length
   );
+  accessInProgressCount = computed(() =>
+    this.accessItems().filter(i => this.isInProgress(i.status)).length
+  );
   accessBlockedCount = computed(() =>
     this.accessItems().filter(i => this.isBlocked(i.status)).length
   );
