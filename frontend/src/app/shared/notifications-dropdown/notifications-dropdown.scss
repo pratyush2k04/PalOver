@@ -63,6 +63,16 @@
   box-shadow: 0 10px 30px rgba($color-slate-900, 0.12);
   z-index: 50;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    position: fixed;
+    top: 4.5rem;
+    right: 1rem;
+    left: 1rem;
+    width: auto;
+    max-height: calc(100vh - 6rem);
+    box-shadow: 0 16px 40px rgba($color-slate-900, 0.2);
+  }
 }
 
 .dropdown-header {
