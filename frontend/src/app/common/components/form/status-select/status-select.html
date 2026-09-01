@@ -24,15 +24,20 @@
   </button>
 
   @if (isOpen()) {
-    <div class="status-select-dropdown" role="listbox" [attr.aria-labelledby]="id()">
+    <div class="status-select-dropdown" 
+         role="listbox" 
+         [attr.aria-labelledby]="id()"
+         [style.position]="'fixed'"
+         [style.top.px]="dropdownTop"
+         [style.left.px]="dropdownLeft"
+         [style.min-width.px]="dropdownMinWidth">
       @for (option of options(); track option.value; let i = $index) {
-        <div
-          class="status-select-option"
-          [class.is-selected]="selectedIndex() === i"
-          role="option"
-          [attr.aria-selected]="selectedIndex() === i"
-          (click)="selectOption(i)"
-        >
+        <button type="button" 
+                class="status-select-option" 
+                [class.is-selected]="selectedIndex() === i"
+                role="option"
+                [attr.aria-selected]="selectedIndex() === i"
+                (click)="selectOption(i)">
           <span
             class="status-option-badge"
             [class.status-option-badge--info]="option.tone === 'info'"
@@ -46,7 +51,7 @@
           @if (selectedIndex() === i) {
             <span class="status-select-option__check" [inlineSVG]="'assets/icons/check.svg'"></span>
           }
-        </div>
+        </button>
       }
     </div>
   }

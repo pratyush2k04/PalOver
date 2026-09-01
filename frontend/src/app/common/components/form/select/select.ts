@@ -6,7 +6,8 @@ import {
   effect,
   inject,
   input,
-  signal
+  signal,
+  OnDestroy
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InlineSVGModule } from 'ng-inline-svg-2';
@@ -24,7 +25,7 @@ export interface SelectOption {
   templateUrl: './select.html',
   styleUrl: './select.scss'
 })
-export class SelectComponent extends BaseControlComponent<unknown> {
+export class SelectComponent extends BaseControlComponent<unknown> implements OnDestroy {
   private readonly elementRef = inject(ElementRef);
 
   readonly id = input.required<string>();
@@ -35,6 +36,17 @@ export class SelectComponent extends BaseControlComponent<unknown> {
   readonly isOpen = signal<boolean>(false);
   value: unknown = null;
   readonly selectedIndex = signal<number | null>(null);
+
+  dropdownTop = 0;
+  dropdownLeft = 0;
+  dropdownMinWidth = 0;
+
+  private onScrollFn = () => {
+    if (this.isOpen()) {
+      this.isOpen.set(false);
+      this.markTouched();
+    }
+  };
 
   readonly selectedOption = computed(() => {
     const opts = this.options();
@@ -67,11 +79,16 @@ export class SelectComponent extends BaseControlComponent<unknown> {
     }, { allowSignalWrites: true });
   }
 
+  ngOnDestroy(): void {
+    window.removeEventListener('scroll', this.onScrollFn, true);
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     if (this.isOpen() && !this.elementRef.nativeElement.contains(event.target)) {
       this.isOpen.set(false);
       this.markTouched();
+      window.removeEventListener('scroll', this.onScrollFn, true);
     }
   }
 
@@ -80,6 +97,7 @@ export class SelectComponent extends BaseControlComponent<unknown> {
     if (this.isOpen()) {
       this.isOpen.set(false);
       this.markTouched();
+      window.removeEventListener('scroll', this.onScrollFn, true);
     }
   }
 
@@ -108,9 +126,25 @@ export class SelectComponent extends BaseControlComponent<unknown> {
     if (this.disabled()) {
       return;
     }
-    this.isOpen.update((open) => !open);
-    if (!this.isOpen()) {
+    
+    if (this.isOpen()) {
+      this.isOpen.set(false);
+      window.removeEventListener('scroll', this.onScrollFn, true);
       this.markTouched();
+    } else {
+      this.isOpen.set(true);
+      this.updatePosition();
+      window.addEventListener('scroll', this.onScrollFn, true);
+    }
+  }
+
+  private updatePosition(): void {
+    const trigger = this.elementRef.nativeElement.querySelector('.select-trigger');
+    if (trigger) {
+      const rect = trigger.getBoundingClientRect();
+      this.dropdownTop = rect.bottom + 4;
+      this.dropdownLeft = rect.left;
+      this.dropdownMinWidth = rect.width;
     }
   }
 

@@ -6,7 +6,8 @@ import {
   effect,
   inject,
   input,
-  signal
+  signal,
+  OnDestroy
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InlineSVGModule } from 'ng-inline-svg-2';
@@ -26,7 +27,7 @@ export interface StatusSelectOption {
   templateUrl: './status-select.html',
   styleUrl: './status-select.scss'
 })
-export class StatusSelectComponent extends BaseControlComponent<unknown> {
+export class StatusSelectComponent extends BaseControlComponent<unknown> implements OnDestroy {
   private readonly elementRef = inject(ElementRef);
 
   readonly options = input.required<StatusSelectOption[]>();
@@ -36,6 +37,17 @@ export class StatusSelectComponent extends BaseControlComponent<unknown> {
   readonly isOpen = signal<boolean>(false);
   value: unknown = null;
   readonly selectedIndex = signal<number | null>(null);
+  
+  dropdownTop = 0;
+  dropdownLeft = 0;
+  dropdownMinWidth = 0;
+
+  private onScrollFn = () => {
+    if (this.isOpen()) {
+      this.isOpen.set(false);
+      this.markTouched();
+    }
+  };
 
   readonly selectedOption = computed(() => {
     const opts = this.options();
@@ -66,11 +78,16 @@ export class StatusSelectComponent extends BaseControlComponent<unknown> {
     }, { allowSignalWrites: true });
   }
 
+  ngOnDestroy(): void {
+    window.removeEventListener('scroll', this.onScrollFn, true);
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     if (this.isOpen() && !this.elementRef.nativeElement.contains(event.target)) {
       this.isOpen.set(false);
       this.markTouched();
+      window.removeEventListener('scroll', this.onScrollFn, true);
     }
   }
 
@@ -79,6 +96,7 @@ export class StatusSelectComponent extends BaseControlComponent<unknown> {
     if (this.isOpen()) {
       this.isOpen.set(false);
       this.markTouched();
+      window.removeEventListener('scroll', this.onScrollFn, true);
     }
   }
 
@@ -107,9 +125,25 @@ export class StatusSelectComponent extends BaseControlComponent<unknown> {
     if (this.disabled()) {
       return;
     }
-    this.isOpen.update((open) => !open);
-    if (!this.isOpen()) {
+    
+    if (this.isOpen()) {
+      this.isOpen.set(false);
+      window.removeEventListener('scroll', this.onScrollFn, true);
       this.markTouched();
+    } else {
+      this.isOpen.set(true);
+      this.updatePosition();
+      window.addEventListener('scroll', this.onScrollFn, true);
+    }
+  }
+
+  private updatePosition(): void {
+    const trigger = this.elementRef.nativeElement.querySelector('.status-select-trigger');
+    if (trigger) {
+      const rect = trigger.getBoundingClientRect();
+      this.dropdownTop = rect.bottom + 6;
+      this.dropdownLeft = rect.left;
+      this.dropdownMinWidth = rect.width;
     }
   }
 
