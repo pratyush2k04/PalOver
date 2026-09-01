@@ -183,6 +183,15 @@
 
   .col-status {
     width: 20%;
+    text-align: center;
+
+    app-status-badge {
+      ::ng-deep .status-badge {
+        min-width: 8.25rem;
+        justify-content: center;
+        box-sizing: border-box;
+      }
+    }
   }
 
   .col-actions {
@@ -191,37 +200,7 @@
   }
 }
 
-.status-select {
-  padding: $spacing-1 $spacing-3;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
-  border-radius: $radius-full;
-  border: 1px solid transparent;
-  outline: none;
-  cursor: pointer;
 
-  &:focus {
-    box-shadow: 0 0 0 2px $color-primary-focus-ring;
-  }
-
-  &.inprogress {
-    color: $color-warning-dark;
-    border-color: $color-warning-border;
-    background-color: $color-amber-50;
-  }
-
-  &.granted {
-    color: $color-success-text;
-    border-color: $color-success-border-alt;
-    background-color: $color-success-bg-alt;
-  }
-
-  &.blocked {
-    color: $color-danger-text;
-    border-color: $color-danger-border;
-    background-color: $color-danger-bg;
-  }
-}
 
 .delete-btn {
   background: transparent;
