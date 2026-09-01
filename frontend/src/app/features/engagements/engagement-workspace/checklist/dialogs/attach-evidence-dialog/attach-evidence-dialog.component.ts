@@ -71,10 +71,6 @@ export class AttachEvidenceDialogComponent {
     return this.form.get('link')!;
   }
 
-  get noteLength(): number {
-    return ((this.noteControl.value as string) || '').length;
-  }
-
   get dialogTitle(): string {
     if (this.isReadOnly) {
       return 'Evidence Details';

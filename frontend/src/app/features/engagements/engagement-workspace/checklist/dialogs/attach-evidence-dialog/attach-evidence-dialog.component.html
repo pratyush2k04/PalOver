@@ -20,9 +20,6 @@
           maxlength: 'Evidence note cannot exceed 500 characters.'
         }"
       />
-      <div class="char-counter" [class.limit-reached]="noteLength >= 500">
-        {{ noteLength }} / 500
-      </div>
     </div>
 
     <app-input
