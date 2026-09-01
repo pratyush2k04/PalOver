@@ -23,6 +23,13 @@
     color: $color-text;
   }
 
+  .header-subtitle {
+    font-weight: $font-weight-medium;
+    color: $color-primary;
+    font-size: $font-size-sm;
+    margin-left: $spacing-2;
+  }
+
   .view-all-link {
     font-size: $font-size-sm;
     color: $color-primary;

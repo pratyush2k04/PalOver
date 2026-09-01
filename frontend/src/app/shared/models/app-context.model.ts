@@ -16,7 +16,10 @@ export interface WorkspaceMetadata {
   welcomeMessage: string;
   emptyState: string;
   cards: DashboardCard[];
+  upcomingEngagements: DashboardEngagement[];
+  totalUpcomingEngagements: number;
   criticalBlockers: DashboardBlocker[];
+  totalCriticalBlockers: number;
 }
 
 export interface PagedResult<T> {

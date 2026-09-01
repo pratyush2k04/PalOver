@@ -18,6 +18,7 @@ export class DashboardCriticalBlockersComponent {
   private router = inject(Router);
 
   blockers = input.required<DashboardBlocker[]>();
+  totalCount = input.required<number>();
 
   onBlockerClick(blocker: DashboardBlocker): void {
     this.notificationService.getNotifications(undefined, 1, 50).subscribe({
