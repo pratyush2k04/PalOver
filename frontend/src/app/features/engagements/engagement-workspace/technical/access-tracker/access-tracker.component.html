@@ -69,18 +69,11 @@
               </td>
               <td class="status-cell">
                 @if (canManage()) {
-                  <select
-                    class="status-select"
-                    [ngClass]="getStatusBadgeClass(item.status)"
-                    (change)="onStatusChange(item, $event)">
-                    @for (opt of statusOptions; track opt.value) {
-                      <option
-                        [value]="opt.value"
-                        [selected]="opt.value === getStatusNumericValue(item.status)">
-                        {{ opt.label }}
-                      </option>
-                    }
-                  </select>
+                  <app-status-select
+                    [options]="statusOptions"
+                    [ngModel]="getStatusNumericValue(item.status)"
+                    (ngModelChange)="onStatusChange(item, $event)"
+                  />
                 } @else {
                   <app-status-badge [tone]="getStatusTone(item.status)">
                     {{ getStatusLabel(item.status) }}

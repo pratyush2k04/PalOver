@@ -1,0 +1,53 @@
+<div class="status-select-container" [class.is-open]="isOpen()">
+  <button
+    type="button"
+    [id]="id()"
+    class="status-select-trigger"
+    [class.status-select-trigger--info]="currentTone() === 'info'"
+    [class.status-select-trigger--neutral]="currentTone() === 'neutral'"
+    [class.status-select-trigger--success]="currentTone() === 'success'"
+    [class.status-select-trigger--danger]="currentTone() === 'danger'"
+    [class.status-select-trigger--warning]="currentTone() === 'warning'"
+    [class.is-open]="isOpen()"
+    [disabled]="disabled()"
+    [attr.aria-expanded]="isOpen()"
+    [attr.aria-haspopup]="'listbox'"
+    role="combobox"
+    (click)="toggleDropdown()"
+  >
+    <span class="status-select-trigger__text">{{ displayLabel() }}</span>
+    <span
+      class="status-select-trigger__chevron"
+      [class.is-open]="isOpen()"
+      [inlineSVG]="'assets/icons/chevron-down.svg'"
+    ></span>
+  </button>
+
+  @if (isOpen()) {
+    <div class="status-select-dropdown" role="listbox" [attr.aria-labelledby]="id()">
+      @for (option of options(); track option.value; let i = $index) {
+        <div
+          class="status-select-option"
+          [class.is-selected]="selectedIndex() === i"
+          role="option"
+          [attr.aria-selected]="selectedIndex() === i"
+          (click)="selectOption(i)"
+        >
+          <span
+            class="status-option-badge"
+            [class.status-option-badge--info]="option.tone === 'info'"
+            [class.status-option-badge--neutral]="option.tone === 'neutral'"
+            [class.status-option-badge--success]="option.tone === 'success'"
+            [class.status-option-badge--danger]="option.tone === 'danger'"
+            [class.status-option-badge--warning]="option.tone === 'warning'"
+          >
+            {{ option.label }}
+          </span>
+          @if (selectedIndex() === i) {
+            <span class="status-select-option__check" [inlineSVG]="'assets/icons/check.svg'"></span>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

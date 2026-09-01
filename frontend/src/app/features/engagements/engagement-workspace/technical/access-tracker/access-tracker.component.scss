@@ -185,30 +185,3 @@
   }
 }
 
-/* Badges (native <select> status coloring — read-only status uses app-status-badge instead) */
-.badge-inprogress {
-  background-color: $color-primary-subtle;
-  color: $color-primary-dark;
-}
-
-.badge-granted {
-  background-color: $color-success-light;
-  color: $color-success-text;
-}
-
-.badge-blocked {
-  background-color: $color-danger-light;
-  color: $color-danger-hover;
-}
-
-/* Editable Status Select */
-.status-select {
-  font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
-  border-radius: $radius-full;
-  padding: 0.25rem 0.6rem;
-  border: 1px solid transparent;
-  outline: none;
-  cursor: pointer;
-  appearance: auto;
-}

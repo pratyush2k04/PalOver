@@ -142,33 +142,11 @@
         }
       }
 
-      .actions-cell {
-        .status-select {
-          max-width: 150px;
-        }
-      }
-
       .empty-cell {
         text-align: center;
         color: $color-gray-400;
         padding: 2rem;
       }
     }
-  }
-}
-
-/* Editable Status Select */
-.status-select {
-  font-size: $font-size-sm;
-  font-weight: $font-weight-medium;
-  border-radius: $radius-md;
-  padding: 0.3rem 0.6rem;
-  border: 1px solid $color-gray-300;
-  outline: none;
-  cursor: pointer;
-  background-color: $color-surface;
-
-  &:focus {
-    border-color: $color-primary;
   }
 }

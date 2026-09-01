@@ -14,6 +14,7 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
 import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { ToastService } from '@common/services/toast/toast';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
+import { StatusSelectComponent, StatusSelectOption } from '@common/components/form/status-select/status-select';
 import { ButtonComponent } from '@common/components/button/button';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import {
@@ -35,6 +36,7 @@ import {
     FormsModule,
     InlineSVGModule,
     StatusBadgeComponent,
+    StatusSelectComponent,
     ButtonComponent
   ],
   templateUrl: './environment-tooling.component.html',
@@ -56,10 +58,10 @@ export class EnvironmentToolingComponent {
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
   canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
 
-  readonly statusOptions = [
-    { label: 'Ready', value: EnvironmentToolingStatus.Ready },
-    { label: 'In Progress', value: EnvironmentToolingStatus.NotReady },
-    { label: 'Not Applicable', value: EnvironmentToolingStatus.NotApplicable }
+  readonly statusOptions: StatusSelectOption[] = [
+    { label: 'Ready', value: EnvironmentToolingStatus.Ready, tone: 'success' },
+    { label: 'In Progress', value: EnvironmentToolingStatus.NotReady, tone: 'info' },
+    { label: 'Not Applicable', value: EnvironmentToolingStatus.NotApplicable, tone: 'neutral' }
   ];
 
   constructor() {
@@ -91,17 +93,15 @@ export class EnvironmentToolingComponent {
     });
   }
 
-  onStatusChange(item: EnvironmentToolingItemDto, event: Event) {
-    const select = event.target as HTMLSelectElement;
-    const newStatus = parseInt(select.value, 10) as EnvironmentToolingStatus;
+  onStatusChange(item: EnvironmentToolingItemDto, newStatus: unknown): void {
+    const statusVal = typeof newStatus === 'string' ? parseInt(newStatus, 10) : (newStatus as EnvironmentToolingStatus);
 
-    if (newStatus === EnvironmentToolingStatus.NotApplicable) {
-      select.value = item.status.toString();
+    if (statusVal === EnvironmentToolingStatus.NotApplicable) {
       this.openNaDialog(item);
       return;
     }
 
-    this.updateStatus(item, newStatus);
+    this.updateStatus(item, statusVal);
   }
 
   private openNaDialog(item: EnvironmentToolingItemDto): void {
@@ -111,12 +111,16 @@ export class EnvironmentToolingComponent {
     );
 
     dialogRef.closed$.subscribe((result) => {
-      if (!result) return;
+      if (!result) {
+        // Revert UI on dialog cancel
+        this.items.update((items) => items.map((i) => i.id === item.id ? { ...i } : i));
+        return;
+      }
       this.updateStatus(item, EnvironmentToolingStatus.NotApplicable, result.reason);
     });
   }
 
-  private updateStatus(item: EnvironmentToolingItemDto, newStatus: EnvironmentToolingStatus, naReason?: string) {
+  private updateStatus(item: EnvironmentToolingItemDto, newStatus: EnvironmentToolingStatus, naReason?: string): void {
     const payload = {
       status: newStatus,
       notApplicableReason: newStatus === EnvironmentToolingStatus.NotApplicable ? naReason : undefined
@@ -136,6 +140,8 @@ export class EnvironmentToolingComponent {
       error: (err) => {
         this.toastService.error(`Failed to update status for ${item.name}`);
         console.warn('API update environment status failed', err);
+        // Revert UI on error
+        this.items.update((items) => items.map((i) => i.id === item.id ? { ...i } : i));
       }
     });
   }

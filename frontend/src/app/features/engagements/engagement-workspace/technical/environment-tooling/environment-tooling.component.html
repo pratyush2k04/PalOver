@@ -26,9 +26,6 @@
             <th>ITEM</th>
             <th>OWNER</th>
             <th>STATUS</th>
-            @if (canManage()) {
-              <th>ACTIONS</th>
-            }
           </tr>
         </thead>
         <tbody>
@@ -44,33 +41,26 @@
               </td>
               <td class="status-cell">
                 <div class="cell-content">
-                  <app-status-badge [tone]="getStatusTone(item.status)">
-                    {{ getStatusLabel(item.status) }}
-                  </app-status-badge>
+                  @if (canManage()) {
+                    <app-status-select
+                      [options]="statusOptions"
+                      [ngModel]="+item.status"
+                      (ngModelChange)="onStatusChange(item, $event)"
+                    />
+                  } @else {
+                    <app-status-badge [tone]="getStatusTone(item.status)">
+                      {{ getStatusLabel(item.status) }}
+                    </app-status-badge>
+                  }
                   @if (item.notApplicableReason) {
                     <span class="na-reason-text">({{ item.notApplicableReason }})</span>
                   }
                 </div>
               </td>
-              @if (canManage()) {
-                <td class="actions-cell">
-                  <select
-                    class="status-select"
-                    (change)="onStatusChange(item, $event)">
-                    @for (opt of statusOptions; track opt.value) {
-                      <option
-                        [value]="opt.value"
-                        [selected]="opt.value === +item.status">
-                        {{ opt.label }}
-                      </option>
-                    }
-                  </select>
-                </td>
-              }
             </tr>
           } @empty {
             <tr>
-              <td [attr.colspan]="canManage() ? 4 : 3" class="empty-cell">
+              <td colspan="3" class="empty-cell">
                 No environment or tooling items found.
               </td>
             </tr>
