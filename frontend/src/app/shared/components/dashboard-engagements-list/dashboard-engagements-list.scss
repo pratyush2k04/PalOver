@@ -1,5 +1,10 @@
 @use 'styles/tokens' as *;
 
+:host {
+  display: block;
+  height: 100%;
+}
+
 .list-card {
   background: $color-surface;
   border-radius: $radius-2xl;
