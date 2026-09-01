@@ -135,6 +135,7 @@ export class TechnicalReadinessComponent {
   // Architecture Sizing & Risk
   isSizingRiskRaised = computed(() => this.architectureValidation()?.isRiskRaised ?? false);
   sizingRiskSummary = computed(() => this.architectureValidation()?.riskSummary ?? null);
+  sizingDeltaPercentage = computed(() => this.architectureValidation()?.sizingDeltaPercentage ?? 0);
   isArchitectureReady = computed(() => !this.isSizingRiskRaised());
 
   // Dependency Spikes Readiness

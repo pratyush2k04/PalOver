@@ -53,6 +53,13 @@
           </li>
         }
 
+        @if (sizingDeltaPercentage() >= 20) {
+          <li class="bullet-item">
+            <span class="bullet-label">Architecture Validation:</span>
+            <span class="bullet-danger">Discovery estimates exceed the commitment estimates by {{ sizingDeltaPercentage() }}%</span>
+          </li>
+        }
+
         @if (isBrownfield()) {
           <li class="bullet-item">
             <span class="bullet-label">Code Review & Architecture Analysis:</span>
