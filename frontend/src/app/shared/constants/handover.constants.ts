@@ -95,4 +95,17 @@ export const HANDOVER_MESSAGES = {
   TITLE_AND_DESC_REQUIRED: 'Title and Description are required.',
   ACK_MESSAGE_REQUIRED: 'An acknowledgement message is required when the realistic timeline differs from the promised timeline.',
   SAVE_DRAFT_FIRST: 'Save draft first to add commitments.',
+  QUERY_LOAD_ERROR: 'Failed to load handover queries.',
+  QUERY_MESSAGE_SUBMIT_SUCCESS: 'Message submitted.',
+  QUERY_MESSAGE_SUBMIT_ERROR: 'Failed to submit message.',
+  QUERY_UPDATE_ERROR: 'Failed to update query.',
+  QUERY_RAISE_ERROR: 'Failed to raise query.',
+} as const;
+
+export const HANDOVER_QUERY_FIELD_LABELS = {
+  ClientBackground: 'Client Background',
+  BusinessProblem: 'Business Problem',
+  ClientSentiment: 'Client Sentiment',
+  DealOrigin: 'Deal Origin',
+  Commitment: 'Commitment',
 } as const;

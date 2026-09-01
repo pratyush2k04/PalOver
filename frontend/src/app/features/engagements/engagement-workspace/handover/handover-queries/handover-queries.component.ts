@@ -20,14 +20,10 @@ import {
   RaiseHandoverQueryDialogComponent,
   RaiseHandoverQueryDialogData
 } from './dialogs/raise-handover-query-dialog/raise-handover-query-dialog.component';
-
-const FIELD_SECTION_LABELS: Record<HandoverQueryFieldSection, string> = {
-  [HandoverQueryFieldSection.ClientBackground]: 'Client Background',
-  [HandoverQueryFieldSection.BusinessProblem]: 'Business Problem',
-  [HandoverQueryFieldSection.ClientSentiment]: 'Client Sentiment',
-  [HandoverQueryFieldSection.DealOrigin]: 'Deal Origin',
-  [HandoverQueryFieldSection.Commitment]: 'Commitment',
-};
+import {
+  HANDOVER_MESSAGES,
+  HANDOVER_QUERY_FIELD_LABELS
+} from '@shared/constants/handover.constants';
 
 @Component({
   selector: 'app-handover-queries',
@@ -83,7 +79,7 @@ export class HandoverQueriesComponent {
       error: (err) => {
         this.isLoading.set(false);
         this.loadError.set(true);
-        this.message.set(this.extractErrorMessage(err, 'Failed to load handover queries.'));
+        this.message.set(this.extractErrorMessage(err, HANDOVER_MESSAGES.QUERY_LOAD_ERROR));
         this.isError.set(true);
       },
     });
@@ -92,9 +88,9 @@ export class HandoverQueriesComponent {
   fieldSectionLabel(query: HandoverQueryDto): string {
     if (query.fieldSection === HandoverQueryFieldSection.Commitment && query.referenceId) {
       const commitment = this.commitments().find((c) => c.commitmentId === query.referenceId);
-      return commitment ? `Commitment: ${commitment.title}` : FIELD_SECTION_LABELS[query.fieldSection];
+      return commitment ? `Commitment: ${commitment.title}` : HANDOVER_QUERY_FIELD_LABELS[query.fieldSection];
     }
-    return FIELD_SECTION_LABELS[query.fieldSection];
+    return HANDOVER_QUERY_FIELD_LABELS[query.fieldSection];
   }
 
   jumpToField(query: HandoverQueryDto): void {
@@ -152,9 +148,9 @@ export class HandoverQueriesComponent {
           return next;
         });
         this.updateMessageDraft(query.id, '');
-        this.showMessage('Message submitted.', false);
+        this.showMessage(HANDOVER_MESSAGES.QUERY_MESSAGE_SUBMIT_SUCCESS, false);
       },
-      error: (err) => this.showMessage(this.extractErrorMessage(err, 'Failed to submit message.'), true),
+      error: (err) => this.showMessage(this.extractErrorMessage(err, HANDOVER_MESSAGES.QUERY_MESSAGE_SUBMIT_ERROR), true),
       complete: () => {
         this.submittingMessages.update((s) => {
           const next = new Set(s);
@@ -187,7 +183,7 @@ export class HandoverQueriesComponent {
           return next;
         });
       },
-      error: (err) => this.showMessage(this.extractErrorMessage(err, 'Failed to update query.'), true),
+      error: (err) => this.showMessage(this.extractErrorMessage(err, HANDOVER_MESSAGES.QUERY_UPDATE_ERROR), true),
       complete: () => {
         this.pendingResolutionToggles.update((s) => {
           const next = new Set(s);
