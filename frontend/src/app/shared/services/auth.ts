@@ -56,10 +56,10 @@ export class AuthService {
       return null;
     }
 
-    const idVal = payload['sub'] 
-      ?? payload['id'] 
-      ?? payload['userId'] 
-      ?? payload['nameid'] 
+    const idVal = payload['sub']
+      ?? payload['id']
+      ?? payload['userId']
+      ?? payload['nameid']
       ?? payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
 
     return idVal ? Number(idVal) : null;
@@ -117,10 +117,10 @@ export class AuthService {
       return null;
     }
 
-    const idVal = payload['sub'] 
-      ?? payload['id'] 
-      ?? payload['userId'] 
-      ?? payload['nameid'] 
+    const idVal = payload['sub']
+      ?? payload['id']
+      ?? payload['userId']
+      ?? payload['nameid']
       ?? payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
 
     return {

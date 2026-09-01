@@ -80,8 +80,8 @@ export class AddActionDialogComponent implements OnInit {
           if (name && !seenNames.has(name)) {
             seenNames.add(name);
             options.push({
-              value: name, // We store the name as value since backend expects ownerName
-              label: role ? `${name} (${role})` : name
+              value: name, 
+              label: name
             });
           }
         };

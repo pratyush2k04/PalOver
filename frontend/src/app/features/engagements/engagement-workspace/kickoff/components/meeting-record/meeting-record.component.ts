@@ -41,6 +41,25 @@ export class MeetingRecordComponent {
     { value: 'Done', label: 'Done' }
   ];
 
+  canEditStatus(item: KickoffActionItem): boolean {
+    if (this.isSignedOff()) return false;
+    
+    let currentUserName = this.authService.currentUser()?.fullName;
+    
+    // Fallback if auth.ts is missing the fullname claim check
+    if (!currentUserName) {
+      const token = this.authService.getToken();
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          currentUserName = payload['fullname'] || payload['fullName'];
+        } catch (e) {}
+      }
+    }
+
+    return currentUserName?.trim().toLowerCase() === item.ownerName?.trim().toLowerCase();
+  }
+
   private parentParamMap = toSignal(this.route.parent!.paramMap);
 
   engagementId = computed(() => {
@@ -95,7 +114,7 @@ export class MeetingRecordComponent {
 
   onStatusChange(item: KickoffActionItem, status: unknown): void {
     const id = this.engagementId();
-    if (!id || !item.kickoffActionItemId || !this.isProjectManager()) return;
+    if (!id || !item.kickoffActionItemId || !this.canEditStatus(item)) return;
 
     this.kickoffService.updateActionItemStatus(id, item.kickoffActionItemId, status as KickoffActionItemStatus).subscribe({
       next: (updated) => {

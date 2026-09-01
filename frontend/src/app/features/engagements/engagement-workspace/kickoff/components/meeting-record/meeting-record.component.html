@@ -25,7 +25,7 @@
           <p class="action-title">{{ item.title }}</p>
           <p class="action-meta">{{ item.ownerName }} &middot; due {{ item.dueDate | date: 'd MMM y' }}</p>
         </div>
-        @if (isProjectManager()) {
+        @if (canEditStatus(item)) {
           <app-select
             id="action-status-{{ item.kickoffActionItemId }}"
             [options]="statusOptions"

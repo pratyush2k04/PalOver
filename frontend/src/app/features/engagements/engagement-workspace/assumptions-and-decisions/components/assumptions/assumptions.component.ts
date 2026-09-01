@@ -98,7 +98,9 @@ export class AssumptionsComponent implements OnInit {
   }
 
   canEdit(assumption: AssumptionDto): boolean {
-    return !this.engagementService.isSignedOff() && assumption.ownerId === this.authService.getUserId();
+    return !this.engagementService.isSignedOff() 
+      && assumption.status === AssumptionStatus.Unvalidated 
+      && Number(assumption.ownerId) === Number(this.authService.getUserId());
   }
 
   isPm(): boolean {
