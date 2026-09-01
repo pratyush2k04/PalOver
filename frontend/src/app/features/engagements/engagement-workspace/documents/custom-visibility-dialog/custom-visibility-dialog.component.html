@@ -41,6 +41,7 @@
       variant="warning"
       (click)="onRemoveOverride()"
       [disabled]="isSubmitting()"
+      [loading]="isSubmitting()"
     >
       Remove Override
     </app-button>
@@ -54,7 +55,7 @@
       type="button"
       variant="accent"
       (click)="onSave()"
-      [disabled]="selectedRoles().length === 0"
+      [disabled]="selectedRoles().length === 0 || isSubmitting()"
       [loading]="isSubmitting()"
     >
       {{ isSubmitting() ? 'Saving...' : 'Apply Restriction' }}

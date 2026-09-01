@@ -67,7 +67,7 @@
   <app-button type="button" variant="stroked" [disabled]="isUploading()" (click)="onClose()">
     Cancel
   </app-button>
-  <app-button type="button" variant="flat" [loading]="isUploading()" (click)="onSubmit()">
+  <app-button type="button" variant="flat" [disabled]="isUploading()" [loading]="isUploading()" (click)="onSubmit()">
     Upload
   </app-button>
 </div>
