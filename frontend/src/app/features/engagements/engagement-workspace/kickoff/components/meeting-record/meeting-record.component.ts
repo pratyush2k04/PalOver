@@ -13,6 +13,7 @@ import { SelectComponent, SelectOption } from '@common/components/form/select/se
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { DialogService } from '@common/services/dialog/dialog.service';
+import { ToastService } from '@common/services/toast/toast';
 import { AddActionDialogComponent, AddActionDialogResult } from '../../dialogs/add-action-dialog/add-action-dialog.component';
 
 @Component({
@@ -28,6 +29,7 @@ export class MeetingRecordComponent {
   private dialog = inject(DialogService);
   private authService = inject(AuthService);
   private engagementService = inject(EngagementService);
+  private toastService = inject(ToastService);
 
   readonly messages = KICKOFF_MESSAGES;
 
@@ -36,7 +38,6 @@ export class MeetingRecordComponent {
 
   readonly statusOptions: SelectOption[] = [
     { value: 'Open', label: 'Open' },
-    { value: 'InProgress', label: 'In Progress' },
     { value: 'Done', label: 'Done' }
   ];
 
@@ -101,9 +102,9 @@ export class MeetingRecordComponent {
         this.actionItems.update((items) =>
           items.map((existing) => (existing.kickoffActionItemId === updated.kickoffActionItemId ? updated : existing))
         );
-        this.showMessage(this.messages.STATUS_UPDATED_SUCCESS(updated.status), false);
+        this.toastService.success(this.messages.STATUS_UPDATED_SUCCESS(updated.status));
       },
-      error: () => this.showMessage('Failed to update status', true)
+      error: () => this.toastService.error('Failed to update status')
     });
   }
 
@@ -111,7 +112,9 @@ export class MeetingRecordComponent {
     const id = this.engagementId();
     if (!id || !this.isProjectManager()) return;
 
-    const dialogRef = this.dialog.open<AddActionDialogComponent, unknown, AddActionDialogResult>(AddActionDialogComponent);
+    const dialogRef = this.dialog.open<AddActionDialogComponent, { engagementId: number }, AddActionDialogResult>(AddActionDialogComponent, {
+      data: { engagementId: id }
+    });
 
     dialogRef.closed$.subscribe((result) => {
       if (!result) return;
@@ -119,9 +122,9 @@ export class MeetingRecordComponent {
       this.kickoffService.createActionItem(id, result).subscribe({
         next: (created) => {
           this.actionItems.update((items) => [...items, created]);
-          this.showMessage(this.messages.ACTION_CREATED_SUCCESS, false);
+          this.toastService.success(this.messages.ACTION_CREATED_SUCCESS);
         },
-        error: () => this.showMessage('Failed to create action item', true)
+        error: () => this.toastService.error('Failed to create action item')
       });
     });
   }

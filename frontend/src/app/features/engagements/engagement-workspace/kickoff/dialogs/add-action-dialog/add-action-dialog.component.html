@@ -10,11 +10,12 @@
       [errorMessages]="{ required: messages.ACTION_TITLE_REQUIRED }"
     />
 
-    <app-input
+    <app-select
       id="action-owner"
       label="Owner"
       [required]="true"
       formControlName="ownerName"
+      [options]="ownerOptions()"
       [errorMessages]="{ required: messages.OWNER_NAME_REQUIRED }"
     />
 
