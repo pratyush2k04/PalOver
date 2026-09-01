@@ -12,6 +12,7 @@ import { LoadingSpinnerComponent } from '@common/components/loading-spinner/load
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { ToastService } from '@common/services/toast/toast';
+import { AuthService } from '@shared/services/auth';
 import { RISK_COMMENT_MESSAGES, RISK_COMMENT_CONSTANTS } from '@shared/constants/app.constants';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 
@@ -42,7 +43,9 @@ export class RiskCommentsComponent implements OnInit {
   private commentService = inject(RiskCommentService);
   private toastService = inject(ToastService);
   private engagementService = inject(EngagementService);
+  private authService = inject(AuthService);
 
+  readonly currentUser = this.authService.currentUser;
   readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
 
   comments = signal<RiskComment[]>([]);
@@ -79,6 +82,36 @@ export class RiskCommentsComponent implements OnInit {
 
   toggleExpanded(): void {
     this.isExpanded.update((v) => !v);
+  }
+
+  isOwnMessage(comment: RiskComment): boolean {
+    if (comment.canEdit) {
+      return true;
+    }
+
+    const currentId = this.currentUser()?.id;
+    if (comment.authorId && currentId && Number(comment.authorId) === Number(currentId)) {
+      return true;
+    }
+
+    const currentName = (this.currentUser()?.fullName || this.getTokenFullName()).trim().toLowerCase();
+    const authorName = comment.authorName?.trim().toLowerCase();
+    if (currentName && authorName && currentName === authorName) {
+      return true;
+    }
+
+    return false;
+  }
+
+  private getTokenFullName(): string {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.fullname || payload.fullName || payload.name || '';
+      }
+    } catch {}
+    return '';
   }
 
   getRelativeTime(dateStr: string | Date): string {

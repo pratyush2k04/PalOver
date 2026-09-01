@@ -49,11 +49,23 @@
     }
   }
 
+  app-select,
+  app-input,
+  app-button {
+    display: inline-flex;
+    align-items: center;
+  }
+
   app-select {
     min-width: 10rem;
 
     ::ng-deep .app-field {
       margin-bottom: 0;
+
+      select {
+        height: 2.375rem;
+        box-sizing: border-box;
+      }
     }
   }
 
@@ -62,7 +74,19 @@
 
     ::ng-deep .app-field {
       margin-bottom: 0;
+
+      input {
+        height: 2.375rem;
+        box-sizing: border-box;
+      }
     }
+  }
+
+  ::ng-deep app-button .btn {
+    height: 2.375rem;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
   }
 }
 
