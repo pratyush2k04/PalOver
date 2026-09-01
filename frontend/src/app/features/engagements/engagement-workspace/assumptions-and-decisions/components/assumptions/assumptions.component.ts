@@ -137,8 +137,8 @@ export class AssumptionsComponent implements OnInit {
     });
   }
 
-  validateAssumption(id: number, status: AssumptionStatus, createRisk: boolean = false) {
-    this.assumptionService.validateAssumption(this.engagementId(), id, { status, createRisk }).subscribe({
+  validateAssumption(id: number, status: AssumptionStatus) {
+    this.assumptionService.validateAssumption(this.engagementId(), id, { status }).subscribe({
       next: () => {
         this.toastService.success(ASSUMPTION_MESSAGES.UPDATE_STATUS_SUCCESS(this.getStatusLabel(status)));
         this.loadAssumptions();
@@ -150,6 +150,6 @@ export class AssumptionsComponent implements OnInit {
   }
 
   markInvalid(id: number) {
-    this.validateAssumption(id, AssumptionStatus.Invalid, true);
+    this.validateAssumption(id, AssumptionStatus.Invalid);
   }
 }
