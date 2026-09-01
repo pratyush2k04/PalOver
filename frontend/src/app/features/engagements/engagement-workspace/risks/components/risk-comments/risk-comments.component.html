@@ -1,5 +1,6 @@
 <app-accordion
-  [title]="'Discussion (' + comments().length + ')'"
+  [title]="'Discussion'"
+  [badge]="comments().length"
   [expanded]="isExpanded()"
   (expandedChange)="isExpanded.set($event)"
 >
@@ -14,29 +15,29 @@
         <app-empty-state [message]="constants.EMPTY_DISCUSSION_MSG" />
       } @else {
         @for (comment of comments(); track comment.id) {
-          <div class="comment-item" [class.is-editing]="editingCommentId() === comment.id">
-            <!-- Common Avatar Component -->
-            <app-avatar [name]="comment.authorName" size="sm" />
-
-            <!-- Comment Content Block -->
-            <div class="comment-content-block">
-              <div class="comment-meta-row">
-                <div class="author-details">
+          <div
+            class="chat-bubble-wrapper"
+            [class.is-own-message]="isOwnMessage(comment)"
+            [class.is-other-message]="!isOwnMessage(comment)"
+          >
+            <div class="chat-bubble" [class.is-editing]="editingCommentId() === comment.id">
+              <!-- Top Header Row: Avatar & Name on left, Edit Button & Time on right -->
+              <div class="bubble-header">
+                <div class="author-info">
+                  <app-avatar [name]="comment.authorName" size="sm" />
                   <span class="author-name">{{ comment.authorName }}</span>
-                  @if (comment.isEdited) {
-                    <span class="edited-badge" [appTooltip]="'This comment was edited'">(edited)</span>
-                  }
                 </div>
-                <div class="time-and-actions">
-                  <span class="comment-time">{{ getRelativeTime(comment.createdAt) }}</span>
+                <div class="header-right-actions">
                   @if (comment.canEdit && !isSignedOff() && editingCommentId() !== comment.id) {
                     <app-button variant="stroked" size="sm" (click)="startEditing(comment)">
                       Edit
                     </app-button>
                   }
+                  <span class="bubble-time">{{ getRelativeTime(comment.createdAt) }}</span>
                 </div>
               </div>
 
+              <!-- Content / Edit Box -->
               @if (editingCommentId() === comment.id) {
                 <div class="inline-edit-box">
                   <app-textarea
@@ -52,8 +53,14 @@
                   </div>
                 </div>
               } @else {
-                <div class="comment-text">
+                <div class="bubble-body">
                   {{ comment.content }}
+                </div>
+              }
+
+              @if (comment.isEdited) {
+                <div class="bubble-footer">
+                  <span class="edited-badge" [appTooltip]="'This comment was edited'">(edited)</span>
                 </div>
               }
             </div>
