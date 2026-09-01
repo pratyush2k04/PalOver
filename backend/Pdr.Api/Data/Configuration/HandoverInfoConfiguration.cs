@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Pdr.Api.Constants;
 using Pdr.Api.Models;
 using Pdr.Api.Models.Engagements;
 using Pdr.Api.Models.Handover;
@@ -18,10 +19,10 @@ public class HandoverInfoConfiguration : IEntityTypeConfiguration<HandoverInfo>
         
         builder.Property(h => h.EngagementId).HasColumnName("engagement_id").IsRequired();
         builder.Property(h => h.StatusId).HasColumnName("status_id").IsRequired();
-        builder.Property(h => h.ClientBackground).HasColumnName("client_background").HasMaxLength(2000);
-        builder.Property(h => h.BusinessProblem).HasColumnName("business_problem").HasMaxLength(2000).IsRequired();
+        builder.Property(h => h.ClientBackground).HasColumnName("client_background").HasMaxLength(SaveHandoverDraftRequestConstants.MaxFieldLength);
+        builder.Property(h => h.BusinessProblem).HasColumnName("business_problem").HasMaxLength(SaveHandoverDraftRequestConstants.MaxFieldLength).IsRequired();
         builder.Property(h => h.ClientSentiment).HasColumnName("client_sentiment").IsRequired();
-        builder.Property(h => h.DealOrigin).HasColumnName("deal_origin").HasMaxLength(2000);
+        builder.Property(h => h.DealOrigin).HasColumnName("deal_origin").HasMaxLength(SaveHandoverDraftRequestConstants.MaxFieldLength);
         builder.Property(h => h.SubmittedAt).HasColumnName("submitted_at");
         builder.Property(h => h.SubmittedByUserId).HasColumnName("submitted_by_user_id");
         builder.Property(h => h.ReviewedAt).HasColumnName("reviewed_at");
