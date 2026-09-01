@@ -60,7 +60,7 @@ export class NotificationFullpageComponent implements OnInit {
   readonly notifications = signal<Notification[]>([]);
   readonly totalCount = signal<number>(0);
   readonly page = signal<number>(1);
-  readonly pageSize = signal<number>(20);
+  readonly pageSize = signal<number>(10);
   readonly selectedStatusFilter = signal<string>('all');
   readonly selectedPriorityFilter = signal<unknown>('all');
   readonly selectedEngagementFilter = signal<number | undefined>(undefined);

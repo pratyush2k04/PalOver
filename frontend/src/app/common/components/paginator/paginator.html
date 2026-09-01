@@ -4,11 +4,10 @@
       <label for="paginator-page-size">Items per page:</label>
       <select
         id="paginator-page-size"
-        [value]="pageSize()"
         (change)="onPageSizeChange($any($event.target).value)"
       >
         @for (size of sizes; track size) {
-          <option [value]="size">{{ size }}</option>
+          <option [value]="size" [selected]="size === pageSize()">{{ size }}</option>
         }
       </select>
     </div>
