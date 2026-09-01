@@ -41,6 +41,23 @@
   @include flex-column($spacing-6);
 }
 
+.checklist-blocked-banner {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  padding: $spacing-3 $spacing-4;
+  background-color: $color-danger-bg;
+  border: 1px solid $color-danger-border;
+  border-radius: $radius-lg;
+  color: $color-danger-text;
+  font-size: $font-size-sm;
+
+  .blocked-icon {
+    flex-shrink: 0;
+    color: $color-danger;
+  }
+}
+
 .area-section {
   @include flex-column($spacing-3);
 

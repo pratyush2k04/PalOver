@@ -1,4 +1,4 @@
-import { Component, inject, input, signal, computed, effect } from '@angular/core';
+import { Component, inject, input, output, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '@shared/services/auth';
@@ -39,6 +39,7 @@ export class HandoverQueriesComponent {
   engagementId = input.required<number>();
   commitments = input<CommitmentDto[]>([]);
   isReviewed = input<boolean>(false);
+  readonly queriesUpdated = output<HandoverQueryDto[]>();
 
   private handoverQueryService = inject(HandoverQueryService);
   private authService = inject(AuthService);
@@ -75,6 +76,7 @@ export class HandoverQueriesComponent {
       next: (data) => {
         this.queries.set(data);
         this.isLoading.set(false);
+        this.queriesUpdated.emit(data);
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -119,6 +121,7 @@ export class HandoverQueriesComponent {
     this.handoverQueryService.respondToQuery(id, query.id, { responseText }).subscribe({
       next: (updated) => {
         this.queries.update((qs) => qs.map((q) => (q.id === updated.id ? updated : q)));
+        this.queriesUpdated.emit(this.queries());
         this.showMessage('Response submitted.', false);
       },
       error: (err) => this.showMessage(this.extractErrorMessage(err, 'Failed to submit response.'), true),
@@ -134,6 +137,7 @@ export class HandoverQueriesComponent {
     this.handoverQueryService.toggleQueryResolution(id, query.id).subscribe({
       next: (updated) => {
         this.queries.update((qs) => qs.map((q) => (q.id === updated.id ? updated : q)));
+        this.queriesUpdated.emit(this.queries());
       },
       error: (err) => this.showMessage(this.extractErrorMessage(err, 'Failed to update query.'), true),
       complete: () => {
@@ -160,6 +164,7 @@ export class HandoverQueriesComponent {
     dialogRef.afterClosed().subscribe((created) => {
       if (created) {
         this.queries.update((qs) => [...qs, created]);
+        this.queriesUpdated.emit(this.queries());
       }
     });
   }
