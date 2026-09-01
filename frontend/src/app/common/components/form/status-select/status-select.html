@@ -38,16 +38,7 @@
                 role="option"
                 [attr.aria-selected]="selectedIndex() === i"
                 (click)="selectOption(i)">
-          <span
-            class="status-option-badge"
-            [class.status-option-badge--info]="option.tone === 'info'"
-            [class.status-option-badge--neutral]="option.tone === 'neutral'"
-            [class.status-option-badge--success]="option.tone === 'success'"
-            [class.status-option-badge--danger]="option.tone === 'danger'"
-            [class.status-option-badge--warning]="option.tone === 'warning'"
-          >
-            {{ option.label }}
-          </span>
+          <span class="status-select-option__label">{{ option.label }}</span>
           @if (selectedIndex() === i) {
             <span class="status-select-option__check" [inlineSVG]="'assets/icons/check.svg'"></span>
           }
