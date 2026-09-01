@@ -13,6 +13,6 @@ public interface IHomeRepository
     Task<int> GetOpenBlockersCountAsync(List<int> engagementIds);
     Task<int> GetOpenAccessItemsCountAsync(List<int> engagementIds);
     Task<int> GetMyEscalationsCountAsync(int userId);
-    Task<(List<DashboardEngagementDto> Items, int TotalCount)> GetUpcomingKickoffsPageAsync(List<int> engagementIds, DateOnly cutoffDate, int page, int pageSize);
+    Task<(List<DashboardEngagementDto> Items, int TotalCount)> GetTopUpcomingKickoffsAsync(List<int> engagementIds, DateOnly cutoffDate, int take);
     Task<int> GetEngagementOpenBlockerCountAsync(int engagementId);
 }

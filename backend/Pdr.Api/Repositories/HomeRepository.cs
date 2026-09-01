@@ -76,7 +76,7 @@ public class HomeRepository(AppDbContext db) : IHomeRepository
             .CountAsync();
     }
 
-    public async Task<(List<DashboardEngagementDto> Items, int TotalCount)> GetUpcomingKickoffsPageAsync(List<int> engagementIds, DateOnly cutoffDate, int page, int pageSize)
+    public async Task<(List<DashboardEngagementDto> Items, int TotalCount)> GetTopUpcomingKickoffsAsync(List<int> engagementIds, DateOnly cutoffDate, int take)
     {
         var query = db.Engagements
             .AsNoTracking()
@@ -86,8 +86,7 @@ public class HomeRepository(AppDbContext db) : IHomeRepository
 
         var items = await query
             .OrderBy(e => e.KickoffDate)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+            .Take(take)
             .Select(e => new DashboardEngagementDto
             {
                 EngagementId = e.EngagementId,
