@@ -6,7 +6,9 @@ namespace Pdr.Api.Repositories.Interfaces;
 public interface INotificationRepository
 {
     Task<Notification?> GetByIdAsync(int id);
-    Task<(List<Notification> Notifications, int TotalCount)> GetForUserAsync(int userId, int? engagementId, int page, int pageSize);
+    Task<(List<Notification> Notifications, int TotalCount)> GetForUserAsync(
+        int userId, int? engagementId, int page, int pageSize,
+        bool? isRead = null, NotificationPriority? priority = null);
     Task AddAsync(Notification notification);
     Task AddRangeAsync(IEnumerable<Notification> notifications);
     Task SetReadAtAsync(int id, DateTime readAt);

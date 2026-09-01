@@ -175,10 +175,9 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
 
     private async Task<(List<DashboardBlockerDto> Items, int TotalCount)> GetDashboardBlockersAsync(int userId)
     {
-        var result = await notificationService.GetForUserAsync(userId, null, 1, int.MaxValue);
+        var result = await notificationService.GetForUserAsync(userId, null, 1, 5, priority: NotificationPriority.High);
 
         var blockers = result.Items
-            .Where(n => n.Priority == NotificationPriority.High)
             .Select(n => new DashboardBlockerDto
             {
                 RiskId = n.Id,
@@ -187,7 +186,7 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
             })
             .ToList();
 
-        return (blockers.Take(5).ToList(), blockers.Count);
+        return (blockers, result.TotalCount);
     }
 
     private static string BuildWelcomeMessage(User user)
