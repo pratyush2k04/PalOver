@@ -19,7 +19,10 @@ import { SelectComponent, SelectOption } from '@common/components/form/select/se
 import { CheckboxComponent } from '@common/components/form/checkbox/checkbox';
 import { PaginatorComponent } from '@common/components/paginator/paginator';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
-import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
+import {
+  StatusBadgeComponent,
+  StatusBadgeTone,
+} from '@common/components/status-badge/status-badge';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { TooltipDirective } from '@common/directives/tooltip.directive';
 
@@ -41,10 +44,10 @@ import { TooltipDirective } from '@common/directives/tooltip.directive';
     EmptyStateComponent,
     StatusBadgeComponent,
     ConfirmDialogComponent,
-    TooltipDirective
+    TooltipDirective,
   ],
   templateUrl: './notification-fullpage.component.html',
-  styleUrl: './notification-fullpage.component.scss'
+  styleUrl: './notification-fullpage.component.scss',
 })
 export class NotificationFullpageComponent implements OnInit {
   private notificationService = inject(NotificationService);
@@ -57,12 +60,12 @@ export class NotificationFullpageComponent implements OnInit {
   readonly notifications = signal<Notification[]>([]);
   readonly totalCount = signal<number>(0);
   readonly page = signal<number>(1);
-  readonly pageSize = signal<number>(10);
+  readonly pageSize = signal<number>(20);
   readonly selectedStatusFilter = signal<string>('all');
   readonly selectedPriorityFilter = signal<unknown>('all');
   readonly selectedEngagementFilter = signal<number | undefined>(undefined);
   readonly engagementFilterOptions = signal<SelectOption[]>([
-    { value: 'all', label: 'All Engagements' }
+    { value: 'all', label: 'All Engagements' },
   ]);
   readonly selectedIds = signal<Set<number>>(new Set());
   readonly showDeleteConfirm = signal<boolean>(false);
@@ -73,14 +76,14 @@ export class NotificationFullpageComponent implements OnInit {
   readonly filterTabs: TabItem[] = [
     { id: 'all', label: 'All' },
     { id: 'unread', label: 'Unread' },
-    { id: 'read', label: 'Read' }
+    { id: 'read', label: 'Read' },
   ];
 
   readonly priorityOptions: SelectOption[] = [
     { value: 'all', label: 'All Priorities' },
     { value: NotificationPriority.High, label: 'High' },
     { value: NotificationPriority.Medium, label: 'Medium' },
-    { value: NotificationPriority.Low, label: 'Low' }
+    { value: NotificationPriority.Low, label: 'Low' },
   ];
 
   // Computed signals
@@ -92,27 +95,10 @@ export class NotificationFullpageComponent implements OnInit {
     return total > 0 ? Math.ceil(total / size) : 1;
   });
 
-  readonly filteredNotifications = computed<Notification[]>(() => {
-    let items = this.notifications();
-    const status = this.selectedStatusFilter();
-    const priority = this.selectedPriorityFilter();
-
-    if (status === 'unread') {
-      items = items.filter(n => !n.readAt);
-    } else if (status === 'read') {
-      items = items.filter(n => !!n.readAt);
-    }
-
-    if (priority !== 'all') {
-      const priorityNum = Number(priority);
-      items = items.filter(n => n.priority === priorityNum);
-    }
-
-    return items;
-  });
+  readonly filteredNotifications = computed<Notification[]>(() => this.notifications());
 
   readonly unreadCountInCurrentView = computed<number>(() => {
-    return this.notifications().filter(n => !n.readAt).length;
+    return this.notifications().filter((n) => !n.readAt).length;
   });
 
   readonly selectedCount = computed<number>(() => this.selectedIds().size);
@@ -121,7 +107,7 @@ export class NotificationFullpageComponent implements OnInit {
     const current = this.filteredNotifications();
     if (current.length === 0) return false;
     const selected = this.selectedIds();
-    return current.every(n => selected.has(n.id));
+    return current.every((n) => selected.has(n.id));
   });
 
   ngOnInit(): void {
@@ -134,35 +120,54 @@ export class NotificationFullpageComponent implements OnInit {
       next: (res) => {
         const options: SelectOption[] = [
           { value: 'all', label: 'All Engagements' },
-          ...res.engagements.map(e => ({
+          ...res.engagements.map((e) => ({
             value: e.id,
             label: e.engagementName
               ? `${e.engagementName}${e.clientName ? ` (${e.clientName})` : ''}`
-              : (e.clientName ? `${e.clientName} (Engagement #${e.id})` : `Engagement #${e.id}`)
-          }))
+              : e.clientName
+                ? `${e.clientName} (Engagement #${e.id})`
+                : `Engagement #${e.id}`,
+          })),
         ];
         this.engagementFilterOptions.set(options);
       },
       error: () => {
         this.toastService.error(NOTIFICATION_MESSAGES.LOAD_ERROR);
-      }
+      },
     });
   }
 
   loadNotifications(): void {
-    this.notificationService.getNotifications(this.selectedEngagementFilter(), this.page(), this.pageSize()).subscribe({
-      next: (result) => {
-        this.notifications.set(result.items);
-        this.totalCount.set(result.totalCount);
+    const status = this.selectedStatusFilter();
+    const isRead = status === 'read' ? true : status === 'unread' ? false : undefined;
 
-        const validIds = new Set(result.items.map(i => i.id));
-        const currentSelections = new Set([...this.selectedIds()].filter(id => validIds.has(id)));
-        this.selectedIds.set(currentSelections);
-      },
-      error: () => {
-        this.toastService.error(NOTIFICATION_MESSAGES.LOAD_ERROR);
-      }
-    });
+    const priority = this.selectedPriorityFilter();
+    const priorityFilter =
+      priority === 'all' ? undefined : (Number(priority) as NotificationPriority);
+
+    this.notificationService
+      .getNotifications(
+        this.selectedEngagementFilter(),
+        this.page(),
+        this.pageSize(),
+        isRead,
+        priorityFilter
+      )
+      .subscribe({
+        next: (result) => {
+          this.notifications.set(result.items);
+          this.totalCount.set(result.totalCount);
+
+          const validIds = new Set(result.items.map((i) => i.id));
+          const currentSelections = new Set(
+            [...this.selectedIds()].filter((id) => validIds.has(id)),
+          );
+          this.selectedIds.set(currentSelections);
+        },
+        error: () => {
+          this.toastService.error(NOTIFICATION_MESSAGES.LOAD_ERROR);
+        },
+      });
   }
 
   onPageChange(newPage: number): void {
@@ -178,10 +183,14 @@ export class NotificationFullpageComponent implements OnInit {
 
   onStatusFilterChange(status: string): void {
     this.selectedStatusFilter.set(status);
+    this.page.set(1);
+    this.loadNotifications();
   }
 
   onPriorityFilterChange(value: unknown): void {
     this.selectedPriorityFilter.set(value);
+    this.page.set(1);
+    this.loadNotifications();
   }
 
   onEngagementFilterChange(value: unknown): void {
@@ -203,14 +212,14 @@ export class NotificationFullpageComponent implements OnInit {
     this.notificationService.markAsRead(notification.id).subscribe({
       next: () => {
         const now = new Date().toISOString();
-        this.notifications.update(items =>
-          items.map(n => n.id === notification.id ? { ...n, readAt: now, status: 'Read' } : n)
+        this.notifications.update((items) =>
+          items.map((n) => (n.id === notification.id ? { ...n, readAt: now, status: 'Read' } : n)),
         );
         this.toastService.success(NOTIFICATION_MESSAGES.MARK_READ_SUCCESS);
       },
       error: () => {
         this.toastService.error(NOTIFICATION_MESSAGES.MARK_READ_ERROR);
-      }
+      },
     });
   }
 
@@ -218,14 +227,14 @@ export class NotificationFullpageComponent implements OnInit {
     this.notificationService.markAllAsRead().subscribe({
       next: () => {
         const now = new Date().toISOString();
-        this.notifications.update(items =>
-          items.map(n => ({ ...n, readAt: now, status: 'Read' }))
+        this.notifications.update((items) =>
+          items.map((n) => ({ ...n, readAt: now, status: 'Read' })),
         );
         this.toastService.success(NOTIFICATION_MESSAGES.MARK_ALL_READ_SUCCESS);
       },
       error: () => {
         this.toastService.error(NOTIFICATION_MESSAGES.MARK_ALL_READ_ERROR);
-      }
+      },
     });
   }
 
@@ -248,7 +257,7 @@ export class NotificationFullpageComponent implements OnInit {
     if (!checked) {
       this.selectedIds.set(new Set());
     } else {
-      const allIds = new Set(this.filteredNotifications().map(n => n.id));
+      const allIds = new Set(this.filteredNotifications().map((n) => n.id));
       this.selectedIds.set(allIds);
     }
   }
@@ -291,7 +300,7 @@ export class NotificationFullpageComponent implements OnInit {
       error: () => {
         this.isDeleting.set(false);
         this.toastService.error(NOTIFICATION_MESSAGES.DELETE_ERROR);
-      }
+      },
     });
   }
 
