@@ -9,7 +9,7 @@
   background: $color-surface;
   border-radius: $radius-2xl;
   box-shadow: $shadow-card;
-  padding: 0;
+  padding: $spacing-4;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -19,7 +19,7 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding: $spacing-4 $spacing-4 0;
+  padding: 0;
   margin-bottom: $spacing-4;
 
   h3 {
@@ -49,7 +49,7 @@
 }
 
 .list-content {
-  padding: $spacing-2 $spacing-4 $spacing-6;
+  padding: 0;
 }
 
 .engagements-list {
