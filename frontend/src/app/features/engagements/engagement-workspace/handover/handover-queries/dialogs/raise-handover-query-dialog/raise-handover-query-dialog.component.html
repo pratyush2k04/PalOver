@@ -42,7 +42,7 @@
 
 <div class="app-dialog__actions">
   <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="onCancel()">Cancel</app-button>
-  <app-button type="button" variant="accent" [disabled]="!canSubmit() || isSubmitting()" (click)="onSubmit()">
+  <app-button type="button" variant="accent" [disabled]="!canSubmit() || isSubmitting()" [loading]="isSubmitting()" (click)="onSubmit()">
     {{ isSubmitting() ? 'Raising...' : 'Raise Query' }}
   </app-button>
 </div>
