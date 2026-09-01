@@ -1,69 +1,74 @@
-<div class="dialog-container">
-  <div class="dialog-header">
-    <h3>{{ isEditMode() ? 'Edit Commitment' : HANDOVER_LABELS.ADD_NEW_COMMITMENT }}</h3>
-  </div>
+<h2 class="app-dialog__title">{{ isEditMode() ? 'Edit Commitment' : HANDOVER_LABELS.ADD_NEW_COMMITMENT }}</h2>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <div class="dialog-body">
-      <div class="form-row">
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
+    <div class="form-row">
+      <div class="flex-2">
         <app-input
           id="commitment-title"
-          [label]="HANDOVER_PLACEHOLDERS.TITLE + ' *'"
+          [label]="HANDOVER_PLACEHOLDERS.TITLE"
+          [required]="true"
           [placeholder]="HANDOVER_PLACEHOLDERS.TITLE_REQ"
           formControlName="title"
           [maxLength]="100"
           [errorMessages]="{ required: 'Title is required.' }"
-          style="flex: 2"
-        />
-        <app-select
-          id="commitment-type"
-          [label]="HANDOVER_LABELS.COMMITMENT_TYPE + ' *'"
-          formControlName="commitmentTypeId"
-          [options]="commitmentTypeOptions"
-          style="flex: 1"
         />
       </div>
+      <div class="flex-1">
+        <app-select
+          id="commitment-type"
+          [label]="HANDOVER_LABELS.COMMITMENT_TYPE"
+          [required]="true"
+          formControlName="commitmentTypeId"
+          [options]="commitmentTypeOptions"
+        />
+      </div>
+    </div>
 
-      <app-textarea
-        id="commitment-description"
-        [label]="HANDOVER_LABELS.DESCRIPTION + ' *'"
-        [placeholder]="HANDOVER_PLACEHOLDERS.DESCRIPTION_REQ"
-        formControlName="description"
-        [maxLength]="2000"
-        [rows]="3"
-        [errorMessages]="{ required: 'Description is required.' }"
-      />
+    <app-textarea
+      id="commitment-description"
+      [label]="HANDOVER_LABELS.DESCRIPTION"
+      [required]="true"
+      [placeholder]="HANDOVER_PLACEHOLDERS.DESCRIPTION_REQ"
+      formControlName="description"
+      [maxLength]="2000"
+      [rows]="3"
+      [errorMessages]="{ required: 'Description is required.' }"
+    />
 
-      <div class="form-row-timeline">
+    <div class="form-row-timeline">
+      <div class="flex-1">
         <app-input
           id="commitment-timeline"
           [label]="HANDOVER_LABELS.TIMELINE"
+          [required]="true"
           type="number"
           [min]="1"
           formControlName="timeline"
-          style="flex: 1"
         />
+      </div>
+      <div class="flex-1">
         <app-select
           id="commitment-unit"
           [label]="HANDOVER_LABELS.UNIT"
+          [required]="true"
           formControlName="timelineUnit"
           [options]="timelineUnitOptions"
-          style="flex: 1"
         />
       </div>
-
-      @if (errorMessage()) {
-        <app-alert variant="danger">{{ errorMessage() }}</app-alert>
-      }
     </div>
 
-    <div class="dialog-footer">
-      <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="onCancel()">
-        {{ HANDOVER_BUTTONS.CANCEL }}
-      </app-button>
-      <app-button type="submit" variant="flat" [disabled]="isSubmitting()">
-        {{ isSubmitting() ? 'Saving...' : (isEditMode() ? HANDOVER_BUTTONS.SAVE : HANDOVER_BUTTONS.ADD_COMMITMENT) }}
-      </app-button>
-    </div>
-  </form>
-</div>
+    @if (errorMessage()) {
+      <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+    }
+  </div>
+
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="onCancel()">
+      {{ HANDOVER_BUTTONS.CANCEL }}
+    </app-button>
+    <app-button type="submit" variant="flat" [disabled]="isSubmitting()">
+      {{ isSubmitting() ? 'Saving...' : (isEditMode() ? HANDOVER_BUTTONS.SAVE : HANDOVER_BUTTONS.ADD_COMMITMENT) }}
+    </app-button>
+  </div>
+</form>

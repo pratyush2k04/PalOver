@@ -16,7 +16,7 @@ export class InputComponent extends BaseControlComponent<string> {
   readonly placeholder = input<string>('');
   readonly maxLength = input<number | null>(null);
   readonly dangerThreshold = input<number>(50);
-  readonly min = input<number | null>(null);
+  readonly min = input<number | string | null>(null);
   readonly step = input<number | string | null>(null);
 
   value = '';

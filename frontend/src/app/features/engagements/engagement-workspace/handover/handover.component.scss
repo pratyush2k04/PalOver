@@ -284,8 +284,6 @@
         font-size: $font-size-xs;
         font-weight: $font-weight-bold;
         color: $color-text;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
       }
 
       .readonly-value {
@@ -464,8 +462,6 @@ select {
 
 .square-label {
   font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
   color: $color-text-fainter;
   font-weight: $font-weight-semibold;
 }
@@ -513,7 +509,6 @@ select {
     font-size: $font-size-xs;
     font-weight: $font-weight-semibold;
     color: $color-text-muted;
-    text-transform: uppercase;
     display: block;
     margin-bottom: 0.25rem;
   }

@@ -1,59 +1,54 @@
-<div class="dialog-container">
-  <div class="dialog-header">
-    <h3>{{ dialogTitle() }}</h3>
-  </div>
+<h2 class="app-dialog__title">{{ dialogTitle() }}</h2>
 
-  <form (ngSubmit)="onSubmit()">
-    <div class="dialog-body">
-      <div class="form-group">
+<form (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
+    <app-input
+      id="feature-name"
+      label="Feature Name"
+      [required]="true"
+      [ngModel]="featureName()"
+      (ngModelChange)="onFeatureNameChange($event)"
+      name="featureName"
+      placeholder="e.g., SSO Authentication & RBAC"
+      [extraError]="featureNameError() || null"
+    />
+
+    <div class="form-row">
+      <div class="flex-1">
         <app-input
-          id="feature-name"
-          label="Feature Name"
-          [ngModel]="featureName()"
-          (ngModelChange)="onFeatureNameChange($event)"
-          name="featureName"
-          placeholder="e.g., SSO Authentication & RBAC"
-          [extraError]="featureNameError() || null"
+          id="estimate-weeks"
+          label="Estimate (Weeks)"
+          [required]="true"
+          type="number"
+          [min]="0"
+          step="any"
+          [ngModel]="estimateWeeks()"
+          (ngModelChange)="onEstimateWeeksChange($event)"
+          name="estimateWeeks"
+          placeholder="e.g., 2.5"
+          [extraError]="estimateWeeksError() || null"
         />
       </div>
 
-      <div class="form-row">
-        <div class="form-group flex-1">
-          <app-input
-            id="estimate-weeks"
-            label="Estimate (Weeks)"
-            type="number"
-            [min]="0"
-            step="any"
-            [ngModel]="estimateWeeks()"
-            (ngModelChange)="onEstimateWeeksChange($event)"
-            name="estimateWeeks"
-            placeholder="e.g., 2.5"
-            [extraError]="estimateWeeksError() || null"
-          />
-        </div>
-
-        <div class="form-group flex-1">
-          <div class="sprint-input-wrapper">
-            <span class="sprint-prefix">Sprint:</span>
-            <app-input
-              id="target-sprint"
-              label="Target Sprint"
-              type="number"
-              [min]="1"
-              [ngModel]="targetSprint()"
-              (ngModelChange)="onTargetSprintChange($event)"
-              name="targetSprint"
-              [extraError]="targetSprintError() || null"
-            />
-          </div>
-        </div>
+      <div class="flex-1">
+        <app-input
+          id="target-sprint"
+          label="Target Sprint"
+          [required]="true"
+          type="number"
+          [min]="1"
+          [ngModel]="targetSprint()"
+          (ngModelChange)="onTargetSprintChange($event)"
+          name="targetSprint"
+          placeholder="e.g., 1"
+          [extraError]="targetSprintError() || null"
+        />
       </div>
     </div>
+  </div>
 
-    <div class="dialog-footer">
-      <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
-      <app-button type="submit" variant="flat">{{ submitButtonText() }}</app-button>
-    </div>
-  </form>
-</div>
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+    <app-button type="submit" variant="flat">{{ submitButtonText() }}</app-button>
+  </div>
+</form>

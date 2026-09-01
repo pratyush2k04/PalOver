@@ -1,41 +1,15 @@
 @use 'styles/tokens' as *;
 
-.dialog-container {
-  width: 520px;
-  max-width: calc(100vw - 48px);
-  background: $color-surface;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.dialog-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.25rem $spacing-6;
-  border-bottom: 1px solid $color-border-soft;
-
-  h3 {
-    margin: 0;
-    font-size: $font-size-lg;
-    font-weight: $font-weight-bold;
-    color: $color-text;
-  }
-}
-
-.dialog-body {
-  padding: $spacing-6;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-5;
+:host {
+  display: block;
+  width: 32.5rem;
+  max-width: calc(100vw - 3rem);
 }
 
 .sign-off-form {
   display: flex;
   flex-direction: column;
-  gap: $spacing-5;
+  gap: $spacing-4;
 }
 
 .form-group {
@@ -47,10 +21,6 @@
     font-size: $font-size-sm;
     font-weight: $font-weight-semibold;
     color: $color-slate-700;
-
-    .required {
-      color: $color-danger;
-    }
   }
 
   .form-control {
@@ -95,13 +65,5 @@
     color: $color-danger;
     margin-top: 0.125rem;
   }
-}
-
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: $spacing-3;
-  padding: $spacing-4 $spacing-6 $spacing-6;
-  border-top: 1px solid $color-border-soft;
 }
 

@@ -8,6 +8,7 @@ export abstract class BaseControlComponent<T> implements ControlValueAccessor {
 
   readonly errorMessages = input<Record<string, string>>({});
   readonly extraError = input<string | null>(null);
+  readonly required = input<boolean>(false);
 
   abstract value: T;
   readonly disabled = model<boolean>(false);

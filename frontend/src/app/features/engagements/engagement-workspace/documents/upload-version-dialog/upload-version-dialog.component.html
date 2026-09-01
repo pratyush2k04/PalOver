@@ -1,39 +1,33 @@
-<div class="dialog-container">
-  <div class="modal-header">
-    <h3 class="modal-title">Upload new version</h3>
-  </div>
+<h2 class="app-dialog__title">Upload new version</h2>
 
-  <div class="modal-body">
-    <p class="file-preview">{{ data.file.name }}</p>
+<div class="app-dialog__content">
+  <p class="file-preview">{{ data.file.name }}</p>
 
-    @if (errorMessage()) {
-      <app-alert variant="danger">{{ errorMessage() }}</app-alert>
-    }
+  @if (errorMessage()) {
+    <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+  }
 
-    <div class="form-group">
-      <app-textarea
-        id="change-note"
-        label="What changed (optional)"
-        [rows]="4"
-        [maxLength]="200"
-        [ngModel]="changeNote()"
-        (ngModelChange)="onChangeNoteChange($event)"
-        placeholder="Describe what changed in this version..."
-      />
-    </div>
-  </div>
+  <app-textarea
+    id="change-note"
+    label="What changed"
+    [rows]="4"
+    [maxLength]="200"
+    [ngModel]="changeNote()"
+    (ngModelChange)="onChangeNoteChange($event)"
+    placeholder="Describe what changed in this version..."
+  />
+</div>
 
-  <div class="modal-footer">
-    <app-button type="button" variant="stroked" (click)="onClose()" [disabled]="isSubmitting()">
-      Cancel
-    </app-button>
-    <app-button
-      type="button"
-      variant="flat"
-      (click)="onSubmit()"
-      [loading]="isSubmitting()"
-    >
-      Upload version
-    </app-button>
-  </div>
+<div class="app-dialog__actions">
+  <app-button type="button" variant="stroked" (click)="onClose()" [disabled]="isSubmitting()">
+    Cancel
+  </app-button>
+  <app-button
+    type="button"
+    variant="flat"
+    (click)="onSubmit()"
+    [loading]="isSubmitting()"
+  >
+    Upload version
+  </app-button>
 </div>

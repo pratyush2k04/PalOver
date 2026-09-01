@@ -1,60 +1,51 @@
-<div class="dialog-container">
-  <div class="dialog-header">
-    <h3>Add Code Review / Architecture Finding</h3>
+<h2 class="app-dialog__title">Add Code Review / Architecture Finding</h2>
+
+<form (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
+    <app-input
+      id="finding-title"
+      label="Title"
+      [required]="true"
+      [ngModel]="title()"
+      (ngModelChange)="onTitleChange($event)"
+      name="findingTitle"
+      placeholder="e.g., High Database Coupling"
+      [extraError]="titleError() || null"
+    />
+
+    <app-select
+      id="finding-severity"
+      label="Severity"
+      [required]="true"
+      [options]="severityOptions"
+      [ngModel]="severity()"
+      (ngModelChange)="severity.set($event)"
+      name="findingSeverity"
+    />
+
+    <app-textarea
+      id="finding-desc"
+      label="Description"
+      [required]="true"
+      [ngModel]="description()"
+      (ngModelChange)="onDescriptionChange($event)"
+      name="findingDesc"
+      placeholder="Detailed observations and findings..."
+      [extraError]="descriptionError() || null"
+    />
+
+    <app-select
+      id="finding-doc"
+      label="Link Document"
+      [options]="documentOptions()"
+      [ngModel]="documentId()"
+      (ngModelChange)="documentId.set($event)"
+      name="findingDoc"
+    />
   </div>
 
-  <form (ngSubmit)="onSubmit()">
-    <div class="dialog-body">
-      <div class="form-group">
-        <app-input
-          id="finding-title"
-          label="Title"
-          [ngModel]="title()"
-          (ngModelChange)="onTitleChange($event)"
-          name="findingTitle"
-          placeholder="e.g., High Database Coupling"
-          [extraError]="titleError() || null"
-        />
-      </div>
-
-      <div class="form-group">
-        <app-select
-          id="finding-severity"
-          label="Severity"
-          [options]="severityOptions"
-          [ngModel]="severity()"
-          (ngModelChange)="severity.set($event)"
-          name="findingSeverity"
-        />
-      </div>
-
-      <div class="form-group">
-        <app-textarea
-          id="finding-desc"
-          label="Description"
-          [ngModel]="description()"
-          (ngModelChange)="onDescriptionChange($event)"
-          name="findingDesc"
-          placeholder="Detailed observations and findings..."
-          [extraError]="descriptionError() || null"
-        />
-      </div>
-
-      <div class="form-group">
-        <app-select
-          id="finding-doc"
-          label="Link Document (Optional)"
-          [options]="documentOptions()"
-          [ngModel]="documentId()"
-          (ngModelChange)="documentId.set($event)"
-          name="findingDoc"
-        />
-      </div>
-    </div>
-
-    <div class="dialog-footer">
-      <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
-      <app-button type="submit" variant="flat">Save Finding</app-button>
-    </div>
-  </form>
-</div>
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+    <app-button type="submit" variant="flat">Save Finding</app-button>
+  </div>
+</form>

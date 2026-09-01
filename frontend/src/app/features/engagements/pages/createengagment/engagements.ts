@@ -16,6 +16,7 @@ import { InputComponent } from '@common/components/form/input/input';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { ToastService } from '@common/services/toast/toast';
+import { futureDateValidator } from '@common/validators/date.validators';
 
 function billingNotBeforeKickoffValidator(group: AbstractControl): ValidationErrors | null {
   const kickoffDate = group.get('kickoffDate')?.value;
@@ -40,6 +41,7 @@ export class EngagementsComponent implements OnInit {
   private engagementService = inject(EngagementService);
   private toastService = inject(ToastService);
 
+  readonly minDate = new Date().toISOString().split('T')[0];
   showModal = signal(false);
   isSubmitting = signal(false);
   errorMessage = signal<string | null>(null);
@@ -55,8 +57,8 @@ export class EngagementsComponent implements OnInit {
       engagementDescription: ['', [Validators.required]],
       engagementTypeId: [null, [Validators.required]],
       commercialModelId: [null, [Validators.required]],
-      kickoffDate: ['', [Validators.required]],
-      billingStartDate: ['', [Validators.required]]
+      kickoffDate: ['', [Validators.required, futureDateValidator]],
+      billingStartDate: ['', [Validators.required, futureDateValidator]]
     },
     { validators: billingNotBeforeKickoffValidator }
   );

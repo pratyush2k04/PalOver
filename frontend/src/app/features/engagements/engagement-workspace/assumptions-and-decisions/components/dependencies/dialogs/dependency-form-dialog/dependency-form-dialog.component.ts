@@ -12,6 +12,7 @@ import { PersonService } from '@shared/services/person.service';
 import { ToastService } from '@common/services/toast/toast';
 import { PersonDto, PersonType } from '@shared/models/person.model';
 import { AuthService } from '@shared/services/auth';
+import { futureDateValidator } from '@common/validators/date.validators';
 
 export interface DependencyFormDialogData {
   dependency: DependencyDto | null;
@@ -41,6 +42,8 @@ export class DependencyFormDialogComponent implements OnInit {
   private toastService = inject(ToastService);
   private authService = inject(AuthService);
 
+  readonly minDate = new Date().toISOString().split('T')[0];
+
   typeOptions: SelectOption[] = [
     { value: DependencyType.Internal, label: 'Internal' },
     { value: DependencyType.External, label: 'External' }
@@ -54,7 +57,7 @@ export class DependencyFormDialogComponent implements OnInit {
     description: ['', [Validators.required]],
     type: [DependencyType.Internal, [Validators.required]],
     ownerId: [null as number | null, [Validators.required]],
-    neededByDate: ['', [Validators.required]]
+    neededByDate: ['', [Validators.required, futureDateValidator]]
   });
 
   get isEditing(): boolean {

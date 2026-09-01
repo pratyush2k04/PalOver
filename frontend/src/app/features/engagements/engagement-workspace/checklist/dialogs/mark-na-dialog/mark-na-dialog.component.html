@@ -1,9 +1,7 @@
-<div class="dialog-container">
-  <div class="dialog-header">
-    <h2>Mark as Not Applicable</h2>
-  </div>
+<h2 class="app-dialog__title">Mark as Not Applicable</h2>
 
-  <div class="dialog-body">
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
     <p class="item-title-preview">
       <strong>Item:</strong> {{ data.itemTitle }}
     </p>
@@ -18,29 +16,26 @@
       </div>
     }
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <app-textarea
-          id="na-reason"
-          label="Reason for marking Not Applicable"
-          formControlName="reason"
-          [rows]="4"
-          [maxLength]="500"
-          placeholder="Enter a brief justification why this item does not apply to this engagement..."
-          [errorMessages]="{
-            required: 'A reason is required.',
-            minlength: 'Reason must be at least 5 characters long.',
-            maxlength: 'Reason cannot exceed 500 characters.'
-          }"
-        />
-      </div>
-
-      <div class="dialog-actions">
-        <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
-        <app-button type="submit" variant="flat" [disabled]="form.invalid">
-          {{ data.isMandatory ? 'Request Exemption' : 'Confirm Not Applicable' }}
-        </app-button>
-      </div>
-    </form>
+    <app-textarea
+      id="na-reason"
+      label="Reason for marking Not Applicable"
+      [required]="true"
+      formControlName="reason"
+      [rows]="4"
+      [maxLength]="500"
+      placeholder="Enter a brief justification why this item does not apply to this engagement..."
+      [errorMessages]="{
+        required: 'A reason is required.',
+        minlength: 'Reason must be at least 5 characters long.',
+        maxlength: 'Reason cannot exceed 500 characters.'
+      }"
+    />
   </div>
-</div>
+
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+    <app-button type="submit" variant="flat" [disabled]="form.invalid">
+      {{ data.isMandatory ? 'Request Exemption' : 'Confirm Not Applicable' }}
+    </app-button>
+  </div>
+</form>

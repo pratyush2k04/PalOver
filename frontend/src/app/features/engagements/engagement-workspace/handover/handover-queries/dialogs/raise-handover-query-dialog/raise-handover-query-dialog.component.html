@@ -1,49 +1,48 @@
-<div class="dialog-container">
-  <div class="dialog-header">
-    <h3>Raise a Query</h3>
-  </div>
+<h2 class="app-dialog__title">Raise a Query</h2>
 
-  <div class="dialog-body">
+<div class="app-dialog__content">
+  <app-select
+    id="query-field-section"
+    label="Field"
+    [required]="true"
+    [options]="fieldSectionOptions"
+    [ngModel]="fieldSection()"
+    (ngModelChange)="onFieldSectionChange($event)"
+    [ngModelOptions]="{ standalone: true }"
+  />
+
+  @if (isCommitmentSection()) {
     <app-select
-      id="query-field-section"
-      label="Field"
-      [options]="fieldSectionOptions"
-      [ngModel]="fieldSection()"
-      (ngModelChange)="onFieldSectionChange($event)"
+      id="query-commitment"
+      label="Commitment"
+      [required]="true"
+      [options]="commitmentOptions()"
+      [ngModel]="referenceId()"
+      (ngModelChange)="referenceId.set($event)"
       [ngModelOptions]="{ standalone: true }"
     />
+  }
 
-    @if (isCommitmentSection()) {
-      <app-select
-        id="query-commitment"
-        label="Commitment"
-        [options]="commitmentOptions()"
-        [ngModel]="referenceId()"
-        (ngModelChange)="referenceId.set($event)"
-        [ngModelOptions]="{ standalone: true }"
-      />
-    }
+  <app-textarea
+    id="query-question"
+    label="Question"
+    [required]="true"
+    placeholder="What would you like to ask?"
+    [rows]="4"
+    [maxLength]="2000"
+    [ngModel]="question()"
+    (ngModelChange)="question.set($event)"
+    [ngModelOptions]="{ standalone: true }"
+  />
 
-    <app-textarea
-      id="query-question"
-      label="Question"
-      placeholder="What would you like to ask?"
-      [rows]="4"
-      [maxLength]="2000"
-      [ngModel]="question()"
-      (ngModelChange)="question.set($event)"
-      [ngModelOptions]="{ standalone: true }"
-    />
+  @if (errorMessage()) {
+    <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+  }
+</div>
 
-    @if (errorMessage()) {
-      <app-alert variant="danger">{{ errorMessage() }}</app-alert>
-    }
-  </div>
-
-  <div class="dialog-footer">
-    <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="onCancel()">Cancel</app-button>
-    <app-button type="button" variant="flat" [disabled]="!canSubmit() || isSubmitting()" (click)="onSubmit()">
-      {{ isSubmitting() ? 'Raising...' : 'Raise Query' }}
-    </app-button>
-  </div>
+<div class="app-dialog__actions">
+  <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="onCancel()">Cancel</app-button>
+  <app-button type="button" variant="accent" [disabled]="!canSubmit() || isSubmitting()" (click)="onSubmit()">
+    {{ isSubmitting() ? 'Raising...' : 'Raise Query' }}
+  </app-button>
 </div>

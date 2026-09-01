@@ -1,14 +1,12 @@
 <div class="modal-backdrop" (click)="onBackdropClick()">
   <div class="modal-card" (click)="onDialogClick($event)">
-    <div class="modal-header">
-      <h3>{{ title() }}</h3>
-    </div>
+    <h2 class="app-dialog__title">{{ title() }}</h2>
 
-    <div class="modal-body">
+    <div class="app-dialog__content">
       <p><ng-content /></p>
     </div>
 
-    <div class="modal-actions">
+    <div class="app-dialog__actions">
       <app-button type="button" variant="stroked" [disabled]="isBusy()" (click)="cancelled.emit()">
         {{ cancelLabel() }}
       </app-button>
