@@ -92,13 +92,13 @@ export class TechnicalReadinessComponent {
     return status === AccessItemStatus[AccessItemStatus.Blocked] || +status === AccessItemStatus.Blocked;
   }
 
-  accessApplicableItems = computed(() =>
-    this.accessItems().filter(i => this.isGranted(i.status) || this.isInProgress(i.status))
-  );
   accessGrantedCount = computed(() =>
-    this.accessApplicableItems().filter(i => this.isGranted(i.status)).length
+    this.accessItems().filter(i => this.isGranted(i.status)).length
   );
-  accessTotalCount = computed(() => this.accessApplicableItems().length);
+  accessBlockedCount = computed(() =>
+    this.accessItems().filter(i => this.isBlocked(i.status)).length
+  );
+  accessTotalCount = computed(() => this.accessItems().length);
 
   // Tooling Metrics
   toolingApplicableItems = computed(() =>
@@ -117,11 +117,14 @@ export class TechnicalReadinessComponent {
 
   // Blockers Check
   hasAccessBlockers = computed(() =>
-    this.accessItems().some(i => this.isBlocked(i.status))
+    this.accessBlockedCount() > 0
   );
   hasBlockers = computed(() => this.hasAccessBlockers());
 
   // Brownfield Readiness
+  brownfieldHighPriorityCount = computed(() =>
+    this.brownfieldReadiness()?.highSeverityPendingCount ?? 0
+  );
   isBrownfieldReady = computed(() =>
     !this.isBrownfield() || (this.brownfieldReadiness()?.isTechnicallyReady ?? true)
   );
@@ -133,6 +136,16 @@ export class TechnicalReadinessComponent {
 
   // Dependency Spikes Readiness
   dependencySpikes = signal<DependencySpikeDto[]>([]);
+  dependencySpikesTotalCount = computed(() => this.dependencySpikes().length);
+  dependencySpikesPassedCount = computed(() =>
+    this.dependencySpikes().filter(s => s.status === 'Passed' || +s.status === DependencySpikeStatus.Passed).length
+  );
+  dependencySpikesInProgressCount = computed(() =>
+    this.dependencySpikes().filter(s => s.status === 'InProgress' || +s.status === DependencySpikeStatus.InProgress).length
+  );
+  dependencySpikesFailedCount = computed(() =>
+    this.dependencySpikes().filter(s => s.status === 'Failed' || +s.status === DependencySpikeStatus.Failed).length
+  );
   isDependencySpikesReady = computed(() => {
     const spikes = this.dependencySpikes();
     if (spikes.length === 0) return true;

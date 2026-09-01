@@ -1,26 +1,71 @@
 <div class="technical-readiness-container">
   <!-- Day-1 Readiness Banner (Delivery Roles Only) -->
   @if (canViewDayOneBanner()) {
-    <div class="readiness-banner" [ngClass]="{ 'ready': isDayOneReady() }">
-      <div class="banner-content">
-        <div class="banner-icon">
-          <span [inlineSVG]="'assets/icons/clock.svg'"></span>
-        </div>
-        <div class="banner-text">
-          @if (!isDayOneReady()) {
-            <strong>Not yet able to start Day-1</strong>
-            <span> &mdash; access {{ accessGrantedCount() }}/{{ accessTotalCount() }} granted, tooling {{ toolingReadyCount() }}/{{ toolingTotalCount() }} ready</span>
+    <div class="readiness-banner" [ngClass]="isDayOneReady() ? 'readiness-ready' : 'readiness-incomplete'">
+      <div class="banner-header">
+        <div class="banner-title-group">
+          @if (isDayOneReady()) {
+            <svg class="banner-icon-svg ready-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span class="banner-title">Ready for Day-1</span>
           } @else {
-            <strong>Ready for Day-1</strong>
-            <span> &mdash; access {{ accessGrantedCount() }}/{{ accessTotalCount() }} granted, tooling {{ toolingReadyCount() }}/{{ toolingTotalCount() }} ready</span>
+            <svg class="banner-icon-svg warning-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <span class="banner-title">Not yet able to start Day-1</span>
           }
         </div>
+
+        <button type="button" class="share-btn" (click)="shareSummary()">
+          <span [inlineSVG]="'assets/icons/share.svg'"></span>
+          Share Summary
+        </button>
       </div>
 
-      <button type="button" class="share-btn" (click)="shareSummary()">
-        <span [inlineSVG]="'assets/icons/share.svg'"></span>
-        Share Summary
-      </button>
+      <div class="readiness-metrics">
+        <div class="metric-item">
+          <span class="metric-label">Access Tracker:</span>
+          <span class="metric-value">{{ accessGrantedCount() }}/{{ accessTotalCount() }}</span>
+        </div>
+
+        @if (accessBlockedCount() > 0) {
+          <div class="metric-item metric-danger">
+            <span class="metric-label">Blocked access items:</span>
+            <span class="metric-value">{{ accessBlockedCount() }}</span>
+          </div>
+        }
+
+        <div class="metric-item">
+          <span class="metric-label">Tooling:</span>
+          <span class="metric-value">{{ toolingReadyCount() }}/{{ toolingTotalCount() }}</span>
+        </div>
+
+        @if (dependencySpikesTotalCount() > 0) {
+          <div class="metric-item">
+            <span class="metric-label">Dependency Spikes:</span>
+            <span class="metric-value">
+              {{ dependencySpikesPassedCount() }}/{{ dependencySpikesTotalCount() }} passed@if (dependencySpikesInProgressCount() > 0) {, {{ dependencySpikesInProgressCount() }} in progress}
+            </span>
+          </div>
+        }
+
+        @if (dependencySpikesFailedCount() > 0) {
+          <div class="metric-item metric-danger">
+            <span class="metric-label">Failed spikes:</span>
+            <span class="metric-value">{{ dependencySpikesFailedCount() }}</span>
+          </div>
+        }
+
+        @if (isBrownfield() && brownfieldHighPriorityCount() > 0) {
+          <div class="metric-item metric-danger">
+            <span class="metric-label">High priority review items:</span>
+            <span class="metric-value">{{ brownfieldHighPriorityCount() }}</span>
+          </div>
+        }
+      </div>
     </div>
   }
 

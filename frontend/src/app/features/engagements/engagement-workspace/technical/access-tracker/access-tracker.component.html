@@ -14,11 +14,6 @@
     </div>
   </div>
 
-  <!-- Flagged Items Summary -->
-  @if (blockedItems().length > 0) {
-    <app-flagged-items-banner [items]="accessTrackerFlaggedItems()"></app-flagged-items-banner>
-  }
-
   <!-- Loading state -->
   @if (isLoading()) {
     <app-loading-spinner label="Loading access items..." />

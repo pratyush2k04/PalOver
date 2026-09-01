@@ -10,8 +10,6 @@ import { AuthService } from '@shared/services/auth';
 import { AccessItemDto } from '@features/engagements/models/access-tracker/access-tracker.dtos';
 import { AccessItemStatus } from '@features/engagements/models/access-tracker/access-tracker.enums';
 import { KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
-import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
-
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { ToastService } from '@common/services/toast/toast';
@@ -40,7 +38,6 @@ import {
     FormsModule,
     InlineSVGModule,
     TooltipDirective,
-    FlaggedItemsBannerComponent,
     StatusBadgeComponent,
     StatusSelectComponent,
     ButtonComponent,
@@ -70,10 +67,6 @@ export class AccessTrackerComponent {
   isDeleting = signal<boolean>(false);
 
   kickoffReadiness = this.kickoffReadinessService.readiness;
-  blockedItems = computed(() => this.accessItems().filter(i => i.status === 'Blocked'));
-  accessTrackerFlaggedItems = computed<FlaggedItem[]>(() => [
-    { label: 'access item(s) blocked', count: this.blockedItems().length }
-  ]);
 
   readonly statusOptions: StatusSelectOption[] = [
     { label: 'In Progress', value: AccessItemStatus.InProgress, tone: 'info' },
