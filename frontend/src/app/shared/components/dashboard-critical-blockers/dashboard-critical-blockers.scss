@@ -61,17 +61,13 @@
   display: flex;
   align-items: flex-start;
   gap: $spacing-4;
-  padding: $spacing-3 0;
+  padding: $spacing-3 $spacing-2;
   border-bottom: 1px solid $color-border-soft;
   text-decoration: none;
   transition: background-color 0.2s;
 
   &:last-child {
     border-bottom: none;
-  }
-
-  &:first-child {
-    padding-top: 0;
   }
 }
 
