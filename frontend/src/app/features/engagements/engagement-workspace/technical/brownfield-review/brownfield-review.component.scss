@@ -136,6 +136,12 @@
         app-status-badge {
           display: inline-flex;
           justify-content: center;
+
+          ::ng-deep .status-badge {
+            min-width: 6.5rem;
+            justify-content: center;
+            box-sizing: border-box;
+          }
         }
       }
 
