@@ -13,6 +13,7 @@
       <app-button
         type="button"
         [variant]="isDestructive() ? 'danger' : 'flat'"
+        [disabled]="isBusy()"
         [loading]="isBusy()"
         (click)="confirmed.emit()"
       >

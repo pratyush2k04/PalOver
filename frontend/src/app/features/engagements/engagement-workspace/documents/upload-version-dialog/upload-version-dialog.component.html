@@ -26,6 +26,7 @@
     type="button"
     variant="flat"
     (click)="onSubmit()"
+    [disabled]="isSubmitting()"
     [loading]="isSubmitting()"
   >
     Upload version
