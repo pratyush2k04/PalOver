@@ -130,15 +130,24 @@
         color: $color-gray-400;
       }
 
-      .decision-group {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
+      .decision-col {
+        text-align: center;
 
-        .btn-decision-actions {
-          display: flex;
+        app-status-badge {
+          display: inline-flex;
+          justify-content: center;
+        }
+      }
+
+      .actions-col {
+        text-align: center;
+        white-space: nowrap;
+
+        .actions-group {
+          display: inline-flex;
           align-items: center;
-          gap: 0.35rem;
+          justify-content: center;
+          gap: $spacing-2;
 
           .btn-accept {
             ::ng-deep .btn:hover:not(:disabled) {
@@ -155,21 +164,16 @@
               border-color: $color-orange-200;
             }
           }
-        }
-      }
 
-      .actions-col {
-        text-align: right;
-        width: 60px;
+          .btn-remove {
+            ::ng-deep .btn {
+              color: $color-gray-500;
+              transition: color 0.15s ease, background-color 0.15s ease;
 
-        .btn-remove {
-          ::ng-deep .btn {
-            color: $color-gray-500;
-            transition: color 0.15s ease, background-color 0.15s ease;
-
-            &:hover {
-              color: $color-danger;
-              background-color: $color-danger-light;
+              &:hover {
+                color: $color-danger;
+                background-color: $color-danger-light;
+              }
             }
           }
         }
