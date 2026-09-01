@@ -38,12 +38,10 @@
             }
           </div>
 
-          @if (request.status !== 'Raised') {
+          @if (request.allocations.length > 0) {
             <div class="allocations-table" [class.allocations-table--readonly]="!canManageAllocations()">
               <div class="allocations-row allocations-row--header">
                 <span>Resource name</span>
-                <span>Allocated on</span>
-                <span>Confirmed on</span>
                 @if (canManageAllocations()) {
                   <span>Actions</span>
                 }
@@ -51,21 +49,9 @@
               @for (allocation of request.allocations; track allocation.id; let i = $index) {
                 <div class="allocations-row">
                   <span class="allocation-name">{{ i + 1 }}. {{ allocation.name }}</span>
-                  <span>{{ formatDisplayDate(allocation.allocatedDate) }}</span>
-                  <span>
-                    @if (allocation.isConfirmed) {
-                      {{ formatDisplayDate(allocation.confirmedDate ?? '') }}
-                    } @else {
-                      <span class="allocation-pending">{{ constants.PENDING_CONFIRMATION }}</span>
-                    }
-                  </span>
                   @if (canManageAllocations()) {
                     <span class="allocation-actions">
-                      @if (!allocation.isConfirmed) {
-                        <app-button variant="flat" size="sm" (click)="openConfirmDialog(request, allocation)">
-                          {{ constants.BTN_CONFIRM }}
-                        </app-button>
-                      } @else {
+                      @if (allocation.isConfirmed) {
                         <app-button variant="danger" size="sm" (click)="openRemoveDialog(request, allocation)">
                           {{ constants.BTN_REMOVE }}
                         </app-button>

@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
@@ -36,16 +36,14 @@ export class AllocateResourcesDialogComponent {
   readonly constants = RESOURCE_REQUEST_CONSTANTS;
 
   // Always exactly peopleNeeded slots — the first existingAllocations.length are pre-filled
-  // by position (disabled once confirmed); the rest are empty and editable.
+  // by position (disabled once confirmed); the rest are empty and optional, saved as-is so
+  // slots can be filled in gradually across multiple visits to this dialog.
   readonly slots = Array.from({ length: this.data.peopleNeeded }, (_, i) => i);
 
   readonly namesArray = this.fb.array(
     this.slots.map((i) => {
       const existing = this.data.existingAllocations[i];
-      const control = this.fb.control(existing?.name ?? '', {
-        nonNullable: true,
-        validators: [Validators.required],
-      });
+      const control = this.fb.control(existing?.name ?? '', { nonNullable: true });
       if (existing?.isConfirmed) {
         control.disable();
       }
@@ -63,11 +61,6 @@ export class AllocateResourcesDialogComponent {
   }
 
   onSubmit(): void {
-    if (this.namesArray.invalid) {
-      this.namesArray.markAllAsTouched();
-      return;
-    }
-
     this.isSubmitting.set(true);
     this.errorMessage.set(null);
 

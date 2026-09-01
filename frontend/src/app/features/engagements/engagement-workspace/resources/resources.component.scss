@@ -85,12 +85,12 @@
   }
 
   .allocations-table--readonly .allocations-row {
-    grid-template-columns: 1fr 9rem 9rem;
+    grid-template-columns: 1fr;
   }
 
   .allocations-row {
     display: grid;
-    grid-template-columns: 1fr 9rem 9rem 9rem;
+    grid-template-columns: 1fr 9rem;
     align-items: center;
     gap: 0.75rem;
     padding: 0.5rem 0;
@@ -116,10 +116,6 @@
     span {
       font-size: 0.875rem;
       color: $color-text;
-    }
-
-    .allocation-pending {
-      color: $color-text-faint;
     }
 
     .allocation-actions {
