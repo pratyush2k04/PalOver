@@ -92,6 +92,27 @@
         }
       }
 
+      th.status-th,
+      .status-cell {
+        text-align: center;
+
+        .cell-content {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+        }
+
+        app-status-badge {
+          ::ng-deep .status-badge {
+            min-width: 6.5rem;
+            justify-content: center;
+            box-sizing: border-box;
+          }
+        }
+      }
+
       .btn-action {
         ::ng-deep .btn {
           color: $color-gray-500;
@@ -142,33 +163,11 @@
         }
       }
 
-      .actions-cell {
-        .status-select {
-          max-width: 150px;
-        }
-      }
-
       .empty-cell {
         text-align: center;
         color: $color-gray-400;
         padding: 2rem;
       }
     }
-  }
-}
-
-/* Editable Status Select */
-.status-select {
-  font-size: $font-size-sm;
-  font-weight: $font-weight-medium;
-  border-radius: $radius-md;
-  padding: 0.3rem 0.6rem;
-  border: 1px solid $color-gray-300;
-  outline: none;
-  cursor: pointer;
-  background-color: $color-surface;
-
-  &:focus {
-    border-color: $color-primary;
   }
 }

@@ -14,11 +14,6 @@
     </div>
   </div>
 
-  <!-- Flagged Items Summary -->
-  @if (blockedItems().length > 0) {
-    <app-flagged-items-banner [items]="accessTrackerFlaggedItems()"></app-flagged-items-banner>
-  }
-
   <!-- Loading state -->
   @if (isLoading()) {
     <app-loading-spinner label="Loading access items..." />
@@ -31,8 +26,8 @@
             <th>ITEM</th>
             <th>OWNER</th>
             <th>CLIENT-SIDE</th>
-            <th>DAYS TO BILLING</th>
-            <th>STATUS</th>
+            <th class="days-th">DAYS TO BILLING</th>
+            <th class="status-th">STATUS</th>
             @if (canManage()) {
               <th>ACTIONS</th>
             }
@@ -69,18 +64,11 @@
               </td>
               <td class="status-cell">
                 @if (canManage()) {
-                  <select
-                    class="status-select"
-                    [ngClass]="getStatusBadgeClass(item.status)"
-                    (change)="onStatusChange(item, $event)">
-                    @for (opt of statusOptions; track opt.value) {
-                      <option
-                        [value]="opt.value"
-                        [selected]="opt.value === getStatusNumericValue(item.status)">
-                        {{ opt.label }}
-                      </option>
-                    }
-                  </select>
+                  <app-status-select
+                    [options]="statusOptions"
+                    [ngModel]="getStatusNumericValue(item.status)"
+                    (ngModelChange)="onStatusChange(item, $event)"
+                  />
                 } @else {
                   <app-status-badge [tone]="getStatusTone(item.status)">
                     {{ getStatusLabel(item.status) }}

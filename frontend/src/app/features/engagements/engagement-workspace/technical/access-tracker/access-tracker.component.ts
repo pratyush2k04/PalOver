@@ -10,12 +10,11 @@ import { AuthService } from '@shared/services/auth';
 import { AccessItemDto } from '@features/engagements/models/access-tracker/access-tracker.dtos';
 import { AccessItemStatus } from '@features/engagements/models/access-tracker/access-tracker.enums';
 import { KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
-import { FlaggedItemsBannerComponent, FlaggedItem } from '@shared/flagged-items-banner/flagged-items-banner.component';
-
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { ToastService } from '@common/services/toast/toast';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
+import { StatusSelectComponent, StatusSelectOption } from '@common/components/form/status-select/status-select';
 import { ButtonComponent } from '@common/components/button/button';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { DialogService } from '@common/services/dialog/dialog.service';
@@ -39,8 +38,8 @@ import {
     FormsModule,
     InlineSVGModule,
     TooltipDirective,
-    FlaggedItemsBannerComponent,
     StatusBadgeComponent,
+    StatusSelectComponent,
     ButtonComponent,
     ConfirmDialogComponent
   ],
@@ -68,15 +67,11 @@ export class AccessTrackerComponent {
   isDeleting = signal<boolean>(false);
 
   kickoffReadiness = this.kickoffReadinessService.readiness;
-  blockedItems = computed(() => this.accessItems().filter(i => i.status === 'Blocked'));
-  accessTrackerFlaggedItems = computed<FlaggedItem[]>(() => [
-    { label: 'access item(s) blocked', count: this.blockedItems().length }
-  ]);
 
-  readonly statusOptions = [
-    { label: 'In Progress', value: AccessItemStatus.InProgress, key: 'InProgress' },
-    { label: 'Granted', value: AccessItemStatus.Granted, key: 'Granted' },
-    { label: 'Blocked', value: AccessItemStatus.Blocked, key: 'Blocked' }
+  readonly statusOptions: StatusSelectOption[] = [
+    { label: 'In Progress', value: AccessItemStatus.InProgress, tone: 'info' },
+    { label: 'Granted', value: AccessItemStatus.Granted, tone: 'success' },
+    { label: 'Blocked', value: AccessItemStatus.Blocked, tone: 'danger' }
   ];
 
   constructor() {
@@ -109,39 +104,34 @@ export class AccessTrackerComponent {
     });
   }
 
-  onStatusChange(item: AccessItemDto, event: Event) {
-    const selectElement = event.target as HTMLSelectElement;
-    const newStatusNum = parseInt(selectElement.value, 10) as AccessItemStatus;
+  onStatusChange(item: AccessItemDto, newStatus: unknown): void {
+    const newStatusNum = this.getStatusNumericValue(newStatus as AccessItemStatus);
 
     if (newStatusNum === AccessItemStatus.Blocked) {
-      // Temporarily revert select dropdown display until block reason confirmed
-      selectElement.value = this.getStatusNumericValue(item.status).toString();
-      this.openBlockDialog(item, selectElement);
+      this.openBlockDialog(item);
       return;
     }
 
-    this.updateStatus(item, newStatusNum, selectElement);
+    this.updateStatus(item, newStatusNum);
   }
 
-  private openBlockDialog(item: AccessItemDto, selectElement?: HTMLSelectElement): void {
+  private openBlockDialog(item: AccessItemDto): void {
     const dialogRef = this.dialog.open<BlockAccessItemDialogComponent, BlockAccessItemDialogData, BlockAccessItemDialogResult>(
       BlockAccessItemDialogComponent,
       { data: { itemName: item.name, currentReason: item.blockReason }, disableClose: true }
     );
 
     dialogRef.closed$.subscribe((result) => {
-      if (!result) return;
-      this.updateStatus(item, AccessItemStatus.Blocked, selectElement, result.reason);
+      if (!result) {
+        // Force signal update so ngModel re-syncs to original status
+        this.accessItems.update((items) => items.map((i) => i.id === item.id ? { ...i } : i));
+        return;
+      }
+      this.updateStatus(item, AccessItemStatus.Blocked, result.reason);
     });
   }
 
-  private updateStatus(item: AccessItemDto, newStatusNum: AccessItemStatus, selectElement?: HTMLSelectElement, blockReason?: string) {
-    const statusTextMap: Record<number, string> = {
-      [AccessItemStatus.InProgress]: 'InProgress',
-      [AccessItemStatus.Granted]: 'Granted',
-      [AccessItemStatus.Blocked]: 'Blocked'
-    };
-
+  private updateStatus(item: AccessItemDto, newStatusNum: AccessItemStatus, blockReason?: string): void {
     const payload = {
       status: newStatusNum,
       blockReason: newStatusNum === AccessItemStatus.Blocked ? blockReason : undefined
@@ -160,11 +150,8 @@ export class AccessTrackerComponent {
       },
       error: (err) => {
         this.toastService.error(`Failed to update status for ${item.name}`);
-        
-        // Revert the dropdown UI back to its original state
-        if (selectElement) {
-          selectElement.value = this.getStatusNumericValue(item.status).toString();
-        }
+        // Revert UI on error
+        this.accessItems.update((items) => items.map((i) => i.id === item.id ? { ...i } : i));
       }
     });
   }

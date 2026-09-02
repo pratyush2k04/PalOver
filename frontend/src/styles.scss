@@ -45,6 +45,13 @@ body.app-dialog-open {
   flex-direction: column;
   overflow: hidden;
   animation: app-dialog-panel-in 0.15s ease-out;
+
+  > form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
 }
 
 @keyframes app-dialog-backdrop-in {

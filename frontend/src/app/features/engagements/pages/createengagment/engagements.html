@@ -18,7 +18,8 @@
             <div class="form-group col">
               <app-input
                 id="engagementName"
-                label="Engagement name *"
+                label="Engagement name"
+                [required]="true"
                 formControlName="engagementName"
                 [errorMessages]="{ required: 'Engagement name is required.' }"
               />
@@ -27,7 +28,8 @@
             <div class="form-group col">
               <app-input
                 id="clientName"
-                label="Client name *"
+                label="Client name"
+                [required]="true"
                 formControlName="clientName"
                 [errorMessages]="{ required: 'Client name is required.' }"
               />
@@ -35,14 +37,15 @@
           </div>
 
           <div class="form-group">
-            <app-textarea id="engagementDescription" label="Engagement description *" formControlName="engagementDescription" />
+            <app-textarea id="engagementDescription" label="Engagement description" [required]="true" formControlName="engagementDescription" />
           </div>
 
           <div class="form-row">
             <div class="form-group col">
               <app-select
                 id="engagementTypeId"
-                label="Nature *"
+                label="Nature"
+                [required]="true"
                 formControlName="engagementTypeId"
                 [options]="engagementTypeOptions()"
                 [errorMessages]="{ required: 'Nature is required.' }"
@@ -52,7 +55,8 @@
             <div class="form-group col">
               <app-select
                 id="commercialModelId"
-                label="Commercial model *"
+                label="Commercial model"
+                [required]="true"
                 formControlName="commercialModelId"
                 [options]="commercialModelOptions()"
                 [errorMessages]="{ required: 'Commercial model is required.' }"
@@ -65,7 +69,8 @@
               <app-input
                 id="kickoffDate"
                 type="date"
-                label="Target kickoff date *"
+                label="Target kickoff date"
+                [required]="true"
                 [min]="minDate"
                 formControlName="kickoffDate"
                 [errorMessages]="{ required: 'Target kickoff date is required.', pastDate: 'Date cannot be in the past.' }"
@@ -76,7 +81,8 @@
               <app-input
                 id="billingStartDate"
                 type="date"
-                label="Billing start date *"
+                label="Billing start date"
+                [required]="true"
                 [min]="minDate"
                 formControlName="billingStartDate"
                 [errorMessages]="{ required: 'Billing start date is required.', pastDate: 'Date cannot be in the past.' }"

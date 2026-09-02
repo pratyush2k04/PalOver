@@ -228,7 +228,7 @@
         ::ng-deep .app-field {
           margin-bottom: 0;
 
-          select {
+          .select-trigger {
             font-weight: $font-weight-semibold;
             border-radius: $radius-lg;
             padding: 0.4rem 1.85rem 0.4rem 0.85rem;
@@ -240,7 +240,7 @@
         /* Distinct color schemes for each role */
         &[data-role="Leadership"],
         &[data-role="Admin"] {
-          ::ng-deep select {
+          ::ng-deep .select-trigger {
             background-color: $color-role-admin-bg;
             color: $color-role-admin-text;
             border: 1px solid $color-role-admin-border;
@@ -248,7 +248,7 @@
         }
 
         &[data-role="Project Management"] {
-          ::ng-deep select {
+          ::ng-deep .select-trigger {
             background-color: $color-primary-light;
             color: $color-primary;
             border: 1px solid $color-primary-border;
@@ -256,7 +256,7 @@
         }
 
         &[data-role="Pre Sales"] {
-          ::ng-deep select {
+          ::ng-deep .select-trigger {
             background-color: $color-success-bg;
             color: $color-success;
             border: 1px solid $color-success-border;
@@ -264,7 +264,7 @@
         }
 
         &[data-role="Tech Lead"] {
-          ::ng-deep select {
+          ::ng-deep .select-trigger {
             background-color: $color-orange-50;
             color: $color-accent-amber-hover;
             border: 1px solid $color-orange-200;
