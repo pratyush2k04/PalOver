@@ -43,6 +43,7 @@
 
     app-select,
     app-input,
+    app-datepicker,
     app-button {
       width: 100%;
       min-width: 0;
@@ -51,6 +52,7 @@
 
   app-select,
   app-input,
+  app-datepicker,
   app-button {
     display: inline-flex;
     align-items: center;
@@ -79,6 +81,14 @@
         height: 2.375rem;
         box-sizing: border-box;
       }
+    }
+  }
+
+  app-datepicker {
+    min-width: 9.5rem;
+
+    ::ng-deep .app-field {
+      margin-bottom: 0;
     }
   }
 
