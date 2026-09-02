@@ -10,7 +10,7 @@ using Pdr.Api.Services.Interfaces;
 namespace Pdr.Api.Controllers;
 
 /// <summary>
-/// Manages PM-raised queries against a submitted handover and Pre Sales responses to them.
+/// Manages PM-raised queries and conversational discussion turns between Project Management and Pre Sales on a submitted handover.
 /// </summary>
 [ApiController]
 [Authorize]
@@ -22,27 +22,27 @@ public class HandoverQueriesController : ControllerBase
     private readonly IHandoverAccessService _handoverAccessService;
     private readonly ICurrentUserService _currentUserService;
     private readonly IValidator<CreateHandoverQueryRequest> _createValidator;
-    private readonly IValidator<RespondHandoverQueryRequest> _respondValidator;
+    private readonly IValidator<AddHandoverQueryMessageRequest> _messageValidator;
 
     public HandoverQueriesController(
         IHandoverQueriesService handoverQueriesService,
         IHandoverAccessService handoverAccessService,
         ICurrentUserService currentUserService,
         IValidator<CreateHandoverQueryRequest> createValidator,
-        IValidator<RespondHandoverQueryRequest> respondValidator)
+        IValidator<AddHandoverQueryMessageRequest> messageValidator)
     {
         _handoverQueriesService = handoverQueriesService;
         _handoverAccessService = handoverAccessService;
         _currentUserService = currentUserService;
         _createValidator = createValidator;
-        _respondValidator = respondValidator;
+        _messageValidator = messageValidator;
     }
 
     /// <summary>
-    /// Retrieves all queries raised against this engagement's handover.
+    /// Retrieves all queries raised against this engagement's handover with full conversational message histories.
     /// </summary>
     /// <param name="engagementId">The unique identifier of the engagement.</param>
-    /// <returns>The list of handover queries.</returns>
+    /// <returns>The list of handover queries with message history.</returns>
     [HttpGet]
     [EndpointSummary("Get handover queries")]
     [ProducesResponseType(typeof(List<HandoverQueryDto>), StatusCodes.Status200OK)]
@@ -58,13 +58,13 @@ public class HandoverQueriesController : ControllerBase
     }
 
     /// <summary>
-    /// Raises a new query against a field of the submitted handover (Project Manager only).
+    /// Raises a new query thread against a field section of the submitted handover (Project Management only).
     /// </summary>
     /// <param name="engagementId">The unique identifier of the engagement.</param>
     /// <param name="request">The query to raise.</param>
-    /// <returns>The created query.</returns>
+    /// <returns>The created query thread with initial question.</returns>
     [HttpPost]
-    [EndpointSummary("Raise a handover query (Project Manager only)")]
+    [EndpointSummary("Raise a handover query (Project Management only)")]
     [ProducesResponseType(typeof(HandoverQueryDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -81,38 +81,38 @@ public class HandoverQueriesController : ControllerBase
     }
 
     /// <summary>
-    /// Responds to a handover query (Pre Sales only). A query can only be responded to once.
+    /// Adds a conversational message turn to a handover query (Pre Sales response or PM follow-up question).
     /// </summary>
     /// <param name="engagementId">The unique identifier of the engagement.</param>
     /// <param name="queryId">The unique identifier of the query.</param>
-    /// <param name="request">The response to record.</param>
-    /// <returns>The updated query.</returns>
-    [HttpPut("{queryId:int}/respond")]
-    [EndpointSummary("Respond to a handover query (Pre Sales only)")]
+    /// <param name="request">The message text payload.</param>
+    /// <returns>The updated query with new message in history.</returns>
+    [HttpPost("{queryId:int}/messages")]
+    [EndpointSummary("Add a message turn to a handover query (Pre Sales response or PM follow-up)")]
     [ProducesResponseType(typeof(HandoverQueryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<HandoverQueryDto>> RespondToQuery(int engagementId, int queryId, [FromBody] RespondHandoverQueryRequest request)
+    public async Task<ActionResult<HandoverQueryDto>> AddMessage(int engagementId, int queryId, [FromBody] AddHandoverQueryMessageRequest request)
     {
-        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId(), RoleConstants.PreSales);
+        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId(), RoleConstants.PreSales, RoleConstants.ProjectManagement);
 
-        await _respondValidator.ValidateAndThrowAsync(request);
+        await _messageValidator.ValidateAndThrowAsync(request);
 
-        var dto = await _handoverQueriesService.RespondToQueryAsync(engagementId, queryId, request, _currentUserService.GetUserId().ToString());
+        var dto = await _handoverQueriesService.AddMessageAsync(engagementId, queryId, request, _currentUserService.GetUserId().ToString());
         return Ok(dto);
     }
 
     /// <summary>
-    /// Toggles a handover query between resolved and reopened (Pre Sales or Project Manager).
+    /// Toggles a handover query between resolved and reopened (Pre Sales or Project Management).
     /// </summary>
     /// <param name="engagementId">The unique identifier of the engagement.</param>
     /// <param name="queryId">The unique identifier of the query.</param>
     /// <returns>The updated query.</returns>
     [HttpPut("{queryId:int}/toggle-resolution")]
-    [EndpointSummary("Toggle resolved/reopened state of a handover query (Pre Sales or Project Manager)")]
+    [EndpointSummary("Toggle resolved/reopened state of a handover query (Pre Sales or Project Management)")]
     [ProducesResponseType(typeof(HandoverQueryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

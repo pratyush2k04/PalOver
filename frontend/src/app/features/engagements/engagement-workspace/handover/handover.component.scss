@@ -32,26 +32,22 @@
   flex-shrink: 0;
 }
 
-.status-report.draft .status-report-dot {
-  background-color: $color-accent-orange;
-}
+.status-report {
+  &.draft .status-report-dot {
+    background-color: $color-accent-orange;
+  }
 
-.status-report.submitted .status-report-dot {
-  background-color: $color-success;
-}
+  &.submitted,
+  &.reviewed {
+    .status-report-dot {
+      background-color: $color-success;
+    }
 
-.status-report.submitted .status-report-text {
-  color: $color-success;
-  font-weight: $font-weight-semibold;
-}
-
-.status-report.reviewed .status-report-dot {
-  background-color: $color-success;
-}
-
-.status-report.reviewed .status-report-text {
-  color: $color-success;
-  font-weight: $font-weight-semibold;
+    .status-report-text {
+      color: $color-success;
+      font-weight: $font-weight-semibold;
+    }
+  }
 }
 
 .readiness-banner {
@@ -66,26 +62,12 @@
     background-color: $color-warning-bg;
     border: 1px solid $color-warning-border;
     color: $color-warning-text;
-
-    .banner-title,
-    .banner-icon-svg,
-    .metric-label,
-    .metric-value {
-      color: $color-warning-text !important;
-    }
   }
 
   &.readiness-ready {
     background-color: $color-success-bg;
     border: 1px solid $color-success-border;
     color: $color-success-text;
-
-    .banner-title,
-    .banner-icon-svg,
-    .metric-label,
-    .metric-value {
-      color: $color-success-text !important;
-    }
   }
 
   .banner-header {
@@ -94,12 +76,12 @@
     gap: $spacing-2;
 
     .banner-icon-svg {
-      width: 1.125rem;
-      height: 1.125rem;
-      flex-shrink: 0;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      width: 1.125rem;
+      height: 1.125rem;
+      flex-shrink: 0;
 
       svg {
         width: 1.125rem;
@@ -153,9 +135,14 @@
 
 .submitted-info,
 .reviewed-info {
-  margin: -1rem 0 1.5rem;
-  font-size: 0.875rem;
+  margin: -$spacing-2 0 $spacing-5;
+  padding-left: $spacing-2;
+  font-size: $font-size-sm;
   color: $color-text-muted;
+
+  @media screen and (max-width: 768px) {
+    padding-left: 0;
+  }
 }
 
 .section {
@@ -411,18 +398,34 @@ select {
 
 .commitment-square {
   flex: 1 1 50%;
-  padding: $spacing-5 $spacing-4;
+  padding: $spacing-5 $spacing-4 $spacing-6;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: $spacing-3;
 
   &.promised-square {
-    border-right: 1px solid $color-border-soft;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: $spacing-2;
+      bottom: $spacing-2;
+      right: 0;
+      width: 1px;
+      background-color: $color-border-soft;
+    }
 
     @media (max-width: 768px) {
-      border-right: none;
-      border-bottom: 1px solid $color-border-soft;
+      &::after {
+        top: auto;
+        bottom: 0;
+        left: $spacing-2;
+        right: $spacing-2;
+        width: auto;
+        height: 1px;
+      }
     }
   }
 
@@ -570,32 +573,7 @@ select {
   border: 1px solid $color-danger-border;
 }
 
-.click-to-edit-placeholder {
-  background: $color-bg;
-  border: 1px dashed $color-border;
-  border-radius: $radius-sm;
-  color: $color-text-fainter;
-  padding: $spacing-4;
-  text-align: center;
-  font-style: italic;
-  width: 100%;
-  flex: 1;
-  min-height: 4rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  box-sizing: border-box;
-  cursor: pointer;
-  transition: border-color $transition-fast, color $transition-fast, background-color $transition-fast;
-
-  &:hover {
-    border-color: $color-primary;
-    color: $color-primary;
-    background-color: $color-primary-light;
-  }
-}
-
+.click-to-edit-placeholder,
 .realistic-square p.empty-state {
   background: $color-bg;
   border: 1px dashed $color-border;
@@ -612,6 +590,20 @@ select {
   justify-content: center;
   margin: 0;
   box-sizing: border-box;
+}
+
+.click-to-edit-placeholder {
+  cursor: pointer;
+  transition: border-color $transition-fast, color $transition-fast, background-color $transition-fast;
+
+  &:hover {
+    border-color: $color-primary;
+    color: $color-primary;
+    background-color: $color-primary-light;
+  }
+}
+
+.realistic-square p.empty-state {
   cursor: default;
 }
 
@@ -739,28 +731,24 @@ button {
   }
 }
 
-.alert {
-  padding: $spacing-3 $spacing-4;
-  border-radius: $radius-sm;
-  margin-bottom: $spacing-6;
-  font-size: $font-size-sm;
-}
-
-.alert-success {
-  background: $color-bg;
-  color: $color-text-muted;
-  border: 1px solid $color-border-soft;
-}
-
-.alert-error {
-  background: $color-danger-bg;
-  color: $color-danger-text;
-  border: 1px solid $color-danger-border;
-}
-
 input.is-invalid, textarea.is-invalid, select.is-invalid {
   border-color: $color-danger !important;
   &:focus {
-    box-shadow: 0 0 0 3px rgba($color-danger, 0.2) !important;
+    box-shadow: 0 0 0 3px $color-danger-focus-ring !important;
+  }
+}
+
+.field-highlight {
+  outline: $radius-xs solid $color-primary !important;
+  outline-offset: 0.1875rem;
+  animation: fieldHighlightPulse 2s ease-out;
+}
+
+@keyframes fieldHighlightPulse {
+  0% {
+    box-shadow: 0 0 0 6px #2563eb59;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
   }
 }

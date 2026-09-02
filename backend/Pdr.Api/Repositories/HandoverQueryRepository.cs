@@ -11,9 +11,10 @@ public class HandoverQueryRepository(AppDbContext context) : IHandoverQueryRepos
         await context.HandoverQueries
             .AsNoTracking()
             .Include(q => q.FieldSection)
-            .Include(q => q.RaisedByUser)
-            .Include(q => q.RespondedByUser)
+            .Include(q => q.RaisedByUser).ThenInclude(u => u.Role)
             .Include(q => q.ResolvedByUser).ThenInclude(u => u!.Role)
+            .Include(q => q.Messages.OrderBy(m => m.SequenceNumber))
+                .ThenInclude(m => m.SenderUser).ThenInclude(u => u.Role)
             .Where(q => q.HandoverId == handoverId)
             .OrderBy(q => q.CreatedAt)
             .ToListAsync();
@@ -21,8 +22,10 @@ public class HandoverQueryRepository(AppDbContext context) : IHandoverQueryRepos
     public async Task<HandoverQuery?> GetByIdAsync(int queryId, int handoverId) =>
         await context.HandoverQueries
             .Include(q => q.FieldSection)
+            .Include(q => q.RaisedByUser).ThenInclude(u => u.Role)
             .Include(q => q.ResolvedByUser).ThenInclude(u => u!.Role)
-            .Include(q => q.Response)
+            .Include(q => q.Messages.OrderBy(m => m.SequenceNumber))
+                .ThenInclude(m => m.SenderUser).ThenInclude(u => u.Role)
             .FirstOrDefaultAsync(q => q.Id == queryId && q.HandoverId == handoverId);
 
     public async Task AddAsync(HandoverQuery query) =>
