@@ -72,6 +72,13 @@
           align-items: center;
           gap: $spacing-2;
 
+          .editing-badge {
+            font-size: $font-size-xs;
+            color: $color-primary;
+            font-style: italic;
+            font-weight: $font-weight-semibold;
+          }
+
           .edited-badge {
             font-size: $font-size-xs;
             color: $color-slate-400;
@@ -269,6 +276,7 @@
 
   .post-button-wrapper {
     @include flex-center;
+    gap: $spacing-2;
 
     app-button {
       ::ng-deep .btn {

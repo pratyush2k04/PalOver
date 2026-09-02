@@ -20,11 +20,13 @@
               <app-avatar [name]="comment.authorName" size="sm" />
             </div>
             <div class="chat-bubble" [class.is-editing]="editingCommentId() === comment.id">
-              <!-- Top Header Row: Author Name on left, (edited), Edit Button & Time on right -->
+              <!-- Top Header Row: Author Name on left, (editing)/(edited), Edit Button & Time on right -->
               <div class="bubble-header">
                 <span class="author-name">{{ comment.authorName }}</span>
                 <div class="header-right-actions">
-                  @if (comment.isEdited) {
+                  @if (editingCommentId() === comment.id) {
+                    <span class="editing-badge">(editing...)</span>
+                  } @else if (comment.isEdited) {
                     <span class="edited-badge" [appTooltip]="'This comment was edited'">(edited)</span>
                   }
                   @if (comment.canEdit && !isSignedOff() && editingCommentId() !== comment.id) {
@@ -36,25 +38,8 @@
                 </div>
               </div>
 
-              <!-- Content / Edit Box -->
-              @if (editingCommentId() === comment.id) {
-                <div class="inline-edit-box">
-                  <app-textarea
-                    [id]="'edit-comment-' + comment.id"
-                    [rows]="1"
-                    [maxLength]="constants.MAX_LENGTH"
-                    [ngModel]="editingCommentText()"
-                    (ngModelChange)="editingCommentText.set($event)"
-                    (keydown)="onEditKeyDown($event, comment.id)"
-                  />
-                  <div class="edit-actions">
-                    <app-button variant="stroked" size="sm" (click)="cancelEditing()">Cancel</app-button>
-                    <app-button variant="flat" size="sm" (click)="saveEdit(comment.id)">Save</app-button>
-                  </div>
-                </div>
-              } @else {
-                <div class="bubble-body" [innerHTML]="formatContent(comment.content)"></div>
-              }
+              <!-- Content -->
+              <div class="bubble-body" [innerHTML]="formatContent(comment.content)"></div>
             </div>
           </div>
         }
@@ -62,14 +47,14 @@
     </div>
   }
 
-  <!-- Bottom Add Comment Row -->
+  <!-- Bottom Add/Edit Comment Row -->
   @if (!isSignedOff()) {
     <div class="add-comment-row">
       <div class="textarea-container">
         <app-textarea
           [id]="'new-comment-' + riskId()"
           [rows]="1"
-          [placeholder]="constants.INPUT_PLACEHOLDER"
+          [placeholder]="editingCommentId() ? 'Edit your comment...' : constants.INPUT_PLACEHOLDER"
           [maxLength]="constants.MAX_LENGTH"
           [ngModel]="newCommentText()"
           (ngModelChange)="onInputTextChange($event)"
@@ -96,14 +81,32 @@
       </div>
 
       <div class="post-button-wrapper">
-        <app-button
-          variant="flat"
-          size="sm"
-          [disabled]="isSubmitting() || !newCommentText().trim()"
-          (click)="submitComment()"
-        >
-          {{ isSubmitting() ? 'Posting...' : 'Post' }}
-        </app-button>
+        @if (editingCommentId()) {
+          <app-button
+            variant="stroked"
+            size="sm"
+            (click)="cancelEditing()"
+          >
+            Cancel
+          </app-button>
+          <app-button
+            variant="flat"
+            size="sm"
+            [disabled]="isSubmitting() || !newCommentText().trim()"
+            (click)="saveEdit()"
+          >
+            {{ isSubmitting() ? 'Saving...' : 'Save' }}
+          </app-button>
+        } @else {
+          <app-button
+            variant="flat"
+            size="sm"
+            [disabled]="isSubmitting() || !newCommentText().trim()"
+            (click)="submitComment()"
+          >
+            {{ isSubmitting() ? 'Posting...' : 'Post' }}
+          </app-button>
+        }
       </div>
     </div>
   }
