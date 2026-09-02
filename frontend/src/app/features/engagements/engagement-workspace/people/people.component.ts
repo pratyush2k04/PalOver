@@ -70,7 +70,7 @@ export class PeopleComponent {
   isImporting = signal(false);
   
   isLeadership = computed(() => this.authService.hasRole(USER_ROLES.LEADERSHIP));
-  canManage = computed(() => !this.isLeadership() && !this.engagementService.isSignedOff());
+  canManage = computed(() => !this.engagementService.isSignedOff());
 
   constructor() {
     effect(() => {

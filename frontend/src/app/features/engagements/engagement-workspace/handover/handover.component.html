@@ -129,6 +129,14 @@
             [errorMessages]="{ required: 'Business Problem is required.' }"
           />
 
+          <app-textarea
+            id="handover-deal-origin"
+            [label]="HANDOVER_LABELS.DEAL_ORIGIN"
+            [placeholder]="HANDOVER_PLACEHOLDERS.DEAL_ORIGIN"
+            formControlName="dealOrigin"
+            [maxLength]="maxFreeTextLength"
+          />
+
           <app-select
             id="handover-client-sentiment"
             [label]="HANDOVER_LABELS.CLIENT_SENTIMENT"
@@ -137,14 +145,6 @@
             [options]="sentimentOptions"
             [required]="true"
             [errorMessages]="{ required: 'Client Sentiment is required.' }"
-          />
-
-          <app-input
-            id="handover-deal-origin"
-            [label]="HANDOVER_LABELS.DEAL_ORIGIN"
-            [placeholder]="HANDOVER_PLACEHOLDERS.DEAL_ORIGIN"
-            formControlName="dealOrigin"
-            [maxLength]="maxFreeTextLength"
           />
 
           <div class="client-context-actions">
@@ -169,44 +169,24 @@
         </div>
 
         <div class="readonly-grid">
-          <div id="handover-client-background" class="readonly-card full-width">
+          <div id="handover-client-background" class="readonly-card">
             <span class="readonly-label">Client Background</span>
             <p class="readonly-value" [class.readonly-value-empty]="!handover()?.clientBackground">
               {{ handover()?.clientBackground || HANDOVER_LABELS.NOT_PROVIDED }}
             </p>
           </div>
 
-          <div id="handover-business-problem" class="readonly-card full-width">
+          <div id="handover-business-problem" class="readonly-card">
             <span class="readonly-label">Business Problem</span>
             <p class="readonly-value" [class.readonly-value-empty]="!handover()?.businessProblem">
               {{ handover()?.businessProblem || HANDOVER_LABELS.NOT_PROVIDED }}
             </p>
-          </div>
-
-          <div id="handover-client-sentiment" class="readonly-card">
-            <span class="readonly-label">Client Sentiment</span>
-            <div class="readonly-badge-container">
-              @if (handover()?.clientSentiment) {
-                <app-status-badge [tone]="getSentimentTone(handover()?.clientSentiment)">
-                  {{ handover()?.clientSentiment }}
-                </app-status-badge>
-              } @else {
-                <p class="readonly-value readonly-value-empty">{{ HANDOVER_LABELS.NOT_PROVIDED }}</p>
-              }
-            </div>
           </div>
 
           <div id="handover-deal-origin" class="readonly-card">
             <span class="readonly-label">Deal Origin</span>
             <p class="readonly-value" [class.readonly-value-empty]="!handover()?.dealOrigin">
               {{ handover()?.dealOrigin || HANDOVER_LABELS.NOT_PROVIDED }}
-            </p>
-          </div>
-
-          <div class="readonly-card">
-            <span class="readonly-label">Business Problem</span>
-            <p class="readonly-value" [class.readonly-value-empty]="!handover()?.businessProblem">
-              {{ handover()?.businessProblem || HANDOVER_LABELS.NOT_PROVIDED }}
             </p>
           </div>
         </div>
