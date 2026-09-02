@@ -85,7 +85,7 @@
 
     @if (canManageAllocations() && request.status !== 'Confirmed') {
       <div class="card-footer">
-        <app-button variant="stroked" size="sm" (click)="openAllocateModal(request)">
+        <app-button variant="flat" size="sm" (click)="openAllocateModal(request)">
           {{ constants.BTN_ALLOCATE }}
         </app-button>
       </div>
