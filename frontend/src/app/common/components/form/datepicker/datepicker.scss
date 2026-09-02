@@ -403,6 +403,14 @@
       border-color: $color-primary;
       background-color: $color-primary-light;
     }
+
+    &.is-disabled,
+    &:disabled {
+      color: $color-slate-200;
+      cursor: not-allowed;
+      background: transparent;
+      border-color: transparent;
+    }
   }
 }
 

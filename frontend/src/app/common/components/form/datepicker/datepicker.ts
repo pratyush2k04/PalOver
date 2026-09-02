@@ -258,6 +258,40 @@ export class DatepickerComponent extends BaseControlComponent<string> implements
     return false;
   }
 
+  isMonthDisabled(month: number, year: number): boolean {
+    const minStr = this.min();
+    if (minStr) {
+      const minDate = parseIsoToDate(minStr);
+      if (minDate) {
+        if (year < minDate.getFullYear()) return true;
+        if (year === minDate.getFullYear() && month < minDate.getMonth()) return true;
+      }
+    }
+    const maxStr = this.max();
+    if (maxStr) {
+      const maxDate = parseIsoToDate(maxStr);
+      if (maxDate) {
+        if (year > maxDate.getFullYear()) return true;
+        if (year === maxDate.getFullYear() && month > maxDate.getMonth()) return true;
+      }
+    }
+    return false;
+  }
+
+  isYearDisabled(year: number): boolean {
+    const minStr = this.min();
+    if (minStr) {
+      const minDate = parseIsoToDate(minStr);
+      if (minDate && year < minDate.getFullYear()) return true;
+    }
+    const maxStr = this.max();
+    if (maxStr) {
+      const maxDate = parseIsoToDate(maxStr);
+      if (maxDate && year > maxDate.getFullYear()) return true;
+    }
+    return false;
+  }
+
   ngOnDestroy(): void {
     window.removeEventListener('scroll', this.onScrollFn, true);
     window.removeEventListener('resize', this.onResizeFn);

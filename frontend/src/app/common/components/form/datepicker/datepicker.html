@@ -162,6 +162,8 @@
                   type="button"
                   class="grid-cell"
                   [class.is-current]="i === viewMonth()"
+                  [class.is-disabled]="isMonthDisabled(i, viewYear())"
+                  [disabled]="isMonthDisabled(i, viewYear())"
                   (click)="selectMonthView(i)"
                 >
                   {{ month }}
@@ -176,6 +178,8 @@
                   type="button"
                   class="grid-cell"
                   [class.is-current]="year === viewYear()"
+                  [class.is-disabled]="isYearDisabled(year)"
+                  [disabled]="isYearDisabled(year)"
                   (click)="selectYearView(year)"
                 >
                   {{ year }}
