@@ -1,10 +1,15 @@
 @use 'styles/tokens' as *;
 
+:host {
+  display: block;
+  height: 100%;
+}
+
 .list-card {
   background: $color-surface;
   border-radius: $radius-2xl;
   box-shadow: $shadow-card;
-  padding: $spacing-6;
+  padding: $spacing-4;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -14,13 +19,20 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: $spacing-6;
+  margin-bottom: $spacing-5;
 
   h3 {
     margin: 0;
     font-size: $font-size-lg;
     font-weight: $font-weight-bold;
     color: $color-text;
+  }
+
+  .header-subtitle {
+    font-weight: $font-weight-medium;
+    color: $color-primary;
+    font-size: $font-size-sm;
+    margin-left: $spacing-2;
   }
 
   .view-all-link {
@@ -49,17 +61,13 @@
   display: flex;
   align-items: flex-start;
   gap: $spacing-4;
-  padding: $spacing-3 0;
+  padding: $spacing-3 $spacing-2;
   border-bottom: 1px solid $color-border-soft;
   text-decoration: none;
   transition: background-color 0.2s;
 
   &:last-child {
     border-bottom: none;
-  }
-
-  &:first-child {
-    padding-top: 0;
   }
 }
 
@@ -205,11 +213,4 @@
       opacity: 1;
     }
   }
-}
-
-.empty-state {
-  text-align: center;
-  color: $color-text-fainter;
-  padding: 2rem 0;
-  font-size: $font-size-sm;
 }

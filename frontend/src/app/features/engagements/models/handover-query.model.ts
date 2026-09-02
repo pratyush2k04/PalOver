@@ -14,21 +14,33 @@ export const HANDOVER_SECTION_FRAGMENT_IDS: Record<HandoverQueryFieldSection, st
   [HandoverQueryFieldSection.Commitment]: 'handover-commitment', // suffixed with -{referenceId}
 };
 
+export interface HandoverQueryMessageDto {
+  id: number;
+  queryId: number;
+  senderUserId: number;
+  senderName: string;
+  senderRole: string;
+  messageType: 'Question' | 'Response';
+  messageText: string;
+  sequenceNumber: number;
+  createdAt: string;
+}
+
 export interface HandoverQueryDto {
   id: number;
   handoverId: number;
   fieldSection: HandoverQueryFieldSection;
   referenceId?: number;
-  question: string;
+  isResolved: boolean;
   raisedByName: string;
   raisedAt: string;
-  responseText?: string;
-  respondedByName?: string;
-  respondedAt?: string;
-  isResolved: boolean;
   resolvedByName?: string;
   resolvedByRole?: string;
   resolvedAt?: string;
+  messages: HandoverQueryMessageDto[];
+  latestMessageType: string;
+  canAddFollowUp: boolean;
+  canRespond: boolean;
 }
 
 export interface CreateHandoverQueryRequest {
@@ -37,6 +49,6 @@ export interface CreateHandoverQueryRequest {
   question: string;
 }
 
-export interface RespondHandoverQueryRequest {
-  responseText: string;
+export interface AddHandoverQueryMessageRequest {
+  messageText: string;
 }

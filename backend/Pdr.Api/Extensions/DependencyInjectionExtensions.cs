@@ -25,8 +25,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ICommitmentRepository, CommitmentRepository>();
         services.AddScoped<IRealisticCommitmentRepository, RealisticCommitmentRepository>();
         services.AddScoped<IHandoverQueryRepository, HandoverQueryRepository>();
-        services.AddScoped<IHandoverQueryQuestionRepository, HandoverQueryQuestionRepository>();
-        services.AddScoped<IHandoverQueryResponseRepository, HandoverQueryResponseRepository>();
+        services.AddScoped<IHandoverQueryMessageRepository, HandoverQueryMessageRepository>();
         services.AddScoped<IMasterChecklistRepository, MasterChecklistRepository>();
         services.AddScoped<ICommunicationCadenceRepository, CommunicationCadenceRepository>();
         services.AddScoped<IEngagementChecklistRepository, EngagementChecklistRepository>();

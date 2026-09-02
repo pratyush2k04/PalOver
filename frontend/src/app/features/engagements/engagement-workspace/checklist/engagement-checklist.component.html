@@ -92,7 +92,7 @@
         }
       </select>
       <select class="filter-select" [ngModel]="selectedStatus()" (ngModelChange)="selectedStatus.set($event)">
-        <option value="all">All Statuses</option>
+        <option value="all">All Status</option>
         <option value="Incomplete">Incomplete</option>
         <option value="Complete">Complete</option>
         <option value="Blocked">Blocked</option>
@@ -218,7 +218,7 @@
                       } @else {
                         @if (canToggleStatus()) {
                           <button type="button" class="btn-evidence-add" (click)="openAttachEvidenceDialog(item, false)">
-                            + Add
+                            + Attach
                           </button>
                         } @else {
                           <span class="text-faint">&mdash;</span>

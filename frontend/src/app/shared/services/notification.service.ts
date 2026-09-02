@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Notification, PagedResult } from '../models/notification.model';
+import { Notification, NotificationPriority, PagedResult } from '../models/notification.model';
 import { NOTIFICATIONS_API_ENDPOINTS } from '../constants/notification.constants';
 import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 
@@ -11,13 +11,27 @@ import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 export class NotificationService {
   private http = inject(HttpClient);
 
-  getNotifications(engagementId?: number, page = 1, pageSize = 20): Observable<PagedResult<Notification>> {
+  getNotifications(
+    engagementId?: number,
+    page = 1,
+    pageSize = 20,
+    isRead?: boolean,
+    priority?: NotificationPriority
+  ): Observable<PagedResult<Notification>> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('pageSize', pageSize.toString());
 
     if (engagementId !== undefined && engagementId !== null) {
       params = params.set('engagementId', engagementId.toString());
+    }
+
+    if (isRead !== undefined) {
+      params = params.set('isRead', isRead.toString());
+    }
+
+    if (priority !== undefined) {
+      params = params.set('priority', priority.toString());
     }
 
     return this.http.get<PagedResult<Notification>>(NOTIFICATIONS_API_ENDPOINTS.NOTIFICATIONS, { params });

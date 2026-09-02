@@ -1,19 +1,20 @@
 <h2 class="app-dialog__title">
-  Assign Leadership Contacts
+  <div style="display: flex; align-items: center; gap: 0.5rem;">
+    Assign Leadership Contacts
+    @if (handover()?.clientSentiment) {
+      <app-status-badge tone="info">{{ handover()!.clientSentiment }}</app-status-badge>
+    }
+  </div>
   <span class="eng-sub">({{ engagement.engagementName }} · {{ engagement.clientName }})</span>
 </h2>
 
 <div class="app-dialog__content">
   <div class="handover-summary">
-    <label class="input-label">Handover Details</label>
+   
     @if (isLoadingHandover()) {
       <app-loading-spinner size="sm" [inline]="true" label="Loading handover details..." />
     } @else if (handover()?.hasHandoverDraft && handover()?.status?.toLowerCase() === 'submitted') {
       <div class="handover-summary-grid">
-        <div class="handover-field">
-          <span class="handover-field-label">Status</span>
-          <app-status-badge tone="info">{{ handover()!.status }}</app-status-badge>
-        </div>
         @if (handover()!.clientBackground) {
           <div class="handover-field">
             <span class="handover-field-label">Client Background</span>
@@ -24,10 +25,7 @@
           <span class="handover-field-label">Business Problem</span>
           <p class="handover-field-value">{{ handover()!.businessProblem || '—' }}</p>
         </div>
-        <div class="handover-field">
-          <span class="handover-field-label">Client Sentiment</span>
-          <p class="handover-field-value">{{ handover()!.clientSentiment || '—' }}</p>
-        </div>
+        
       </div>
     } @else {
       <app-alert variant="warning">Handover has not been submitted for this engagement yet.</app-alert>
@@ -73,6 +71,6 @@
 </div>
 
 <div class="app-dialog__actions">
-  <app-button type="button" variant="stroked" [disabled]="isSaving()" (click)="onClose()">Cancel</app-button>
-  <app-button type="button" variant="flat" [disabled]="isSaving()" [loading]="isSaving()" (click)="saveAndClose()">Done</app-button>
+  <app-button type="button" variant="stroked" (click)="onClose()" [disabled]="isSaving()">Cancel</app-button>
+  <app-button type="button" variant="flat" (click)="saveAndClose()" [disabled]="isSaving()">Save</app-button>
 </div>
