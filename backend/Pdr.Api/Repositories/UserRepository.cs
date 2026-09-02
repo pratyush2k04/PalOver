@@ -65,4 +65,18 @@ public class UserRepository(AppDbContext context) : IUserRepository
         context.Users.Update(user);
         await context.SaveChangesAsync();
     }
+
+    public async Task<bool> UserExistsAsync(int id)
+    {
+        return await context.Users
+            .AsNoTracking()
+            .AnyAsync(u => u.Id == id);
+    }
+
+    public async Task<List<User>> GetAllActiveAsync()
+    {
+        return await context.Users
+            .AsNoTracking()
+            .ToListAsync();
+    }
 }

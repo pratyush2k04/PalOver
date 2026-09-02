@@ -103,4 +103,14 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
 
         await context.SaveChangesAsync();
         return document;
-    }}
+    }
+
+    public async Task<List<string>> GetFileNamesByEngagementAndCategoryAsync(int engagementId, string categoryName)
+    {
+        return await context.Documents
+            .AsNoTracking()
+            .Include(d => d.Category)
+            .Where(d => d.EngagementId == engagementId && d.Category.CategoryName == categoryName)
+            .Select(d => d.FileName)
+            .ToListAsync();
+    }}

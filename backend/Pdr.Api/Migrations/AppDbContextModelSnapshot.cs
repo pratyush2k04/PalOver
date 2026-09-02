@@ -1273,15 +1273,9 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("engagement_checklist_id");
 
-                    b.Property<string>("EvidenceLink")
-                        .HasMaxLength(2048)
-                        .HasColumnType("character varying(2048)")
-                        .HasColumnName("evidence_link");
-
-                    b.Property<string>("EvidenceNote")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("evidence_note");
+                    b.Property<int?>("EvidenceDocumentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("evidence_document_id");
 
                     b.Property<bool>("EvidenceRequired")
                         .ValueGeneratedOnAdd()
@@ -1385,6 +1379,8 @@ namespace Pdr.Api.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("EngagementChecklistId");
+
+                    b.HasIndex("EvidenceDocumentId");
 
                     b.HasIndex("EvidenceSubmittedById");
 
@@ -2596,15 +2592,14 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("display_order");
 
-                    b.Property<string>("EvidenceLink")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
-                        .HasColumnName("evidence_link");
+                    b.Property<string>("EvidenceDocumentFileName")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("evidence_document_file_name");
 
-                    b.Property<string>("EvidenceNote")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("evidence_note");
+                    b.Property<int?>("EvidenceDocumentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("evidence_document_id");
 
                     b.Property<int>("EvidenceSnapshotId")
                         .HasColumnType("integer")
@@ -6147,6 +6142,11 @@ namespace Pdr.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Pdr.Api.Models.Documents.Document", "EvidenceDocument")
+                        .WithMany()
+                        .HasForeignKey("EvidenceDocumentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Pdr.Api.Models.LoginEntity.User", "EvidenceSubmittedBy")
                         .WithMany()
                         .HasForeignKey("EvidenceSubmittedById")
@@ -6160,6 +6160,8 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("EngagementChecklist");
+
+                    b.Navigation("EvidenceDocument");
 
                     b.Navigation("EvidenceSubmittedBy");
 

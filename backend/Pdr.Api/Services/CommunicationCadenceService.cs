@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Pdr.Api.Data;
 using Pdr.Api.DTOs.CommunicationCadences;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Cadence;
@@ -9,7 +7,8 @@ using Pdr.Api.Services.Interfaces;
 namespace Pdr.Api.Services;
 
 public class CommunicationCadenceService(
-    AppDbContext dbContext,
+    IEngagementRepository engagementRepository,
+    IUserRepository userRepository,
     ICommunicationCadenceRepository cadenceRepository) : ICommunicationCadenceService
 {
     public async Task<List<CommunicationCadenceResponseDto>> GetCadencesAsync(int engagementId)
@@ -48,23 +47,17 @@ public class CommunicationCadenceService(
     {
         await EnsureEngagementExistsAsync(engagementId);
 
-        var assignedUsers = await dbContext.EngagementAssignments
-            .AsNoTracking()
-            .Where(a => a.EngagementId == engagementId && !a.User.IsDeleted)
-            .Select(a => new EngagementParticipantDto(
-                a.User.Id,
-                a.User.FullName))
-            .ToListAsync();
+        var assignments = await engagementRepository.GetAssignmentsAsync(engagementId);
+        var assignedUsers = assignments
+            .Select(a => new EngagementParticipantDto(a.User.Id, a.User.FullName))
+            .ToList();
 
         if (assignedUsers.Count == 0)
         {
-            assignedUsers = await dbContext.Users
-                .AsNoTracking()
-                .Where(u => !u.IsDeleted)
-                .Select(u => new EngagementParticipantDto(
-                    u.Id,
-                    u.FullName))
-                .ToListAsync();
+            var activeUsers = await userRepository.GetAllActiveAsync();
+            assignedUsers = activeUsers
+                .Select(u => new EngagementParticipantDto(u.Id, u.FullName))
+                .ToList();
         }
 
         return assignedUsers;
@@ -74,11 +67,8 @@ public class CommunicationCadenceService(
     {
         if (participantUserIds is not null && participantUserIds.Count > 0)
         {
-            var userNames = await dbContext.Users
-                .AsNoTracking()
-                .Where(u => participantUserIds.Contains(u.Id) && !u.IsDeleted)
-                .Select(u => u.FullName)
-                .ToListAsync();
+            var users = await userRepository.GetByIdsAsync(participantUserIds);
+            var userNames = users.Select(u => u.FullName).ToList();
 
             if (userNames.Count > 0)
             {
@@ -91,7 +81,7 @@ public class CommunicationCadenceService(
 
     private async Task EnsureEngagementExistsAsync(int engagementId)
     {
-        var exists = await dbContext.Engagements.AnyAsync(e => e.EngagementId == engagementId);
+        var exists = await engagementRepository.EngagementExistsAsync(engagementId);
         if (!exists)
         {
             throw new EngagementNotFoundException(engagementId);

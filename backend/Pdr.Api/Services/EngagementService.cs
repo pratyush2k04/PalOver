@@ -740,8 +740,8 @@ public class EngagementService(
                             : i.Status == "Complete"
                                 ? EvidenceSnapshotItemStatus.Complete
                                 : EvidenceSnapshotItemStatus.Open,
-                        EvidenceNote = i.EvidenceNote,
-                        EvidenceLink = i.EvidenceLink,
+                        EvidenceDocumentId = i.EvidenceDocumentId,
+                        EvidenceDocumentFileName = i.EvidenceDocument != null ? i.EvidenceDocument.FileName : null,
                         EvidenceSubmittedAt = i.EvidenceSubmittedAt,
                         EvidenceSubmittedByName = i.EvidenceSubmittedBy?.FullName
                     }).ToList()

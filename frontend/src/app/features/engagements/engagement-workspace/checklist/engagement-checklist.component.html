@@ -122,12 +122,7 @@
 
     <!-- Empty filtered state -->
     @if (filteredCategories().length === 0) {
-      <div class="empty-filter-state">
-        <p>No checklist items match the selected filter criteria.</p>
-        <app-button type="button" variant="stroked" (click)="clearFilters()">
-          Clear Filters
-        </app-button>
-      </div>
+      <app-empty-state icon="assets/icons/search.svg" message="No checklist items match the selected filter criteria." />
     }
 
     <!-- Category Cards -->
@@ -196,15 +191,26 @@
                     </td>
 
                     <td class="cell-evidence">
-                      @if (item.evidenceNote || item.evidenceLink) {
-                        <button
-                          type="button"
-                          class="btn-evidence-view"
-                          (click)="openAttachEvidenceDialog(item, false)"
-                          [title]="item.evidenceNote || item.evidenceLink || 'View Evidence'">
-                          <span class="evidence-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
-                          <span class="evidence-text">{{ item.evidenceNote ? (item.evidenceNote | slice:0:20) + (item.evidenceNote.length > 20 ? '...' : '') : 'View Link' }}</span>
-                        </button>
+                      @if (item.evidenceDocumentId) {
+                        <div class="evidence-attached-wrapper">
+                          <button
+                            type="button"
+                            class="btn-evidence-view"
+                            (click)="downloadEvidence(item)"
+                            [title]="item.evidenceDocumentFileName || 'Download evidence'">
+                            <span class="evidence-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
+                            <span class="evidence-text">{{ item.evidenceDocumentFileName ? (item.evidenceDocumentFileName | slice:0:20) + (item.evidenceDocumentFileName.length > 20 ? '...' : '') : 'Download' }}</span>
+                          </button>
+                          @if (canToggleStatus()) {
+                            <button
+                              type="button"
+                              class="btn-evidence-details"
+                              (click)="openAttachEvidenceDialog(item, false)"
+                              title="View or replace evidence">
+                              <span class="view-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                            </button>
+                          }
+                        </div>
                       } @else if (item.evidenceRequired) {
                         <div class="evidence-required-wrapper">
                           <app-status-badge tone="warning" [appTooltip]="'Evidence is required to complete this item'">
@@ -241,44 +247,48 @@
 
                     @if (canPerformAnyAction()) {
                       <td class="cell-actions">
-                        <div class="actions-group">
-                          <!-- Status Toggle / Unblock (PM & Tech Lead) -->
-                          @if (canToggleStatus()) {
-                            @if (item.status === 'Blocked') {
-                              <app-button type="button" variant="danger" [disabled]="isUpdating()" (click)="unblockItem(item)">
-                                Unblock
-                              </app-button>
-                            } @else if (item.status === 'Complete') {
-                              <app-button type="button" variant="stroked" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
-                                Reopen
-                              </app-button>
-                            } @else {
-                              <app-button class="btn-complete" type="button" variant="stroked" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
-                                Complete
+                        @if (canToggleStatus() || (canChangeApplicability() && item.exemptionStatus !== 'Pending') || (isLeadership() && item.exemptionStatus === 'Pending')) {
+                          <div class="actions-group">
+                            <!-- Status Toggle / Unblock (PM & Tech Lead) -->
+                            @if (canToggleStatus()) {
+                              @if (item.status === 'Blocked') {
+                                <app-button type="button" variant="danger" [disabled]="isUpdating()" (click)="unblockItem(item)">
+                                  Unblock
+                                </app-button>
+                              } @else if (item.status === 'Complete') {
+                                <app-button type="button" variant="stroked" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
+                                  Reopen
+                                </app-button>
+                              } @else {
+                                <app-button class="btn-complete" type="button" variant="stroked" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
+                                  Complete
+                                </app-button>
+                              }
+
+                              @if (item.status !== 'Blocked') {
+                                <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openBlockDialog(item)" ariaLabel="Flag as Blocked" [appTooltip]="'Flag as Blocked'">
+                                  <span class="action-icon" [inlineSVG]="'assets/icons/flag.svg'"></span>
+                                </app-button>
+                              }
+                            }
+
+                            <!-- Applicability Actions (PM only) -->
+                            @if (canChangeApplicability() && item.exemptionStatus !== 'Pending') {
+                              <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openMarkNaDialog(item)" ariaLabel="Mark Not Applicable" [appTooltip]="'Mark Not Applicable'">
+                                <span class="action-icon" [inlineSVG]="'assets/icons/close.svg'"></span>
                               </app-button>
                             }
 
-                            @if (item.status !== 'Blocked') {
-                              <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openBlockDialog(item)" ariaLabel="Flag as Blocked" [appTooltip]="'Flag as Blocked'">
-                                <span class="action-icon" [inlineSVG]="'assets/icons/flag.svg'"></span>
+                            <!-- Leadership Exemption Review -->
+                            @if (isLeadership() && item.exemptionStatus === 'Pending') {
+                              <app-button type="button" variant="flat" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
+                                Review Request
                               </app-button>
                             }
-                          }
-
-                          <!-- Applicability Actions (PM only) -->
-                          @if (canChangeApplicability() && item.exemptionStatus !== 'Pending') {
-                            <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openMarkNaDialog(item)" ariaLabel="Mark Not Applicable" [appTooltip]="'Mark Not Applicable'">
-                              <span class="action-icon" [inlineSVG]="'assets/icons/close.svg'"></span>
-                            </app-button>
-                          }
-
-                          <!-- Leadership Exemption Review -->
-                          @if (isLeadership() && item.exemptionStatus === 'Pending') {
-                            <app-button type="button" variant="flat" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
-                              Review Request
-                            </app-button>
-                          }
-                        </div>
+                          </div>
+                        } @else {
+                          <span class="text-faint">&mdash;</span>
+                        }
                       </td>
                     }
                   </tr>

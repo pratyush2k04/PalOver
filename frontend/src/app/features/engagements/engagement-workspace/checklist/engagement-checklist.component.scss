@@ -132,21 +132,6 @@
   }
 }
 
-.empty-filter-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: $spacing-3;
-  padding: $spacing-8;
-  background: $color-surface;
-  border: 1px dashed $color-border-soft;
-  border-radius: $radius-lg;
-  color: $color-text-faint;
-  font-size: $font-size-sm;
-  text-align: center;
-}
-
 // Callout Gate Banner
 .callout {
   display: flex;
@@ -418,11 +403,49 @@
     gap: $spacing-2;
   }
 
+  .evidence-attached-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-1;
+  }
+
+  .btn-evidence-details {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    background: transparent;
+    border: 1px solid $color-border-input;
+    border-radius: $radius-sm;
+    color: $color-text-faint;
+    cursor: pointer;
+    flex-shrink: 0;
+
+    .view-icon {
+      width: 0.875rem;
+      height: 0.875rem;
+      display: inline-flex;
+
+      ::ng-deep svg {
+        width: 0.875rem;
+        height: 0.875rem;
+      }
+    }
+
+    &:hover {
+      border-color: $color-primary;
+      color: $color-primary;
+    }
+  }
+
   .btn-evidence-view {
     display: inline-flex;
     align-items: center;
     gap: $spacing-1;
-    padding: $spacing-1 $spacing-2;
+    height: 1.75rem;
+    padding: 0 $spacing-2;
     background: $color-primary-light;
     color: $color-primary;
     border: 1px solid $color-primary-border;
@@ -432,6 +455,7 @@
     cursor: pointer;
     max-width: 170px;
     text-decoration: none;
+    box-sizing: border-box;
 
     .evidence-icon {
       width: 1rem;

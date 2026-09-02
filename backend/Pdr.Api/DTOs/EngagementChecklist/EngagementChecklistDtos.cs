@@ -46,16 +46,15 @@ public record EngagementChecklistItemDto(
     string? OwnerName,
     string? BlockReason,
     bool EvidenceRequired,
-    string? EvidenceNote,
-    string? EvidenceLink,
+    int? EvidenceDocumentId,
+    string? EvidenceDocumentFileName,
     DateTime? EvidenceSubmittedAt,
     int? EvidenceSubmittedById,
     string? EvidenceSubmittedByName
 );
 
 public record SaveChecklistItemEvidenceRequestDto(
-    string Note,
-    string? Link,
+    int DocumentId,
     bool? MarkComplete = false
 );
 

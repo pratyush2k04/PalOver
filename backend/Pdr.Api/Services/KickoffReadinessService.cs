@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Pdr.Api.Data;
 using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Exceptions;
@@ -10,8 +8,6 @@ using Pdr.Api.Models.Documents;
 using Pdr.Api.Models.EngagementChecklist;
 using Pdr.Api.Models.Handover;
 using Pdr.Api.Models.LoginEntity;
-using Pdr.Api.Models.ResourceRequests;
-using Pdr.Api.Models.Risks;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
@@ -24,7 +20,9 @@ public class KickoffReadinessService(
     IRealisticCommitmentRepository realisticCommitmentRepository,
     ICurrentUserService currentUserService,
     IAuditLogService auditLogService,
-    AppDbContext db,
+    IRiskRepository riskRepository,
+    IResourceRequestRepository resourceRequestRepository,
+    IDocumentRepository documentRepository,
     IEngagementChecklistRepository checklistRepository) : IKickoffReadinessService
 {
     private readonly record struct ReadinessCheck(int Applicable, int Passed, List<int> FailingIds, List<string> FailingFieldLabels);
@@ -145,11 +143,7 @@ public class KickoffReadinessService(
     {
         var computation = await ComputeReadinessAsync(engagementId);
 
-        var engagement = await db.Engagements
-            .AsNoTracking()
-            .Include(e => e.CommercialModel)
-            .Include(e => e.DayOneSignOffRecord)
-            .FirstOrDefaultAsync(e => e.EngagementId == engagementId)
+        var engagement = await engagementRepository.GetForOnePagerAsync(engagementId)
             ?? throw new EngagementNotFoundException(engagementId);
 
         var outstandingMandatoryItems = BuildOutstandingMandatoryItems(
@@ -159,14 +153,10 @@ public class KickoffReadinessService(
             computation.ChecklistCheck,
             computation.ChecklistItems);
 
-        var openBlockers = await db.Risks
-            .AsNoTracking()
-            .Include(r => r.Owner)
-            .Where(r => r.EngagementId == engagementId &&
-                        (r.Status == RiskStatus.Open || r.Status == RiskStatus.Mitigating) &&
-                        !r.IsDeleted)
+        var openBlockerRisks = await riskRepository.GetOpenRiskBlockersAsync(engagementId);
+        var openBlockers = openBlockerRisks
             .Select(r => new OpenBlockerDto(r.Id, r.Title, r.Status.ToString(), r.Impact.ToString(), r.Owner != null ? r.Owner.FullName : null))
-            .ToListAsync();
+            .ToList();
 
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         var daysToKickoff = engagement.KickoffDate.DayNumber - today.DayNumber;
@@ -178,11 +168,7 @@ public class KickoffReadinessService(
             ? engagement.BillingStartDate.Value.DayNumber - today.DayNumber
             : null;
 
-        var unconfirmedResourceCount = await db.ResourceRequests
-            .AsNoTracking()
-            .CountAsync(r => r.EngagementId == engagementId &&
-                             r.Status != ResourceRequestStatus.Confirmed &&
-                             !r.IsDeleted);
+        var unconfirmedResourceCount = await resourceRequestRepository.GetUnconfirmedCountByEngagementIdAsync(engagementId);
 
         var hasResourcingGap = LeadershipDashboardHelpers.EvaluateResourcingGap(daysToBilling, unconfirmedResourceCount);
 
@@ -196,12 +182,7 @@ public class KickoffReadinessService(
         CommercialDetailDto? commercial = null;
         if (isCommercialVisible)
         {
-            var commercialDocumentTitles = await db.Documents
-                .AsNoTracking()
-                .Include(d => d.Category)
-                .Where(d => d.EngagementId == engagementId && d.Category.CategoryName == DocumentCategoryNames.Commercial && !d.IsDeleted)
-                .Select(d => d.FileName)
-                .ToListAsync();
+            var commercialDocumentTitles = await documentRepository.GetFileNamesByEngagementAndCategoryAsync(engagementId, DocumentCategoryNames.Commercial);
 
             commercial = new CommercialDetailDto(engagement.CommercialModel.Name, commercialDocumentTitles);
         }

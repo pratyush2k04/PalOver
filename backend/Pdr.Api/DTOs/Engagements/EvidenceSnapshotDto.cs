@@ -14,7 +14,7 @@ public record EvidenceSnapshotItemDto(
     string Title,
     string CategoryName,
     EvidenceSnapshotItemStatus StatusAtSignOff,
-    string? EvidenceNote,
-    string? EvidenceLink,
+    int? EvidenceDocumentId,
+    string? EvidenceDocumentFileName,
     DateTime? EvidenceSubmittedAt,
     string? EvidenceSubmittedByName);
