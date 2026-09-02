@@ -12,7 +12,6 @@ namespace Pdr.Api.Services;
 public class AssumptionService(
     IAssumptionRepository assumptionRepository,
     IEngagementRepository engagementRepository,
-    IRiskService riskService,
     ICurrentUserService currentUserService) : IAssumptionService
 {
     public async Task<List<AssumptionDto>> GetAssumptionsAsync(int engagementId)
@@ -49,13 +48,15 @@ public class AssumptionService(
 
         await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
+        var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
+
         var assumption = new Assumption
         {
             EngagementId = engagementId,
             Description = createDto.Description,
             Rationale = createDto.Rationale,
             OwnerId = currentUserService.GetUserId(),
-            Status = AssumptionStatus.Unvalidated
+            Status = isPm ? AssumptionStatus.Validated : AssumptionStatus.Unvalidated
         };
 
         var created = await assumptionRepository.AddAsync(assumption);
@@ -112,21 +113,6 @@ public class AssumptionService(
             throw new InvalidAssumptionStatusException();
 
         assumption.Status = validateDto.Status;
-
-        if (validateDto.Status == AssumptionStatus.Invalid && validateDto.CreateRisk)
-        {
-            var riskDto = new CreateRiskDto
-            {
-                Title = $"Invalid Assumption: {new string(assumption.Description.Take(50).ToArray())}...",
-                Description = $"Assumption: {assumption.Description}\nRationale: {assumption.Rationale}",
-                Impact = RiskImpact.Medium,
-                Likelihood = RiskLikelihood.Low,
-                OwnerId = assumption.OwnerId
-            };
-
-            var createdRisk = await riskService.CreateRiskAsync(engagementId, riskDto);
-            assumption.LinkedRiskId = createdRisk.Id;
-        }
 
         var updated = await assumptionRepository.UpdateAsync(assumption);
 

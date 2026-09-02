@@ -19,7 +19,9 @@ namespace Pdr.Api.Controllers;
 [Produces("application/json")]
 public class KickoffController(IKickoffService kickoffService) : ControllerBase
 {
-    private string? GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    private string? GetUserId() =>
+        User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value
+        ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
     /// <summary>
     /// Retrieves the kickoff record and action items for an engagement.
@@ -101,7 +103,6 @@ public class KickoffController(IKickoffService kickoffService) : ControllerBase
     /// <param name="request">The new status value.</param>
     /// <returns>The updated action item.</returns>
     [HttpPatch("actions/{actionItemId:int}/status")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement)]
     [EndpointSummary("Update action item status")]
     [ProducesResponseType(typeof(KickoffActionItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

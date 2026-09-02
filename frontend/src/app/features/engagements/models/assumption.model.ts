@@ -27,5 +27,4 @@ export interface UpdateAssumptionDto {
 
 export interface ValidateAssumptionDto {
   status: AssumptionStatus;
-  createRisk: boolean;
 }

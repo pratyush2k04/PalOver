@@ -3649,7 +3649,7 @@ namespace Pdr.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasDefaultValue("Open")
+                        .HasDefaultValue("InProgress")
                         .HasColumnName("status");
 
                     b.Property<string>("Title")
