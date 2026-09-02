@@ -10,7 +10,7 @@ import { AuthService } from '@shared/services/auth';
 import { KICKOFF_MESSAGES } from '@shared/constants/kickoff.constants';
 import { ButtonComponent } from '@common/components/button/button';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
-import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
+import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { ToastService } from '@common/services/toast/toast';
@@ -37,27 +37,33 @@ export class MeetingRecordComponent {
   isProjectManager = computed(() => !this.isSignedOff() && this.authService.hasRole('Project Management'));
 
   readonly statusOptions: SelectOption[] = [
-    { value: 'Open', label: 'Open' },
+    { value: 'InProgress', label: 'In Progress' },
     { value: 'Done', label: 'Done' }
   ];
 
-  canEditStatus(item: KickoffActionItem): boolean {
-    if (this.isSignedOff()) return false;
-    
-    let currentUserName = this.authService.currentUser()?.fullName;
-    
-    // Fallback if auth.ts is missing the fullname claim check
-    if (!currentUserName) {
-      const token = this.authService.getToken();
-      if (token) {
-        try {
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          currentUserName = payload['fullname'] || payload['fullName'];
-        } catch (e) {}
-      }
-    }
+  private readonly statusLabels: Record<KickoffActionItemStatus, string> = {
+    Open: 'In Progress',
+    InProgress: 'In Progress',
+    Done: 'Done'
+  };
 
-    return currentUserName?.trim().toLowerCase() === item.ownerName?.trim().toLowerCase();
+  statusLabel(status: KickoffActionItemStatus): string {
+    return this.statusLabels[status];
+  }
+
+  getStatusTone(status: KickoffActionItemStatus): StatusBadgeTone {
+    return status === 'Done' ? 'success' : 'neutral';
+  }
+
+  sortedActionItems = computed(() =>
+    [...this.actionItems()].sort((a, b) => (this.canEditStatus(b) ? 1 : 0) - (this.canEditStatus(a) ? 1 : 0))
+  );
+
+  canEditStatus(item: KickoffActionItem): boolean {
+    if (this.isSignedOff() || item.status === 'Done') return false;
+
+    const currentUserId = this.authService.currentUser()?.id;
+    return currentUserId != null && currentUserId === item.assignedToUserId;
   }
 
   private parentParamMap = toSignal(this.route.parent!.paramMap);
@@ -70,8 +76,6 @@ export class MeetingRecordComponent {
   outcomes = signal('');
   actionItems = signal<KickoffActionItem[]>([]);
   isSaving = signal(false);
-  message = signal('');
-  isError = signal(false);
 
   constructor() {
     effect(() => {
@@ -103,11 +107,11 @@ export class MeetingRecordComponent {
     this.kickoffService.saveKickoffRecord(id, this.outcomes()).subscribe({
       next: () => {
         this.isSaving.set(false);
-        this.showMessage(this.messages.OUTCOMES_SAVED_SUCCESS, false);
+        this.toastService.success(this.messages.OUTCOMES_SAVED_SUCCESS);
       },
       error: () => {
         this.isSaving.set(false);
-        this.showMessage('Failed to save outcomes', true);
+        this.toastService.error('Failed to save outcomes');
       }
     });
   }
@@ -146,11 +150,5 @@ export class MeetingRecordComponent {
         error: () => this.toastService.error('Failed to create action item')
       });
     });
-  }
-
-  private showMessage(msg: string, isErr: boolean): void {
-    this.message.set(msg);
-    this.isError.set(isErr);
-    setTimeout(() => this.message.set(''), 5000);
   }
 }

@@ -15,7 +15,7 @@ import { UserService } from '@features/users/services/user.service';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-export type AddActionDialogResult = Pick<KickoffActionItem, 'title' | 'ownerName' | 'dueDate'>;
+export type AddActionDialogResult = Pick<KickoffActionItem, 'title' | 'ownerName' | 'assignedToUserId' | 'dueDate'>;
 
 export interface AddActionDialogData {
   engagementId: number;
@@ -41,10 +41,11 @@ export class AddActionDialogComponent implements OnInit {
   readonly minDate = new Date().toISOString().split('T')[0];
 
   ownerOptions = signal<SelectOption[]>([]);
+  private ownersById = new Map<number, string>();
 
   readonly form = this.fb.nonNullable.group({
     title: ['', [Validators.required]],
-    ownerName: ['', [Validators.required]],
+    ownerId: [null as number | null, [Validators.required]],
     dueDate: ['', [Validators.required, futureDateValidator]]
   });
 
@@ -52,8 +53,8 @@ export class AddActionDialogComponent implements OnInit {
     return this.form.get('title')!;
   }
 
-  get ownerNameControl() {
-    return this.form.get('ownerName')!;
+  get ownerIdControl() {
+    return this.form.get('ownerId')!;
   }
 
   get dueDateControl() {
@@ -74,25 +75,21 @@ export class AddActionDialogComponent implements OnInit {
     }).subscribe({
       next: ({ owners, leadership, projectManagers, techLeads, preSales }) => {
         const options: SelectOption[] = [];
-        const seenNames = new Set<string>();
 
-        const addOption = (name: string, role: string) => {
-          if (name && !seenNames.has(name)) {
-            seenNames.add(name);
-            options.push({
-              value: name, 
-              label: name
-            });
+        const addOption = (id: number | undefined, name: string | undefined) => {
+          if (id && name && !this.ownersById.has(id)) {
+            this.ownersById.set(id, name);
+            options.push({ value: id, label: name });
           }
         };
 
-        if (owners?.projectManagerName) addOption(owners.projectManagerName, 'Project Manager');
-        if (owners?.techLeadName) addOption(owners.techLeadName, 'Technical Lead');
+        addOption(owners?.projectManagerId, owners?.projectManagerName);
+        addOption(owners?.techLeadId, owners?.techLeadName);
 
-        leadership?.forEach((u: any) => addOption(u.fullName, 'Leadership'));
-        projectManagers?.forEach((u: any) => addOption(u.fullName, 'Project Manager'));
-        techLeads?.forEach((u: any) => addOption(u.fullName, 'Technical Lead'));
-        preSales?.forEach((u: any) => addOption(u.fullName, 'PreSales'));
+        leadership?.forEach((u: any) => addOption(u.id, u.fullName));
+        projectManagers?.forEach((u: any) => addOption(u.id, u.fullName));
+        techLeads?.forEach((u: any) => addOption(u.id, u.fullName));
+        preSales?.forEach((u: any) => addOption(u.id, u.fullName));
 
         this.ownerOptions.set([
           { value: '', label: '-- Select Owner --' },
@@ -112,6 +109,12 @@ export class AddActionDialogComponent implements OnInit {
       return;
     }
 
-    this.dialogRef.close(this.form.getRawValue());
+    const { title, ownerId, dueDate } = this.form.getRawValue();
+    this.dialogRef.close({
+      title,
+      ownerName: this.ownersById.get(ownerId!) ?? '',
+      assignedToUserId: ownerId,
+      dueDate
+    });
   }
 }
