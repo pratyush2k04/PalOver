@@ -25,7 +25,7 @@ public class KickoffActionItem : BaseAuditableEntity
 
     public DateOnly DueDate { get; set; }
 
-    public KickoffActionItemStatus Status { get; set; } = KickoffActionItemStatus.Open;
+    public KickoffActionItemStatus Status { get; set; } = KickoffActionItemStatus.InProgress;
 
     public bool IsNotified { get; set; } = true;
 }

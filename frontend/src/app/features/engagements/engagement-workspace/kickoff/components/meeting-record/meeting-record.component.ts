@@ -42,7 +42,6 @@ export class MeetingRecordComponent {
   ];
 
   private readonly statusLabels: Record<KickoffActionItemStatus, string> = {
-    Open: 'In Progress',
     InProgress: 'In Progress',
     Done: 'Done'
   };
