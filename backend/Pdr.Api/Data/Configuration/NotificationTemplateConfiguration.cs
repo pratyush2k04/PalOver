@@ -371,6 +371,19 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",
                 IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 629481,
+                Key = NotificationConstants.TemplateKeys.AssumptionNeedsValidation,
+                Title = "Assumption Needs Validation — {EngagementName}",
+                Body = "Assumption \"{AssumptionDescription}\" needs to be validated for {EngagementName}.",
+                DefaultPriority = NotificationPriority.Medium,
+                LinkPattern = "/engagements/{EngagementId}/workspace/assumptions-and-decisions",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
             }
         );
     }

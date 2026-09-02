@@ -5405,6 +5405,19 @@ namespace Pdr.Api.Migrations
                             LinkPattern = "/engagements/{EngagementId}/workspace/kickoff",
                             Title = "Action Item Assigned — {EngagementName}",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 629481,
+                            Body = "Assumption \"{AssumptionDescription}\" needs to be validated for {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 2,
+                            IsDeleted = false,
+                            Key = "AssumptionNeedsValidation",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/assumptions-and-decisions",
+                            Title = "Assumption Needs Validation — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
