@@ -39,6 +39,7 @@ import {
   AddCommitmentDialogData
 } from '../../models/handover.model';
 import { HandoverReadinessItemDto } from '../../models/handover-readiness.model';
+import { HandoverQueryDto } from '../../models/handover-query.model';
 import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
@@ -55,6 +56,8 @@ import { LoadingSpinnerComponent } from '@common/components/loading-spinner/load
 
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { HandoverReadinessComponent } from './handover-readiness/handover-readiness.component';
+
+import { InlineSVGModule } from 'ng-inline-svg-2';
 
 function timelinesMatch(timeline1: number, unit1: string, timeline2: number, unit2: string): boolean {
   return timeline1 === timeline2 && unit1 === unit2;
@@ -74,6 +77,7 @@ interface RealisticEditForm {
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
+    InlineSVGModule,
     SectionHeaderComponent,
     AlertComponent,
     ButtonComponent,
@@ -124,6 +128,7 @@ export class HandoverComponent {
   message = signal('');
   isError = signal(false);
   handoverReadinessItems = signal<HandoverReadinessItemDto[]>([]);
+  handoverQueries = signal<HandoverQueryDto[]>([]);
 
   hasUnresolvedQueries = computed(() => this.queries().some((q) => !q.isResolved));
 
@@ -133,18 +138,35 @@ export class HandoverComponent {
     this.handoverReadinessItems.set(items);
   }
 
+  onHandoverQueriesUpdated(queries: HandoverQueryDto[]): void {
+    this.handoverQueries.set(queries);
+  }
+
+  readonly blockedChecklistCount = computed(() =>
+    this.handoverReadinessItems().filter(i => i.status === 'Blocked').length
+  );
+
+  readonly totalChecklistCount = computed(() =>
+    this.handoverReadinessItems().length
+  );
+
+  readonly grantedChecklistCount = computed(() =>
+    this.handoverReadinessItems().filter(i => i.status === 'Granted').length
+  );
+
   readonly readinessItemsApplicable = computed(() =>
     this.handoverReadinessItems().filter(i => i.status !== 'Blocked').length
   );
 
   readonly readinessItemsPassed = computed(() =>
-    this.handoverReadinessItems().filter(i => i.status === 'Granted').length
+    this.grantedChecklistCount()
   );
 
   readonly isReadinessChecklistComplete = computed(() => {
-    const applicable = this.readinessItemsApplicable();
-    const passed = this.readinessItemsPassed();
-    return applicable > 0 && passed === applicable;
+    const total = this.totalChecklistCount();
+    const granted = this.grantedChecklistCount();
+    const blocked = this.blockedChecklistCount();
+    return total > 0 && granted === total && blocked === 0;
   });
 
   isHandoverReadyToSubmit = computed(() => {
@@ -155,6 +177,32 @@ export class HandoverComponent {
       this.isReadinessChecklistComplete()
     );
   });
+
+  readonly totalQueriesCount = computed(() => this.handoverQueries().length);
+
+  readonly resolvedQueriesCount = computed(() =>
+    this.handoverQueries().filter(q => q.isResolved).length
+  );
+
+  readonly allQueriesResolved = computed(() =>
+    this.handoverQueries().every(q => q.isResolved)
+  );
+
+  readonly totalCommitmentsCount = computed(() => this.commitments().length);
+
+  readonly realisticCommitmentsCount = computed(() =>
+    this.commitments().filter(c => !!c.realisticCommitment).length
+  );
+
+  readonly allRealisticProvided = computed(() =>
+    this.commitments().length === 0
+      ? true
+      : this.realisticCommitmentsCount() === this.totalCommitmentsCount()
+  );
+
+  readonly isPMReviewReady = computed(() =>
+    this.allQueriesResolved() && this.allRealisticProvided()
+  );
 
 
   readonly sentimentOptions: SelectOption[] = HANDOVER_SENTIMENT_OPTIONS.map((value) => ({ value, label: value }));

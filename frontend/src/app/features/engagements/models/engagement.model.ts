@@ -112,6 +112,15 @@ export interface EngagementListResponse {
   engagements: EngagementListItem[];
 }
 
+export interface MyEngagementsPage {
+  items: EngagementListItem[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  activeCount: number;
+  pastCount: number;
+}
+
 export type EngagementSortBy = 'kickoff' | 'readiness' | 'client';
 
 export type OwnerKind = 'projectManager' | 'techLead';

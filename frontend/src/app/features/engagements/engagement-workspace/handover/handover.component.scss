@@ -82,6 +82,14 @@
       width: 1.125rem;
       height: 1.125rem;
       flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      svg {
+        width: 1.125rem;
+        height: 1.125rem;
+      }
     }
 
     .banner-title {
@@ -108,6 +116,15 @@
 
       .metric-value {
         font-weight: $font-weight-medium;
+      }
+
+      &.metric-item-danger,
+      &.metric-item-blocked {
+        .metric-label,
+        .metric-value {
+          color: $color-danger !important;
+          font-weight: $font-weight-bold;
+        }
       }
     }
 
@@ -196,9 +213,11 @@
   color: $color-text;
 }
 
+:host ::ng-deep .required-asterisk,
 :host ::ng-deep .required-star,
+.required-asterisk,
 .required-star {
-  color: $color-danger;
+  color: $color-danger !important;
   font-weight: $font-weight-semibold;
 }
 
@@ -255,7 +274,7 @@
     }
 
     .readonly-card {
-      background-color: #ffffff;
+      background-color: $color-surface;
       border: 1px solid $color-border-soft;
       border-radius: $radius-lg;
       box-shadow: $shadow-card;

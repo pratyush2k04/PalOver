@@ -23,18 +23,6 @@
   position: relative;
 }
 
-.char-counter {
-  font-size: $font-size-xs;
-  color: $color-text-faint;
-  text-align: right;
-  margin-top: 0.125rem;
-
-  &.limit-reached {
-    color: $color-danger;
-    font-weight: $font-weight-semibold;
-  }
-}
-
 .submitted-metadata {
   font-size: $font-size-xs;
   color: $color-text-faint;

@@ -14,6 +14,7 @@ import { ToastService } from '@common/services/toast/toast';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
+import { StatusSelectComponent, StatusSelectOption } from '@common/components/form/status-select/status-select';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { InlineSVGModule } from 'ng-inline-svg-2';
@@ -28,6 +29,7 @@ import { BlockHandoverItemDialogComponent } from './dialogs/block-handover-item-
     FormsModule,
     ButtonComponent,
     StatusBadgeComponent,
+    StatusSelectComponent,
     LoadingSpinnerComponent,
     ConfirmDialogComponent,
     InlineSVGModule,
@@ -52,6 +54,10 @@ export class HandoverReadinessComponent implements OnInit {
 
   readonly isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
 
+  readonly blockedCount = computed(() =>
+    this.items().filter(item => item.status === 'Blocked').length
+  );
+
   readonly commercialItems = computed(() =>
     this.items().filter(item => item.area.toUpperCase() === 'COMMERCIAL')
   );
@@ -59,6 +65,12 @@ export class HandoverReadinessComponent implements OnInit {
   readonly handoverItems = computed(() =>
     this.items().filter(item => item.area.toUpperCase() === 'HANDOVER')
   );
+
+  readonly statusOptions: StatusSelectOption[] = [
+    { label: 'In Progress', value: 'InProgress', tone: 'info' },
+    { label: 'Granted', value: 'Granted', tone: 'success' },
+    { label: 'Blocked', value: 'Blocked', tone: 'danger' }
+  ];
 
   ngOnInit(): void {
     this.loadItems();
@@ -79,11 +91,8 @@ export class HandoverReadinessComponent implements OnInit {
     });
   }
 
-  onStatusChange(item: HandoverReadinessItemDto, event: Event): void {
+  onStatusChange(item: HandoverReadinessItemDto, newStatus: HandoverReadinessStatus): void {
     if (!this.isPreSales()) return;
-
-    const select = event.target as HTMLSelectElement;
-    const newStatus = select.value as HandoverReadinessStatus;
 
     if (newStatus === item.status) return;
 
@@ -102,7 +111,9 @@ export class HandoverReadinessComponent implements OnInit {
         if (result && result.reason) {
           this.updateStatus(item, 'Blocked', result.reason);
         } else {
-          select.value = item.status;
+          this.items.update(current =>
+            current.map(i => i.id === item.id ? { ...i } : i)
+          );
         }
       });
     } else {

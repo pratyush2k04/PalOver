@@ -2,11 +2,9 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { forkJoin, of, catchError, switchMap, map } from 'rxjs';
 import { EngagementService } from '../services/engagement.service';
 import { EngagementSortBy, EngagementListItem } from '../models/engagement.model';
 import { AppContextService } from '@shared/services/app-context';
-import { KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
 import { EngagementsComponent } from '../pages/createengagment/engagements';
 import { ENGAGEMENT_MESSAGES, USER_ROLES, APP_ROUTES, ENGAGEMENT_ROUTES } from '@shared/constants/app.constants';
 import { AlertComponent } from '@common/components/alert/alert';
@@ -16,6 +14,7 @@ import { StatusBadgeComponent } from '@common/components/status-badge/status-bad
 import { PaginatorComponent } from '@common/components/paginator/paginator';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { PageHeaderComponent } from '@common/components/page-header/page-header';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { ReadinessCircleComponent } from '@shared/readiness-circle/readiness-circle';
 
 interface MyEngagementRow extends EngagementListItem {
@@ -30,8 +29,6 @@ const SORT_OPTIONS: SelectOption[] = [
   { value: 'readiness', label: 'Readiness score' }
 ];
 
-const PAGE_SIZE = 4;
-
 @Component({
   selector: 'app-my-engagements',
   standalone: true,
@@ -45,6 +42,7 @@ const PAGE_SIZE = 4;
     PaginatorComponent,
     SelectComponent,
     PageHeaderComponent,
+    LoadingSpinnerComponent,
     ReadinessCircleComponent
   ],
   templateUrl: './my-engagements.html',
@@ -52,39 +50,31 @@ const PAGE_SIZE = 4;
 })
 export class MyEngagementsComponent implements OnInit {
   private engagementService = inject(EngagementService);
-  private kickoffReadinessService = inject(KickoffReadinessService);
   private appContext = inject(AppContextService);
   private router = inject(Router);
 
   readonly isPreSales = computed(() => this.appContext.user()?.role === USER_ROLES.PRE_SALES);
   readonly sortOptions = SORT_OPTIONS;
+  readonly pageSizeOptions = [5, 10, 15];
 
   sortBy = signal<SortOption>('kickoff');
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
-  engagements = signal<MyEngagementRow[]>([]);
-  currentPage = signal(1);
   activeTab = signal<'Active' | 'Past'>('Active');
 
-  filteredEngagements = computed(() => {
-    return this.engagements().filter(e => 
-      this.activeTab() === 'Past' ? e.isSignedOff : !e.isSignedOff
-    );
-  });
+  pageSize = signal(5);
+  page = signal(1);
+  totalCount = signal(0);
+  activeEngagementsCount = signal(0);
+  pastEngagementsCount = signal(0);
+  pagedEngagements = signal<MyEngagementRow[]>([]);
 
-  activeEngagementsCount = computed(() => this.engagements().filter(e => !e.isSignedOff).length);
-  pastEngagementsCount = computed(() => this.engagements().filter(e => e.isSignedOff).length);
-
-  activeCount = computed(() => this.filteredEngagements().length);
-  totalPages = computed(() => Math.max(1, Math.ceil(this.activeCount() / PAGE_SIZE)));
-  pagedEngagements = computed(() => {
-    const start = (this.currentPage() - 1) * PAGE_SIZE;
-    return this.filteredEngagements().slice(start, start + PAGE_SIZE);
-  });
+  totalPages = computed(() => Math.max(1, Math.ceil(this.totalCount() / this.pageSize())));
 
   setTab(tabId: 'Active' | 'Past'): void {
     this.activeTab.set(tabId);
-    this.currentPage.set(1);
+    this.page.set(1);
+    this.loadEngagements();
   }
 
   ngOnInit(): void {
@@ -96,41 +86,20 @@ export class MyEngagementsComponent implements OnInit {
     this.errorMessage.set(null);
 
     this.engagementService
-      .getMyEngagements(this.sortBy() as EngagementSortBy)
-      .pipe(
-        switchMap((response) => {
-          const list = response.engagements;
-          if (!list || list.length === 0) {
-            return of([]);
-          }
-
-          const readinessRequests = list.map((engagement) =>
-            this.kickoffReadinessService.getReadiness(engagement.id).pipe(
-              catchError(() => of({ score: 0 }))
-            )
-          );
-
-          return forkJoin(readinessRequests).pipe(
-            map((readinessResults) =>
-              list.map((engagement, idx) => ({
-                ...engagement,
-                displayReadinessScore: Math.round(readinessResults[idx]?.score ?? 0),
-                isOverdue: engagement.daysToKickoff < 0
-              }))
-            )
-          );
-        })
-      )
+      .getMyEngagementsPage(this.activeTab(), this.sortBy() as EngagementSortBy, this.page(), this.pageSize())
       .subscribe({
-        next: (rows) => {
+        next: (result) => {
+          this.pagedEngagements.set(
+            result.items.map((engagement) => ({
+              ...engagement,
+              displayReadinessScore: Math.round(engagement.readinessScore ?? 0),
+              isOverdue: engagement.daysToKickoff < 0
+            }))
+          );
+          this.totalCount.set(result.totalCount);
+          this.activeEngagementsCount.set(result.activeCount);
+          this.pastEngagementsCount.set(result.pastCount);
           this.isLoading.set(false);
-
-          if (this.sortBy() === 'readiness') {
-            rows.sort((a, b) => b.displayReadinessScore - a.displayReadinessScore);
-          }
-
-          this.engagements.set(rows);
-          this.currentPage.set(1);
         },
         error: () => {
           this.isLoading.set(false);
@@ -141,11 +110,22 @@ export class MyEngagementsComponent implements OnInit {
 
   onSortChange(sortBy: unknown): void {
     this.sortBy.set(sortBy as SortOption);
+    this.page.set(1);
     this.loadEngagements();
   }
 
   goToPage(page: number): void {
-    this.currentPage.set(Math.min(Math.max(1, page), this.totalPages()));
+    if (page < 1 || page > this.totalPages() || page === this.page()) {
+      return;
+    }
+    this.page.set(page);
+    this.loadEngagements();
+  }
+
+  onPageSizeChange(size: number): void {
+    this.pageSize.set(size);
+    this.page.set(1);
+    this.loadEngagements();
   }
 
   openEngagement(engagementId: number): void {

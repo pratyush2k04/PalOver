@@ -50,16 +50,11 @@
                   </td>
                   <td class="col-status">
                     @if (isPreSales() && !isSubmitted()) {
-                      <select
-                        class="status-select"
-                        [class]="item.status.toLowerCase()"
+                      <app-status-select
+                        [options]="statusOptions"
                         [ngModel]="item.status"
-                        (change)="onStatusChange(item, $event)"
-                      >
-                        <option value="InProgress">In Progress</option>
-                        <option value="Granted">Granted</option>
-                        <option value="Blocked">Blocked</option>
-                      </select>
+                        (ngModelChange)="onStatusChange(item, $event)"
+                      />
                     } @else {
                       <app-status-badge [tone]="getStatusTone(item.status)">
                         {{ getStatusLabel(item.status) }}
@@ -131,16 +126,11 @@
                   </td>
                   <td class="col-status">
                     @if (isPreSales() && !isSubmitted()) {
-                      <select
-                        class="status-select"
-                        [class]="item.status.toLowerCase()"
+                      <app-status-select
+                        [options]="statusOptions"
                         [ngModel]="item.status"
-                        (change)="onStatusChange(item, $event)"
-                      >
-                        <option value="InProgress">In Progress</option>
-                        <option value="Granted">Granted</option>
-                        <option value="Blocked">Blocked</option>
-                      </select>
+                        (ngModelChange)="onStatusChange(item, $event)"
+                      />
                     } @else {
                       <app-status-badge [tone]="getStatusTone(item.status)">
                         {{ getStatusLabel(item.status) }}

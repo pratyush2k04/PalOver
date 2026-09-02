@@ -213,6 +213,74 @@ public class EngagementService(
         return new EngagementListResponse(items);
     }
 
+    public async Task<MyEngagementsPageDto> GetMyEngagementsPageAsync(string status, string sortBy, int page, int pageSize)
+    {
+        var userId = currentUserService.GetUserId();
+        var isSignedOff = status == "Past";
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        // The selected tab's count comes for free as totalCount below; only the other tab needs its own query.
+        var otherStatusCount = await engagementRepository.GetEngagementsForUserStatusCountAsync(userId, isSignedOff: !isSignedOff);
+
+        List<EngagementListItemDto> items;
+        int totalCount;
+
+        if (sortBy == "readiness")
+        {
+            var all = await engagementRepository.GetEngagementsForUserFilteredAsync(userId, isSignedOff, sortBy);
+
+            var scored = new List<(Engagement Engagement, int Score)>();
+            foreach (var e in all)
+            {
+                var readiness = await kickoffReadinessService.GetReadinessAsync(e.EngagementId);
+                scored.Add((e, readiness.Score));
+            }
+
+            totalCount = scored.Count;
+
+            items = scored
+                .OrderByDescending(s => s.Score)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(s => ToEngagementListItemDto(s.Engagement, today, s.Score))
+                .ToList();
+        }
+        else
+        {
+            var (pageEngagements, count) = await engagementRepository.GetEngagementsForUserPageAsync(userId, isSignedOff, sortBy, page, pageSize);
+            totalCount = count;
+
+            items = new List<EngagementListItemDto>();
+            foreach (var e in pageEngagements)
+            {
+                var readiness = await kickoffReadinessService.GetReadinessAsync(e.EngagementId);
+                items.Add(ToEngagementListItemDto(e, today, readiness.Score));
+            }
+        }
+
+        return new MyEngagementsPageDto
+        {
+            Items = items,
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize,
+            ActiveCount = isSignedOff ? otherStatusCount : totalCount,
+            PastCount = isSignedOff ? totalCount : otherStatusCount
+        };
+    }
+
+    private static EngagementListItemDto ToEngagementListItemDto(Engagement e, DateOnly today, int readinessScore) =>
+        new(
+            e.EngagementId,
+            e.EngagementName,
+            e.ClientName,
+            e.EngagementType.Name,
+            e.CommercialModel.Name,
+            e.KickoffDate,
+            e.KickoffDate.DayNumber - today.DayNumber,
+            ReadinessScore: readinessScore,
+            IsSignedOff: e.DayOneSignOffRecord != null);
+
     public async Task<EngagementOwnersDto> GetEngagementOwnersAsync(int engagementId)
     {
         if (!await engagementRepository.EngagementExistsAsync(engagementId))

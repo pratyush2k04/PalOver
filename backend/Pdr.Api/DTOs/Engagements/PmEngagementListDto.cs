@@ -1,3 +1,5 @@
+using Pdr.Api.DTOs.Common;
+
 namespace Pdr.Api.DTOs.Engagements;
 
 public record EngagementListItemDto(
@@ -12,3 +14,9 @@ public record EngagementListItemDto(
     bool IsSignedOff);
 
 public record EngagementListResponse(List<EngagementListItemDto> Engagements);
+
+public class MyEngagementsPageDto : PagedResult<EngagementListItemDto>
+{
+    public int ActiveCount { get; set; }
+    public int PastCount { get; set; }
+}

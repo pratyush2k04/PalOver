@@ -1,10 +1,10 @@
 <div class="list-card">
   <div class="list-header">
-    <h3>Engagements approaching kickoff <span class="header-subtitle">(within 7 days)</span></h3>
-    <a routerLink="/my-engagements" class="view-all-link">View all engagements &rarr;</a>
+    <h3>Engagements approaching kickoff <span class="header-subtitle">({{ totalCount() }} total)</span></h3>
+    <a routerLink="/my-engagements" class="view-all-link">View all &rarr;</a>
   </div>
 
-  <div class="list-content custom-scrollbar">
+  <div class="list-content">
     <div class="engagements-list">
       @for (engagement of engagements(); track engagement.engagementId) {
       <a [routerLink]="['/engagements', engagement.engagementId]" class="engagement-item clickable">
@@ -35,7 +35,7 @@
         </div>
       </a>
       } @empty {
-      <div class="empty-state">No active engagements approaching kickoff.</div>
+      <app-empty-state message="No active engagements approaching kickoff." />
       }
     </div>
   </div>

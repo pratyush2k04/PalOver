@@ -20,6 +20,7 @@
             variant="flat"
             [disabled]="isSaving() || hasUnresolvedQueries()"
             [title]="hasUnresolvedQueries() ? 'All queries must be resolved before marking handover as reviewed' : ''"
+            [disabled]="isSaving() || !isPMReviewReady()"
             (click)="markReviewed()"
           >
             Mark Reviewed
@@ -49,7 +50,7 @@
       <div class="readiness-banner" [class.readiness-ready]="isHandoverReadyToSubmit()" [class.readiness-incomplete]="!isHandoverReadyToSubmit()">
         <div class="banner-header">
           @if (isHandoverReadyToSubmit()) {
-            <span class="banner-icon-svg ready-icon" [inlineSVG]="'assets/icons/check.svg'"></span>
+            <span class="banner-icon-svg ready-icon" [inlineSVG]="'assets/icons/check-circle.svg'"></span>
             <span class="banner-title">Handover is ready for submission</span>
           } @else {
             <span class="banner-icon-svg warning-icon" [inlineSVG]="'assets/icons/alert-triangle.svg'"></span>
@@ -66,6 +67,39 @@
           <div class="metric-item">
             <span class="metric-label">Readiness Checklist:</span>
             <span class="metric-value">{{ readinessItemsPassed() }}/{{ readinessItemsApplicable() }}</span>
+          </div>
+
+          @if (blockedChecklistCount() > 0) {
+            <div class="metric-item metric-item-blocked">
+              <span class="metric-label">Blocked checklist items:</span>
+              <span class="metric-value">{{ blockedChecklistCount() }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    @if (isSubmitted() && isProjectManagement()) {
+      <div class="readiness-banner" [class.readiness-ready]="isPMReviewReady()" [class.readiness-incomplete]="!isPMReviewReady()">
+        <div class="banner-header">
+          @if (isPMReviewReady()) {
+            <span class="banner-icon-svg ready-icon" [inlineSVG]="'assets/icons/check-circle.svg'"></span>
+            <span class="banner-title">Handover is ready for review</span>
+          } @else {
+            <span class="banner-icon-svg warning-icon" [inlineSVG]="'assets/icons/alert-triangle.svg'"></span>
+            <span class="banner-title">Review pending </span>
+          }
+        </div>
+
+        <div class="readiness-metrics">
+          <div class="metric-item">
+            <span class="metric-label">Queries resolved:</span>
+            <span class="metric-value">{{ resolvedQueriesCount() }}/{{ totalQueriesCount() }}</span>
+          </div>
+
+          <div class="metric-item">
+            <span class="metric-label">Realistic estimates:</span>
+            <span class="metric-value">{{ realisticCommitmentsCount() }}/{{ totalCommitmentsCount() }}</span>
           </div>
         </div>
       </div>
@@ -90,6 +124,7 @@
             [placeholder]="HANDOVER_PLACEHOLDERS.BUSINESS_PROBLEM"
             formControlName="businessProblem"
             [maxLength]="maxFreeTextLength"
+            [required]="true"
             [errorMessages]="{ required: 'Business Problem is required.' }"
           />
 
@@ -99,6 +134,7 @@
             [placeholder]="HANDOVER_PLACEHOLDERS.CLIENT_SENTIMENT"
             formControlName="clientSentiment"
             [options]="sentimentOptions"
+            [required]="true"
             [errorMessages]="{ required: 'Client Sentiment is required.' }"
           />
 
@@ -111,7 +147,7 @@
           />
 
           <div class="client-context-actions">
-            <app-button variant="stroked" [disabled]="isSaving() || !isDraft()" (click)="saveDraft()">{{ HANDOVER_BUTTONS.SAVE_DRAFT }}</app-button>
+            <app-button variant="flat" [disabled]="isSaving() || !isDraft()" (click)="saveDraft()">{{ HANDOVER_BUTTONS.SAVE_DRAFT }}</app-button>
           </div>
         </div>
       </form>
@@ -390,7 +426,8 @@
                   <div class="realistic-edit-form">
                     <app-textarea
                       [id]="'edit-realistic-desc-' + c.commitmentId"
-                      [label]="HANDOVER_LABELS.DESCRIPTION + ' *'"
+                      [label]="HANDOVER_LABELS.DESCRIPTION"
+                      [required]="true"
                       [(ngModel)]="realisticEditForm().description"
                       [ngModelOptions]="{ standalone: true }"
                       [maxLength]="2000"
@@ -426,7 +463,8 @@
                     <div class="form-group">
                       <app-input
                         [id]="'edit-realistic-ack-' + c.commitmentId"
-                        [label]="editFormNeedsAcknowledgement(c) ? HANDOVER_LABELS.ACKNOWLEDGEMENT_MESSAGE_REQ : HANDOVER_LABELS.ACKNOWLEDGEMENT_MESSAGE"
+                        [label]="HANDOVER_LABELS.ACKNOWLEDGEMENT_MESSAGE"
+                        [required]="editFormNeedsAcknowledgement(c)"
                         [(ngModel)]="realisticEditForm().acknowledgementMessage"
                         [ngModelOptions]="{ standalone: true }"
                         [maxLength]="2000"

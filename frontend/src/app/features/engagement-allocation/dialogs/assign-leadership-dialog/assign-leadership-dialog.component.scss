@@ -17,6 +17,10 @@
 
   .handover-summary-grid {
     @include flex-column($gap: $spacing-3);
+    max-height: 220px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: $spacing-2;
   }
 
   .handover-field {
@@ -33,16 +37,14 @@
       font-size: $font-size-sm;
       color: $color-text;
       margin: 0;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
   }
 }
 
-.input-label {
-  display: block;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-semibold;
-  color: $color-slate-700;
-}
+
+
 
 .tag-input-wrapper {
   background: $color-surface;
