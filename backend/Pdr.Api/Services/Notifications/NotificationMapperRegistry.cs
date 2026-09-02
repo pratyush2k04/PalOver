@@ -35,6 +35,8 @@ public static class NotificationMapperRegistry
         services.AddScoped<INotificationTemplateMapper, DocumentVisibilityChangedMapper>();
         services.AddScoped<INotificationTemplateMapper, KickoffActionItemAssignedMapper>();
         services.AddScoped<INotificationTemplateMapper, AssumptionNeedsValidationMapper>();
+        services.AddScoped<INotificationTemplateMapper, DependencyAssignedToOwnerMapper>();
+        services.AddScoped<INotificationTemplateMapper, DependencyAssignedExternalMapper>();
 
         // Add new mappers here when adding new notification types.
 

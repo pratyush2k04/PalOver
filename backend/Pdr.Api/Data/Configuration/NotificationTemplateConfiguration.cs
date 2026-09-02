@@ -384,6 +384,32 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",
                 IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 742619,
+                Key = NotificationConstants.TemplateKeys.DependencyAssignedToOwner,
+                Title = "Dependency Assigned — {EngagementName}",
+                Body = "You have been assigned the dependency \"{DependencyDescription}\" for {EngagementName}.",
+                DefaultPriority = NotificationPriority.Medium,
+                LinkPattern = "/engagements/{EngagementId}/workspace/assumptions-and-decisions",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 853720,
+                Key = NotificationConstants.TemplateKeys.DependencyAssignedExternal,
+                Title = "External Dependency Added — {EngagementName}",
+                Body = "Dependency \"{DependencyDescription}\" was assigned to external owner {OwnerName} for {EngagementName}.",
+                DefaultPriority = NotificationPriority.Medium,
+                LinkPattern = "/engagements/{EngagementId}/workspace/assumptions-and-decisions",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
             }
         );
     }

@@ -27,6 +27,8 @@ public static class NotificationConstants
         public const string TechnicalReadinessComplete = "TechnicalReadinessComplete";
         public const string KickoffActionItemAssigned = "KickoffActionItemAssigned";
         public const string AssumptionNeedsValidation = "AssumptionNeedsValidation";
+        public const string DependencyAssignedToOwner = "DependencyAssignedToOwner";
+        public const string DependencyAssignedExternal = "DependencyAssignedExternal";
     }
 
     public static class RiskCommentMention
