@@ -1,4 +1,5 @@
 using Pdr.Api.Models;
+using Pdr.Api.Models.Documents;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.MasterChecklist;
 using Pdr.Api.Models.People;
@@ -35,14 +36,14 @@ public class EngagementChecklistItem : BaseAuditableEntity
 
     // Evidence tracking (FTR-026 / US-045)
     public bool EvidenceRequired { get; set; } = false;
-    public string? EvidenceNote { get; set; }
-    public string? EvidenceLink { get; set; }
+    public int? EvidenceDocumentId { get; set; }
     public DateTime? EvidenceSubmittedAt { get; set; }
     public int? EvidenceSubmittedById { get; set; }
 
     // Navigation properties
     public User? Owner { get; set; }
     public User? EvidenceSubmittedBy { get; set; }
+    public Document? EvidenceDocument { get; set; }
     [System.Text.Json.Serialization.JsonIgnore]
     public EngagementChecklist EngagementChecklist { get; set; } = null!;
     public MasterChecklistCategory Category { get; set; } = null!;

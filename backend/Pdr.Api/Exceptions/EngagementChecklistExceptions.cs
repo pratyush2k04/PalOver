@@ -29,3 +29,6 @@ public class ItemNotBlockedException(int itemId)
 
 public class ChecklistItemEvidenceRequiredException(int itemId)
     : AppException(MasterChecklistConstants.Messages.EvidenceRequiredToComplete(itemId), StatusCodes.Status400BadRequest);
+
+public class EvidenceDocumentNotInEngagementException(int documentId)
+    : AppException(MasterChecklistConstants.Messages.EvidenceDocumentNotInEngagement(documentId), StatusCodes.Status400BadRequest);

@@ -15,6 +15,7 @@ public interface IRiskRepository
     Task<List<RiskBlockerSourceItem>> GetActiveChecklistBlockersAsync(int engagementId);
     Task<List<RiskBlockerSourceItem>> GetActiveHandoverReadinessBlockersAsync(int engagementId);
     Task<RiskBlockerSourceItem?> GetActiveResourceGapBlockerAsync(int engagementId, int thresholdDays);
+    Task<List<Risk>> GetOpenRiskBlockersAsync(int engagementId);
     Task<List<Risk>> GetAutoCreatedRisksAsync(int engagementId);
 
     Task<List<Risk>> GetOpenRisksAsync();

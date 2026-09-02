@@ -41,4 +41,6 @@ public interface IEngagementRepository
     Task<List<EngagementAssignment>> GetAssignmentsForEngagementsAsync(List<int> engagementIds);
     Task<bool> IsEngagementSignedOffAsync(int engagementId);
     Task EnsureNotSignedOffAsync(int engagementId);
+    Task<bool> HasAnyAssignmentAsync(int engagementId);
+    Task<Engagement?> GetForOnePagerAsync(int engagementId);
 }

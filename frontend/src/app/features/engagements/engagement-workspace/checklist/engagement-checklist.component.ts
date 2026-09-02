@@ -6,10 +6,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '@shared/services/auth';
 import { EngagementService } from '../../services/engagement.service';
 import { EngagementChecklistService } from '@features/engagements/services/engagement-checklist.service';
+import { DocumentService } from '@features/engagements/services/document.service';
 import { EngagementChecklist, EngagementChecklistItem } from '../../models/engagement-checklist.model';
 import { ENGAGEMENT_CHECKLIST_MESSAGES } from '@shared/constants/engagements.constants';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
+import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
 import { CommunicationCadenceService } from '@features/engagements/services/communication-cadence.service';
@@ -53,6 +55,7 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
     SectionHeaderComponent,
     TooltipDirective,
     SelectComponent,
+    EmptyStateComponent,
   ],
   templateUrl: './engagement-checklist.component.html',
   styleUrl: './engagement-checklist.component.scss'
@@ -60,6 +63,7 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
 export class EngagementChecklistComponent {
   private route = inject(ActivatedRoute);
   private checklistService = inject(EngagementChecklistService);
+  private documentService = inject(DocumentService);
   private authService = inject(AuthService);
   private engagementService = inject(EngagementService);
   private dialog = inject(DialogService);
@@ -185,7 +189,7 @@ export class EngagementChecklistComponent {
 
           // Evidence filter
           if (evidence !== 'all') {
-            const hasEvidence = !!item.evidenceNote || !!item.evidenceLink;
+            const hasEvidence = !!item.evidenceDocumentId;
             if (evidence === 'required' && !item.evidenceRequired) return false;
             if (evidence === 'attached' && !hasEvidence) return false;
             if (evidence === 'missing' && (!item.evidenceRequired || hasEvidence)) return false;
@@ -279,7 +283,7 @@ export class EngagementChecklistComponent {
     }
 
     // Intercept if completing an item with required evidence that hasn't been provided yet
-    if (item.status !== 'Complete' && item.evidenceRequired && !item.evidenceNote && !item.evidenceLink) {
+    if (item.status !== 'Complete' && item.evidenceRequired && !item.evidenceDocumentId) {
       this.openAttachEvidenceDialog(item, true);
       return;
     }
@@ -293,6 +297,13 @@ export class EngagementChecklistComponent {
         this.isUpdating.set(false);
       }
     });
+  }
+
+  downloadEvidence(item: EngagementChecklistItem): void {
+    if (!item.evidenceDocumentId) {
+      return;
+    }
+    this.documentService.downloadDocument(item.evidenceDocumentId, item.evidenceDocumentFileName || 'evidence').subscribe();
   }
 
   openAttachEvidenceDialog(item: EngagementChecklistItem, isMandatoryCompletion = false): void {
@@ -310,17 +321,17 @@ export class EngagementChecklistComponent {
     >(AttachEvidenceDialogComponent, {
       data: {
         item,
+        engagementId: engId,
         isMandatoryCompletion,
         isReadOnly
       }
     });
 
     dialogRef.closed$.subscribe((result) => {
-      if (result && result.note) {
+      if (result && result.documentId) {
         this.isUpdating.set(true);
         this.checklistService.saveItemEvidence(engId, item.id, {
-          note: result.note,
-          link: result.link,
+          documentId: result.documentId,
           markComplete: result.markComplete
         }).subscribe({
           next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist),
@@ -415,18 +426,15 @@ export class EngagementChecklistComponent {
     });
   }
 
-  onOwnerChange(item: EngagementChecklistItem, personIdValue: unknown): void {
+  onOwnerChange(item: EngagementChecklistItem, personIdValue: number | null): void {
     const engId = this.engagementId();
     if (!engId || !this.canToggleStatus() || this.isUpdating()) {
       return;
     }
 
-    const personId = (personIdValue === '' || personIdValue === null || personIdValue === undefined)
-      ? null
-      : Number(personIdValue);
     this.isUpdating.set(true);
 
-    this.checklistService.updateItemOwner(engId, item.id, { personId }).subscribe({
+    this.checklistService.updateItemOwner(engId, item.id, { personId: personIdValue }).subscribe({
       next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist, { refreshReadiness: false }),
       error: () => {
         this.isUpdating.set(false);
