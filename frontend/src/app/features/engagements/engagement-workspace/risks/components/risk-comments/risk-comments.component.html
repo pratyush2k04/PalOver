@@ -15,19 +15,18 @@
         <app-empty-state [message]="constants.EMPTY_DISCUSSION_MSG" />
       } @else {
         @for (comment of comments(); track comment.id) {
-          <div
-            class="chat-bubble-wrapper"
-            [class.is-own-message]="isOwnMessage(comment)"
-            [class.is-other-message]="!isOwnMessage(comment)"
-          >
+          <div class="chat-bubble-wrapper">
+            <div class="comment-avatar">
+              <app-avatar [name]="comment.authorName" size="sm" />
+            </div>
             <div class="chat-bubble" [class.is-editing]="editingCommentId() === comment.id">
-              <!-- Top Header Row: Avatar & Name on left, Edit Button & Time on right -->
+              <!-- Top Header Row: Author Name on left, (edited), Edit Button & Time on right -->
               <div class="bubble-header">
-                <div class="author-info">
-                  <app-avatar [name]="comment.authorName" size="sm" />
-                  <span class="author-name">{{ comment.authorName }}</span>
-                </div>
+                <span class="author-name">{{ comment.authorName }}</span>
                 <div class="header-right-actions">
+                  @if (comment.isEdited) {
+                    <span class="edited-badge" [appTooltip]="'This comment was edited'">(edited)</span>
+                  }
                   @if (comment.canEdit && !isSignedOff() && editingCommentId() !== comment.id) {
                     <app-button variant="stroked" size="sm" (click)="startEditing(comment)">
                       Edit
@@ -42,10 +41,11 @@
                 <div class="inline-edit-box">
                   <app-textarea
                     [id]="'edit-comment-' + comment.id"
-                    [rows]="2"
+                    [rows]="1"
                     [maxLength]="constants.MAX_LENGTH"
                     [ngModel]="editingCommentText()"
                     (ngModelChange)="editingCommentText.set($event)"
+                    (keydown)="onEditKeyDown($event, comment.id)"
                   />
                   <div class="edit-actions">
                     <app-button variant="stroked" size="sm" (click)="cancelEditing()">Cancel</app-button>
@@ -53,15 +53,7 @@
                   </div>
                 </div>
               } @else {
-                <div class="bubble-body">
-                  {{ comment.content }}
-                </div>
-              }
-
-              @if (comment.isEdited) {
-                <div class="bubble-footer">
-                  <span class="edited-badge" [appTooltip]="'This comment was edited'">(edited)</span>
-                </div>
+                <div class="bubble-body" [innerHTML]="formatContent(comment.content)"></div>
               }
             </div>
           </div>
@@ -74,33 +66,34 @@
   @if (!isSignedOff()) {
     <div class="add-comment-row">
       <div class="textarea-container">
-      <app-textarea
-        [id]="'new-comment-' + riskId"
-        [rows]="1"
-        [placeholder]="constants.INPUT_PLACEHOLDER"
-        [maxLength]="constants.MAX_LENGTH"
-        [ngModel]="newCommentText()"
-        (ngModelChange)="onInputTextChange($event)"
-      />
+        <app-textarea
+          [id]="'new-comment-' + riskId()"
+          [rows]="1"
+          [placeholder]="constants.INPUT_PLACEHOLDER"
+          [maxLength]="constants.MAX_LENGTH"
+          [ngModel]="newCommentText()"
+          (ngModelChange)="onInputTextChange($event)"
+          (keydown)="onTextareaKeyDown($event)"
+        />
 
-      <!-- @Mentions Autocomplete Dropdown -->
-      @if (showMentionDropdown()) {
-        <div class="mention-dropdown">
-          <div class="dropdown-header">Mention Teammate:</div>
-          @if (filteredMembers().length === 0) {
-            <div class="no-members">No matching members</div>
-          } @else {
-            <ul class="members-list">
-              @for (member of filteredMembers(); track member.id) {
-                <li class="member-item" (click)="selectMention(member)">
-                  <span class="member-name">{{ member.fullName }}</span>
-                </li>
-              }
-            </ul>
-          }
-        </div>
-      }
-    </div>
+        <!-- @Mentions Autocomplete Dropdown -->
+        @if (showMentionDropdown()) {
+          <div class="mention-dropdown">
+            <div class="dropdown-header">Mention Teammate:</div>
+            @if (filteredMembers().length === 0) {
+              <div class="no-members">No matching members</div>
+            } @else {
+              <ul class="members-list">
+                @for (member of filteredMembers(); track member.id) {
+                  <li class="member-item" (click)="selectMention(member)">
+                    <span class="member-name">{{ member.fullName }}</span>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        }
+      </div>
 
       <div class="post-button-wrapper">
         <app-button
@@ -115,3 +108,4 @@
     </div>
   }
 </app-accordion>
+

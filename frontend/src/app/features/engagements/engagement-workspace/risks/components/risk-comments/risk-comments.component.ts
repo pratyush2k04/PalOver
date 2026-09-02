@@ -132,6 +132,39 @@ export class RiskCommentsComponent implements OnInit {
     return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   }
 
+  formatContent(content: string): string {
+    if (!content) return '';
+    let escaped = this.escapeHtml(content);
+
+    const currentMembers = this.members();
+    if (currentMembers && currentMembers.length > 0) {
+      const sortedMembers = [...currentMembers].sort((a, b) => b.fullName.length - a.fullName.length);
+      for (const member of sortedMembers) {
+        const mentionStr = `@${this.escapeHtml(member.fullName)}`;
+        if (escaped.includes(mentionStr)) {
+          const replaceRegex = new RegExp(this.escapeRegExp(mentionStr), 'g');
+          escaped = escaped.replace(replaceRegex, `<span class="mention-highlight">${mentionStr}</span>`);
+        }
+      }
+    }
+
+    escaped = escaped.replace(/(?<!<span class="mention-highlight">)(@[A-Za-z0-9_.-]+)/g, '<span class="mention-highlight">$1</span>');
+    return escaped;
+  }
+
+  private escapeHtml(str: string): string {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  private escapeRegExp(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
   loadComments(): void {
     this.isLoading.set(true);
     this.commentService.getComments(this.engagementId(), this.riskId()).subscribe({
@@ -231,6 +264,28 @@ export class RiskCommentsComponent implements OnInit {
 
       this.showMentionDropdown.set(false);
       this.mentionStartIndex.set(-1);
+    }
+  }
+
+  onTextareaKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      if (this.showMentionDropdown() && this.filteredMembers().length > 0) {
+        event.preventDefault();
+        this.selectMention(this.filteredMembers()[0]);
+        return;
+      }
+      event.preventDefault();
+      this.submitComment();
+    }
+  }
+
+  onEditKeyDown(event: KeyboardEvent, commentId: number): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.saveEdit(commentId);
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      this.cancelEditing();
     }
   }
 
