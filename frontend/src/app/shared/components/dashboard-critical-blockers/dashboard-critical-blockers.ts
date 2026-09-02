@@ -22,17 +22,8 @@ export class DashboardCriticalBlockersComponent {
   totalCount = input.required<number>();
 
   onBlockerClick(blocker: DashboardBlocker): void {
-    this.notificationService.getNotifications(undefined, 1, 50).subscribe({
-      next: (result) => {
-        const notification = result.items.find(n => n.id === blocker.riskId);
-        if (notification?.link) {
-          this.router.navigateByUrl(notification.link);
-        } else {
-          this.router.navigateByUrl('/notifications');
-        }
-      },
-      error: () => this.router.navigateByUrl('/notifications')
-    });
+    this.notificationService.markAsRead(blocker.riskId).subscribe();
+    this.router.navigateByUrl(blocker.link ?? '/notifications');
   }
 
   getCategory(title: string): string {
