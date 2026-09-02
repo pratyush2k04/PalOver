@@ -46,7 +46,18 @@ export class ToastService {
       clearTimeout(timer);
       this.timers.delete(id);
     }
-    this.toasts.update((toasts) => toasts.filter((t) => t.id !== id));
+
+    const currentList = this.toasts();
+    const target = currentList.find((t) => t.id === id);
+    if (!target || target.leaving) return;
+
+    this.toasts.update((list) =>
+      list.map((t) => (t.id === id ? { ...t, leaving: true } : t))
+    );
+
+    setTimeout(() => {
+      this.toasts.update((list) => list.filter((t) => t.id !== id));
+    }, 250);
   }
 
   remove(id: number): void {
