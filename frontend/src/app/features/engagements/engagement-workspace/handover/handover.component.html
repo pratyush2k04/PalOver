@@ -19,6 +19,7 @@
           <app-button
             variant="flat"
             [disabled]="isSaving() || !isPMReviewReady()"
+            [title]="hasUnresolvedQueries() ? 'All queries must be resolved before marking handover as reviewed' : (!allRealisticProvided() ? 'All commitments must have realistic estimates before marking handover as reviewed' : '')"
             (click)="markReviewed()"
           >
             Mark Reviewed
@@ -27,7 +28,7 @@
       </div>
     </app-section-header>
 
-    @if (isSubmitted() && handover()?.submittedAt) {
+    @if (isSubmitted() && handover()?.submittedAt && !handover()?.reviewedAt) {
       <p class="submitted-info">
         Submitted by {{ handover()?.submittedByName || 'Unknown' }} on {{ handover()?.submittedAt | date: 'medium' }}
       </p>
@@ -90,10 +91,12 @@
         </div>
 
         <div class="readiness-metrics">
-          <div class="metric-item">
-            <span class="metric-label">Queries resolved:</span>
-            <span class="metric-value">{{ resolvedQueriesCount() }}/{{ totalQueriesCount() }}</span>
-          </div>
+          @if (totalQueriesCount() > 0) {
+            <div class="metric-item">
+              <span class="metric-label">Queries resolved:</span>
+              <span class="metric-value">{{ resolvedQueriesCount() }}/{{ totalQueriesCount() }}</span>
+            </div>
+          }
 
           <div class="metric-item">
             <span class="metric-label">Realistic estimates:</span>
@@ -109,7 +112,7 @@
           <h3>{{ HANDOVER_LABELS.CLIENT_CONTEXT }}</h3>
 
           <app-textarea
-            id="clientBackground"
+            id="handover-client-background"
             [label]="HANDOVER_LABELS.CLIENT_BACKGROUND"
             [placeholder]="HANDOVER_PLACEHOLDERS.CLIENT_BACKGROUND"
             formControlName="clientBackground"
@@ -117,7 +120,7 @@
           />
 
           <app-textarea
-            id="businessProblem"
+            id="handover-business-problem"
             [label]="HANDOVER_LABELS.BUSINESS_PROBLEM"
             [placeholder]="HANDOVER_PLACEHOLDERS.BUSINESS_PROBLEM"
             formControlName="businessProblem"
@@ -127,7 +130,7 @@
           />
 
           <app-select
-            id="clientSentiment"
+            id="handover-client-sentiment"
             [label]="HANDOVER_LABELS.CLIENT_SENTIMENT"
             [placeholder]="HANDOVER_PLACEHOLDERS.CLIENT_SENTIMENT"
             formControlName="clientSentiment"
@@ -137,7 +140,7 @@
           />
 
           <app-input
-            id="dealOrigin"
+            id="handover-deal-origin"
             [label]="HANDOVER_LABELS.DEAL_ORIGIN"
             [placeholder]="HANDOVER_PLACEHOLDERS.DEAL_ORIGIN"
             formControlName="dealOrigin"
@@ -166,14 +169,34 @@
         </div>
 
         <div class="readonly-grid">
-          <div class="readonly-card">
+          <div id="handover-client-background" class="readonly-card full-width">
             <span class="readonly-label">Client Background</span>
             <p class="readonly-value" [class.readonly-value-empty]="!handover()?.clientBackground">
               {{ handover()?.clientBackground || HANDOVER_LABELS.NOT_PROVIDED }}
             </p>
           </div>
 
-          <div class="readonly-card">
+          <div id="handover-business-problem" class="readonly-card full-width">
+            <span class="readonly-label">Business Problem</span>
+            <p class="readonly-value" [class.readonly-value-empty]="!handover()?.businessProblem">
+              {{ handover()?.businessProblem || HANDOVER_LABELS.NOT_PROVIDED }}
+            </p>
+          </div>
+
+          <div id="handover-client-sentiment" class="readonly-card">
+            <span class="readonly-label">Client Sentiment</span>
+            <div class="readonly-badge-container">
+              @if (handover()?.clientSentiment) {
+                <app-status-badge [tone]="getSentimentTone(handover()?.clientSentiment)">
+                  {{ handover()?.clientSentiment }}
+                </app-status-badge>
+              } @else {
+                <p class="readonly-value readonly-value-empty">{{ HANDOVER_LABELS.NOT_PROVIDED }}</p>
+              }
+            </div>
+          </div>
+
+          <div id="handover-deal-origin" class="readonly-card">
             <span class="readonly-label">Deal Origin</span>
             <p class="readonly-value" [class.readonly-value-empty]="!handover()?.dealOrigin">
               {{ handover()?.dealOrigin || HANDOVER_LABELS.NOT_PROVIDED }}
@@ -217,7 +240,7 @@
       @if (commitments().length > 0) {
         <div class="commitment-cards">
           @for (c of commitments(); track c.commitmentId) {
-            <div class="commitment-card">
+            <div [id]="'handover-commitment-' + c.commitmentId" class="commitment-card">
               <div class="commitment-square promised-square">
                 <div class="square-header">
                   <span class="square-label">{{ HANDOVER_LABELS.PROMISED }}</span>
@@ -483,7 +506,7 @@
         [engagementId]="engagementId()!"
         [commitments]="commitments()"
         [isReviewed]="isReviewed()"
-        (queriesUpdated)="onHandoverQueriesUpdated($event)"
+        (queriesChange)="queries.set($event)"
       ></app-handover-queries>
     }
   </div>

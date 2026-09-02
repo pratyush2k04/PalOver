@@ -184,6 +184,11 @@
         border: 1px solid $color-danger-border;
 
         .warning-icon {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 0.875rem;
+          height: 0.875rem;
           flex-shrink: 0;
         }
       }
@@ -227,6 +232,17 @@
   padding: $spacing-1;
   border-radius: $radius-md;
   transition: color $transition-base, background-color $transition-base;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  .action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+  }
 
   &:hover {
     color: $color-danger;

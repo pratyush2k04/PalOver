@@ -17,6 +17,7 @@ import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status
 import { StatusSelectComponent, StatusSelectOption } from '@common/components/form/status-select/status-select';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
+import { InlineSVGModule } from 'ng-inline-svg-2';
 import { AddHandoverItemDialogComponent } from './dialogs/add-handover-item-dialog/add-handover-item-dialog.component';
 import { BlockHandoverItemDialogComponent } from './dialogs/block-handover-item-dialog/block-handover-item-dialog.component';
 
@@ -30,7 +31,8 @@ import { BlockHandoverItemDialogComponent } from './dialogs/block-handover-item-
     StatusBadgeComponent,
     StatusSelectComponent,
     LoadingSpinnerComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    InlineSVGModule,
   ],
   templateUrl: './handover-readiness.component.html',
   styleUrl: './handover-readiness.component.scss'
