@@ -1,4 +1,4 @@
-﻿<div class="app-field" [class.app-field--invalid]="showError" [class.app-field--open]="isOpen()">
+<div class="app-field" [class.app-field--invalid]="showError" [class.app-field--open]="isOpen()">
   @if (label()) {
     <label [for]="id()" (click)="toggleDropdown()">
       {{ label() }}
@@ -58,6 +58,7 @@
         [style.top.px]="dropdownTop"
         [style.left.px]="dropdownLeft"
         [style.min-width.px]="dropdownMinWidth"
+        (click)="$event.stopPropagation()"
       >
         <!-- Calendar Header -->
         <div class="datepicker-header">

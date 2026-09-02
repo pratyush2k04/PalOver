@@ -1,4 +1,4 @@
-﻿import {
+import {
   Component,
   ElementRef,
   HostListener,
@@ -89,7 +89,16 @@ export class DatepickerComponent extends BaseControlComponent<string> implements
   readonly max = input<string | null>(null);
 
   readonly isOpen = signal<boolean>(false);
-  value = '';
+  
+  private readonly _value = signal<string>('');
+  
+  get value(): string {
+    return this._value();
+  }
+
+  set value(val: string) {
+    this._value.set(val);
+  }
 
   // Track the month and year currently in view
   readonly viewYear = signal<number>(new Date().getFullYear());
@@ -122,20 +131,21 @@ export class DatepickerComponent extends BaseControlComponent<string> implements
   });
 
   readonly displayValue = computed(() => {
-    if (!this.value) {
+    const currentVal = this._value();
+    if (!currentVal) {
       return '';
     }
-    const parsed = parseIsoToDate(this.value);
+    const parsed = parseIsoToDate(currentVal);
     if (!parsed) {
-      return this.value;
+      return currentVal;
     }
     const day = String(parsed.getDate()).padStart(2, '0');
-    const month = SHORT_MONTH_NAMES[parsed.getMonth()];
+    const month = String(parsed.getMonth() + 1).padStart(2, '0');
     const year = parsed.getFullYear();
-    return `${day} ${month} ${year}`;
+    return `${day}-${month}-${year}`;
   });
 
-  readonly isPlaceholder = computed(() => !this.value);
+  readonly isPlaceholder = computed(() => !this._value());
 
   readonly calendarDays = computed<CalendarDay[]>(() => {
     const year = this.viewYear();
