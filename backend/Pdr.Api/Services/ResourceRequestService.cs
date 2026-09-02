@@ -108,41 +108,25 @@ public class ResourceRequestService(
             .OrderBy(a => a.Id)
             .ToList();
 
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
         for (var position = 0; position < dto.Names.Count; position++)
         {
-            var name = dto.Names[position].Trim();
-
-            if (position < activeAllocations.Count)
+            // Every existing slot is already confirmed the moment it was saved, so it's
+            // server-authoritative here: the submitted value is ignored regardless of content.
+            if (position >= activeAllocations.Count)
             {
-                var existing = activeAllocations[position];
-                if (existing.ConfirmedDate == null)
+                var name = dto.Names[position].Trim();
+                if (name.Length > 0)
                 {
-                    if (name.Length > 0)
-                    {
-                        existing.Name = name;
-                    }
-                    else
-                    {
-                        request.Allocations.Remove(existing);
-                    }
+                    request.Allocations.Add(new ResourceAllocation { Name = name, ConfirmedDate = today });
                 }
-                // Confirmed positions are server-authoritative: the submitted name is ignored.
-            }
-            else if (name.Length > 0)
-            {
-                request.Allocations.Add(new ResourceAllocation { Name = name });
             }
         }
 
         var updatedActiveAllocations = request.Allocations.Where(a => a.RemovedAt == null).ToList();
         if (updatedActiveAllocations.Count == request.PeopleNeeded)
         {
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
-            foreach (var allocation in updatedActiveAllocations.Where(a => a.ConfirmedDate == null))
-            {
-                allocation.ConfirmedDate = today;
-            }
-
             request.Status = ResourceRequestStatus.Confirmed;
             await NotifyPmOfConfirmationAsync(request);
         }
