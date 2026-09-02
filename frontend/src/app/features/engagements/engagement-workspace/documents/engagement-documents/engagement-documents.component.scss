@@ -291,6 +291,10 @@
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
+
+  .visibility-app-select {
+    min-width: 9.5rem;
+  }
 }
 
 .edit-icon {

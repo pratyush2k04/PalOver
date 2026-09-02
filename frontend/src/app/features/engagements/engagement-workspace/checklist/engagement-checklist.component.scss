@@ -89,7 +89,16 @@
     }
   }
 
-  .filter-select {
+  app-select.filter-select {
+    min-width: 9rem;
+
+    @media screen and (max-width: 768px) {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+
+  select.filter-select {
     min-width: 140px;
     border: 1px solid $color-border-input;
     border-radius: $radius-md;
@@ -484,6 +493,13 @@
     color: $color-danger;
     margin-left: $spacing-1;
   }
+}
+
+.owner-app-select {
+  width: 100%;
+  max-width: 180px;
+  display: inline-block;
+  text-align: left;
 }
 
 .owner-select {
