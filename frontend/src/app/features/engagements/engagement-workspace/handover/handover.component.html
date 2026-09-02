@@ -18,9 +18,8 @@
         @if (isProjectManagement() && isSubmitted() && !handover()?.reviewedAt) {
           <app-button
             variant="flat"
-            [disabled]="isSaving() || hasUnresolvedQueries()"
-            [title]="hasUnresolvedQueries() ? 'All queries must be resolved before marking handover as reviewed' : ''"
             [disabled]="isSaving() || !isPMReviewReady()"
+            [title]="hasUnresolvedQueries() ? 'All queries must be resolved before marking handover as reviewed' : (!allRealisticProvided() ? 'All commitments must have realistic estimates before marking handover as reviewed' : '')"
             (click)="markReviewed()"
           >
             Mark Reviewed
@@ -92,10 +91,12 @@
         </div>
 
         <div class="readiness-metrics">
-          <div class="metric-item">
-            <span class="metric-label">Queries resolved:</span>
-            <span class="metric-value">{{ resolvedQueriesCount() }}/{{ totalQueriesCount() }}</span>
-          </div>
+          @if (totalQueriesCount() > 0) {
+            <div class="metric-item">
+              <span class="metric-label">Queries resolved:</span>
+              <span class="metric-value">{{ resolvedQueriesCount() }}/{{ totalQueriesCount() }}</span>
+            </div>
+          }
 
           <div class="metric-item">
             <span class="metric-label">Realistic estimates:</span>

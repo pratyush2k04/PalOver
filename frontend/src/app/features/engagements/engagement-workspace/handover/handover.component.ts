@@ -49,7 +49,6 @@ import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { SectionHeaderComponent } from '@common/components/section-header/section-header';
 import { HandoverQueryService } from '../../services/handover-query.service';
-import { HandoverQueryDto } from '../../models/handover-query.model';
 import { HandoverQueriesComponent } from './handover-queries/handover-queries.component';
 import { ToastService } from '@common/services/toast/toast';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
@@ -57,7 +56,6 @@ import { LoadingSpinnerComponent } from '@common/components/loading-spinner/load
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { HandoverReadinessComponent } from './handover-readiness/handover-readiness.component';
 
-import { InlineSVGModule } from 'ng-inline-svg-2';
 
 function timelinesMatch(timeline1: number, unit1: string, timeline2: number, unit2: string): boolean {
   return timeline1 === timeline2 && unit1 === unit2;
@@ -128,7 +126,6 @@ export class HandoverComponent {
   message = signal('');
   isError = signal(false);
   handoverReadinessItems = signal<HandoverReadinessItemDto[]>([]);
-  handoverQueries = signal<HandoverQueryDto[]>([]);
 
   hasUnresolvedQueries = computed(() => this.queries().some((q) => !q.isResolved));
 
@@ -136,10 +133,6 @@ export class HandoverComponent {
 
   onHandoverReadinessItemsUpdated(items: HandoverReadinessItemDto[]): void {
     this.handoverReadinessItems.set(items);
-  }
-
-  onHandoverQueriesUpdated(queries: HandoverQueryDto[]): void {
-    this.handoverQueries.set(queries);
   }
 
   readonly blockedChecklistCount = computed(() =>
@@ -178,14 +171,14 @@ export class HandoverComponent {
     );
   });
 
-  readonly totalQueriesCount = computed(() => this.handoverQueries().length);
+  readonly totalQueriesCount = computed(() => this.queries().length);
 
   readonly resolvedQueriesCount = computed(() =>
-    this.handoverQueries().filter(q => q.isResolved).length
+    this.queries().filter(q => q.isResolved).length
   );
 
   readonly allQueriesResolved = computed(() =>
-    this.handoverQueries().every(q => q.isResolved)
+    this.queries().every(q => q.isResolved)
   );
 
   readonly totalCommitmentsCount = computed(() => this.commitments().length);

@@ -75,7 +75,6 @@ export class HandoverQueriesComponent {
         this.queries.set(data);
         this.queriesChange.emit(data);
         this.isLoading.set(false);
-        this.queriesUpdated.emit(data);
       },
       error: (err) => {
         this.isLoading.set(false);

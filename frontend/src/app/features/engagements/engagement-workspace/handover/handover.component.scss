@@ -82,9 +82,6 @@
       width: 1.125rem;
       height: 1.125rem;
       flex-shrink: 0;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
 
       svg {
         width: 1.125rem;
@@ -732,25 +729,6 @@ button {
   li {
     margin-bottom: $spacing-1;
   }
-}
-
-.alert {
-  padding: $spacing-3 $spacing-4;
-  border-radius: $radius-sm;
-  margin-bottom: $spacing-6;
-  font-size: $font-size-sm;
-}
-
-.alert-success {
-  background: $color-bg;
-  color: $color-text-muted;
-  border: 1px solid $color-border-soft;
-}
-
-.alert-error {
-  background: $color-danger-bg;
-  color: $color-danger-text;
-  border: 1px solid $color-danger-border;
 }
 
 input.is-invalid, textarea.is-invalid, select.is-invalid {
