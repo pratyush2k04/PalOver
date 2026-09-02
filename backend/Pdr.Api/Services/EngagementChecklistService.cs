@@ -1,7 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Pdr.Api.Constants;
-using Pdr.Api.Data;
 using Pdr.Api.DTOs.EngagementChecklist;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Audit;
@@ -15,7 +13,7 @@ public class EngagementChecklistService(
     IEngagementRepository engagementRepository,
     IEngagementChecklistRepository checklistRepository,
     IMasterChecklistRepository masterChecklistRepository,
-    AppDbContext dbContext,
+    IUserRepository userRepository,
     ICurrentUserService currentUserService,
     IRiskService riskService,
     IAuditLogService auditLogService,
@@ -383,13 +381,12 @@ public class EngagementChecklistService(
 
     private async Task EnsureUserBelongsToEngagementAsync(int engagementId, int personId)
     {
-        var isAssigned = await dbContext.EngagementAssignments
-            .AnyAsync(a => a.EngagementId == engagementId && a.UserId == personId && !a.User.IsDeleted);
+        var isAssigned = await engagementRepository.IsUserAssignedAsync(engagementId, personId);
 
         if (!isAssigned)
         {
-            var hasAnyAssignments = await dbContext.EngagementAssignments.AnyAsync(a => a.EngagementId == engagementId);
-            if (hasAnyAssignments || !await dbContext.Users.AnyAsync(u => u.Id == personId && !u.IsDeleted))
+            var hasAnyAssignments = await engagementRepository.HasAnyAssignmentAsync(engagementId);
+            if (hasAnyAssignments || !await userRepository.UserExistsAsync(personId))
             {
                 throw new UserNotFoundException(personId);
             }
