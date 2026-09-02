@@ -17,17 +17,29 @@
   }
 }
 
+.input-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
 input {
   width: 100%;
   font-family: inherit;
   font-size: $font-size-sm;
-  color: $color-text;
+  color: $color-slate-900;
   background-color: $color-surface;
   border: 1px solid $color-border-input;
-  border-radius: $radius-md;
-  padding: $spacing-2 $spacing-3;
+  border-radius: $radius-lg;
+  padding: 0.75rem 1rem;
   outline: none;
   box-sizing: border-box;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+
+  &::placeholder {
+    color: $color-text-placeholder;
+  }
 
   &:focus {
     border-color: $color-primary;
@@ -45,6 +57,37 @@ input {
   &:disabled {
     background-color: $color-bg;
     cursor: not-allowed;
+  }
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 0.75rem;
+  background: transparent;
+  border: none;
+  padding: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-slate-500;
+  cursor: pointer;
+  border-radius: $radius-sm;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-slate-800;
+  }
+
+  .toggle-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    ::ng-deep svg,
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
   }
 }
 

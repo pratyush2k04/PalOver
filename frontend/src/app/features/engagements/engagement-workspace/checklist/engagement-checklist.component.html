@@ -85,32 +85,34 @@
         [ngModel]="searchTerm()"
         (ngModelChange)="searchTerm.set($event)"
       />
-      <select class="filter-select" [ngModel]="selectedCategoryId()" (ngModelChange)="selectedCategoryId.set($event)">
-        <option [ngValue]="'all'">All Categories</option>
-        @for (cat of categoriesList(); track cat.id) {
-          <option [ngValue]="cat.id">{{ cat.name }}</option>
-        }
-      </select>
-      <select class="filter-select" [ngModel]="selectedStatus()" (ngModelChange)="selectedStatus.set($event)">
-        <option value="all">All Status</option>
-        <option value="Incomplete">Incomplete</option>
-        <option value="Complete">Complete</option>
-        <option value="Blocked">Blocked</option>
-        <option value="Pending">Pending Approval</option>
-      </select>
-      <select class="filter-select" [ngModel]="selectedEvidenceFilter()" (ngModelChange)="selectedEvidenceFilter.set($event)">
-        <option value="all">All Evidence</option>
-        <option value="required">Evidence Required</option>
-        <option value="attached">Evidence Attached</option>
-        <option value="missing">Evidence Missing</option>
-      </select>
-      <select class="filter-select" [ngModel]="selectedOwnerId()" (ngModelChange)="selectedOwnerId.set($event)">
-        <option [ngValue]="'all'">All Owners</option>
-        <option [ngValue]="'unassigned'">Unassigned</option>
-        @for (user of assignedUsers(); track user.userId) {
-          <option [ngValue]="user.userId">{{ user.fullName }}</option>
-        }
-      </select>
+      <app-select
+        id="checklist-filter-category"
+        class="filter-select"
+        [options]="categoryFilterOptions()"
+        [ngModel]="selectedCategoryId()"
+        (ngModelChange)="selectedCategoryId.set($event)"
+      />
+      <app-select
+        id="checklist-filter-status"
+        class="filter-select"
+        [options]="statusFilterOptions"
+        [ngModel]="selectedStatus()"
+        (ngModelChange)="selectedStatus.set($event)"
+      />
+      <app-select
+        id="checklist-filter-evidence"
+        class="filter-select"
+        [options]="evidenceFilterOptions"
+        [ngModel]="selectedEvidenceFilter()"
+        (ngModelChange)="selectedEvidenceFilter.set($event)"
+      />
+      <app-select
+        id="checklist-filter-owner"
+        class="filter-select"
+        [options]="ownerFilterOptions()"
+        [ngModel]="selectedOwnerId()"
+        (ngModelChange)="selectedOwnerId.set($event)"
+      />
       @if (hasActiveFilters()) {
         <app-button type="button" variant="stroked" (click)="clearFilters()">
           Clear Filters
@@ -180,15 +182,14 @@
 
                     <td class="cell-owner">
                       @if (canToggleStatus()) {
-                        <select
-                          class="owner-select"
+                        <app-select
+                          [id]="'owner-' + item.id"
+                          class="owner-app-select"
+                          [options]="rowOwnerOptions()"
+                          [ngModel]="item.ownerId"
+                          (ngModelChange)="onOwnerChange(item, $event)"
                           [disabled]="isUpdating()"
-                          (change)="onOwnerChange(item, $any($event.target).value)">
-                          <option value="" [selected]="!item.ownerId">Unassigned</option>
-                          @for (user of assignedUsers(); track user.userId) {
-                            <option [value]="user.userId" [selected]="item.ownerId === user.userId">{{ user.fullName }}</option>
-                          }
-                        </select>
+                        />
                       } @else {
                         {{ item.ownerName || 'Unassigned' }}
                       }

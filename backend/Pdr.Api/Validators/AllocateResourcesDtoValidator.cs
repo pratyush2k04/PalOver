@@ -12,7 +12,6 @@ public class AllocateResourcesDtoValidator : AbstractValidator<AllocateResources
             .NotEmpty().WithMessage(ResourceRequestConstants.ValidationMessages.NamesRequired);
 
         RuleForEach(x => x.Names)
-            .NotEmpty().WithMessage(ResourceRequestConstants.ValidationMessages.NameRequired)
             .MaximumLength(255).WithMessage(ResourceRequestConstants.ValidationMessages.NameTooLong);
     }
 }

@@ -9,7 +9,6 @@ public interface IResourceRequestService
     Task<ResourceRequestDto> CreateResourceRequestAsync(int engagementId, CreateResourceRequestDto dto);
     Task<List<ResourceRequestDto>> GetForEngagementAsync(int engagementId);
     Task<ResourceRequestDto> AllocateResourcesAsync(int engagementId, int id, AllocateResourcesDto dto);
-    Task<ResourceRequestDto> ConfirmAllocationAsync(int engagementId, int id, int allocationId, ConfirmAllocationDto dto);
     Task<ResourceRequestDto> RemoveAllocationAsync(int engagementId, int id, int allocationId, RemoveAllocationDto dto);
     Task<ResourcingGapDto> GetResourcingGapAsync(int engagementId);
 }

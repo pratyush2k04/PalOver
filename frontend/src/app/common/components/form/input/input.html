@@ -7,19 +7,34 @@
       }
     </label>
   }
-  <input
-    [id]="id()"
-    [type]="type()"
-    [placeholder]="placeholder()"
-    [attr.maxlength]="maxLength()"
-    [attr.min]="min()"
-    [attr.step]="step()"
-    [value]="value"
-    [disabled]="disabled()"
-    [class.is-invalid]="showError"
-    (input)="onInput($any($event.target).value)"
-    (blur)="markTouched()"
-  />
+  <div class="input-wrapper">
+    <input
+      [id]="id()"
+      [type]="currentType()"
+      [placeholder]="placeholder()"
+      [attr.maxlength]="maxLength()"
+      [attr.min]="min()"
+      [attr.step]="step()"
+      [value]="value"
+      [disabled]="disabled()"
+      [class.is-invalid]="showError"
+      (input)="onInput($any($event.target).value)"
+      (blur)="markTouched()"
+    />
+    @if (type() === 'password') {
+      <button
+        type="button"
+        class="password-toggle-btn"
+        [attr.aria-label]="isPasswordVisible() ? 'Hide password' : 'Show password'"
+        (click)="togglePasswordVisibility()"
+      >
+        <span
+          class="toggle-icon"
+          [inlineSVG]="isPasswordVisible() ? 'assets/icons/eye-off.svg' : 'assets/icons/eye.svg'"
+        ></span>
+      </button>
+    }
+  </div>
   @if (showError || showCounter()) {
     <div class="app-field__footer">
       @if (showError) {

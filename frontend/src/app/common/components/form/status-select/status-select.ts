@@ -75,7 +75,7 @@ export class StatusSelectComponent extends BaseControlComponent<unknown> impleme
     effect(() => {
       this.options();
       this.syncSelectedIndex();
-    }, { allowSignalWrites: true });
+    });
   }
 
   ngOnDestroy(): void {
