@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
+import { DatepickerComponent } from '@common/components/form/datepicker/datepicker';
 import { KickoffActionItem } from '@shared/models/kickoff.model';
 import { KICKOFF_MESSAGES } from '@shared/constants/kickoff.constants';
 import { futureDateValidator } from '@common/validators/date.validators';
@@ -13,7 +14,7 @@ export type AddActionDialogResult = Pick<KickoffActionItem, 'title' | 'ownerName
 @Component({
   selector: 'app-add-action-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, InputComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, InputComponent, DatepickerComponent],
   templateUrl: './add-action-dialog.component.html',
   styleUrl: './add-action-dialog.component.scss'
 })

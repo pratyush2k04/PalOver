@@ -11,7 +11,7 @@ import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { AlertComponent } from '@common/components/alert/alert';
-import { InputComponent } from '@common/components/form/input/input';
+import { DatepickerComponent } from '@common/components/form/datepicker/datepicker';
 import { ToastService } from '@common/services/toast/toast';
 import { RESOURCE_REQUEST_CONSTANTS } from '@shared/constants/app.constants';
 import { ResourceRequestItem } from '../../../models/resource-request.model';
@@ -37,7 +37,7 @@ function notFutureDateValidator(): ValidatorFn {
 @Component({
   selector: 'app-confirm-allocation-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, AlertComponent, InputComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, AlertComponent, DatepickerComponent],
   templateUrl: './confirm-allocation-dialog.component.html',
   styleUrl: './confirm-allocation-dialog.component.scss',
 })

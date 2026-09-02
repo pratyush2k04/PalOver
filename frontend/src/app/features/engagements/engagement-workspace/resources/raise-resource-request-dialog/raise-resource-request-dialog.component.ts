@@ -15,6 +15,7 @@ import { AlertComponent } from '@common/components/alert/alert';
 import { ToastService } from '@common/services/toast/toast';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { InputComponent } from '@common/components/form/input/input';
+import { DatepickerComponent } from '@common/components/form/datepicker/datepicker';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { MultiSelectListComponent } from '@common/components/multi-select-list/multi-select-list';
 import {
@@ -54,6 +55,7 @@ function notAfterBillingDateValidator(billingStartDate: string | null | undefine
     AlertComponent,
     SelectComponent,
     InputComponent,
+    DatepickerComponent,
     TextareaComponent,
     MultiSelectListComponent,
   ],

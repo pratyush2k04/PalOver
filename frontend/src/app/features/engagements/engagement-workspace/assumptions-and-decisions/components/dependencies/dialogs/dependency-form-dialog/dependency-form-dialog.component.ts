@@ -5,7 +5,7 @@ import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
-import { InputComponent } from '@common/components/form/input/input';
+import { DatepickerComponent } from '@common/components/form/datepicker/datepicker';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { DependencyDto, DependencyType, DependencyStatus } from '../../../../../../models/dependency.model';
 import { PersonService } from '@shared/services/person.service';
@@ -30,7 +30,7 @@ export interface DependencyFormDialogResult {
 @Component({
   selector: 'app-dependency-form-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, TextareaComponent, InputComponent, SelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, TextareaComponent, SelectComponent, DatepickerComponent],
   templateUrl: './dependency-form-dialog.component.html',
   styleUrl: './dependency-form-dialog.component.scss'
 })

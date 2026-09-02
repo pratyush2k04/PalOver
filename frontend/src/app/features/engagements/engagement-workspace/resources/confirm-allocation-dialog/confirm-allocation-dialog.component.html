@@ -10,10 +10,9 @@
       Confirm <strong>{{ data.allocationName }}</strong> for this role.
     </p>
 
-    <app-input
+    <app-datepicker
       id="confirmed-date"
       [label]="constants.LABEL_CONFIRMED_DATE"
-      type="date"
       formControlName="confirmedDate"
       [errorMessages]="{ futureDate: constants.MSG_FUTURE_CONFIRMED_DATE }"
     />
