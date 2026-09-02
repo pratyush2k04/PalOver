@@ -1,0 +1,217 @@
+<div class="app-field" [class.app-field--invalid]="showError" [class.app-field--open]="isOpen()">
+  @if (label()) {
+    <label [for]="id()" (click)="toggleDropdown()">
+      {{ label() }}
+      @if (required()) {
+        <span class="required-asterisk">*</span>
+      }
+    </label>
+  }
+
+  <div class="datepicker-wrapper">
+    <button
+      type="button"
+      [id]="id()"
+      class="datepicker-trigger"
+      [class.is-invalid]="showError"
+      [class.is-open]="isOpen()"
+      [class.is-placeholder]="isPlaceholder()"
+      [disabled]="disabled()"
+      [attr.aria-expanded]="isOpen()"
+      [attr.aria-haspopup]="'dialog'"
+      (click)="toggleDropdown()"
+    >
+      <span class="datepicker-trigger__left">
+        <span class="datepicker-trigger__icon" [inlineSVG]="'assets/icons/calendar.svg'"></span>
+        <span class="datepicker-trigger__text">
+          {{ isPlaceholder() ? placeholder() : displayValue() }}
+        </span>
+      </span>
+
+      <span class="datepicker-trigger__right">
+        @if (value && !disabled()) {
+          <span
+            role="button"
+            tabindex="0"
+            class="datepicker-trigger__clear"
+            title="Clear date"
+            [inlineSVG]="'assets/icons/close.svg'"
+            (click)="$event.stopPropagation(); clearDate()"
+            (keydown.enter)="$event.stopPropagation(); clearDate()"
+          ></span>
+        }
+        <span
+          class="datepicker-trigger__chevron"
+          [class.is-open]="isOpen()"
+          [inlineSVG]="'assets/icons/chevron-down.svg'"
+        ></span>
+      </span>
+    </button>
+
+    @if (isOpen()) {
+      <div
+        class="datepicker-dropdown"
+        role="dialog"
+        aria-modal="true"
+        [attr.aria-label]="label() || 'Choose Date'"
+        [style.position]="'fixed'"
+        [style.top.px]="dropdownTop"
+        [style.left.px]="dropdownLeft"
+        (click)="$event.stopPropagation()"
+      >
+        <!-- Calendar Header -->
+        <div class="datepicker-header">
+          <div class="datepicker-header__nav">
+            <button
+              type="button"
+              class="nav-btn"
+              title="Previous Year"
+              (click)="prevYear()"
+            >
+              <span class="double-chevron double-chevron--prev">
+                <span class="chevron-svg" [inlineSVG]="'assets/icons/chevron-down.svg'"></span>
+                <span class="chevron-svg" [inlineSVG]="'assets/icons/chevron-down.svg'"></span>
+              </span>
+            </button>
+            <button
+              type="button"
+              class="nav-btn"
+              title="Previous Month"
+              (click)="prevMonth()"
+            >
+              <span class="chevron-svg chevron-svg--prev" [inlineSVG]="'assets/icons/chevron-down.svg'"></span>
+            </button>
+          </div>
+
+          <span class="datepicker-header__title">
+            <button
+              type="button"
+              class="title-btn"
+              [class.is-active]="viewMode() === 'months'"
+              (click)="setMode('months')"
+            >
+              {{ currentMonthName() }}
+            </button>
+            <button
+              type="button"
+              class="title-btn"
+              [class.is-active]="viewMode() === 'years'"
+              (click)="setMode('years')"
+            >
+              {{ viewYear() }}
+            </button>
+          </span>
+
+          <div class="datepicker-header__nav">
+            <button
+              type="button"
+              class="nav-btn"
+              title="Next Month"
+              (click)="nextMonth()"
+            >
+              <span class="chevron-svg chevron-svg--next" [inlineSVG]="'assets/icons/chevron-down.svg'"></span>
+            </button>
+            <button
+              type="button"
+              class="nav-btn"
+              title="Next Year"
+              (click)="nextYear()"
+            >
+              <span class="double-chevron double-chevron--next">
+                <span class="chevron-svg" [inlineSVG]="'assets/icons/chevron-down.svg'"></span>
+                <span class="chevron-svg" [inlineSVG]="'assets/icons/chevron-down.svg'"></span>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        @switch (viewMode()) {
+          @case ('days') {
+            <!-- Weekdays Row -->
+            <div class="datepicker-weekdays">
+              @for (day of weekdays; track day) {
+                <span class="weekday-cell">{{ day }}</span>
+              }
+            </div>
+
+            <!-- Days Grid -->
+            <div class="datepicker-days">
+              @for (day of calendarDays(); track day.isoString) {
+                <button
+                  type="button"
+                  class="day-cell"
+                  [class.is-outside]="!day.isCurrentMonth"
+                  [class.is-today]="day.isToday"
+                  [class.is-selected]="day.isSelected"
+                  [class.is-disabled]="day.isDisabled"
+                  [disabled]="day.isDisabled"
+                  [attr.aria-label]="day.isoString"
+                  [attr.aria-selected]="day.isSelected"
+                  (click)="selectDay(day)"
+                >
+                  {{ day.dayNumber }}
+                </button>
+              }
+            </div>
+          }
+          @case ('months') {
+            <div class="datepicker-months-grid">
+              @for (month of shortMonthNames; track month; let i = $index) {
+                <button
+                  type="button"
+                  class="grid-cell"
+                  [class.is-current]="i === viewMonth()"
+                  [class.is-disabled]="isMonthDisabled(i, viewYear())"
+                  [disabled]="isMonthDisabled(i, viewYear())"
+                  (click)="selectMonthView(i)"
+                >
+                  {{ month }}
+                </button>
+              }
+            </div>
+          }
+          @case ('years') {
+            <div class="datepicker-years-grid">
+              @for (year of calendarYears(); track year) {
+                <button
+                  type="button"
+                  class="grid-cell"
+                  [class.is-current]="year === viewYear()"
+                  [class.is-disabled]="isYearDisabled(year)"
+                  [disabled]="isYearDisabled(year)"
+                  (click)="selectYearView(year)"
+                >
+                  {{ year }}
+                </button>
+              }
+            </div>
+          }
+        }
+
+        <!-- Calendar Footer -->
+        <div class="datepicker-footer">
+          <button
+            type="button"
+            class="action-btn action-btn--secondary"
+            (click)="selectToday()"
+          >
+            Today
+          </button>
+          @if (!required() && value) {
+            <button
+              type="button"
+              class="action-btn action-btn--subtle"
+              (click)="clearDate()"
+            >
+              Clear
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (showError) {
+    <span class="app-field__error">{{ errorMessage }}</span>
+  }
+</div>

@@ -43,29 +43,30 @@
 
     app-select,
     app-input,
+    app-datepicker,
     app-button {
       width: 100%;
       min-width: 0;
     }
   }
 
-  app-select,
   app-input,
+  app-datepicker,
   app-button {
     display: inline-flex;
     align-items: center;
   }
 
   app-select {
-    min-width: 10rem;
+    display: block;
+    min-width: 8.5rem;
+
+    &.audit-category-select {
+      min-width: 11.5rem;
+    }
 
     ::ng-deep .app-field {
       margin-bottom: 0;
-
-      select {
-        height: 2.375rem;
-        box-sizing: border-box;
-      }
     }
   }
 
@@ -79,6 +80,14 @@
         height: 2.375rem;
         box-sizing: border-box;
       }
+    }
+  }
+
+  app-datepicker {
+    min-width: 9.5rem;
+
+    ::ng-deep .app-field {
+      margin-bottom: 0;
     }
   }
 
