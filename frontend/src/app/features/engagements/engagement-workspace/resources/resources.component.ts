@@ -73,9 +73,10 @@ export class ResourcesComponent {
   engagementInfo = signal<EngagementInfoDto | null>(null);
   readonly isLoading = signal<boolean>(true);
 
-  readonly unconfirmedCount = computed(
-    () => this.requests().filter((r) => r.status !== 'Confirmed').length,
-  );
+  readonly raisedRequests = computed(() => this.requests().filter((r) => r.status !== 'Confirmed'));
+  readonly confirmedRequests = computed(() => this.requests().filter((r) => r.status === 'Confirmed'));
+
+  readonly unconfirmedCount = computed(() => this.raisedRequests().length);
   readonly hasUnconfirmedRequests = computed(() => this.unconfirmedCount() > 0);
   readonly billingStartDate = computed(() => this.engagementInfo()?.billingStartDate ?? null);
 
