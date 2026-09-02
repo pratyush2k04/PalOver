@@ -1,8 +1,9 @@
 <div class="login-container">
   <div class="login-card">
     <div class="login-header">
-      <h2>Log In</h2>
-      <p>Enter your credentials to access your workspace</p>
+      <img src="logo.png" alt="paltech logo" class="login-logo" />
+      <h1 class="hub-title">Project Readiness Hub</h1>
+      <p class="login-desc">Log in to continue to your workspace.</p>
     </div>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
@@ -14,7 +15,7 @@
         id="email"
         type="email"
         label="Work Email"
-        placeholder="name@company.com"
+        placeholder="you@company.com"
         formControlName="email"
         [errorMessages]="{ required: 'Email is required.', email: 'Enter a valid work email address.' }"
       />
@@ -23,15 +24,21 @@
         id="password"
         type="password"
         label="Password"
-        placeholder="Enter your password"
+        placeholder="Enter password"
         formControlName="password"
         [errorMessages]="{ required: 'Password is required.' }"
       />
 
-      <app-button type="submit" variant="flat" [fullWidth]="true">
-       Log In
+      <app-button
+        type="submit"
+        variant="flat"
+        [fullWidth]="true"
+        [loading]="isLoading()"
+        [disabled]="isLoading()"
+        class="login-submit-btn"
+      >
+        Log In
       </app-button>
     </form>
   </div>
-  <app-global-loader />
 </div>
