@@ -8,7 +8,26 @@
 .comments-list {
   @include flex-column($spacing-3);
   width: 100%;
-  padding: $spacing-2 0;
+  padding: $spacing-2 $spacing-1 $spacing-2 0;
+  max-height: 22rem;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $color-slate-300;
+    border-radius: $radius-full;
+
+    &:hover {
+      background-color: $color-slate-400;
+    }
+  }
 
   .chat-bubble-wrapper {
     display: flex;

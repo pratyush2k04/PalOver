@@ -171,6 +171,7 @@ export class RiskCommentsComponent implements OnInit {
       next: (data) => {
         this.comments.set(data);
         this.isLoading.set(false);
+        this.scrollToBottom();
       },
       error: (err) => {
         console.error(RISK_COMMENT_MESSAGES.LOAD_ERROR, err);
@@ -310,6 +311,7 @@ export class RiskCommentsComponent implements OnInit {
         this.showMentionDropdown.set(false);
         this.toastService.success(RISK_COMMENT_MESSAGES.ADD_SUCCESS);
         this.isSubmitting.set(false);
+        this.scrollToBottom();
       },
       error: (err) => {
         console.error(err);
@@ -317,6 +319,15 @@ export class RiskCommentsComponent implements OnInit {
         this.isSubmitting.set(false);
       }
     });
+  }
+
+  private scrollToBottom(): void {
+    setTimeout(() => {
+      const container = document.querySelector('.comments-list');
+      if (container) {
+        container.scrollTop = container.scrollHeight;
+      }
+    }, 50);
   }
 
   startEditing(comment: RiskComment): void {
