@@ -50,6 +50,10 @@ export class HandoverReadinessComponent implements OnInit {
 
   readonly isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
 
+  readonly blockedCount = computed(() =>
+    this.items().filter(item => item.status === 'Blocked').length
+  );
+
   readonly commercialItems = computed(() =>
     this.items().filter(item => item.area.toUpperCase() === 'COMMERCIAL')
   );

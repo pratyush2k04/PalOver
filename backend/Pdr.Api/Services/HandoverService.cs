@@ -190,8 +190,7 @@ public class HandoverService : IHandoverService
             throw new HandoverIncompleteException(HandoverValidationConstants.ClientSentimentRequiredSubmit);
 
         var readinessItems = await _handoverReadinessRepository.GetItemsByEngagementIdAsync(engagementId);
-        var nonBlockedItems = readinessItems.Where(i => i.Status != HandoverReadinessStatus.Blocked).ToList();
-        if (nonBlockedItems.Count == 0 || nonBlockedItems.Any(i => i.Status != HandoverReadinessStatus.Granted))
+        if (readinessItems.Count == 0 || readinessItems.Any(i => i.Status != HandoverReadinessStatus.Granted))
         {
             throw new HandoverIncompleteException(HandoverValidationConstants.ReadinessChecklistNotGrantedSubmit);
         }
@@ -241,6 +240,17 @@ public class HandoverService : IHandoverService
 
         if (handover.ReviewedAt is null)
         {
+            var commitments = await _commitmentRepository.GetByHandoverIdAsync(handover.HandoverId);
+            if (commitments.Count > 0)
+            {
+                var commitmentIds = commitments.Select(c => c.CommitmentId).ToList();
+                var realisticByCommitmentId = await _realisticCommitmentRepository.GetByCommitmentIdsAsync(commitmentIds);
+                if (commitments.Any(c => !realisticByCommitmentId.ContainsKey(c.CommitmentId)))
+                {
+                    throw new HandoverIncompleteException(HandoverValidationConstants.MissingRealisticCommitmentsReview);
+                }
+            }
+
             handover.ReviewedAt = DateTime.UtcNow;
             handover.ReviewedByUserId = int.Parse(userIdStr);
             handover.StatusId = (int)HandoverStatusEnum.Reviewed;
