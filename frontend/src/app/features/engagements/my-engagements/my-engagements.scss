@@ -90,21 +90,22 @@
   }
 }
 
-app-paginator {
-  display: block;
-  margin-top: $spacing-5;
-}
-
-.engagement-list {
+.engagement-list-card {
   background: $color-surface;
   border-radius: $radius-2xl;
   box-shadow: $shadow-card;
   overflow: hidden;
 }
 
+.pagination-footer {
+  padding: $spacing-3 $spacing-5;
+  border-top: 1px solid $color-border-soft;
+  background-color: $color-surface-hover;
+}
+
 .engagement-row {
   @include flex-between;
-  padding: $spacing-5 $spacing-6;
+  padding: $spacing-3 $spacing-6;
   cursor: pointer;
   transition: background-color $transition-fast;
 

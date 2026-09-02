@@ -1,10 +1,15 @@
 @use 'styles/tokens' as *;
 
+:host {
+  display: block;
+  height: 100%;
+}
+
 .list-card {
   background: $color-surface;
   border-radius: $radius-2xl;
   box-shadow: $shadow-card;
-  padding: $spacing-6;
+  padding: $spacing-4;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -14,7 +19,8 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: $spacing-6;
+  padding: 0;
+  margin-bottom: $spacing-4;
 
   h3 {
     margin: 0;
@@ -43,30 +49,26 @@
 }
 
 .list-content {
-  overflow-y: auto;
-  max-height: 28.125rem;
+  padding: 0;
 }
 
 .engagements-list {
   display: flex;
   flex-direction: column;
+  padding: $spacing-1 0;
 }
 
 .engagement-item {
   display: flex;
   align-items: center;
   gap: $spacing-5;
-  padding: $spacing-3 0;
+  padding: $spacing-3 $spacing-2;
   border-bottom: 1px solid $color-border-soft;
   text-decoration: none;
   transition: background-color 0.2s;
 
   &:last-child {
     border-bottom: none;
-  }
-
-  &:first-child {
-    padding-top: 0;
   }
 }
 
@@ -199,12 +201,4 @@
   color: $color-text;
   min-width: 2.1875rem;
   text-align: right;
-}
-
-.empty-state {
-  text-align: center;
-  color: $color-text-fainter;
-  padding: 3rem 0;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-medium;
 }

@@ -1,5 +1,5 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map, tap } from 'rxjs';
 import {
   CommercialModelOption,
@@ -12,6 +12,7 @@ import {
   MarkSowSignedResponse,
   EngagementListResponse,
   EngagementSortBy,
+  MyEngagementsPage,
   DayOneSignOffRequest
 } from '../models/engagement.model';
 import { EvidenceSnapshot } from '../models/evidence-snapshot.model';
@@ -89,6 +90,15 @@ export class EngagementService {
     return this.http.get<EngagementListResponse>(ENGAGEMENT_API_ENDPOINTS.MY_ENGAGEMENTS, {
       params: { sortBy }
     });
+  }
+
+  getMyEngagementsPage(status: 'Active' | 'Past', sortBy: EngagementSortBy, page: number, pageSize: number): Observable<MyEngagementsPage> {
+    const params = new HttpParams()
+      .set('status', status)
+      .set('sortBy', sortBy)
+      .set('page', page)
+      .set('pageSize', pageSize);
+    return this.http.get<MyEngagementsPage>(ENGAGEMENT_API_ENDPOINTS.MY_ENGAGEMENTS_PAGE, { params });
   }
 
   getOpenItemsSummary(id: number): Observable<EngagementOpenItemsSummary> {

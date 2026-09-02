@@ -99,9 +99,11 @@ public class NotificationService(
         await repository.AddRangeAsync(notifications);
     }
 
-    public async Task<PagedResult<NotificationDto>> GetForUserAsync(int userId, int? engagementId, int page, int pageSize)
+    public async Task<PagedResult<NotificationDto>> GetForUserAsync(
+        int userId, int? engagementId, int page, int pageSize,
+        bool? isRead = null, NotificationPriority? priority = null)
     {
-        var (notifications, totalCount) = await repository.GetForUserAsync(userId, engagementId, page, pageSize);
+        var (notifications, totalCount) = await repository.GetForUserAsync(userId, engagementId, page, pageSize, isRead, priority);
 
         var items = new List<NotificationDto>();
         foreach (var notification in notifications)

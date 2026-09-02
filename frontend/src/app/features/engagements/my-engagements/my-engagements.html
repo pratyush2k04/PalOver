@@ -42,37 +42,46 @@
     <app-alert>{{ errorMessage() }}</app-alert>
   }
 
-  @if (!isLoading() && engagements().length === 0) {
+  @if (!isLoading() && activeEngagementsCount() + pastEngagementsCount() === 0) {
     <app-empty-state message="You have no engagements yet. They appear here once assigned to you." />
   } @else {
-    <div class="engagement-list">
-      @for (engagement of pagedEngagements(); track engagement.id) {
-        <div class="engagement-row" (click)="openEngagement(engagement.id)">
-          <div class="engagement-info">
-            <div class="engagement-title-line">
-              <span class="client-name">{{ engagement.engagementName }}</span>
-            </div>
-            <div class="engagement-meta">
-              {{ engagement.engagementTypeName }} &middot; {{ engagement.commercialModelName }} &middot; Kickoff {{ formatKickoffDate(engagement.kickoffDate) }}
-              @if (engagement.isOverdue) {
-                <app-status-badge tone="danger">Overdue</app-status-badge>
-              }
-            </div>
-          </div>
+    <div class="engagement-list-card">
+      <div class="engagement-list">
+        @if (isLoading()) {
+          <app-loading-spinner />
+        } @else {
+          @for (engagement of pagedEngagements(); track engagement.id) {
+            <div class="engagement-row" (click)="openEngagement(engagement.id)">
+              <div class="engagement-info">
+                <div class="engagement-title-line">
+                  <span class="client-name">{{ engagement.engagementName }}</span>
+                </div>
+                <div class="engagement-meta">
+                  {{ engagement.engagementTypeName }} &middot; {{ engagement.commercialModelName }} &middot; Kickoff {{ formatKickoffDate(engagement.kickoffDate) }}
+                  @if (engagement.isOverdue) {
+                    <app-status-badge tone="danger">Overdue</app-status-badge>
+                  }
+                </div>
+              </div>
 
-          <div class="engagement-actions">
-            <app-readiness-circle [score]="engagement.displayReadinessScore" size="sm" />
-          </div>
-        </div>
-      }
+              <div class="engagement-actions">
+                <app-readiness-circle [score]="engagement.displayReadinessScore" size="sm" />
+              </div>
+            </div>
+          }
+        }
+      </div>
+
+      <div class="pagination-footer">
+        <app-paginator
+          [page]="page()"
+          [totalPages]="totalPages()"
+          [pageSize]="pageSize()"
+          [pageSizeOptions]="pageSizeOptions"
+          (pageChange)="goToPage($event)"
+          (pageSizeChange)="onPageSizeChange($event)"
+        />
+      </div>
     </div>
-
-    @if (totalPages() > 1) {
-      <app-paginator
-        [page]="currentPage()"
-        [totalPages]="totalPages()"
-        (pageChange)="goToPage($event)"
-      />
-    }
   }
 </div>

@@ -37,6 +37,29 @@ public class EngagementsController(
     }
 
     /// <summary>
+    /// Retrieves a paged, filtered, sorted page of engagements assigned to the logged-in user.
+    /// </summary>
+    /// <param name="status">Tab filter ("Active" or "Past").</param>
+    /// <param name="sortBy">Sort field ("kickoff", "readiness", or "client").</param>
+    /// <param name="page">Page number (1-based).</param>
+    /// <param name="pageSize">Number of items per page.</param>
+    /// <returns>A page of assigned engagements, plus Active/Past tab counts.</returns>
+    [HttpGet("my-engagements/page")]
+    [Authorize]
+    [EndpointSummary("Get a paged page of my assigned engagements")]
+    [ProducesResponseType(typeof(MyEngagementsPageDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<MyEngagementsPageDto>> GetMyEngagementsPage(
+        [FromQuery] string status = "Active",
+        [FromQuery] string sortBy = "kickoff",
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 5)
+    {
+        var result = await engagementService.GetMyEngagementsPageAsync(status, sortBy, page, pageSize);
+        return Ok(result);
+    }
+
+    /// <summary>
     /// Gets all engagements in the system.
     /// </summary>
     /// <returns>List of all engagements.</returns>

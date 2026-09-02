@@ -31,8 +31,8 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
         var effectiveRole = (RoleEnum)user.RoleId;
 
         var cards = await GetDashboardCardsAsync(user.Id, effectiveRole, myEngagementIds);
-        var engagements = await GetDashboardEngagementsAsync(myEngagementIds);
-        var blockers = await GetDashboardBlockersAsync(user.Id);
+        var (upcomingEngagements, totalUpcomingEngagements) = await GetUpcomingEngagementsAsync(myEngagementIds);
+        var (blockers, totalBlockers) = await GetDashboardBlockersAsync(user.Id);
 
         var homeDto = new HomeDashboardDto
         {
@@ -41,8 +41,10 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
             WelcomeMessage = BuildWelcomeMessage(user),
             EmptyState = ResolveEmptyState(effectiveRole),
             Cards = cards,
-            Engagements = engagements,
-            CriticalBlockers = blockers
+            UpcomingEngagements = upcomingEngagements,
+            TotalUpcomingEngagements = totalUpcomingEngagements,
+            CriticalBlockers = blockers,
+            TotalCriticalBlockers = totalBlockers
         };
 
         return new HomeResponseDto { User = userDto, Home = homeDto };
@@ -148,14 +150,14 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
         };
     }
 
-    private async Task<List<DashboardEngagementDto>> GetDashboardEngagementsAsync(List<int> engagementIds)
+    private async Task<(List<DashboardEngagementDto> Items, int TotalCount)> GetUpcomingEngagementsAsync(List<int> engagementIds)
     {
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         var sevenDaysFromNow = today.AddDays(7);
 
-        var engagements = await homeRepository.GetUpcomingKickoffsAsync(engagementIds, sevenDaysFromNow);
+        var (items, totalCount) = await homeRepository.GetTopUpcomingKickoffsAsync(engagementIds, sevenDaysFromNow, take: 5);
 
-        foreach (var e in engagements)
+        foreach (var e in items)
         {
             var readiness = await kickoffReadinessService.GetReadinessAsync(e.EngagementId);
             var daysToKickoff = e.KickoffDate.DayNumber - today.DayNumber;
@@ -168,15 +170,14 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
             e.Status = LeadershipDashboardHelpers.DeriveStatus(readiness.Score, openBlockerCount, requiredThreshold);
         }
 
-        return engagements;
+        return (items, totalCount);
     }
 
-    private async Task<List<DashboardBlockerDto>> GetDashboardBlockersAsync(int userId)
+    private async Task<(List<DashboardBlockerDto> Items, int TotalCount)> GetDashboardBlockersAsync(int userId)
     {
-        var result = await notificationService.GetForUserAsync(userId, null, 1, int.MaxValue);
-        
+        var result = await notificationService.GetForUserAsync(userId, null, 1, 5, priority: NotificationPriority.High);
+
         var blockers = result.Items
-            .Where(n => n.Priority == NotificationPriority.High)
             .Select(n => new DashboardBlockerDto
             {
                 RiskId = n.Id,
@@ -184,8 +185,8 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
                 DueDate = n.ReceivedAt
             })
             .ToList();
-                              
-        return blockers;
+
+        return (blockers, result.TotalCount);
     }
 
     private static string BuildWelcomeMessage(User user)

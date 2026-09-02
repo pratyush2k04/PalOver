@@ -1,7 +1,7 @@
 <div class="list-card">
   <div class="list-header">
-    <h3>Needs attention</h3>
-    <a routerLink="/notifications" class="view-all-link">View my notifications &rarr;</a>
+    <h3>Needs attention <span class="header-subtitle">({{ totalCount() }} total)</span></h3>
+    <a routerLink="/notifications" class="view-all-link">View all &rarr;</a>
   </div>
 
   <div class="list-content custom-scrollbar">
@@ -21,9 +21,7 @@
         </div>
       </div>
       } @empty {
-      <div class="empty-state">
-        No items need attention!
-      </div>
+      <app-empty-state message="No items need attention!" />
       }
     </div>
   </div>
