@@ -324,7 +324,7 @@
     font-family: inherit;
     font-size: $font-size-xs;
     color: $color-slate-700;
-    height: 2.125rem;
+    height: 2.25rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -350,15 +350,16 @@
     &.is-today {
       font-weight: $font-weight-bold;
       border: 1px solid $color-primary;
-      background-color: $color-primary-light;
-      border-radius: $radius-full;
+      border-radius: 50%;
+      background-color: transparent;
     }
 
     &.is-selected {
-      background-color: $color-primary !important;
-      color: $color-white !important;
+      background-color: #1054e86b !important;
+      color: #000 !important;
       font-weight: $font-weight-semibold;
       border-color: $color-primary !important;
+      border-radius: 50%;
     }
 
     &.is-disabled,
