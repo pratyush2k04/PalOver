@@ -28,14 +28,5 @@ public class EngagementAssignmentConfiguration : IEntityTypeConfiguration<Engage
         // Matching filter: User and Engagement are both required ends with their own
         // soft-delete query filters, so mirror it here to avoid EF's dangling-required-navigation warning.
         builder.HasQueryFilter(ea => !ea.User.IsDeleted && !ea.Engagement.IsDeleted);
-
-        builder.HasData(
-            new EngagementAssignment { UserId = 1, EngagementId = 1 }, // Rahul Verma (Pre Sales) on FinTech Solutions
-            new EngagementAssignment { UserId = 2, EngagementId = 1 }, // Asha Rao (PM) on FinTech Solutions
-            new EngagementAssignment { UserId = 3, EngagementId = 1 }, // Vikram Singh (Tech Lead) on FinTech Solutions
-            new EngagementAssignment { UserId = 4, EngagementId = 1 }, // Neha Sharma (Leadership) on FinTech Solutions
-            new EngagementAssignment { UserId = 2, EngagementId = 2 }, // Asha Rao (PM) on HealthCare Plus
-            new EngagementAssignment { UserId = 3, EngagementId = 2 }  // Vikram Singh (Tech Lead) on HealthCare Plus
-        );
     }
 }
