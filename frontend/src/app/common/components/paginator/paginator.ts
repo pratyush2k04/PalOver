@@ -1,8 +1,11 @@
-import { Component, input, output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 
 @Component({
   selector: 'app-paginator',
   standalone: true,
+  imports: [FormsModule, SelectComponent],
   templateUrl: './paginator.html',
   styleUrl: './paginator.scss'
 })
@@ -15,6 +18,14 @@ export class PaginatorComponent {
 
   readonly pageChange = output<number>();
   readonly pageSizeChange = output<number>();
+
+  readonly selectOptions = computed<SelectOption[]>(() => {
+    const sizes = this.pageSizeOptions() || [];
+    return sizes.map((size) => ({
+      value: size,
+      label: String(size),
+    }));
+  });
 
   goToFirst(): void {
     this.pageChange.emit(1);
@@ -32,7 +43,9 @@ export class PaginatorComponent {
     this.pageChange.emit(this.totalPages());
   }
 
-  onPageSizeChange(value: string): void {
-    this.pageSizeChange.emit(Number(value));
+  onPageSizeChange(value: unknown): void {
+    if (value !== null && value !== undefined) {
+      this.pageSizeChange.emit(Number(value));
+    }
   }
 }
