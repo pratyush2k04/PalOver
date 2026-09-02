@@ -11,6 +11,7 @@ import { EngagementChecklist, EngagementChecklistItem } from '../../models/engag
 import { ENGAGEMENT_CHECKLIST_MESSAGES } from '@shared/constants/engagements.constants';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
+import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
 import { CommunicationCadenceService } from '@features/engagements/services/communication-cadence.service';
@@ -54,6 +55,7 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
     SectionHeaderComponent,
     TooltipDirective,
     SelectComponent,
+    EmptyStateComponent,
   ],
   templateUrl: './engagement-checklist.component.html',
   styleUrl: './engagement-checklist.component.scss'
