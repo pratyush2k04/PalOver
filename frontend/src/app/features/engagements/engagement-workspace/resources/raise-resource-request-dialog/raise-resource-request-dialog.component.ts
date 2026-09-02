@@ -107,6 +107,10 @@ export class RaiseResourceRequestDialogComponent {
   }
 
   onSubmit(): void {
+    if (this.isSubmitting()) {
+      return;
+    }
+
     const skillsValid = this.selectedSkills().length > 0;
 
     if (this.form.invalid || !skillsValid) {

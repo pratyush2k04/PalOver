@@ -19,7 +19,6 @@ export enum SkillEnum {
 
 export enum ResourceRequestStatus {
   Raised = 'Raised',
-  Allocated = 'Allocated',
   Confirmed = 'Confirmed',
 }
 
@@ -55,10 +54,6 @@ export interface CreateResourceRequestPayload {
 
 export interface AllocateResourcesPayload {
   names: string[];
-}
-
-export interface ConfirmAllocationPayload {
-  confirmedDate: string;
 }
 
 export interface RemoveAllocationPayload {

@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   AllocateResourcesPayload,
-  ConfirmAllocationPayload,
   CreateResourceRequestPayload,
   RemoveAllocationPayload,
   ResourceRequestItem,
@@ -41,16 +40,6 @@ export class ResourceRequestService {
     payload: AllocateResourcesPayload,
   ): Observable<ResourceRequestItem> {
     const url = RESOURCE_REQUEST_CONSTANTS.API_ENGAGEMENT_RESOURCE_ALLOCATIONS(engagementId, requestId);
-    return this.http.post<ResourceRequestItem>(url, payload);
-  }
-
-  confirmAllocation(
-    engagementId: number,
-    requestId: number,
-    allocationId: number,
-    payload: ConfirmAllocationPayload,
-  ): Observable<ResourceRequestItem> {
-    const url = RESOURCE_REQUEST_CONSTANTS.API_CONFIRM_ALLOCATION(engagementId, requestId, allocationId);
     return this.http.post<ResourceRequestItem>(url, payload);
   }
 

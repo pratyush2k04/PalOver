@@ -23,9 +23,6 @@ public class ResourceAllocationCountMismatchException()
 public class ResourceAllocationNotFoundException(int id)
     : AppException(ResourceRequestConstants.ValidationMessages.AllocationNotFound(id), 404);
 
-public class ResourceAllocationAlreadyConfirmedException()
-    : AppException(ResourceRequestConstants.ValidationMessages.AllocationAlreadyConfirmed, 400);
-
 public class ResourceAllocationNotConfirmedException()
     : AppException(ResourceRequestConstants.ValidationMessages.AllocationNotConfirmed, 400);
 

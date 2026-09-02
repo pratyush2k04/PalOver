@@ -22,7 +22,6 @@ public static class NotificationMapperRegistry
         services.AddScoped<INotificationTemplateMapper, PMAssignedMapper>();
         services.AddScoped<INotificationTemplateMapper, TechLeadAssignedMapper>();
         services.AddScoped<INotificationTemplateMapper, DocumentUploadedMapper>();
-        services.AddScoped<INotificationTemplateMapper, ResourceRequestAllocatedMapper>();
         services.AddScoped<INotificationTemplateMapper, ResourceRequestConfirmedMapper>();
         services.AddScoped<INotificationTemplateMapper, ResourceRequestReopenedMapper>();
         services.AddScoped<INotificationTemplateMapper, ResourcingGapFlaggedNotificationMapper>();
