@@ -4,8 +4,8 @@ export interface EvidenceSnapshotItem {
   title: string;
   categoryName: string;
   statusAtSignOff: EvidenceSnapshotItemStatus;
-  evidenceNote: string | null;
-  evidenceLink: string | null;
+  evidenceDocumentId: number | null;
+  evidenceDocumentFileName: string | null;
   evidenceSubmittedAt: string | null;
   evidenceSubmittedByName: string | null;
 }
