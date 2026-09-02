@@ -134,6 +134,11 @@ public class KickoffService(IKickoffRepository repository) : IKickoffService
             throw new KickoffActionItemNotFoundException(actionItemId);
         }
 
+        if (item.AssignedToUserId is null || !int.TryParse(currentUserId, out var userId) || item.AssignedToUserId != userId)
+        {
+            throw new KickoffActionItemStatusUpdateForbiddenException();
+        }
+
         item.Status = status;
         item.UpdatedAt = DateTime.UtcNow;
         item.UpdatedBy = currentUserId;
