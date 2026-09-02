@@ -23,6 +23,7 @@
       id="action-due-date"
       label="Due date"
       [min]="minDate"
+      [max]="billingStartDate()"
       [required]="true"
       formControlName="dueDate"
       [errorMessages]="{ required: messages.DUE_DATE_REQUIRED, pastDate: 'Date cannot be in the past.' }"

@@ -466,8 +466,8 @@ export class DatepickerComponent extends BaseControlComponent<string> implements
       } else {
         this.dropdownTop = rect.bottom + 4;
       }
-      this.dropdownLeft = rect.left;
-      this.dropdownMinWidth = Math.max(rect.width, 280);
+      const maxLeft = Math.max(8, window.innerWidth - 320);
+      this.dropdownLeft = Math.min(Math.max(8, rect.left), maxLeft);
     }
   }
 }

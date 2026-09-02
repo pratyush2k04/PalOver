@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
@@ -30,6 +30,7 @@ import {
 } from '../../../models/resource-request.model';
 import { ResourceRequestService } from '../../../services/resource-request.service';
 import { futureDateValidator } from '@common/validators/date.validators';
+import { EngagementService } from '@features/engagements/services/engagement.service';
 
 export interface RaiseResourceRequestDialogData {
   engagementId: number;
@@ -67,7 +68,10 @@ export class RaiseResourceRequestDialogComponent {
   private dialogRef = inject<DialogRef<ResourceRequestItem | null>>(DialogRef);
   private resourceRequestService = inject(ResourceRequestService);
   private toastService = inject(ToastService);
+  private engagementService = inject(EngagementService);
   readonly data = inject<RaiseResourceRequestDialogData>(DIALOG_DATA);
+
+  readonly billingStartDate = computed(() => this.data.billingStartDate || this.engagementService.currentEngagement()?.billingStartDate || null);
 
   readonly minDate = new Date().toISOString().split('T')[0];
   readonly constants = RESOURCE_REQUEST_CONSTANTS;

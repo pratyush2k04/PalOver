@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
@@ -13,6 +13,7 @@ import { ToastService } from '@common/services/toast/toast';
 import { PersonDto, PersonType } from '@shared/models/person.model';
 import { AuthService } from '@shared/services/auth';
 import { futureDateValidator } from '@common/validators/date.validators';
+import { EngagementService } from '@features/engagements/services/engagement.service';
 
 export interface DependencyFormDialogData {
   dependency: DependencyDto | null;
@@ -41,6 +42,9 @@ export class DependencyFormDialogComponent implements OnInit {
   private personService = inject(PersonService);
   private toastService = inject(ToastService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
+
+  readonly billingStartDate = computed(() => this.engagementService.currentEngagement()?.billingStartDate || null);
 
   readonly minDate = new Date().toISOString().split('T')[0];
 

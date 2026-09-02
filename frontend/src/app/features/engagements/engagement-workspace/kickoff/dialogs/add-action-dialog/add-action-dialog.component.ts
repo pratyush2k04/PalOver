@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
@@ -37,6 +37,8 @@ export class AddActionDialogComponent implements OnInit {
   private engagementService = inject(EngagementService);
   private engagementAllocationService = inject(EngagementAllocationService);
   private userService = inject(UserService);
+
+  readonly billingStartDate = computed(() => this.engagementService.currentEngagement()?.billingStartDate || null);
 
   readonly messages = KICKOFF_MESSAGES;
   readonly minDate = new Date().toISOString().split('T')[0];

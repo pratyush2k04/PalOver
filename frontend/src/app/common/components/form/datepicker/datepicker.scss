@@ -324,11 +324,14 @@
     font-family: inherit;
     font-size: $font-size-xs;
     color: $color-slate-700;
+    width: 2.25rem;
     height: 2.25rem;
+    justify-self: center;
+    align-self: center;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: $radius-md;
+    border-radius: 50%;
     cursor: pointer;
     user-select: none;
     transition: background-color $transition-fast, color $transition-fast;
