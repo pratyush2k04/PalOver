@@ -426,16 +426,15 @@ export class EngagementChecklistComponent {
     });
   }
 
-  onOwnerChange(item: EngagementChecklistItem, personIdValue: unknown): void {
+  onOwnerChange(item: EngagementChecklistItem, personIdValue: number | null): void {
     const engId = this.engagementId();
     if (!engId || !this.canToggleStatus() || this.isUpdating()) {
       return;
     }
 
-    const personId = personIdValue == null ? null : (personIdValue as number);
     this.isUpdating.set(true);
 
-    this.checklistService.updateItemOwner(engId, item.id, { personId }).subscribe({
+    this.checklistService.updateItemOwner(engId, item.id, { personId: personIdValue }).subscribe({
       next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist, { refreshReadiness: false }),
       error: () => {
         this.isUpdating.set(false);
