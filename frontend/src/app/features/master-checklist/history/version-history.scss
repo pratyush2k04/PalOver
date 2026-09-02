@@ -8,9 +8,7 @@
 .version-history {
   padding: 0;
 
-  ::ng-deep .status-badge {
-    font-weight: $font-weight-normal;
-  }
+  
 
   &__card {
     background-color: $color-surface;
