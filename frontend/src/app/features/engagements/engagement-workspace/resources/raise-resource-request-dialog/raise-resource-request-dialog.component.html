@@ -40,12 +40,12 @@
       }"
     />
 
-    <app-input
+    <app-datepicker
       id="required-by-date"
       [label]="constants.LABEL_REQUIRED_BY"
       [required]="true"
-      type="date"
       [min]="minDate"
+      [max]="billingStartDate()"
       formControlName="requiredByDate"
       [errorMessages]="{
         required: 'Please select a required-by date.',

@@ -1,11 +1,11 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
-import { InputComponent } from '@common/components/form/input/input';
+import { DatepickerComponent } from '@common/components/form/datepicker/datepicker';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { DependencyDto, DependencyType, DependencyStatus } from '../../../../../../models/dependency.model';
 import { PersonService } from '@shared/services/person.service';
@@ -13,6 +13,7 @@ import { ToastService } from '@common/services/toast/toast';
 import { PersonDto, PersonType } from '@shared/models/person.model';
 import { AuthService } from '@shared/services/auth';
 import { futureDateValidator } from '@common/validators/date.validators';
+import { EngagementService } from '@features/engagements/services/engagement.service';
 
 export interface DependencyFormDialogData {
   dependency: DependencyDto | null;
@@ -30,7 +31,7 @@ export interface DependencyFormDialogResult {
 @Component({
   selector: 'app-dependency-form-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, TextareaComponent, InputComponent, SelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, TextareaComponent, SelectComponent, DatepickerComponent],
   templateUrl: './dependency-form-dialog.component.html',
   styleUrl: './dependency-form-dialog.component.scss'
 })
@@ -41,6 +42,9 @@ export class DependencyFormDialogComponent implements OnInit {
   private personService = inject(PersonService);
   private toastService = inject(ToastService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
+
+  readonly billingStartDate = computed(() => this.engagementService.currentEngagement()?.billingStartDate || null);
 
   readonly minDate = new Date().toISOString().split('T')[0];
 

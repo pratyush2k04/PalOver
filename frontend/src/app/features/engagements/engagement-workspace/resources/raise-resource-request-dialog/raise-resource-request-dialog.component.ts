@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
@@ -15,6 +15,7 @@ import { AlertComponent } from '@common/components/alert/alert';
 import { ToastService } from '@common/services/toast/toast';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { InputComponent } from '@common/components/form/input/input';
+import { DatepickerComponent } from '@common/components/form/datepicker/datepicker';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { MultiSelectListComponent } from '@common/components/multi-select-list/multi-select-list';
 import {
@@ -29,6 +30,7 @@ import {
 } from '../../../models/resource-request.model';
 import { ResourceRequestService } from '../../../services/resource-request.service';
 import { futureDateValidator } from '@common/validators/date.validators';
+import { EngagementService } from '@features/engagements/services/engagement.service';
 
 export interface RaiseResourceRequestDialogData {
   engagementId: number;
@@ -54,6 +56,7 @@ function notAfterBillingDateValidator(billingStartDate: string | null | undefine
     AlertComponent,
     SelectComponent,
     InputComponent,
+    DatepickerComponent,
     TextareaComponent,
     MultiSelectListComponent,
   ],
@@ -65,7 +68,10 @@ export class RaiseResourceRequestDialogComponent {
   private dialogRef = inject<DialogRef<ResourceRequestItem | null>>(DialogRef);
   private resourceRequestService = inject(ResourceRequestService);
   private toastService = inject(ToastService);
+  private engagementService = inject(EngagementService);
   readonly data = inject<RaiseResourceRequestDialogData>(DIALOG_DATA);
+
+  readonly billingStartDate = computed(() => this.data.billingStartDate || this.engagementService.currentEngagement()?.billingStartDate || null);
 
   readonly minDate = new Date().toISOString().split('T')[0];
   readonly constants = RESOURCE_REQUEST_CONSTANTS;
