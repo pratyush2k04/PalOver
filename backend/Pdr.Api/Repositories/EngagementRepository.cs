@@ -395,4 +395,16 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
             throw new EngagementSignedOffException();
         }
     }
+
+    public async Task<bool> HasAnyAssignmentAsync(int engagementId) =>
+        await context.EngagementAssignments
+            .AsNoTracking()
+            .AnyAsync(a => a.EngagementId == engagementId);
+
+    public async Task<Engagement?> GetForOnePagerAsync(int engagementId) =>
+        await context.Engagements
+            .AsNoTracking()
+            .Include(e => e.CommercialModel)
+            .Include(e => e.DayOneSignOffRecord)
+            .FirstOrDefaultAsync(e => e.EngagementId == engagementId);
 }
