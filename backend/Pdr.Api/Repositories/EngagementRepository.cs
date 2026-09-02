@@ -357,8 +357,8 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
                     i.Title,
                     i.CategoryName,
                     i.StatusAtSignOff,
-                    i.EvidenceNote,
-                    i.EvidenceLink,
+                    i.EvidenceDocumentId,
+                    i.EvidenceDocumentFileName,
                     i.EvidenceSubmittedAt,
                     i.EvidenceSubmittedByName))
                 .ToList());

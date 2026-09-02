@@ -20,7 +20,8 @@ public class EngagementChecklistService(
     IRiskService riskService,
     IAuditLogService auditLogService,
     ILogger<EngagementChecklistService> logger,
-    IEngagementAccessService engagementAccessService) : IEngagementChecklistService
+    IEngagementAccessService engagementAccessService,
+    IDocumentRepository documentRepository) : IEngagementChecklistService
 {
     public async Task<EngagementChecklistResponseDto?> GetByEngagementIdAsync(int engagementId)
     {
@@ -103,8 +104,7 @@ public class EngagementChecklistService(
 
         if (normalizedStatus == MasterChecklistConstants.ItemStatuses.Complete && item.EvidenceRequired)
         {
-            var hasEvidence = !string.IsNullOrWhiteSpace(item.EvidenceNote) || !string.IsNullOrWhiteSpace(item.EvidenceLink);
-            if (!hasEvidence)
+            if (item.EvidenceDocumentId is null)
             {
                 throw new ChecklistItemEvidenceRequiredException(itemId);
             }
@@ -340,9 +340,16 @@ public class EngagementChecklistService(
             throw new CannotUpdateNonApplicableItemException(itemId);
         }
 
+        var evidenceDocument = await documentRepository.GetByIdAsync(dto.DocumentId)
+            ?? throw new DocumentNotFoundException(dto.DocumentId);
+
+        if (evidenceDocument.EngagementId != engagementId)
+        {
+            throw new EvidenceDocumentNotInEngagementException(dto.DocumentId);
+        }
+
         var currentUserId = currentUserService.GetUserId();
-        item.EvidenceNote = dto.Note?.Trim();
-        item.EvidenceLink = string.IsNullOrWhiteSpace(dto.Link) ? null : dto.Link.Trim();
+        item.EvidenceDocumentId = evidenceDocument.Id;
         item.EvidenceSubmittedAt = DateTime.UtcNow;
         item.EvidenceSubmittedById = currentUserId;
         item.UpdatedAt = DateTime.UtcNow;
@@ -433,8 +440,8 @@ public class EngagementChecklistService(
                      i.Owner != null ? i.Owner.FullName : null,
                      i.BlockReason,
                      i.EvidenceRequired,
-                     i.EvidenceNote,
-                     i.EvidenceLink,
+                     i.EvidenceDocumentId,
+                     i.EvidenceDocument != null ? i.EvidenceDocument.FileName : null,
                      i.EvidenceSubmittedAt,
                      i.EvidenceSubmittedById,
                      i.EvidenceSubmittedBy != null ? i.EvidenceSubmittedBy.FullName : null))

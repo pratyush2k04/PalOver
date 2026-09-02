@@ -40,8 +40,7 @@ public class EngagementChecklistItemConfiguration : IEntityTypeConfiguration<Eng
 
         // Evidence tracking (FTR-026 / US-045)
         builder.Property(e => e.EvidenceRequired).HasColumnName("evidence_required").HasDefaultValue(false).IsRequired();
-        builder.Property(e => e.EvidenceNote).HasColumnName("evidence_note").HasMaxLength(500);
-        builder.Property(e => e.EvidenceLink).HasColumnName("evidence_link").HasMaxLength(2048);
+        builder.Property(e => e.EvidenceDocumentId).HasColumnName("evidence_document_id");
         builder.Property(e => e.EvidenceSubmittedAt).HasColumnName("evidence_submitted_at");
         builder.Property(e => e.EvidenceSubmittedById).HasColumnName("evidence_submitted_by_id");
 
@@ -72,6 +71,12 @@ public class EngagementChecklistItemConfiguration : IEntityTypeConfiguration<Eng
                .WithMany()
                .HasForeignKey(e => e.EvidenceSubmittedById)
                .OnDelete(DeleteBehavior.Restrict);
+
+        // FK to Document (evidence document — deleting the document just clears the link)
+        builder.HasOne(e => e.EvidenceDocument)
+               .WithMany()
+               .HasForeignKey(e => e.EvidenceDocumentId)
+               .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasData(GetSeedItems());
     }
