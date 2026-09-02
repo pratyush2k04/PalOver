@@ -5392,6 +5392,58 @@ namespace Pdr.Api.Migrations
                             LinkPattern = "/engagements/{EngagementId}/workspace/handover",
                             Title = "Handover Query Raised — {EngagementName}",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 918273,
+                            Body = "You have been assigned the kickoff action \"{ActionTitle}\" for {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 1,
+                            IsDeleted = false,
+                            Key = "KickoffActionItemAssigned",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/kickoff",
+                            Title = "Action Item Assigned — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 629481,
+                            Body = "Assumption \"{AssumptionDescription}\" needs to be validated for {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 2,
+                            IsDeleted = false,
+                            Key = "AssumptionNeedsValidation",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/assumptions-and-decisions",
+                            Title = "Assumption Needs Validation — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 742619,
+                            Body = "You have been assigned the dependency \"{DependencyDescription}\" for {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 2,
+                            IsDeleted = false,
+                            Key = "DependencyAssignedToOwner",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/assumptions-and-decisions",
+                            Title = "Dependency Assigned — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 853720,
+                            Body = "Dependency \"{DependencyDescription}\" was assigned to external owner {OwnerName} for {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 2,
+                            IsDeleted = false,
+                            Key = "DependencyAssignedExternal",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/assumptions-and-decisions",
+                            Title = "External Dependency Added — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 

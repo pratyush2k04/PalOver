@@ -36,8 +36,6 @@
         <h3>Assign Project Manager and Tech Lead</h3>
       </div>
 
-      <p class="modal-subtitle">Routine start-of-engagement assignment — Leadership only.</p>
-
       <form [formGroup]="assignForm" (ngSubmit)="onSubmitAssignment()" novalidate>
         @if (errorMessage()) {
           <app-alert>{{ errorMessage() }}</app-alert>
