@@ -1,3 +1,5 @@
+using System.Text.Json;
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Assumptions;
 using Pdr.Api.DTOs.Risks;
 using Pdr.Api.Exceptions;
@@ -6,13 +8,15 @@ using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.Risks;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
+using Pdr.Api.Services.Notifications.Mappers;
 
 namespace Pdr.Api.Services;
 
 public class AssumptionService(
     IAssumptionRepository assumptionRepository,
     IEngagementRepository engagementRepository,
-    ICurrentUserService currentUserService) : IAssumptionService
+    ICurrentUserService currentUserService,
+    INotificationService notificationService) : IAssumptionService
 {
     public async Task<List<AssumptionDto>> GetAssumptionsAsync(int engagementId)
     {
@@ -60,6 +64,19 @@ public class AssumptionService(
         };
 
         var created = await assumptionRepository.AddAsync(assumption);
+
+        if (created.Status == AssumptionStatus.Unvalidated)
+        {
+            var data = JsonSerializer.Serialize(
+                new AssumptionNeedsValidationMapper.AssumptionNeedsValidationPayload(created.Id, engagementId));
+
+            await notificationService.CreateFromTemplateAsync(
+                NotificationConstants.TemplateKeys.AssumptionNeedsValidation,
+                engagementId,
+                RoleEnum.ProjectManagement,
+                data,
+                DateTime.UtcNow);
+        }
 
         return MapToDto(created);
     }

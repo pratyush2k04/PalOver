@@ -5,4 +5,5 @@ export interface Toast {
   message: string;
   type: ToastType;
   actionLabel?: string;
+  leaving?: boolean;
 }
