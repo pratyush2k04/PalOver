@@ -49,6 +49,7 @@ import { LoadingSpinnerComponent } from '@common/components/loading-spinner/load
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { TooltipDirective } from '@common/directives/tooltip.directive';
+import { SelectComponent } from '@common/components/form/select/select';
 
 @Component({
   selector: 'app-engagement-documents',
@@ -64,6 +65,7 @@ import { TooltipDirective } from '@common/directives/tooltip.directive';
     EmptyStateComponent,
     StatusBadgeComponent,
     TooltipDirective,
+    SelectComponent
   ],
   templateUrl: './engagement-documents.component.html',
   styleUrl: './engagement-documents.component.scss',
@@ -95,6 +97,13 @@ export class EngagementDocumentsComponent {
   searchTerm = signal<string>('');
   selectedCategoryId = signal<number | 'all'>('all');
   categories = signal<DocumentCategory[]>([]);
+
+  categoryFilterOptions = computed(() => {
+    return [
+      { value: 'all', label: 'All categories' },
+      ...this.categories().map((c) => ({ value: c.id, label: c.categoryName }))
+    ];
+  });
 
   filteredDocuments = computed(() => {
     const term = this.searchTerm().trim().toLowerCase();

@@ -19,12 +19,13 @@
       placeholder="Search by file name"
       [(ngModel)]="searchTerm"
     />
-    <select class="category-select" [(ngModel)]="selectedCategoryId">
-      <option [ngValue]="'all'">All categories</option>
-      @for (cat of categories(); track cat.id) {
-        <option [ngValue]="cat.id">{{ cat.categoryName }}</option>
-      }
-    </select>
+    <app-select
+      id="category-filter"
+      class="category-select"
+      [options]="categoryFilterOptions()"
+      [ngModel]="selectedCategoryId()"
+      (ngModelChange)="selectedCategoryId.set($event)"
+    />
   </div>
 
   <div class="table-card">

@@ -10,10 +10,11 @@ public static class HandoverValidationConstants
     public const string BusinessProblemRequiredSubmit = "Business Problem is required to submit.";
     public const string ClientSentimentRequiredSubmit = "Client Sentiment is required to submit.";
     public const string NotKickoffReadySubmit = "Engagement is not kickoff-ready. All mandatory items must be complete before submitting the handover.";
-    public const string ReadinessChecklistNotGrantedSubmit = "All non-blocked Readiness Checklist items must be Granted before submitting the handover.";
+    public const string ReadinessChecklistNotGrantedSubmit = "All Readiness Checklist items must be Granted and none can be Blocked before submitting the handover.";
     public const string RealisticCommitmentRequiresSubmitted = "Realistic commitments can only be provided after the handover has been submitted.";
     public const string RealisticTimelineDiffersAcknowledgementRequired = "The realistic timeline differs from the promised timeline. Please provide an acknowledgement message.";
     public const string UpdatedAcknowledgementRequired = "The estimation gap between the promised and realistic timelines still exceeds the threshold. Please provide an updated acknowledgement message.";
+    public const string MissingRealisticCommitmentsReview = "All commitments must have realistic estimates before marking handover as reviewed.";
 
     public static class Variance
     {
