@@ -32,6 +32,7 @@ import {
 } from './dialogs/block-item-dialog/block-item-dialog.component';
 import { SectionHeaderComponent } from '@common/components/section-header/section-header';
 import { TooltipDirective } from '@common/directives/tooltip.directive';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import {
   AttachEvidenceDialogComponent,
   AttachEvidenceDialogData,
@@ -51,6 +52,7 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
     ButtonComponent,
     SectionHeaderComponent,
     TooltipDirective,
+    SelectComponent,
   ],
   templateUrl: './engagement-checklist.component.html',
   styleUrl: './engagement-checklist.component.scss'
@@ -100,6 +102,37 @@ export class EngagementChecklistComponent {
   categoriesList = computed(() => {
     return this.checklist()?.categories.map((c) => ({ id: c.categoryId, name: c.categoryName })) ?? [];
   });
+
+  categoryFilterOptions = computed<SelectOption[]>(() => [
+    { value: 'all', label: 'All Categories' },
+    ...this.categoriesList().map((c) => ({ value: c.id, label: c.name }))
+  ]);
+
+  readonly statusFilterOptions: SelectOption[] = [
+    { value: 'all', label: 'All Status' },
+    { value: 'Incomplete', label: 'Incomplete' },
+    { value: 'Complete', label: 'Complete' },
+    { value: 'Blocked', label: 'Blocked' },
+    { value: 'Pending', label: 'Pending Approval' }
+  ];
+
+  readonly evidenceFilterOptions: SelectOption[] = [
+    { value: 'all', label: 'All Evidence' },
+    { value: 'required', label: 'Evidence Required' },
+    { value: 'attached', label: 'Evidence Attached' },
+    { value: 'missing', label: 'Evidence Missing' }
+  ];
+
+  ownerFilterOptions = computed<SelectOption[]>(() => [
+    { value: 'all', label: 'All Owners' },
+    { value: 'unassigned', label: 'Unassigned' },
+    ...this.assignedUsers().map((u) => ({ value: u.userId, label: u.fullName }))
+  ]);
+
+  rowOwnerOptions = computed<SelectOption[]>(() => [
+    { value: null, label: 'Unassigned' },
+    ...this.assignedUsers().map((u) => ({ value: u.userId, label: u.fullName }))
+  ]);
 
   blockedGateItems = computed(() =>
     (this.checklist()?.incompleteMandatoryItems ?? []).filter((item) => item.status === 'Blocked')
@@ -382,13 +415,15 @@ export class EngagementChecklistComponent {
     });
   }
 
-  onOwnerChange(item: EngagementChecklistItem, personIdStr: string): void {
+  onOwnerChange(item: EngagementChecklistItem, personIdValue: unknown): void {
     const engId = this.engagementId();
     if (!engId || !this.canToggleStatus() || this.isUpdating()) {
       return;
     }
 
-    const personId = personIdStr === '' ? null : Number(personIdStr);
+    const personId = (personIdValue === '' || personIdValue === null || personIdValue === undefined)
+      ? null
+      : Number(personIdValue);
     this.isUpdating.set(true);
 
     this.checklistService.updateItemOwner(engId, item.id, { personId }).subscribe({

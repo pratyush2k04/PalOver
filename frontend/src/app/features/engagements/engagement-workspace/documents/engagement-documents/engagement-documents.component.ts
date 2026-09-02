@@ -49,7 +49,7 @@ import { LoadingSpinnerComponent } from '@common/components/loading-spinner/load
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { TooltipDirective } from '@common/directives/tooltip.directive';
-import { SelectComponent } from '@common/components/form/select/select';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 
 @Component({
   selector: 'app-engagement-documents',
@@ -97,6 +97,12 @@ export class EngagementDocumentsComponent {
   searchTerm = signal<string>('');
   selectedCategoryId = signal<number | 'all'>('all');
   categories = signal<DocumentCategory[]>([]);
+
+  readonly visibilityOptions: SelectOption[] = [
+    { value: 'Team-wide', label: 'Team-wide' },
+    { value: 'PM-only', label: 'PM-only' },
+    { value: 'Custom', label: 'Custom visibility' }
+  ];
 
   categoryFilterOptions = computed(() => {
     return [
@@ -221,7 +227,7 @@ export class EngagementDocumentsComponent {
       });
   }
 
-  openCustomVisibilityModal(doc: DocumentItem, selectEl?: HTMLSelectElement): void {
+  openCustomVisibilityModal(doc: DocumentItem): void {
     const dialogRef = this.dialog.open<
       CustomVisibilityDialogComponent,
       CustomVisibilityDialogData,
@@ -230,10 +236,8 @@ export class EngagementDocumentsComponent {
 
     dialogRef.closed$.subscribe((updatedDoc) => {
       if (!updatedDoc) {
-        // Reset native <select> DOM element if modal was cancelled
-        if (selectEl) {
-          selectEl.value = doc.visibility === 'Custom' ? 'Custom' : doc.visibility;
-        }
+        // Trigger update to re-sync select value if modal was cancelled
+        this.documents.update((docs) => [...docs]);
         return;
       }
       this.documents.update((docs) => docs.map((d) => (d.id === updatedDoc.id ? updatedDoc : d)));
@@ -242,23 +246,23 @@ export class EngagementDocumentsComponent {
 
   onVisibilityChange(
     doc: DocumentItem,
-    newVisibility: DocumentVisibility,
-    selectEl?: HTMLSelectElement,
+    newVisibility: unknown,
   ): void {
-    if (newVisibility === 'Custom') {
-      this.openCustomVisibilityModal(doc, selectEl);
+    const vis = newVisibility as DocumentVisibility;
+    if (vis === 'Custom') {
+      this.openCustomVisibilityModal(doc);
       return;
     }
 
     // Optimistic update
     this.documents.update((docs) =>
       docs.map((d) =>
-        d.id === doc.id ? { ...d, visibility: newVisibility, allowedRoles: [] } : d,
+        d.id === doc.id ? { ...d, visibility: vis, allowedRoles: [] } : d,
       ),
     );
 
     this.documentService
-      .updateVisibility(doc.id, newVisibility)
+      .updateVisibility(doc.id, vis)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (updated) => {
