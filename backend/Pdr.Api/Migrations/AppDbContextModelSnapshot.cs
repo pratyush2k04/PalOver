@@ -5392,6 +5392,19 @@ namespace Pdr.Api.Migrations
                             LinkPattern = "/engagements/{EngagementId}/workspace/handover",
                             Title = "Handover Query Raised — {EngagementName}",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 918273,
+                            Body = "You have been assigned the kickoff action \"{ActionTitle}\" for {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 1,
+                            IsDeleted = false,
+                            Key = "KickoffActionItemAssigned",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/kickoff",
+                            Title = "Action Item Assigned — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 

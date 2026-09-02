@@ -33,6 +33,7 @@ public static class NotificationMapperRegistry
         services.AddScoped<INotificationTemplateMapper, DocumentDeletedMapper>();
         services.AddScoped<INotificationTemplateMapper, DocumentVersionUploadedMapper>();
         services.AddScoped<INotificationTemplateMapper, DocumentVisibilityChangedMapper>();
+        services.AddScoped<INotificationTemplateMapper, KickoffActionItemAssignedMapper>();
 
         // Add new mappers here when adding new notification types.
 

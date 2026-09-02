@@ -358,6 +358,19 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
                 UpdatedAt = seedTimestamp,
                 CreatedBy = "System",
                 IsDeleted = false
+            },
+            new NotificationTemplate
+            {
+                Id = 918273,
+                Key = NotificationConstants.TemplateKeys.KickoffActionItemAssigned,
+                Title = "Action Item Assigned — {EngagementName}",
+                Body = "You have been assigned the kickoff action \"{ActionTitle}\" for {EngagementName}.",
+                DefaultPriority = NotificationPriority.Low,
+                LinkPattern = "/engagements/{EngagementId}/workspace/kickoff",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
             }
         );
     }
