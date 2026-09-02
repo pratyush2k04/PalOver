@@ -6,6 +6,7 @@ import { DialogService } from '@common/services/dialog/dialog.service';
 import { HandoverQueryService } from '../../../services/handover-query.service';
 import {
   HandoverQueryDto,
+  HandoverQueryMessageDto,
   HandoverQueryFieldSection,
   HANDOVER_SECTION_FRAGMENT_IDS
 } from '../../../models/handover-query.model';
@@ -19,14 +20,10 @@ import {
   RaiseHandoverQueryDialogComponent,
   RaiseHandoverQueryDialogData
 } from './dialogs/raise-handover-query-dialog/raise-handover-query-dialog.component';
-
-const FIELD_SECTION_LABELS: Record<HandoverQueryFieldSection, string> = {
-  [HandoverQueryFieldSection.ClientBackground]: 'Client Background',
-  [HandoverQueryFieldSection.BusinessProblem]: 'Business Problem',
-  [HandoverQueryFieldSection.ClientSentiment]: 'Client Sentiment',
-  [HandoverQueryFieldSection.DealOrigin]: 'Deal Origin',
-  [HandoverQueryFieldSection.Commitment]: 'Commitment',
-};
+import {
+  HANDOVER_MESSAGES,
+  HANDOVER_QUERY_FIELD_LABELS
+} from '@shared/constants/handover.constants';
 
 @Component({
   selector: 'app-handover-queries',
@@ -39,7 +36,7 @@ export class HandoverQueriesComponent {
   engagementId = input.required<number>();
   commitments = input<CommitmentDto[]>([]);
   isReviewed = input<boolean>(false);
-  readonly queriesUpdated = output<HandoverQueryDto[]>();
+  queriesChange = output<HandoverQueryDto[]>();
 
   private handoverQueryService = inject(HandoverQueryService);
   private authService = inject(AuthService);
@@ -51,8 +48,9 @@ export class HandoverQueriesComponent {
   message = signal('');
   isError = signal(false);
 
-  responseDrafts = signal<Record<number, string>>({});
+  messageDrafts = signal<Record<number, string>>({});
   pendingResolutionToggles = signal<ReadonlySet<number>>(new Set());
+  submittingMessages = signal<ReadonlySet<number>>(new Set());
 
   isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
   isProjectManagement = computed(() => this.authService.hasRole('Project Management'));
@@ -75,13 +73,13 @@ export class HandoverQueriesComponent {
     this.handoverQueryService.getQueries(id).subscribe({
       next: (data) => {
         this.queries.set(data);
+        this.queriesChange.emit(data);
         this.isLoading.set(false);
-        this.queriesUpdated.emit(data);
       },
       error: (err) => {
         this.isLoading.set(false);
         this.loadError.set(true);
-        this.message.set(this.extractErrorMessage(err, 'Failed to load handover queries.'));
+        this.message.set(this.extractErrorMessage(err, HANDOVER_MESSAGES.QUERY_LOAD_ERROR));
         this.isError.set(true);
       },
     });
@@ -90,9 +88,9 @@ export class HandoverQueriesComponent {
   fieldSectionLabel(query: HandoverQueryDto): string {
     if (query.fieldSection === HandoverQueryFieldSection.Commitment && query.referenceId) {
       const commitment = this.commitments().find((c) => c.commitmentId === query.referenceId);
-      return commitment ? `Commitment: ${commitment.title}` : FIELD_SECTION_LABELS[query.fieldSection];
+      return commitment ? `Commitment: ${commitment.title}` : HANDOVER_QUERY_FIELD_LABELS[query.fieldSection];
     }
-    return FIELD_SECTION_LABELS[query.fieldSection];
+    return HANDOVER_QUERY_FIELD_LABELS[query.fieldSection];
   }
 
   jumpToField(query: HandoverQueryDto): void {
@@ -102,30 +100,73 @@ export class HandoverQueriesComponent {
         ? `${baseId}-${query.referenceId}`
         : baseId;
 
-    document.getElementById(fragmentId)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const element = document.getElementById(fragmentId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      element.classList.add('field-highlight');
+      setTimeout(() => element.classList.remove('field-highlight'), 2000);
+    }
   }
 
-  responseDraft(queryId: number): string {
-    return this.responseDrafts()[queryId] ?? '';
+  isMessageOutgoing(msg: HandoverQueryMessageDto): boolean {
+    if (this.isPreSales()) {
+      return msg.messageType === 'Response';
+    }
+    if (this.isProjectManagement()) {
+      return msg.messageType === 'Question';
+    }
+    return msg.messageType === 'Response';
   }
 
-  updateResponseDraft(queryId: number, value: string): void {
-    this.responseDrafts.update((drafts) => ({ ...drafts, [queryId]: value }));
+  messageDraft(queryId: number): string {
+    return this.messageDrafts()[queryId] ?? '';
   }
 
-  submitResponse(query: HandoverQueryDto): void {
+  updateMessageDraft(queryId: number, value: string): void {
+    this.messageDrafts.update((drafts) => ({ ...drafts, [queryId]: value }));
+  }
+
+  canUserSubmitMessage(query: HandoverQueryDto): boolean {
+    if (query.isResolved) return false;
+    if (this.isPreSales() && query.canRespond) return true;
+    if (this.isProjectManagement() && query.canAddFollowUp) return true;
+    return false;
+  }
+
+  submitMessage(query: HandoverQueryDto): void {
     const id = this.engagementId();
-    const responseText = this.responseDraft(query.id).trim();
-    if (!responseText) return;
+    const text = this.messageDraft(query.id).trim();
+    if (!text || this.submittingMessages().has(query.id)) return;
 
-    this.handoverQueryService.respondToQuery(id, query.id, { responseText }).subscribe({
+    this.submittingMessages.update((s) => new Set(s).add(query.id));
+
+    this.handoverQueryService.addMessage(id, query.id, { messageText: text }).subscribe({
       next: (updated) => {
-        this.queries.update((qs) => qs.map((q) => (q.id === updated.id ? updated : q)));
-        this.queriesUpdated.emit(this.queries());
-        this.showMessage('Response submitted.', false);
+        this.queries.update((qs) => {
+          const next = qs.map((q) => (q.id === updated.id ? updated : q));
+          this.queriesChange.emit(next);
+          return next;
+        });
+        this.updateMessageDraft(query.id, '');
+        this.showMessage(HANDOVER_MESSAGES.QUERY_MESSAGE_SUBMIT_SUCCESS, false);
       },
-      error: (err) => this.showMessage(this.extractErrorMessage(err, 'Failed to submit response.'), true),
+      error: (err) => this.showMessage(this.extractErrorMessage(err, HANDOVER_MESSAGES.QUERY_MESSAGE_SUBMIT_ERROR), true),
+      complete: () => {
+        this.submittingMessages.update((s) => {
+          const next = new Set(s);
+          next.delete(query.id);
+          return next;
+        });
+      },
     });
+  }
+
+  canResolve(query: HandoverQueryDto): boolean {
+    if (query.isResolved) return true; // Can always toggle to reopen
+    // To resolve: must not be waiting on a response (cannot have pending question) and must have at least 1 response
+    const hasResponse = query.messages.some((m) => m.messageType === 'Response');
+    const latestIsResponse = query.latestMessageType === 'Response';
+    return hasResponse && latestIsResponse;
   }
 
   toggleResolve(query: HandoverQueryDto): void {
@@ -136,10 +177,13 @@ export class HandoverQueriesComponent {
 
     this.handoverQueryService.toggleQueryResolution(id, query.id).subscribe({
       next: (updated) => {
-        this.queries.update((qs) => qs.map((q) => (q.id === updated.id ? updated : q)));
-        this.queriesUpdated.emit(this.queries());
+        this.queries.update((qs) => {
+          const next = qs.map((q) => (q.id === updated.id ? updated : q));
+          this.queriesChange.emit(next);
+          return next;
+        });
       },
-      error: (err) => this.showMessage(this.extractErrorMessage(err, 'Failed to update query.'), true),
+      error: (err) => this.showMessage(this.extractErrorMessage(err, HANDOVER_MESSAGES.QUERY_UPDATE_ERROR), true),
       complete: () => {
         this.pendingResolutionToggles.update((s) => {
           const next = new Set(s);
@@ -163,8 +207,11 @@ export class HandoverQueriesComponent {
 
     dialogRef.afterClosed().subscribe((created) => {
       if (created) {
-        this.queries.update((qs) => [...qs, created]);
-        this.queriesUpdated.emit(this.queries());
+        this.queries.update((qs) => {
+          const next = [...qs, created];
+          this.queriesChange.emit(next);
+          return next;
+        });
       }
     });
   }

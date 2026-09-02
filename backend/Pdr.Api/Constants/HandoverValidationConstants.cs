@@ -14,6 +14,7 @@ public static class HandoverValidationConstants
     public const string RealisticCommitmentRequiresSubmitted = "Realistic commitments can only be provided after the handover has been submitted.";
     public const string RealisticTimelineDiffersAcknowledgementRequired = "The realistic timeline differs from the promised timeline. Please provide an acknowledgement message.";
     public const string UpdatedAcknowledgementRequired = "The estimation gap between the promised and realistic timelines still exceeds the threshold. Please provide an updated acknowledgement message.";
+    public const string QueriesUnresolvedForReview = "All handover queries must be resolved before marking the handover as reviewed.";
     public const string MissingRealisticCommitmentsReview = "All commitments must have realistic estimates before marking handover as reviewed.";
 
     public static class Variance
