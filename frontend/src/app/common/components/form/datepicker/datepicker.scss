@@ -183,10 +183,33 @@
   border-bottom: 1px solid $color-border-soft;
 
   &__title {
+    display: inline-flex;
+    gap: $spacing-1;
     font-size: $font-size-sm;
     font-weight: $font-weight-semibold;
     color: $color-slate-800;
     user-select: none;
+  }
+
+  .title-btn {
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+    padding: $spacing-1 $spacing-2;
+    border-radius: $radius-md;
+    cursor: pointer;
+    transition: background-color $transition-fast;
+
+    &:hover {
+      background-color: $color-slate-100;
+    }
+
+    &.is-active {
+      background-color: $color-slate-200;
+    }
   }
 
   &__nav {
@@ -327,6 +350,8 @@
     &.is-today {
       font-weight: $font-weight-bold;
       border: 1px solid $color-primary;
+      background-color: $color-primary-light;
+      border-radius: $radius-full;
     }
 
     &.is-selected {
@@ -341,6 +366,42 @@
       color: $color-slate-200;
       cursor: not-allowed;
       background: transparent;
+    }
+  }
+}
+
+.datepicker-months-grid,
+.datepicker-years-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-2;
+  margin-top: $spacing-2;
+  margin-bottom: $spacing-2;
+
+  .grid-cell {
+    border: 1px solid transparent;
+    background: transparent;
+    font-family: inherit;
+    font-size: $font-size-sm;
+    color: $color-slate-700;
+    height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $radius-md;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color $transition-fast, color $transition-fast, border-color $transition-fast;
+
+    &:hover {
+      background-color: $color-slate-100;
+      color: $color-slate-900;
+    }
+
+    &.is-current {
+      font-weight: $font-weight-bold;
+      border-color: $color-primary;
+      background-color: $color-primary-light;
     }
   }
 }

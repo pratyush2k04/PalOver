@@ -85,7 +85,22 @@
           </div>
 
           <span class="datepicker-header__title">
-            {{ currentMonthLabel() }}
+            <button
+              type="button"
+              class="title-btn"
+              [class.is-active]="viewMode() === 'months'"
+              (click)="setMode('months')"
+            >
+              {{ currentMonthName() }}
+            </button>
+            <button
+              type="button"
+              class="title-btn"
+              [class.is-active]="viewMode() === 'years'"
+              (click)="setMode('years')"
+            >
+              {{ viewYear() }}
+            </button>
           </span>
 
           <div class="datepicker-header__nav">
@@ -111,32 +126,64 @@
           </div>
         </div>
 
-        <!-- Weekdays Row -->
-        <div class="datepicker-weekdays">
-          @for (day of weekdays; track day) {
-            <span class="weekday-cell">{{ day }}</span>
-          }
-        </div>
+        @switch (viewMode()) {
+          @case ('days') {
+            <!-- Weekdays Row -->
+            <div class="datepicker-weekdays">
+              @for (day of weekdays; track day) {
+                <span class="weekday-cell">{{ day }}</span>
+              }
+            </div>
 
-        <!-- Days Grid -->
-        <div class="datepicker-days">
-          @for (day of calendarDays(); track day.isoString) {
-            <button
-              type="button"
-              class="day-cell"
-              [class.is-outside]="!day.isCurrentMonth"
-              [class.is-today]="day.isToday"
-              [class.is-selected]="day.isSelected"
-              [class.is-disabled]="day.isDisabled"
-              [disabled]="day.isDisabled"
-              [attr.aria-label]="day.isoString"
-              [attr.aria-selected]="day.isSelected"
-              (click)="selectDay(day)"
-            >
-              {{ day.dayNumber }}
-            </button>
+            <!-- Days Grid -->
+            <div class="datepicker-days">
+              @for (day of calendarDays(); track day.isoString) {
+                <button
+                  type="button"
+                  class="day-cell"
+                  [class.is-outside]="!day.isCurrentMonth"
+                  [class.is-today]="day.isToday"
+                  [class.is-selected]="day.isSelected"
+                  [class.is-disabled]="day.isDisabled"
+                  [disabled]="day.isDisabled"
+                  [attr.aria-label]="day.isoString"
+                  [attr.aria-selected]="day.isSelected"
+                  (click)="selectDay(day)"
+                >
+                  {{ day.dayNumber }}
+                </button>
+              }
+            </div>
           }
-        </div>
+          @case ('months') {
+            <div class="datepicker-months-grid">
+              @for (month of shortMonthNames; track month; let i = $index) {
+                <button
+                  type="button"
+                  class="grid-cell"
+                  [class.is-current]="i === viewMonth()"
+                  (click)="selectMonthView(i)"
+                >
+                  {{ month }}
+                </button>
+              }
+            </div>
+          }
+          @case ('years') {
+            <div class="datepicker-years-grid">
+              @for (year of calendarYears(); track year) {
+                <button
+                  type="button"
+                  class="grid-cell"
+                  [class.is-current]="year === viewYear()"
+                  (click)="selectYearView(year)"
+                >
+                  {{ year }}
+                </button>
+              }
+            </div>
+          }
+        }
 
         <!-- Calendar Footer -->
         <div class="datepicker-footer">

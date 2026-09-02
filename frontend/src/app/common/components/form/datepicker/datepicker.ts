@@ -104,6 +104,9 @@ export class DatepickerComponent extends BaseControlComponent<string> implements
   readonly viewYear = signal<number>(new Date().getFullYear());
   readonly viewMonth = signal<number>(new Date().getMonth()); // 0 - 11
 
+  readonly viewMode = signal<'days' | 'months' | 'years'>('days');
+  readonly shortMonthNames = SHORT_MONTH_NAMES;
+
   readonly weekdays = WEEKDAY_NAMES;
 
   dropdownTop = 0;
@@ -126,8 +129,22 @@ export class DatepickerComponent extends BaseControlComponent<string> implements
     }
   };
 
+  readonly currentMonthName = computed(() => {
+    return MONTH_NAMES[this.viewMonth()];
+  });
+
   readonly currentMonthLabel = computed(() => {
-    return `${MONTH_NAMES[this.viewMonth()]} ${this.viewYear()}`;
+    return `${this.currentMonthName()} ${this.viewYear()}`;
+  });
+
+  readonly calendarYears = computed<number[]>(() => {
+    const current = this.viewYear();
+    const start = current - 10;
+    const years: number[] = [];
+    for (let i = 0; i < 20; i++) {
+      years.push(start + i);
+    }
+    return years;
   });
 
   readonly displayValue = computed(() => {
@@ -146,6 +163,20 @@ export class DatepickerComponent extends BaseControlComponent<string> implements
   });
 
   readonly isPlaceholder = computed(() => !this._value());
+
+  setMode(mode: 'days' | 'months' | 'years'): void {
+    this.viewMode.set(mode);
+  }
+
+  selectMonthView(index: number): void {
+    this.viewMonth.set(index);
+    this.viewMode.set('days');
+  }
+
+  selectYearView(year: number): void {
+    this.viewYear.set(year);
+    this.viewMode.set('days');
+  }
 
   readonly calendarDays = computed<CalendarDay[]>(() => {
     const year = this.viewYear();
@@ -289,31 +320,59 @@ export class DatepickerComponent extends BaseControlComponent<string> implements
   }
 
   prevMonth(): void {
-    const currentMonth = this.viewMonth();
-    if (currentMonth === 0) {
-      this.viewMonth.set(11);
+    const mode = this.viewMode();
+    if (mode === 'days') {
+      const currentMonth = this.viewMonth();
+      if (currentMonth === 0) {
+        this.viewMonth.set(11);
+        this.viewYear.update((y) => y - 1);
+      } else {
+        this.viewMonth.set(currentMonth - 1);
+      }
+    } else if (mode === 'months') {
       this.viewYear.update((y) => y - 1);
-    } else {
-      this.viewMonth.set(currentMonth - 1);
+    } else if (mode === 'years') {
+      this.viewYear.update((y) => y - 20);
     }
   }
 
   nextMonth(): void {
-    const currentMonth = this.viewMonth();
-    if (currentMonth === 11) {
-      this.viewMonth.set(0);
+    const mode = this.viewMode();
+    if (mode === 'days') {
+      const currentMonth = this.viewMonth();
+      if (currentMonth === 11) {
+        this.viewMonth.set(0);
+        this.viewYear.update((y) => y + 1);
+      } else {
+        this.viewMonth.set(currentMonth + 1);
+      }
+    } else if (mode === 'months') {
       this.viewYear.update((y) => y + 1);
-    } else {
-      this.viewMonth.set(currentMonth + 1);
+    } else if (mode === 'years') {
+      this.viewYear.update((y) => y + 20);
     }
   }
 
   prevYear(): void {
-    this.viewYear.update((y) => y - 1);
+    const mode = this.viewMode();
+    if (mode === 'days') {
+      this.viewYear.update((y) => y - 1);
+    } else if (mode === 'months') {
+      this.viewYear.update((y) => y - 1);
+    } else if (mode === 'years') {
+      this.viewYear.update((y) => y - 20);
+    }
   }
 
   nextYear(): void {
-    this.viewYear.update((y) => y + 1);
+    const mode = this.viewMode();
+    if (mode === 'days') {
+      this.viewYear.update((y) => y + 1);
+    } else if (mode === 'months') {
+      this.viewYear.update((y) => y + 1);
+    } else if (mode === 'years') {
+      this.viewYear.update((y) => y + 20);
+    }
   }
 
   selectDay(day: CalendarDay): void {
