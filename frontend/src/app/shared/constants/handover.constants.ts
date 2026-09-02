@@ -9,13 +9,13 @@ export const HANDOVER_API_ENDPOINTS = {
     `/api/engagements/${engagementId}/handover/commitments/${commitmentId}/realistic`,
   HANDOVER_REVIEW: (id: number) => `/api/engagements/${id}/handover/review`,
   HANDOVER_QUERIES: (id: number) => `/api/engagements/${id}/handover/queries`,
-  HANDOVER_QUERY_RESPOND: (engagementId: number, queryId: number) =>
-    `/api/engagements/${engagementId}/handover/queries/${queryId}/respond`,
+  HANDOVER_QUERY_MESSAGES: (engagementId: number, queryId: number) =>
+    `/api/engagements/${engagementId}/handover/queries/${queryId}/messages`,
   HANDOVER_QUERY_TOGGLE_RESOLUTION: (engagementId: number, queryId: number) =>
     `/api/engagements/${engagementId}/handover/queries/${queryId}/toggle-resolution`,
 } as const;
 
-export const MAX_FREE_TEXT_LENGTH = 2000;
+export const MAX_FREE_TEXT_LENGTH = 500;
 export const HANDOVER_SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
 export const HANDOVER_TIMELINE_UNITS = ['Days', 'Weeks', 'Months'] as const;
 
@@ -95,4 +95,17 @@ export const HANDOVER_MESSAGES = {
   TITLE_AND_DESC_REQUIRED: 'Title and Description are required.',
   ACK_MESSAGE_REQUIRED: 'An acknowledgement message is required when the realistic timeline differs from the promised timeline.',
   SAVE_DRAFT_FIRST: 'Save draft first to add commitments.',
+  QUERY_LOAD_ERROR: 'Failed to load handover queries.',
+  QUERY_MESSAGE_SUBMIT_SUCCESS: 'Message submitted.',
+  QUERY_MESSAGE_SUBMIT_ERROR: 'Failed to submit message.',
+  QUERY_UPDATE_ERROR: 'Failed to update query.',
+  QUERY_RAISE_ERROR: 'Failed to raise query.',
+} as const;
+
+export const HANDOVER_QUERY_FIELD_LABELS = {
+  ClientBackground: 'Client Background',
+  BusinessProblem: 'Business Problem',
+  ClientSentiment: 'Client Sentiment',
+  DealOrigin: 'Deal Origin',
+  Commitment: 'Commitment',
 } as const;
