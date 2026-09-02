@@ -5226,19 +5226,6 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            Id = 6,
-                            Body = "Named resources have been allocated for your {RoleName} request on {EngagementName}.",
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
-                            DefaultPriority = 2,
-                            IsDeleted = false,
-                            Key = "ResourceRequestAllocated",
-                            LinkPattern = "/engagements/{EngagementId}/workspace/resources",
-                            Title = "Resource Request Allocated — {EngagementName}",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
                             Id = 11,
                             Body = "A confirmed resource was removed from your {RoleName} request on {EngagementName}; it is now reopened for allocation.",
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
