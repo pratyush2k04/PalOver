@@ -3,12 +3,14 @@
     <app-section-header title="Audit Log">
       <div class="header-actions-group">
         <app-select
+          class="audit-user-select"
           [id]="'audit-user-select'"
           [options]="userOptions()"
           [(ngModel)]="filterUserId"
           (ngModelChange)="onFilterChange()"
         ></app-select>
         <app-select
+          class="audit-category-select"
           [id]="'audit-category-select'"
           [options]="categoryOptions"
           [(ngModel)]="filterCategory"
@@ -36,6 +38,7 @@
           (ngModelChange)="onFilterChange()"
         />
         <app-select
+          class="audit-category-select"
           [id]="'audit-category-select'"
           [options]="categoryOptions"
           [(ngModel)]="filterCategory"
