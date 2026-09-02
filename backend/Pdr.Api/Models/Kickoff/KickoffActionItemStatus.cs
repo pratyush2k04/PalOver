@@ -5,6 +5,6 @@ namespace Pdr.Api.Models.Kickoff;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum KickoffActionItemStatus
 {
-    InProgress = 2,
-    Done = 3
+    InProgress = 1,
+    Done = 2
 }
