@@ -85,7 +85,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("AccessItems", (string)null);
+                    b.ToTable("AccessItems");
 
                     b.HasData(
                         new
@@ -196,7 +196,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AccessItemDefinitions", (string)null);
+                    b.ToTable("AccessItemDefinitions");
 
                     b.HasData(
                         new
@@ -1273,15 +1273,9 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("engagement_checklist_id");
 
-                    b.Property<string>("EvidenceLink")
-                        .HasMaxLength(2048)
-                        .HasColumnType("character varying(2048)")
-                        .HasColumnName("evidence_link");
-
-                    b.Property<string>("EvidenceNote")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("evidence_note");
+                    b.Property<int?>("EvidenceDocumentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("evidence_document_id");
 
                     b.Property<bool>("EvidenceRequired")
                         .ValueGeneratedOnAdd()
@@ -1385,6 +1379,8 @@ namespace Pdr.Api.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("EngagementChecklistId");
+
+                    b.HasIndex("EvidenceDocumentId");
 
                     b.HasIndex("EvidenceSubmittedById");
 
@@ -2128,7 +2124,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Assumptions", (string)null);
+                    b.ToTable("Assumptions");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Engagements.CommercialModel", b =>
@@ -2300,7 +2296,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Dependencies", (string)null);
+                    b.ToTable("Dependencies");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Engagements.Engagement", b =>
@@ -2596,15 +2592,14 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("display_order");
 
-                    b.Property<string>("EvidenceLink")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
-                        .HasColumnName("evidence_link");
+                    b.Property<string>("EvidenceDocumentFileName")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("evidence_document_file_name");
 
-                    b.Property<string>("EvidenceNote")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("evidence_note");
+                    b.Property<int?>("EvidenceDocumentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("evidence_document_id");
 
                     b.Property<int>("EvidenceSnapshotId")
                         .HasColumnType("integer")
@@ -2685,7 +2680,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EnvironmentToolingDefinitions", (string)null);
+                    b.ToTable("EnvironmentToolingDefinitions");
 
                     b.HasData(
                         new
@@ -2769,7 +2764,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("EnvironmentToolingItems", (string)null);
+                    b.ToTable("EnvironmentToolingItems");
 
                     b.HasData(
                         new
@@ -3477,7 +3472,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HandoverReadinessDefinitions", (string)null);
+                    b.ToTable("HandoverReadinessDefinitions");
 
                     b.HasData(
                         new
@@ -3587,7 +3582,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("HandoverReadinessItems", (string)null);
+                    b.ToTable("HandoverReadinessItems");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Kickoff.KickoffActionItem", b =>
@@ -6147,6 +6142,11 @@ namespace Pdr.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Pdr.Api.Models.Documents.Document", "EvidenceDocument")
+                        .WithMany()
+                        .HasForeignKey("EvidenceDocumentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Pdr.Api.Models.LoginEntity.User", "EvidenceSubmittedBy")
                         .WithMany()
                         .HasForeignKey("EvidenceSubmittedById")
@@ -6160,6 +6160,8 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("EngagementChecklist");
+
+                    b.Navigation("EvidenceDocument");
 
                     b.Navigation("EvidenceSubmittedBy");
 
