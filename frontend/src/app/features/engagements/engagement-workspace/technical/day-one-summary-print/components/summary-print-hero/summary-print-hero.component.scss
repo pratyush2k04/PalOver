@@ -1,4 +1,5 @@
 @use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
 
 :host {
   display: block;
@@ -17,18 +18,17 @@
     border-color: $color-success-border;
     .status-indicator-icon { background: $color-success; color: $color-surface; }
     .status-title { color: $color-success-dark; }
-    .status-description { color: $color-success-text; }
   }
 
   &.blocked {
-    background: $color-rose-50;
-    border-color: $color-rose-200;
-    .status-indicator-icon { background: $color-rose-600; color: $color-surface; }
-    .status-title { color: $color-rose-800; }
-    .status-description { color: $color-rose-700; }
+    background: $color-danger-bg;
+    border-color: $color-danger-border;
+    .status-indicator-icon { background: $color-danger; color: $color-surface; }
+    .status-title { color: $color-danger-dark; }
+    .status-description { color: $color-danger-text; }
   }
 
-  @media screen and (max-width: 768px) {
+  @include respond-to-down('md') {
     padding: 1rem;
     gap: 0.875rem;
   }

@@ -13,7 +13,7 @@
   font-family: $font-family-base;
   color: $color-text;
 
-  @media (max-width: 768px) {
+  @include respond-to-down('md') {
     padding: $spacing-4;
   }
 }
@@ -109,7 +109,7 @@
   cursor: pointer;
   transition: background-color $transition-fast;
 
-  @media (max-width: 768px) {
+  @include respond-to-down('md') {
     flex-direction: column;
     align-items: flex-start;
     padding: $spacing-4;

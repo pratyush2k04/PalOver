@@ -2,20 +2,19 @@
 
 :host {
   display: block;
-  flex-shrink: 0;
+  width: 100%;
 }
 
 .header {
   @include flex-between;
-  gap: $spacing-6;
   height: 4rem;
-  padding: 0 $spacing-6;
-  background: $color-surface;
+  background-color: $color-surface;
   border-bottom: 1px solid $color-border-soft;
+  padding: 0 $spacing-8;
   box-sizing: border-box;
   font-family: $font-family-base;
 
-  @media (max-width: 768px) {
+  @include respond-to-down('md') {
     padding: 0 $spacing-3;
     gap: $spacing-2;
   }
@@ -48,7 +47,7 @@
     transform: scale(0.95);
   }
 
-  @media (max-width: 768px) {
+  @include respond-to-down('md') {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -69,7 +68,7 @@
   gap: $spacing-5;
   flex-shrink: 0;
 
-  @media (max-width: 768px) {
+  @include respond-to-down('md') {
     gap: $spacing-2;
   }
 }
@@ -80,7 +79,7 @@
   white-space: nowrap;
   font-weight: $font-weight-medium;
 
-  @media (max-width: 1024px) {
+  @include respond-to-down('lg') {
     display: none;
   }
 }

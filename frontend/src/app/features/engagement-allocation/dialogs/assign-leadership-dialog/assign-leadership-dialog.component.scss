@@ -27,10 +27,8 @@
     @include flex-column($gap: $spacing-1);
 
     .handover-field-label {
-      font-size: $font-size-xs;
-      font-weight: $font-weight-semibold;
+      @include text-overline;
       color: $color-text-fainter;
-      text-transform: uppercase;
     }
 
     .handover-field-value {

@@ -41,11 +41,8 @@
   font-size: $font-size-sm;
 
   th {
-    font-size: $font-size-xs;
-    font-weight: $font-weight-semibold;
+    @include text-overline;
     color: $color-text-faint;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
     padding: $spacing-3 $spacing-4;
     border-bottom: 1px solid $color-border-soft;
     background-color: $color-bg;

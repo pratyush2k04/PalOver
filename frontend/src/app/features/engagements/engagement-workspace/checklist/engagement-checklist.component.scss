@@ -50,7 +50,7 @@
   gap: $spacing-3;
   flex-wrap: wrap;
 
-  @media screen and (max-width: 768px) {
+  @include respond-to-down('md') {
     flex-direction: column;
     align-items: stretch;
     gap: $spacing-2;
@@ -68,7 +68,7 @@
     background-color: $color-surface;
     transition: border-color 0.15s, box-shadow 0.15s;
 
-    @media screen and (max-width: 768px) {
+    @include respond-to-down('md') {
       max-width: 100%;
       width: 100%;
       box-sizing: border-box;
@@ -92,7 +92,7 @@
   app-select.filter-select {
     min-width: 9rem;
 
-    @media screen and (max-width: 768px) {
+    @include respond-to-down('md') {
       width: 100%;
       box-sizing: border-box;
     }
@@ -109,7 +109,7 @@
     cursor: pointer;
     transition: border-color 0.15s;
 
-    @media screen and (max-width: 768px) {
+    @include respond-to-down('md') {
       width: 100%;
       box-sizing: border-box;
     }
@@ -126,7 +126,7 @@
   }
 
   app-button {
-    @media screen and (max-width: 768px) {
+    @include respond-to-down('md') {
       width: 100%;
     }
   }

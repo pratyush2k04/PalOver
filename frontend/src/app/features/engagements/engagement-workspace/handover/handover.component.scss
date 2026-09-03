@@ -10,7 +10,7 @@
   align-items: center;
   gap: $spacing-4;
 
-  @media (max-width: 640px) {
+  @include respond-to-down('sm') {
     width: 100%;
     justify-content: space-between;
   }
@@ -29,7 +29,8 @@
   width: 0.5rem;
   height: 0.5rem;
   border-radius: $radius-full;
-  flex-shrink: 0;
+  background-color: $color-success;
+  display: inline-block;
 }
 
 .status-report {
@@ -125,7 +126,7 @@
       }
     }
 
-    @media (max-width: 640px) {
+    @include respond-to-down('sm') {
       flex-direction: column;
       align-items: flex-start;
       gap: $spacing-2;
@@ -140,7 +141,7 @@
   font-size: $font-size-sm;
   color: $color-text-muted;
 
-  @media screen and (max-width: 768px) {
+  @include respond-to-down('md') {
     padding-left: 0;
   }
 }
@@ -149,7 +150,7 @@
   @include card-surface($spacing-6, $radius-2xl);
   margin-bottom: $spacing-8;
 
-  @media (max-width: 768px) {
+  @include respond-to-down('md') {
     padding: $spacing-4;
   }
 }
@@ -178,7 +179,7 @@
     margin-bottom: 0;
   }
 
-  @media (max-width: 640px) {
+  @include respond-to-down('sm') {
     flex-direction: column;
     align-items: flex-start;
     gap: $spacing-3;
@@ -190,7 +191,7 @@
   align-items: center;
   gap: $spacing-3;
 
-  @media (max-width: 640px) {
+  @include respond-to-down('sm') {
     width: 100%;
     justify-content: space-between;
   }
@@ -266,7 +267,7 @@
     gap: $spacing-4;
     margin-top: $spacing-4;
 
-    @media (max-width: 768px) {
+    @include respond-to-down('md') {
       grid-template-columns: 1fr;
     }
 
@@ -391,7 +392,7 @@ select {
   border-top: 3px solid transparent;
   overflow: hidden;
 
-  @media (max-width: 768px) {
+  @include respond-to-down('md') {
     flex-direction: column;
   }
 }
@@ -690,7 +691,7 @@ select {
     flex: 1;
     width: auto;
 
-    @media (max-width: 640px) {
+    @include respond-to-down('sm') {
       width: 100%;
     }
   }

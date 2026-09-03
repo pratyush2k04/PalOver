@@ -1,4 +1,5 @@
 @use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
 
 .people-directory {
   display: flex;
@@ -40,7 +41,7 @@
   gap: $spacing-6;
   align-items: flex-start;
 
-  @media (max-width: 1024px) {
+  @include respond-to-down('lg') {
     grid-template-columns: 1fr;
   }
 }
@@ -70,10 +71,7 @@
     tr {
       th {
         padding: 0.875rem 1.25rem;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+        @include text-overline;
         color: $color-slate-500;
         white-space: nowrap;
       }

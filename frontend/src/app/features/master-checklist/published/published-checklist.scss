@@ -16,7 +16,7 @@
     overflow: hidden;
     padding: 0;
 
-    @media (max-width: 768px) {
+    @include respond-to-down('md') {
       background: transparent;
       border: none;
       box-shadow: none;
@@ -32,7 +32,7 @@
     padding: $spacing-5 $spacing-6;
     background-color: $color-surface;
 
-    @media (max-width: 768px) {
+    @include respond-to-down('md') {
       flex-direction: column;
       align-items: stretch;
       padding: $spacing-4;
@@ -108,7 +108,7 @@
   background: transparent;
   min-height: auto;
 
-  @media (max-width: 768px) {
+  @include respond-to-down('md') {
     gap: $spacing-4;
   }
 }
@@ -121,7 +121,7 @@
   border: none;
   overflow: hidden;
 
-  @media (max-width: 768px) {
+  @include respond-to-down('md') {
     background: $color-surface;
     border: 1px solid $color-border-soft;
     border-radius: $radius-lg;
@@ -136,7 +136,7 @@
   border-top: 1px solid $color-border-soft;
   border-bottom: 1px solid $color-border-soft;
 
-  @media (max-width: 768px) {
+  @include respond-to-down('md') {
     border-top: none;
     padding: $spacing-3 $spacing-4;
   }
@@ -274,11 +274,8 @@
 
   h4 {
     margin: 0 0 $spacing-2 0;
-    font-size: $font-size-xs;
-    font-weight: $font-weight-semibold;
+    @include text-overline;
     color: $color-text-muted;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
   }
 
   p {

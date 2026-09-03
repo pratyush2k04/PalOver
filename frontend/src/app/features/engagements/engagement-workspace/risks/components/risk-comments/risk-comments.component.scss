@@ -226,15 +226,13 @@
       border: 1px solid $color-border-input;
       border-radius: $radius-md;
       box-shadow: $shadow-card;
-      z-index: 100;
+      z-index: $z-index-dropdown;
       padding: $spacing-1 0;
 
       .dropdown-header {
         padding: $spacing-1 $spacing-3;
-        font-size: $font-size-xs;
-        font-weight: $font-weight-semibold;
+        @include text-overline;
         color: $color-text-faint;
-        text-transform: uppercase;
         border-bottom: 1px solid $color-border-soft;
       }
 

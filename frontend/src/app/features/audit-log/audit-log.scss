@@ -1,4 +1,5 @@
 @use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
 
 :host {
   display: block;
@@ -15,7 +16,7 @@
   font-family: $font-family-base;
   color: $color-text;
 
-  @media (max-width: 768px) {
+  @include respond-to-down('md') {
     padding: $spacing-4;
   }
 
@@ -35,7 +36,7 @@
   gap: $spacing-3;
   flex-wrap: wrap;
 
-  @media screen and (max-width: 768px) {
+  @include respond-to-down('md') {
     flex-direction: column;
     align-items: stretch;
     gap: $spacing-2;
@@ -104,11 +105,8 @@ table {
 thead th {
   text-align: left;
   padding: $spacing-4 $spacing-6;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-bold;
-  letter-spacing: 0.04em;
+  @include text-overline;
   color: $color-text-muted;
-  text-transform: uppercase;
   background: $color-surface-hover;
   border-bottom: 1px solid $color-border-soft;
 }

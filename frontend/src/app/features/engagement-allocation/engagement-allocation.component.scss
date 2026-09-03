@@ -171,10 +171,7 @@
     th {
       background: $color-surface-hover;
       padding: $spacing-4 $spacing-5;
-      font-size: $font-size-xs;
-      font-weight: $font-weight-bold;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      @include text-overline;
       color: $color-text-muted;
       border-bottom: 1px solid $color-border-soft;
       vertical-align: middle;

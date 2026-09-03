@@ -1,4 +1,5 @@
 @use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
 
 .card-container {
   background-color: $color-surface;
@@ -65,11 +66,8 @@
       font-size: 0.875rem;
 
       th {
-        font-size: 0.75rem;
-        font-weight: 600;
+        @include text-overline;
         color: $color-gray-500;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
         padding: 0.75rem 1rem;
         border-bottom: 1px solid $color-gray-200;
         background-color: $color-gray-50;
