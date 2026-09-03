@@ -26,7 +26,6 @@
             <th>ITEM</th>
             <th>OWNER</th>
             <th>CLIENT-SIDE</th>
-            <th class="days-th">DAYS TO BILLING</th>
             <th class="status-th">STATUS</th>
             @if (canManage()) {
               <th>ACTIONS</th>
@@ -59,9 +58,6 @@
                   }
                 </div>
               </td>
-              <td class="days-cell">
-                {{ item.daysUntilBillingDate ?? '—' }}
-              </td>
               <td class="status-cell">
                 @if (canManage()) {
                   <app-status-select
@@ -93,7 +89,7 @@
             </tr>
           } @empty {
             <tr>
-              <td [attr.colspan]="canManage() ? 6 : 5" class="empty-cell">
+              <td [attr.colspan]="canManage() ? 5 : 4" class="empty-cell">
                 No access items found for this engagement.
               </td>
             </tr>
