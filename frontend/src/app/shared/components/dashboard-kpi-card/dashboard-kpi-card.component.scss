@@ -6,7 +6,7 @@
   border-radius: $radius-2xl;
   box-shadow: $shadow-card;
   border: 1px solid $color-border-soft;
-  background-color: $color-surface !important;
+  background-color: $color-surface;
   transition: transform $transition-base, box-shadow $transition-base;
   position: relative;
   overflow: hidden;

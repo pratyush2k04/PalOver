@@ -35,7 +35,7 @@
   margin: 0 auto;
   padding: $spacing-4 $spacing-6;
 
-  @media screen and (max-width: 768px) {
+  @include respond-to-down('md') {
     flex-direction: column;
     align-items: stretch;
     gap: 0.75rem;
@@ -44,10 +44,7 @@
 }
 
 .report-tag {
-  font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  @include text-overline;
   color: $color-slate-500;
 }
 
@@ -57,7 +54,7 @@
   font-weight: $font-weight-bold;
   color: $color-slate-900;
 
-  @media screen and (max-width: 768px) {
+  @include respond-to-down('md') {
     font-size: 1.1rem;
   }
 }
@@ -66,16 +63,12 @@
   display: flex;
   gap: $spacing-3;
 
-  @media screen and (max-width: 768px) {
+  @include respond-to-down('md') {
     width: 100%;
 
     app-button {
       flex: 1;
-
-      ::ng-deep button {
-        width: 100%;
-        white-space: nowrap;
-      }
+      --btn-width: 100%;
     }
   }
 }
@@ -106,7 +99,7 @@
   border-radius: 0.75rem;
   box-shadow: 0 0.625rem 0.9375rem -0.1875rem rgba($color-black, 0.05);
 
-  @media screen and (max-width: 768px) {
+  @include respond-to-down('md') {
     margin-top: $spacing-4;
     padding: 1.25rem;
     border-radius: 0.5rem;
@@ -141,11 +134,8 @@
   font-size: $font-size-sm;
 
   th {
-    font-size: $font-size-xs;
-    font-weight: $font-weight-semibold;
+    @include text-overline;
     color: $color-slate-500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
     padding: $spacing-3 0;
     border-bottom: 0.0625rem solid $color-slate-200;
   }

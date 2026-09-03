@@ -1,4 +1,5 @@
 @use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
 
 :host {
   display: block;
@@ -64,9 +65,8 @@
 
   th {
     background: $color-slate-50;
+    @include text-overline;
     font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
     color: $color-slate-600;
     white-space: nowrap;
   }

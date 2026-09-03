@@ -9,10 +9,10 @@
   @include flex-between;
   align-items: flex-start;
   gap: $spacing-6;
-  margin-bottom: $spacing-6;
+  margin-bottom: var(--page-header-margin-bottom, #{$spacing-6});
   flex-wrap: wrap;
 
-  @media screen and (max-width: 768px) {
+  @include respond-to-down('md') {
     flex-direction: column;
     align-items: stretch;
     gap: $spacing-4;
@@ -21,9 +21,9 @@
 
   .header-titles {
     flex: 1;
-    min-width: 260px;
+    min-width: 16.25rem;
 
-    @media screen and (max-width: 768px) {
+    @include respond-to-down('md') {
       min-width: 0;
       width: 100%;
     }
@@ -35,7 +35,7 @@
       margin: 0 0 $spacing-2 0;
       letter-spacing: -0.02em;
 
-      @media screen and (max-width: 768px) {
+      @include respond-to-down('md') {
         font-size: 1.35rem;
       }
     }
@@ -54,7 +54,7 @@
     gap: $spacing-4;
     flex-shrink: 0;
 
-    @media screen and (max-width: 768px) {
+    @include respond-to-down('md') {
       width: 100%;
       flex-wrap: wrap;
     }

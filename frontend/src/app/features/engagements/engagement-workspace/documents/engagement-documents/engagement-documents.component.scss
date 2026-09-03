@@ -22,7 +22,7 @@
   gap: 0.75rem;
   margin-bottom: 1.25rem;
 
-  @media screen and (max-width: 768px) {
+  @include respond-to-down('md') {
     flex-direction: column;
     align-items: stretch;
     gap: 0.5rem;
@@ -39,7 +39,7 @@
     background-color: $color-surface;
     transition: border-color 0.15s, box-shadow 0.15s;
 
-    @media screen and (max-width: 768px) {
+    @include respond-to-down('md') {
       max-width: 100%;
       width: 100%;
       box-sizing: border-box;
@@ -63,7 +63,7 @@
   .category-select {
     min-width: 12rem;
 
-    @media screen and (max-width: 768px) {
+    @include respond-to-down('md') {
       width: 100%;
       box-sizing: border-box;
     }
@@ -97,11 +97,8 @@
 
     th {
       padding: 0.875rem 1.25rem;
-      font-size: 0.725rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
+      @include text-overline;
       color: $color-slate-400;
-      text-transform: uppercase;
       white-space: nowrap;
     }
   }
@@ -149,19 +146,13 @@
   }
 
   .file-icon {
-    width: 18px;
-    height: 18px;
+    width: 1.125rem;
+    height: 1.125rem;
     color: $color-slate-500;
     flex-shrink: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
-    ::ng-deep svg,
-    svg {
-      width: 18px;
-      height: 18px;
-    }
   }
 
   .file-name {
@@ -192,41 +183,15 @@
   white-space: nowrap;
 
   .btn-upload-version {
-    ::ng-deep button.btn,
-    ::ng-deep .btn {
-      color: $color-slate-500;
-      transition: all 0.15s ease;
-
-      &:hover:not(:disabled) {
-        color: $color-accent-amber-hover !important;
-        background-color: $color-accent-amber-light !important;
-
-        .upload-version-icon,
-        svg {
-          stroke: $color-accent-amber-hover !important;
-          color: $color-accent-amber-hover !important;
-        }
-      }
-    }
+    --btn-color: #{$color-slate-500};
+    --btn-color-hover: #{$color-accent-amber-hover};
+    --btn-bg-hover: #{$color-accent-amber-light};
   }
 
   .btn-remove {
-    ::ng-deep button.btn,
-    ::ng-deep .btn {
-      color: $color-slate-500;
-      transition: all 0.15s ease;
-
-      &:hover:not(:disabled) {
-        color: $color-danger !important;
-        background-color: $color-danger-light !important;
-
-        .remove-icon,
-        svg {
-          stroke: $color-danger !important;
-          color: $color-danger !important;
-        }
-      }
-    }
+    --btn-color: #{$color-slate-500};
+    --btn-color-hover: #{$color-danger};
+    --btn-bg-hover: #{$color-danger-light};
   }
 }
 
@@ -235,12 +200,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  ::ng-deep svg,
-  svg {
-    width: 16px;
-    height: 16px;
-  }
+  width: 1rem;
+  height: 1rem;
 }
 
 .col-nowrap {
@@ -278,19 +239,13 @@
 
 // Read-only badge (Leadership and other view-only roles)
 .badge-icon {
-  width: 12px;
-  height: 12px;
+  width: 0.75rem;
+  height: 0.75rem;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   margin-right: 0.35rem;
-
-  ::ng-deep svg,
-  svg {
-    width: 12px;
-    height: 12px;
-  }
 }
 
 .visibility-cell-wrapper {
@@ -304,15 +259,11 @@
 }
 
 .edit-icon {
+  width: 0.875rem;
+  height: 0.875rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  ::ng-deep svg,
-  svg {
-    width: 14px;
-    height: 14px;
-  }
 }
 
 // Inline editable dropdown (PM and Admin)

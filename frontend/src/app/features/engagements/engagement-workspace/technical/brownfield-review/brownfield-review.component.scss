@@ -1,4 +1,5 @@
 @use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
 
 .card-container {
   background-color: $color-surface;
@@ -33,17 +34,8 @@
     }
 
     .btn-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
       width: 1rem;
       height: 1rem;
-
-      ::ng-deep svg {
-        width: 100%;
-        height: 100%;
-        display: block;
-      }
     }
   }
 
@@ -65,11 +57,8 @@
       font-size: 0.875rem;
 
       th {
-        font-size: 0.75rem;
-        font-weight: 600;
+        @include text-overline;
         color: $color-gray-500;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
         padding: 0.75rem 1rem;
         border-bottom: 1px solid $color-gray-200;
         background-color: $color-gray-50;
@@ -109,19 +98,13 @@
         gap: 0.35rem;
 
         .file-icon {
-          width: 16px;
-          height: 16px;
+          width: 1rem;
+          height: 1rem;
           color: $color-slate-500;
           flex-shrink: 0;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-
-          ::ng-deep svg,
-          svg {
-            width: 16px;
-            height: 16px;
-          }
         }
       }
 
@@ -136,12 +119,8 @@
         app-status-badge {
           display: inline-flex;
           justify-content: center;
-
-          ::ng-deep .status-badge {
-            min-width: 6.5rem;
-            justify-content: center;
-            box-sizing: border-box;
-          }
+          --badge-min-width: 6.5rem;
+          --badge-justify: center;
         }
       }
 
@@ -156,31 +135,21 @@
           gap: $spacing-2;
 
           .btn-accept {
-            ::ng-deep .btn:hover:not(:disabled) {
-              background-color: $color-success-bg-alt;
-              color: $color-emerald-700;
-              border-color: $color-success-border-alt;
-            }
+            --btn-bg-hover: #{$color-success-bg-alt};
+            --btn-color-hover: #{$color-emerald-700};
+            --btn-border-hover: #{$color-success-border-alt};
           }
 
           .btn-defer {
-            ::ng-deep .btn:hover:not(:disabled) {
-              background-color: $color-orange-50;
-              color: $color-orange-700;
-              border-color: $color-orange-200;
-            }
+            --btn-bg-hover: #{$color-orange-50};
+            --btn-color-hover: #{$color-orange-700};
+            --btn-border-hover: #{$color-orange-200};
           }
 
           .btn-remove {
-            ::ng-deep .btn {
-              color: $color-gray-500;
-              transition: color 0.15s ease, background-color 0.15s ease;
-
-              &:hover {
-                color: $color-danger;
-                background-color: $color-danger-light;
-              }
-            }
+            --btn-color: #{$color-gray-500};
+            --btn-color-hover: #{$color-danger};
+            --btn-bg-hover: #{$color-danger-light};
           }
         }
       }
@@ -192,12 +161,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  ::ng-deep svg,
-  svg {
-    width: 16px;
-    height: 16px;
-  }
+  width: 1rem;
+  height: 1rem;
 }
 
 .btn-remove:hover {

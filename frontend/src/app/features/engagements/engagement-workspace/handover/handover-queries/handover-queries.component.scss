@@ -97,7 +97,7 @@
   border-radius: $radius-lg;
   border: 1px solid $color-border-soft;
 
-  @media (max-width: 640px) {
+  @include respond-to-down('sm') {
     width: calc(100% - #{$spacing-4});
   }
 }
@@ -156,12 +156,10 @@
 }
 
 .sender-role-pill {
+  @include text-overline;
   font-size: 0.6875rem;
-  font-weight: $font-weight-semibold;
   padding: $radius-xs $radius-md;
   border-radius: $radius-full;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 .sender-role-pm {
