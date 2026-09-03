@@ -42,10 +42,19 @@ export class StatusSelectComponent extends BaseControlComponent<unknown> impleme
   dropdownLeft = 0;
   dropdownMinWidth = 0;
 
-  private onScrollFn = () => {
+  private onScrollFn = (event: Event) => {
+    const dropdown = this.elementRef.nativeElement.querySelector('.status-select-dropdown');
+    if (dropdown && dropdown.contains(event.target as Node)) {
+      return;
+    }
     if (this.isOpen()) {
-      this.isOpen.set(false);
-      this.markTouched();
+      this.updatePosition();
+    }
+  };
+
+  private onResizeFn = () => {
+    if (this.isOpen()) {
+      this.updatePosition();
     }
   };
 
@@ -80,23 +89,20 @@ export class StatusSelectComponent extends BaseControlComponent<unknown> impleme
 
   ngOnDestroy(): void {
     window.removeEventListener('scroll', this.onScrollFn, true);
+    window.removeEventListener('resize', this.onResizeFn);
   }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     if (this.isOpen() && !this.elementRef.nativeElement.contains(event.target)) {
-      this.isOpen.set(false);
-      this.markTouched();
-      window.removeEventListener('scroll', this.onScrollFn, true);
+      this.closeDropdown();
     }
   }
 
   @HostListener('keydown.escape')
   onEscape(): void {
     if (this.isOpen()) {
-      this.isOpen.set(false);
-      this.markTouched();
-      window.removeEventListener('scroll', this.onScrollFn, true);
+      this.closeDropdown();
     }
   }
 
@@ -121,19 +127,26 @@ export class StatusSelectComponent extends BaseControlComponent<unknown> impleme
     this.selectedIndex.set(idx >= 0 ? idx : null);
   }
 
+  private closeDropdown(): void {
+    this.isOpen.set(false);
+    this.markTouched();
+    window.removeEventListener('scroll', this.onScrollFn, true);
+    window.removeEventListener('resize', this.onResizeFn);
+  }
+
   toggleDropdown(): void {
     if (this.disabled()) {
       return;
     }
     
     if (this.isOpen()) {
-      this.isOpen.set(false);
-      window.removeEventListener('scroll', this.onScrollFn, true);
-      this.markTouched();
+      this.closeDropdown();
     } else {
       this.isOpen.set(true);
       this.updatePosition();
+      setTimeout(() => this.updatePosition(), 0);
       window.addEventListener('scroll', this.onScrollFn, true);
+      window.addEventListener('resize', this.onResizeFn);
     }
   }
 
@@ -141,8 +154,21 @@ export class StatusSelectComponent extends BaseControlComponent<unknown> impleme
     const trigger = this.elementRef.nativeElement.querySelector('.status-select-trigger');
     if (trigger) {
       const rect = trigger.getBoundingClientRect();
-      this.dropdownTop = rect.bottom + 6;
-      this.dropdownLeft = rect.left;
+      const viewportHeight = window.innerHeight;
+      const spaceBelow = viewportHeight - rect.bottom;
+
+      const dropdownEl = this.elementRef.nativeElement.querySelector('.status-select-dropdown') as HTMLElement | null;
+      const dropdownHeight = dropdownEl ? dropdownEl.offsetHeight : Math.min(this.options().length * 38 + 12, 256);
+
+      if (spaceBelow < dropdownHeight && rect.top > spaceBelow) {
+        this.dropdownTop = Math.max(8, rect.top - dropdownHeight - 6);
+      } else {
+        this.dropdownTop = rect.bottom + 6;
+      }
+
+      const dropdownWidth = dropdownEl ? dropdownEl.offsetWidth : 152;
+      const maxLeft = Math.max(8, window.innerWidth - dropdownWidth - 8);
+      this.dropdownLeft = Math.min(Math.max(8, rect.left), maxLeft);
       this.dropdownMinWidth = rect.width;
     }
   }
@@ -155,7 +181,6 @@ export class StatusSelectComponent extends BaseControlComponent<unknown> impleme
     const option = this.options()[index];
     this.value = option ? option.value : null;
     this.onChange(this.value);
-    this.markTouched();
-    this.isOpen.set(false);
+    this.closeDropdown();
   }
 }
