@@ -33,7 +33,7 @@ export class RejectCrDialogComponent {
   errorMessage = signal<string | null>(null);
 
   rejectForm: FormGroup = this.fb.group({
-    rejectionReason: ['', [Validators.required, Validators.maxLength(2000)]]
+    rejectionReason: ['', [Validators.required, Validators.maxLength(500)]]
   });
 
   onCancel(): void {

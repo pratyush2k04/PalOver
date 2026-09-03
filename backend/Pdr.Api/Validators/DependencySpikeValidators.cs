@@ -19,7 +19,7 @@ public class CreateDependencySpikeRequestValidator : AbstractValidator<CreateDep
             .IsInEnum().WithMessage("Status must be a valid DependencySpikeStatus.");
 
         RuleFor(x => x.OutcomeFindings)
-            .MaximumLength(2000).WithMessage("Outcome findings must not exceed 2000 characters.");
+            .MaximumLength(500).WithMessage("Outcome findings must not exceed 500 characters.");
     }
 }
 
@@ -39,6 +39,6 @@ public class UpdateDependencySpikeRequestValidator : AbstractValidator<UpdateDep
             .IsInEnum().WithMessage("Status must be a valid DependencySpikeStatus.");
 
         RuleFor(x => x.OutcomeFindings)
-            .MaximumLength(2000).WithMessage("Outcome findings must not exceed 2000 characters.");
+            .MaximumLength(500).WithMessage("Outcome findings must not exceed 500 characters.");
     }
 }

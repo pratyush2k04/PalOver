@@ -143,7 +143,7 @@ export class RisksComponent implements OnInit {
 
   // Reactive Forms
   closeForm: FormGroup = this.fb.group({
-    resolutionNote: ['', [Validators.required, Validators.maxLength(2000)]]
+    resolutionNote: ['', [Validators.required, Validators.maxLength(500)]]
   });
 
   ngOnInit(): void {

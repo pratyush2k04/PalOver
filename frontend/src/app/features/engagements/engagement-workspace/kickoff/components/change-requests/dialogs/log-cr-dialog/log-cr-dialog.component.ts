@@ -34,8 +34,8 @@ export class LogCrDialogComponent {
   errorMessage = signal<string | null>(null);
 
   logForm: FormGroup = this.fb.group({
-    description: ['', [Validators.required, Validators.maxLength(2000)]],
-    impact: ['', [Validators.required, Validators.maxLength(2000)]]
+    description: ['', [Validators.required, Validators.maxLength(500)]],
+    impact: ['', [Validators.required, Validators.maxLength(500)]]
   });
 
   onCancel(): void {
