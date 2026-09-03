@@ -363,7 +363,6 @@ export class HandoverComponent {
     const { businessProblem, clientSentiment } = this.clientContextForm.getRawValue();
     if (!businessProblem || !clientSentiment) {
       this.clientContextForm.markAllAsTouched();
-      this.toastService.error(HANDOVER_MESSAGES.DRAFT_REQUIRED_FIELDS);
       return;
     }
 
@@ -377,8 +376,7 @@ export class HandoverComponent {
         this.isSaving.set(false);
         this.kickoffReadinessService.refresh();
       },
-      error: (err) => {
-        this.toastService.error(this.extractErrorMessage(err, HANDOVER_MESSAGES.SAVE_DRAFT_ERROR));
+      error: () => {
         this.isSaving.set(false);
       },
     });
