@@ -57,6 +57,12 @@
     align-items: center;
   }
 
+  app-select,
+  app-input,
+  app-datepicker {
+    --field-margin-bottom: 0;
+  }
+
   app-select {
     display: block;
     min-width: 8.5rem;
@@ -64,38 +70,19 @@
     &.audit-category-select {
       min-width: 11.5rem;
     }
-
-    ::ng-deep .app-field {
-      margin-bottom: 0;
-    }
   }
 
   app-input {
     min-width: 8.75rem;
-
-    ::ng-deep .app-field {
-      margin-bottom: 0;
-
-      input {
-        height: 2.375rem;
-        box-sizing: border-box;
-      }
-    }
+    --input-height: 2.375rem;
   }
 
   app-datepicker {
     min-width: 9.5rem;
-
-    ::ng-deep .app-field {
-      margin-bottom: 0;
-    }
   }
 
-  ::ng-deep app-button .btn {
-    height: 2.375rem;
-    box-sizing: border-box;
-    display: inline-flex;
-    align-items: center;
+  app-button {
+    --btn-height: 2.375rem;
   }
 }
 

@@ -207,26 +207,6 @@
       }
     }
 
-    .type-cell {
-      &[data-type="Greenfield"],
-      &[data-type="greenfield"] {
-        ::ng-deep .status-badge {
-          background-color: $color-success-bg;
-          color: $color-success;
-          border: 1px solid $color-success-border;
-        }
-      }
-
-      &[data-type="Brownfield"],
-      &[data-type="brownfield"] {
-        ::ng-deep .status-badge {
-          background-color: $color-warning-bg;
-          color: $color-warning-text;
-          border: 1px solid $color-warning-border;
-        }
-      }
-    }
-
     .model-sub {
       font-size: $font-size-xs;
       color: $color-text-faint;

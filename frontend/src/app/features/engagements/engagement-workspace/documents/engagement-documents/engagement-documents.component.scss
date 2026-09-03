@@ -192,41 +192,15 @@
   white-space: nowrap;
 
   .btn-upload-version {
-    ::ng-deep button.btn,
-    ::ng-deep .btn {
-      color: $color-slate-500;
-      transition: all 0.15s ease;
-
-      &:hover:not(:disabled) {
-        color: $color-accent-amber-hover;
-        background-color: $color-accent-amber-light;
-
-        .upload-version-icon,
-        svg {
-          stroke: $color-accent-amber-hover;
-          color: $color-accent-amber-hover;
-        }
-      }
-    }
+    --btn-color: #{$color-slate-500};
+    --btn-color-hover: #{$color-accent-amber-hover};
+    --btn-bg-hover: #{$color-accent-amber-light};
   }
 
   .btn-remove {
-    ::ng-deep button.btn,
-    ::ng-deep .btn {
-      color: $color-slate-500;
-      transition: all 0.15s ease;
-
-      &:hover:not(:disabled) {
-        color: $color-danger;
-        background-color: $color-danger-light;
-
-        .remove-icon,
-        svg {
-          stroke: $color-danger;
-          color: $color-danger;
-        }
-      }
-    }
+    --btn-color: #{$color-slate-500};
+    --btn-color-hover: #{$color-danger};
+    --btn-bg-hover: #{$color-danger-light};
   }
 }
 

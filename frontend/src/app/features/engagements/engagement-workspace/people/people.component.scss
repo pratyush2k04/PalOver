@@ -140,41 +140,15 @@
     }
 
     .edit-btn {
-      ::ng-deep button.btn,
-      ::ng-deep .btn {
-        color: $color-slate-500;
-        transition: all 0.15s ease;
-
-        &:hover:not(:disabled) {
-          color: $color-primary;
-          background-color: $color-primary-light;
-
-          .action-icon,
-          svg {
-            stroke: $color-primary;
-            color: $color-primary;
-          }
-        }
-      }
+      --btn-color: #{$color-slate-500};
+      --btn-color-hover: #{$color-primary};
+      --btn-bg-hover: #{$color-primary-light};
     }
 
     .delete-btn {
-      ::ng-deep button.btn,
-      ::ng-deep .btn {
-        color: $color-slate-500;
-        transition: all 0.15s ease;
-
-        &:hover:not(:disabled) {
-          color: $color-danger;
-          background-color: $color-danger-light;
-
-          .action-icon,
-          svg {
-            stroke: $color-danger;
-            color: $color-danger;
-          }
-        }
-      }
+      --btn-color: #{$color-slate-500};
+      --btn-color-hover: #{$color-danger};
+      --btn-bg-hover: #{$color-danger-light};
     }
   }
 }
@@ -186,41 +160,15 @@
   gap: 0.375rem;
 
   .edit-btn {
-    ::ng-deep button.btn,
-    ::ng-deep .btn {
-      color: $color-slate-500;
-      transition: all 0.15s ease;
-
-      &:hover:not(:disabled) {
-        color: $color-primary;
-        background-color: $color-primary-light;
-
-        .action-icon,
-        svg {
-          stroke: $color-primary;
-          color: $color-primary;
-        }
-      }
-    }
+    --btn-color: #{$color-slate-500};
+    --btn-color-hover: #{$color-primary};
+    --btn-bg-hover: #{$color-primary-light};
   }
 
   .delete-btn {
-    ::ng-deep button.btn,
-    ::ng-deep .btn {
-      color: $color-slate-500;
-      transition: all 0.15s ease;
-
-      &:hover:not(:disabled) {
-        color: $color-danger;
-        background-color: $color-danger-light;
-
-        .action-icon,
-        svg {
-          stroke: $color-danger;
-          color: $color-danger;
-        }
-      }
-    }
+    --btn-color: #{$color-slate-500};
+    --btn-color-hover: #{$color-danger};
+    --btn-bg-hover: #{$color-danger-light};
   }
 }
 

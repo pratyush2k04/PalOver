@@ -8,7 +8,7 @@
   display: flex;
   flex-direction: column;
   gap: $spacing-1;
-  margin-bottom: $spacing-3;
+  margin-bottom: var(--field-margin-bottom, #{$spacing-3});
 
   &:last-child,
   &:only-child {

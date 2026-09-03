@@ -549,15 +549,11 @@
   }
 }
 
-::ng-deep app-button.btn-complete button.btn,
+app-button.btn-complete,
 .btn-complete {
-  ::ng-deep button.btn {
-    &:hover:not(:disabled) {
-      background-color: rgba(37, 99, 235, 0.1);
-      border-color: rgba(37, 99, 235, 0.4);
-      color: $color-primary;
-    }
-  }
+  --btn-bg-hover: #{rgba(37, 99, 235, 0.1)};
+  --btn-border-hover: #{rgba(37, 99, 235, 0.4)};
+  --btn-color-hover: #{$color-primary};
 }
 
 // Actions Group
