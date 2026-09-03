@@ -52,7 +52,7 @@ public class ClientContactTransitionsController(IClientContactTransitionService 
     /// Records a new client contact transition for an engagement (Pre Sales only).
     /// </summary>
     [HttpPost]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.Leadership)]
+    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.Presales)]
     [EndpointSummary("Record client contact transition")]
     [ProducesResponseType(typeof(ClientContactTransitionResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
