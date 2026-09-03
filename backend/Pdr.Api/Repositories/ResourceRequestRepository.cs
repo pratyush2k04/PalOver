@@ -69,13 +69,20 @@ public class ResourceRequestRepository(AppDbContext context) : IResourceRequestR
         return await context.EngagementAssignments
             .AsNoTracking()
             .Include(a => a.User).ThenInclude(u => u.Role)
-            .Where(a => a.EngagementId == engagementId && 
+            .Where(a => a.EngagementId == engagementId &&
                         (a.User.RoleId == (int)RoleEnum.Leadership || a.User.RoleId == (int)RoleEnum.ProjectManagement) &&
                         !a.User.IsDeleted)
             .ToListAsync();
     }
 
+    public async Task<int> GetUnconfirmedCountByEngagementIdAsync(int engagementId)
+    {
+        return await context.ResourceRequests
+            .AsNoTracking()
+            .CountAsync(r => r.EngagementId == engagementId && r.Status != ResourceRequestStatus.Confirmed);
+    }
+
     public async Task SaveChangesAsync()
     {
         await context.SaveChangesAsync();
-    }}
+    }}

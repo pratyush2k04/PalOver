@@ -1273,15 +1273,9 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("engagement_checklist_id");
 
-                    b.Property<string>("EvidenceLink")
-                        .HasMaxLength(2048)
-                        .HasColumnType("character varying(2048)")
-                        .HasColumnName("evidence_link");
-
-                    b.Property<string>("EvidenceNote")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("evidence_note");
+                    b.Property<int?>("EvidenceDocumentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("evidence_document_id");
 
                     b.Property<bool>("EvidenceRequired")
                         .ValueGeneratedOnAdd()
@@ -1385,6 +1379,8 @@ namespace Pdr.Api.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("EngagementChecklistId");
+
+                    b.HasIndex("EvidenceDocumentId");
 
                     b.HasIndex("EvidenceSubmittedById");
 
@@ -2596,15 +2592,14 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("display_order");
 
-                    b.Property<string>("EvidenceLink")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
-                        .HasColumnName("evidence_link");
+                    b.Property<string>("EvidenceDocumentFileName")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("evidence_document_file_name");
 
-                    b.Property<string>("EvidenceNote")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("evidence_note");
+                    b.Property<int?>("EvidenceDocumentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("evidence_document_id");
 
                     b.Property<int>("EvidenceSnapshotId")
                         .HasColumnType("integer")
@@ -3649,7 +3644,7 @@ namespace Pdr.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasDefaultValue("Open")
+                        .HasDefaultValue("InProgress")
                         .HasColumnName("status");
 
                     b.Property<string>("Title")
@@ -5226,19 +5221,6 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            Id = 6,
-                            Body = "Named resources have been allocated for your {RoleName} request on {EngagementName}.",
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
-                            DefaultPriority = 2,
-                            IsDeleted = false,
-                            Key = "ResourceRequestAllocated",
-                            LinkPattern = "/engagements/{EngagementId}/workspace/resources",
-                            Title = "Resource Request Allocated — {EngagementName}",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
                             Id = 11,
                             Body = "A confirmed resource was removed from your {RoleName} request on {EngagementName}; it is now reopened for allocation.",
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -5404,6 +5386,58 @@ namespace Pdr.Api.Migrations
                             Key = "HandoverQueryRaised",
                             LinkPattern = "/engagements/{EngagementId}/workspace/handover",
                             Title = "Handover Query Raised — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 918273,
+                            Body = "You have been assigned the kickoff action \"{ActionTitle}\" for {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 1,
+                            IsDeleted = false,
+                            Key = "KickoffActionItemAssigned",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/kickoff",
+                            Title = "Action Item Assigned — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 629481,
+                            Body = "Assumption \"{AssumptionDescription}\" needs to be validated for {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 2,
+                            IsDeleted = false,
+                            Key = "AssumptionNeedsValidation",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/assumptions-and-decisions",
+                            Title = "Assumption Needs Validation — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 742619,
+                            Body = "You have been assigned the dependency \"{DependencyDescription}\" for {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 2,
+                            IsDeleted = false,
+                            Key = "DependencyAssignedToOwner",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/assumptions-and-decisions",
+                            Title = "Dependency Assigned — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 853720,
+                            Body = "Dependency \"{DependencyDescription}\" was assigned to external owner {OwnerName} for {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 2,
+                            IsDeleted = false,
+                            Key = "DependencyAssignedExternal",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/assumptions-and-decisions",
+                            Title = "External Dependency Added — {EngagementName}",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
@@ -6108,6 +6142,11 @@ namespace Pdr.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Pdr.Api.Models.Documents.Document", "EvidenceDocument")
+                        .WithMany()
+                        .HasForeignKey("EvidenceDocumentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Pdr.Api.Models.LoginEntity.User", "EvidenceSubmittedBy")
                         .WithMany()
                         .HasForeignKey("EvidenceSubmittedById")
@@ -6121,6 +6160,8 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("EngagementChecklist");
+
+                    b.Navigation("EvidenceDocument");
 
                     b.Navigation("EvidenceSubmittedBy");
 

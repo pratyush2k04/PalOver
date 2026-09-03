@@ -1,7 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Pdr.Api.Constants;
-using Pdr.Api.Data;
 using Pdr.Api.DTOs.EngagementChecklist;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Audit;
@@ -15,12 +13,13 @@ public class EngagementChecklistService(
     IEngagementRepository engagementRepository,
     IEngagementChecklistRepository checklistRepository,
     IMasterChecklistRepository masterChecklistRepository,
-    AppDbContext dbContext,
+    IUserRepository userRepository,
     ICurrentUserService currentUserService,
     IRiskService riskService,
     IAuditLogService auditLogService,
     ILogger<EngagementChecklistService> logger,
-    IEngagementAccessService engagementAccessService) : IEngagementChecklistService
+    IEngagementAccessService engagementAccessService,
+    IDocumentRepository documentRepository) : IEngagementChecklistService
 {
     public async Task<EngagementChecklistResponseDto?> GetByEngagementIdAsync(int engagementId)
     {
@@ -103,8 +102,7 @@ public class EngagementChecklistService(
 
         if (normalizedStatus == MasterChecklistConstants.ItemStatuses.Complete && item.EvidenceRequired)
         {
-            var hasEvidence = !string.IsNullOrWhiteSpace(item.EvidenceNote) || !string.IsNullOrWhiteSpace(item.EvidenceLink);
-            if (!hasEvidence)
+            if (item.EvidenceDocumentId is null)
             {
                 throw new ChecklistItemEvidenceRequiredException(itemId);
             }
@@ -340,9 +338,16 @@ public class EngagementChecklistService(
             throw new CannotUpdateNonApplicableItemException(itemId);
         }
 
+        var evidenceDocument = await documentRepository.GetByIdAsync(dto.DocumentId)
+            ?? throw new DocumentNotFoundException(dto.DocumentId);
+
+        if (evidenceDocument.EngagementId != engagementId)
+        {
+            throw new EvidenceDocumentNotInEngagementException(dto.DocumentId);
+        }
+
         var currentUserId = currentUserService.GetUserId();
-        item.EvidenceNote = dto.Note?.Trim();
-        item.EvidenceLink = string.IsNullOrWhiteSpace(dto.Link) ? null : dto.Link.Trim();
+        item.EvidenceDocumentId = evidenceDocument.Id;
         item.EvidenceSubmittedAt = DateTime.UtcNow;
         item.EvidenceSubmittedById = currentUserId;
         item.UpdatedAt = DateTime.UtcNow;
@@ -376,13 +381,12 @@ public class EngagementChecklistService(
 
     private async Task EnsureUserBelongsToEngagementAsync(int engagementId, int personId)
     {
-        var isAssigned = await dbContext.EngagementAssignments
-            .AnyAsync(a => a.EngagementId == engagementId && a.UserId == personId && !a.User.IsDeleted);
+        var isAssigned = await engagementRepository.IsUserAssignedAsync(engagementId, personId);
 
         if (!isAssigned)
         {
-            var hasAnyAssignments = await dbContext.EngagementAssignments.AnyAsync(a => a.EngagementId == engagementId);
-            if (hasAnyAssignments || !await dbContext.Users.AnyAsync(u => u.Id == personId && !u.IsDeleted))
+            var hasAnyAssignments = await engagementRepository.HasAnyAssignmentAsync(engagementId);
+            if (hasAnyAssignments || !await userRepository.UserExistsAsync(personId))
             {
                 throw new UserNotFoundException(personId);
             }
@@ -433,8 +437,8 @@ public class EngagementChecklistService(
                      i.Owner != null ? i.Owner.FullName : null,
                      i.BlockReason,
                      i.EvidenceRequired,
-                     i.EvidenceNote,
-                     i.EvidenceLink,
+                     i.EvidenceDocumentId,
+                     i.EvidenceDocument != null ? i.EvidenceDocument.FileName : null,
                      i.EvidenceSubmittedAt,
                      i.EvidenceSubmittedById,
                      i.EvidenceSubmittedBy != null ? i.EvidenceSubmittedBy.FullName : null))

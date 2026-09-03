@@ -1,13 +1,16 @@
+using System.Text.Json;
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Kickoff;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
 using Pdr.Api.Models.Kickoff;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
+using Pdr.Api.Services.Notifications.Mappers;
 
 namespace Pdr.Api.Services;
 
-public class KickoffService(IKickoffRepository repository) : IKickoffService
+public class KickoffService(IKickoffRepository repository, INotificationService notificationService) : IKickoffService
 {
     public async Task<KickoffRecordDto> GetKickoffRecordAsync(int engagementId, string? currentUserId)
     {
@@ -121,6 +124,18 @@ public class KickoffService(IKickoffRepository repository) : IKickoffService
         await repository.AddActionItemAsync(actionItem);
         await repository.SaveChangesAsync();
 
+        if (actionItem.AssignedToUserId.HasValue)
+        {
+            var data = JsonSerializer.Serialize(
+                new KickoffActionItemAssignedMapper.KickoffActionItemAssignedPayload(actionItem.KickoffActionItemId, engagementId));
+
+            await notificationService.CreateFromTemplateAsync(
+                NotificationConstants.TemplateKeys.KickoffActionItemAssigned,
+                actionItem.AssignedToUserId.Value,
+                data,
+                DateTime.UtcNow);
+        }
+
         return MapActionItemToDto(actionItem);
     }
 
@@ -132,6 +147,11 @@ public class KickoffService(IKickoffRepository repository) : IKickoffService
         if (item is null || item.EngagementId != engagementId)
         {
             throw new KickoffActionItemNotFoundException(actionItemId);
+        }
+
+        if (item.AssignedToUserId is null || !int.TryParse(currentUserId, out var userId) || item.AssignedToUserId != userId)
+        {
+            throw new KickoffActionItemStatusUpdateForbiddenException();
         }
 
         item.Status = status;

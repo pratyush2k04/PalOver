@@ -35,19 +35,16 @@
                   <span class="type-badge">{{ item.type }}</span>
                 </div>
                 
-                <div class="item-meta">
+                <div class="item-meta" style="flex-direction: row; align-items: center; gap: 0.4rem; display: flex;">
                   <span class="rationale">Needed By: {{ item.neededByDate | date:'mediumDate' }}</span>
+                  @if (item.ownerName) {
+                    <span class="rationale" style="opacity: 0.4;">|</span>
+                    <span class="rationale">Depended On: {{ item.ownerName }}</span>
+                  }
                 </div>
               </div>
 
               <div class="item-right">
-                @if (item.ownerName) {
-                  <div class="owner-container">
-                    <span class="owner-icon" [inlineSVG]="'assets/icons/user.svg'"></span>
-                    {{ item.ownerName }}
-                  </div>
-                }
-                
                 <div class="item-actions">
                   @if (canEdit(item)) {
                     <app-button class="btn-edit" variant="stroked" (click)="openDependencyDialog(item)">Edit</app-button>

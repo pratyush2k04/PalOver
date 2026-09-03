@@ -139,7 +139,9 @@ export class DependenciesComponent implements OnInit {
   }
 
   canEdit(dependency: DependencyDto): boolean {
-    return !this.engagementService.isSignedOff() && dependency.createdBy === String(this.authService.getUserId());
+    return !this.engagementService.isSignedOff() 
+      && dependency.status !== DependencyStatus.Met 
+      && dependency.createdBy === String(this.authService.getUserId());
   }
 
   canMarkMet(dependency: DependencyDto): boolean {

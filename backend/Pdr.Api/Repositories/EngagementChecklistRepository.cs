@@ -17,6 +17,8 @@ public class EngagementChecklistRepository(AppDbContext context) : IEngagementCh
             .ThenInclude(i => i.Owner)
             .Include(c => c.Items)
             .ThenInclude(i => i.EvidenceSubmittedBy)
+            .Include(c => c.Items)
+            .ThenInclude(i => i.EvidenceDocument)
             .FirstOrDefaultAsync(c => c.EngagementId == engagementId);
     }
 
@@ -26,6 +28,7 @@ public class EngagementChecklistRepository(AppDbContext context) : IEngagementCh
             .Include(i => i.Category)
             .Include(i => i.Owner)
             .Include(i => i.EvidenceSubmittedBy)
+            .Include(i => i.EvidenceDocument)
             .FirstOrDefaultAsync(i => i.Id == itemId && i.EngagementChecklist.EngagementId == engagementId);
     }
 

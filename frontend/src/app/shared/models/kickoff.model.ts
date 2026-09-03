@@ -1,4 +1,4 @@
-export type KickoffActionItemStatus = 'Open' | 'InProgress' | 'Done';
+export type KickoffActionItemStatus = 'InProgress' | 'Done';
 
 export interface KickoffActionItem {
   kickoffActionItemId?: number;

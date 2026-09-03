@@ -68,18 +68,14 @@
                   @if (canManageVisibility()) {
                     <!-- PM / Admin: inline editable dropdown & custom edit trigger -->
                     <div class="visibility-cell-wrapper">
-                      <select
-                        class="visibility-select"
-                        [class.is-pm-only]="doc.visibility === 'PM-only'"
-                        [class.is-custom]="doc.visibility === 'Custom'"
-                        [value]="doc.visibility === 'Custom' ? 'Custom' : doc.visibility"
-                        (change)="onVisibilityChange(doc, $any($event.target).value, $any($event.target))"
+                      <app-select
+                        [id]="'doc-visibility-' + doc.id"
+                        [options]="visibilityOptions"
+                        [ngModel]="doc.visibility === 'Custom' ? 'Custom' : doc.visibility"
+                        (ngModelChange)="onVisibilityChange(doc, $event)"
+                        class="visibility-app-select"
                         [attr.aria-label]="'Visibility for ' + doc.fileName"
-                      >
-                        <option value="Team-wide">Team-wide</option>
-                        <option value="PM-only">PM-only</option>
-                        <option value="Custom">Custom visibility</option>
-                      </select>
+                      />
                       @if (doc.visibility === 'Custom') {
                         <app-button
                           type="button"

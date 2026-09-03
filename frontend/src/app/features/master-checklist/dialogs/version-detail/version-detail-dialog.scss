@@ -1,18 +1,49 @@
 @use 'styles/tokens' as *;
 
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   width: 35rem;
   max-width: calc(100vw - 3rem);
+  max-height: calc(100vh - 3rem);
+
+  ::ng-deep .status-badge,
+  ::ng-deep .badge {
+    font-weight: $font-weight-normal;
+  }
 }
 
 .version-detail-dialog {
   &__content {
     width: 100%;
     box-sizing: border-box;
+    flex: 1;
+    min-height: 0;
+    max-height: 36rem;
     overflow-y: auto;
     padding-top: $spacing-4;
     padding-right: $spacing-3;
+
+    /* Custom internal scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: $color-slate-300 transparent;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: $color-slate-300;
+      border-radius: $radius-full;
+
+      &:hover {
+        background-color: $color-slate-400;
+      }
+    }
   }
 
   &__group {

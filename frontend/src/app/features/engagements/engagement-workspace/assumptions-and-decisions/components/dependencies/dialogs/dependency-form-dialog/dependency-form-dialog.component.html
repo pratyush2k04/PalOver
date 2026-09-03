@@ -32,11 +32,11 @@
       </div>
     </div>
 
-    <app-input
+    <app-datepicker
       id="neededByDate"
       label="Needed By Date"
-      type="date"
       [min]="minDate"
+      [max]="billingStartDate()"
       [required]="true"
       formControlName="neededByDate"
       [errorMessages]="{ required: 'Needed by date is required.', pastDate: 'Date cannot be in the past.' }"

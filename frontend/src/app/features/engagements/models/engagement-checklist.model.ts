@@ -28,8 +28,8 @@ export interface EngagementChecklistItem {
   ownerName: string | null;
   blockReason: string | null;
   evidenceRequired: boolean;
-  evidenceNote: string | null;
-  evidenceLink: string | null;
+  evidenceDocumentId: number | null;
+  evidenceDocumentFileName: string | null;
   evidenceSubmittedAt: string | null;
   evidenceSubmittedById: number | null;
   evidenceSubmittedByName: string | null;
@@ -75,7 +75,6 @@ export interface BlockChecklistItemRequest {
 }
 
 export interface SaveChecklistItemEvidenceRequest {
-  note: string;
-  link?: string;
+  documentId: number;
   markComplete?: boolean;
 }

@@ -11,7 +11,6 @@ import { EmptyStateComponent } from '@common/components/empty-state/empty-state'
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { TooltipDirective } from '@common/directives/tooltip.directive';
-import { ToastService } from '@common/services/toast/toast';
 import { AuthService } from '@shared/services/auth';
 import { RISK_COMMENT_MESSAGES, RISK_COMMENT_CONSTANTS } from '@shared/constants/app.constants';
 import { InlineSVGModule } from 'ng-inline-svg-2';
@@ -41,7 +40,6 @@ export class RiskCommentsComponent implements OnInit {
   readonly constants = RISK_COMMENT_CONSTANTS;
 
   private commentService = inject(RiskCommentService);
-  private toastService = inject(ToastService);
   private engagementService = inject(EngagementService);
   private authService = inject(AuthService);
 
@@ -132,16 +130,49 @@ export class RiskCommentsComponent implements OnInit {
     return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   }
 
+  formatContent(content: string): string {
+    if (!content) return '';
+    let escaped = this.escapeHtml(content);
+
+    const currentMembers = this.members();
+    if (currentMembers && currentMembers.length > 0) {
+      const sortedMembers = [...currentMembers].sort((a, b) => b.fullName.length - a.fullName.length);
+      for (const member of sortedMembers) {
+        const mentionStr = `@${this.escapeHtml(member.fullName)}`;
+        if (escaped.includes(mentionStr)) {
+          const replaceRegex = new RegExp(this.escapeRegExp(mentionStr), 'g');
+          escaped = escaped.replace(replaceRegex, `<span class="mention-highlight">${mentionStr}</span>`);
+        }
+      }
+    }
+
+    escaped = escaped.replace(/(?<!<span class="mention-highlight">)(@[A-Za-z0-9_.-]+)/g, '<span class="mention-highlight">$1</span>');
+    return escaped;
+  }
+
+  private escapeHtml(str: string): string {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  private escapeRegExp(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
   loadComments(): void {
     this.isLoading.set(true);
     this.commentService.getComments(this.engagementId(), this.riskId()).subscribe({
       next: (data) => {
         this.comments.set(data);
         this.isLoading.set(false);
+        this.scrollToBottom();
       },
       error: (err) => {
         console.error(RISK_COMMENT_MESSAGES.LOAD_ERROR, err);
-        this.toastService.error(RISK_COMMENT_MESSAGES.LOAD_ERROR);
         this.isLoading.set(false);
       }
     });
@@ -234,14 +265,28 @@ export class RiskCommentsComponent implements OnInit {
     }
   }
 
+  onTextareaKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      if (this.showMentionDropdown() && this.filteredMembers().length > 0) {
+        event.preventDefault();
+        this.selectMention(this.filteredMembers()[0]);
+        return;
+      }
+      event.preventDefault();
+      if (this.editingCommentId()) {
+        this.saveEdit();
+      } else {
+        this.submitComment();
+      }
+    } else if (event.key === 'Escape' && this.editingCommentId()) {
+      event.preventDefault();
+      this.cancelEditing();
+    }
+  }
+
   submitComment(): void {
     const content = this.newCommentText().trim();
-    if (!content) return;
-
-    if (content.length > RISK_COMMENT_CONSTANTS.MAX_LENGTH) {
-      this.toastService.error(RISK_COMMENT_CONSTANTS.TEXT_EXCEED_ERROR);
-      return;
-    }
+    if (!content || content.length > RISK_COMMENT_CONSTANTS.MAX_LENGTH) return;
 
     this.isSubmitting.set(true);
     this.commentService.addComment(this.engagementId(), this.riskId(), {
@@ -253,50 +298,63 @@ export class RiskCommentsComponent implements OnInit {
         this.newCommentText.set('');
         this.selectedMentionIds.set([]);
         this.showMentionDropdown.set(false);
-        this.toastService.success(RISK_COMMENT_MESSAGES.ADD_SUCCESS);
         this.isSubmitting.set(false);
+        this.scrollToBottom();
       },
       error: (err) => {
         console.error(err);
-        this.toastService.error(RISK_COMMENT_MESSAGES.ADD_ERROR);
         this.isSubmitting.set(false);
       }
     });
   }
 
+  private scrollToBottom(): void {
+    setTimeout(() => {
+      const container = document.querySelector('.comments-list');
+      if (container) {
+        container.scrollTop = container.scrollHeight;
+      }
+    }, 50);
+  }
+
   startEditing(comment: RiskComment): void {
-    if (!comment.canEdit) {
-      this.toastService.error(RISK_COMMENT_MESSAGES.EDIT_WINDOW_EXPIRED);
-      return;
-    }
+    if (!comment.canEdit) return;
     this.editingCommentId.set(comment.id);
-    this.editingCommentText.set(comment.content);
+    this.newCommentText.set(comment.content);
+
+    setTimeout(() => {
+      const textarea = document.querySelector<HTMLTextAreaElement>(`#new-comment-${this.riskId()}`);
+      if (textarea) {
+        textarea.focus();
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+      }
+    }, 50);
   }
 
   cancelEditing(): void {
     this.editingCommentId.set(null);
-    this.editingCommentText.set('');
+    this.newCommentText.set('');
+    this.selectedMentionIds.set([]);
+    this.showMentionDropdown.set(false);
   }
 
-  saveEdit(commentId: number): void {
-    const content = this.editingCommentText().trim();
-    if (!content) return;
+  saveEdit(): void {
+    const commentId = this.editingCommentId();
+    if (!commentId) return;
 
-    if (content.length > RISK_COMMENT_CONSTANTS.MAX_LENGTH) {
-      this.toastService.error(RISK_COMMENT_CONSTANTS.TEXT_EXCEED_ERROR);
-      return;
-    }
+    const content = this.newCommentText().trim();
+    if (!content || content.length > RISK_COMMENT_CONSTANTS.MAX_LENGTH) return;
 
+    this.isSubmitting.set(true);
     this.commentService.updateComment(this.engagementId(), this.riskId(), commentId, { content }).subscribe({
       next: (updated) => {
         this.comments.update((list) => list.map((c) => (c.id === commentId ? updated : c)));
         this.cancelEditing();
-        this.toastService.success(RISK_COMMENT_MESSAGES.UPDATE_SUCCESS);
+        this.isSubmitting.set(false);
       },
       error: (err) => {
         console.error(err);
-        const errorMsg = err?.error?.message || RISK_COMMENT_MESSAGES.UPDATE_ERROR;
-        this.toastService.error(errorMsg);
+        this.isSubmitting.set(false);
       }
     });
   }

@@ -85,7 +85,7 @@ export class SelectComponent extends BaseControlComponent<unknown> implements On
       this.options();
       // Use untracked to prevent circular effect loops when modifying signals
       this.syncSelectedIndex();
-    }, { allowSignalWrites: true });
+    });
   }
 
   ngOnDestroy(): void {

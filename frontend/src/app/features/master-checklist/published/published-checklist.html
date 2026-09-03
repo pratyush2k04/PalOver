@@ -17,17 +17,13 @@
 
         <div class="published-checklist__toolbar">
           <div class="published-checklist__field published-checklist__category">
-            <label for="category-select">Category</label>
-            <select
+            <app-select
               id="category-select"
+              label="Category"
+              [options]="categoryOptions()"
               [ngModel]="selectedCategory()"
               (ngModelChange)="selectedCategory.set($event)"
-            >
-              <option value="all">All Categories</option>
-              @for (category of categories(); track category) {
-                <option [value]="category">{{ category }}</option>
-              }
-            </select>
+            />
           </div>
         </div>
       </div>

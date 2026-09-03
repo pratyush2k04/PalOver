@@ -77,14 +77,16 @@ public class ResourceRequestsController(
     }
 
     /// <summary>
-    /// Allocates named resources against a request's open slots (Leadership assigned to the engagement, or Admin, only).
+    /// Saves named resources against a request's slots — names may be left blank to fill in later
+    /// (Leadership assigned to the engagement, or Admin, only). The request is confirmed automatically,
+    /// using today's date, once every slot has a name.
     /// </summary>
     /// <param name="engagementId">The ID of the engagement.</param>
     /// <param name="id">The ID of the resource request.</param>
-    /// <param name="request">The names to allocate — one per person needed.</param>
+    /// <param name="request">The names to save — one per person needed, blank entries left unfilled.</param>
     /// <returns>The updated resource request, including its named allocations.</returns>
     [HttpPost("{id:int}/allocations")]
-    [EndpointSummary("Allocate named resources to a request (Leadership or Admin only)")]
+    [EndpointSummary("Save named resources for a request (Leadership or Admin only)")]
     [ProducesResponseType(typeof(ResourceRequestDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -96,37 +98,12 @@ public class ResourceRequestsController(
         [FromBody] AllocateResourcesDto request)
     {
         var result = await resourceRequestService.AllocateResourcesAsync(engagementId, id, request);
-        return Ok(result);
-    }
-
-    /// <summary>
-    /// Records a confirmation date for a named resource (Leadership assigned to the engagement, or Admin, only).
-    /// </summary>
-    /// <param name="engagementId">The ID of the engagement.</param>
-    /// <param name="id">The ID of the resource request.</param>
-    /// <param name="allocationId">The ID of the named resource allocation.</param>
-    /// <param name="request">The confirmation date (must not be in the future).</param>
-    /// <returns>The updated resource request; flips to Confirmed once every named resource is confirmed.</returns>
-    [HttpPost("{id:int}/allocations/{allocationId:int}/confirm")]
-    [EndpointSummary("Confirm a named resource with a confirmation date (Leadership or Admin only)")]
-    [ProducesResponseType(typeof(ResourceRequestDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ResourceRequestDto>> ConfirmAllocation(
-        int engagementId,
-        int id,
-        int allocationId,
-        [FromBody] ConfirmAllocationDto request)
-    {
-        var result = await resourceRequestService.ConfirmAllocationAsync(engagementId, id, allocationId, request);
         await riskService.SyncAutoCreatedRisksAsync(engagementId);
         return Ok(result);
     }
 
     /// <summary>
-    /// Removes a confirmed named resource with a required reason, reopening the request to Allocated (Leadership assigned to the engagement, or Admin, only).
+    /// Removes a confirmed named resource with a required reason, reopening the request to Raised (Leadership assigned to the engagement, or Admin, only).
     /// </summary>
     /// <param name="engagementId">The ID of the engagement.</param>
     /// <param name="id">The ID of the resource request.</param>
