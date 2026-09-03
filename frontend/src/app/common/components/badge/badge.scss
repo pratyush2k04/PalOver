@@ -12,6 +12,6 @@
   background: $color-indigo-50;
   color: $color-indigo-800;
   font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
+  font-weight: var(--badge-font-weight, #{$font-weight-semibold});
   letter-spacing: 0.03em;
 }

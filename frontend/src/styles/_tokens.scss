@@ -205,3 +205,22 @@ $shadow-modal: 0 16px 48px rgba(0, 0, 0, 0.18);
 // Transition Tokens
 $transition-fast: 0.15s ease;
 $transition-base: 0.2s ease;
+
+// Letter Spacing Tokens
+$letter-spacing-tight: -0.025em;
+$letter-spacing-normal: 0em;
+$letter-spacing-wide: 0.025em;
+$letter-spacing-wider: 0.05em;
+$letter-spacing-widest: 0.1em;
+
+// Z-Index Tokens (Prevent z-index wars)
+$z-index-base: 0;
+$z-index-badge: 1;
+$z-index-dropdown-trigger: 5;
+$z-index-sticky: 10;
+$z-index-dropdown: 100;
+$z-index-overlay: 500;
+$z-index-modal: 1000;
+$z-index-toast: 1100;
+$z-index-tooltip: 1200;
+$z-index-loader: 9999;

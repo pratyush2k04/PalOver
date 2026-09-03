@@ -13,7 +13,7 @@
   overflow-y: auto;
 
   &::-webkit-scrollbar {
-    width: 6px;
+    width: 0.375rem;
   }
 
   &::-webkit-scrollbar-track {
@@ -91,12 +91,10 @@
           }
 
           app-button {
-            ::ng-deep .btn {
-              border-radius: $radius-md;
-              padding: $spacing-1 $spacing-2;
-              font-size: $font-size-xs;
-              line-height: 1.2;
-            }
+            --btn-border-radius: #{$radius-md};
+            --btn-padding: #{$spacing-1} #{$spacing-2};
+            --btn-font-size: #{$font-size-xs};
+            --btn-line-height: 1.2;
           }
         }
       }
@@ -109,14 +107,6 @@
         word-break: break-word;
         padding-left: 0;
         margin-top: $spacing-1;
-
-        ::ng-deep .mention-highlight {
-          color: $color-primary;
-          font-weight: $font-weight-semibold;
-          background-color: $color-primary-light;
-          padding: calc($spacing-1 / 4) $spacing-1;
-          border-radius: $radius-sm;
-        }
       }
 
       .inline-edit-box {
@@ -125,34 +115,13 @@
         margin-top: $spacing-1;
 
         app-textarea {
-          ::ng-deep .app-field {
-            margin-bottom: 0;
-          }
-
-          ::ng-deep textarea {
-            border-radius: $radius-3xl;
-            padding: $spacing-2 $spacing-4;
-            font-size: $font-size-sm;
-            color: $color-slate-900;
-            background-color: $color-white;
-            border: 1px solid $color-slate-200;
-            outline: none;
-            resize: none;
-            min-height: 2.25rem;
-            max-height: 8rem;
-            line-height: 1.4;
-            box-shadow: none;
-            transition: border-color $transition-fast, box-shadow $transition-fast;
-
-            &:focus {
-              border-color: $color-primary;
-              box-shadow: 0 0 0 3px $color-primary-focus-ring;
-            }
-          }
-
-          ::ng-deep .char-counter {
-            display: none;
-          }
+          --field-margin-bottom: 0;
+          --textarea-border-radius: #{$radius-3xl};
+          --textarea-padding: #{$spacing-2} #{$spacing-4};
+          --textarea-min-height: 2.25rem;
+          --textarea-max-height: 8rem;
+          --textarea-resize: none;
+          --char-counter-display: none;
         }
 
         .edit-actions {
@@ -162,11 +131,9 @@
           gap: $spacing-2;
 
           app-button {
-            ::ng-deep .btn {
-              border-radius: $radius-3xl;
-              padding: $spacing-1 $spacing-3;
-              font-size: $font-size-xs;
-            }
+            --btn-border-radius: #{$radius-3xl};
+            --btn-padding: #{$spacing-1} #{$spacing-3};
+            --btn-font-size: #{$font-size-xs};
           }
         }
       }
@@ -185,34 +152,13 @@
     position: relative;
 
     app-textarea {
-      ::ng-deep .app-field {
-        margin-bottom: 0;
-      }
-
-      ::ng-deep textarea {
-        border-radius: $radius-3xl;
-        padding: $spacing-2 $spacing-5;
-        font-size: $font-size-sm;
-        color: $color-slate-900;
-        background-color: $color-white;
-        border: 1px solid $color-slate-200;
-        outline: none;
-        resize: none;
-        min-height: 2.625rem;
-        max-height: 8rem;
-        line-height: 1.4;
-        box-shadow: none;
-        transition: border-color $transition-fast, box-shadow $transition-fast;
-
-        &:focus {
-          border-color: $color-primary;
-          box-shadow: 0 0 0 3px $color-primary-focus-ring;
-        }
-      }
-
-      ::ng-deep .char-counter {
-        display: none;
-      }
+      --field-margin-bottom: 0;
+      --textarea-border-radius: #{$radius-3xl};
+      --textarea-padding: #{$spacing-2} #{$spacing-5};
+      --textarea-min-height: 2.625rem;
+      --textarea-max-height: 8rem;
+      --textarea-resize: none;
+      --char-counter-display: none;
     }
 
     .mention-dropdown {
@@ -226,15 +172,13 @@
       border: 1px solid $color-border-input;
       border-radius: $radius-md;
       box-shadow: $shadow-card;
-      z-index: 100;
+      z-index: $z-index-dropdown;
       padding: $spacing-1 0;
 
       .dropdown-header {
         padding: $spacing-1 $spacing-3;
-        font-size: $font-size-xs;
-        font-weight: $font-weight-semibold;
+        @include text-overline;
         color: $color-text-faint;
-        text-transform: uppercase;
         border-bottom: 1px solid $color-border-soft;
       }
 
@@ -279,12 +223,10 @@
     gap: $spacing-2;
 
     app-button {
-      ::ng-deep .btn {
-        border-radius: $radius-3xl;
-        padding: $spacing-2 $spacing-4;
-        font-size: $font-size-xs;
-        font-weight: $font-weight-semibold;
-      }
+      --btn-border-radius: #{$radius-3xl};
+      --btn-padding: #{$spacing-2} #{$spacing-4};
+      --btn-font-size: #{$font-size-xs};
+      --btn-font-weight: #{$font-weight-semibold};
     }
   }
 }

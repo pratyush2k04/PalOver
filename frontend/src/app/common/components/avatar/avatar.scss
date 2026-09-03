@@ -8,8 +8,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 2.25rem;
+  height: 2.25rem;
   border-radius: 50%;
   background-color: $color-accent-orange;
   color: $color-surface;
@@ -18,8 +18,8 @@
   flex-shrink: 0;
 
   &--sm {
-    width: 32px;
-    height: 32px;
+    width: 2rem;
+    height: 2rem;
     font-size: 0.75rem;
   }
 }

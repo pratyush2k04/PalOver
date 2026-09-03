@@ -7,10 +7,13 @@
 .status-badge {
   display: inline-flex;
   align-items: center;
+  justify-content: var(--badge-justify, flex-start);
+  min-width: var(--badge-min-width, auto);
+  box-sizing: border-box;
   padding: 0.15rem 0.625rem;
   border-radius: $radius-full;
   font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
+  font-weight: var(--badge-font-weight, #{$font-weight-semibold});
   line-height: 1.4;
 
   &--info {
