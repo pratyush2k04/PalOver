@@ -17,27 +17,22 @@
     />
   </div>
 
-  <!-- Show selected file list when multiple files are chosen -->
-  @if (selectedFiles().length > 1) {
-    <div class="selected-files-list">
-      <p class="selected-files-label">{{ selectedFiles().length }} files selected:</p>
-      <ul>
-        @for (f of selectedFiles(); track f.name) {
-          <li>{{ f.name }}</li>
-        }
-      </ul>
+  <!-- One rename field per selected file -->
+  @if (selectedFiles().length > 0) {
+    <div class="rename-files-list">
+      @for (file of selectedFiles(); track $index; let i = $index) {
+        <div class="form-group">
+          <p class="original-file-name">{{ file.name }}</p>
+          <app-input
+            [id]="'file-name-' + i"
+            label="Rename File"
+            [ngModel]="renamedFileNames()[i]"
+            (ngModelChange)="onRenamedFileNameChange(i, $event)"
+            placeholder="e.g. Document.pdf"
+          />
+        </div>
+      }
     </div>
-  }
-
-  <!-- Rename field — only for single-file uploads -->
-  @if (isSingleFile()) {
-    <app-input
-      id="file-name"
-      label="File name (simulated)"
-      [ngModel]="simulatedFileName()"
-      (ngModelChange)="onSimulatedNameChange($event)"
-      placeholder="e.g. Document.pdf"
-    />
   }
 
   <app-select

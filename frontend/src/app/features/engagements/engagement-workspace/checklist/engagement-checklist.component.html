@@ -163,8 +163,9 @@
                       </div>
 
                       @if (item.blockReason) {
-                        <div class="item-reason-note">
-                          <span class="reason-label">Blocked:</span> {{ item.blockReason }}
+                        <div class="block-reason-callout">
+                          <span class="warning-icon" [inlineSVG]="'assets/icons/alert-triangle.svg'"></span>
+                          <span><strong>Blocked:</strong> {{ item.blockReason }}</span>
                         </div>
                       }
 
@@ -260,7 +261,14 @@
                                   Reopen
                                 </app-button>
                               } @else {
-                                <app-button class="btn-complete" type="button" variant="stroked" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
+                                <app-button
+                                  class="btn-complete"
+                                  type="button"
+                                  variant="stroked"
+                                  [disabled]="isUpdating() || !item.ownerId"
+                                  [appTooltip]="!item.ownerId ? 'Assign an owner before completing' : ''"
+                                  (click)="toggleItemStatus(item)"
+                                >
                                   Complete
                                 </app-button>
                               }
@@ -275,7 +283,7 @@
                             <!-- Applicability Actions (PM only) -->
                             @if (canChangeApplicability() && item.exemptionStatus !== 'Pending') {
                               <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openMarkNaDialog(item)" ariaLabel="Mark Not Applicable" [appTooltip]="'Mark Not Applicable'">
-                                <span class="action-icon" [inlineSVG]="'assets/icons/close.svg'"></span>
+                                <span class="action-icon" [inlineSVG]="'assets/icons/not-applicable.svg'"></span>
                               </app-button>
                             }
 
