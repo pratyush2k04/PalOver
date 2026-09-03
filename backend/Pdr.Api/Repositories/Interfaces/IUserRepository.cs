@@ -10,4 +10,6 @@ public interface IUserRepository
     Task<List<User>> GetAdminsAsync();
     Task<(List<User> Users, int TotalCount)> SearchAsync(string? search, int page, int pageSize);
     Task UpdateAsync(User user);
+    Task<bool> UserExistsAsync(int id);
+    Task<List<User>> GetAllActiveAsync();
 }

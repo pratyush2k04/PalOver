@@ -24,7 +24,7 @@ public class KickoffActionItemConfiguration : IEntityTypeConfiguration<KickoffAc
             .HasColumnName("status")
             .HasConversion<string>()
             .HasMaxLength(50)
-            .HasDefaultValue(KickoffActionItemStatus.Open)
+            .HasDefaultValue(KickoffActionItemStatus.InProgress)
             .HasSentinel(default(KickoffActionItemStatus))
             .IsRequired();
 

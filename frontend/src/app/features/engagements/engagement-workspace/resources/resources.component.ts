@@ -23,10 +23,6 @@ import {
   AllocateResourcesDialogData,
 } from './allocate-resources-dialog/allocate-resources-dialog.component';
 import {
-  ConfirmAllocationDialogComponent,
-  ConfirmAllocationDialogData,
-} from './confirm-allocation-dialog/confirm-allocation-dialog.component';
-import {
   RemoveAllocationDialogComponent,
   RemoveAllocationDialogData,
 } from './remove-allocation-dialog/remove-allocation-dialog.component';
@@ -77,9 +73,10 @@ export class ResourcesComponent {
   engagementInfo = signal<EngagementInfoDto | null>(null);
   readonly isLoading = signal<boolean>(true);
 
-  readonly unconfirmedCount = computed(
-    () => this.requests().filter((r) => r.status !== 'Confirmed').length,
-  );
+  readonly raisedRequests = computed(() => this.requests().filter((r) => r.status !== 'Confirmed'));
+  readonly confirmedRequests = computed(() => this.requests().filter((r) => r.status === 'Confirmed'));
+
+  readonly unconfirmedCount = computed(() => this.raisedRequests().length);
   readonly hasUnconfirmedRequests = computed(() => this.unconfirmedCount() > 0);
   readonly billingStartDate = computed(() => this.engagementInfo()?.billingStartDate ?? null);
 
@@ -184,30 +181,6 @@ export class ResourcesComponent {
     });
   }
 
-  openConfirmDialog(request: ResourceRequestItem, allocation: ResourceAllocationItem): void {
-    const id = this.engagementId();
-    if (!id) return;
-
-    const dialogRef = this.dialog.open<
-      ConfirmAllocationDialogComponent,
-      ConfirmAllocationDialogData,
-      ResourceRequestItem | null
-    >(ConfirmAllocationDialogComponent, {
-      data: {
-        engagementId: id,
-        requestId: request.id,
-        allocationId: allocation.id,
-        allocationName: allocation.name,
-      },
-    });
-
-    dialogRef.closed$.subscribe((updated) => {
-      if (updated) {
-        this.loadData(id);
-      }
-    });
-  }
-
   openRemoveDialog(request: ResourceRequestItem, allocation: ResourceAllocationItem): void {
     const id = this.engagementId();
     if (!id) return;
@@ -234,8 +207,6 @@ export class ResourcesComponent {
 
   statusTone(status: string): StatusBadgeTone {
     switch (status) {
-      case 'Allocated':
-        return 'info';
       case 'Confirmed':
         return 'success';
       default:

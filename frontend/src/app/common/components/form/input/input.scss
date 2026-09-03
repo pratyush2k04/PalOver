@@ -7,13 +7,13 @@
 .app-field {
   display: flex;
   flex-direction: column;
-  gap: $spacing-2;
-  margin-bottom: $spacing-5;
+  gap: $spacing-1;
+  margin-bottom: $spacing-3;
 
   label {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-semibold;
-    color: $color-slate-900;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+    color: $color-text-faint;
   }
 }
 

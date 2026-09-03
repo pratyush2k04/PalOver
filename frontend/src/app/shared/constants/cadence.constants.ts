@@ -7,7 +7,7 @@ export const CADENCE_CONSTANTS = {
   // UI Strings
   TITLE: 'Governance & Change-Request Process',
   BTN_ADD_CADENCE: '+ Add cadence',
-  EMPTY_STATE: 'No communication cadences recorded yet. Click "+ Add cadence" to set client communication expectations.',
+  EMPTY_STATE: 'No governance added.',
   MODAL_TITLE: 'Add communication cadence',
   LABEL_STAKEHOLDER_ROLE: 'Stakeholder role',
   PLACEHOLDER_STAKEHOLDER_ROLE: 'e.g. Client Sponsor, Steering Committee',

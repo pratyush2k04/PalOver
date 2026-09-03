@@ -1,3 +1,5 @@
+using System.Text.Json;
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Assumptions;
 using Pdr.Api.DTOs.Risks;
 using Pdr.Api.Exceptions;
@@ -6,14 +8,15 @@ using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.Risks;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
+using Pdr.Api.Services.Notifications.Mappers;
 
 namespace Pdr.Api.Services;
 
 public class AssumptionService(
     IAssumptionRepository assumptionRepository,
     IEngagementRepository engagementRepository,
-    IRiskService riskService,
-    ICurrentUserService currentUserService) : IAssumptionService
+    ICurrentUserService currentUserService,
+    INotificationService notificationService) : IAssumptionService
 {
     public async Task<List<AssumptionDto>> GetAssumptionsAsync(int engagementId)
     {
@@ -49,16 +52,31 @@ public class AssumptionService(
 
         await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
+        var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
+
         var assumption = new Assumption
         {
             EngagementId = engagementId,
             Description = createDto.Description,
             Rationale = createDto.Rationale,
             OwnerId = currentUserService.GetUserId(),
-            Status = AssumptionStatus.Unvalidated
+            Status = isPm ? AssumptionStatus.Validated : AssumptionStatus.Unvalidated
         };
 
         var created = await assumptionRepository.AddAsync(assumption);
+
+        if (created.Status == AssumptionStatus.Unvalidated)
+        {
+            var data = JsonSerializer.Serialize(
+                new AssumptionNeedsValidationMapper.AssumptionNeedsValidationPayload(created.Id, engagementId));
+
+            await notificationService.CreateFromTemplateAsync(
+                NotificationConstants.TemplateKeys.AssumptionNeedsValidation,
+                engagementId,
+                RoleEnum.ProjectManagement,
+                data,
+                DateTime.UtcNow);
+        }
 
         return MapToDto(created);
     }
@@ -112,21 +130,6 @@ public class AssumptionService(
             throw new InvalidAssumptionStatusException();
 
         assumption.Status = validateDto.Status;
-
-        if (validateDto.Status == AssumptionStatus.Invalid && validateDto.CreateRisk)
-        {
-            var riskDto = new CreateRiskDto
-            {
-                Title = $"Invalid Assumption: {new string(assumption.Description.Take(50).ToArray())}...",
-                Description = $"Assumption: {assumption.Description}\nRationale: {assumption.Rationale}",
-                Impact = RiskImpact.Medium,
-                Likelihood = RiskLikelihood.Low,
-                OwnerId = assumption.OwnerId
-            };
-
-            var createdRisk = await riskService.CreateRiskAsync(engagementId, riskDto);
-            assumption.LinkedRiskId = createdRisk.Id;
-        }
 
         var updated = await assumptionRepository.UpdateAsync(assumption);
 

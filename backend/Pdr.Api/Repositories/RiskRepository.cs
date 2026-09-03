@@ -39,6 +39,16 @@ public class RiskRepository(AppDbContext context) : IRiskRepository
             .ToListAsync();
     }
 
+    public async Task<List<Risk>> GetOpenRiskBlockersAsync(int engagementId)
+    {
+        return await context.Risks
+            .AsNoTracking()
+            .Include(r => r.Owner)
+            .Where(r => r.EngagementId == engagementId &&
+                        (r.Status == RiskStatus.Open || r.Status == RiskStatus.Mitigating))
+            .ToListAsync();
+    }
+
     public async Task<Risk?> GetByIdAsync(int id)
     {
         return await context.Risks

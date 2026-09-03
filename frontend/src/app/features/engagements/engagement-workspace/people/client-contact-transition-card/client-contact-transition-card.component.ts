@@ -47,6 +47,7 @@ export class ClientContactTransitionCardComponent {
   transitions = signal<TransitionResponse[]>([]);
   isLoading = signal(false);
 
+  isPm = computed(() => this.authService.hasRole('Project Management'));
   isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
 
   constructor() {
