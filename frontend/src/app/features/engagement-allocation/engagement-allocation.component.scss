@@ -2,12 +2,12 @@
 
 .allocation-page {
   padding: $spacing-8;
-  max-width: 1400px;
+  max-width: 87.5rem;
   margin: 0 auto;
   font-family: $font-family-base;
   color: $color-text;
 
-  @media (max-width: 768px) {
+  @include respond-to-down('md') {
     padding: $spacing-4;
   }
 }

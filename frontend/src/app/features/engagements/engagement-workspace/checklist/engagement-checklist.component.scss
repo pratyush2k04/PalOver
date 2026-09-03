@@ -58,8 +58,8 @@
 
   .search-input {
     flex: 1;
-    min-width: 200px;
-    max-width: 280px;
+    min-width: 12.5rem;
+    max-width: 17.5rem;
     border: 1px solid $color-border-input;
     border-radius: $radius-md;
     padding: $spacing-2 $spacing-3;
@@ -99,7 +99,7 @@
   }
 
   select.filter-select {
-    min-width: 140px;
+    min-width: 8.75rem;
     border: 1px solid $color-border-input;
     border-radius: $radius-md;
     padding: $spacing-2 $spacing-3;
@@ -181,7 +181,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-top: 1px;
+  margin-top: 0.0625rem;
 
   ::ng-deep svg {
     width: 1.5rem;
@@ -453,7 +453,7 @@
     font-size: $font-size-xs;
     font-weight: $font-weight-medium;
     cursor: pointer;
-    max-width: 170px;
+    max-width: 10.625rem;
     text-decoration: none;
     box-sizing: border-box;
 
@@ -521,14 +521,14 @@
 
 .owner-app-select {
   width: 100%;
-  max-width: 180px;
+  max-width: 11.25rem;
   display: inline-block;
   text-align: left;
 }
 
 .owner-select {
   width: 100%;
-  max-width: 180px;
+  max-width: 11.25rem;
   padding: $spacing-1 $spacing-2;
   font-size: $font-size-xs;
   color: $color-text;

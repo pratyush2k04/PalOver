@@ -8,7 +8,7 @@
   flex-direction: column;
   align-items: flex-end;
   pointer-events: none;
-  z-index: 100000;
+  z-index: $z-index-toast;
 }
 
 .toast-container {
@@ -66,7 +66,7 @@
 @keyframes slideInRight {
   from {
     opacity: 0;
-    transform: translateX(24px) scale(0.95);
+    transform: translateX(1.5rem) scale(0.95);
   }
   to {
     opacity: 1;
@@ -81,6 +81,6 @@
   }
   to {
     opacity: 0;
-    transform: translateX(24px) scale(0.95);
+    transform: translateX(1.5rem) scale(0.95);
   }
 }

@@ -149,19 +149,13 @@
   }
 
   .file-icon {
-    width: 18px;
-    height: 18px;
+    width: 1.125rem;
+    height: 1.125rem;
     color: $color-slate-500;
     flex-shrink: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
-    ::ng-deep svg,
-    svg {
-      width: 18px;
-      height: 18px;
-    }
   }
 
   .file-name {
@@ -209,12 +203,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  ::ng-deep svg,
-  svg {
-    width: 16px;
-    height: 16px;
-  }
+  width: 1rem;
+  height: 1rem;
 }
 
 .col-nowrap {
@@ -252,19 +242,13 @@
 
 // Read-only badge (Leadership and other view-only roles)
 .badge-icon {
-  width: 12px;
-  height: 12px;
+  width: 0.75rem;
+  height: 0.75rem;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   margin-right: 0.35rem;
-
-  ::ng-deep svg,
-  svg {
-    width: 12px;
-    height: 12px;
-  }
 }
 
 .visibility-cell-wrapper {
@@ -278,15 +262,11 @@
 }
 
 .edit-icon {
+  width: 0.875rem;
+  height: 0.875rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  ::ng-deep svg,
-  svg {
-    width: 14px;
-    height: 14px;
-  }
 }
 
 // Inline editable dropdown (PM and Admin)

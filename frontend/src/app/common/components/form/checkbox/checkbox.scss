@@ -7,14 +7,14 @@
 .app-checkbox {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
+  gap: $spacing-2;
+  font-size: $font-size-sm;
   color: $color-text-muted;
   cursor: pointer;
 
   input {
-    width: 16px;
-    height: 16px;
+    width: 1rem;
+    height: 1rem;
     cursor: pointer;
   }
 }

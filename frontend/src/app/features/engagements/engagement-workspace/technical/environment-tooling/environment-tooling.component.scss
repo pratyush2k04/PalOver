@@ -114,23 +114,13 @@
       }
 
       .btn-action {
-        ::ng-deep .btn {
-          color: $color-gray-500;
-          transition: color 0.15s ease, background-color 0.15s ease;
-
-          &:hover {
-            color: $color-primary;
-            background-color: $color-primary-light;
-          }
-        }
+        --btn-color: #{$color-gray-500};
+        --btn-color-hover: #{$color-primary};
+        --btn-bg-hover: #{$color-primary-light};
 
         &.btn-danger {
-          ::ng-deep .btn {
-            &:hover {
-              color: $color-danger;
-              background-color: $color-danger-light;
-            }
-          }
+          --btn-color-hover: #{$color-danger};
+          --btn-bg-hover: #{$color-danger-light};
         }
       }
 
@@ -138,14 +128,8 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 16px;
-        height: 16px;
-
-        ::ng-deep svg,
-        svg {
-          width: 16px;
-          height: 16px;
-        }
+        width: 1rem;
+        height: 1rem;
       }
 
       .status-cell {

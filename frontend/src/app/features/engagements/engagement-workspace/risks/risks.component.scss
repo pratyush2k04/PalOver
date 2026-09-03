@@ -315,7 +315,7 @@
   @include modal-overlay;
 
   .modal-content {
-    @include modal-card(560px);
+    @include modal-card(35rem);
     padding: 0;
     animation: modalSlide $transition-base;
 
@@ -372,7 +372,7 @@
 @keyframes modalSlide {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-0.625rem);
   }
   to {
     opacity: 1;

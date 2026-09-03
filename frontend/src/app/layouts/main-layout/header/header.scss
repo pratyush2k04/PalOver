@@ -146,14 +146,14 @@
   border-radius: 0.75rem;
   box-shadow: $shadow-modal;
   padding: $spacing-2;
-  z-index: 100;
+  z-index: $z-index-dropdown;
   animation: dropdown-fade $transition-fast;
 }
 
 @keyframes dropdown-fade {
   from {
     opacity: 0;
-    transform: translateY(-4px);
+    transform: translateY(-0.25rem);
   }
   to {
     opacity: 1;

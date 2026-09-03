@@ -62,10 +62,10 @@
     &::after {
       content: '';
       position: absolute;
-      bottom: -1px;
+      bottom: -0.0625rem;
       left: 0;
       right: 0;
-      height: 2px;
+      height: 0.125rem;
       background-color: $color-primary;
     }
   }
