@@ -20,7 +20,7 @@
       margin: 0;
 
       ::ng-deep h2, ::ng-deep h3, ::ng-deep .section-title {
-        font-size: 1.25rem !important;
+        font-size: 1.25rem;
         font-weight: 700;
       }
     }
@@ -146,13 +146,13 @@
         transition: all 0.15s ease;
 
         &:hover:not(:disabled) {
-          color: $color-primary !important;
-          background-color: $color-primary-light !important;
+          color: $color-primary;
+          background-color: $color-primary-light;
 
           .action-icon,
           svg {
-            stroke: $color-primary !important;
-            color: $color-primary !important;
+            stroke: $color-primary;
+            color: $color-primary;
           }
         }
       }
@@ -165,13 +165,13 @@
         transition: all 0.15s ease;
 
         &:hover:not(:disabled) {
-          color: $color-danger !important;
-          background-color: $color-danger-light !important;
+          color: $color-danger;
+          background-color: $color-danger-light;
 
           .action-icon,
           svg {
-            stroke: $color-danger !important;
-            color: $color-danger !important;
+            stroke: $color-danger;
+            color: $color-danger;
           }
         }
       }
@@ -192,13 +192,13 @@
       transition: all 0.15s ease;
 
       &:hover:not(:disabled) {
-        color: $color-primary !important;
-        background-color: $color-primary-light !important;
+        color: $color-primary;
+        background-color: $color-primary-light;
 
         .action-icon,
         svg {
-          stroke: $color-primary !important;
-          color: $color-primary !important;
+          stroke: $color-primary;
+          color: $color-primary;
         }
       }
     }
@@ -211,13 +211,13 @@
       transition: all 0.15s ease;
 
       &:hover:not(:disabled) {
-        color: $color-danger !important;
-        background-color: $color-danger-light !important;
+        color: $color-danger;
+        background-color: $color-danger-light;
 
         .action-icon,
         svg {
-          stroke: $color-danger !important;
-          color: $color-danger !important;
+          stroke: $color-danger;
+          color: $color-danger;
         }
       }
     }
@@ -238,7 +238,7 @@
 
 .empty-state {
   text-align: center;
-  padding: 2.5rem 1.25rem !important;
+  padding: 2.5rem 1.25rem;
   color: $color-slate-400;
   font-style: italic;
   font-size: 0.875rem;

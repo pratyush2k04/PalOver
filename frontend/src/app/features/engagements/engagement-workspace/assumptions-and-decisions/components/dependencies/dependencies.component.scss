@@ -186,25 +186,25 @@
       }
 
       .btn-edit {
-        ::ng-deep button {
-          background-color: $color-slate-50 !important;
-          border-color: $color-slate-200 !important;
-          color: $color-slate-700 !important;
+        ::ng-deep button.btn {
+          background-color: $color-slate-50;
+          border-color: $color-slate-200;
+          color: $color-slate-700;
 
           &:hover {
-            background-color: $color-slate-100 !important;
+            background-color: $color-slate-100;
           }
         }
       }
 
       .btn-met {
-        ::ng-deep button {
-          background-color: $color-success-bg !important;
-          border-color: $color-success-border !important;
-          color: $color-success-dark !important;
+        ::ng-deep button.btn {
+          background-color: $color-success-bg;
+          border-color: $color-success-border;
+          color: $color-success-dark;
 
           &:hover {
-            background-color: $color-success-light !important;
+            background-color: $color-success-light;
           }
         }
       }

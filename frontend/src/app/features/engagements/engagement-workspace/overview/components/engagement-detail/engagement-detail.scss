@@ -147,7 +147,7 @@ form {
 
 :host ::ng-deep .required-asterisk,
 .required-asterisk {
-  color: $color-danger !important;
+  color: $color-danger;
   font-weight: $font-weight-semibold;
   margin-left: 0.125rem;
 }

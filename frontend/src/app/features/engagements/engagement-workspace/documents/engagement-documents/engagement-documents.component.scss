@@ -198,13 +198,13 @@
       transition: all 0.15s ease;
 
       &:hover:not(:disabled) {
-        color: $color-accent-amber-hover !important;
-        background-color: $color-accent-amber-light !important;
+        color: $color-accent-amber-hover;
+        background-color: $color-accent-amber-light;
 
         .upload-version-icon,
         svg {
-          stroke: $color-accent-amber-hover !important;
-          color: $color-accent-amber-hover !important;
+          stroke: $color-accent-amber-hover;
+          color: $color-accent-amber-hover;
         }
       }
     }
@@ -217,13 +217,13 @@
       transition: all 0.15s ease;
 
       &:hover:not(:disabled) {
-        color: $color-danger !important;
-        background-color: $color-danger-light !important;
+        color: $color-danger;
+        background-color: $color-danger-light;
 
         .remove-icon,
         svg {
-          stroke: $color-danger !important;
-          color: $color-danger !important;
+          stroke: $color-danger;
+          color: $color-danger;
         }
       }
     }
