@@ -38,6 +38,7 @@ public class DashboardBlockerDto
     public int RiskId { get; set; }
     public string ProjectName { get; set; } = string.Empty;
     public DateTime? DueDate { get; set; }
+    public string? Link { get; set; }
 }
 
 public class HomeResponseDto
