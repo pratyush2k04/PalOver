@@ -22,7 +22,7 @@ export const FORM_PLACEHOLDERS = {
 } as const;
 
 export const BUTTON_LABELS = {
-  ADD_TRANSITION: '+ Add Transition',
+  ADD_TRANSITION: 'Add Transition',
   REVIEW_CONFIRM: 'Review & Confirm',
   BACK: 'Back',
   CANCEL: 'Cancel',

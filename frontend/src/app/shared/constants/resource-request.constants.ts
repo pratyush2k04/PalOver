@@ -11,7 +11,7 @@ export const RESOURCE_REQUEST_CONSTANTS = {
 
   // UI Strings
   PAGE_TITLE: 'Resource Requests',
-  BTN_RAISE_REQUEST: '+ Raise request',
+  BTN_RAISE_REQUEST: ' Raise request',
   MODAL_TITLE: 'Raise resource request',
 
   LABEL_STANDARD_ROLE: 'Standard role',

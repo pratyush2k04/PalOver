@@ -1,5 +1,5 @@
 <div class="engagements-page">
-    <app-button type="button" variant="flat" (click)="openModal()" class="mark-as-sow-btn">+ Mark SOW Signed</app-button>
+    <app-button type="button" variant="flat" (click)="openModal()" class="mark-as-sow-btn"> Mark SOW Signed</app-button>
 
   @if (showModal()) {
   <div class="modal-overlay">
@@ -93,7 +93,7 @@
         <div class="modal-footer">
           <app-button type="button" variant="stroked" (click)="closeModal()">Cancel</app-button>
           <app-button type="submit" variant="flat" [disabled]="isSubmitting()">
-            {{ isSubmitting() ? 'Creating...' : 'Create Engagement' }}
+            {{ isSubmitting() ? 'Creating...' : 'Create' }}
           </app-button>
         </div>
       </form>
