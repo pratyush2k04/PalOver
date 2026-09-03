@@ -1,67 +1,163 @@
+@use 'styles/mixins' as *;
 @use 'styles/tokens' as *;
 
 :host {
   position: fixed;
-  right: 1.5rem;
-  bottom: 1.5rem;
-  display: flex;
-  flex-direction: column;
+  top: 4.5rem;
+  right: $spacing-6;
+  @include flex-column;
   align-items: flex-end;
   pointer-events: none;
   z-index: 100000;
 }
 
 .toast-container {
-  display: flex;
-  flex-direction: column;
+  @include flex-column($spacing-3);
   align-items: flex-end;
-  gap: 0.5rem;
 }
 
 .toast {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1.1rem;
-  border-radius: 0.5rem;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: $color-surface;
-  box-shadow: 0 10px 25px -5px rgba($color-black, 0.1), 0 8px 10px -6px rgba($color-black, 0.1);
-  cursor: pointer;
+  @include flex-between;
+  gap: $spacing-4;
+  min-width: 22rem;
+  max-width: 28rem;
+  padding: $spacing-3 $spacing-4;
+  border-radius: $radius-2xl;
+  font-family: inherit;
+  font-size: $font-size-sm;
+  box-shadow: $shadow-card;
   pointer-events: auto;
-  animation: slideInRight 0.25s ease-out;
+  animation: slideInRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: transform $transition-fast, opacity $transition-fast;
 
+  &.is-leaving {
+    animation: slideOutRight 0.25s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+  }
+
+  .toast-content {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+
+    .icon-circle {
+      @include flex-center;
+      width: $spacing-8;
+      height: $spacing-8;
+      border-radius: $radius-full;
+      flex-shrink: 0;
+
+      .toast-icon-svg {
+        @include flex-center;
+        width: 1.125rem;
+        height: 1.125rem;
+
+        ::ng-deep svg {
+          width: 1.125rem;
+          height: 1.125rem;
+          display: block;
+        }
+      }
+    }
+
+    .message {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      color: $color-slate-900;
+      line-height: 1.4;
+    }
+  }
+
+  .close-btn {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: $color-slate-500;
+    font-size: $font-size-base;
+    cursor: pointer;
+    padding: $spacing-1;
+    @include flex-center;
+    border-radius: $radius-md;
+    transition: color $transition-fast, background-color $transition-fast;
+    flex-shrink: 0;
+
+    .close-icon-svg {
+      @include flex-center;
+      width: $spacing-4;
+      height: $spacing-4;
+
+      ::ng-deep svg {
+        width: $spacing-4;
+        height: $spacing-4;
+        display: block;
+      }
+    }
+
+    &:hover {
+      color: $color-slate-900;
+      background-color: rgba($color-black, 0.05);
+    }
+  }
+
+  // Variant Themes (Pastel background + 1px border + shaded icon circle)
   &.success {
-    background-color: $color-success;
+    background-color: $color-success-bg;
+    border: 1px solid $color-success;
+
+    .icon-circle {
+      background-color: $color-success-light;
+      color: $color-success-text;
+    }
   }
 
   &.error {
-    background-color: $color-danger;
+    background-color: $color-danger-bg;
+    border: 1px solid $color-danger-500;
+
+    .icon-circle {
+      background-color: $color-danger-light;
+      color: $color-danger-text;
+    }
   }
 
   &.info {
-    background-color: $color-blue-deep;
-  }
-}
+    background-color: $color-info-bg;
+    border: 1px solid $color-primary-active;
 
-.icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.85rem;
-  font-weight: 700;
+    .icon-circle {
+      background-color: $color-primary-subtle;
+      color: $color-primary-hover;
+    }
+  }
+
+  &.warning {
+    background-color: $color-amber-50;
+    border: 1px solid $color-accent-amber;
+
+    .icon-circle {
+      background-color: $color-accent-amber-light;
+      color: $color-amber-700;
+    }
+  }
 }
 
 @keyframes slideInRight {
   from {
     opacity: 0;
-    transform: translateX(16px);
+    transform: translateX(1.5rem) scale(0.96);
   }
-
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(1.5rem) scale(0.96);
   }
 }
