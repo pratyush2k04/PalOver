@@ -68,11 +68,7 @@
 
     app-button {
       flex: 1;
-
-      ::ng-deep button {
-        width: 100%;
-        white-space: nowrap;
-      }
+      --btn-width: 100%;
     }
   }
 }

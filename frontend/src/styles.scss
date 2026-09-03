@@ -225,6 +225,14 @@ body.app-dialog-open {
 
 
 
+.mention-highlight {
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
+  background-color: $color-primary-light;
+  padding: calc($spacing-1 / 4) $spacing-1;
+  border-radius: $radius-sm;
+}
+
 @media print {
   html, body {
     height: auto !important;

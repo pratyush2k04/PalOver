@@ -202,11 +202,8 @@
     text-align: center;
 
     app-status-badge {
-      ::ng-deep .status-badge {
-        min-width: 6.5rem;
-        justify-content: center;
-        box-sizing: border-box;
-      }
+      --badge-min-width: 6.5rem;
+      --badge-justify: center;
     }
   }
 

@@ -145,7 +145,6 @@ form {
   border-top: 1px solid $color-border-soft;
 }
 
-:host ::ng-deep .required-asterisk,
 .required-asterisk {
   color: $color-danger;
   font-weight: $font-weight-semibold;

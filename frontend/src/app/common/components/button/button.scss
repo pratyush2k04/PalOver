@@ -18,8 +18,9 @@
   height: var(--btn-height, auto);
   min-height: var(--btn-min-height, auto);
   font-size: var(--btn-font-size, #{$font-size-sm});
-  font-weight: $font-weight-medium;
-  border-radius: $radius-md;
+  font-weight: var(--btn-font-weight, #{$font-weight-medium});
+  line-height: var(--btn-line-height, normal);
+  border-radius: var(--btn-border-radius, #{$radius-md});
   padding: var(--btn-padding, #{$spacing-2} #{$spacing-4});
   cursor: pointer;
   border: 1px solid var(--btn-border, transparent);
@@ -54,11 +55,11 @@
   }
 
   &--flat {
-    background-color: $color-primary;
-    color: $color-surface;
+    background-color: var(--btn-bg, #{$color-primary});
+    color: var(--btn-color, #{$color-surface});
 
     &:hover:not(:disabled) {
-      background-color: $color-primary-hover;
+      background-color: var(--btn-bg-hover, #{$color-primary-hover});
     }
   }
 

@@ -7,10 +7,7 @@
   max-width: calc(100vw - 3rem);
   max-height: calc(100vh - 3rem);
 
-  ::ng-deep .status-badge,
-  ::ng-deep .badge {
-    font-weight: $font-weight-normal;
-  }
+  --badge-font-weight: #{$font-weight-normal};
 }
 
 .version-detail-dialog {

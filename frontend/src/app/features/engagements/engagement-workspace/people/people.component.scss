@@ -16,14 +16,10 @@
     overflow: hidden;
 
     .card-inner-header {
+      --section-title-size: 1.25rem;
       padding: $spacing-4 $spacing-6;
       border-bottom: 1px solid $color-slate-200;
       margin: 0;
-
-      ::ng-deep h2, ::ng-deep h3, ::ng-deep .section-title {
-        font-size: 1.25rem;
-        font-weight: 700;
-      }
     }
   }
 

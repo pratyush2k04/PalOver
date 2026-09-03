@@ -9,7 +9,7 @@
   @include flex-between;
   align-items: flex-start;
   gap: $spacing-6;
-  margin-bottom: $spacing-6;
+  margin-bottom: var(--page-header-margin-bottom, #{$spacing-6});
   flex-wrap: wrap;
 
   @include respond-to-down('md') {

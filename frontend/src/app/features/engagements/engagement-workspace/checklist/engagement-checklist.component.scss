@@ -15,16 +15,8 @@
   .error-icon {
     width: 1.25rem;
     height: 1.25rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    color: $color-danger;
     flex-shrink: 0;
-
-    ::ng-deep svg {
-      width: 1.25rem;
-      height: 1.25rem;
-      stroke: $color-danger;
-    }
   }
   p { margin: 0; font-size: $font-size-sm; }
 }
@@ -144,8 +136,8 @@
     border: 1px solid $color-border-soft;
     border-left: 5px solid $color-danger;
 
-    .callout-icon ::ng-deep svg {
-      stroke: $color-danger;
+    .callout-icon {
+      color: $color-danger;
     }
   }
 
@@ -154,8 +146,8 @@
     border: 1px solid $color-success-border;
     border-left: 5px solid $color-success;
 
-    .callout-icon ::ng-deep svg {
-      stroke: $color-success;
+    .callout-icon {
+      color: $color-success;
     }
   }
 
@@ -164,8 +156,8 @@
     border: 1px solid $color-warning-border;
     border-left: 5px solid $color-warning;
 
-    .callout-icon ::ng-deep svg {
-      stroke: $color-warning;
+    .callout-icon {
+      color: $color-warning;
     }
 
     .callout-text {
@@ -178,15 +170,7 @@
   width: 1.5rem;
   height: 1.5rem;
   flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   margin-top: 0.0625rem;
-
-  ::ng-deep svg {
-    width: 1.5rem;
-    height: 1.5rem;
-  }
 }
 
 .callout-body {
@@ -426,12 +410,6 @@
     .view-icon {
       width: 0.875rem;
       height: 0.875rem;
-      display: inline-flex;
-
-      ::ng-deep svg {
-        width: 0.875rem;
-        height: 0.875rem;
-      }
     }
 
     &:hover {
@@ -460,15 +438,7 @@
     .evidence-icon {
       width: 1rem;
       height: 1rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
       flex-shrink: 0;
-
-      ::ng-deep svg {
-        width: 1rem;
-        height: 1rem;
-      }
     }
 
     .evidence-text {
@@ -564,32 +534,14 @@ app-button.btn-complete,
   gap: $spacing-2;
 
   .action-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    width: 1.15rem;
+    height: 1.15rem;
     color: $color-text-faint;
     transition: color 0.15s ease, transform 0.15s ease;
-
-    ::ng-deep svg,
-    svg {
-      width: 1.15rem;
-      height: 1.15rem;
-      stroke: currentColor;
-      transition: stroke 0.15s ease;
-    }
   }
 
-  app-button {
-    &:hover:not([disabled]) {
-      .action-icon {
-        color: $color-danger;
-
-        ::ng-deep svg,
-        svg {
-          stroke: $color-danger;
-        }
-      }
-    }
+  app-button:hover:not([disabled]) .action-icon {
+    color: $color-danger;
   }
 }
 
