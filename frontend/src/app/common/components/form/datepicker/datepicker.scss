@@ -358,15 +358,15 @@
     }
 
     &.is-selected {
-      background-color: #1054e86b;
-      color: #000;
+      background-color: $color-primary-subtle;
+      color: $color-slate-900;
       font-weight: $font-weight-semibold;
       border-color: $color-primary;
       border-radius: 50%;
 
       &:hover {
-        background-color: #1054e86b;
-        color: #000;
+        background-color: $color-primary-border;
+        color: $color-slate-900;
       }
     }
 

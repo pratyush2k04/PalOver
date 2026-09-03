@@ -545,14 +545,14 @@
   &:focus {
     outline: none;
     border-color: $color-primary;
-    box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
+    box-shadow: 0 0 0 0.125rem rgba($color-primary, 0.15);
   }
 }
 
 app-button.btn-complete,
 .btn-complete {
-  --btn-bg-hover: #{rgba(37, 99, 235, 0.1)};
-  --btn-border-hover: #{rgba(37, 99, 235, 0.4)};
+  --btn-bg-hover: #{rgba($color-primary, 0.1)};
+  --btn-border-hover: #{rgba($color-primary, 0.4)};
   --btn-color-hover: #{$color-primary};
 }
 
