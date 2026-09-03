@@ -4,7 +4,6 @@
   display: flex;
   flex-direction: column;
   gap: $spacing-4;
-  padding: 0;
   font-family: $font-family-base;
 
   &__card {
@@ -15,7 +14,7 @@
     overflow: hidden;
 
     .card-inner-header {
-      padding: $spacing-4 $spacing-6;
+      padding-bottom: $spacing-3;
       border-bottom: 1px solid $color-slate-200;
       margin: 0;
 
@@ -45,6 +44,9 @@
   }
 }
 
+.people-directory__card{
+  padding: $spacing-4;
+}
 .btn-icon {
   font-size: 1.1rem;
   font-weight: 700;

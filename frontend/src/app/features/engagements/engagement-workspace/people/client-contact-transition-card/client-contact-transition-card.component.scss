@@ -7,7 +7,7 @@
 }
 
 .section.transition-section {
-  @include card-surface($spacing-6, $radius-2xl);
+  @include card-surface($spacing-5, $radius-2xl);
   margin-bottom: $spacing-8;
   width: 100%;
 

@@ -2,7 +2,9 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Pdr.Api.Attributes;
 using Pdr.Api.DTOs.ClientContactTransitions;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Controllers;
@@ -50,7 +52,7 @@ public class ClientContactTransitionsController(IClientContactTransitionService 
     /// Records a new client contact transition for an engagement (Pre Sales only).
     /// </summary>
     [HttpPost]
-    [Authorize(Roles = "Pre Sales")]
+    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.Leadership)]
     [EndpointSummary("Record client contact transition")]
     [ProducesResponseType(typeof(ClientContactTransitionResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
