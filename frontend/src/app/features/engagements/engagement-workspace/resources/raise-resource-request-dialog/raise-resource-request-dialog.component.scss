@@ -15,6 +15,10 @@ form {
   min-height: 0;
 }
 
+.app-dialog__content {
+  gap: $spacing-3;
+}
+
 .form-group {
   display: flex;
   flex-direction: column;
