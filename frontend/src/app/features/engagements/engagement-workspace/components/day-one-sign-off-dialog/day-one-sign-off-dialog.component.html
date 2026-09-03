@@ -18,10 +18,9 @@
   }
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="sign-off-form">
-    <app-input
+    <app-datepicker
       id="billingStartDate"
       label="Billing Start Date"
-      type="date"
       [required]="true"
       [min]="minDate"
       formControlName="billingStartDate"
