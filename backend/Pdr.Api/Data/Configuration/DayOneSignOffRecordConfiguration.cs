@@ -18,7 +18,7 @@ public class DayOneSignOffRecordConfiguration : IEntityTypeConfiguration<DayOneS
         builder.Property(d => d.BillingStartDate).HasColumnName("billing_start_date").IsRequired();
         builder.Property(d => d.SignedOffAt).HasColumnName("signed_off_at").IsRequired();
         builder.Property(d => d.IsException).HasColumnName("is_exception").HasDefaultValue(false);
-        builder.Property(d => d.ExceptionJustification).HasColumnName("exception_justification").HasMaxLength(2000);
+        builder.Property(d => d.ExceptionJustification).HasColumnName("exception_justification").HasMaxLength(500);
 
         // BaseAuditableEntity Column Mappings
         builder.Property(d => d.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");

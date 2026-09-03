@@ -58,7 +58,7 @@ export class AddCommitmentDialogComponent {
   form: FormGroup = this.fb.group({
     title: ['', [Validators.required, Validators.maxLength(100)]],
     commitmentTypeId: [1, [Validators.required]],
-    description: ['', [Validators.required, Validators.maxLength(2000)]],
+    description: ['', [Validators.required, Validators.maxLength(500)]],
     timeline: [1, [Validators.required, Validators.min(1)]],
     timelineUnit: ['Weeks', [Validators.required]],
   });

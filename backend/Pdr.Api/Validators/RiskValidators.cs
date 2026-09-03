@@ -14,7 +14,7 @@ public class CreateRiskDtoValidator : AbstractValidator<CreateRiskDto>
 
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage(RiskConstants.Validation.DescriptionRequired)
-            .MaximumLength(2000).WithMessage(RiskConstants.Validation.DescriptionMaxLength);
+            .MaximumLength(500).WithMessage(RiskConstants.Validation.DescriptionMaxLength);
 
         RuleFor(x => x.Impact)
             .IsInEnum().WithMessage(RiskConstants.Validation.ImpactInvalid);
@@ -27,7 +27,7 @@ public class CreateRiskDtoValidator : AbstractValidator<CreateRiskDto>
             .GreaterThan(0).WithMessage(RiskConstants.Validation.OwnerRequired);
 
         RuleFor(x => x.Mitigation)
-            .MaximumLength(2000).WithMessage(RiskConstants.Validation.MitigationMaxLength);
+            .MaximumLength(500).WithMessage(RiskConstants.Validation.MitigationMaxLength);
     }
 }
 
@@ -41,7 +41,7 @@ public class UpdateRiskDtoValidator : AbstractValidator<UpdateRiskDto>
 
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage(RiskConstants.Validation.DescriptionRequired)
-            .MaximumLength(2000).WithMessage(RiskConstants.Validation.DescriptionMaxLength);
+            .MaximumLength(500).WithMessage(RiskConstants.Validation.DescriptionMaxLength);
 
         RuleFor(x => x.Impact)
             .IsInEnum().WithMessage(RiskConstants.Validation.ImpactInvalid);
@@ -57,7 +57,7 @@ public class UpdateRiskDtoValidator : AbstractValidator<UpdateRiskDto>
             .IsInEnum().WithMessage(RiskConstants.Validation.StatusInvalid);
 
         RuleFor(x => x.Mitigation)
-            .MaximumLength(2000).WithMessage(RiskConstants.Validation.MitigationMaxLength);
+            .MaximumLength(500).WithMessage(RiskConstants.Validation.MitigationMaxLength);
     }
 }
 
@@ -67,6 +67,6 @@ public class CloseRiskDtoValidator : AbstractValidator<CloseRiskDto>
     {
         RuleFor(x => x.ResolutionNote)
             .NotEmpty().WithMessage(RiskConstants.Validation.ResolutionNoteRequired)
-            .MaximumLength(2000).WithMessage(RiskConstants.Validation.ResolutionNoteMaxLength);
+            .MaximumLength(500).WithMessage(RiskConstants.Validation.ResolutionNoteMaxLength);
     }
 }

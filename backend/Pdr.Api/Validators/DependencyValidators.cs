@@ -9,7 +9,7 @@ public class CreateDependencyDtoValidator : AbstractValidator<CreateDependencyDt
     {
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("Description is required.")
-            .MaximumLength(2000).WithMessage("Description must not exceed 2000 characters.");
+            .MaximumLength(500).WithMessage("Description must not exceed 500 characters.");
             
         RuleFor(x => x.Type)
             .IsInEnum().WithMessage("A valid Type must be provided.");
@@ -25,7 +25,7 @@ public class UpdateDependencyDtoValidator : AbstractValidator<UpdateDependencyDt
     {
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("Description is required.")
-            .MaximumLength(2000).WithMessage("Description must not exceed 2000 characters.");
+            .MaximumLength(500).WithMessage("Description must not exceed 500 characters.");
             
         RuleFor(x => x.Type)
             .IsInEnum().WithMessage("A valid Type must be provided.");

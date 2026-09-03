@@ -16,7 +16,7 @@ public class HandoverQueryMessageConfiguration : IEntityTypeConfiguration<Handov
         builder.Property(m => m.QueryId).HasColumnName("query_id").IsRequired();
         builder.Property(m => m.SenderUserId).HasColumnName("sender_user_id").IsRequired();
         builder.Property(m => m.MessageType).HasColumnName("message_type").HasConversion<int>().IsRequired();
-        builder.Property(m => m.MessageText).HasColumnName("message_text").HasMaxLength(2000).IsRequired();
+        builder.Property(m => m.MessageText).HasColumnName("message_text").HasMaxLength(500).IsRequired();
         builder.Property(m => m.SequenceNumber).HasColumnName("sequence_number").HasDefaultValue(1);
 
         // BaseAuditableEntity Column Mappings
