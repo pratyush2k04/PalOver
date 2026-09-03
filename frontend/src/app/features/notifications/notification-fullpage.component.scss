@@ -231,9 +231,23 @@
 }
 
 .pagination-footer {
+  @include flex-between;
+  align-items: center;
   padding: $spacing-3 $spacing-5;
   border-top: 1px solid $color-border-soft;
   background-color: $color-surface-hover;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-3;
+  }
+
+  .showing-text {
+    font-size: $font-size-sm;
+    color: $color-text-faint;
+    font-weight: $font-weight-medium;
+  }
 }
 
 .empty-container {
