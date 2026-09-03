@@ -147,10 +147,10 @@
   align-items: center;
   justify-content: center;
   background: rgba($color-black, 0.5);
-  z-index: 1000;
+  z-index: $z-index-modal;
 }
 
-@mixin modal-card($max-width: 460px) {
+@mixin modal-card($max-width: 28.75rem) {
   width: 100%;
   max-width: $max-width;
   max-height: 90vh;
@@ -173,6 +173,20 @@
   border-radius: $radius-full;
 }
 
+// Micro-Typography Mixins
+@mixin text-overline {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  text-transform: uppercase;
+  letter-spacing: $letter-spacing-wider;
+}
+
+@mixin text-caption {
+  font-size: $font-size-xs;
+  color: $color-text-gray;
+  letter-spacing: $letter-spacing-normal;
+}
+
 // Text Truncate Mixins
 @mixin text-truncate {
   overflow: hidden;
@@ -187,7 +201,7 @@
   overflow: hidden;
 }
 
-// Responsive Breakpoints
+// Responsive Breakpoints (Mobile First)
 @mixin respond-to($breakpoint) {
   @if $breakpoint == 'sm' {
     @media (min-width: 640px) { @content; }
@@ -197,5 +211,18 @@
     @media (min-width: 1024px) { @content; }
   } @else if $breakpoint == 'xl' {
     @media (min-width: 1280px) { @content; }
+  }
+}
+
+// Responsive Breakpoints (Desktop Down)
+@mixin respond-to-down($breakpoint) {
+  @if $breakpoint == 'sm' {
+    @media (max-width: 639px) { @content; }
+  } @else if $breakpoint == 'md' {
+    @media (max-width: 767px) { @content; }
+  } @else if $breakpoint == 'lg' {
+    @media (max-width: 1023px) { @content; }
+  } @else if $breakpoint == 'xl' {
+    @media (max-width: 1279px) { @content; }
   }
 }
