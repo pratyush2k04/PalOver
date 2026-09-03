@@ -6,9 +6,10 @@
 
 .app-field {
   display: flex;
-  flex-direction: column;
-  gap: $spacing-1;
-  margin-bottom: $spacing-3;
+  flex-direction: var(--field-direction, column);
+  align-items: var(--field-align, stretch);
+  gap: var(--field-gap, #{$spacing-1});
+  margin-bottom: var(--field-margin-bottom, #{$spacing-3});
 
   &:last-child,
   &:only-child {
@@ -37,11 +38,12 @@
   gap: $spacing-2;
   font-family: inherit;
   font-size: $font-size-sm;
-  color: $color-text;
-  background-color: $color-surface;
-  border: 1px solid $color-border-input;
-  border-radius: $radius-md;
-  padding: $spacing-2 $spacing-3;
+  font-weight: var(--select-font-weight, normal);
+  color: var(--select-color, #{$color-text});
+  background-color: var(--select-bg, #{$color-surface});
+  border: 1px solid var(--select-border, #{$color-border-input});
+  border-radius: var(--select-border-radius, #{$radius-md});
+  padding: var(--select-padding, #{$spacing-2} #{$spacing-3});
   min-height: 2.375rem;
   outline: none;
   box-sizing: border-box;

@@ -1,4 +1,5 @@
 @use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
 
 .architecture-validation-card {
   background-color: $color-surface;
@@ -57,17 +58,8 @@
       flex-wrap: wrap;
 
       .btn-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
         width: 1rem;
         height: 1rem;
-
-        ::ng-deep svg {
-          width: 100%;
-          height: 100%;
-          display: block;
-        }
       }
     }
 
@@ -118,19 +110,19 @@
     padding: 0.75rem 1rem;
     cursor: pointer;
     transition: all 0.15s ease;
-    min-width: 220px;
+    min-width: 13.75rem;
 
     input[type='radio'] {
       display: none;
     }
 
     .radio-custom {
-      width: 18px;
-      height: 18px;
+      width: 1.125rem;
+      height: 1.125rem;
       border-radius: 50%;
-      border: 2px solid $color-gray-300;
+      border: $radius-xs solid $color-gray-300;
       display: inline-block;
-      margin-top: 2px;
+      margin-top: 0.125rem;
       flex-shrink: 0;
       position: relative;
       transition: all 0.15s ease;
@@ -187,7 +179,7 @@
     border-radius: $radius-md;
     border: 1.5px solid $color-gray-200;
     background-color: $color-surface;
-    min-width: 240px;
+    min-width: 15rem;
 
     &.valid {
       border-color: $color-success-border;
@@ -217,8 +209,8 @@
     }
 
     .status-dot {
-      width: 10px;
-      height: 10px;
+      width: 0.625rem;
+      height: 0.625rem;
       border-radius: 50%;
       display: inline-block;
 
@@ -246,7 +238,7 @@
 .sizing-kpi-section {
   .kpi-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
     gap: 1rem;
 
     .kpi-card {
@@ -264,10 +256,7 @@
       }
 
       .kpi-label {
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+        @include text-overline;
         color: $color-gray-500;
       }
 
@@ -308,7 +297,7 @@
     margin-top: 0.5rem;
 
     .alert-icon {
-      margin-top: 2px;
+      margin-top: 0.125rem;
       flex-shrink: 0;
     }
 
@@ -361,11 +350,8 @@
       font-size: 0.875rem;
 
       th {
-        font-size: 0.75rem;
-        font-weight: 600;
+        @include text-overline;
         color: $color-gray-500;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
         padding: 0.75rem 1rem;
         border-bottom: 1px solid $color-gray-200;
         background-color: $color-gray-50;
@@ -415,7 +401,7 @@
 
       .actions-col {
         text-align: right;
-        width: 100px;
+        width: 6.25rem;
       }
 
       .action-btn-group {
@@ -425,23 +411,13 @@
       }
 
       .btn-action {
-        ::ng-deep .btn {
-          color: $color-gray-500;
-          transition: color 0.15s ease, background-color 0.15s ease;
-
-          &:hover {
-            color: $color-primary;
-            background-color: $color-primary-light;
-          }
-        }
+        --btn-color: #{$color-gray-500};
+        --btn-color-hover: #{$color-primary};
+        --btn-bg-hover: #{$color-primary-light};
 
         &.btn-danger {
-          ::ng-deep .btn {
-            &:hover {
-              color: $color-danger;
-              background-color: $color-danger-light;
-            }
-          }
+          --btn-color-hover: #{$color-danger};
+          --btn-bg-hover: #{$color-danger-light};
         }
       }
 
@@ -449,14 +425,8 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 16px;
-        height: 16px;
-
-        ::ng-deep svg,
-        svg {
-          width: 16px;
-          height: 16px;
-        }
+        width: 1rem;
+        height: 1rem;
       }
     }
   }

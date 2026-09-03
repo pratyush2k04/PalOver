@@ -43,7 +43,7 @@
   border: 1px solid $color-border-soft;
   border-radius: $radius-2xl;
 
-  @media screen and (max-width: 768px) {
+  @include respond-to-down('md') {
     flex-direction: column;
     align-items: stretch;
     gap: $spacing-3;
@@ -55,7 +55,7 @@
     align-items: center;
     gap: $spacing-2;
 
-    @media screen and (max-width: 768px) {
+    @include respond-to-down('md') {
       width: 100%;
 
       app-select {
@@ -88,7 +88,7 @@
   .metrics-summary {
     margin-left: auto;
 
-    @media screen and (max-width: 768px) {
+    @include respond-to-down('md') {
       margin-left: 0;
       display: flex;
       justify-content: flex-start;
@@ -134,7 +134,7 @@
     @include flex-between;
     padding: $spacing-4 $spacing-5 $spacing-2 $spacing-5;
 
-    @media screen and (max-width: 768px) {
+    @include respond-to-down('md') {
       flex-direction: column;
       align-items: flex-start;
       gap: $spacing-2;
@@ -188,7 +188,7 @@
   .risk-card-body {
     padding: $spacing-2 $spacing-5 $spacing-4 $spacing-5;
 
-    @media screen and (max-width: 768px) {
+    @include respond-to-down('md') {
       padding: $spacing-2 $spacing-4 $spacing-3 $spacing-4;
     }
 
@@ -315,7 +315,7 @@
   @include modal-overlay;
 
   .modal-content {
-    @include modal-card(560px);
+    @include modal-card(35rem);
     padding: 0;
     animation: modalSlide $transition-base;
 
@@ -372,7 +372,7 @@
 @keyframes modalSlide {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-0.625rem);
   }
   to {
     opacity: 1;

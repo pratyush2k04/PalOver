@@ -5,7 +5,7 @@
   font-family: $font-family-base;
   color: $color-text;
 
-  @media (max-width: 768px) {
+  @include respond-to-down('md') {
     padding: $spacing-4;
   }
 }
@@ -169,10 +169,7 @@
     th {
       background: $color-surface-hover;
       padding: $spacing-4 $spacing-5;
-      font-size: $font-size-xs;
-      font-weight: $font-weight-bold;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      @include text-overline;
       color: $color-text-muted;
       border-bottom: 1px solid $color-border-soft;
       vertical-align: middle;
@@ -202,26 +199,6 @@
         font-size: $font-size-xs;
         color: $color-text-faint;
         margin-top: 0.15rem;
-      }
-    }
-
-    .type-cell {
-      &[data-type="Greenfield"],
-      &[data-type="greenfield"] {
-        ::ng-deep .status-badge {
-          background-color: $color-success-bg;
-          color: $color-success;
-          border: 1px solid $color-success-border;
-        }
-      }
-
-      &[data-type="Brownfield"],
-      &[data-type="brownfield"] {
-        ::ng-deep .status-badge {
-          background-color: $color-warning-bg;
-          color: $color-warning-text;
-          border: 1px solid $color-warning-border;
-        }
       }
     }
 

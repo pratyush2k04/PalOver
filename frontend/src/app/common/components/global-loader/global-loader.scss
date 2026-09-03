@@ -4,7 +4,7 @@
 :host {
   position: fixed;
   inset: 0;
-  z-index: 10000;
+  z-index: $z-index-loader;
   pointer-events: none;
 }
 
@@ -15,11 +15,11 @@
   bottom: 0;
   right: 0;
   left: 6rem;
-  background: rgba($color-surface, 0.78);
+  background-color: rgba($color-surface-subtle-alt, 0.45);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   pointer-events: auto;
-  z-index: 9990;
+  z-index: $z-index-loader;
   animation: loader-fade-in 0.18s ease-out;
 
   &.is-full-page {
@@ -27,7 +27,7 @@
     left: 0;
   }
 
-  @media (max-width: 768px) {
+  @include respond-to-down('md') {
     left: 0;
     top: 4rem;
   }

@@ -8,7 +8,7 @@
   display: flex;
   flex-direction: column;
   gap: $spacing-1;
-  margin-bottom: $spacing-3;
+  margin-bottom: var(--field-margin-bottom, #{$spacing-3});
 
   &:last-child,
   &:only-child {
@@ -358,11 +358,16 @@
     }
 
     &.is-selected {
-      background-color: #1054e86b !important;
-      color: #000 !important;
+      background-color: $color-primary-subtle;
+      color: $color-slate-900;
       font-weight: $font-weight-semibold;
-      border-color: $color-primary !important;
+      border-color: $color-primary;
       border-radius: 50%;
+
+      &:hover {
+        background-color: $color-primary-border;
+        color: $color-slate-900;
+      }
     }
 
     &.is-disabled,

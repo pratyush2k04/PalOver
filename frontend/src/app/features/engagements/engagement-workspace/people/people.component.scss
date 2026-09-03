@@ -1,4 +1,5 @@
 @use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
 
 .people-directory {
   display: flex;
@@ -14,14 +15,10 @@
     overflow: hidden;
 
     .card-inner-header {
+      --section-title-size: 1.25rem;
       padding-bottom: $spacing-3;
       border-bottom: 1px solid $color-slate-200;
       margin: 0;
-
-      ::ng-deep h2, ::ng-deep h3, ::ng-deep .section-title {
-        font-size: 1.25rem !important;
-        font-weight: 700;
-      }
     }
   }
 
@@ -39,7 +36,7 @@
   gap: $spacing-6;
   align-items: flex-start;
 
-  @media (max-width: 1024px) {
+  @include respond-to-down('lg') {
     grid-template-columns: 1fr;
   }
 }
@@ -72,10 +69,7 @@
     tr {
       th {
         padding: 0.875rem 1.25rem;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+        @include text-overline;
         color: $color-slate-500;
         white-space: nowrap;
       }
@@ -142,41 +136,15 @@
     }
 
     .edit-btn {
-      ::ng-deep button.btn,
-      ::ng-deep .btn {
-        color: $color-slate-500;
-        transition: all 0.15s ease;
-
-        &:hover:not(:disabled) {
-          color: $color-primary !important;
-          background-color: $color-primary-light !important;
-
-          .action-icon,
-          svg {
-            stroke: $color-primary !important;
-            color: $color-primary !important;
-          }
-        }
-      }
+      --btn-color: #{$color-slate-500};
+      --btn-color-hover: #{$color-primary};
+      --btn-bg-hover: #{$color-primary-light};
     }
 
     .delete-btn {
-      ::ng-deep button.btn,
-      ::ng-deep .btn {
-        color: $color-slate-500;
-        transition: all 0.15s ease;
-
-        &:hover:not(:disabled) {
-          color: $color-danger !important;
-          background-color: $color-danger-light !important;
-
-          .action-icon,
-          svg {
-            stroke: $color-danger !important;
-            color: $color-danger !important;
-          }
-        }
-      }
+      --btn-color: #{$color-slate-500};
+      --btn-color-hover: #{$color-danger};
+      --btn-bg-hover: #{$color-danger-light};
     }
   }
 }
@@ -188,41 +156,15 @@
   gap: 0.375rem;
 
   .edit-btn {
-    ::ng-deep button.btn,
-    ::ng-deep .btn {
-      color: $color-slate-500;
-      transition: all 0.15s ease;
-
-      &:hover:not(:disabled) {
-        color: $color-primary !important;
-        background-color: $color-primary-light !important;
-
-        .action-icon,
-        svg {
-          stroke: $color-primary !important;
-          color: $color-primary !important;
-        }
-      }
-    }
+    --btn-color: #{$color-slate-500};
+    --btn-color-hover: #{$color-primary};
+    --btn-bg-hover: #{$color-primary-light};
   }
 
   .delete-btn {
-    ::ng-deep button.btn,
-    ::ng-deep .btn {
-      color: $color-slate-500;
-      transition: all 0.15s ease;
-
-      &:hover:not(:disabled) {
-        color: $color-danger !important;
-        background-color: $color-danger-light !important;
-
-        .action-icon,
-        svg {
-          stroke: $color-danger !important;
-          color: $color-danger !important;
-        }
-      }
-    }
+    --btn-color: #{$color-slate-500};
+    --btn-color-hover: #{$color-danger};
+    --btn-bg-hover: #{$color-danger-light};
   }
 }
 
@@ -230,17 +172,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  ::ng-deep svg,
-  svg {
-    width: 16px;
-    height: 16px;
-  }
+  width: 1rem;
+  height: 1rem;
 }
 
 .empty-state {
   text-align: center;
-  padding: 2.5rem 1.25rem !important;
+  padding: 2.5rem 1.25rem;
   color: $color-slate-400;
   font-style: italic;
   font-size: 0.875rem;

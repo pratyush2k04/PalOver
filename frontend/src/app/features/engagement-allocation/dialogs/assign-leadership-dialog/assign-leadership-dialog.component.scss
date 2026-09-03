@@ -17,7 +17,7 @@
 
   .handover-summary-grid {
     @include flex-column($gap: $spacing-3);
-    max-height: 220px;
+    max-height: 13.75rem;
     overflow-y: auto;
     overflow-x: hidden;
     padding-right: $spacing-2;
@@ -27,10 +27,8 @@
     @include flex-column($gap: $spacing-1);
 
     .handover-field-label {
-      font-size: $font-size-xs;
-      font-weight: $font-weight-semibold;
+      @include text-overline;
       color: $color-text-fainter;
-      text-transform: uppercase;
     }
 
     .handover-field-value {

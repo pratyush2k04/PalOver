@@ -15,16 +15,8 @@
   .error-icon {
     width: 1.25rem;
     height: 1.25rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    color: $color-danger;
     flex-shrink: 0;
-
-    ::ng-deep svg {
-      width: 1.25rem;
-      height: 1.25rem;
-      stroke: $color-danger;
-    }
   }
   p { margin: 0; font-size: $font-size-sm; }
 }
@@ -50,7 +42,7 @@
   gap: $spacing-3;
   flex-wrap: wrap;
 
-  @media screen and (max-width: 768px) {
+  @include respond-to-down('md') {
     flex-direction: column;
     align-items: stretch;
     gap: $spacing-2;
@@ -58,8 +50,8 @@
 
   .search-input {
     flex: 1;
-    min-width: 200px;
-    max-width: 280px;
+    min-width: 12.5rem;
+    max-width: 17.5rem;
     border: 1px solid $color-border-input;
     border-radius: $radius-md;
     padding: $spacing-2 $spacing-3;
@@ -68,7 +60,7 @@
     background-color: $color-surface;
     transition: border-color 0.15s, box-shadow 0.15s;
 
-    @media screen and (max-width: 768px) {
+    @include respond-to-down('md') {
       max-width: 100%;
       width: 100%;
       box-sizing: border-box;
@@ -92,14 +84,14 @@
   app-select.filter-select {
     min-width: 9rem;
 
-    @media screen and (max-width: 768px) {
+    @include respond-to-down('md') {
       width: 100%;
       box-sizing: border-box;
     }
   }
 
   select.filter-select {
-    min-width: 140px;
+    min-width: 8.75rem;
     border: 1px solid $color-border-input;
     border-radius: $radius-md;
     padding: $spacing-2 $spacing-3;
@@ -109,7 +101,7 @@
     cursor: pointer;
     transition: border-color 0.15s;
 
-    @media screen and (max-width: 768px) {
+    @include respond-to-down('md') {
       width: 100%;
       box-sizing: border-box;
     }
@@ -126,7 +118,7 @@
   }
 
   app-button {
-    @media screen and (max-width: 768px) {
+    @include respond-to-down('md') {
       width: 100%;
     }
   }
@@ -144,8 +136,8 @@
     border: 1px solid $color-border-soft;
     border-left: 5px solid $color-danger;
 
-    .callout-icon ::ng-deep svg {
-      stroke: $color-danger;
+    .callout-icon {
+      color: $color-danger;
     }
   }
 
@@ -154,8 +146,8 @@
     border: 1px solid $color-success-border;
     border-left: 5px solid $color-success;
 
-    .callout-icon ::ng-deep svg {
-      stroke: $color-success;
+    .callout-icon {
+      color: $color-success;
     }
   }
 
@@ -164,8 +156,8 @@
     border: 1px solid $color-warning-border;
     border-left: 5px solid $color-warning;
 
-    .callout-icon ::ng-deep svg {
-      stroke: $color-warning;
+    .callout-icon {
+      color: $color-warning;
     }
 
     .callout-text {
@@ -178,15 +170,7 @@
   width: 1.5rem;
   height: 1.5rem;
   flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 1px;
-
-  ::ng-deep svg {
-    width: 1.5rem;
-    height: 1.5rem;
-  }
+  margin-top: 0.0625rem;
 }
 
 .callout-body {
@@ -335,6 +319,16 @@
     padding: $spacing-3 $spacing-5;
     vertical-align: middle;
   }
+
+  ::ng-deep .status-badge--neutral {
+    background-color: $color-slate-200;
+    color: $color-text-faint;
+  }
+
+  ::ng-deep .status-badge--danger {
+    background-color: $color-danger-light;
+    color: $color-danger-text;
+  }
 }
 
 .col-item { width: 36%; min-width: 14rem; }
@@ -385,6 +379,30 @@
   }
 }
 
+.block-reason-callout {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  align-items: center;
+  gap: $spacing-1;
+  margin-top: $spacing-1;
+  font-size: $font-size-xs;
+  color: $color-danger;
+  background-color: $color-danger-bg;
+  padding: $spacing-1 $spacing-2;
+  border-radius: $radius-md;
+  border: 1px solid $color-danger-border;
+
+  .warning-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 0.875rem;
+    height: 0.875rem;
+    flex-shrink: 0;
+  }
+}
+
 .cell-status,
 .cell-owner,
 .cell-evidence,
@@ -393,6 +411,10 @@
 .cell-actions {
   font-size: $font-size-sm;
   text-align: center;
+}
+
+.cell-actions {
+  text-align: right;
 }
 
 .cell-evidence {
@@ -426,12 +448,6 @@
     .view-icon {
       width: 0.875rem;
       height: 0.875rem;
-      display: inline-flex;
-
-      ::ng-deep svg {
-        width: 0.875rem;
-        height: 0.875rem;
-      }
     }
 
     &:hover {
@@ -453,22 +469,14 @@
     font-size: $font-size-xs;
     font-weight: $font-weight-medium;
     cursor: pointer;
-    max-width: 170px;
+    max-width: 10.625rem;
     text-decoration: none;
     box-sizing: border-box;
 
     .evidence-icon {
       width: 1rem;
       height: 1rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
       flex-shrink: 0;
-
-      ::ng-deep svg {
-        width: 1rem;
-        height: 1rem;
-      }
     }
 
     .evidence-text {
@@ -484,9 +492,9 @@
   .btn-evidence-add {
     padding: $spacing-1 $spacing-2;
     background: transparent;
-    border: 1px dashed $color-border-input;
+    border: 1px dashed $color-border-dark;
     border-radius: $radius-sm;
-    color: $color-text-faint;
+    color: $color-text-subdued;
     font-size: $font-size-xs;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -521,14 +529,14 @@
 
 .owner-app-select {
   width: 100%;
-  max-width: 180px;
+  max-width: 11.25rem;
   display: inline-block;
   text-align: left;
 }
 
 .owner-select {
   width: 100%;
-  max-width: 180px;
+  max-width: 11.25rem;
   padding: $spacing-1 $spacing-2;
   font-size: $font-size-xs;
   color: $color-text;
@@ -545,55 +553,33 @@
   &:focus {
     outline: none;
     border-color: $color-primary;
-    box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
+    box-shadow: 0 0 0 0.125rem rgba($color-primary, 0.15);
   }
 }
 
-::ng-deep app-button.btn-complete .btn,
+app-button.btn-complete,
 .btn-complete {
-  ::ng-deep .btn {
-    &:hover:not(:disabled) {
-      background-color: rgba(37, 99, 235, 0.1) !important;
-      border-color: rgba(37, 99, 235, 0.4) !important;
-      color: #2563eb !important;
-    }
-  }
+  --btn-bg-hover: #{rgba($color-primary, 0.1)};
+  --btn-border-hover: #{rgba($color-primary, 0.4)};
+  --btn-color-hover: #{$color-primary};
 }
 
 // Actions Group
 .actions-group {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   gap: $spacing-2;
 
   .action-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    width: 1.15rem;
+    height: 1.15rem;
     color: $color-text-faint;
     transition: color 0.15s ease, transform 0.15s ease;
-
-    ::ng-deep svg,
-    svg {
-      width: 1.15rem;
-      height: 1.15rem;
-      stroke: currentColor;
-      transition: stroke 0.15s ease;
-    }
   }
 
-  app-button {
-    &:hover:not([disabled]) {
-      .action-icon {
-        color: $color-danger;
-
-        ::ng-deep svg,
-        svg {
-          stroke: $color-danger;
-        }
-      }
-    }
+  app-button:hover:not([disabled]) .action-icon {
+    color: $color-danger;
   }
 }
 

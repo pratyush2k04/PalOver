@@ -59,11 +59,11 @@ export class RiskFormDialogComponent {
 
   riskForm: FormGroup = this.fb.group({
     title: [this.data.risk?.title ?? '', [Validators.required, Validators.maxLength(300)]],
-    description: [this.data.risk?.description ?? '', [Validators.required, Validators.maxLength(2000)]],
+    description: [this.data.risk?.description ?? '', [Validators.required, Validators.maxLength(500)]],
     impact: [this.data.risk?.impact ?? RISK_IMPACT_LEVELS.MEDIUM, [Validators.required]],
     likelihood: [this.data.risk?.likelihood ?? RISK_LIKELIHOOD_LEVELS.MEDIUM, [Validators.required]],
     ownerId: [this.data.risk?.ownerId != null ? Number(this.data.risk.ownerId) : null, [Validators.required]],
-    mitigation: [this.data.risk?.mitigation ?? '', [Validators.maxLength(2000)]],
+    mitigation: [this.data.risk?.mitigation ?? '', [Validators.maxLength(500)]],
     status: [this.data.risk?.status ?? RISK_STATUSES.OPEN, [Validators.required]]
   });
 

@@ -77,19 +77,13 @@
   color: $color-success-dark;
 
   .shield-icon {
-    width: 14px;
-    height: 14px;
+    width: 0.875rem;
+    height: 0.875rem;
     flex-shrink: 0;
     color: $color-success;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
-    ::ng-deep svg,
-    svg {
-      width: 14px;
-      height: 14px;
-    }
   }
 }
 

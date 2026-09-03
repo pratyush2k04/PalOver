@@ -12,7 +12,7 @@ public class DependencyConfiguration : IEntityTypeConfiguration<Dependency>
         
         builder.Property(x => x.Description)
             .IsRequired()
-            .HasMaxLength(2000);
+            .HasMaxLength(500);
 
         builder.Property(x => x.Type)
             .HasConversion<string>()

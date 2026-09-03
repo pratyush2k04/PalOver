@@ -16,7 +16,7 @@ public class SaveArchitectureValidationRequestValidator : AbstractValidator<Save
         {
             RuleFor(x => x.Rationale)
                 .NotEmpty().WithMessage(ArchitectureValidationConstants.Messages.RationaleRequiredWhenModified)
-                .MaximumLength(2000).WithMessage("Rationale cannot exceed 2000 characters.");
+                .MaximumLength(500).WithMessage("Rationale cannot exceed 500 characters.");
         });
     }
 }

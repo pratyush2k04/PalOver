@@ -8,7 +8,7 @@ public static class RiskConstants
         public const string TitleMaxLength = "Risk title must not exceed 300 characters.";
 
         public const string DescriptionRequired = "Risk description is required.";
-        public const string DescriptionMaxLength = "Risk description must not exceed 2000 characters.";
+        public const string DescriptionMaxLength = "Risk description must not exceed 500 characters.";
 
         public const string ImpactInvalid = "Impact must be a valid RiskImpact value (Low, Medium, High).";
         public const string LikelihoodInvalid = "Likelihood must be a valid RiskLikelihood value (Low, Medium, High).";
@@ -16,10 +16,10 @@ public static class RiskConstants
 
         public const string OwnerRequired = "Risk owner is required.";
 
-        public const string MitigationMaxLength = "Mitigation details must not exceed 2000 characters.";
+        public const string MitigationMaxLength = "Mitigation details must not exceed 500 characters.";
 
         public const string ResolutionNoteRequired = "Resolution note is required when closing a risk.";
-        public const string ResolutionNoteMaxLength = "Resolution note must not exceed 2000 characters.";
+        public const string ResolutionNoteMaxLength = "Resolution note must not exceed 500 characters.";
 
         public const string CommentContentRequired = "Comment content is required.";
         public const string CommentContentMaxLength = "Comment content must not exceed 1000 characters.";

@@ -1,4 +1,5 @@
 @use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
 
 .dependency-spikes-card {
   background-color: $color-surface;
@@ -39,17 +40,9 @@
       gap: 0.5rem;
 
       .btn-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
         width: 1rem;
         height: 1rem;
         margin-right: 0.375rem;
-
-        ::ng-deep svg {
-          width: 100%;
-          height: 100%;
-        }
       }
     }
   }
@@ -81,11 +74,8 @@
         th {
           padding: 0.75rem 1rem;
           text-align: left;
-          font-size: 0.75rem;
-          font-weight: 600;
+          @include text-overline;
           color: $color-slate-600;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
           &.status-th,
           &.actions-th {
             text-align: center;
@@ -115,13 +105,13 @@
           }
 
           .objective-cell {
-            max-width: 280px;
+            max-width: 17.5rem;
             color: $color-slate-700;
             line-height: 1.4;
           }
 
           .findings-cell {
-            max-width: 320px;
+            max-width: 20rem;
             color: $color-slate-600;
             font-size: 0.8125rem;
             line-height: 1.4;
@@ -143,17 +133,14 @@
             white-space: nowrap;
 
             app-status-badge {
-              ::ng-deep .status-badge {
-                min-width: 6.5rem;
-                justify-content: center;
-                box-sizing: border-box;
-              }
+              --badge-min-width: 6.5rem;
+              --badge-justify: center;
             }
           }
 
           .actions-cell {
             white-space: nowrap;
-            width: 100px;
+            width: 6.25rem;
             text-align: center;
 
             .action-btn-group {
@@ -165,23 +152,13 @@
           }
 
           .btn-action {
-            ::ng-deep .btn {
-              color: $color-gray-500;
-              transition: color 0.15s ease, background-color 0.15s ease;
-
-              &:hover {
-                color: $color-primary;
-                background-color: $color-primary-light;
-              }
-            }
+            --btn-color: #{$color-gray-500};
+            --btn-color-hover: #{$color-primary};
+            --btn-bg-hover: #{$color-primary-light};
 
             &.btn-danger {
-              ::ng-deep .btn {
-                &:hover {
-                  color: $color-danger;
-                  background-color: $color-danger-light;
-                }
-              }
+              --btn-color-hover: #{$color-danger};
+              --btn-bg-hover: #{$color-danger-light};
             }
           }
 
@@ -189,15 +166,8 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 16px;
-            height: 16px;
-
-            ::ng-deep svg,
-            svg {
-              width: 16px;
-              height: 16px;
-              display: block;
-            }
+            width: 1rem;
+            height: 1rem;
           }
         }
       }

@@ -61,18 +61,12 @@ form {
 
   .login-submit-btn {
     margin-top: $spacing-3;
-
-    ::ng-deep .btn {
-      padding: 0.8rem 1.35rem;
-      font-size: $font-size-base;
-      font-weight: $font-weight-semibold;
-      border-radius: $radius-lg;
-      background-color: $color-primary-hover;
-
-      &:hover:not(:disabled) {
-        background-color: $color-primary-dark;
-      }
-    }
+    --btn-padding: 0.8rem 1.35rem;
+    --btn-font-size: #{$font-size-base};
+    --btn-font-weight: #{$font-weight-semibold};
+    --btn-border-radius: #{$radius-lg};
+    --btn-bg: #{$color-primary-hover};
+    --btn-bg-hover: #{$color-primary-dark};
   }
 }
 

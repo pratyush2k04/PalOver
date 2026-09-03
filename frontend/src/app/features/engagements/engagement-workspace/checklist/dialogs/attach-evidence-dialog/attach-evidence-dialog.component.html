@@ -46,6 +46,14 @@
         />
       </div>
 
+      <app-input
+        id="evidence-file-name"
+        label="Rename File"
+        [ngModel]="renamedFileName()"
+        (ngModelChange)="onRenamedFileNameChange($event)"
+        placeholder="e.g. Document.pdf"
+      />
+
       <app-select
         id="evidence-doc-category"
         label="Category"

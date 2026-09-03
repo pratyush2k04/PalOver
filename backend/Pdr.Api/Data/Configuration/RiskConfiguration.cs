@@ -17,7 +17,7 @@ public class RiskConfiguration : IEntityTypeConfiguration<Risk>
 
         builder.Property(r => r.EngagementId).HasColumnName("engagement_id").IsRequired();
         builder.Property(r => r.Title).HasColumnName("title").HasMaxLength(300).IsRequired();
-        builder.Property(r => r.Description).HasColumnName("description").HasMaxLength(2000).IsRequired();
+        builder.Property(r => r.Description).HasColumnName("description").HasMaxLength(500).IsRequired();
 
         builder.Property(r => r.Impact)
             .HasColumnName("impact")
@@ -31,7 +31,7 @@ public class RiskConfiguration : IEntityTypeConfiguration<Risk>
 
         builder.Property(r => r.OwnerId).HasColumnName("owner_id").IsRequired(false);
 
-        builder.Property(r => r.Mitigation).HasColumnName("mitigation").HasMaxLength(2000);
+        builder.Property(r => r.Mitigation).HasColumnName("mitigation").HasMaxLength(500);
 
         builder.Property(r => r.Status)
             .HasColumnName("status")
@@ -39,7 +39,7 @@ public class RiskConfiguration : IEntityTypeConfiguration<Risk>
             .HasMaxLength(50)
             .IsRequired();
 
-        builder.Property(r => r.ResolutionNote).HasColumnName("resolution_note").HasMaxLength(2000);
+        builder.Property(r => r.ResolutionNote).HasColumnName("resolution_note").HasMaxLength(500);
 
         builder.Property(r => r.SourceType).HasColumnName("source_type").HasMaxLength(100);
         builder.Property(r => r.SourceItemId).HasColumnName("source_item_id");

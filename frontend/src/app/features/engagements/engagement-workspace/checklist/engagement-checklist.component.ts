@@ -10,6 +10,7 @@ import { DocumentService } from '@features/engagements/services/document.service
 import { EngagementChecklist, EngagementChecklistItem } from '../../models/engagement-checklist.model';
 import { ENGAGEMENT_CHECKLIST_MESSAGES } from '@shared/constants/engagements.constants';
 import { DialogService } from '@common/services/dialog/dialog.service';
+import { ToastService } from '@common/services/toast/toast';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
@@ -69,6 +70,7 @@ export class EngagementChecklistComponent {
   private dialog = inject(DialogService);
   private cadenceService = inject(CommunicationCadenceService);
   private kickoffReadinessService = inject(KickoffReadinessService);
+  private toastService = inject(ToastService);
 
   private paramMap = toSignal(this.route.parent!.paramMap);
 
@@ -282,13 +284,19 @@ export class EngagementChecklistComponent {
       return;
     }
 
+    const nextStatus = item.status === 'Complete' ? 'Incomplete' : 'Complete';
+
+    if (nextStatus === 'Complete' && !item.ownerId) {
+      this.toastService.error('Assign an owner before marking this item complete.');
+      return;
+    }
+
     // Intercept if completing an item with required evidence that hasn't been provided yet
     if (item.status !== 'Complete' && item.evidenceRequired && !item.evidenceDocumentId) {
       this.openAttachEvidenceDialog(item, true);
       return;
     }
 
-    const nextStatus = item.status === 'Complete' ? 'Incomplete' : 'Complete';
     this.isUpdating.set(true);
 
     this.checklistService.updateItemStatus(engId, item.id, { status: nextStatus }).subscribe({

@@ -75,7 +75,7 @@ export class DependencySpikeFormDialogComponent implements OnInit {
       status: [initialStatus, [Validators.required]],
       outcomeFindings: [
         spike?.outcomeFindings ?? '',
-        [Validators.maxLength(2000)]
+        [Validators.maxLength(500)]
       ]
     });
   }

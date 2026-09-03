@@ -1,4 +1,5 @@
 @use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
 
 :host {
   position: relative;
@@ -138,11 +139,9 @@
 }
 
 .global-search__active-label {
+  @include text-overline;
   font-size: 0.6875rem;
-  font-weight: 600;
   color: $color-primary-dark;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
 }
 
 .global-search__chip {
@@ -196,11 +195,8 @@
 
 .global-search__group-header {
   padding: 0.625rem 1rem 0.25rem;
-  font-size: 0.75rem;
-  font-weight: 700;
+  @include text-overline;
   color: $color-slate-900;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 .global-search__row {

@@ -16,7 +16,7 @@ public class EngagementChecklistItemConfiguration : IEntityTypeConfiguration<Eng
         builder.Property(e => e.EngagementChecklistId).HasColumnName("engagement_checklist_id").IsRequired();
         builder.Property(e => e.SourceMasterItemId).HasColumnName("source_master_item_id");
         builder.Property(e => e.Title).HasColumnName("title").HasMaxLength(255).IsRequired();
-        builder.Property(e => e.Description).HasColumnName("description").HasMaxLength(2000);
+        builder.Property(e => e.Description).HasColumnName("description").HasMaxLength(500);
         builder.Property(e => e.CategoryId).HasColumnName("category_id").IsRequired();
         builder.Property(e => e.IsMandatory).HasColumnName("is_mandatory").HasDefaultValue(true).IsRequired();
         builder.Property(e => e.DisplayOrder).HasColumnName("display_order").IsRequired();

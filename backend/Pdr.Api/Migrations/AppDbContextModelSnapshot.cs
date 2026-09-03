@@ -246,8 +246,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Rationale")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -740,8 +740,8 @@ namespace Pdr.Api.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("description");
 
                     b.Property<int>("EngagementId")
@@ -750,8 +750,8 @@ namespace Pdr.Api.Migrations
 
                     b.Property<string>("Impact")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("impact");
 
                     b.Property<bool>("IsDeleted")
@@ -761,8 +761,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnName("is_deleted");
 
                     b.Property<string>("RejectionReason")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("rejection_reason");
 
                     b.Property<DateTime?>("ReviewedAt")
@@ -843,8 +843,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("character varying(1000)");
 
                     b.Property<string>("OutcomeFindings")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<int?>("OwnerId")
                         .HasColumnType("integer");
@@ -1261,8 +1261,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnName("created_by");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("description");
 
                     b.Property<int>("DisplayOrder")
@@ -2193,8 +2193,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnName("engagement_id");
 
                     b.Property<string>("ExceptionJustification")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("exception_justification");
 
                     b.Property<bool>("IsDeleted")
@@ -2254,8 +2254,8 @@ namespace Pdr.Api.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<int>("EngagementId")
                         .HasColumnType("integer");
@@ -2939,8 +2939,8 @@ namespace Pdr.Api.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("description");
 
                     b.Property<int>("HandoverId")
@@ -3305,8 +3305,8 @@ namespace Pdr.Api.Migrations
 
                     b.Property<string>("MessageText")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("message_text");
 
                     b.Property<int>("MessageType")
@@ -3391,8 +3391,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnName("commitment_id");
 
                     b.Property<string>("AcknowledgementMessage")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("acknowledgement_message");
 
                     b.Property<DateTime>("CreatedAt")
@@ -3408,8 +3408,8 @@ namespace Pdr.Api.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("description");
 
                     b.Property<bool>("IsDeleted")
@@ -5727,8 +5727,8 @@ namespace Pdr.Api.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("description");
 
                     b.Property<int>("EngagementId")
@@ -5750,8 +5750,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnName("likelihood");
 
                     b.Property<string>("Mitigation")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("mitigation");
 
                     b.Property<int?>("OwnerId")
@@ -5759,8 +5759,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnName("owner_id");
 
                     b.Property<string>("ResolutionNote")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("resolution_note");
 
                     b.Property<int?>("SourceItemId")
