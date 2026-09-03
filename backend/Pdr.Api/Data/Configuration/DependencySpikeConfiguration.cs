@@ -24,7 +24,7 @@ public class DependencySpikeConfiguration : IEntityTypeConfiguration<DependencyS
             .IsRequired();
 
         builder.Property(x => x.OutcomeFindings)
-            .HasMaxLength(2000);
+            .HasMaxLength(500);
 
         builder.HasQueryFilter(x => !x.IsDeleted);
 

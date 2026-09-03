@@ -13,10 +13,10 @@ public class RealisticCommitmentConfiguration : IEntityTypeConfiguration<Realist
         builder.HasKey(rc => rc.CommitmentId);
         builder.Property(rc => rc.CommitmentId).HasColumnName("commitment_id").ValueGeneratedNever();
 
-        builder.Property(rc => rc.Description).HasColumnName("description").HasMaxLength(2000).IsRequired();
+        builder.Property(rc => rc.Description).HasColumnName("description").HasMaxLength(500).IsRequired();
         builder.Property(rc => rc.Timeline).HasColumnName("timeline").IsRequired();
         builder.Property(rc => rc.TimelineUnit).HasColumnName("timeline_unit").HasConversion<string>().HasMaxLength(20).IsRequired();
-        builder.Property(rc => rc.AcknowledgementMessage).HasColumnName("acknowledgement_message").HasMaxLength(2000);
+        builder.Property(rc => rc.AcknowledgementMessage).HasColumnName("acknowledgement_message").HasMaxLength(500);
 
         // BaseAuditableEntity Column Mappings
         builder.Property(rc => rc.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");
