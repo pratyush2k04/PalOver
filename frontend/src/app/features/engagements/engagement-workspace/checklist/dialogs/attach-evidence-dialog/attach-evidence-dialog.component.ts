@@ -11,6 +11,7 @@ import { DOCUMENT_CONFIG, DOCUMENT_MESSAGES } from '@shared/constants/document.c
 import { ButtonComponent } from '@common/components/button/button';
 import { AlertComponent } from '@common/components/alert/alert';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
+import { InputComponent } from '@common/components/form/input/input';
 
 export interface AttachEvidenceDialogData {
   item: EngagementChecklistItem;
@@ -29,7 +30,7 @@ type EvidenceMode = 'upload' | 'select';
 @Component({
   selector: 'app-attach-evidence-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, AlertComponent, SelectComponent],
+  imports: [CommonModule, FormsModule, ButtonComponent, AlertComponent, SelectComponent, InputComponent],
   templateUrl: './attach-evidence-dialog.component.html',
   styleUrl: './attach-evidence-dialog.component.scss'
 })
@@ -49,6 +50,7 @@ export class AttachEvidenceDialogComponent implements OnInit {
   selectedCategoryId = signal<number | null>(null);
   selectedVisibility = signal<DocumentVisibility>(DOCUMENT_CONFIG.VISIBILITY.TEAM_WIDE);
   selectedFile = signal<File | null>(null);
+  renamedFileName = signal<string>('');
   isUploading = signal<boolean>(false);
 
   // Select Existing section state
@@ -136,7 +138,12 @@ export class AttachEvidenceDialogComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     const file = input.files && input.files.length > 0 ? input.files[0] : null;
     this.selectedFile.set(file);
+    this.renamedFileName.set(file?.name ?? '');
     this.errorMessage.set(null);
+  }
+
+  onRenamedFileNameChange(name: string): void {
+    this.renamedFileName.set(name);
   }
 
   onCategoryChange(catId: string): void {
@@ -192,10 +199,10 @@ export class AttachEvidenceDialogComponent implements OnInit {
       return;
     }
 
-    const file = this.selectedFile();
+    const selectedFile = this.selectedFile();
     const catId = this.selectedCategoryId();
 
-    if (!file) {
+    if (!selectedFile) {
       this.errorMessage.set('Please select a file to upload.');
       return;
     }
@@ -203,6 +210,14 @@ export class AttachEvidenceDialogComponent implements OnInit {
       this.errorMessage.set(DOCUMENT_MESSAGES.UPLOAD_NO_CATEGORY_SELECTED);
       return;
     }
+
+    // Preserve original extension if the typed name omits it
+    const originalExt = selectedFile.name.includes('.')
+      ? selectedFile.name.substring(selectedFile.name.lastIndexOf('.')).toLowerCase()
+      : '';
+    const typedName = this.renamedFileName().trim() || selectedFile.name;
+    const finalName = typedName.includes('.') ? typedName : typedName + originalExt;
+    const file = new File([selectedFile], finalName, { type: selectedFile.type });
 
     const ext = file.name.includes('.') ? file.name.substring(file.name.lastIndexOf('.')).toLowerCase() : '';
     if (!ext || !DOCUMENT_CONFIG.ALLOWED_EXTENSIONS.includes(ext)) {
