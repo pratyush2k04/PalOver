@@ -60,8 +60,9 @@ export class UsersComponent implements OnInit {
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
 
+  readonly pageSizeOptions = [5, 10, 15];
   page = signal(1);
-  pageSize = 5;
+  pageSize = signal(5);
   totalCount = signal(0);
 
   selectedRoleFilter = signal<string>('all');
@@ -75,13 +76,15 @@ export class UsersComponent implements OnInit {
     return list.filter((u) => String(u.roleId) === filter || u.roleName === filter);
   });
 
+  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.totalCount() / this.pageSize())));
+
   readonly showingStart = computed(() => {
     if (this.totalCount() === 0) return 0;
-    return (this.page() - 1) * this.pageSize + 1;
+    return (this.page() - 1) * this.pageSize() + 1;
   });
 
   readonly showingEnd = computed(() => {
-    return Math.min(this.page() * this.pageSize, this.totalCount());
+    return Math.min(this.page() * this.pageSize(), this.totalCount());
   });
 
   pendingChange = signal<PendingRoleChange | null>(null);
@@ -108,7 +111,7 @@ export class UsersComponent implements OnInit {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    this.userService.getUsers(this.searchTerm, this.page(), this.pageSize).subscribe({
+    this.userService.getUsers(this.searchTerm, this.page(), this.pageSize()).subscribe({
       next: (result) => {
         this.users.set(result.items);
         this.totalCount.set(result.totalCount);
@@ -121,15 +124,17 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  get totalPages(): number {
-    return Math.max(1, Math.ceil(this.totalCount() / this.pageSize));
-  }
-
   goToPage(page: number): void {
-    if (page < 1 || page > this.totalPages || page === this.page()) {
+    if (page < 1 || page > this.totalPages() || page === this.page()) {
       return;
     }
     this.page.set(page);
+    this.loadUsers();
+  }
+
+  onPageSizeChange(size: number): void {
+    this.pageSize.set(size);
+    this.page.set(1);
     this.loadUsers();
   }
 
