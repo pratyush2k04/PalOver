@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { DocumentCategory, DocumentItem, DocumentUploadResult, DocumentVersion, DocumentVisibility, UpdateDocumentVisibilityRequest } from '../models/document.model';
 import { DOCUMENT_API_ENDPOINTS } from '@shared/constants/document.constants';
+import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 
 @Injectable({
   providedIn: 'root'
@@ -61,7 +62,9 @@ export class DocumentService {
   }
 
   getVersionHistory(documentId: number): Observable<DocumentVersion[]> {
-    return this.http.get<DocumentVersion[]>(DOCUMENT_API_ENDPOINTS.VERSIONS(documentId));
+    return this.http.get<DocumentVersion[]>(DOCUMENT_API_ENDPOINTS.VERSIONS(documentId), {
+      context: new HttpContext().set(SKIP_LOADER, true)
+    });
   }
 
   uploadNewVersion(documentId: number, file: File, changeNote: string): Observable<DocumentItem> {

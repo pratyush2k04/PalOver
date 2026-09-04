@@ -81,6 +81,20 @@
             --btn-font-size: #{$font-size-xs};
             --btn-line-height: 1.2;
           }
+
+          .action-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1rem;
+            height: 1rem;
+
+            ::ng-deep svg {
+              width: 1rem;
+              height: 1rem;
+              display: block;
+            }
+          }
         }
       }
 

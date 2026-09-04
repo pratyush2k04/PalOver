@@ -95,6 +95,29 @@
     }
   }
 
+  &.is-disabled {
+    opacity: 0.7;
+    border-color: $color-border-soft;
+    box-shadow: none;
+
+    .accordion-header {
+      cursor: not-allowed;
+      background: $color-surface-hover;
+
+      &:hover {
+        background: $color-surface-hover;
+      }
+
+      &:focus-visible {
+        box-shadow: none;
+      }
+
+      .header-title {
+        color: $color-text-muted;
+      }
+    }
+  }
+
   .accordion-body {
     padding: $spacing-4 $spacing-5;
   }

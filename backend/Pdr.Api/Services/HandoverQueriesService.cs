@@ -138,27 +138,9 @@ public class HandoverQueriesService : IHandoverQueriesService
         var actorUser = await _userRepository.GetByIdAsync(actorUserId)
             ?? throw new UserNotFoundException(actorUserId);
 
-        var latestMessage = query.Messages
-            .OrderByDescending(m => m.SequenceNumber)
-            .FirstOrDefault();
-
-        HandoverQueryMessageType messageType;
-        if (latestMessage == null || latestMessage.MessageType == HandoverQueryMessageType.Response)
-        {
-            // Expected turn is Question (PM)
-            if (actorUser.Role.Name != RoleConstants.ProjectManagement)
-                throw new HandoverQueryInvalidTurnException(HandoverQueryConstants.InvalidTurnExpectedResponse);
-
-            messageType = HandoverQueryMessageType.Question;
-        }
-        else
-        {
-            // Expected turn is Response (Pre Sales)
-            if (actorUser.Role.Name != RoleConstants.PreSales)
-                throw new HandoverQueryInvalidTurnException(HandoverQueryConstants.InvalidTurnExpectedQuestion);
-
-            messageType = HandoverQueryMessageType.Response;
-        }
+        var messageType = actorUser.Role.Name == RoleConstants.PreSales
+            ? HandoverQueryMessageType.Response
+            : HandoverQueryMessageType.Question;
 
         var nextSeq = await _messageRepository.GetNextSequenceNumberAsync(queryId);
 
@@ -234,16 +216,6 @@ public class HandoverQueriesService : IHandoverQueriesService
 
         var newIsResolved = !query.IsResolved;
 
-        if (newIsResolved)
-        {
-            var orderedMessages = query.Messages.OrderBy(m => m.SequenceNumber).ToList();
-            if (!orderedMessages.Any(m => m.MessageType == HandoverQueryMessageType.Response))
-                throw new HandoverQueryNoResponsesException();
-
-            if (orderedMessages.Last().MessageType == HandoverQueryMessageType.Question)
-                throw new HandoverQueryPendingResponseException();
-        }
-
         query.IsResolved = newIsResolved;
         query.ResolvedByUserId = newIsResolved ? int.Parse(userIdStr) : null;
         query.ResolvedAt = newIsResolved ? DateTime.UtcNow : null;
@@ -267,6 +239,20 @@ public class HandoverQueriesService : IHandoverQueriesService
         }
 
         return await GetSingleDtoOrThrowAsync(engagementId, queryId);
+    }
+
+    public async Task DeleteQueryAsync(int engagementId, int queryId, string userIdStr)
+    {
+        var handover = await GetHandoverOrThrowAsync(engagementId);
+
+        var query = await _queryRepository.GetByIdAsync(queryId, handover.HandoverId);
+        if (query == null)
+            throw new HandoverQueryNotFoundException(queryId);
+
+        query.IsDeleted = true;
+        query.UpdatedBy = userIdStr;
+
+        await _queryRepository.SaveChangesAsync();
     }
 
     private async Task<HandoverQueryDto> GetSingleDtoOrThrowAsync(int engagementId, int queryId)
@@ -311,8 +297,8 @@ public class HandoverQueriesService : IHandoverQueriesService
                 ResolvedAt = q.ResolvedAt,
                 Messages = messages,
                 LatestMessageType = latestMessage?.MessageType ?? string.Empty,
-                CanAddFollowUp = !q.IsResolved && latestMessage?.MessageType == nameof(HandoverQueryMessageType.Response),
-                CanRespond = !q.IsResolved && latestMessage?.MessageType == nameof(HandoverQueryMessageType.Question)
+                CanAddFollowUp = !q.IsResolved,
+                CanRespond = !q.IsResolved
             };
         }).ToList();
     }

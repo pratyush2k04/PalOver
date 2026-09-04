@@ -67,9 +67,11 @@ export class AssumptionsComponent implements OnInit {
     });
   }
 
-  loadAssumptions() {
-    this.isLoading.set(true);
-    this.assumptionService.getAssumptions(this.engagementId()).subscribe({
+  loadAssumptions(skipLoader = false) {
+    if (skipLoader) {
+      this.isLoading.set(true);
+    }
+    this.assumptionService.getAssumptions(this.engagementId(), skipLoader).subscribe({
       next: (data) => {
         this.assumptions.set(data);
         this.isLoading.set(false);
@@ -130,7 +132,7 @@ export class AssumptionsComponent implements OnInit {
         this.assumptionService.updateAssumption(this.engagementId(), assumption.id, result).subscribe({
           next: () => {
             this.toastService.success(ASSUMPTION_MESSAGES.UPDATE_SUCCESS);
-            this.loadAssumptions();
+            this.loadAssumptions(true);
           },
           error: (err) => this.handleError(err, ASSUMPTION_MESSAGES.UPDATE_ERROR)
         });
@@ -138,7 +140,7 @@ export class AssumptionsComponent implements OnInit {
         this.assumptionService.createAssumption(this.engagementId(), result).subscribe({
           next: () => {
             this.toastService.success(ASSUMPTION_MESSAGES.CREATE_SUCCESS);
-            this.loadAssumptions();
+            this.loadAssumptions(true);
           },
           error: (err) => this.handleError(err, ASSUMPTION_MESSAGES.CREATE_ERROR)
         });
@@ -150,7 +152,7 @@ export class AssumptionsComponent implements OnInit {
     this.assumptionService.validateAssumption(this.engagementId(), id, { status }).subscribe({
       next: () => {
         this.toastService.success(ASSUMPTION_MESSAGES.UPDATE_STATUS_SUCCESS(this.getStatusLabel(status)));
-        this.loadAssumptions();
+        this.loadAssumptions(true);
       },
       error: (err) => {
         this.handleError(err, ASSUMPTION_MESSAGES.UPDATE_STATUS_ERROR);

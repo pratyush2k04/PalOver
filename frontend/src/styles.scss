@@ -139,6 +139,8 @@ body.app-dialog-open {
   align-items: center;
   gap: $spacing-3;
   flex-shrink: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .app-dialog__hint {
@@ -146,6 +148,8 @@ body.app-dialog-open {
   font-size: $font-size-sm;
   color: $color-text-muted;
   line-height: 1.5;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .app-dialog__content {
@@ -158,6 +162,8 @@ body.app-dialog-open {
   display: flex;
   flex-direction: column;
   gap: $spacing-4;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .app-dialog__actions {
