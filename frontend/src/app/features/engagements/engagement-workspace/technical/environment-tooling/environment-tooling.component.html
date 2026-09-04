@@ -42,22 +42,17 @@
                 </div>
               </td>
               <td class="status-cell">
-                <div class="cell-content">
-                  @if (canManage()) {
-                    <app-status-select
-                      [options]="statusOptions"
-                      [ngModel]="+item.status"
-                      (ngModelChange)="onStatusChange(item, $event)"
-                    />
-                  } @else {
-                    <app-status-badge [tone]="getStatusTone(item.status)">
-                      {{ getStatusLabel(item.status) }}
-                    </app-status-badge>
-                  }
-                  @if (item.blockReason) {
-                    <span class="na-reason-text">({{ item.blockReason }})</span>
-                  }
-                </div>
+                @if (canManage()) {
+                  <app-status-select
+                    [options]="statusOptions"
+                    [ngModel]="+item.status"
+                    (ngModelChange)="onStatusChange(item, $event)"
+                  />
+                } @else {
+                  <app-status-badge [tone]="getStatusTone(item.status)">
+                    {{ getStatusLabel(item.status) }}
+                  </app-status-badge>
+                }
               </td>
               @if (canManage()) {
                 <td class="actions-cell">
