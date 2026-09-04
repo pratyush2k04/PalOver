@@ -19,7 +19,7 @@
     gap: 1.5rem;
     width: 100%;
     margin-bottom: 1.5rem;
-    
+
     @include respond-to('lg') {
       grid-template-columns: repeat(3, 1fr);
     }
@@ -31,7 +31,20 @@
     gap: 1.5rem;
     width: 100%;
 
-    .main-left, .main-right {
+    .main-left {
+      overflow: auto;
+
+      ::ng-deep .engagement-status-col {
+        display: none;
+
+        @include respond-to('sm') {
+          display: flex;
+        }
+      }
+    }
+
+    .main-left,
+    .main-right {
       grid-column: span 1;
     }
 
@@ -41,7 +54,7 @@
       .main-left {
         grid-column: span 2;
       }
-      
+
       .main-right {
         grid-column: span 1;
       }
