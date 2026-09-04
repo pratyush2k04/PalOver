@@ -97,7 +97,7 @@
         gap: 0.5rem;
         flex-wrap: wrap;
 
-        app-button {
+        app-button:not([variant="icon"]) {
           flex: 1;
           min-width: 4.5rem;
         }
@@ -172,7 +172,7 @@
       flex-shrink: 0;
       margin-left: 1rem;
 
-      app-button {
+      app-button:not([variant="icon"]) {
         display: block;
         min-width: 5rem;
         --btn-width: 100%;
@@ -181,11 +181,18 @@
         --btn-font-size: 0.8rem;
       }
 
-      .btn-edit {
-        --btn-bg: #{$color-slate-50};
-        --btn-border: #{$color-slate-200};
-        --btn-color: #{$color-slate-700};
-        --btn-bg-hover: #{$color-slate-100};
+      .action-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1rem;
+        height: 1rem;
+
+        ::ng-deep svg {
+          width: 1rem;
+          height: 1rem;
+          display: block;
+        }
       }
 
       .btn-met {

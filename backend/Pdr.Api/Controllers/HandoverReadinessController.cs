@@ -80,4 +80,20 @@ public class HandoverReadinessController(IHandoverReadinessService service) : Co
         await service.DeleteItemAsync(id);
         return NoContent();
     }
+
+    /// <summary>
+    /// Attaches or updates an evidence document for a Handover Readiness item (Pre-Sales role required).
+    /// </summary>
+    [HttpPut("api/engagements/{engagementId:int}/handover-readiness/{itemId:int}/evidence")]
+    [AuthorizeRoles(RoleEnum.PreSales)]
+    [EndpointSummary("Attach or update handover readiness item evidence")]
+    [ProducesResponseType(typeof(HandoverReadinessItemDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<HandoverReadinessItemDto>> SaveEvidence(int engagementId, int itemId, [FromBody] SaveHandoverReadinessEvidenceRequestDto request)
+    {
+        var item = await service.SaveItemEvidenceAsync(engagementId, itemId, request);
+        return Ok(item);
+    }
 }

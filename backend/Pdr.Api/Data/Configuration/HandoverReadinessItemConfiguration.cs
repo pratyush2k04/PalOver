@@ -37,5 +37,15 @@ public class HandoverReadinessItemConfiguration : IEntityTypeConfiguration<Hando
             .WithMany(x => x.HandoverReadinessItems)
             .HasForeignKey(x => x.HandoverReadinessDefinitionId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.EvidenceDocument)
+            .WithMany()
+            .HasForeignKey(x => x.EvidenceDocumentId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(x => x.EvidenceSubmittedBy)
+            .WithMany()
+            .HasForeignKey(x => x.EvidenceSubmittedById)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

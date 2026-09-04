@@ -13,9 +13,11 @@ export const HANDOVER_API_ENDPOINTS = {
     `/api/engagements/${engagementId}/handover/queries/${queryId}/messages`,
   HANDOVER_QUERY_TOGGLE_RESOLUTION: (engagementId: number, queryId: number) =>
     `/api/engagements/${engagementId}/handover/queries/${queryId}/toggle-resolution`,
+  HANDOVER_QUERY_BY_ID: (engagementId: number, queryId: number) =>
+    `/api/engagements/${engagementId}/handover/queries/${queryId}`,
 } as const;
 
-export const MAX_FREE_TEXT_LENGTH = 500;
+export const MAX_FREE_TEXT_LENGTH = 2000;
 export const HANDOVER_SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
 export const HANDOVER_TIMELINE_UNITS = ['Days', 'Weeks', 'Months'] as const;
 
@@ -101,6 +103,8 @@ export const HANDOVER_MESSAGES = {
   QUERY_UPDATE_ERROR: 'Failed to update query.',
   QUERY_RAISE_SUCCESS: 'Query raised.',
   QUERY_RAISE_ERROR: 'Failed to raise query.',
+  QUERY_DELETED: 'Query deleted successfully.',
+  QUERY_DELETE_ERROR: 'Failed to delete query.',
 } as const;
 
 export const HANDOVER_QUERY_FIELD_LABELS = {
@@ -109,4 +113,37 @@ export const HANDOVER_QUERY_FIELD_LABELS = {
   ClientSentiment: 'Client Sentiment',
   DealOrigin: 'Deal Origin',
   Commitment: 'Commitment',
+} as const;
+
+export const HANDOVER_READINESS_LABELS = {
+  TITLE: 'Readiness Checklist',
+  LOADING: 'Loading readiness checklist...',
+  COMMERCIAL: 'COMMERCIAL',
+  HANDOVER: 'HANDOVER',
+  ITEMS: 'Items',
+  ADD_ITEM: '+ Add Item',
+  ITEM: 'Item',
+  OWNER: 'Owner',
+  EVIDENCE: 'Evidence',
+  STATUS: 'Status',
+  ACTIONS: 'Actions',
+  BLOCK_REASON: 'Block Reason:',
+  DOWNLOAD_EVIDENCE: 'Download evidence',
+  VIEW_OR_REPLACE_EVIDENCE: 'View or replace evidence',
+  ATTACH_EVIDENCE: '+ Attach',
+  DELETE_ITEM: 'Delete Item',
+  DELETE_CONFIRM_TITLE: 'Delete Handover Item',
+  DELETE_CONFIRM_LABEL: 'Delete',
+} as const;
+
+export const HANDOVER_READINESS_MESSAGES = {
+  LOAD_ERROR: 'Failed to load Handover Readiness items',
+  STATUS_UPDATED: 'Status updated',
+  STATUS_UPDATE_ERROR: 'Failed to update status',
+  ADD_SUCCESS: (area: string) => `Custom ${area.toLowerCase()} item added successfully`,
+  ADD_ERROR: 'Failed to add custom item',
+  EVIDENCE_SAVE_SUCCESS: 'Evidence saved successfully',
+  EVIDENCE_SAVE_ERROR: 'Failed to save evidence',
+  DELETE_SUCCESS: 'Item deleted successfully',
+  DELETE_ERROR: 'Failed to delete item',
 } as const;

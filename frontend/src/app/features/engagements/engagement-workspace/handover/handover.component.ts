@@ -18,6 +18,7 @@ import { KickoffReadinessService } from '@shared/services/kickoff-readiness.serv
 import { EngagementInfoDto } from '../../models/engagement.model';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { AddCommitmentDialogComponent } from './dialogs/add-commitment-dialog/add-commitment-dialog.component';
 import {
   HANDOVER_MESSAGES,
@@ -76,6 +77,7 @@ interface RealisticEditForm {
     ReactiveFormsModule,
     FormsModule,
     InlineSVGModule,
+    TooltipDirective,
     SectionHeaderComponent,
     AlertComponent,
     ButtonComponent,
@@ -87,7 +89,6 @@ interface RealisticEditForm {
     HandoverQueriesComponent,
     ConfirmDialogComponent,
     HandoverReadinessComponent,
-    InlineSVGModule,
   ],
   templateUrl: './handover.component.html',
   styleUrl: './handover.component.scss',

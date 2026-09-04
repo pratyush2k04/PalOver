@@ -30,8 +30,8 @@ export class LogCrDialogComponent {
   readonly constants = CHANGE_REQUEST_CONSTANTS;
 
   logForm: FormGroup = this.fb.group({
-    description: ['', [Validators.required, Validators.maxLength(500)]],
-    impact: ['', [Validators.required, Validators.maxLength(500)]]
+    description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(2000)]],
+    impact: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(2000)]]
   });
 
   isSubmitting = signal(false);

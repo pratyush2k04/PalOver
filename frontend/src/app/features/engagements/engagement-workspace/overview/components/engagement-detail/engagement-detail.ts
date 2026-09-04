@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -104,6 +104,13 @@ export class EngagementDetailComponent implements OnInit {
 
   closeAssignModal(): void {
     this.showAssignModal.set(false);
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    if (this.showAssignModal()) {
+      this.closeAssignModal();
+    }
   }
 
   onSubmitAssignment(): void {

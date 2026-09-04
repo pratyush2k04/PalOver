@@ -13,8 +13,12 @@ export class AccordionComponent {
   readonly icon = input<string>();
   readonly badge = input<string | number>();
   readonly expanded = model<boolean>(true);
+  readonly disabled = input<boolean>(false);
 
   toggle(): void {
+    if (this.disabled()) {
+      return;
+    }
     this.expanded.update((v) => !v);
   }
 }

@@ -70,7 +70,12 @@
           <tr>
             <td class="col-date" [title]="log.createdAt | date: 'full'">{{ log.createdAt | date: 'medium' }}</td>
             @if (showUserColumn()) {
-              <td class="col-user">{{ log.userName || '' }}</td>
+              <td class="col-user">
+                <div class="user-cell">
+                  <app-avatar [name]="log.userName || 'Unknown'" size="sm" />
+                  <span class="user-name">{{ log.userName || 'Unknown' }}</span>
+                </div>
+              </td>
             }
             <td class="col-action">{{ getEventCategory(log.action) }}</td>
             <td class="col-details">{{ log.details }}</td>

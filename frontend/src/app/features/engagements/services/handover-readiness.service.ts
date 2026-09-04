@@ -47,4 +47,17 @@ export class HandoverReadinessService {
       { context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined }
     );
   }
+
+  saveEvidence(
+    engagementId: number,
+    itemId: number,
+    documentId: number,
+    skipLoader = false
+  ): Observable<HandoverReadinessItemDto> {
+    return this.http.put<HandoverReadinessItemDto>(
+      `/api/engagements/${engagementId}/handover-readiness/${itemId}/evidence`,
+      { documentId },
+      { context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined }
+    );
+  }
 }

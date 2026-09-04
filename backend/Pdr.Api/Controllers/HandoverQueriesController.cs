@@ -125,4 +125,24 @@ public class HandoverQueriesController : ControllerBase
         var dto = await _handoverQueriesService.ToggleResolutionAsync(engagementId, queryId, _currentUserService.GetUserId().ToString());
         return Ok(dto);
     }
+
+    /// <summary>
+    /// Deletes a handover query (Project Management only).
+    /// </summary>
+    /// <param name="engagementId">The unique identifier of the engagement.</param>
+    /// <param name="queryId">The unique identifier of the query.</param>
+    /// <returns>No content on success.</returns>
+    [HttpDelete("{queryId:int}")]
+    [EndpointSummary("Delete a handover query (Project Management only)")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteQuery(int engagementId, int queryId)
+    {
+        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId(), RoleConstants.ProjectManagement);
+
+        await _handoverQueriesService.DeleteQueryAsync(engagementId, queryId, _currentUserService.GetUserId().ToString());
+        return NoContent();
+    }
 }

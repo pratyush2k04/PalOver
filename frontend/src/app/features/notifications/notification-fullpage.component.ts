@@ -98,6 +98,15 @@ export class NotificationFullpageComponent implements OnInit {
     return total > 0 ? Math.ceil(total / size) : 1;
   });
 
+  readonly showingStart = computed<number>(() => {
+    if (this.totalCount() === 0) return 0;
+    return (this.page() - 1) * this.pageSize() + 1;
+  });
+
+  readonly showingEnd = computed<number>(() => {
+    return Math.min(this.page() * this.pageSize(), this.totalCount());
+  });
+
   readonly filteredNotifications = computed<Notification[]>(() => this.notifications());
 
   readonly unreadCountInCurrentView = computed<number>(() => {

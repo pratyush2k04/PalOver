@@ -20,6 +20,45 @@ body {
   margin: 0;
 }
 
+/* Global Scrollbar Styles (Firefox) */
+@-moz-document url-prefix() {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: $color-slate-400 transparent;
+  }
+}
+
+/* Global Scrollbar Styles (Webkit/Blink) */
+::-webkit-scrollbar {
+  width: 0.25rem;
+  height: 0.25rem;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $color-slate-400;
+
+  &:hover {
+    background-color: $color-slate-500;
+  }
+}
+
+/* Hide scrollbar arrow buttons */
+::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Make bottom right corner transparent */
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+
 // Injected inline SVGs inherit container dimensions
 [inlineSVG] {
   display: inline-flex;
@@ -100,6 +139,8 @@ body.app-dialog-open {
   align-items: center;
   gap: $spacing-3;
   flex-shrink: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .app-dialog__hint {
@@ -107,6 +148,8 @@ body.app-dialog-open {
   font-size: $font-size-sm;
   color: $color-text-muted;
   line-height: 1.5;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .app-dialog__content {
@@ -119,6 +162,8 @@ body.app-dialog-open {
   display: flex;
   flex-direction: column;
   gap: $spacing-4;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .app-dialog__actions {

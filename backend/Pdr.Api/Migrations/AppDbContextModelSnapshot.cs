@@ -2996,13 +2996,13 @@ namespace Pdr.Api.Migrations
 
                     b.Property<string>("BusinessProblem")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
                         .HasColumnName("business_problem");
 
                     b.Property<string>("ClientBackground")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
                         .HasColumnName("client_background");
 
                     b.Property<string>("ClientSentiment")
@@ -3022,8 +3022,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnName("created_by");
 
                     b.Property<string>("DealOrigin")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
                         .HasColumnName("deal_origin");
 
                     b.Property<int>("EngagementId")
@@ -3496,6 +3496,15 @@ namespace Pdr.Api.Migrations
                     b.Property<int>("EngagementId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("EvidenceDocumentId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("EvidenceSubmittedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("EvidenceSubmittedById")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("HandoverReadinessDefinitionId")
                         .HasColumnType("integer");
 
@@ -3522,6 +3531,10 @@ namespace Pdr.Api.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EngagementId");
+
+                    b.HasIndex("EvidenceDocumentId");
+
+                    b.HasIndex("EvidenceSubmittedById");
 
                     b.HasIndex("HandoverReadinessDefinitionId");
 
@@ -6359,6 +6372,16 @@ namespace Pdr.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Pdr.Api.Models.Documents.Document", "EvidenceDocument")
+                        .WithMany()
+                        .HasForeignKey("EvidenceDocumentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "EvidenceSubmittedBy")
+                        .WithMany()
+                        .HasForeignKey("EvidenceSubmittedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Pdr.Api.Models.HandoverReadiness.HandoverReadinessDefinition", "HandoverReadinessDefinition")
                         .WithMany("HandoverReadinessItems")
                         .HasForeignKey("HandoverReadinessDefinitionId")
@@ -6371,6 +6394,10 @@ namespace Pdr.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Engagement");
+
+                    b.Navigation("EvidenceDocument");
+
+                    b.Navigation("EvidenceSubmittedBy");
 
                     b.Navigation("HandoverReadinessDefinition");
 

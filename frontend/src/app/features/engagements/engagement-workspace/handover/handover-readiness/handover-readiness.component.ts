@@ -17,9 +17,21 @@ import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status
 import { StatusSelectComponent, StatusSelectOption } from '@common/components/form/status-select/status-select';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { AlertComponent } from '@common/components/alert/alert';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { AddHandoverItemDialogComponent } from './dialogs/add-handover-item-dialog/add-handover-item-dialog.component';
 import { BlockHandoverItemDialogComponent } from './dialogs/block-handover-item-dialog/block-handover-item-dialog.component';
+import { DocumentService } from '../../../services/document.service';
+import {
+  AttachEvidenceDialogComponent,
+  AttachEvidenceDialogData,
+  AttachEvidenceDialogResult
+} from '../../checklist/dialogs/attach-evidence-dialog/attach-evidence-dialog.component';
+
+import {
+  HANDOVER_READINESS_LABELS,
+  HANDOVER_READINESS_MESSAGES
+} from '@shared/constants/handover.constants';
 
 @Component({
   selector: 'app-handover-readiness',
@@ -30,6 +42,7 @@ import { BlockHandoverItemDialogComponent } from './dialogs/block-handover-item-
     ButtonComponent,
     StatusBadgeComponent,
     StatusSelectComponent,
+    LoadingSpinnerComponent,
     ConfirmDialogComponent,
     AlertComponent,
     InlineSVGModule,
@@ -42,6 +55,10 @@ export class HandoverReadinessComponent implements OnInit {
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
   private dialogService = inject(DialogService);
+  private documentService = inject(DocumentService);
+
+  readonly LABELS = HANDOVER_READINESS_LABELS;
+  readonly MESSAGES = HANDOVER_READINESS_MESSAGES;
 
   readonly engagementId = input.required<number>();
   readonly isSubmitted = input<boolean>(false);
@@ -50,6 +67,7 @@ export class HandoverReadinessComponent implements OnInit {
   items = signal<HandoverReadinessItemDto[]>([]);
   isLoading = signal<boolean>(false);
   pendingDeleteItem = signal<HandoverReadinessItemDto | null>(null);
+  isDeletingItem = signal<boolean>(false);
   errorMessage = signal<string>('');
 
   readonly isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
@@ -93,7 +111,7 @@ export class HandoverReadinessComponent implements OnInit {
         if (skipLoader) {
           this.isLoading.set(false);
         }
-        this.toastService.error('Failed to load Handover Readiness items');
+        this.toastService.error(this.MESSAGES.LOAD_ERROR);
         onDone?.();
       }
     });
@@ -135,18 +153,18 @@ export class HandoverReadinessComponent implements OnInit {
         this.items.update(current =>
           current.map(i => i.id === updatedItem.id ? updatedItem : i)
         );
-        this.toastService.success('Status updated');
+        this.toastService.success(this.MESSAGES.STATUS_UPDATED);
         this.itemsUpdated.emit(this.items());
       },
       error: (err) => {
         this.loadItems(true, () =>
-          this.toastService.error(err?.error?.message || 'Failed to update status')
+          this.toastService.error(err?.error?.message || this.MESSAGES.STATUS_UPDATE_ERROR)
         );
       }
     });
   }
 
-  openAddModal(): void {
+  openAddModal(area: 'COMMERCIAL' | 'HANDOVER' = 'HANDOVER'): void {
     if (!this.isPreSales()) return;
 
     const dialogRef = this.dialogService.open<AddHandoverItemDialogComponent, void, AddHandoverItemDialogResult>(
@@ -155,18 +173,51 @@ export class HandoverReadinessComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result: AddHandoverItemDialogResult | undefined) => {
       if (result && result.name) {
-        this.readinessService.addCustomItem(this.engagementId(), { name: result.name }).subscribe({
+        this.readinessService.addCustomItem(this.engagementId(), { name: result.name, area }).subscribe({
           next: (newItem) => {
             this.items.update(current => [...current, newItem]);
-            this.toastService.success('Custom handover item added successfully');
+            this.toastService.success(this.MESSAGES.ADD_SUCCESS(area));
             this.itemsUpdated.emit(this.items());
           },
           error: (err) => {
-            this.toastService.error(err?.error?.message || 'Failed to add custom item');
+            this.toastService.error(err?.error?.message || this.MESSAGES.ADD_ERROR);
           }
         });
       }
     });
+  }
+
+  openAttachEvidenceDialog(item: HandoverReadinessItemDto): void {
+    const dialogRef = this.dialogService.open<AttachEvidenceDialogComponent, AttachEvidenceDialogData, AttachEvidenceDialogResult>(
+      AttachEvidenceDialogComponent,
+      {
+        data: {
+          item: {
+            id: item.id,
+            title: item.name,
+            evidenceDocumentId: item.evidenceDocumentId,
+            evidenceDocumentFileName: item.evidenceDocumentFileName,
+            evidenceSubmittedByName: item.evidenceSubmittedByName,
+            evidenceSubmittedAt: item.evidenceSubmittedAt
+          } as any,
+          engagementId: this.engagementId(),
+          isReadOnly: !this.isPreSales() || this.isSubmitted(),
+          saveEvidence: (documentId: number) =>
+            this.readinessService.saveEvidence(this.engagementId(), item.id, documentId, true)
+        }
+      }
+    );
+
+    dialogRef.afterClosed().subscribe((result: AttachEvidenceDialogResult | undefined) => {
+      if (!result) return;
+
+      this.loadItems(true, () => this.toastService.success(this.MESSAGES.EVIDENCE_SAVE_SUCCESS));
+    });
+  }
+
+  downloadEvidence(item: HandoverReadinessItemDto): void {
+    if (!item.evidenceDocumentId) return;
+    this.documentService.downloadDocument(item.evidenceDocumentId, item.evidenceDocumentFileName || 'evidence').subscribe();
   }
 
   onDeleteItem(item: HandoverReadinessItemDto): void {
@@ -182,18 +233,18 @@ export class HandoverReadinessComponent implements OnInit {
 
   confirmDeleteItem(item: HandoverReadinessItemDto): void {
     this.errorMessage.set('');
-    this.isLoading.set(true);
+    this.isDeletingItem.set(true);
     this.readinessService.deleteItem(item.id, true).subscribe({
       next: () => {
         this.pendingDeleteItem.set(null);
-        this.isLoading.set(false);
+        this.isDeletingItem.set(false);
         this.loadItems(true, () =>
-          this.toastService.success('Item deleted successfully')
+          this.toastService.success(this.MESSAGES.DELETE_SUCCESS)
         );
       },
       error: (err) => {
-        this.isLoading.set(false);
-        this.errorMessage.set(err?.error?.message || 'Failed to delete item');
+        this.isDeletingItem.set(false);
+        this.errorMessage.set(err?.error?.message || this.MESSAGES.DELETE_ERROR);
       }
     });
   }

@@ -1,5 +1,6 @@
 import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
@@ -13,12 +14,19 @@ import { ButtonComponent } from '@common/components/button/button';
 import { AlertComponent } from '@common/components/alert/alert';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { InputComponent } from '@common/components/form/input/input';
+import { TabsComponent, TabItem } from '@common/components/tabs/tabs';
 
 export interface AttachEvidenceDialogData {
   item: EngagementChecklistItem;
   engagementId: number;
   isMandatoryCompletion?: boolean;
   isReadOnly?: boolean;
+  /**
+   * Overrides how the selected/uploaded document id is persisted against the
+   * item. Defaults to the checklist's saveItemEvidence endpoint; callers
+   * outside the checklist feature (e.g. handover readiness) pass their own.
+   */
+  saveEvidence?: (documentId: number, markComplete?: boolean) => Observable<unknown>;
 }
 
 export type AttachEvidenceDialogResult = true;
@@ -28,7 +36,7 @@ type EvidenceMode = 'upload' | 'select';
 @Component({
   selector: 'app-attach-evidence-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, AlertComponent, SelectComponent, InputComponent],
+  imports: [CommonModule, FormsModule, ButtonComponent, AlertComponent, SelectComponent, InputComponent, TabsComponent],
   templateUrl: './attach-evidence-dialog.component.html',
   styleUrl: './attach-evidence-dialog.component.scss'
 })
@@ -43,6 +51,11 @@ export class AttachEvidenceDialogComponent implements OnInit {
   readonly isMandatoryCompletion = this.data.isMandatoryCompletion ?? false;
 
   mode = signal<EvidenceMode>('upload');
+
+  readonly evidenceTabs: TabItem[] = [
+    { id: 'upload', label: 'Upload New' },
+    { id: 'select', label: 'Select Existing' }
+  ];
 
   // Upload New section state
   categories = signal<DocumentCategory[]>([]);
@@ -131,6 +144,10 @@ export class AttachEvidenceDialogComponent implements OnInit {
   setMode(mode: EvidenceMode): void {
     this.mode.set(mode);
     this.errorMessage.set(null);
+  }
+
+  onTabChange(tabId: string): void {
+    this.setMode(tabId as EvidenceMode);
   }
 
   onFileSelected(event: Event): void {
@@ -234,22 +251,26 @@ export class AttachEvidenceDialogComponent implements OnInit {
     this.submitUpload(file, catId, this.selectedVisibility(), markComplete);
   }
 
+  private saveEvidence(documentId: number, markComplete?: boolean): Observable<unknown> {
+    return this.data.saveEvidence
+      ? this.data.saveEvidence(documentId, markComplete)
+      : this.checklistService.saveItemEvidence(this.data.engagementId, this.data.item.id, { documentId, markComplete }, true);
+  }
+
   private submitSelectedDocument(documentId: number, markComplete?: boolean): void {
     this.errorMessage.set(null);
     this.isSubmitting.set(true);
 
-    this.checklistService
-      .saveItemEvidence(this.data.engagementId, this.data.item.id, { documentId, markComplete }, true)
-      .subscribe({
-        next: () => {
-          this.isSubmitting.set(false);
-          this.dialogRef.close(true);
-        },
-        error: (err) => {
-          this.isSubmitting.set(false);
-          this.errorMessage.set(this.extractSaveEvidenceErrorMessage(err));
-        }
-      });
+    this.saveEvidence(documentId, markComplete).subscribe({
+      next: () => {
+        this.isSubmitting.set(false);
+        this.dialogRef.close(true);
+      },
+      error: (err) => {
+        this.isSubmitting.set(false);
+        this.errorMessage.set(this.extractSaveEvidenceErrorMessage(err));
+      }
+    });
   }
 
   private submitUpload(file: File, categoryId: number, visibility: DocumentVisibility, markComplete?: boolean): void {
@@ -264,18 +285,16 @@ export class AttachEvidenceDialogComponent implements OnInit {
           this.errorMessage.set(uploaded?.errors?.join(', ') || DOCUMENT_MESSAGES.UPLOAD_FAILED);
           return;
         }
-        this.checklistService
-          .saveItemEvidence(this.data.engagementId, this.data.item.id, { documentId: uploaded.document.id, markComplete }, true)
-          .subscribe({
-            next: () => {
-              this.isSubmitting.set(false);
-              this.dialogRef.close(true);
-            },
-            error: (err) => {
-              this.isSubmitting.set(false);
-              this.errorMessage.set(this.extractSaveEvidenceErrorMessage(err));
-            }
-          });
+        this.saveEvidence(uploaded.document.id, markComplete).subscribe({
+          next: () => {
+            this.isSubmitting.set(false);
+            this.dialogRef.close(true);
+          },
+          error: (err) => {
+            this.isSubmitting.set(false);
+            this.errorMessage.set(this.extractSaveEvidenceErrorMessage(err));
+          }
+        });
       },
       error: (err) => {
         this.isSubmitting.set(false);

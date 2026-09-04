@@ -25,13 +25,12 @@
       <app-alert>{{ errorMessage() }}</app-alert>
     }
 
-    <div class="mode-toggle">
-      <app-button type="button" [variant]="mode() === 'upload' ? 'flat' : 'stroked'" (click)="setMode('upload')">
-        Upload New
-      </app-button>
-      <app-button type="button" [variant]="mode() === 'select' ? 'flat' : 'stroked'" (click)="setMode('select')">
-        Select Existing
-      </app-button>
+    <div class="dialog-tabs">
+      <app-tabs
+        [tabs]="evidenceTabs"
+        [activeId]="mode()"
+        (tabChange)="onTabChange($event)"
+      />
     </div>
 
     @if (mode() === 'upload') {

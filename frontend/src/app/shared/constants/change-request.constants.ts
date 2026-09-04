@@ -33,7 +33,9 @@ export const CHANGE_REQUEST_CONSTANTS = {
 
   ERROR_GENERIC: 'An error occurred while processing your request.',
   ERROR_DESCRIPTION_REQUIRED: 'Description is required.',
+  ERROR_DESCRIPTION_MINLENGTH: 'Description must be at least 10 characters long.',
   ERROR_IMPACT_REQUIRED: 'Impact estimate is required.',
+  ERROR_IMPACT_MINLENGTH: 'Impact estimate must be at least 5 characters long.',
   ERROR_REASON_REQUIRED: 'Reason is required when rejecting a change request.',
 
   MSG_LOG_SUCCESS: 'Change request logged successfully.',
