@@ -20,4 +20,11 @@
   .flex-2 {
     flex: 2;
   }
+
+  app-input {
+    --input-height: 2.375rem;
+    --input-padding: #{$spacing-2} #{$spacing-3};
+    --input-padding-left: #{$spacing-3};
+    --input-border-radius: #{$radius-md};
+  }
 }

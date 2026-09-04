@@ -201,17 +201,7 @@
   }
 }
 
-.save-draft-hint {
-  font-size: 0.8125rem;
-  color: $color-text-muted;
-  font-style: italic;
-}
 
-.required-asterisk,
-.required-star {
-  color: $color-danger;
-  font-weight: $font-weight-semibold;
-}
 
 .form-group {
   margin-bottom: $spacing-5;
@@ -509,6 +499,13 @@ select {
     display: flex;
     gap: $spacing-3;
     align-items: flex-start;
+
+    app-input {
+      --input-height: 2.375rem;
+      --input-padding: #{$spacing-2} #{$spacing-3};
+      --input-padding-left: #{$spacing-3};
+      --input-border-radius: #{$radius-md};
+    }
   }
 }
 
