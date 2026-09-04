@@ -8,7 +8,8 @@ import {
   HandoverQueryDto,
   HandoverQueryMessageDto,
   HandoverQueryFieldSection,
-  HANDOVER_SECTION_FRAGMENT_IDS
+  HANDOVER_SECTION_FRAGMENT_IDS,
+  CreateHandoverQueryRequest
 } from '../../../models/handover-query.model';
 import { CommitmentDto } from '../../../models/handover.model';
 import { ButtonComponent } from '@common/components/button/button';
@@ -195,7 +196,7 @@ export class HandoverQueriesComponent {
   }
 
   openRaiseQueryDialog(): void {
-    const dialogRef = this.dialogService.open<RaiseHandoverQueryDialogComponent, RaiseHandoverQueryDialogData, HandoverQueryDto>(
+    const dialogRef = this.dialogService.open<RaiseHandoverQueryDialogComponent, RaiseHandoverQueryDialogData, CreateHandoverQueryRequest>(
       RaiseHandoverQueryDialogComponent,
       {
         data: {
@@ -205,14 +206,24 @@ export class HandoverQueriesComponent {
       }
     );
 
-    dialogRef.afterClosed().subscribe((created) => {
-      if (created) {
-        this.queries.update((qs) => {
-          const next = [...qs, created];
-          this.queriesChange.emit(next);
-          return next;
-        });
-      }
+    dialogRef.afterClosed().subscribe((request) => {
+      if (!request) return;
+
+      this.isLoading.set(true);
+      this.handoverQueryService.raiseQuery(this.engagementId(), request).subscribe({
+        next: (created) => {
+          this.queries.update((qs) => {
+            const next = [...qs, created];
+            this.queriesChange.emit(next);
+            return next;
+          });
+          this.isLoading.set(false);
+        },
+        error: (err) => {
+          this.isLoading.set(false);
+          this.showMessage(this.extractErrorMessage(err, HANDOVER_MESSAGES.QUERY_RAISE_ERROR), true);
+        }
+      });
     });
   }
 
