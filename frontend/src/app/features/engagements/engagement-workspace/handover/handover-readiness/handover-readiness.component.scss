@@ -220,7 +220,8 @@
 
 .col-evidence {
   .evidence-attached-wrapper {
-    @include flex-center($gap: $spacing-1);
+    @include flex-center;
+    gap: $spacing-1;
   }
 
   .btn-evidence-details {
@@ -249,7 +250,8 @@
   }
 
   .btn-evidence-view {
-    @include flex-align-center;
+    display: flex;
+    align-items: center;
     gap: $spacing-1;
     height: 1.75rem;
     padding: 0 $spacing-2;
