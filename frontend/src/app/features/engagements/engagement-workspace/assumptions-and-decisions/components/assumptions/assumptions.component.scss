@@ -14,25 +14,6 @@
   max-height: 100%;
   overflow: hidden;
 
-  .banner-alert {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    background-color: $color-danger-light-alt;
-    color: $color-danger-dark;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--border-light, $color-border-table);
-    border-top-left-radius: $radius-2xl;
-    border-top-right-radius: $radius-2xl;
-    font-weight: 500;
-    font-size: 0.95rem;
-
-    &.danger {
-      background-color: $color-danger-bg;
-      color: $color-danger-text;
-    }
-  }
-
   .panel-header {
     @include flex-between;
     padding: 1.25rem 1.5rem;

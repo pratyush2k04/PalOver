@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -40,10 +40,12 @@ export class AssumptionsComponent implements OnInit {
   private dialogService = inject(DialogService);
   private authService = inject(AuthService);
   private engagementService = inject(EngagementService);
+  @Output() metricsChanged = new EventEmitter<{ invalidCount: number, unvalidatedCount: number, totalCount: number }>();
 
   engagementId = signal<number>(0);
   assumptions = signal<AssumptionDto[]>([]);
   unvalidatedCount = computed(() => this.assumptions().filter(a => a.status === AssumptionStatus.Unvalidated).length);
+  invalidCount = computed(() => this.assumptions().filter(a => a.status === AssumptionStatus.Invalid).length);
   isLoading = signal<boolean>(true);
   readonly canAdd = computed(() => !this.engagementService.isSignedOff());
 
@@ -71,6 +73,11 @@ export class AssumptionsComponent implements OnInit {
       next: (data) => {
         this.assumptions.set(data);
         this.isLoading.set(false);
+        this.metricsChanged.emit({
+          invalidCount: this.invalidCount(),
+          unvalidatedCount: this.unvalidatedCount(),
+          totalCount: data.length
+        });
       },
       error: (err) => {
         this.handleError(err, ASSUMPTION_MESSAGES.LOAD_ERROR);
@@ -98,8 +105,8 @@ export class AssumptionsComponent implements OnInit {
   }
 
   canEdit(assumption: AssumptionDto): boolean {
-    return !this.engagementService.isSignedOff() 
-      && assumption.status === AssumptionStatus.Unvalidated 
+    return !this.engagementService.isSignedOff()
+      && assumption.status === AssumptionStatus.Unvalidated
       && Number(assumption.ownerId) === Number(this.authService.getUserId());
   }
 
@@ -110,7 +117,7 @@ export class AssumptionsComponent implements OnInit {
   openAssumptionDialog(assumption?: AssumptionDto) {
     const dialogRef = this.dialogService.open<AssumptionFormDialogComponent, any, AssumptionFormDialogResult>(
       AssumptionFormDialogComponent,
-      { 
+      {
         data: { assumption },
         disableClose: true
       }

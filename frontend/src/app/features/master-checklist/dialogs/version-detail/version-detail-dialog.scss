@@ -24,23 +24,6 @@
     /* Custom internal scrollbar */
     scrollbar-width: thin;
     scrollbar-color: $color-slate-300 transparent;
-
-    &::-webkit-scrollbar {
-      width: 0.375rem;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background-color: $color-slate-300;
-      border-radius: $radius-full;
-
-      &:hover {
-        background-color: $color-slate-400;
-      }
-    }
   }
 
   &__group {
