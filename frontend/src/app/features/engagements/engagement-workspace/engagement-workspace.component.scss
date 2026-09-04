@@ -341,6 +341,11 @@
   align-items: center;
   flex-shrink: 0;
 
+  .sign-off-btn-wrapper {
+    display: inline-flex;
+    align-items: center;
+  }
+
   @include respond-to-down('md') {
     width: 100%;
     justify-content: center;
@@ -349,6 +354,7 @@
       justify-content: center;
     }
 
+    .sign-off-btn-wrapper,
     app-button {
       width: 100%;
     }
