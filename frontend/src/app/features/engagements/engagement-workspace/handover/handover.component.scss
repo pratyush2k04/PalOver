@@ -153,6 +153,12 @@
   }
 }
 
+.client-context {
+  app-textarea {
+    --textarea-min-height: 11rem;
+  }
+}
+
 .commitments-header,
 .client-context-header {
   @include flex-between;
