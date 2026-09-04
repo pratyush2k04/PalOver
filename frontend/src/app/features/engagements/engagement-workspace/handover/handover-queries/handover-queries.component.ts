@@ -74,8 +74,18 @@ export class HandoverQueriesComponent {
   isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
   isProjectManagement = computed(() => this.authService.hasRole('Project Management'));
 
-  openQueries = computed(() => this.queries().filter((q) => !q.isResolved));
-  resolvedQueries = computed(() => this.queries().filter((q) => q.isResolved));
+  openQueries = computed(() =>
+    this.queries()
+      .filter((q) => !q.isResolved)
+      .slice()
+      .sort((a, b) => this.compareQueriesLatestFirst(a, b))
+  );
+  resolvedQueries = computed(() =>
+    this.queries()
+      .filter((q) => q.isResolved)
+      .slice()
+      .sort((a, b) => this.compareQueriesLatestFirst(a, b))
+  );
   sortedQueries = computed(() => [...this.openQueries(), ...this.resolvedQueries()]);
 
   constructor() {
@@ -303,5 +313,20 @@ export class HandoverQueriesComponent {
   private extractErrorMessage(err: unknown, fallback: string): string {
     const errorMessage = (err as { error?: { message?: string } })?.error?.message;
     return errorMessage || fallback;
+  }
+
+  private compareQueriesLatestFirst(a: HandoverQueryDto, b: HandoverQueryDto): number {
+    const timeA = this.parseDate(a.raisedAt);
+    const timeB = this.parseDate(b.raisedAt);
+    if (timeA !== timeB) {
+      return timeB - timeA;
+    }
+    return b.id - a.id;
+  }
+
+  private parseDate(dateStr?: string | Date): number {
+    if (!dateStr) return 0;
+    const time = new Date(dateStr).getTime();
+    return isNaN(time) ? 0 : time;
   }
 }
