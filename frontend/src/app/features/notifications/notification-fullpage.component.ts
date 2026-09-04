@@ -69,7 +69,6 @@ export class NotificationFullpageComponent implements OnInit {
   ]);
   readonly selectedIds = signal<Set<number>>(new Set());
   readonly showDeleteConfirm = signal<boolean>(false);
-  readonly isDeleting = signal<boolean>(false);
 
   readonly NotificationPriority = NotificationPriority;
 
@@ -137,7 +136,7 @@ export class NotificationFullpageComponent implements OnInit {
     });
   }
 
-  loadNotifications(): void {
+  loadNotifications(onDone?: () => void): void {
     const status = this.selectedStatusFilter();
     const isRead = status === 'read' ? true : status === 'unread' ? false : undefined;
 
@@ -163,9 +162,11 @@ export class NotificationFullpageComponent implements OnInit {
             [...this.selectedIds()].filter((id) => validIds.has(id)),
           );
           this.selectedIds.set(currentSelections);
+          onDone?.();
         },
         error: () => {
           this.toastService.error(NOTIFICATION_MESSAGES.LOAD_ERROR);
+          onDone?.();
         },
       });
   }
@@ -288,17 +289,13 @@ export class NotificationFullpageComponent implements OnInit {
     const idsToDelete = Array.from(this.selectedIds());
     if (idsToDelete.length === 0) return;
 
-    this.isDeleting.set(true);
+    this.showDeleteConfirm.set(false);
     this.notificationService.bulkDelete(idsToDelete).subscribe({
       next: () => {
-        this.isDeleting.set(false);
-        this.showDeleteConfirm.set(false);
         this.selectedIds.set(new Set());
-        this.toastService.success(NOTIFICATION_MESSAGES.DELETE_SUCCESS);
-        this.loadNotifications();
+        this.loadNotifications(() => this.toastService.success(NOTIFICATION_MESSAGES.DELETE_SUCCESS));
       },
       error: () => {
-        this.isDeleting.set(false);
         this.toastService.error(NOTIFICATION_MESSAGES.DELETE_ERROR);
       },
     });

@@ -153,7 +153,6 @@
     [message]="'Are you sure you want to delete ' + selectedCount() + ' selected notification(s)? This action cannot be undone.'"
     confirmLabel="Delete"
     cancelLabel="Cancel"
-    [isBusy]="isDeleting()"
     [isDestructive]="true"
     (confirmed)="onConfirmBulkDelete()"
     (cancelled)="cancelBulkDelete()">
