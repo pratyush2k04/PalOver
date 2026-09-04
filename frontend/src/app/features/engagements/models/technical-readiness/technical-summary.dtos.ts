@@ -58,6 +58,7 @@ export interface DayOneReadinessSummaryDto {
   highSeverityAcceptedCount: number;
   highSeverityPendingCount: number;
   isBrownfieldReady: boolean;
+  brownfieldDocumentNames?: string[];
 
   // Blockers & Action Items
   outstandingBlockers: DayOneBlockerItemDto[];
