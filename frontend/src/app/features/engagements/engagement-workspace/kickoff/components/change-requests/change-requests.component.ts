@@ -5,11 +5,13 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ChangeRequestService } from '@features/engagements/services/change-request.service';
 import { EngagementService } from '@features/engagements/services/engagement.service';
 import { AuthService } from '@shared/services/auth';
-import { ChangeRequest, CreateChangeRequest, RejectChangeRequest } from '@features/engagements/models/change-request.model';
+import { ToastService } from '@common/services/toast/toast';
+import { ChangeRequest } from '@features/engagements/models/change-request.model';
 import { CHANGE_REQUEST_CONSTANTS } from '@shared/constants/change-request.constants';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { LogCrDialogComponent, LogCrDialogData } from './dialogs/log-cr-dialog/log-cr-dialog.component';
@@ -24,6 +26,7 @@ import { ViewReasonDialogComponent, ViewReasonDialogData } from './dialogs/view-
     InlineSVGModule,
     StatusBadgeComponent,
     ButtonComponent,
+    LoadingSpinnerComponent,
     TooltipDirective
   ],
   templateUrl: './change-requests.component.html',
@@ -35,6 +38,7 @@ export class ChangeRequestsComponent {
   private authService = inject(AuthService);
   private engagementService = inject(EngagementService);
   private dialog = inject(DialogService);
+  private toastService = inject(ToastService);
 
   readonly constants = CHANGE_REQUEST_CONSTANTS;
 
@@ -52,6 +56,7 @@ export class ChangeRequestsComponent {
 
   changeRequests = signal<ChangeRequest[]>([]);
   selectedStatusFilter = signal<string>('All');
+  isLoading = signal(false);
 
   filteredChangeRequests = computed(() => {
     const filter = this.selectedStatusFilter();
@@ -69,10 +74,19 @@ export class ChangeRequestsComponent {
     });
   }
 
-  loadChangeRequests(engagementId: number): void {
+  loadChangeRequests(engagementId: number, onDone?: () => void): void {
+    this.isLoading.set(true);
     this.changeRequestService.getChangeRequests(engagementId).subscribe({
-      next: (data) => this.changeRequests.set(data),
-      error: (err) => console.error('Failed to load change requests:', err)
+      next: (data) => {
+        this.changeRequests.set(data);
+        this.isLoading.set(false);
+        onDone?.();
+      },
+      error: (err) => {
+        console.error('Failed to load change requests:', err);
+        this.isLoading.set(false);
+        onDone?.();
+      }
     });
   }
 
@@ -94,24 +108,16 @@ export class ChangeRequestsComponent {
   // --- Log Change Request ---
   openLogModal(): void {
     const id = this.engagementId();
-    if (!id || !this.isProjectManager()) return;
+    if (!id || !this.isProjectManager() || this.isLoading()) return;
 
-    const dialogRef = this.dialog.open<LogCrDialogComponent, LogCrDialogData, CreateChangeRequest>(
+    const dialogRef = this.dialog.open<LogCrDialogComponent, LogCrDialogData, boolean>(
       LogCrDialogComponent,
       { data: { engagementId: id } }
     );
 
-    dialogRef.closed$.subscribe((request) => {
-      if (!request) return;
-
-      this.changeRequestService.createChangeRequest(id, request).subscribe({
-        next: (newCr) => {
-          this.changeRequests.update(list => [newCr, ...list]);
-        },
-        error: (err) => {
-          console.error('Failed to log change request:', err);
-        }
-      });
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+      this.loadChangeRequests(id, () => this.toastService.success(this.constants.MSG_LOG_SUCCESS));
     });
   }
 
@@ -133,26 +139,17 @@ export class ChangeRequestsComponent {
 
   // --- Reject Change Request ---
   openRejectModal(cr: ChangeRequest): void {
-    if (!this.isLeadership() || cr.status !== 'Under Review') return;
+    const id = this.engagementId();
+    if (!id || !this.isLeadership() || cr.status !== 'Under Review' || this.isLoading()) return;
 
-    const dialogRef = this.dialog.open<RejectCrDialogComponent, RejectCrDialogData, RejectChangeRequest>(
+    const dialogRef = this.dialog.open<RejectCrDialogComponent, RejectCrDialogData, boolean>(
       RejectCrDialogComponent,
       { data: { cr } }
     );
 
-    dialogRef.closed$.subscribe((request) => {
-      if (!request) return;
-
-      this.changeRequestService.rejectChangeRequest(cr.id, request).subscribe({
-        next: (updatedCr) => {
-          this.changeRequests.update(list =>
-            list.map(item => item.id === updatedCr.id ? updatedCr : item)
-          );
-        },
-        error: (err) => {
-          console.error('Failed to reject change request:', err);
-        }
-      });
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+      this.loadChangeRequests(id, () => this.toastService.success(this.constants.MSG_REJECT_SUCCESS));
     });
   }
 
