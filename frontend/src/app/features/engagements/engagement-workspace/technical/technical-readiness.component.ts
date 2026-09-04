@@ -12,12 +12,10 @@ import { BrownfieldReadinessResponse } from '@features/engagements/models/brownf
 import { ArchitectureValidationDto } from '@features/engagements/models/architecture-validation/architecture-validation.dtos';
 import { EngagementService } from '@features/engagements/services/engagement.service';
 import { EngagementInfoDto } from '@features/engagements/models/engagement.model';
-import { DependencySpikeDto, DependencySpikeStatus } from '@features/engagements/models/dependency-spikes/dependency-spike.model';
 import { AccessTrackerComponent } from './access-tracker/access-tracker.component';
 import { EnvironmentToolingComponent } from './environment-tooling/environment-tooling.component';
 import { BrownfieldReviewComponent } from './brownfield-review/brownfield-review.component';
 import { ArchitectureValidationComponent } from './architecture-validation/architecture-validation.component';
-import { DependencySpikesComponent } from './dependency-spikes/dependency-spikes.component';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 
@@ -30,8 +28,7 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
     AccessTrackerComponent,
     EnvironmentToolingComponent,
     BrownfieldReviewComponent,
-    ArchitectureValidationComponent,
-    DependencySpikesComponent
+    ArchitectureValidationComponent
   ],
   templateUrl: './technical-readiness.component.html',
   styleUrl: './technical-readiness.component.scss'
@@ -51,7 +48,6 @@ export class TechnicalReadinessComponent {
   canViewEnvironmentTooling = computed(() => !this.isPreSales());
   canViewArchitectureValidation = computed(() => true);
   canViewBrownfieldReview = computed(() => !this.isPreSales() && this.isBrownfield());
-  canViewDependencySpikes = computed(() => !this.isPreSales());
 
   engagementId = computed(() => {
     const idStr = this.parentParamMap()?.get('id');
@@ -138,24 +134,6 @@ export class TechnicalReadinessComponent {
   sizingDeltaPercentage = computed(() => this.architectureValidation()?.sizingDeltaPercentage ?? 0);
   isArchitectureReady = computed(() => !this.isSizingRiskRaised());
 
-  // Dependency Spikes Readiness
-  dependencySpikes = signal<DependencySpikeDto[]>([]);
-  dependencySpikesTotalCount = computed(() => this.dependencySpikes().length);
-  dependencySpikesPassedCount = computed(() =>
-    this.dependencySpikes().filter(s => s.status === 'Passed' || +s.status === DependencySpikeStatus.Passed).length
-  );
-  dependencySpikesInProgressCount = computed(() =>
-    this.dependencySpikes().filter(s => s.status === 'InProgress' || +s.status === DependencySpikeStatus.InProgress).length
-  );
-  dependencySpikesFailedCount = computed(() =>
-    this.dependencySpikes().filter(s => s.status === 'Failed' || +s.status === DependencySpikeStatus.Failed).length
-  );
-  isDependencySpikesReady = computed(() => {
-    const spikes = this.dependencySpikes();
-    if (spikes.length === 0) return true;
-    return spikes.every(s => s.status === 'Passed' || +s.status === DependencySpikeStatus.Passed);
-  });
-
   // Total readiness check
   totalRequired = computed(() => this.accessTotalCount() + this.toolingTotalCount());
   totalReady = computed(() => this.accessGrantedCount() + this.toolingReadyCount());
@@ -165,8 +143,7 @@ export class TechnicalReadinessComponent {
     this.totalRequired() > 0 &&
     this.totalReady() === this.totalRequired() &&
     this.isBrownfieldReady() &&
-    this.isArchitectureReady() &&
-    this.isDependencySpikesReady()
+    this.isArchitectureReady()
   );
 
   onAccessItemsUpdated(items: AccessItemDto[]) {
@@ -183,10 +160,6 @@ export class TechnicalReadinessComponent {
 
   onArchitectureValidationUpdated(val: ArchitectureValidationDto) {
     this.architectureValidation.set(val);
-  }
-
-  onDependencySpikesUpdated(items: DependencySpikeDto[]) {
-    this.dependencySpikes.set(items);
   }
 
   shareSummary(): void {

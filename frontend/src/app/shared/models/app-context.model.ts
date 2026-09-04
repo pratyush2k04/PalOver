@@ -42,6 +42,7 @@ export interface DashboardBlocker {
   riskId: number;
   projectName: string;
   dueDate: string;
+  link: string | null;
 }
 
 export interface HomeResponse {

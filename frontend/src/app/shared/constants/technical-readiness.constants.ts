@@ -23,9 +23,7 @@ export const TECHNICAL_READINESS_API_ENDPOINTS = {
   ARCHITECTURE_VALIDATION: (engagementId: number) => `/api/engagements/${engagementId}/architecture-validation`,
   ARCHITECTURE_VALIDATION_FEATURES: (engagementId: number) => `/api/engagements/${engagementId}/architecture-validation/features`,
   ARCHITECTURE_VALIDATION_FEATURE_ITEM: (featureId: number) => `/api/architecture-validation/features/${featureId}`,
-  TECHNICAL_SUMMARY: (engagementId: number) => `/api/engagements/${engagementId}/technical-readiness/summary`,
-  DEPENDENCY_SPIKES: (engagementId: number) => `/api/engagements/${engagementId}/dependency-spikes`,
-  DEPENDENCY_SPIKE: (engagementId: number, id: number) => `/api/engagements/${engagementId}/dependency-spikes/${id}`
+  TECHNICAL_SUMMARY: (engagementId: number) => `/api/engagements/${engagementId}/technical-readiness/summary`
 } as const;
 
 export const TECHNICAL_READINESS_MESSAGES = {
@@ -37,9 +35,5 @@ export const TECHNICAL_READINESS_MESSAGES = {
   LOAD_TOOLING_ITEMS_ERROR: 'Failed to load environment and tooling items.',
   ADD_TOOLING_ITEM_ERROR: 'Failed to add custom environment/tooling item.',
   UPDATE_TOOLING_STATUS_ERROR: 'Failed to update environment/tooling status.',
-  UPDATE_TOOLING_OWNER_ERROR: 'Failed to update environment/tooling owner.',
-  LOAD_DEPENDENCY_SPIKES_ERROR: 'Failed to load dependency spikes.',
-  ADD_DEPENDENCY_SPIKE_ERROR: 'Failed to create dependency spike.',
-  UPDATE_DEPENDENCY_SPIKE_ERROR: 'Failed to update dependency spike.',
-  DELETE_DEPENDENCY_SPIKE_ERROR: 'Failed to delete dependency spike.'
+  UPDATE_TOOLING_OWNER_ERROR: 'Failed to update environment/tooling owner.'
 } as const;
