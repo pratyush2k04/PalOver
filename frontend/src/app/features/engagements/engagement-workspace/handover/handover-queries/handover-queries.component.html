@@ -25,7 +25,7 @@
 
   @if (!loadError() && queries().length > 0) {
     <div class="queries-grid">
-      @for (query of queries(); track query.id) {
+      @for (query of sortedQueries(); track query.id) {
         <div class="query-card" [class.resolved]="query.isResolved">
           <!-- Card Header -->
           <div class="query-card-header">
@@ -59,7 +59,7 @@
 
             <!-- Discussion Accordion -->
             <app-accordion
-              [title]="'Discussion'"
+              [title]="getDiscussionTitle(query.id)"
               [badge]="getReplies(query).length"
               [expanded]="isExpanded(query.id)"
               (expandedChange)="toggleExpand(query.id, $event)"

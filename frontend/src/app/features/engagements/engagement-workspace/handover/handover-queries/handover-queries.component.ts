@@ -76,6 +76,7 @@ export class HandoverQueriesComponent {
 
   openQueries = computed(() => this.queries().filter((q) => !q.isResolved));
   resolvedQueries = computed(() => this.queries().filter((q) => q.isResolved));
+  sortedQueries = computed(() => [...this.openQueries(), ...this.resolvedQueries()]);
 
   constructor() {
     effect(() => {
@@ -156,7 +157,11 @@ export class HandoverQueriesComponent {
   }
 
   isExpanded(queryId: number): boolean {
-    return this.expandedQueries()[queryId] ?? true;
+    return this.expandedQueries()[queryId] ?? false;
+  }
+
+  getDiscussionTitle(queryId: number): string {
+    return this.isExpanded(queryId) ? 'Close Discussion' : 'Open Discussion';
   }
 
   toggleExpand(queryId: number, expanded: boolean): void {

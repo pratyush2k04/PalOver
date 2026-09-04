@@ -70,9 +70,9 @@
 
       .query-field-title {
         margin: 0;
-        font-size: $font-size-base;
-        font-weight: $font-weight-semibold;
-        color: $color-text;
+        font-size: $font-size-xs;
+        font-weight: $font-weight-medium;
+        color: $color-text-faint;
 
         &.clickable {
           cursor: pointer;
@@ -102,7 +102,8 @@
 
     .query-description {
       margin: 0 0 $spacing-2 0;
-      font-size: $font-size-sm;
+      font-size: $font-size-base;
+      font-weight: $font-weight-medium;
       color: $color-text;
       line-height: 1.5;
       white-space: pre-wrap;
