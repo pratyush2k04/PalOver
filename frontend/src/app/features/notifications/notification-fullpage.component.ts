@@ -24,6 +24,7 @@ import {
   StatusBadgeTone,
 } from '@common/components/status-badge/status-badge';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
+import { AlertComponent } from '@common/components/alert/alert';
 import { TooltipDirective } from '@common/directives/tooltip.directive';
 
 @Component({
@@ -44,6 +45,7 @@ import { TooltipDirective } from '@common/directives/tooltip.directive';
     EmptyStateComponent,
     StatusBadgeComponent,
     ConfirmDialogComponent,
+    AlertComponent,
     TooltipDirective,
   ],
   templateUrl: './notification-fullpage.component.html',
@@ -69,6 +71,8 @@ export class NotificationFullpageComponent implements OnInit {
   ]);
   readonly selectedIds = signal<Set<number>>(new Set());
   readonly showDeleteConfirm = signal<boolean>(false);
+  readonly isSubmitting = signal<boolean>(false);
+  readonly errorMessage = signal<string | null>(null);
 
   readonly NotificationPriority = NotificationPriority;
 
@@ -278,6 +282,7 @@ export class NotificationFullpageComponent implements OnInit {
 
   promptBulkDelete(): void {
     if (this.selectedIds().size === 0) return;
+    this.errorMessage.set(null);
     this.showDeleteConfirm.set(true);
   }
 
@@ -289,14 +294,18 @@ export class NotificationFullpageComponent implements OnInit {
     const idsToDelete = Array.from(this.selectedIds());
     if (idsToDelete.length === 0) return;
 
-    this.showDeleteConfirm.set(false);
-    this.notificationService.bulkDelete(idsToDelete).subscribe({
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
+    this.notificationService.bulkDelete(idsToDelete, true).subscribe({
       next: () => {
+        this.showDeleteConfirm.set(false);
+        this.isSubmitting.set(false);
         this.selectedIds.set(new Set());
         this.loadNotifications(() => this.toastService.success(NOTIFICATION_MESSAGES.DELETE_SUCCESS));
       },
       error: () => {
-        this.toastService.error(NOTIFICATION_MESSAGES.DELETE_ERROR);
+        this.isSubmitting.set(false);
+        this.errorMessage.set(NOTIFICATION_MESSAGES.DELETE_ERROR);
       },
     });
   }

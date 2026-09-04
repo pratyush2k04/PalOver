@@ -56,9 +56,10 @@ export class NotificationService {
     });
   }
 
-  bulkDelete(ids: number[]): Observable<void> {
+  bulkDelete(ids: number[], skipLoader = false): Observable<void> {
     return this.http.delete<void>(NOTIFICATIONS_API_ENDPOINTS.NOTIFICATIONS, {
-      body: { ids }
+      body: { ids },
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
     });
   }
 }
