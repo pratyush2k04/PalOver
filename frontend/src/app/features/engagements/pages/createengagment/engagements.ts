@@ -10,7 +10,6 @@ import {
 } from '@angular/forms';
 import { EngagementService } from '../../services/engagement.service';
 import { CommercialModelOption, EngagementTypeOption } from '../../models/engagement.model';
-import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
@@ -33,7 +32,7 @@ function billingNotBeforeKickoffValidator(group: AbstractControl): ValidationErr
 @Component({
   selector: 'app-engagements',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AlertComponent, ButtonComponent, InputComponent, TextareaComponent, SelectComponent, DatepickerComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, InputComponent, TextareaComponent, SelectComponent, DatepickerComponent],
   templateUrl: './engagements.html',
   styleUrl: './engagements.scss'
 })
@@ -44,8 +43,6 @@ export class EngagementsComponent implements OnInit {
 
   readonly minDate = new Date().toISOString().split('T')[0];
   showModal = signal(false);
-  isSubmitting = signal(false);
-  errorMessage = signal<string | null>(null);
   engagementTypes = signal<EngagementTypeOption[]>([]);
   commercialModels = signal<CommercialModelOption[]>([]);
 
@@ -93,7 +90,6 @@ export class EngagementsComponent implements OnInit {
   );
 
   openModal(): void {
-    this.errorMessage.set(null);
     this.engagementForm.reset({
       engagementTypeId: this.engagementTypes()[0]?.id ?? null,
       commercialModelId: this.commercialModels()[0]?.id ?? null
@@ -111,11 +107,10 @@ export class EngagementsComponent implements OnInit {
       return;
     }
 
-    this.isSubmitting.set(true);
-    this.errorMessage.set(null);
-
     const { engagementName, clientName, engagementDescription, engagementTypeId, commercialModelId, kickoffDate, billingStartDate } =
       this.engagementForm.value;
+
+    this.showModal.set(false);
 
     this.engagementService
       .markSowSigned({
@@ -129,16 +124,13 @@ export class EngagementsComponent implements OnInit {
       })
       .subscribe({
         next: (response) => {
-          this.isSubmitting.set(false);
           if (response.warnings && response.warnings.length > 0) {
             response.warnings.forEach(warning => this.toastService.error(warning));
           }
-          this.showModal.set(false);
           this.engagementCreated.emit();
         },
         error: (err) => {
-          this.isSubmitting.set(false);
-          this.errorMessage.set(
+          this.toastService.error(
             typeof err.error === 'string' ? err.error : 'Failed to create engagement. Please try again.'
           );
         }

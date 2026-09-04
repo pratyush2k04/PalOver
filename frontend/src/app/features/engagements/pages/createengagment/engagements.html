@@ -10,10 +10,6 @@
 
       <form [formGroup]="engagementForm" (ngSubmit)="onSubmit()" novalidate>
         <div class="modal-body">
-          @if (errorMessage()) {
-          <app-alert variant="danger">{{ errorMessage() }}</app-alert>
-          }
-
           <div class="form-row">
             <div class="form-group col">
               <app-input
@@ -92,9 +88,7 @@
 
         <div class="modal-footer">
           <app-button type="button" variant="stroked" (click)="closeModal()">Cancel</app-button>
-          <app-button type="submit" variant="flat" [disabled]="isSubmitting()">
-            {{ isSubmitting() ? 'Creating...' : 'Create' }}
-          </app-button>
+          <app-button type="submit" variant="flat">Create</app-button>
         </div>
       </form>
     </div>
