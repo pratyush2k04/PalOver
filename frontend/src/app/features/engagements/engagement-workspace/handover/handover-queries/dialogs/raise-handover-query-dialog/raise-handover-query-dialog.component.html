@@ -1,48 +1,47 @@
 <h2 class="app-dialog__title">Raise a Query</h2>
 
-<div class="app-dialog__content">
-  <app-select
-    id="query-field-section"
-    label="Field"
-    [required]="true"
-    [options]="fieldSectionOptions"
-    [ngModel]="fieldSection()"
-    (ngModelChange)="onFieldSectionChange($event)"
-    [ngModelOptions]="{ standalone: true }"
-  />
-
-  @if (isCommitmentSection()) {
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
     <app-select
-      id="query-commitment"
-      label="Commitment"
+      id="query-field-section"
+      label="Field"
       [required]="true"
-      [options]="commitmentOptions()"
-      [ngModel]="referenceId()"
-      (ngModelChange)="referenceId.set($event)"
-      [ngModelOptions]="{ standalone: true }"
+      [options]="fieldSectionOptions"
+      formControlName="fieldSection"
+      [errorMessages]="fieldErrors"
     />
-  }
 
-  <app-textarea
-    id="query-question"
-    label="Question"
-    [required]="true"
-    placeholder="What would you like to ask?"
-    [rows]="4"
-    [maxLength]="500"
-    [ngModel]="question()"
-    (ngModelChange)="question.set($event)"
-    [ngModelOptions]="{ standalone: true }"
-  />
+    @if (isCommitmentSection()) {
+      <app-select
+        id="query-commitment"
+        label="Commitment"
+        [required]="true"
+        [options]="commitmentOptions()"
+        formControlName="referenceId"
+        [errorMessages]="commitmentErrors"
+      />
+    }
 
-  @if (errorMessage()) {
-    <app-alert variant="danger">{{ errorMessage() }}</app-alert>
-  }
-</div>
+    <app-textarea
+      id="query-question"
+      label="Question"
+      [required]="true"
+      placeholder="What would you like to ask?"
+      [rows]="4"
+      [maxLength]="500"
+      formControlName="question"
+      [errorMessages]="questionErrors"
+    />
 
-<div class="app-dialog__actions">
-  <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="onCancel()">Cancel</app-button>
-  <app-button type="button" variant="accent" [disabled]="!canSubmit() || isSubmitting()" [loading]="isSubmitting()" (click)="onSubmit()">
-    {{ isSubmitting() ? 'Raising...' : 'Raise Query' }}
-  </app-button>
-</div>
+    @if (errorMessage()) {
+      <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+    }
+  </div>
+
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="onCancel()">Cancel</app-button>
+    <app-button type="submit" variant="accent" [disabled]="isSubmitting()" [loading]="isSubmitting()">
+      {{ isSubmitting() ? 'Raising...' : 'Raise Query' }}
+    </app-button>
+  </div>
+</form>
