@@ -496,7 +496,6 @@
   <app-confirm-dialog
     title="Delete Commitment"
     confirmLabel="Delete"
-    [isBusy]="isDeletingCommitment()"
     (confirmed)="confirmDeleteCommitment(commitmentId)"
     (cancelled)="cancelDeleteCommitment()"
   >

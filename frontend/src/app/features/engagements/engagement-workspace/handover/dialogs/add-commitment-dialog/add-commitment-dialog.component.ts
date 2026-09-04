@@ -4,12 +4,10 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
-import { AlertComponent } from '@common/components/alert/alert';
 import { InputComponent } from '@common/components/form/input/input';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
-import { HandoverService } from '../../../../services/handover.service';
-import { CommitmentDto, CreateCommitmentRequest, AddCommitmentDialogData } from '../../../../models/handover.model';
+import { CreateCommitmentRequest, AddCommitmentDialogData } from '../../../../models/handover.model';
 import {
   HANDOVER_LABELS,
   HANDOVER_PLACEHOLDERS,
@@ -25,7 +23,6 @@ import {
     CommonModule,
     ReactiveFormsModule,
     ButtonComponent,
-    AlertComponent,
     InputComponent,
     TextareaComponent,
     SelectComponent,
@@ -34,8 +31,7 @@ import {
   styleUrl: './add-commitment-dialog.component.scss',
 })
 export class AddCommitmentDialogComponent {
-  private dialogRef = inject<DialogRef<CommitmentDto>>(DialogRef);
-  private handoverService = inject(HandoverService);
+  private dialogRef = inject<DialogRef<CreateCommitmentRequest>>(DialogRef);
   private fb = inject(FormBuilder);
   readonly data = inject<AddCommitmentDialogData>(DIALOG_DATA);
 
@@ -63,8 +59,6 @@ export class AddCommitmentDialogComponent {
     timelineUnit: ['Weeks', [Validators.required]],
   });
 
-  isSubmitting = signal(false);
-  errorMessage = signal<string>('');
   isEditMode = signal(false);
 
   constructor() {
@@ -90,27 +84,7 @@ export class AddCommitmentDialogComponent {
       return;
     }
 
-    this.isSubmitting.set(true);
-    this.errorMessage.set('');
-
-    const request: CreateCommitmentRequest = this.form.getRawValue();
-    const isEdit = this.isEditMode() && this.data.commitment;
-
-    const request$ = isEdit
-      ? this.handoverService.updateCommitment(this.data.engagementId, this.data.commitment!.commitmentId, request)
-      : this.handoverService.addCommitment(this.data.engagementId, request);
-
-    request$.subscribe({
-      next: (response: CommitmentDto) => {
-        this.isSubmitting.set(false);
-        this.dialogRef.close(response);
-      },
-      error: (err) => {
-        this.isSubmitting.set(false);
-        const msg = err?.error?.message || (isEdit ? HANDOVER_MESSAGES.COMMITMENT_UPDATE_ERROR : HANDOVER_MESSAGES.COMMITMENT_ADD_ERROR);
-        this.errorMessage.set(msg);
-      },
-    });
+    this.dialogRef.close(this.form.getRawValue());
   }
 }
 

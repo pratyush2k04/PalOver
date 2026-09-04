@@ -433,16 +433,27 @@ export class HandoverComponent {
     if (!id) return;
 
     const data: AddCommitmentDialogData = { engagementId: id };
-    const dialogRef = this.dialog.open<AddCommitmentDialogComponent, AddCommitmentDialogData, CommitmentDto>(
+    const dialogRef = this.dialog.open<AddCommitmentDialogComponent, AddCommitmentDialogData, CreateCommitmentRequest>(
       AddCommitmentDialogComponent,
       { data }
     );
 
-    dialogRef.closed$.subscribe((response) => {
-      if (!response) return;
-      this.commitments.update((c) => [...c, response]);
-      this.toastService.success(HANDOVER_MESSAGES.COMMITMENT_ADDED);
-      this.kickoffReadinessService.refresh();
+    dialogRef.closed$.subscribe((request) => {
+      if (!request) return;
+
+      this.isSaving.set(true);
+      this.handoverService.addCommitment(id, request, true).subscribe({
+        next: (response) => {
+          this.commitments.update((c) => [...c, response]);
+          this.isSaving.set(false);
+          this.toastService.success(HANDOVER_MESSAGES.COMMITMENT_ADDED);
+          this.kickoffReadinessService.refresh();
+        },
+        error: (err) => {
+          this.isSaving.set(false);
+          this.toastService.error(this.extractErrorMessage(err, HANDOVER_MESSAGES.COMMITMENT_ADD_ERROR));
+        }
+      });
     });
   }
 
@@ -451,20 +462,31 @@ export class HandoverComponent {
     if (!id) return;
 
     const data: AddCommitmentDialogData = { engagementId: id, commitment: c };
-    const dialogRef = this.dialog.open<AddCommitmentDialogComponent, AddCommitmentDialogData, CommitmentDto>(
+    const dialogRef = this.dialog.open<AddCommitmentDialogComponent, AddCommitmentDialogData, CreateCommitmentRequest>(
       AddCommitmentDialogComponent,
       { data }
     );
 
-    dialogRef.closed$.subscribe((response) => {
-      if (!response) return;
-      this.commitments.update((commits) => {
-        const arr = [...commits];
-        const index = arr.findIndex((item) => item.commitmentId === c.commitmentId);
-        if (index !== -1) arr[index] = response;
-        return arr;
+    dialogRef.closed$.subscribe((request) => {
+      if (!request) return;
+
+      this.isSaving.set(true);
+      this.handoverService.updateCommitment(id, c.commitmentId, request, true).subscribe({
+        next: (response) => {
+          this.commitments.update((commits) => {
+            const arr = [...commits];
+            const index = arr.findIndex((item) => item.commitmentId === c.commitmentId);
+            if (index !== -1) arr[index] = response;
+            return arr;
+          });
+          this.isSaving.set(false);
+          this.toastService.success(HANDOVER_MESSAGES.COMMITMENT_UPDATED);
+        },
+        error: (err) => {
+          this.isSaving.set(false);
+          this.toastService.error(this.extractErrorMessage(err, HANDOVER_MESSAGES.COMMITMENT_UPDATE_ERROR));
+        }
       });
-      this.toastService.success(HANDOVER_MESSAGES.COMMITMENT_UPDATED);
     });
   }
 
@@ -501,8 +523,6 @@ export class HandoverComponent {
     });
   }
 
-  isDeletingCommitment = signal(false);
-
   requestDeleteCommitment(commitmentId: number) {
     this.pendingDeleteId.set(commitmentId);
   }
@@ -515,18 +535,17 @@ export class HandoverComponent {
     const id = this.engagementId();
     if (!id) return;
 
-    this.isDeletingCommitment.set(true);
-    this.handoverService.deleteCommitment(id, commitmentId).subscribe({
+    this.pendingDeleteId.set(null);
+    this.isLoading.set(true);
+    this.handoverService.deleteCommitment(id, commitmentId, true).subscribe({
       next: () => {
         this.commitments.update((c) => c.filter((item) => item.commitmentId !== commitmentId));
-        this.pendingDeleteId.set(null);
-        this.isDeletingCommitment.set(false);
+        this.isLoading.set(false);
         this.toastService.success(HANDOVER_MESSAGES.COMMITMENT_DELETED);
         this.kickoffReadinessService.refresh();
       },
       error: (err) => {
-        this.pendingDeleteId.set(null);
-        this.isDeletingCommitment.set(false);
+        this.isLoading.set(false);
         this.toastService.error(this.extractErrorMessage(err, HANDOVER_MESSAGES.COMMITMENT_DELETE_ERROR));
       },
     });

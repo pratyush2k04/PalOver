@@ -57,17 +57,14 @@
       </div>
     </div>
 
-    @if (errorMessage()) {
-      <app-alert variant="danger">{{ errorMessage() }}</app-alert>
-    }
   </div>
 
   <div class="app-dialog__actions">
-    <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="onCancel()">
+    <app-button type="button" variant="stroked" (click)="onCancel()">
       {{ HANDOVER_BUTTONS.CANCEL }}
     </app-button>
-    <app-button type="submit" variant="flat" [disabled]="isSubmitting()">
-      {{ isSubmitting() ? 'Saving...' : (isEditMode() ? HANDOVER_BUTTONS.SAVE : HANDOVER_BUTTONS.ADD_COMMITMENT) }}
+    <app-button type="submit" variant="flat">
+      {{ isEditMode() ? HANDOVER_BUTTONS.SAVE : HANDOVER_BUTTONS.ADD_COMMITMENT }}
     </app-button>
   </div>
 </form>
