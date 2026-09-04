@@ -3051,13 +3051,13 @@ namespace Pdr.Api.Migrations
 
                     b.Property<string>("BusinessProblem")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
                         .HasColumnName("business_problem");
 
                     b.Property<string>("ClientBackground")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
                         .HasColumnName("client_background");
 
                     b.Property<string>("ClientSentiment")
@@ -3077,8 +3077,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnName("created_by");
 
                     b.Property<string>("DealOrigin")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
                         .HasColumnName("deal_origin");
 
                     b.Property<int>("EngagementId")
