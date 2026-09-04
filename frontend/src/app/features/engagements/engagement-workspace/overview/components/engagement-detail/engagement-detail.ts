@@ -37,6 +37,7 @@ export class EngagementDetailComponent implements OnInit {
 
   showAssignModal = signal(false);
   errorMessage = signal<string | null>(null);
+  isSubmitting = signal(false);
   projectManagers = signal<UserListItem[]>([]);
   techLeads = signal<UserListItem[]>([]);
 
@@ -86,6 +87,7 @@ export class EngagementDetailComponent implements OnInit {
     if (!this.canAssignOwners) return;
 
     this.errorMessage.set(null);
+    this.isSubmitting.set(false);
     this.assignForm.reset({
       projectManagerId: this.owners()?.projectManagerId ?? null,
       techLeadId: this.owners()?.techLeadId ?? null
@@ -131,12 +133,12 @@ export class EngagementDetailComponent implements OnInit {
       });
     }
 
-    this.showAssignModal.set(false);
-
     if (this.pendingChanges.length === 0) {
+      this.showAssignModal.set(false);
       return;
     }
 
+    this.errorMessage.set(null);
     this.processNextChange();
   }
 
@@ -150,10 +152,14 @@ export class EngagementDetailComponent implements OnInit {
     const isPostKickoff = this.engagement()?.status !== ENGAGEMENT_CONSTANTS.KICKOFF_PENDING_STATUS;
 
     if (isReassignment && isPostKickoff) {
+      this.showAssignModal.set(false);
+      this.errorMessage.set(null);
       this.currentConfirmation.set(change);
       return;
     }
 
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
     this.saveChange(change);
   }
 
@@ -166,29 +172,34 @@ export class EngagementDetailComponent implements OnInit {
     const change = this.currentConfirmation();
     if (!change) return;
 
-    this.currentConfirmation.set(null);
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
     this.saveChange(change);
   }
 
   cancelPendingChange(): void {
     this.currentConfirmation.set(null);
     this.pendingChanges = [];
+    this.errorMessage.set(null);
   }
 
   private saveChange(change: OwnerChange): void {
     const request$ =
       change.kind === 'projectManager'
-        ? this.engagementService.assignProjectManager(this.engagementId, change.userId)
-        : this.engagementService.assignTechLead(this.engagementId, change.userId);
+        ? this.engagementService.assignProjectManager(this.engagementId, change.userId, true)
+        : this.engagementService.assignTechLead(this.engagementId, change.userId, true);
 
     request$.subscribe({
       next: () => {
+        this.isSubmitting.set(false);
+        this.showAssignModal.set(false);
+        this.currentConfirmation.set(null);
         this.toastService.success(ENGAGEMENT_MESSAGES.ASSIGNMENT_SUCCESS(change.userName, change.label));
         this.processNextChange();
       },
       error: (err) => {
-        this.pendingChanges = [];
-        this.toastService.error(this.extractErrorMessage(err));
+        this.isSubmitting.set(false);
+        this.errorMessage.set(this.extractErrorMessage(err));
       }
     });
   }

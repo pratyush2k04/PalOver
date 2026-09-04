@@ -62,8 +62,8 @@
         />
 
         <div class="modal-actions">
-          <app-button type="button" variant="stroked" (click)="closeAssignModal()">Cancel</app-button>
-          <app-button type="submit" variant="flat">Save assignment</app-button>
+          <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="closeAssignModal()">Cancel</app-button>
+          <app-button type="submit" variant="flat" [loading]="isSubmitting()" [disabled]="isSubmitting()">Save assignment</app-button>
         </div>
       </form>
     </div>
@@ -74,9 +74,13 @@
   <app-confirm-dialog
     title="Reassign mid-engagement?"
     confirmLabel="Reassign"
+    [isBusy]="isSubmitting()"
     (confirmed)="confirmPendingChange()"
     (cancelled)="cancelPendingChange()"
   >
     {{ change.userName }} will take over open items.
+    @if (errorMessage()) {
+      <app-alert>{{ errorMessage() }}</app-alert>
+    }
   </app-confirm-dialog>
 }
