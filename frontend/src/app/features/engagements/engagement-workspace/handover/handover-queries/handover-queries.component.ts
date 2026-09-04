@@ -97,7 +97,7 @@ export class HandoverQueriesComponent {
     });
   }
 
-  loadQueries(id: number): void {
+  loadQueries(id: number, onDone?: () => void): void {
     this.isLoading.set(true);
     this.loadError.set(false);
     this.handoverQueryService.getQueries(id).subscribe({
@@ -105,12 +105,14 @@ export class HandoverQueriesComponent {
         this.queries.set(data);
         this.queriesChange.emit(data);
         this.isLoading.set(false);
+        onDone?.();
       },
       error: (err) => {
         this.isLoading.set(false);
         this.loadError.set(true);
         this.message.set(this.extractErrorMessage(err, HANDOVER_MESSAGES.QUERY_LOAD_ERROR));
         this.isError.set(true);
+        onDone?.();
       },
     });
   }
@@ -290,24 +292,21 @@ export class HandoverQueriesComponent {
   }
 
   openRaiseQueryDialog(): void {
-    const dialogRef = this.dialogService.open<RaiseHandoverQueryDialogComponent, RaiseHandoverQueryDialogData, HandoverQueryDto>(
+    const id = this.engagementId();
+    const dialogRef = this.dialogService.open<RaiseHandoverQueryDialogComponent, RaiseHandoverQueryDialogData, boolean>(
       RaiseHandoverQueryDialogComponent,
       {
         data: {
-          engagementId: this.engagementId(),
+          engagementId: id,
           commitments: this.commitments(),
         },
       }
     );
 
-    dialogRef.afterClosed().subscribe((created) => {
-      if (created) {
-        this.queries.update((qs) => {
-          const next = [...qs, created];
-          this.queriesChange.emit(next);
-          return next;
-        });
-      }
+    dialogRef.afterClosed().subscribe((result) => {
+      if (!result) return;
+
+      this.loadQueries(id, () => this.showMessage(HANDOVER_MESSAGES.QUERY_RAISE_SUCCESS, false));
     });
   }
 

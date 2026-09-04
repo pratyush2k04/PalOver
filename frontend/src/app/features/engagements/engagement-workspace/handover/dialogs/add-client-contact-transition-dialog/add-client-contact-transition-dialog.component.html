@@ -52,11 +52,12 @@
           </p>
         </div>
       </div>
+
+      @if (errorMessage()) {
+        <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+      }
     }
 
-    @if (errorMessage()) {
-      <app-alert variant="danger">{{ errorMessage() }}</app-alert>
-    }
   </div>
 
   <div class="app-dialog__actions">
@@ -71,7 +72,7 @@
       <app-button type="button" variant="stroked" (click)="onCancel()">
         {{ buttonLabels.CANCEL }}
       </app-button>
-      <app-button type="submit" variant="flat" [disabled]="isSubmitting()">
+      <app-button type="submit" variant="flat">
         {{ buttonLabels.REVIEW_CONFIRM }}
       </app-button>
     }

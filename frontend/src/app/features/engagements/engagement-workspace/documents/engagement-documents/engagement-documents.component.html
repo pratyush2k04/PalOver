@@ -1,7 +1,7 @@
 <div class="documents-container">
   <app-section-header title="Documents">
     @if (canUpload()) {
-      <app-button type="button" variant="flat" (click)="openUploadModal()">
+      <app-button type="button" variant="flat" [disabled]="isLoading()" (click)="openUploadModal()">
         <span class="upload-icon" [inlineSVG]="'assets/icons/upload.svg'"></span>
         Upload
       </app-button>
@@ -82,6 +82,7 @@
                           variant="icon"
                           ariaLabel="Edit allowed roles"
                           [appTooltip]="'Edit allowed roles'"
+                          [disabled]="isLoading()"
                           (click)="openCustomVisibilityModal(doc)"
                         >
                           <span class="edit-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
@@ -127,6 +128,7 @@
                       class="btn-upload-version"
                       ariaLabel="Upload new version"
                       [appTooltip]="'Upload new version'"
+                      [disabled]="isLoading()"
                       (click)="triggerVersionUpload(doc)"
                     >
                       <span class="upload-version-icon" [inlineSVG]="'assets/icons/upload.svg'"></span>
@@ -137,6 +139,7 @@
                       class="btn-remove"
                       ariaLabel="Remove document"
                       [appTooltip]="'Remove document'"
+                      [disabled]="isLoading()"
                       (click)="openRemoveModal(doc)"
                     >
                       <span class="remove-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>

@@ -6,10 +6,9 @@ import { ButtonComponent } from '@common/components/button/button';
 import { AlertComponent } from '@common/components/alert/alert';
 import { DatepickerComponent } from '@common/components/form/datepicker/datepicker';
 import { DayOneSignOffRequest } from '@features/engagements/models/engagement.model';
+import { EngagementService } from '@features/engagements/services/engagement.service';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
-import { EngagementService } from '@features/engagements/services/engagement.service';
-import { ToastService } from '@common/services/toast/toast';
 import { futureDateValidator } from '@common/validators/date.validators';
 
 @Component({
@@ -22,17 +21,15 @@ import { futureDateValidator } from '@common/validators/date.validators';
 export class DayOneSignOffDialogComponent {
   private fb = inject(FormBuilder);
   private dialogRef = inject(DialogRef<boolean>);
+  private engagementService = inject(EngagementService);
   public data = inject(DIALOG_DATA) as {
     engagementId: number;
     isAbleToStartDayOne: boolean;
     isLeadership: boolean;
     initialBillingStartDate: string;
   };
-  private engagementService = inject(EngagementService);
-  private toastService = inject(ToastService);
 
   readonly minDate = new Date().toISOString().split('T')[0];
-  readonly isBusy = signal<boolean>(false);
   readonly isException = computed(() => !this.data.isAbleToStartDayOne);
 
   readonly form: FormGroup = this.fb.group({
@@ -40,34 +37,25 @@ export class DayOneSignOffDialogComponent {
     exceptionJustification: ['']
   });
 
-  private readonly formStatus = toSignal(this.form.statusChanges, { initialValue: this.form.status });
   private readonly formValue = toSignal(this.form.valueChanges, { initialValue: this.form.value });
 
   readonly justificationLength = computed(() => {
     return this.formValue()?.exceptionJustification?.length ?? 0;
   });
 
-  readonly canSubmit = computed(() => {
-    if (this.isBusy()) return false;
-    if (this.isException() && !this.data.isLeadership) return false;
-    return this.formStatus() === 'VALID';
-  });
+  readonly canAttemptSubmit = computed(() => !(this.isException() && !this.data.isLeadership));
+
+  readonly isSubmitting = signal(false);
+  readonly errorMessage = signal<string | null>(null);
 
   constructor() {
     effect(() => {
       const isBlockedAndNotLeadership = !this.data.isAbleToStartDayOne && !this.data.isLeadership;
-      const busy = this.isBusy();
 
-      if (busy || isBlockedAndNotLeadership) {
+      if (isBlockedAndNotLeadership) {
         this.form.get('billingStartDate')?.disable({ emitEvent: false });
       } else {
         this.form.get('billingStartDate')?.enable({ emitEvent: false });
-      }
-
-      if (busy) {
-        this.form.get('exceptionJustification')?.disable({ emitEvent: false });
-      } else {
-        this.form.get('exceptionJustification')?.enable({ emitEvent: false });
       }
     });
 
@@ -90,13 +78,16 @@ export class DayOneSignOffDialogComponent {
   }
 
   onCancel(): void {
-    if (!this.isBusy()) {
-      this.dialogRef.close(false);
-    }
+    this.dialogRef.close();
   }
 
   onSubmit(): void {
-    if (!this.canSubmit()) return;
+    if (!this.canAttemptSubmit()) return;
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
     const val = this.form.getRawValue();
     const request: DayOneSignOffRequest = {
@@ -105,16 +96,16 @@ export class DayOneSignOffDialogComponent {
       exceptionJustification: this.isException() ? val.exceptionJustification?.trim() : undefined
     };
 
-    this.isBusy.set(true);
-    this.engagementService.signOffDayOne(this.data.engagementId, request).subscribe({
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
+
+    this.engagementService.signOffDayOne(this.data.engagementId, request, true).subscribe({
       next: () => {
-        this.isBusy.set(false);
-        this.toastService.success('Day-1 successfully signed off!');
         this.dialogRef.close(true);
       },
       error: (err) => {
-        this.isBusy.set(false);
-        this.toastService.error(err.error?.message || 'Failed to sign off Day-1 readiness.');
+        this.isSubmitting.set(false);
+        this.errorMessage.set(err?.error?.message || err?.error || 'Something went wrong');
       }
     });
   }

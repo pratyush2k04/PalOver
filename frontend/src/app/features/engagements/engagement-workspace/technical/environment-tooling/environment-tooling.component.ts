@@ -234,7 +234,7 @@ export class EnvironmentToolingComponent {
     if (!item) return;
 
     this.isDeleting.set(true);
-    this.service.deleteItem(item.id).pipe(
+    this.service.deleteItem(item.id, true).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: () => {

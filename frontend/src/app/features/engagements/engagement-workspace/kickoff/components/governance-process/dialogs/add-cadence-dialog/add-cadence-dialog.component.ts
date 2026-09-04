@@ -8,9 +8,9 @@ import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { MultiSelectListComponent } from '@common/components/multi-select-list/multi-select-list';
-import { CommunicationCadenceService } from '../../../../../../services/communication-cadence.service';
-import { CommunicationCadence, EngagementParticipant, CadenceTypeEnum } from '../../../../../../models/cadence.model';
+import { CreateCommunicationCadence, EngagementParticipant, CadenceTypeEnum } from '../../../../../../models/cadence.model';
 import { CADENCE_CONSTANTS } from '@shared/constants/cadence.constants';
+import { CommunicationCadenceService } from '../../../../../../services/communication-cadence.service';
 
 export interface AddCadenceDialogData {
   engagementId: number;
@@ -33,9 +33,9 @@ export interface AddCadenceDialogData {
   styleUrl: './add-cadence-dialog.component.scss'
 })
 export class AddCadenceDialogComponent {
-  private dialogRef = inject<DialogRef<CommunicationCadence>>(DialogRef);
-  private cadenceService = inject(CommunicationCadenceService);
+  private dialogRef = inject<DialogRef<boolean>>(DialogRef);
   private fb = inject(FormBuilder);
+  private cadenceService = inject(CommunicationCadenceService);
   readonly data = inject<AddCadenceDialogData>(DIALOG_DATA);
 
   readonly constants = CADENCE_CONSTANTS;
@@ -54,8 +54,8 @@ export class AddCadenceDialogComponent {
   }));
 
   selectedParticipantUserIds = signal<number[]>([]);
-  isSubmitting = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
+  isSubmitting = signal(false);
 
   cadenceForm: FormGroup = this.fb.group({
     stakeholderRole: ['', [Validators.required, Validators.maxLength(200)]],
@@ -67,6 +67,7 @@ export class AddCadenceDialogComponent {
   }
 
   onCancel(): void {
+    if (this.isSubmitting()) return;
     this.dialogRef.close();
   }
 
@@ -82,24 +83,23 @@ export class AddCadenceDialogComponent {
       return;
     }
 
-    this.isSubmitting.set(true);
-    this.errorMessage.set(null);
-
-    const payload = {
+    const request: CreateCommunicationCadence = {
       stakeholderRole: this.cadenceForm.value.stakeholderRole,
       cadence: +this.cadenceForm.value.cadence,
       participantUserIds: participantIds
     };
 
-    this.cadenceService.addCadence(this.data.engagementId, payload).subscribe({
-      next: (newCadence) => {
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
+
+    this.cadenceService.addCadence(this.data.engagementId, request, true).subscribe({
+      next: () => {
         this.isSubmitting.set(false);
-        this.dialogRef.close(newCadence);
+        this.dialogRef.close(true);
       },
       error: (err) => {
         this.isSubmitting.set(false);
-        const backendMessage = err?.error?.message || err?.error || this.constants.ERROR_GENERIC;
-        this.errorMessage.set(backendMessage);
+        this.errorMessage.set(err?.error?.message || err?.error || this.constants.ERROR_GENERIC);
       }
     });
   }

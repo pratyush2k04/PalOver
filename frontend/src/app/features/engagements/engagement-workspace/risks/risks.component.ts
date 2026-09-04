@@ -69,7 +69,6 @@ export class RisksComponent implements OnInit {
   risks = signal<Risk[]>([]);
   owners = signal<OwnerOption[]>([]);
   isLoading = signal<boolean>(true);
-  isSubmitting = signal<boolean>(false);
   closeFormSubmitted = signal<boolean>(false);
 
   readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
@@ -162,6 +161,8 @@ export class RisksComponent implements OnInit {
   // Modal State
   showCloseModal = signal<boolean>(false);
   closingRisk = signal<Risk | null>(null);
+  isSubmitting = signal<boolean>(false);
+  errorMessage = signal<string | null>(null);
 
   // Reactive Forms
   closeForm: FormGroup = this.fb.group({
@@ -179,17 +180,19 @@ export class RisksComponent implements OnInit {
     });
   }
 
-  loadRisks(engagementId: number): void {
+  loadRisks(engagementId: number, onDone?: () => void): void {
     this.isLoading.set(true);
     this.riskService.getRisks(engagementId).subscribe({
       next: (data) => {
         this.risks.set(data);
         this.isLoading.set(false);
+        onDone?.();
       },
       error: (err) => {
         console.error('Failed to load risks:', err);
-        this.toastService.error(RISK_MESSAGES.LOAD_ERROR);
         this.isLoading.set(false);
+        this.toastService.error(RISK_MESSAGES.LOAD_ERROR);
+        onDone?.();
       }
     });
   }
@@ -312,8 +315,7 @@ export class RisksComponent implements OnInit {
         const updateReq: UpdateRiskRequest = { ...result, status: result.status! };
         this.riskService.updateRisk(engagementId, risk.id, updateReq).subscribe({
           next: () => {
-            this.toastService.success(RISK_MESSAGES.UPDATE_SUCCESS);
-            this.loadRisks(engagementId);
+            this.loadRisks(engagementId, () => this.toastService.success(RISK_MESSAGES.UPDATE_SUCCESS));
           },
           error: (err) => {
             console.error(err);
@@ -324,8 +326,7 @@ export class RisksComponent implements OnInit {
         const createReq: CreateRiskRequest = result;
         this.riskService.createRisk(engagementId, createReq).subscribe({
           next: () => {
-            this.toastService.success(RISK_MESSAGES.CREATE_SUCCESS);
-            this.loadRisks(engagementId);
+            this.loadRisks(engagementId, () => this.toastService.success(RISK_MESSAGES.CREATE_SUCCESS));
           },
           error: (err) => {
             console.error(err);
@@ -341,6 +342,8 @@ export class RisksComponent implements OnInit {
     this.closingRisk.set(risk);
     this.closeFormSubmitted.set(false);
     this.closeForm.reset({ resolutionNote: '' });
+    this.errorMessage.set(null);
+    this.isSubmitting.set(false);
     this.showCloseModal.set(true);
   }
 
@@ -349,6 +352,8 @@ export class RisksComponent implements OnInit {
     this.closeFormSubmitted.set(false);
     this.closingRisk.set(null);
     this.closeForm.reset();
+    this.errorMessage.set(null);
+    this.isSubmitting.set(false);
   }
 
   @HostListener('document:keydown.escape')
@@ -378,20 +383,18 @@ export class RisksComponent implements OnInit {
     const risk = this.closingRisk();
     if (!engagementId || !risk) return;
 
+    const resolutionNote = this.closeForm.value.resolutionNote;
+    this.errorMessage.set(null);
     this.isSubmitting.set(true);
-    this.riskService.closeRisk(engagementId, risk.id, {
-      resolutionNote: this.closeForm.value.resolutionNote
-    }).subscribe({
+    this.riskService.closeRisk(engagementId, risk.id, { resolutionNote }, true).subscribe({
       next: () => {
-        this.toastService.success(RISK_MESSAGES.CLOSE_SUCCESS);
         this.closeCloseModal();
-        this.loadRisks(engagementId);
-        this.isSubmitting.set(false);
+        this.loadRisks(engagementId, () => this.toastService.success(RISK_MESSAGES.CLOSE_SUCCESS));
       },
       error: (err) => {
         console.error(err);
-        this.toastService.error(RISK_MESSAGES.CLOSE_ERROR);
         this.isSubmitting.set(false);
+        this.errorMessage.set(err?.error?.message || err?.error || RISK_MESSAGES.CLOSE_ERROR);
       }
     });
   }
@@ -402,8 +405,7 @@ export class RisksComponent implements OnInit {
 
     this.riskService.reopenRisk(engagementId, risk.id).subscribe({
       next: () => {
-        this.toastService.success(RISK_MESSAGES.REOPEN_SUCCESS);
-        this.loadRisks(engagementId);
+        this.loadRisks(engagementId, () => this.toastService.success(RISK_MESSAGES.REOPEN_SUCCESS));
       },
       error: (err) => {
         console.error(err);

@@ -99,10 +99,13 @@
   <app-confirm-dialog
     title="Delete Access Item"
     confirmLabel="Delete"
-    [isBusy]="isDeleting()"
     [isDestructive]="true"
+    [isBusy]="isSubmitting()"
     (confirmed)="confirmDelete()"
     (cancelled)="cancelDelete()">
     Are you sure you want to delete <strong>{{ item.name }}</strong>? This action cannot be undone.
+    @if (errorMessage()) {
+      <app-alert>{{ errorMessage() }}</app-alert>
+    }
   </app-confirm-dialog>
 }

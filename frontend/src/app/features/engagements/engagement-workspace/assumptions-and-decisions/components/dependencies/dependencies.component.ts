@@ -68,7 +68,7 @@ export class DependenciesComponent implements OnInit {
     });
   }
 
-  loadDependencies(skipLoader = false) {
+  loadDependencies(skipLoader = false, onDone?: () => void) {
     if (skipLoader) {
       this.isLoading.set(true);
     }
@@ -78,12 +78,14 @@ export class DependenciesComponent implements OnInit {
         if (skipLoader) {
           this.isLoading.set(false);
         }
+        onDone?.();
       },
       error: (err: any) => {
         this.handleError(err, DEPENDENCY_MESSAGES.LOAD_ERROR);
         if (skipLoader) {
           this.isLoading.set(false);
         }
+        onDone?.();
       }
     });
   }
@@ -127,16 +129,14 @@ export class DependenciesComponent implements OnInit {
           status: result.status ?? dependency.status
         }).subscribe({
           next: () => {
-            this.toastService.success(DEPENDENCY_MESSAGES.UPDATE_SUCCESS);
-            this.loadDependencies(true);
+            this.loadDependencies(true, () => this.toastService.success(DEPENDENCY_MESSAGES.UPDATE_SUCCESS));
           },
           error: (err: any) => this.handleError(err, DEPENDENCY_MESSAGES.UPDATE_ERROR)
         });
       } else {
         this.dependencyService.createDependency(this.engagementId(), result).subscribe({
           next: () => {
-            this.toastService.success(DEPENDENCY_MESSAGES.CREATE_SUCCESS);
-            this.loadDependencies(true);
+            this.loadDependencies(true, () => this.toastService.success(DEPENDENCY_MESSAGES.CREATE_SUCCESS));
           },
           error: (err: any) => this.handleError(err, DEPENDENCY_MESSAGES.CREATE_ERROR)
         });
@@ -168,8 +168,7 @@ export class DependenciesComponent implements OnInit {
 
     this.dependencyService.updateDependency(this.engagementId(), dependency.id, updateDto).subscribe({
       next: () => {
-        this.toastService.success(DEPENDENCY_MESSAGES.UPDATE_SUCCESS);
-        this.loadDependencies(true);
+        this.loadDependencies(true, () => this.toastService.success(DEPENDENCY_MESSAGES.UPDATE_SUCCESS));
       },
       error: (err: any) => this.handleError(err, DEPENDENCY_MESSAGES.UPDATE_ERROR)
     });

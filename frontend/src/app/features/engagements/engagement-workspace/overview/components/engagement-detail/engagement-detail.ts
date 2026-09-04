@@ -36,14 +36,13 @@ export class EngagementDetailComponent implements OnInit {
   canAssignOwners = computed(() => this.authService.hasRole(USER_ROLES.LEADERSHIP) && !this.engagementService.isSignedOff());
 
   showAssignModal = signal(false);
-  isSubmitting = signal(false);
   errorMessage = signal<string | null>(null);
+  isSubmitting = signal(false);
   projectManagers = signal<UserListItem[]>([]);
   techLeads = signal<UserListItem[]>([]);
 
   pendingChanges: OwnerChange[] = [];
   currentConfirmation = signal<OwnerChange | null>(null);
-  isSavingConfirmation = signal(false);
 
   assignForm: FormGroup = this.fb.group({
     projectManagerId: [null, [Validators.required]],
@@ -88,6 +87,7 @@ export class EngagementDetailComponent implements OnInit {
     if (!this.canAssignOwners) return;
 
     this.errorMessage.set(null);
+    this.isSubmitting.set(false);
     this.assignForm.reset({
       projectManagerId: this.owners()?.projectManagerId ?? null,
       techLeadId: this.owners()?.techLeadId ?? null
@@ -145,14 +145,13 @@ export class EngagementDetailComponent implements OnInit {
       return;
     }
 
+    this.errorMessage.set(null);
     this.processNextChange();
   }
 
   private processNextChange(): void {
     const change = this.pendingChanges.shift();
     if (!change) {
-      this.isSubmitting.set(false);
-      this.showAssignModal.set(false);
       return;
     }
 
@@ -160,10 +159,14 @@ export class EngagementDetailComponent implements OnInit {
     const isPostKickoff = this.engagement()?.status !== ENGAGEMENT_CONSTANTS.KICKOFF_PENDING_STATUS;
 
     if (isReassignment && isPostKickoff) {
+      this.showAssignModal.set(false);
+      this.errorMessage.set(null);
       this.currentConfirmation.set(change);
       return;
     }
 
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
     this.saveChange(change);
   }
 
@@ -176,37 +179,34 @@ export class EngagementDetailComponent implements OnInit {
     const change = this.currentConfirmation();
     if (!change) return;
 
-    this.isSavingConfirmation.set(true);
-    this.saveChange(change, () => {
-      this.isSavingConfirmation.set(false);
-      this.currentConfirmation.set(null);
-    });
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
+    this.saveChange(change);
   }
 
   cancelPendingChange(): void {
     this.currentConfirmation.set(null);
     this.pendingChanges = [];
-    this.isSubmitting.set(false);
+    this.errorMessage.set(null);
   }
 
-  private saveChange(change: OwnerChange, onSaved?: () => void): void {
-    this.isSubmitting.set(true);
+  private saveChange(change: OwnerChange): void {
     const request$ =
       change.kind === 'projectManager'
-        ? this.engagementService.assignProjectManager(this.engagementId, change.userId)
-        : this.engagementService.assignTechLead(this.engagementId, change.userId);
+        ? this.engagementService.assignProjectManager(this.engagementId, change.userId, true)
+        : this.engagementService.assignTechLead(this.engagementId, change.userId, true);
 
     request$.subscribe({
       next: () => {
+        this.isSubmitting.set(false);
+        this.showAssignModal.set(false);
+        this.currentConfirmation.set(null);
         this.toastService.success(ENGAGEMENT_MESSAGES.ASSIGNMENT_SUCCESS(change.userName, change.label));
-        onSaved?.();
         this.processNextChange();
       },
       error: (err) => {
         this.isSubmitting.set(false);
-        this.pendingChanges = [];
-        onSaved?.();
-        this.toastService.error(this.extractErrorMessage(err));
+        this.errorMessage.set(this.extractErrorMessage(err));
       }
     });
   }

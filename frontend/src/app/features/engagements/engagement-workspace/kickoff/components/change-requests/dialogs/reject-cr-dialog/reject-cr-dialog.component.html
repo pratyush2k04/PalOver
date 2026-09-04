@@ -3,7 +3,7 @@
 <form [formGroup]="rejectForm" (ngSubmit)="onSubmit()">
   <div class="app-dialog__content">
     @if (errorMessage()) {
-      <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+      <app-alert>{{ errorMessage() }}</app-alert>
     }
 
     <app-textarea
@@ -17,10 +17,10 @@
   </div>
 
   <div class="app-dialog__actions">
-    <app-button type="button" variant="stroked" (click)="onCancel()">
+    <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="onCancel()">
       {{ constants.BTN_CANCEL }}
     </app-button>
-    <app-button type="submit" variant="danger" [disabled]="isSubmitting()">
+    <app-button type="submit" variant="danger" [disabled]="isSubmitting()" [loading]="isSubmitting()">
       {{ constants.BTN_REJECT }}
     </app-button>
   </div>

@@ -7,7 +7,7 @@
       }
     </div>
     @if (!loadError() && isProjectManagement() && !isReviewed()) {
-      <app-button variant="flat" (click)="openRaiseQueryDialog()">
+      <app-button variant="flat" [disabled]="isLoading()" (click)="openRaiseQueryDialog()">
         Raise Query
       </app-button>
     }

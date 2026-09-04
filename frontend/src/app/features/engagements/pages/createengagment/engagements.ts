@@ -10,12 +10,12 @@ import {
 } from '@angular/forms';
 import { EngagementService } from '../../services/engagement.service';
 import { CommercialModelOption, EngagementTypeOption } from '../../models/engagement.model';
-import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { DatepickerComponent } from '@common/components/form/datepicker/datepicker';
+import { AlertComponent } from '@common/components/alert/alert';
 import { ToastService } from '@common/services/toast/toast';
 import { futureDateValidator } from '@common/validators/date.validators';
 
@@ -33,7 +33,7 @@ function billingNotBeforeKickoffValidator(group: AbstractControl): ValidationErr
 @Component({
   selector: 'app-engagements',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AlertComponent, ButtonComponent, InputComponent, TextareaComponent, SelectComponent, DatepickerComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, InputComponent, TextareaComponent, SelectComponent, DatepickerComponent, AlertComponent],
   templateUrl: './engagements.html',
   styleUrl: './engagements.scss'
 })
@@ -44,10 +44,10 @@ export class EngagementsComponent implements OnInit {
 
   readonly minDate = new Date().toISOString().split('T')[0];
   showModal = signal(false);
-  isSubmitting = signal(false);
-  errorMessage = signal<string | null>(null);
   engagementTypes = signal<EngagementTypeOption[]>([]);
   commercialModels = signal<CommercialModelOption[]>([]);
+  isSubmitting = signal(false);
+  errorMessage = signal<string | null>(null);
 
   engagementCreated = output<void>();
 
@@ -93,16 +93,19 @@ export class EngagementsComponent implements OnInit {
   );
 
   openModal(): void {
-    this.errorMessage.set(null);
     this.engagementForm.reset({
       engagementTypeId: this.engagementTypes()[0]?.id ?? null,
       commercialModelId: this.commercialModels()[0]?.id ?? null
     });
+    this.errorMessage.set(null);
+    this.isSubmitting.set(false);
     this.showModal.set(true);
   }
 
   closeModal(): void {
     this.showModal.set(false);
+    this.errorMessage.set(null);
+    this.isSubmitting.set(false);
   }
 
   @HostListener('document:keydown.escape')
@@ -118,35 +121,37 @@ export class EngagementsComponent implements OnInit {
       return;
     }
 
-    this.isSubmitting.set(true);
-    this.errorMessage.set(null);
-
     const { engagementName, clientName, engagementDescription, engagementTypeId, commercialModelId, kickoffDate, billingStartDate } =
       this.engagementForm.value;
 
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
+
     this.engagementService
-      .markSowSigned({
-        engagementName,
-        clientName,
-        engagementDescription: engagementDescription || undefined,
-        engagementTypeId,
-        commercialModelId,
-        kickoffDate,
-        billingStartDate: billingStartDate || undefined
-      })
+      .markSowSigned(
+        {
+          engagementName,
+          clientName,
+          engagementDescription: engagementDescription || undefined,
+          engagementTypeId,
+          commercialModelId,
+          kickoffDate,
+          billingStartDate: billingStartDate || undefined
+        },
+        true
+      )
       .subscribe({
         next: (response) => {
-          this.isSubmitting.set(false);
+          this.closeModal();
           if (response.warnings && response.warnings.length > 0) {
             response.warnings.forEach(warning => this.toastService.error(warning));
           }
-          this.showModal.set(false);
           this.engagementCreated.emit();
         },
         error: (err) => {
           this.isSubmitting.set(false);
           this.errorMessage.set(
-            typeof err.error === 'string' ? err.error : 'Failed to create engagement. Please try again.'
+            err?.error?.message || (typeof err?.error === 'string' ? err.error : 'Failed to create engagement. Please try again.')
           );
         }
       });

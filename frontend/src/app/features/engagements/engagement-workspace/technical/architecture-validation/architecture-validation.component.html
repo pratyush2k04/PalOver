@@ -245,10 +245,13 @@
   <app-confirm-dialog
     title="Delete Feature"
     confirmLabel="Delete"
-    [isBusy]="isDeleting()"
     [isDestructive]="true"
+    [isBusy]="isLoading()"
     (confirmed)="confirmDeleteFeature()"
     (cancelled)="cancelDeleteFeature()">
     Are you sure you want to delete <strong>{{ feature.featureName }}</strong>? This action cannot be undone.
+    @if (errorMessage()) {
+      <app-alert>{{ errorMessage() }}</app-alert>
+    }
   </app-confirm-dialog>
 }

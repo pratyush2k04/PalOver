@@ -16,6 +16,7 @@ import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status
 import { StatusSelectComponent, StatusSelectOption } from '@common/components/form/status-select/status-select';
 import { ButtonComponent } from '@common/components/button/button';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
+import { AlertComponent } from '@common/components/alert/alert';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import {
   AddAccessItemDialogComponent,
@@ -39,7 +40,8 @@ import {
     StatusBadgeComponent,
     StatusSelectComponent,
     ButtonComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    AlertComponent
   ],
   templateUrl: './access-tracker.component.html',
   styleUrl: './access-tracker.component.scss'
@@ -61,7 +63,8 @@ export class AccessTrackerComponent {
   canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
 
   itemToDelete = signal<AccessItemDto | null>(null);
-  isDeleting = signal<boolean>(false);
+  isSubmitting = signal(false);
+  errorMessage = signal<string | null>(null);
 
   kickoffReadiness = this.kickoffReadinessService.readiness;
 
@@ -240,6 +243,7 @@ export class AccessTrackerComponent {
 
   onDeleteItem(item: AccessItemDto): void {
     if (!this.isTechLead()) return;
+    this.errorMessage.set(null);
     this.itemToDelete.set(item);
   }
 
@@ -251,22 +255,24 @@ export class AccessTrackerComponent {
     const item = this.itemToDelete();
     if (!item) return;
 
-    this.isDeleting.set(true);
-    this.readinessService.deleteAccessItem(item.id).pipe(
+    this.isSubmitting.set(true);
+    this.errorMessage.set(null);
+
+    this.readinessService.deleteAccessItem(item.id, true).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: () => {
         const updatedList = this.accessItems().filter(i => i.id !== item.id);
         this.accessItems.set(updatedList);
         this.itemsUpdated.emit(updatedList);
-        this.toastService.success(`Access item "${item.name}" deleted successfully`);
-        this.isDeleting.set(false);
+        this.isSubmitting.set(false);
         this.itemToDelete.set(null);
+        this.toastService.success(`Access item "${item.name}" deleted successfully`);
       },
       error: (err) => {
-        this.toastService.error(`Failed to delete "${item.name}"`);
+        this.isSubmitting.set(false);
+        this.errorMessage.set(`Failed to delete "${item.name}"`);
         console.error('API delete access item failed', err);
-        this.isDeleting.set(false);
       }
     });
   }

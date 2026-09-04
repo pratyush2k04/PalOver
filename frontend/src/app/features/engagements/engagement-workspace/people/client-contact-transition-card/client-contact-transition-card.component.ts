@@ -59,17 +59,19 @@ export class ClientContactTransitionCardComponent {
     });
   }
 
-  loadHistory(): void {
+  loadHistory(onDone?: () => void): void {
     this.isLoading.set(true);
     this.transitionService.getTransitions(this.engagementId()).subscribe({
       next: (data) => {
         this.transitions.set(data);
         this.transitionsLoaded.emit(data);
         this.isLoading.set(false);
+        onDone?.();
       },
       error: () => {
         this.transitions.set([]);
         this.isLoading.set(false);
+        onDone?.();
       },
     });
   }
@@ -80,15 +82,15 @@ export class ClientContactTransitionCardComponent {
       activeTransitions: this.transitions(),
     };
 
-    const dialogRef = this.dialog.open<AddClientContactTransitionDialogComponent, AddClientContactTransitionDialogData, TransitionResponse>(
+    const dialogRef = this.dialog.open<AddClientContactTransitionDialogComponent, AddClientContactTransitionDialogData, boolean>(
       AddClientContactTransitionDialogComponent,
       { data }
     );
 
-    dialogRef.closed$.subscribe((response) => {
-      if (!response) return;
-      this.toastService.success(this.statusMessages.SAVE_SUCCESS);
-      this.loadHistory();
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+
+      this.loadHistory(() => this.toastService.success(this.statusMessages.SAVE_SUCCESS));
       this.onSaved.emit();
     });
   }

@@ -14,7 +14,8 @@ import { PageHeaderComponent } from '@common/components/page-header/page-header'
 import { DialogService } from '@common/services/dialog/dialog.service';
 import {
   AssignLeadershipDialogComponent,
-  AssignLeadershipDialogData
+  AssignLeadershipDialogData,
+  AssignLeadershipDialogResult
 } from './dialogs/assign-leadership-dialog/assign-leadership-dialog.component';
 
 @Component({
@@ -75,7 +76,7 @@ export class EngagementAllocationComponent implements OnInit {
     this.loadData();
   }
 
-  loadData(): void {
+  loadData(onDone?: () => void): void {
     this.loading.set(true);
     this.allocationService.getAllEngagements().subscribe({
       next: (data) => {
@@ -88,6 +89,7 @@ export class EngagementAllocationComponent implements OnInit {
         if (items.length === 0) {
           this.engagements.set(items);
           this.loading.set(false);
+          onDone?.();
           return;
         }
 
@@ -118,11 +120,13 @@ export class EngagementAllocationComponent implements OnInit {
             hasHandoverDraft: handoverMap.get(item.engagementId) ?? false
           })));
           this.loading.set(false);
+          onDone?.();
         });
       },
       error: () => {
-        this.toastService.error('Failed to load engagements.');
         this.loading.set(false);
+        this.toastService.error('Failed to load engagements.');
+        onDone?.();
       }
     });
 
@@ -162,24 +166,25 @@ export class EngagementAllocationComponent implements OnInit {
   }
 
   openAssignModal(engagement: EngagementAllocationItem): void {
-    const dialogRef = this.dialog.open<AssignLeadershipDialogComponent, AssignLeadershipDialogData, LeadershipUserItem[]>(
+    const dialogRef = this.dialog.open<AssignLeadershipDialogComponent, AssignLeadershipDialogData, AssignLeadershipDialogResult>(
       AssignLeadershipDialogComponent,
       { data: { engagement, availableLeadershipUsers: this.availableLeadershipUsers() } }
     );
 
-    dialogRef.closed$.subscribe((updatedUsers) => {
-      if (!updatedUsers) return;
-      this.updateEngagementInList(engagement.engagementId, updatedUsers);
-    });
-  }
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
 
-  private updateEngagementInList(engagementId: number, updatedUsers: LeadershipUserItem[]): void {
-    this.engagements.update(list =>
-      list.map(item =>
-        item.engagementId === engagementId
-          ? { ...item, leadershipUsers: updatedUsers }
-          : item
-      )
-    );
+      this.loadData(() => {
+        const { addedNames, removedNames } = result;
+
+        if (addedNames.length > 0 && removedNames.length === 0) {
+          this.toastService.success(`Assigned ${addedNames.join(', ')} to ${engagement.engagementName}`);
+        } else if (removedNames.length > 0 && addedNames.length === 0) {
+          this.toastService.success(`Removed ${removedNames.join(', ')} from ${engagement.engagementName}`);
+        } else if (addedNames.length > 0 && removedNames.length > 0) {
+          this.toastService.success(`Updated leadership contacts for ${engagement.engagementName}`);
+        }
+      });
+    });
   }
 }

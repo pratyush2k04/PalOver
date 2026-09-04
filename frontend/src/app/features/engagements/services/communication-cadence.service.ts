@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   CommunicationCadence,
@@ -7,6 +7,7 @@ import {
   EngagementParticipant
 } from '../models/cadence.model';
 import { CADENCE_CONSTANTS } from '@shared/constants/app.constants';
+import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 
 @Injectable({
   providedIn: 'root'
@@ -24,8 +25,14 @@ export class CommunicationCadenceService {
     return this.http.get<EngagementParticipant[]>(url);
   }
 
-  addCadence(engagementId: number, request: CreateCommunicationCadence): Observable<CommunicationCadence> {
+  addCadence(
+    engagementId: number,
+    request: CreateCommunicationCadence,
+    skipLoader = false
+  ): Observable<CommunicationCadence> {
     const url = CADENCE_CONSTANTS.API_ADD_CADENCE(engagementId);
-    return this.http.post<CommunicationCadence>(url, request);
+    return this.http.post<CommunicationCadence>(url, request, {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 }

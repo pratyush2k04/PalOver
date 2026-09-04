@@ -53,9 +53,10 @@ export class ArchitectureValidationService {
     );
   }
 
-  deleteFeatureItem(featureId: number): Observable<void> {
+  deleteFeatureItem(featureId: number, skipLoader = false): Observable<void> {
     return this.http.delete<void>(
-      TECHNICAL_READINESS_API_ENDPOINTS.ARCHITECTURE_VALIDATION_FEATURE_ITEM(featureId)
+      TECHNICAL_READINESS_API_ENDPOINTS.ARCHITECTURE_VALIDATION_FEATURE_ITEM(featureId),
+      { context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined }
     );
   }
 }

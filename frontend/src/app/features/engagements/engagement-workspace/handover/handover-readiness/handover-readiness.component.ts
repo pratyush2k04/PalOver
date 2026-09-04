@@ -15,6 +15,8 @@ import { DialogService } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { StatusSelectComponent, StatusSelectOption } from '@common/components/form/status-select/status-select';
+import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
+import { AlertComponent } from '@common/components/alert/alert';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { AddHandoverItemDialogComponent } from './dialogs/add-handover-item-dialog/add-handover-item-dialog.component';
@@ -30,7 +32,6 @@ import {
   HANDOVER_READINESS_LABELS,
   HANDOVER_READINESS_MESSAGES
 } from '@shared/constants/handover.constants';
-import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-handover-readiness',
@@ -43,6 +44,7 @@ import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confir
     StatusSelectComponent,
     LoadingSpinnerComponent,
     ConfirmDialogComponent,
+    AlertComponent,
     InlineSVGModule,
   ],
   templateUrl: './handover-readiness.component.html',
@@ -66,6 +68,7 @@ export class HandoverReadinessComponent implements OnInit {
   isLoading = signal<boolean>(false);
   pendingDeleteItem = signal<HandoverReadinessItemDto | null>(null);
   isDeletingItem = signal<boolean>(false);
+  errorMessage = signal<string>('');
 
   readonly isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
 
@@ -91,7 +94,7 @@ export class HandoverReadinessComponent implements OnInit {
     this.loadItems();
   }
 
-  loadItems(skipLoader = false): void {
+  loadItems(skipLoader = false, onDone?: () => void): void {
     if (skipLoader) {
       this.isLoading.set(true);
     }
@@ -102,10 +105,14 @@ export class HandoverReadinessComponent implements OnInit {
           this.isLoading.set(false);
         }
         this.itemsUpdated.emit(data);
+        onDone?.();
       },
       error: () => {
+        if (skipLoader) {
+          this.isLoading.set(false);
+        }
         this.toastService.error(this.MESSAGES.LOAD_ERROR);
-        this.isLoading.set(false);
+        onDone?.();
       }
     });
   }
@@ -150,8 +157,9 @@ export class HandoverReadinessComponent implements OnInit {
         this.itemsUpdated.emit(this.items());
       },
       error: (err) => {
-        this.toastService.error(err?.error?.message || this.MESSAGES.STATUS_UPDATE_ERROR);
-        this.loadItems();
+        this.loadItems(true, () =>
+          this.toastService.error(err?.error?.message || this.MESSAGES.STATUS_UPDATE_ERROR)
+        );
       }
     });
   }
@@ -193,24 +201,17 @@ export class HandoverReadinessComponent implements OnInit {
             evidenceSubmittedAt: item.evidenceSubmittedAt
           } as any,
           engagementId: this.engagementId(),
-          isReadOnly: !this.isPreSales() || this.isSubmitted()
+          isReadOnly: !this.isPreSales() || this.isSubmitted(),
+          saveEvidence: (documentId: number) =>
+            this.readinessService.saveEvidence(this.engagementId(), item.id, documentId, true)
         }
       }
     );
 
     dialogRef.afterClosed().subscribe((result: AttachEvidenceDialogResult | undefined) => {
-      if (result && result.documentId) {
-        this.readinessService.saveEvidence(this.engagementId(), item.id, result.documentId).subscribe({
-          next: (updatedItem) => {
-            this.items.update(current => current.map(i => i.id === updatedItem.id ? updatedItem : i));
-            this.toastService.success(this.MESSAGES.EVIDENCE_SAVE_SUCCESS);
-            this.itemsUpdated.emit(this.items());
-          },
-          error: (err) => {
-            this.toastService.error(err?.error?.message || this.MESSAGES.EVIDENCE_SAVE_ERROR);
-          }
-        });
-      }
+      if (!result) return;
+
+      this.loadItems(true, () => this.toastService.success(this.MESSAGES.EVIDENCE_SAVE_SUCCESS));
     });
   }
 
@@ -221,26 +222,29 @@ export class HandoverReadinessComponent implements OnInit {
 
   onDeleteItem(item: HandoverReadinessItemDto): void {
     if (!this.isPreSales()) return;
+    this.errorMessage.set('');
     this.pendingDeleteItem.set(item);
   }
 
   cancelDeleteItem(): void {
     this.pendingDeleteItem.set(null);
+    this.errorMessage.set('');
   }
 
   confirmDeleteItem(item: HandoverReadinessItemDto): void {
+    this.errorMessage.set('');
     this.isDeletingItem.set(true);
-    this.readinessService.deleteItem(item.id).subscribe({
+    this.readinessService.deleteItem(item.id, true).subscribe({
       next: () => {
-        this.items.update(current => current.filter(i => i.id !== item.id));
-        this.toastService.success(this.MESSAGES.DELETE_SUCCESS);
-        this.itemsUpdated.emit(this.items());
         this.pendingDeleteItem.set(null);
         this.isDeletingItem.set(false);
+        this.loadItems(true, () =>
+          this.toastService.success(this.MESSAGES.DELETE_SUCCESS)
+        );
       },
       error: (err) => {
-        this.toastService.error(err?.error?.message || this.MESSAGES.DELETE_ERROR);
         this.isDeletingItem.set(false);
+        this.errorMessage.set(err?.error?.message || this.MESSAGES.DELETE_ERROR);
       }
     });
   }

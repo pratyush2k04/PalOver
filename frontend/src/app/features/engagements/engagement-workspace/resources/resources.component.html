@@ -1,7 +1,7 @@
 <div class="resources-container">
   <app-section-header title="Resource Requests">
     @if (canRaiseRequest()) {
-      <app-button variant="flat" (click)="openRaiseModal()">
+      <app-button variant="flat" [disabled]="isLoading()" (click)="openRaiseModal()">
         {{ constants.BTN_RAISE_REQUEST }}
       </app-button>
     }
@@ -73,7 +73,7 @@
             <span>{{ formatDisplayDate(allocation.allocatedDate) }}</span>
             @if (canManageAllocations()) {
               <span class="allocation-actions">
-                <app-button variant="danger" size="sm" (click)="openRemoveDialog(request, allocation)">
+                <app-button variant="danger" size="sm" [disabled]="isLoading()" (click)="openRemoveDialog(request, allocation)">
                   {{ constants.BTN_REMOVE }}
                 </app-button>
               </span>
@@ -85,7 +85,7 @@
 
     @if (canManageAllocations() && request.status !== 'Confirmed') {
       <div class="card-footer">
-        <app-button variant="flat" size="sm" (click)="openAllocateModal(request)">
+        <app-button variant="flat" size="sm" [disabled]="isLoading()" (click)="openAllocateModal(request)">
           {{ constants.BTN_ALLOCATE }}
         </app-button>
       </div>

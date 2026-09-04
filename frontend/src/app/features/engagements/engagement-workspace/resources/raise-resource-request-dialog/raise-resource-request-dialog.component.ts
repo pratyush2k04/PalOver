@@ -1,4 +1,5 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, DestroyRef, inject, signal, computed } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
@@ -12,7 +13,6 @@ import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { AlertComponent } from '@common/components/alert/alert';
-import { ToastService } from '@common/services/toast/toast';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { InputComponent } from '@common/components/form/input/input';
 import { DatepickerComponent } from '@common/components/form/datepicker/datepicker';
@@ -25,12 +25,11 @@ import {
 } from '@shared/constants/app.constants';
 import {
   CreateResourceRequestPayload,
-  ResourceRequestItem,
   StandardRoleEnum,
 } from '../../../models/resource-request.model';
-import { ResourceRequestService } from '../../../services/resource-request.service';
 import { futureDateValidator } from '@common/validators/date.validators';
 import { EngagementService } from '@features/engagements/services/engagement.service';
+import { ResourceRequestService } from '@features/engagements/services/resource-request.service';
 
 export interface RaiseResourceRequestDialogData {
   engagementId: number;
@@ -65,10 +64,10 @@ function notAfterBillingDateValidator(billingStartDate: string | null | undefine
 })
 export class RaiseResourceRequestDialogComponent {
   private fb = inject(FormBuilder);
-  private dialogRef = inject<DialogRef<ResourceRequestItem | null>>(DialogRef);
-  private resourceRequestService = inject(ResourceRequestService);
-  private toastService = inject(ToastService);
+  private dialogRef = inject<DialogRef<CreateResourceRequestPayload>>(DialogRef);
   private engagementService = inject(EngagementService);
+  private resourceRequestService = inject(ResourceRequestService);
+  private destroyRef = inject(DestroyRef);
   readonly data = inject<RaiseResourceRequestDialogData>(DIALOG_DATA);
 
   readonly billingStartDate = computed(() => this.data.billingStartDate || this.engagementService.currentEngagement()?.billingStartDate || null);
@@ -104,8 +103,8 @@ export class RaiseResourceRequestDialogComponent {
   selectedSkills = signal<number[]>([]);
   skillsTouched = signal(false);
 
+  isSubmitting = signal(false);
   errorMessage = signal<string | null>(null);
-  isSubmitting = signal<boolean>(false);
 
   onSkillsChange(values: unknown[]): void {
     this.selectedSkills.set(values as number[]);
@@ -113,10 +112,6 @@ export class RaiseResourceRequestDialogComponent {
   }
 
   onSubmit(): void {
-    if (this.isSubmitting()) {
-      return;
-    }
-
     const skillsValid = this.selectedSkills().length > 0;
 
     if (this.form.invalid || !skillsValid) {
@@ -124,9 +119,6 @@ export class RaiseResourceRequestDialogComponent {
       this.skillsTouched.set(true);
       return;
     }
-
-    this.isSubmitting.set(true);
-    this.errorMessage.set(null);
 
     const { standardRole, peopleNeeded, requiredByDate, jobDescription } = this.form.getRawValue();
 
@@ -138,26 +130,24 @@ export class RaiseResourceRequestDialogComponent {
       jobDescription: jobDescription.trim(),
     };
 
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
+
     this.resourceRequestService
-      .createResourceRequest(this.data.engagementId, payload)
+      .createResourceRequest(this.data.engagementId, payload, true)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (created: ResourceRequestItem) => {
-          this.toastService.success(RESOURCE_REQUEST_CONSTANTS.MSG_SUCCESS_RAISED);
-          this.isSubmitting.set(false);
-          this.dialogRef.close(created);
+        next: () => {
+          this.dialogRef.close(payload);
         },
-        error: (err: { error?: { message?: string; title?: string } }) => {
+        error: (err) => {
           this.isSubmitting.set(false);
-          const errorMsg =
-            err.error?.message ||
-            err.error?.title ||
-            'Failed to raise resource request. Please try again.';
-          this.errorMessage.set(errorMsg);
+          this.errorMessage.set(err?.error?.message || err?.error || 'Failed to raise resource request. Please try again.');
         },
       });
   }
 
   onCancel(): void {
-    this.dialogRef.close(null);
+    this.dialogRef.close();
   }
 }

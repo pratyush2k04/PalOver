@@ -78,7 +78,7 @@
 
 <!-- Delete Confirmation Dialog -->
 @if (personToDelete(); as person) {
-<app-confirm-dialog title="Delete Person" confirmLabel="Delete" [isBusy]="isDeleting()" (confirmed)="confirmDelete()"
+<app-confirm-dialog title="Delete Person" confirmLabel="Delete" (confirmed)="confirmDelete()"
   (cancelled)="cancelDelete()">
   Are you sure you want to remove <strong>{{ person.name }}</strong> from the people directory?
 </app-confirm-dialog>

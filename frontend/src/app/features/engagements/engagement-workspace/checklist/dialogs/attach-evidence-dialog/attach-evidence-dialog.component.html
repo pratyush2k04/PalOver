@@ -102,9 +102,9 @@
   @if (isReadOnly) {
     <app-button type="button" variant="stroked" (click)="onCancel()">Close</app-button>
   } @else {
-    <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
-    <app-button type="button" variant="flat" [disabled]="isUploading()" [loading]="isUploading()" (click)="onSubmit()">
-      {{ submitButtonText }}
+    <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="onCancel()">Cancel</app-button>
+    <app-button type="button" variant="flat" [disabled]="isSubmitting()" (click)="onSubmit()">
+      {{ isSubmitting() ? 'Saving...' : submitButtonText }}
     </app-button>
   }
 </div>

@@ -2,10 +2,6 @@
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <div class="app-dialog__content">
-    @if (errorMessage()) {
-      <app-alert variant="danger">{{ errorMessage() }}</app-alert>
-    }
-
     <app-select
       id="standard-role"
       [label]="constants.LABEL_STANDARD_ROLE"
@@ -69,6 +65,10 @@
       }"
     />
   </div>
+
+  @if (errorMessage()) {
+    <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+  }
 
   <div class="app-dialog__actions">
     <app-button

@@ -20,21 +20,26 @@ import { EngagementService } from '../../../services/engagement.service';
 import { DocumentCategory, DocumentItem, DocumentVisibility } from '../../../models/document.model';
 import { AuthService } from '@shared/services/auth';
 import { DialogService } from '@common/services/dialog/dialog.service';
+import { ToastService } from '@common/services/toast/toast';
 import {
   UploadDocumentDialogComponent,
   UploadDocumentDialogData,
+  UploadDocumentDialogResult,
 } from '../upload-document-dialog/upload-document-dialog.component';
 import {
   RemoveDocumentDialogComponent,
   RemoveDocumentDialogData,
+  RemoveDocumentDialogResult,
 } from '../remove-document-dialog/remove-document-dialog.component';
 import {
   CustomVisibilityDialogComponent,
   CustomVisibilityDialogData,
+  CustomVisibilityDialogResult,
 } from '../custom-visibility-dialog/custom-visibility-dialog.component';
 import {
   UploadVersionDialogComponent,
   UploadVersionDialogData,
+  UploadVersionDialogResult,
 } from '../upload-version-dialog/upload-version-dialog.component';
 import {
   VersionHistoryDialogComponent,
@@ -76,6 +81,7 @@ export class EngagementDocumentsComponent {
   private authService = inject(AuthService);
   private destroyRef = inject(DestroyRef);
   private dialog = inject(DialogService);
+  private toastService = inject(ToastService);
 
   readonly versionFileInput = viewChild<ElementRef<HTMLInputElement>>('versionFileInput');
   private pendingVersionDocId: number | null = null;
@@ -158,7 +164,7 @@ export class EngagementDocumentsComponent {
       });
   }
 
-  loadDocuments(id?: number): void {
+  loadDocuments(id?: number, onDone?: () => void): void {
     const targetId = id ?? this.engagementId();
     if (!targetId) return;
 
@@ -172,6 +178,7 @@ export class EngagementDocumentsComponent {
         next: (docs) => {
           this.documents.set(docs);
           this.isLoading.set(false);
+          onDone?.();
         },
         error: (err) => {
           this.isLoading.set(false);
@@ -180,6 +187,7 @@ export class EngagementDocumentsComponent {
               ? err.error
               : err.error?.message || DOCUMENT_MESSAGES.LOAD_FAILED;
           this.errorMessage.set(msg);
+          onDone?.();
         },
       });
   }
@@ -191,11 +199,19 @@ export class EngagementDocumentsComponent {
     const dialogRef = this.dialog.open<
       UploadDocumentDialogComponent,
       UploadDocumentDialogData,
-      boolean
+      UploadDocumentDialogResult
     >(UploadDocumentDialogComponent, { data: { engagementId } });
 
-    dialogRef.closed$.subscribe((uploaded) => {
-      if (uploaded) this.loadDocuments();
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+
+      this.loadDocuments(undefined, () => {
+        if (result.failedFileNames.length > 0) {
+          this.toastService.error(DOCUMENT_MESSAGES.UPLOAD_PARTIAL_FAILURE(result.failedFileNames.join(', ')));
+        } else {
+          this.toastService.success(DOCUMENT_MESSAGES.UPLOAD_SUCCESS);
+        }
+      });
     });
   }
 
@@ -203,11 +219,13 @@ export class EngagementDocumentsComponent {
     const dialogRef = this.dialog.open<
       RemoveDocumentDialogComponent,
       RemoveDocumentDialogData,
-      boolean
+      RemoveDocumentDialogResult
     >(RemoveDocumentDialogComponent, { data: { documentId: doc.id, documentName: doc.fileName } });
 
-    dialogRef.closed$.subscribe((removed) => {
-      if (removed) this.loadDocuments();
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+
+      this.loadDocuments(undefined, () => this.toastService.success(DOCUMENT_MESSAGES.REMOVE_SUCCESS));
     });
   }
 
@@ -231,16 +249,17 @@ export class EngagementDocumentsComponent {
     const dialogRef = this.dialog.open<
       CustomVisibilityDialogComponent,
       CustomVisibilityDialogData,
-      DocumentItem
+      CustomVisibilityDialogResult
     >(CustomVisibilityDialogComponent, { data: { document: doc } });
 
-    dialogRef.closed$.subscribe((updatedDoc) => {
-      if (!updatedDoc) {
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) {
         // Trigger update to re-sync select value if modal was cancelled
         this.documents.update((docs) => [...docs]);
         return;
       }
-      this.documents.update((docs) => docs.map((d) => (d.id === updatedDoc.id ? updatedDoc : d)));
+
+      this.loadDocuments(undefined, () => this.toastService.success(DOCUMENT_MESSAGES.UPDATE_VISIBILITY_SUCCESS));
     });
   }
 
@@ -300,11 +319,13 @@ export class EngagementDocumentsComponent {
     const dialogRef = this.dialog.open<
       UploadVersionDialogComponent,
       UploadVersionDialogData,
-      boolean
+      UploadVersionDialogResult
     >(UploadVersionDialogComponent, { data: { documentId, file } });
 
-    dialogRef.closed$.subscribe((uploaded) => {
-      if (uploaded) this.loadDocuments();
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+
+      this.loadDocuments(undefined, () => this.toastService.success(DOCUMENT_MESSAGES.UPLOAD_VERSION_SUCCESS));
     });
   }
 

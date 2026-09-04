@@ -243,17 +243,32 @@ export class EngagementChecklistComponent {
     this.selectedOwnerId.set('all');
   }
 
-  private loadChecklist(engagementId: number): void {
-    this.isLoading.set(true);
+  private loadChecklist(engagementId: number, skipLoader = false, onDone?: () => void): void {
+    if (skipLoader) {
+      this.isUpdating.set(true);
+    } else {
+      this.isLoading.set(true);
+    }
     this.error.set(null);
-    this.checklistService.getEngagementChecklist(engagementId).subscribe({
+    this.checklistService.getEngagementChecklist(engagementId, skipLoader).subscribe({
       next: (data) => {
         this.checklist.set(data);
-        this.isLoading.set(false);
+        if (skipLoader) {
+          this.isUpdating.set(false);
+          this.kickoffReadinessService.refresh();
+        } else {
+          this.isLoading.set(false);
+        }
+        onDone?.();
       },
       error: () => {
         this.error.set(ENGAGEMENT_CHECKLIST_MESSAGES.LOAD_FAILED);
-        this.isLoading.set(false);
+        if (skipLoader) {
+          this.isUpdating.set(false);
+        } else {
+          this.isLoading.set(false);
+        }
+        onDone?.();
       }
     });
   }
@@ -336,18 +351,11 @@ export class EngagementChecklistComponent {
     });
 
     dialogRef.closed$.subscribe((result) => {
-      if (result && result.documentId) {
-        this.isUpdating.set(true);
-        this.checklistService.saveItemEvidence(engId, item.id, {
-          documentId: result.documentId,
-          markComplete: result.markComplete
-        }).subscribe({
-          next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist),
-          error: () => {
-            this.isUpdating.set(false);
-          }
-        });
-      }
+      if (!result) return;
+
+      this.loadChecklist(engId, true, () => {
+        this.toastService.success(ENGAGEMENT_CHECKLIST_MESSAGES.EVIDENCE_SAVED_SUCCESS);
+      });
     });
   }
 

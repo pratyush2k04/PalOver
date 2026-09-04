@@ -8,6 +8,7 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
 import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { ToastService } from '@common/services/toast/toast';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
+import { AlertComponent } from '@common/components/alert/alert';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
@@ -37,6 +38,7 @@ import { DiscoveryFeatureDialogComponent, DiscoveryFeatureDialogData } from './d
     InlineSVGModule,
     TooltipDirective,
     ConfirmDialogComponent,
+    AlertComponent,
     StatusBadgeComponent,
     ButtonComponent,
     TextareaComponent
@@ -61,7 +63,7 @@ export class ArchitectureValidationComponent {
   validation = signal<ArchitectureValidationDto | null>(null);
   isLoading = signal<boolean>(false);
   featureToDelete = signal<DiscoveryFeatureItemDto | null>(null);
-  isDeleting = signal<boolean>(false);
+  errorMessage = signal<string>('');
   selectedStatus = signal<ArchitectureStatus>(ArchitectureStatus.StillValid);
   rationale = signal<string>('');
   rationaleError = signal<string>('');
@@ -100,7 +102,7 @@ export class ArchitectureValidationComponent {
     });
   }
 
-  loadValidation(id: number = this.engagementId(), skipLoader = false): void {
+  loadValidation(id: number = this.engagementId(), skipLoader = false, onDone?: () => void): void {
     if (skipLoader) {
       this.isLoading.set(true);
     }
@@ -115,6 +117,7 @@ export class ArchitectureValidationComponent {
         if (skipLoader) {
           this.isLoading.set(false);
         }
+        onDone?.();
 
         if (this.isTechLead() && this.route.snapshot.queryParamMap.get('action') === 'create') {
           this.onAddFeature();
@@ -124,6 +127,7 @@ export class ArchitectureValidationComponent {
         if (skipLoader) {
           this.isLoading.set(false);
         }
+        onDone?.();
       }
     });
   }
@@ -215,31 +219,35 @@ export class ArchitectureValidationComponent {
 
   onDeleteFeature(feature: DiscoveryFeatureItemDto): void {
     if (!this.isTechLead()) return;
+    this.errorMessage.set('');
     this.featureToDelete.set(feature);
   }
 
   cancelDeleteFeature(): void {
     this.featureToDelete.set(null);
+    this.errorMessage.set('');
   }
 
   confirmDeleteFeature(): void {
     const feature = this.featureToDelete();
     if (!feature) return;
 
-    this.isDeleting.set(true);
-    this.service.deleteFeatureItem(feature.id).pipe(
+    this.errorMessage.set('');
+    this.isLoading.set(true);
+    this.service.deleteFeatureItem(feature.id, true).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: () => {
-        this.toastService.success(`Feature "${feature.featureName}" deleted successfully`);
-        this.isDeleting.set(false);
         this.featureToDelete.set(null);
-        this.loadValidation(this.engagementId(), true);
+        this.isLoading.set(false);
+        this.loadValidation(this.engagementId(), true, () =>
+          this.toastService.success(`Feature "${feature.featureName}" deleted successfully`)
+        );
       },
       error: (err) => {
-        this.toastService.error(`Failed to delete feature "${feature.featureName}"`);
+        this.isLoading.set(false);
+        this.errorMessage.set(`Failed to delete feature "${feature.featureName}"`);
         console.error('API delete feature failed', err);
-        this.isDeleting.set(false);
       }
     });
   }

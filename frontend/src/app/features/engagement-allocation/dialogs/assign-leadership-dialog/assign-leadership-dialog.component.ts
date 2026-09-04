@@ -18,6 +18,12 @@ export interface AssignLeadershipDialogData {
   availableLeadershipUsers: LeadershipUserItem[];
 }
 
+export interface AssignLeadershipDialogResult {
+  success: true;
+  addedNames: string[];
+  removedNames: string[];
+}
+
 @Component({
   selector: 'app-assign-leadership-dialog',
   standalone: true,
@@ -35,7 +41,7 @@ export interface AssignLeadershipDialogData {
   styleUrl: './assign-leadership-dialog.component.scss'
 })
 export class AssignLeadershipDialogComponent implements OnInit {
-  private dialogRef = inject<DialogRef<LeadershipUserItem[]>>(DialogRef);
+  private dialogRef = inject<DialogRef<AssignLeadershipDialogResult>>(DialogRef);
   private allocationService = inject(EngagementAllocationService);
   private toastService = inject(ToastService);
   readonly data = inject<AssignLeadershipDialogData>(DIALOG_DATA);
@@ -44,9 +50,10 @@ export class AssignLeadershipDialogComponent implements OnInit {
 
   modalLeadershipUsers = signal<LeadershipUserItem[]>([...(this.data.engagement.leadershipUsers || [])]);
   modalSearchTerm = signal<string>('');
-  isSaving = signal<boolean>(false);
   readonly handover = signal<HandoverDraftStatus | null>(null);
   readonly isLoadingHandover = signal<boolean>(true);
+  readonly isSubmitting = signal(false);
+  readonly errorMessage = signal<string | null>(null);
 
   ngOnInit(): void {
     this.allocationService.getHandoverDraftStatus(this.engagement.engagementId, true).subscribe({
@@ -111,41 +118,29 @@ export class AssignLeadershipDialogComponent implements OnInit {
   }
 
   saveAndClose(): void {
-    const originalIds = new Set(this.engagement.leadershipUsers?.map(u => u.id) || []);
-    const newIds = new Set(this.modalLeadershipUsers().map(u => u.id));
-    
-    // If no changes, just close
+    const originalUsers = this.data.engagement.leadershipUsers || [];
+    const originalIds = new Set(originalUsers.map(u => u.id));
+    const newUsers = this.modalLeadershipUsers();
+    const newIds = new Set(newUsers.map(u => u.id));
+
     if (originalIds.size === newIds.size && [...originalIds].every(id => newIds.has(id))) {
-      this.dialogRef.close(this.modalLeadershipUsers());
+      this.dialogRef.close();
       return;
     }
 
-    this.isSaving.set(true);
-    const userIds = Array.from(newIds);
-    this.allocationService.updateLeadershipUsers(this.engagement.engagementId, userIds).subscribe({
-      next: (updatedUsers) => {
-        this.isSaving.set(false);
-        this.modalLeadershipUsers.set(updatedUsers);
-        
-        const addedUsers = updatedUsers.filter(u => !originalIds.has(u.id));
-        const removedUsers = (this.engagement.leadershipUsers || []).filter(u => !newIds.has(u.id));
+    const addedNames = newUsers.filter(u => !originalIds.has(u.id)).map(u => u.fullName);
+    const removedNames = originalUsers.filter(u => !newIds.has(u.id)).map(u => u.fullName);
 
-        if (addedUsers.length > 0 && removedUsers.length === 0) {
-          const names = addedUsers.map(u => u.fullName).join(', ');
-          this.toastService.success(`Assigned ${names} to ${this.engagement.engagementName}`);
-        } else if (removedUsers.length > 0 && addedUsers.length === 0) {
-          const names = removedUsers.map(u => u.fullName).join(', ');
-          this.toastService.success(`Removed ${names} from ${this.engagement.engagementName}`);
-        } else if (addedUsers.length > 0 && removedUsers.length > 0) {
-          this.toastService.success(`Updated leadership contacts for ${this.engagement.engagementName}`);
-        }
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
 
-        this.dialogRef.close(this.modalLeadershipUsers());
+    this.allocationService.updateLeadershipUsers(this.engagement.engagementId, [...newIds], true).subscribe({
+      next: () => {
+        this.dialogRef.close({ success: true, addedNames, removedNames });
       },
       error: (err) => {
-        this.isSaving.set(false);
-        const errorMsg = err.error?.message || 'Failed to update leadership contacts.';
-        this.toastService.error(errorMsg);
+        this.isSubmitting.set(false);
+        this.errorMessage.set(err?.error?.message || err?.error || 'Something went wrong');
       }
     });
   }

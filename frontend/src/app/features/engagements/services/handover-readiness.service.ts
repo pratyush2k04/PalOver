@@ -41,20 +41,23 @@ export class HandoverReadinessService {
     );
   }
 
-  deleteItem(id: number): Observable<void> {
+  deleteItem(id: number, skipLoader = false): Observable<void> {
     return this.http.delete<void>(
-      `/api/handover-readiness/${id}`
+      `/api/handover-readiness/${id}`,
+      { context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined }
     );
   }
 
   saveEvidence(
     engagementId: number,
     itemId: number,
-    documentId: number
+    documentId: number,
+    skipLoader = false
   ): Observable<HandoverReadinessItemDto> {
     return this.http.put<HandoverReadinessItemDto>(
       `/api/engagements/${engagementId}/handover-readiness/${itemId}/evidence`,
-      { documentId }
+      { documentId },
+      { context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined }
     );
   }
 }
