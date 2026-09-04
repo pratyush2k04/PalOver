@@ -23,11 +23,15 @@ export class RiskCommentService {
   }
 
   addComment(engagementId: number, riskId: number, request: CreateRiskCommentRequest): Observable<RiskComment> {
-    return this.http.post<RiskComment>(RISK_COMMENT_API_ENDPOINTS.ADD_COMMENT(engagementId, riskId), request);
+    return this.http.post<RiskComment>(RISK_COMMENT_API_ENDPOINTS.ADD_COMMENT(engagementId, riskId), request, {
+      context: new HttpContext().set(SKIP_LOADER, true)
+    });
   }
 
   updateComment(engagementId: number, riskId: number, commentId: number, request: UpdateRiskCommentRequest): Observable<RiskComment> {
-    return this.http.put<RiskComment>(RISK_COMMENT_API_ENDPOINTS.UPDATE_COMMENT(engagementId, riskId, commentId), request);
+    return this.http.put<RiskComment>(RISK_COMMENT_API_ENDPOINTS.UPDATE_COMMENT(engagementId, riskId, commentId), request, {
+      context: new HttpContext().set(SKIP_LOADER, true)
+    });
   }
 
   getEngagementMembers(engagementId: number): Observable<EngagementMember[]> {
