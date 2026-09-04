@@ -62,7 +62,6 @@
   <app-button
     type="button"
     variant="stroked"
-    [disabled]="isBusy()"
     (click)="onCancel()"
   >
     Cancel
@@ -70,7 +69,6 @@
   <app-button
     type="button"
     [variant]="isException() && data.isLeadership ? 'warning' : 'flat'"
-    [loading]="isBusy()"
     [disabled]="!canSubmit()"
     (click)="onSubmit()"
   >

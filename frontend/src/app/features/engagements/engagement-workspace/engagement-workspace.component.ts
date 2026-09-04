@@ -135,17 +135,19 @@ export class EngagementWorkspaceComponent {
     });
   }
 
-  private loadEngagement(id: number) {
+  private loadEngagement(id: number, onDone?: () => void) {
     this.isLoading.set(true);
     this.engagementService.getEngagementInfo(id).subscribe({
       next: (data) => {
         this.engagement.set(data);
         this.isLoading.set(false);
+        onDone?.();
       },
       error: (error) => {
         console.error(error);
         this.engagement.set(null);
         this.isLoading.set(false);
+        onDone?.();
       }
     });
 
@@ -180,10 +182,17 @@ export class EngagementWorkspaceComponent {
       }
     });
 
-    dialogRef.closed$.subscribe((success) => {
-      if (success) {
-        this.loadEngagement(engagementId);
-      }
+    dialogRef.closed$.subscribe((request) => {
+      if (!request) return;
+
+      this.engagementService.signOffDayOne(engagementId, request).subscribe({
+        next: () => {
+          this.loadEngagement(engagementId, () => this.toastService.success('Day-1 successfully signed off!'));
+        },
+        error: (err) => {
+          this.toastService.error(err.error?.message || 'Failed to sign off Day-1 readiness.');
+        }
+      });
     });
   }
 
