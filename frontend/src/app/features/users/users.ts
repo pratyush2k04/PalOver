@@ -85,7 +85,6 @@ export class UsersComponent implements OnInit {
   });
 
   pendingChange = signal<PendingRoleChange | null>(null);
-  isSavingRoleChange = signal(false);
 
   private searchDebounce: ReturnType<typeof setTimeout> | null = null;
 
@@ -162,21 +161,20 @@ export class UsersComponent implements OnInit {
       return;
     }
 
-    this.isSavingRoleChange.set(true);
+    this.pendingChange.set(null);
+    this.isLoading.set(true);
 
-    this.userService.changeUserRole(pending.user.id, pending.newRoleId).subscribe({
+    this.userService.changeUserRole(pending.user.id, pending.newRoleId, true).subscribe({
       next: (updatedUser) => {
         this.users.update((list) =>
           list.map((u) => (u.id === updatedUser.id ? updatedUser : u))
         );
-        this.isSavingRoleChange.set(false);
-        this.pendingChange.set(null);
+        this.isLoading.set(false);
         this.toastService.success(USER_MESSAGES.ROLE_UPDATED_SUCCESS);
       },
       error: () => {
+        this.isLoading.set(false);
         this.errorMessage.set(USER_MESSAGES.UPDATE_ROLE_ERROR);
-        this.isSavingRoleChange.set(false);
-        this.pendingChange.set(null);
       }
     });
   }

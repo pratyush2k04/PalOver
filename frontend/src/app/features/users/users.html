@@ -103,7 +103,6 @@
 @if (pendingChange(); as pending) {
   <app-confirm-dialog
     confirmLabel="Confirm"
-    [isBusy]="isSavingRoleChange()"
     (confirmed)="confirmRoleChange()"
     (cancelled)="cancelRoleChange()"
   >
