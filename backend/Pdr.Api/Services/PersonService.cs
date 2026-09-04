@@ -52,9 +52,23 @@ public class PersonService(
         await personRepository.AddAsync(person);
         await personRepository.SaveChangesAsync();
 
+        var actorUserId = int.TryParse(currentUserId, out var uid) ? uid : currentUserService.GetUserId();
+
+        await auditLogService.LogAsync(
+            AuditActionEnum.PersonAdded,
+            new Dictionary<string, object?>
+            {
+                ["EngagementId"] = engagementId,
+                ["PersonName"] = person.Name,
+                ["RoleName"] = person.Role,
+                ["ActorUserId"] = actorUserId
+            },
+            engagementId,
+            actorUserId
+        );
+
         if (person.PersonType == PersonType.Client)
         {
-            var actorUserId = int.TryParse(currentUserId, out var uid) ? uid : currentUserService.GetUserId();
             await auditLogService.LogAsync(
                 AuditActionEnum.ClientContactDetailsChanged,
                 new Dictionary<string, object?>

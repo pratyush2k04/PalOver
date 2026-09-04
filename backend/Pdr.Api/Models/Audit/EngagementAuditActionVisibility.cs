@@ -53,6 +53,7 @@ public static class EngagementAuditActionVisibilityRegistry
         [AuditActionEnum.ReadinessOnePagerGenerated] = new(VisibleToRoles: AllRoles),
         [AuditActionEnum.KickoffReadyMarked] = new(VisibleToRoles: AllRoles),
         [AuditActionEnum.KickoffReadyReverted] = new(VisibleToRoles: AllRoles),
-        [AuditActionEnum.AccessItemBlocked] = new(VisibleToRoles: AllRoles)
+        [AuditActionEnum.AccessItemBlocked] = new(VisibleToRoles: AllRoles),
+        [AuditActionEnum.PersonAdded] = new(VisibleToRoles: AllRoles)
     };
 }

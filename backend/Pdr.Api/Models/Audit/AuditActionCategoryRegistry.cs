@@ -34,6 +34,7 @@ public static class AuditActionCategoryRegistry
         [AuditActionEnum.ReadinessOnePagerGenerated] = AuditCategoryEnum.TechnicalReadiness,
         [AuditActionEnum.KickoffReadyMarked] = AuditCategoryEnum.TechnicalReadiness,
         [AuditActionEnum.KickoffReadyReverted] = AuditCategoryEnum.TechnicalReadiness,
-        [AuditActionEnum.AccessItemBlocked] = AuditCategoryEnum.TechnicalReadiness
+        [AuditActionEnum.AccessItemBlocked] = AuditCategoryEnum.TechnicalReadiness,
+        [AuditActionEnum.PersonAdded] = AuditCategoryEnum.People
     };
 }

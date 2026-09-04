@@ -71,7 +71,8 @@ export class AuditLogComponent implements OnInit {
     { value: 'Handover', label: 'Handover' },
     { value: 'Escalation', label: 'Escalation' },
     { value: 'ResourceAllocation', label: 'Resource Allocation' },
-    { value: 'TechnicalReadiness', label: 'Technical Readiness' }
+    { value: 'TechnicalReadiness', label: 'Technical Readiness' },
+    { value: 'People', label: 'People' }
   ];
 
   page = signal(1);
@@ -133,7 +134,8 @@ export class AuditLogComponent implements OnInit {
     ReadinessOnePagerGenerated: 'Technical Readiness',
     KickoffReadyMarked: 'Technical Readiness',
     KickoffReadyReverted: 'Technical Readiness',
-    AccessItemBlocked: 'Technical Readiness'
+    AccessItemBlocked: 'Technical Readiness',
+    PersonAdded: 'People'
   };
 
   getEventCategory(action: string): string {

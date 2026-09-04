@@ -538,6 +538,12 @@ namespace Pdr.Api.Migrations
                             Id = 856019,
                             Action = "HandoverQueryResolved",
                             Details = "{actorName} marked a query on {fieldSection} resolved for the handover on {engagementName}"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            Action = "PersonAdded",
+                            Details = "Person {personName} with role {roleName} was added by {actorName}"
                         });
                 });
 

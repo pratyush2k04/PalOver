@@ -230,6 +230,12 @@ public class AuditActionConfiguration : IEntityTypeConfiguration<AuditAction>
                 Id = (int)AuditActionEnum.HandoverQueryResolved,
                 Action = AuditActionEnum.HandoverQueryResolved.ToString(),
                 Details = "{actorName} marked a query on {fieldSection} resolved for the handover on {engagementName}"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.PersonAdded,
+                Action = AuditActionEnum.PersonAdded.ToString(),
+                Details = "Person {personName} with role {roleName} was added by {actorName}"
             });
     }
 }
