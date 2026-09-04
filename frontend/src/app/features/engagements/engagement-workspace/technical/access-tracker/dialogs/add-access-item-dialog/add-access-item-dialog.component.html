@@ -6,6 +6,7 @@
       id="item-name"
       label="Item Name"
       [required]="true"
+      [maxLength]="200"
       [ngModel]="name()"
       (ngModelChange)="onNameChange($event)"
       name="itemName"
@@ -23,6 +24,7 @@
     <app-input
       id="tz-note"
       label="Notes / Timezone"
+      [maxLength]="100"
       [ngModel]="timeZoneNote()"
       (ngModelChange)="timeZoneNote.set($event)"
       name="timeZoneNote"

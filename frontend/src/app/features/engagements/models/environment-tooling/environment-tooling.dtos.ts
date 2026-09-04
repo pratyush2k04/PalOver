@@ -9,7 +9,7 @@ export interface EnvironmentToolingItemDto {
   ownerFullName: string;
   customName?: string;
   status: EnvironmentToolingStatus;
-  notApplicableReason?: string;
+  blockReason?: string;
 }
 
 export interface EnvironmentToolingReadinessResponse {

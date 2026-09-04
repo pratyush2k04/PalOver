@@ -6,6 +6,7 @@
       id="feature-name"
       label="Feature Name"
       [required]="true"
+      [maxLength]="200"
       [ngModel]="featureName()"
       (ngModelChange)="onFeatureNameChange($event)"
       name="featureName"

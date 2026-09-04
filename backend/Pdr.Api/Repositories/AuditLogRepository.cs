@@ -64,9 +64,8 @@ public class AuditLogRepository(AppDbContext context) : IAuditLogRepository
     {
         return await context.AuditLogs
             .AsNoTracking()
-            .Include(x => x.User)
-            .Where(x => x.EngagementId == engagementId)
-            .Select(x => x.User)
+            .Where(x => x.EngagementId == engagementId && x.User != null)
+            .Select(x => x.User!)
             .Distinct()
             .Select(u => new SimpleUserDto
             {

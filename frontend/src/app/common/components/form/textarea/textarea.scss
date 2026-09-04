@@ -26,6 +26,7 @@ textarea {
   border: 1px solid $color-border-input;
   border-radius: var(--textarea-border-radius, #{$radius-md});
   padding: var(--textarea-padding, #{$spacing-2} #{$spacing-3});
+  field-sizing: var(--textarea-field-sizing, fixed);
   min-height: var(--textarea-min-height, auto);
   max-height: var(--textarea-max-height, none);
   outline: none;

@@ -36,8 +36,7 @@ export interface DayOneReadinessSummaryDto {
   totalToolingCount: number;
   readyToolingCount: number;
   notReadyToolingCount: number;
-  notApplicableToolingCount: number;
-  applicableToolingCount: number;
+  blockedToolingCount: number;
   toolingPercentReady: number;
   isToolingReady: boolean;
 
@@ -59,6 +58,7 @@ export interface DayOneReadinessSummaryDto {
   highSeverityAcceptedCount: number;
   highSeverityPendingCount: number;
   isBrownfieldReady: boolean;
+  brownfieldDocumentNames?: string[];
 
   // Blockers & Action Items
   outstandingBlockers: DayOneBlockerItemDto[];

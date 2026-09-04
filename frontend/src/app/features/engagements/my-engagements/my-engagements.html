@@ -73,6 +73,9 @@
       </div>
 
       <div class="pagination-footer">
+        <div class="showing-text">
+          Showing {{ showingStart() }} to {{ showingEnd() }} of {{ totalCount() }} engagements
+        </div>
         <app-paginator
           [page]="page()"
           [totalPages]="totalPages()"

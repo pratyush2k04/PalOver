@@ -26,4 +26,8 @@ export class EnvironmentToolingService {
   updateOwner(id: number, request: UpdateEnvironmentToolingOwnerRequest): Observable<EnvironmentToolingItemDto> {
     return this.http.patch<EnvironmentToolingItemDto>(TECHNICAL_READINESS_API_ENDPOINTS.ENVIRONMENT_TOOLING_OWNER(id), request);
   }
+
+  deleteItem(id: number): Observable<void> {
+    return this.http.delete<void>(TECHNICAL_READINESS_API_ENDPOINTS.ENVIRONMENT_TOOLING_ITEM(id));
+  }
 }

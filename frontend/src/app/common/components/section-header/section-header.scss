@@ -39,7 +39,7 @@
 
       .section-title {
         margin: 0;
-        font-size: var(--section-title-size, 1.35rem);
+        font-size: var(--section-title-size, $font-size-xl);
         font-weight: $font-weight-bold;
         color: $color-text;
         line-height: 1.3;

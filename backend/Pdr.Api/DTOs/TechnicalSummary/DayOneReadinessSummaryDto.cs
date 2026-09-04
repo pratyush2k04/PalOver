@@ -29,8 +29,7 @@ public class DayOneReadinessSummaryDto
     public int TotalToolingCount { get; set; }
     public int ReadyToolingCount { get; set; }
     public int NotReadyToolingCount { get; set; }
-    public int NotApplicableToolingCount { get; set; }
-    public int ApplicableToolingCount { get; set; }
+    public int BlockedToolingCount { get; set; }
     public decimal ToolingPercentReady { get; set; }
     public bool IsToolingReady { get; set; }
 
@@ -52,6 +51,7 @@ public class DayOneReadinessSummaryDto
     public int HighSeverityAcceptedCount { get; set; }
     public int HighSeverityPendingCount { get; set; }
     public bool IsBrownfieldReady { get; set; }
+    public List<string> BrownfieldDocumentNames { get; set; } = [];
 
     // Blockers & Action Items
     public List<DayOneBlockerItemDto> OutstandingBlockers { get; set; } = [];

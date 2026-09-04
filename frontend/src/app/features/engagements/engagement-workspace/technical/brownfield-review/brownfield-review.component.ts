@@ -46,7 +46,7 @@ export class BrownfieldReviewComponent {
   private dialog = inject(DialogService);
 
   readinessResponse = signal<BrownfieldReadinessResponse | null>(null);
-  isLoading = signal<boolean>(true);
+  isLoading = signal<boolean>(false);
   findingToDelete = signal<BrownfieldFindingDto | null>(null);
   isDeleting = signal<boolean>(false);
 
@@ -66,15 +66,23 @@ export class BrownfieldReviewComponent {
     });
   }
 
-  loadFindings(id: number = this.engagementId()): void {
-    this.isLoading.set(true);
-    this.brownfieldService.getFindings(id).subscribe({
+  loadFindings(id: number = this.engagementId(), skipLoader = false): void {
+    if (skipLoader) {
+      this.isLoading.set(true);
+    }
+    this.brownfieldService.getFindings(id, skipLoader).subscribe({
       next: (res: BrownfieldReadinessResponse) => {
         this.readinessResponse.set(res);
         this.readinessUpdated.emit(res);
-        this.isLoading.set(false);
+        if (skipLoader) {
+          this.isLoading.set(false);
+        }
       },
-      error: () => this.isLoading.set(false)
+      error: () => {
+        if (skipLoader) {
+          this.isLoading.set(false);
+        }
+      }
     });
   }
 
@@ -87,7 +95,7 @@ export class BrownfieldReviewComponent {
     dialogRef.afterClosed().subscribe((result: AddFindingDialogResult | undefined) => {
       if (result) {
         this.brownfieldService.createFinding(this.engagementId(), result).subscribe({
-          next: () => this.loadFindings()
+          next: () => this.loadFindings(this.engagementId(), true)
         });
       }
     });
@@ -95,7 +103,7 @@ export class BrownfieldReviewComponent {
 
   onUpdateDecision(findingId: number, decision: ClientDecision): void {
     this.brownfieldService.updateDecision(findingId, decision).subscribe({
-      next: () => this.loadFindings()
+      next: () => this.loadFindings(this.engagementId(), true)
     });
   }
 
@@ -118,7 +126,7 @@ export class BrownfieldReviewComponent {
         this.toastService.success(`Finding "${finding.title}" deleted successfully`);
         this.isDeleting.set(false);
         this.findingToDelete.set(null);
-        this.loadFindings();
+        this.loadFindings(this.engagementId(), true);
       },
       error: (err: unknown) => {
         this.toastService.error(`Failed to delete finding "${finding.title}"`);

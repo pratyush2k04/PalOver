@@ -1,12 +1,12 @@
 <div class="readiness-card">
   <div class="card-header">
-    <h3 class="card-title">Readiness Checklist</h3>
+    <h3 class="card-title">{{ LABELS.TITLE }}</h3>
   </div>
 
   @if (isLoading()) {
     <div class="loading-state">
       <app-loading-spinner size="md"></app-loading-spinner>
-      <span>Loading readiness checklist...</span>
+      <span>{{ LABELS.LOADING }}</span>
     </div>
   } @else {
     <div class="readiness-content">
@@ -14,20 +14,26 @@
       <div class="area-section">
         <div class="area-header">
           <div class="area-badge-group">
-            <span class="area-badge commercial">COMMERCIAL</span>
-            <span class="area-count">{{ commercialItems().length }} Items</span>
+            <span class="area-badge commercial">{{ LABELS.COMMERCIAL }}</span>
+            <span class="area-count">{{ commercialItems().length }} {{ LABELS.ITEMS }}</span>
           </div>
+          @if (isPreSales() && !isSubmitted()) {
+            <app-button variant="flat" size="sm" (click)="openAddModal('COMMERCIAL')">
+               {{ LABELS.ADD_ITEM }}
+            </app-button>
+          }
         </div>
 
         <div class="table-wrapper">
           <table class="readiness-table">
             <thead>
               <tr>
-                <th class="col-item">Item</th>
-                <th class="col-owner">Owner</th>
-                <th class="col-status">Status</th>
+                <th class="col-item">{{ LABELS.ITEM }}</th>
+                <th class="col-owner">{{ LABELS.OWNER }}</th>
+                <th class="col-evidence">{{ LABELS.EVIDENCE }}</th>
+                <th class="col-status">{{ LABELS.STATUS }}</th>
                 @if (isPreSales() && !isSubmitted()) {
-                  <th class="col-actions">Actions</th>
+                  <th class="col-actions">{{ LABELS.ACTIONS }}</th>
                 }
               </tr>
             </thead>
@@ -40,13 +46,44 @@
                       @if (item.status === 'Blocked' && item.blockReason) {
                         <div class="block-reason-callout">
                           <span class="warning-icon" [inlineSVG]="'assets/icons/alert-triangle.svg'"></span>
-                          <span><strong>Block Reason:</strong> {{ item.blockReason }}</span>
+                          <span><strong>{{ LABELS.BLOCK_REASON }}</strong> {{ item.blockReason }}</span>
                         </div>
                       }
                     </div>
                   </td>
                   <td class="col-owner">
                     <span class="owner-name">{{ item.ownerFullName }}</span>
+                  </td>
+                  <td class="col-evidence">
+                    @if (item.evidenceDocumentId) {
+                      <div class="evidence-attached-wrapper">
+                        <button
+                          type="button"
+                          class="btn-evidence-view"
+                          (click)="downloadEvidence(item)"
+                          [title]="item.evidenceDocumentFileName || LABELS.DOWNLOAD_EVIDENCE">
+                          <span class="evidence-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
+                          <span class="evidence-text">{{ item.evidenceDocumentFileName ? (item.evidenceDocumentFileName | slice:0:15) + (item.evidenceDocumentFileName.length > 15 ? '...' : '') : 'Download' }}</span>
+                        </button>
+                        @if (isPreSales() && !isSubmitted()) {
+                          <button
+                            type="button"
+                            class="btn-evidence-details"
+                            (click)="openAttachEvidenceDialog(item)"
+                            [title]="LABELS.VIEW_OR_REPLACE_EVIDENCE">
+                            <span class="view-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                          </button>
+                        }
+                      </div>
+                    } @else {
+                      @if (isPreSales() && !isSubmitted()) {
+                        <button type="button" class="btn-evidence-add" (click)="openAttachEvidenceDialog(item)">
+                          {{ LABELS.ATTACH_EVIDENCE }}
+                        </button>
+                      } @else {
+                        <span class="text-faint">&mdash;</span>
+                      }
+                    }
                   </td>
                   <td class="col-status">
                     @if (isPreSales() && !isSubmitted()) {
@@ -67,8 +104,8 @@
                         type="button"
                         class="delete-btn"
                         (click)="onDeleteItem(item)"
-                        title="Delete Item"
-                        aria-label="Delete item"
+                        [title]="LABELS.DELETE_ITEM"
+                        [attr.aria-label]="LABELS.DELETE_ITEM"
                       >
                         <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
                       </button>
@@ -85,12 +122,12 @@
       <div class="area-section">
         <div class="area-header">
           <div class="area-badge-group">
-            <span class="area-badge handover">HANDOVER</span>
-            <span class="area-count">{{ handoverItems().length }} Items</span>
+            <span class="area-badge handover">{{ LABELS.HANDOVER }}</span>
+            <span class="area-count">{{ handoverItems().length }} {{ LABELS.ITEMS }}</span>
           </div>
           @if (isPreSales() && !isSubmitted()) {
-            <app-button variant="flat" size="sm" (click)="openAddModal()">
-               Add Item
+            <app-button variant="flat" size="sm" (click)="openAddModal('HANDOVER')">
+               {{ LABELS.ADD_ITEM }}
             </app-button>
           }
         </div>
@@ -99,11 +136,12 @@
           <table class="readiness-table">
             <thead>
               <tr>
-                <th class="col-item">Item</th>
-                <th class="col-owner">Owner</th>
-                <th class="col-status">Status</th>
+                <th class="col-item">{{ LABELS.ITEM }}</th>
+                <th class="col-owner">{{ LABELS.OWNER }}</th>
+                <th class="col-evidence">{{ LABELS.EVIDENCE }}</th>
+                <th class="col-status">{{ LABELS.STATUS }}</th>
                 @if (isPreSales() && !isSubmitted()) {
-                  <th class="col-actions">Actions</th>
+                  <th class="col-actions">{{ LABELS.ACTIONS }}</th>
                 }
               </tr>
             </thead>
@@ -116,13 +154,44 @@
                       @if (item.status === 'Blocked' && item.blockReason) {
                         <div class="block-reason-callout">
                           <span class="warning-icon" [inlineSVG]="'assets/icons/alert-triangle.svg'"></span>
-                          <span><strong>Block Reason:</strong> {{ item.blockReason }}</span>
+                          <span><strong>{{ LABELS.BLOCK_REASON }}</strong> {{ item.blockReason }}</span>
                         </div>
                       }
                     </div>
                   </td>
                   <td class="col-owner">
                     <span class="owner-name">{{ item.ownerFullName }}</span>
+                  </td>
+                  <td class="col-evidence">
+                    @if (item.evidenceDocumentId) {
+                      <div class="evidence-attached-wrapper">
+                        <button
+                          type="button"
+                          class="btn-evidence-view"
+                          (click)="downloadEvidence(item)"
+                          [title]="item.evidenceDocumentFileName || LABELS.DOWNLOAD_EVIDENCE">
+                          <span class="evidence-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
+                          <span class="evidence-text">{{ item.evidenceDocumentFileName ? (item.evidenceDocumentFileName | slice:0:15) + (item.evidenceDocumentFileName.length > 15 ? '...' : '') : 'Download' }}</span>
+                        </button>
+                        @if (isPreSales() && !isSubmitted()) {
+                          <button
+                            type="button"
+                            class="btn-evidence-details"
+                            (click)="openAttachEvidenceDialog(item)"
+                            [title]="LABELS.VIEW_OR_REPLACE_EVIDENCE">
+                            <span class="view-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                          </button>
+                        }
+                      </div>
+                    } @else {
+                      @if (isPreSales() && !isSubmitted()) {
+                        <button type="button" class="btn-evidence-add" (click)="openAttachEvidenceDialog(item)">
+                          {{ LABELS.ATTACH_EVIDENCE }}
+                        </button>
+                      } @else {
+                        <span class="text-faint">&mdash;</span>
+                      }
+                    }
                   </td>
                   <td class="col-status">
                     @if (isPreSales() && !isSubmitted()) {
@@ -143,8 +212,8 @@
                         type="button"
                         class="delete-btn"
                         (click)="onDeleteItem(item)"
-                        title="Delete Item"
-                        aria-label="Delete item"
+                        [title]="LABELS.DELETE_ITEM"
+                        [attr.aria-label]="LABELS.DELETE_ITEM"
                       >
                         <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
                       </button>
@@ -162,8 +231,8 @@
 
 @if (pendingDeleteItem(); as item) {
   <app-confirm-dialog
-    title="Delete Handover Item"
-    confirmLabel="Delete"
+    [title]="LABELS.DELETE_CONFIRM_TITLE"
+    [confirmLabel]="LABELS.DELETE_CONFIRM_LABEL"
     [isBusy]="isDeletingItem()"
     (confirmed)="confirmDeleteItem(item)"
     (cancelled)="cancelDeleteItem()"

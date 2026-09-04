@@ -21,6 +21,7 @@
       [attr.aria-haspopup]="'listbox'"
       role="combobox"
       (click)="toggleDropdown()"
+      (blur)="markTouched()"
     >
       <span class="select-trigger__text">{{ displayLabel() }}</span>
       <span

@@ -15,7 +15,14 @@ public class HandoverReadinessItem : BaseAuditableEntity
     public string? BlockReason { get; set; }
     public int? HandoverReadinessDefinitionId { get; set; }
     
+    // Evidence tracking
+    public int? EvidenceDocumentId { get; set; }
+    public DateTime? EvidenceSubmittedAt { get; set; }
+    public int? EvidenceSubmittedById { get; set; }
+    
     public Engagement Engagement { get; set; } = null!;
     public User Owner { get; set; } = null!;
     public HandoverReadinessDefinition? HandoverReadinessDefinition { get; set; }
+    public Documents.Document? EvidenceDocument { get; set; }
+    public User? EvidenceSubmittedBy { get; set; }
 }

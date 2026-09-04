@@ -8,4 +8,5 @@ public interface IHandoverQueriesService
     Task<HandoverQueryDto> RaiseQueryAsync(int engagementId, CreateHandoverQueryRequest request, string userIdStr);
     Task<HandoverQueryDto> AddMessageAsync(int engagementId, int queryId, AddHandoverQueryMessageRequest request, string userIdStr);
     Task<HandoverQueryDto> ToggleResolutionAsync(int engagementId, int queryId, string userIdStr);
+    Task DeleteQueryAsync(int engagementId, int queryId, string userIdStr);
 }

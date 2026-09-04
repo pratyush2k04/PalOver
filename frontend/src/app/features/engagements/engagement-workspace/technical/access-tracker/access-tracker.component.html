@@ -13,21 +13,17 @@
     </div>
   </div>
 
-  <!-- Loading state -->
-  @if (isLoading()) {
-    <app-loading-spinner label="Loading access items..." />
-  } @else {
-    <!-- Table -->
-    <div class="table-responsive">
+  <!-- Table -->
+  <div class="table-responsive">
       <table class="access-table">
         <thead>
           <tr>
-            <th>ITEM</th>
-            <th>OWNER</th>
-            <th>CLIENT-SIDE</th>
+            <th class="item-th">ITEM</th>
+            <th class="owner-th">OWNER</th>
+            <th class="client-side-th">CLIENT-SIDE</th>
             <th class="status-th">STATUS</th>
             @if (canManage()) {
-              <th>ACTIONS</th>
+              <th class="actions-th">ACTIONS</th>
             }
           </tr>
         </thead>
@@ -96,8 +92,7 @@
         </tbody>
       </table>
     </div>
-  }
-</div>
+  </div>
 
 <!-- Delete Confirmation Dialog -->
 @if (itemToDelete(); as item) {
