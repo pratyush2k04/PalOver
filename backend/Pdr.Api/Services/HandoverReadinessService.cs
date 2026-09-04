@@ -12,7 +12,9 @@ namespace Pdr.Api.Services;
 
 public class HandoverReadinessService(
     IHandoverReadinessRepository repository,
-    IRiskService riskService) : IHandoverReadinessService
+    IRiskService riskService,
+    IDocumentRepository documentRepository,
+    ICurrentUserService currentUserService) : IHandoverReadinessService
 {
     public async Task<List<HandoverReadinessItemDto>> GetItemsAsync(int engagementId)
     {
@@ -56,11 +58,12 @@ public class HandoverReadinessService(
             throw new HandoverReadinessItemNameRequiredException();
 
         var preSalesOwnerId = await repository.GetPreSalesOwnerIdAsync(engagementId) ?? 1;
+        var targetArea = string.IsNullOrWhiteSpace(request.Area) ? "HANDOVER" : request.Area.Trim().ToUpperInvariant();
 
         var item = new HandoverReadinessItem
         {
             EngagementId = engagementId,
-            Area = "HANDOVER",
+            Area = targetArea,
             Name = request.Name.Trim(),
             OwnerId = preSalesOwnerId,
             Status = HandoverReadinessStatus.InProgress,
@@ -117,6 +120,38 @@ public class HandoverReadinessService(
         await riskService.SyncAutoCreatedRisksAsync(item.EngagementId);
     }
 
+    public async Task<HandoverReadinessItemDto> SaveItemEvidenceAsync(int engagementId, int itemId, SaveHandoverReadinessEvidenceRequestDto dto)
+    {
+        if (!await repository.EngagementExistsAsync(engagementId))
+            throw new EngagementNotFoundException(engagementId);
+
+        var item = await repository.GetByIdAsync(itemId)
+            ?? throw new HandoverReadinessItemNotFoundException(itemId);
+
+        if (item.EngagementId != engagementId)
+            throw new HandoverReadinessItemNotFoundException(itemId);
+
+        var evidenceDocument = await documentRepository.GetByIdAsync(dto.DocumentId)
+            ?? throw new DocumentNotFoundException(dto.DocumentId);
+
+        if (evidenceDocument.EngagementId != engagementId)
+            throw new EvidenceDocumentNotInEngagementException(dto.DocumentId);
+
+        var currentUserId = currentUserService.GetUserId();
+        item.EvidenceDocumentId = evidenceDocument.Id;
+        item.EvidenceSubmittedAt = DateTime.UtcNow;
+        item.EvidenceSubmittedById = currentUserId;
+        item.UpdatedAt = DateTime.UtcNow;
+        item.UpdatedBy = currentUserId.ToString();
+
+        await repository.SaveChangesAsync();
+
+        var updated = await repository.GetByIdAsync(itemId)
+            ?? throw new HandoverReadinessItemNotFoundException(itemId);
+
+        return MapToDto(updated);
+    }
+
     private static HandoverReadinessItemDto MapToDto(HandoverReadinessItem item)
     {
         return new HandoverReadinessItemDto
@@ -126,7 +161,12 @@ public class HandoverReadinessService(
             Name = item.Name,
             OwnerFullName = item.Owner?.FullName ?? "Pre-Sales",
             Status = item.Status.ToString(),
-            BlockReason = item.BlockReason
+            BlockReason = item.BlockReason,
+            EvidenceDocumentId = item.EvidenceDocumentId,
+            EvidenceDocumentFileName = item.EvidenceDocument?.FileName,
+            EvidenceSubmittedAt = item.EvidenceSubmittedAt,
+            EvidenceSubmittedById = item.EvidenceSubmittedById,
+            EvidenceSubmittedByName = item.EvidenceSubmittedBy?.FullName
         };
     }
 }
