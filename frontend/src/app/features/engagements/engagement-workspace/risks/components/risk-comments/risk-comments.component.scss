@@ -12,22 +12,7 @@
   max-height: 22rem;
   overflow-y: auto;
 
-  &::-webkit-scrollbar {
-    width: 0.375rem;
-  }
 
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: $color-slate-300;
-    border-radius: $radius-full;
-
-    &:hover {
-      background-color: $color-slate-400;
-    }
-  }
 
   .chat-bubble-wrapper {
     display: flex;

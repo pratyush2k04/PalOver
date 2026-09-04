@@ -7,12 +7,11 @@
 }
 
 .section.transition-section {
-  @include card-surface($spacing-5, $radius-2xl);
-  margin-bottom: $spacing-8;
+  @include card-surface($spacing-4, $radius-2xl);
   width: 100%;
 
   @include respond-to-down('md') {
-    padding: $spacing-4;
+    padding: $spacing-3;
   }
 }
 
@@ -25,10 +24,14 @@
 
   h3 {
     margin: 0;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
     color: $color-text;
     border-bottom: none;
     padding-bottom: 0;
     margin-bottom: 0;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
   }
 
   .add-button {
@@ -142,4 +145,12 @@
     height: 2.5rem;
     background-color: $color-border;
   }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2.5rem 1.25rem;
+  color: $color-slate-400;
+  font-style: italic;
+  font-size: 0.875rem;
 }
