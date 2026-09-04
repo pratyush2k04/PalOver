@@ -227,20 +227,24 @@
                   @if (isPreSales() && isDraft() && editingCommitmentId() !== c.commitmentId) {
                     <div class="card-header-actions">
                       <app-button
-                        variant="stroked"
-                        size="sm"
+                        type="button"
+                        variant="icon"
+                        class="edit-btn"
                         (click)="startEditCommitment(c)"
                         ariaLabel="Edit promised commitment"
+                        [appTooltip]="'Edit commitment'"
                       >
-                        Edit
+                        <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
                       </app-button>
                       <app-button
-                        variant="danger"
-                        size="sm"
+                        type="button"
+                        variant="icon"
+                        class="delete-btn"
                         (click)="requestDeleteCommitment(c.commitmentId)"
                         ariaLabel="Delete promised commitment"
+                        [appTooltip]="'Delete commitment'"
                       >
-                        {{ HANDOVER_BUTTONS.DELETE }}
+                        <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
                       </app-button>
                     </div>
                   }
@@ -324,14 +328,18 @@
                     c.realisticCommitment &&
                     editingRealisticCommitmentId() !== c.commitmentId
                   ) {
-                    <app-button
-                      variant="stroked"
-                      size="sm"
-                      (click)="startEditRealisticCommitment(c)"
-                      ariaLabel="Edit realistic commitment"
-                    >
-                      Edit
-                    </app-button>
+                    <div class="card-header-actions">
+                      <app-button
+                        type="button"
+                        variant="icon"
+                        class="edit-btn"
+                        (click)="startEditRealisticCommitment(c)"
+                        ariaLabel="Edit realistic commitment"
+                        [appTooltip]="'Edit realistic commitment'"
+                      >
+                        <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                      </app-button>
+                    </div>
                   }
                 </div>
 
