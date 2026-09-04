@@ -71,5 +71,11 @@ public class EngagementChecklistItemConfiguration : IEntityTypeConfiguration<Eng
                .WithMany()
                .HasForeignKey(e => e.EvidenceSubmittedById)
                .OnDelete(DeleteBehavior.Restrict);
+
+        // FK to Document (evidence document — deleting the document just clears the link)
+        builder.HasOne(e => e.EvidenceDocument)
+               .WithMany()
+               .HasForeignKey(e => e.EvidenceDocumentId)
+               .OnDelete(DeleteBehavior.SetNull);
     }
 }
