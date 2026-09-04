@@ -64,13 +64,14 @@
         padding: 0.75rem 1rem;
         border-bottom: 1px solid $color-gray-200;
         background-color: $color-gray-50;
+        vertical-align: middle;
 
         &.title-col {
-          width: 32%;
+          width: 35%;
         }
 
         &.severity-col {
-          width: 12%;
+          width: 13%;
           text-align: center;
         }
 
@@ -85,8 +86,8 @@
         }
 
         &.actions-col {
-          width: 24%;
-          min-width: 14.5rem;
+          width: 20%;
+          min-width: 14rem;
           text-align: center;
         }
       }
@@ -95,7 +96,7 @@
         padding: 0.875rem 1rem;
         border-bottom: 1px solid $color-gray-100;
         color: $color-gray-700;
-        vertical-align: top;
+        vertical-align: middle;
 
         &.severity-col {
           text-align: center;
