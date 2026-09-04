@@ -85,7 +85,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("AccessItems");
+                    b.ToTable("AccessItems", (string)null);
 
                     b.HasData(
                         new
@@ -196,7 +196,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AccessItemDefinitions");
+                    b.ToTable("AccessItemDefinitions", (string)null);
 
                     b.HasData(
                         new
@@ -2124,7 +2124,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Assumptions");
+                    b.ToTable("Assumptions", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Engagements.CommercialModel", b =>
@@ -2296,7 +2296,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Dependencies");
+                    b.ToTable("Dependencies", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Engagements.Engagement", b =>
@@ -2680,7 +2680,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EnvironmentToolingDefinitions");
+                    b.ToTable("EnvironmentToolingDefinitions", (string)null);
 
                     b.HasData(
                         new
@@ -2764,7 +2764,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("EnvironmentToolingItems");
+                    b.ToTable("EnvironmentToolingItems", (string)null);
 
                     b.HasData(
                         new
@@ -3051,13 +3051,13 @@ namespace Pdr.Api.Migrations
 
                     b.Property<string>("BusinessProblem")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("business_problem");
 
                     b.Property<string>("ClientBackground")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("client_background");
 
                     b.Property<string>("ClientSentiment")
@@ -3077,8 +3077,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnName("created_by");
 
                     b.Property<string>("DealOrigin")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("deal_origin");
 
                     b.Property<int>("EngagementId")
@@ -3472,7 +3472,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HandoverReadinessDefinitions");
+                    b.ToTable("HandoverReadinessDefinitions", (string)null);
 
                     b.HasData(
                         new
@@ -3582,7 +3582,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("HandoverReadinessItems");
+                    b.ToTable("HandoverReadinessItems", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Kickoff.KickoffActionItem", b =>
