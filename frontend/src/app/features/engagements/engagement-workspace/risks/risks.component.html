@@ -171,11 +171,15 @@
               placeholder="Describe how this risk was resolved or why it is closed"
               [maxLength]="500"
             />
+
+            @if (errorMessage()) {
+              <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+            }
           </div>
 
           <div class="modal-footer">
-            <app-button variant="stroked" (click)="closeCloseModal()">Cancel</app-button>
-            <app-button type="submit" variant="danger">Close Risk</app-button>
+            <app-button variant="stroked" [disabled]="isSubmitting()" (click)="closeCloseModal()">Cancel</app-button>
+            <app-button type="submit" variant="danger" [disabled]="isSubmitting()">Close Risk</app-button>
           </div>
         </form>
       </div>

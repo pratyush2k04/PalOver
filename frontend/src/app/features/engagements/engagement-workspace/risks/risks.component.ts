@@ -139,6 +139,8 @@ export class RisksComponent implements OnInit {
   // Modal State
   showCloseModal = signal<boolean>(false);
   closingRisk = signal<Risk | null>(null);
+  isSubmitting = signal<boolean>(false);
+  errorMessage = signal<string | null>(null);
 
   // Reactive Forms
   closeForm: FormGroup = this.fb.group({
@@ -317,6 +319,8 @@ export class RisksComponent implements OnInit {
     this.closingRisk.set(risk);
     this.closeFormSubmitted.set(false);
     this.closeForm.reset({ resolutionNote: '' });
+    this.errorMessage.set(null);
+    this.isSubmitting.set(false);
     this.showCloseModal.set(true);
   }
 
@@ -325,6 +329,8 @@ export class RisksComponent implements OnInit {
     this.closeFormSubmitted.set(false);
     this.closingRisk.set(null);
     this.closeForm.reset();
+    this.errorMessage.set(null);
+    this.isSubmitting.set(false);
   }
 
   submitCloseRisk(): void {
@@ -340,14 +346,17 @@ export class RisksComponent implements OnInit {
     if (!engagementId || !risk) return;
 
     const resolutionNote = this.closeForm.value.resolutionNote;
-    this.closeCloseModal();
-    this.riskService.closeRisk(engagementId, risk.id, { resolutionNote }).subscribe({
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
+    this.riskService.closeRisk(engagementId, risk.id, { resolutionNote }, true).subscribe({
       next: () => {
+        this.closeCloseModal();
         this.loadRisks(engagementId, () => this.toastService.success(RISK_MESSAGES.CLOSE_SUCCESS));
       },
       error: (err) => {
         console.error(err);
-        this.toastService.error(RISK_MESSAGES.CLOSE_ERROR);
+        this.isSubmitting.set(false);
+        this.errorMessage.set(err?.error?.message || err?.error || RISK_MESSAGES.CLOSE_ERROR);
       }
     });
   }

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   Risk,
@@ -9,6 +9,7 @@ import {
   RiskStatus
 } from '../models/risk.model';
 import { RISK_API_ENDPOINTS } from '@shared/constants/app.constants';
+import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 
 @Injectable({
   providedIn: 'root'
@@ -36,8 +37,10 @@ export class RiskService {
     return this.http.put<Risk>(RISK_API_ENDPOINTS.UPDATE_RISK(engagementId, riskId), request);
   }
 
-  closeRisk(engagementId: number, riskId: number, request: CloseRiskRequest): Observable<Risk> {
-    return this.http.post<Risk>(RISK_API_ENDPOINTS.CLOSE_RISK(engagementId, riskId), request);
+  closeRisk(engagementId: number, riskId: number, request: CloseRiskRequest, skipLoader = false): Observable<Risk> {
+    return this.http.post<Risk>(RISK_API_ENDPOINTS.CLOSE_RISK(engagementId, riskId), request, {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
   reopenRisk(engagementId: number, riskId: number): Observable<Risk> {
