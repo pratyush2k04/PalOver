@@ -35,11 +35,14 @@
     [ngModelOptions]="{ standalone: true }"
   />
 
+  @if (errorMessage()) {
+    <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+  }
 </div>
 
 <div class="app-dialog__actions">
-  <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
-  <app-button type="button" variant="accent" [disabled]="!canSubmit()" (click)="onSubmit()">
-    Raise Query
+  <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="onCancel()">Cancel</app-button>
+  <app-button type="button" variant="accent" [disabled]="!canSubmit() || isSubmitting()" [loading]="isSubmitting()" (click)="onSubmit()">
+    {{ isSubmitting() ? 'Raising...' : 'Raise Query' }}
   </app-button>
 </div>

@@ -4,10 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
+import { AlertComponent } from '@common/components/alert/alert';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
+import { HandoverQueryService } from '../../../../../services/handover-query.service';
 import { CommitmentDto } from '../../../../../models/handover.model';
-import { CreateHandoverQueryRequest, HandoverQueryFieldSection } from '../../../../../models/handover-query.model';
+import { HandoverQueryFieldSection } from '../../../../../models/handover-query.model';
+import { HANDOVER_MESSAGES } from '@shared/constants/handover.constants';
 
 export interface RaiseHandoverQueryDialogData {
   engagementId: number;
@@ -26,12 +29,13 @@ const FIELD_SECTION_OPTIONS: SelectOption[] = [
 @Component({
   selector: 'app-raise-handover-query-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, SelectComponent, TextareaComponent],
+  imports: [CommonModule, FormsModule, ButtonComponent, AlertComponent, SelectComponent, TextareaComponent],
   templateUrl: './raise-handover-query-dialog.component.html',
   styleUrl: './raise-handover-query-dialog.component.scss',
 })
 export class RaiseHandoverQueryDialogComponent {
-  private dialogRef = inject<DialogRef<CreateHandoverQueryRequest>>(DialogRef);
+  private dialogRef = inject<DialogRef<boolean>>(DialogRef);
+  private handoverQueryService = inject(HandoverQueryService);
   readonly data = inject<RaiseHandoverQueryDialogData>(DIALOG_DATA);
 
   readonly fieldSectionOptions = FIELD_SECTION_OPTIONS;
@@ -43,6 +47,9 @@ export class RaiseHandoverQueryDialogComponent {
   fieldSection = signal<HandoverQueryFieldSection | null>(null);
   referenceId = signal<number | null>(null);
   question = signal('');
+
+  isSubmitting = signal(false);
+  errorMessage = signal<string | null>(null);
 
   isCommitmentSection = computed(() => this.fieldSection() === HandoverQueryFieldSection.Commitment);
 
@@ -66,10 +73,30 @@ export class RaiseHandoverQueryDialogComponent {
   onSubmit(): void {
     if (!this.canSubmit()) return;
 
-    this.dialogRef.close({
-      fieldSection: this.fieldSection()!,
-      referenceId: this.referenceId() ?? undefined,
-      question: this.question().trim(),
-    });
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
+
+    this.handoverQueryService
+      .raiseQuery(
+        this.data.engagementId,
+        {
+          fieldSection: this.fieldSection()!,
+          referenceId: this.referenceId() ?? undefined,
+          question: this.question().trim(),
+        },
+        true,
+      )
+      .subscribe({
+        next: () => {
+          this.isSubmitting.set(false);
+          this.dialogRef.close(true);
+        },
+        error: (err) => {
+          this.isSubmitting.set(false);
+          const error = (err as { error?: { message?: string } | string })?.error;
+          const msg = typeof error === 'string' ? error : error?.message;
+          this.errorMessage.set(msg || HANDOVER_MESSAGES.QUERY_RAISE_ERROR);
+        },
+      });
   }
 }

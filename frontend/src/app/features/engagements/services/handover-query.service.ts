@@ -21,8 +21,14 @@ export class HandoverQueryService {
     });
   }
 
-  raiseQuery(engagementId: number, request: CreateHandoverQueryRequest): Observable<HandoverQueryDto> {
-    return this.http.post<HandoverQueryDto>(HANDOVER_API_ENDPOINTS.HANDOVER_QUERIES(engagementId), request);
+  raiseQuery(
+    engagementId: number,
+    request: CreateHandoverQueryRequest,
+    skipLoader = false,
+  ): Observable<HandoverQueryDto> {
+    return this.http.post<HandoverQueryDto>(HANDOVER_API_ENDPOINTS.HANDOVER_QUERIES(engagementId), request, {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
   addMessage(engagementId: number, queryId: number, request: AddHandoverQueryMessageRequest): Observable<HandoverQueryDto> {
