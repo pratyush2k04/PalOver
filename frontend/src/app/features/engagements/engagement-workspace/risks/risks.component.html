@@ -175,9 +175,7 @@
 
           <div class="modal-footer">
             <app-button variant="stroked" (click)="closeCloseModal()">Cancel</app-button>
-            <app-button type="submit" variant="danger" [disabled]="isSubmitting()">
-              {{ isSubmitting() ? 'Closing...' : 'Close Risk' }}
-            </app-button>
+            <app-button type="submit" variant="danger">Close Risk</app-button>
           </div>
         </form>
       </div>
