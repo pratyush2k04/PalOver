@@ -154,6 +154,17 @@ public class TechnicalSummaryService(
         var briefDocName = briefDoc?.FileName ?? "Engagement Brief & Documents";
         var briefDocLink = $"/engagements/{engagementId}/documents";
 
+        // Extract finding-linked document names for Brownfield engagements
+        var brownfieldDocNames = new List<string>();
+        if (isBrownfield)
+        {
+            brownfieldDocNames = brownfieldFindings
+                .Where(f => f.Document != null && !string.IsNullOrWhiteSpace(f.Document.FileName))
+                .Select(f => f.Document!.FileName)
+                .Distinct()
+                .ToList();
+        }
+
         // Current User Name or Email for metadata
         var generatedBy = currentUserService.GetFullName();
         if (string.IsNullOrWhiteSpace(generatedBy))
@@ -209,6 +220,7 @@ public class TechnicalSummaryService(
             HighSeverityAcceptedCount = highSeverityAccepted,
             HighSeverityPendingCount = highSeverityPending,
             IsBrownfieldReady = isBrownfieldReady,
+            BrownfieldDocumentNames = brownfieldDocNames,
 
             OutstandingBlockers = blockers
         };

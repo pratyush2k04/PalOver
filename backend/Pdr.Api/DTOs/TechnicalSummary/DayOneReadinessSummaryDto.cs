@@ -51,6 +51,7 @@ public class DayOneReadinessSummaryDto
     public int HighSeverityAcceptedCount { get; set; }
     public int HighSeverityPendingCount { get; set; }
     public bool IsBrownfieldReady { get; set; }
+    public List<string> BrownfieldDocumentNames { get; set; } = [];
 
     // Blockers & Action Items
     public List<DayOneBlockerItemDto> OutstandingBlockers { get; set; } = [];
