@@ -1,4 +1,3 @@
-import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { Component, inject, input, output, signal, computed, effect, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
@@ -33,7 +32,6 @@ import {
   selector: 'app-access-tracker',
   standalone: true,
   imports: [
-    LoadingSpinnerComponent,
     CommonModule,
     FormsModule,
     InlineSVGModule,
@@ -59,7 +57,6 @@ export class AccessTrackerComponent {
   private dialog = inject(DialogService);
 
   accessItems = signal<AccessItemDto[]>([]);
-  isLoading = signal<boolean>(true);
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
   canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
 
@@ -85,7 +82,6 @@ export class AccessTrackerComponent {
   }
 
   loadItems(id: number) {
-    this.isLoading.set(true);
     this.readinessService.getAccessItems(id).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
@@ -93,13 +89,11 @@ export class AccessTrackerComponent {
         const finalItems = items ?? [];
         this.accessItems.set(finalItems);
         this.itemsUpdated.emit(finalItems);
-        this.isLoading.set(false);
       },
       error: (err) => {
         console.error('Failed to load access items from API', err);
         this.accessItems.set([]);
         this.itemsUpdated.emit([]);
-        this.isLoading.set(false);
       }
     });
   }

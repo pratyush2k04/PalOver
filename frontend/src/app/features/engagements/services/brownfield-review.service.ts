@@ -1,10 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { TECHNICAL_READINESS_API_ENDPOINTS } from '@shared/constants/technical-readiness.constants';
 import { BrownfieldFindingDto, BrownfieldReadinessResponse } from '../models/brownfield-review/brownfield-review.dtos';
 import { CreateBrownfieldFindingRequest, UpdateClientDecisionRequest } from '../models/brownfield-review/brownfield-review.requests';
 import { ClientDecision } from '../models/brownfield-review/brownfield-review.enums';
+import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 
 @Injectable({
   providedIn: 'root'
@@ -12,9 +13,10 @@ import { ClientDecision } from '../models/brownfield-review/brownfield-review.en
 export class BrownfieldReviewService {
   private http = inject(HttpClient);
 
-  getFindings(engagementId: number): Observable<BrownfieldReadinessResponse> {
+  getFindings(engagementId: number, skipLoader = false): Observable<BrownfieldReadinessResponse> {
     return this.http.get<BrownfieldReadinessResponse>(
-      TECHNICAL_READINESS_API_ENDPOINTS.BROWNFIELD_FINDINGS(engagementId)
+      TECHNICAL_READINESS_API_ENDPOINTS.BROWNFIELD_FINDINGS(engagementId),
+      { context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined }
     );
   }
 

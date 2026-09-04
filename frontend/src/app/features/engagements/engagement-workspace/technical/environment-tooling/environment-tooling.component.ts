@@ -1,4 +1,3 @@
-import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { Component, inject, input, output, signal, computed, effect, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -32,7 +31,6 @@ import {
   selector: 'app-environment-tooling',
   standalone: true,
   imports: [
-    LoadingSpinnerComponent,
     CommonModule,
     FormsModule,
     InlineSVGModule,
@@ -57,7 +55,6 @@ export class EnvironmentToolingComponent {
   private dialog = inject(DialogService);
 
   items = signal<EnvironmentToolingItemDto[]>([]);
-  isLoading = signal<boolean>(true);
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
   canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
   itemToDelete = signal<EnvironmentToolingItemDto | null>(null);
@@ -79,7 +76,6 @@ export class EnvironmentToolingComponent {
   }
 
   loadItems(id: number) {
-    this.isLoading.set(true);
     this.service.getItems(id).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
@@ -87,13 +83,11 @@ export class EnvironmentToolingComponent {
         const list = res?.items ?? [];
         this.items.set(list);
         this.itemsUpdated.emit(list);
-        this.isLoading.set(false);
       },
       error: (err) => {
         console.error('API load environment tooling failed', err);
         this.items.set([]);
         this.itemsUpdated.emit([]);
-        this.isLoading.set(false);
       }
     });
   }

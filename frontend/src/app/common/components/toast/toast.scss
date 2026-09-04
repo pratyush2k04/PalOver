@@ -19,8 +19,9 @@
 .toast {
   @include flex-between;
   gap: $spacing-4;
-  min-width: 22rem;
-  max-width: 28rem;
+  min-width: 18rem;
+  max-width: min(28rem, calc(100vw - 2rem));
+  box-sizing: border-box;
   padding: $spacing-3 $spacing-4;
   border-radius: $radius-2xl;
   font-family: inherit;
@@ -38,6 +39,8 @@
     display: flex;
     align-items: center;
     gap: $spacing-3;
+    flex: 1;
+    min-width: 0;
 
     .icon-circle {
       @include flex-center;
@@ -64,6 +67,8 @@
       font-weight: $font-weight-medium;
       color: $color-slate-900;
       line-height: 1.4;
+      word-break: break-word;
+      overflow-wrap: anywhere;
     }
   }
 

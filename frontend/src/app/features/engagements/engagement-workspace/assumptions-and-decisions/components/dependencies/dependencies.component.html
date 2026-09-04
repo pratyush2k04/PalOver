@@ -47,7 +47,9 @@
               <div class="item-right">
                 <div class="item-actions">
                   @if (canEdit(item)) {
-                    <app-button class="btn-edit" variant="stroked" (click)="openDependencyDialog(item)">Edit</app-button>
+                    <app-button variant="icon" size="sm" (click)="openDependencyDialog(item)" title="Edit Dependency" ariaLabel="Edit Dependency">
+                      <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                    </app-button>
                   }
                   @if (item.status !== DependencyStatus.Met && canMarkMet(item)) {
                     <app-button class="btn-met" type="button" variant="flat" (click)="markAsMet(item)">Mark Met</app-button>

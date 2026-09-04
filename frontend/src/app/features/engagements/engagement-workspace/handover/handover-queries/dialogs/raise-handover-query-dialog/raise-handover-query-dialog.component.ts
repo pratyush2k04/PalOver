@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
@@ -29,13 +29,14 @@ const FIELD_SECTION_OPTIONS: SelectOption[] = [
 @Component({
   selector: 'app-raise-handover-query-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, AlertComponent, SelectComponent, TextareaComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, AlertComponent, SelectComponent, TextareaComponent],
   templateUrl: './raise-handover-query-dialog.component.html',
   styleUrl: './raise-handover-query-dialog.component.scss',
 })
 export class RaiseHandoverQueryDialogComponent {
   private dialogRef = inject<DialogRef<HandoverQueryDto>>(DialogRef);
   private handoverQueryService = inject(HandoverQueryService);
+  private fb = inject(FormBuilder);
   readonly data = inject<RaiseHandoverQueryDialogData>(DIALOG_DATA);
 
   readonly fieldSectionOptions = FIELD_SECTION_OPTIONS;
@@ -44,26 +45,37 @@ export class RaiseHandoverQueryDialogComponent {
     ...this.data.commitments.map((c) => ({ value: c.commitmentId, label: c.title })),
   ]);
 
-  fieldSection = signal<HandoverQueryFieldSection | null>(null);
-  referenceId = signal<number | null>(null);
-  question = signal('');
-
+  isCommitmentSection = signal(false);
   isSubmitting = signal(false);
   errorMessage = signal('');
 
-  isCommitmentSection = computed(() => this.fieldSection() === HandoverQueryFieldSection.Commitment);
-
-  canSubmit = computed(() => {
-    if (!this.fieldSection() || !this.question().trim()) return false;
-    if (this.isCommitmentSection() && !this.referenceId()) return false;
-    return true;
+  form: FormGroup = this.fb.group({
+    fieldSection: [null, [Validators.required]],
+    referenceId: [null],
+    question: ['', [Validators.required, Validators.maxLength(500)]],
   });
 
-  onFieldSectionChange(value: HandoverQueryFieldSection): void {
-    this.fieldSection.set(value);
-    if (value !== HandoverQueryFieldSection.Commitment) {
-      this.referenceId.set(null);
-    }
+  readonly fieldErrors = { required: 'Please select a field.' };
+  readonly commitmentErrors = { required: 'Please select a commitment.' };
+  readonly questionErrors = {
+    required: 'Please enter a question.',
+    maxlength: 'Question cannot exceed 500 characters.',
+  };
+
+  constructor() {
+    this.form.get('fieldSection')?.valueChanges.subscribe((value: HandoverQueryFieldSection | null) => {
+      const isCommitment = value === HandoverQueryFieldSection.Commitment;
+      this.isCommitmentSection.set(isCommitment);
+
+      const refControl = this.form.get('referenceId');
+      if (isCommitment) {
+        refControl?.setValidators([Validators.required]);
+      } else {
+        refControl?.clearValidators();
+        refControl?.setValue(null);
+      }
+      refControl?.updateValueAndValidity();
+    });
   }
 
   onCancel(): void {
@@ -71,16 +83,21 @@ export class RaiseHandoverQueryDialogComponent {
   }
 
   onSubmit(): void {
-    if (!this.canSubmit()) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
     this.isSubmitting.set(true);
     this.errorMessage.set('');
 
+    const formVal = this.form.getRawValue();
+
     this.handoverQueryService
       .raiseQuery(this.data.engagementId, {
-        fieldSection: this.fieldSection()!,
-        referenceId: this.referenceId() ?? undefined,
-        question: this.question().trim(),
+        fieldSection: formVal.fieldSection!,
+        referenceId: formVal.referenceId ?? undefined,
+        question: formVal.question.trim(),
       })
       .subscribe({
         next: (created) => {

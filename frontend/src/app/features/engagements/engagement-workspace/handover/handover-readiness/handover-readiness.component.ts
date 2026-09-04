@@ -48,7 +48,7 @@ export class HandoverReadinessComponent implements OnInit {
   readonly itemsUpdated = output<HandoverReadinessItemDto[]>();
 
   items = signal<HandoverReadinessItemDto[]>([]);
-  isLoading = signal<boolean>(true);
+  isLoading = signal<boolean>(false);
   pendingDeleteItem = signal<HandoverReadinessItemDto | null>(null);
   isDeletingItem = signal<boolean>(false);
 
@@ -76,17 +76,23 @@ export class HandoverReadinessComponent implements OnInit {
     this.loadItems();
   }
 
-  loadItems(): void {
-    this.isLoading.set(true);
-    this.readinessService.getItems(this.engagementId()).subscribe({
+  loadItems(skipLoader = false): void {
+    if (skipLoader) {
+      this.isLoading.set(true);
+    }
+    this.readinessService.getItems(this.engagementId(), skipLoader).subscribe({
       next: (data) => {
         this.items.set(data);
-        this.isLoading.set(false);
+        if (skipLoader) {
+          this.isLoading.set(false);
+        }
         this.itemsUpdated.emit(data);
       },
       error: () => {
         this.toastService.error('Failed to load Handover Readiness items');
-        this.isLoading.set(false);
+        if (skipLoader) {
+          this.isLoading.set(false);
+        }
       }
     });
   }
@@ -132,7 +138,7 @@ export class HandoverReadinessComponent implements OnInit {
       },
       error: (err) => {
         this.toastService.error(err?.error?.message || 'Failed to update status');
-        this.loadItems();
+        this.loadItems(true);
       }
     });
   }

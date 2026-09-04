@@ -56,8 +56,10 @@ export class DialogService {
 
     afterNextRender(() => this.focusFirstField(panel), { injector: this.environmentInjector });
 
+    const disableClose = config.disableClose ?? true;
+
     const onBackdropClick = (event: MouseEvent) => {
-      if (event.target === backdrop && !config.disableClose) {
+      if (event.target === backdrop && !disableClose) {
         dialogRef.close();
       }
     };
