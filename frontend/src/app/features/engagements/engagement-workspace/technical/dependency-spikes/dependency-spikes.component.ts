@@ -1,4 +1,3 @@
-import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { Component, OnInit, inject, input, signal, computed, effect, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InlineSVGModule } from 'ng-inline-svg-2';
@@ -28,7 +27,6 @@ import {
   selector: 'app-dependency-spikes',
   standalone: true,
   imports: [
-    LoadingSpinnerComponent,
     CommonModule,
     InlineSVGModule,
     TooltipDirective,
@@ -51,7 +49,6 @@ export class DependencySpikesComponent implements OnInit {
   private dialog = inject(DialogService);
 
   spikes = signal<DependencySpikeDto[]>([]);
-  isLoading = signal<boolean>(true);
   spikeToDelete = signal<DependencySpikeDto | null>(null);
   isDeleting = signal<boolean>(false);
 
@@ -78,14 +75,9 @@ export class DependencySpikesComponent implements OnInit {
   }
 
   loadSpikes(engagementId: number): void {
-    this.isLoading.set(true);
     this.spikeService.getSpikes(engagementId).subscribe({
       next: (data) => {
         this.spikes.set(data || []);
-        this.isLoading.set(false);
-      },
-      error: () => {
-        this.isLoading.set(false);
       }
     });
   }
