@@ -38,15 +38,32 @@
     flex-direction: column;
     align-items: stretch;
     gap: $spacing-2;
-    width: 100%;
+    width: fit-content;
+    max-width: 100%;
+
+    .to-fro-date-group {
+      width: fit-content;
+      max-width: 100%;
+      gap: $spacing-2;
+
+      app-datepicker {
+        min-width: 0;
+      }
+    }
 
     app-select,
     app-input,
-    app-datepicker,
     app-button {
       width: 100%;
       min-width: 0;
     }
+  }
+
+  .to-fro-date-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: $spacing-3;
   }
 
   app-input,
