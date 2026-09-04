@@ -1,10 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { TECHNICAL_READINESS_API_ENDPOINTS } from '@shared/constants/technical-readiness.constants';
 import { AccessItemDto } from '../models/access-tracker/access-tracker.dtos';
 import { AddCustomAccessItemRequest, UpdateAccessItemStatusRequest, UpdateAccessItemOwnerRequest } from '../models/access-tracker/access-tracker.requests';
 import { DayOneReadinessSummaryDto } from '../models/technical-readiness/technical-summary.dtos';
+import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,9 @@ export class TechnicalReadinessService {
     return this.http.get<DayOneReadinessSummaryDto>(TECHNICAL_READINESS_API_ENDPOINTS.TECHNICAL_SUMMARY(engagementId));
   }
 
-  deleteAccessItem(id: number): Observable<void> {
-    return this.http.delete<void>(TECHNICAL_READINESS_API_ENDPOINTS.ACCESS_ITEM(id));
+  deleteAccessItem(id: number, skipLoader = false): Observable<void> {
+    return this.http.delete<void>(TECHNICAL_READINESS_API_ENDPOINTS.ACCESS_ITEM(id), {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 }

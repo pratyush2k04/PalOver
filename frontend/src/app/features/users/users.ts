@@ -58,6 +58,7 @@ export class UsersComponent implements OnInit {
   ]);
   searchTerm = '';
   isLoading = signal(false);
+  isSubmitting = signal(false);
   errorMessage = signal<string | null>(null);
 
   page = signal(1);
@@ -152,6 +153,7 @@ export class UsersComponent implements OnInit {
       return;
     }
 
+    this.errorMessage.set(null);
     this.pendingChange.set({ user, newRoleId, newRoleName: newRole.name });
   }
 
@@ -161,19 +163,20 @@ export class UsersComponent implements OnInit {
       return;
     }
 
-    this.pendingChange.set(null);
-    this.isLoading.set(true);
+    this.isSubmitting.set(true);
+    this.errorMessage.set(null);
 
     this.userService.changeUserRole(pending.user.id, pending.newRoleId, true).subscribe({
       next: (updatedUser) => {
         this.users.update((list) =>
           list.map((u) => (u.id === updatedUser.id ? updatedUser : u))
         );
-        this.isLoading.set(false);
+        this.isSubmitting.set(false);
+        this.pendingChange.set(null);
         this.toastService.success(USER_MESSAGES.ROLE_UPDATED_SUCCESS);
       },
       error: () => {
-        this.isLoading.set(false);
+        this.isSubmitting.set(false);
         this.errorMessage.set(USER_MESSAGES.UPDATE_ROLE_ERROR);
       }
     });
