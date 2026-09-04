@@ -61,7 +61,6 @@ export class ArchitectureValidationComponent {
   validation = signal<ArchitectureValidationDto | null>(null);
   isLoading = signal<boolean>(false);
   featureToDelete = signal<DiscoveryFeatureItemDto | null>(null);
-  isDeleting = signal<boolean>(false);
   selectedStatus = signal<ArchitectureStatus>(ArchitectureStatus.StillValid);
   rationale = signal<string>('');
   rationaleError = signal<string>('');
@@ -100,7 +99,7 @@ export class ArchitectureValidationComponent {
     });
   }
 
-  loadValidation(id: number = this.engagementId(), skipLoader = false): void {
+  loadValidation(id: number = this.engagementId(), skipLoader = false, onDone?: () => void): void {
     if (skipLoader) {
       this.isLoading.set(true);
     }
@@ -115,6 +114,7 @@ export class ArchitectureValidationComponent {
         if (skipLoader) {
           this.isLoading.set(false);
         }
+        onDone?.();
 
         if (this.isTechLead() && this.route.snapshot.queryParamMap.get('action') === 'create') {
           this.onAddFeature();
@@ -124,6 +124,7 @@ export class ArchitectureValidationComponent {
         if (skipLoader) {
           this.isLoading.set(false);
         }
+        onDone?.();
       }
     });
   }
@@ -221,20 +222,20 @@ export class ArchitectureValidationComponent {
     const feature = this.featureToDelete();
     if (!feature) return;
 
-    this.isDeleting.set(true);
-    this.service.deleteFeatureItem(feature.id).pipe(
+    this.featureToDelete.set(null);
+    this.isLoading.set(true);
+    this.service.deleteFeatureItem(feature.id, true).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: () => {
-        this.toastService.success(`Feature "${feature.featureName}" deleted successfully`);
-        this.isDeleting.set(false);
-        this.featureToDelete.set(null);
-        this.loadValidation(this.engagementId(), true);
+        this.loadValidation(this.engagementId(), true, () =>
+          this.toastService.success(`Feature "${feature.featureName}" deleted successfully`)
+        );
       },
       error: (err) => {
+        this.isLoading.set(false);
         this.toastService.error(`Failed to delete feature "${feature.featureName}"`);
         console.error('API delete feature failed', err);
-        this.isDeleting.set(false);
       }
     });
   }

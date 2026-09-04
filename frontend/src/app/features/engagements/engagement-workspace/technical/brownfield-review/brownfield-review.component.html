@@ -121,7 +121,6 @@
   <app-confirm-dialog
     title="Delete Finding"
     confirmLabel="Delete"
-    [isBusy]="isDeleting()"
     [isDestructive]="true"
     (confirmed)="confirmDeleteFinding()"
     (cancelled)="cancelDeleteFinding()">

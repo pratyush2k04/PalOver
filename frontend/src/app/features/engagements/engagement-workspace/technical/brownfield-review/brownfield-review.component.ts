@@ -48,7 +48,6 @@ export class BrownfieldReviewComponent {
   readinessResponse = signal<BrownfieldReadinessResponse | null>(null);
   isLoading = signal<boolean>(false);
   findingToDelete = signal<BrownfieldFindingDto | null>(null);
-  isDeleting = signal<boolean>(false);
 
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
   canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
@@ -66,7 +65,7 @@ export class BrownfieldReviewComponent {
     });
   }
 
-  loadFindings(id: number = this.engagementId(), skipLoader = false): void {
+  loadFindings(id: number = this.engagementId(), skipLoader = false, onDone?: () => void): void {
     if (skipLoader) {
       this.isLoading.set(true);
     }
@@ -77,11 +76,13 @@ export class BrownfieldReviewComponent {
         if (skipLoader) {
           this.isLoading.set(false);
         }
+        onDone?.();
       },
       error: () => {
         if (skipLoader) {
           this.isLoading.set(false);
         }
+        onDone?.();
       }
     });
   }
@@ -120,18 +121,18 @@ export class BrownfieldReviewComponent {
     const finding = this.findingToDelete();
     if (!finding) return;
 
-    this.isDeleting.set(true);
-    this.brownfieldService.deleteFinding(finding.id).subscribe({
+    this.findingToDelete.set(null);
+    this.isLoading.set(true);
+    this.brownfieldService.deleteFinding(finding.id, true).subscribe({
       next: () => {
-        this.toastService.success(`Finding "${finding.title}" deleted successfully`);
-        this.isDeleting.set(false);
-        this.findingToDelete.set(null);
-        this.loadFindings(this.engagementId(), true);
+        this.loadFindings(this.engagementId(), true, () =>
+          this.toastService.success(`Finding "${finding.title}" deleted successfully`)
+        );
       },
       error: (err: unknown) => {
+        this.isLoading.set(false);
         this.toastService.error(`Failed to delete finding "${finding.title}"`);
         console.error('API delete finding failed', err);
-        this.isDeleting.set(false);
       }
     });
   }

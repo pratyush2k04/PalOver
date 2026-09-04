@@ -61,7 +61,6 @@ export class AccessTrackerComponent {
   canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
 
   itemToDelete = signal<AccessItemDto | null>(null);
-  isDeleting = signal<boolean>(false);
 
   kickoffReadiness = this.kickoffReadinessService.readiness;
 
@@ -265,7 +264,7 @@ export class AccessTrackerComponent {
     const item = this.itemToDelete();
     if (!item) return;
 
-    this.isDeleting.set(true);
+    this.itemToDelete.set(null);
     this.readinessService.deleteAccessItem(item.id).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
@@ -274,13 +273,10 @@ export class AccessTrackerComponent {
         this.accessItems.set(updatedList);
         this.itemsUpdated.emit(updatedList);
         this.toastService.success(`Access item "${item.name}" deleted successfully`);
-        this.isDeleting.set(false);
-        this.itemToDelete.set(null);
       },
       error: (err) => {
         this.toastService.error(`Failed to delete "${item.name}"`);
         console.error('API delete access item failed', err);
-        this.isDeleting.set(false);
       }
     });
   }
