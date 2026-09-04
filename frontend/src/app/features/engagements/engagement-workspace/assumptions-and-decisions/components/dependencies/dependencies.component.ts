@@ -43,7 +43,7 @@ export class DependenciesComponent implements OnInit {
   engagementId = signal<number>(0);
   dependencies = signal<DependencyDto[]>([]);
   atRiskCount = computed(() => this.dependencies().filter(d => d.status === DependencyStatus.AtRisk).length);
-  isLoading = signal<boolean>(true);
+  isLoading = signal<boolean>(false);
   readonly canAdd = computed(() => !this.engagementService.isSignedOff());
 
   DependencyStatus = DependencyStatus;
@@ -68,16 +68,22 @@ export class DependenciesComponent implements OnInit {
     });
   }
 
-  loadDependencies() {
-    this.isLoading.set(true);
-    this.dependencyService.getDependencies(this.engagementId()).subscribe({
+  loadDependencies(skipLoader = false) {
+    if (skipLoader) {
+      this.isLoading.set(true);
+    }
+    this.dependencyService.getDependencies(this.engagementId(), skipLoader).subscribe({
       next: (data: DependencyDto[]) => {
         this.dependencies.set(data);
-        this.isLoading.set(false);
+        if (skipLoader) {
+          this.isLoading.set(false);
+        }
       },
       error: (err: any) => {
         this.handleError(err, DEPENDENCY_MESSAGES.LOAD_ERROR);
-        this.isLoading.set(false);
+        if (skipLoader) {
+          this.isLoading.set(false);
+        }
       }
     });
   }
@@ -122,7 +128,7 @@ export class DependenciesComponent implements OnInit {
         }).subscribe({
           next: () => {
             this.toastService.success(DEPENDENCY_MESSAGES.UPDATE_SUCCESS);
-            this.loadDependencies();
+            this.loadDependencies(true);
           },
           error: (err: any) => this.handleError(err, DEPENDENCY_MESSAGES.UPDATE_ERROR)
         });
@@ -130,7 +136,7 @@ export class DependenciesComponent implements OnInit {
         this.dependencyService.createDependency(this.engagementId(), result).subscribe({
           next: () => {
             this.toastService.success(DEPENDENCY_MESSAGES.CREATE_SUCCESS);
-            this.loadDependencies();
+            this.loadDependencies(true);
           },
           error: (err: any) => this.handleError(err, DEPENDENCY_MESSAGES.CREATE_ERROR)
         });
@@ -163,7 +169,7 @@ export class DependenciesComponent implements OnInit {
     this.dependencyService.updateDependency(this.engagementId(), dependency.id, updateDto).subscribe({
       next: () => {
         this.toastService.success(DEPENDENCY_MESSAGES.UPDATE_SUCCESS);
-        this.loadDependencies();
+        this.loadDependencies(true);
       },
       error: (err: any) => this.handleError(err, DEPENDENCY_MESSAGES.UPDATE_ERROR)
     });

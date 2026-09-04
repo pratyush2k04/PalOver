@@ -12,11 +12,13 @@ public class SaveArchitectureValidationRequestValidator : AbstractValidator<Save
         RuleFor(x => x.Status)
             .IsInEnum().WithMessage(ArchitectureValidationConstants.Messages.InvalidArchitectureStatus);
 
+        RuleFor(x => x.Rationale)
+            .MaximumLength(500).WithMessage("Rationale cannot exceed 500 characters.");
+
         When(x => x.Status == ArchitectureStatus.Modified, () =>
         {
             RuleFor(x => x.Rationale)
-                .NotEmpty().WithMessage(ArchitectureValidationConstants.Messages.RationaleRequiredWhenModified)
-                .MaximumLength(500).WithMessage("Rationale cannot exceed 500 characters.");
+                .NotEmpty().WithMessage(ArchitectureValidationConstants.Messages.RationaleRequiredWhenModified);
         });
     }
 }

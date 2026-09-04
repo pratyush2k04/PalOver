@@ -1,10 +1,11 @@
-<div class="accordion-card" [class.is-collapsed]="!expanded()">
+<div class="accordion-card" [class.is-collapsed]="!expanded()" [class.is-disabled]="disabled()">
   <div
     class="accordion-header"
     (click)="toggle()"
     role="button"
     [attr.aria-expanded]="expanded()"
-    tabindex="0"
+    [attr.aria-disabled]="disabled()"
+    [tabindex]="disabled() ? -1 : 0"
     (keydown.enter)="toggle()"
     (keydown.space)="$event.preventDefault(); toggle()"
   >
@@ -22,16 +23,18 @@
       }
     </div>
 
-    <div class="header-right">
-      <span
-        class="chevron-icon"
-        [class.expanded]="expanded()"
-        [inlineSVG]="'assets/icons/chevron-down.svg'"
-      ></span>
-    </div>
+    @if (!disabled()) {
+      <div class="header-right">
+        <span
+          class="chevron-icon"
+          [class.expanded]="expanded()"
+          [inlineSVG]="'assets/icons/chevron-down.svg'"
+        ></span>
+      </div>
+    }
   </div>
 
-  @if (expanded()) {
+  @if (expanded() && !disabled()) {
     <div class="accordion-body">
       <ng-content />
     </div>

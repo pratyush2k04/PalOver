@@ -6,7 +6,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { PersonService } from '@shared/services/person.service';
 import { PersonDto, PersonType } from '@shared/models/person.model';
-import { LoaderService } from '@shared/services/loader.service';
 import { ToastService } from '@common/services/toast/toast';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { ButtonComponent } from '@common/components/button/button';
@@ -46,7 +45,6 @@ export class PeopleComponent {
   private personService = inject(PersonService);
   private toastService = inject(ToastService);
   private dialog = inject(DialogService);
-  public loaderService = inject(LoaderService);
   private authService = inject(AuthService);
   private engagementService = inject(EngagementService);
 
@@ -59,6 +57,7 @@ export class PeopleComponent {
 
   people = signal<PersonDto[]>([]);
   transitions = signal<TransitionResponse[]>([]);
+  isLoading = signal(false);
   
   filteredPeople = computed(() => {
     const t = this.transitions();
@@ -85,16 +84,22 @@ export class PeopleComponent {
     });
   }
 
-  private loadPeople(engagementId: number): void {
-    this.loaderService.show();
-    this.personService.getPeopleByEngagement(engagementId).subscribe({
+  private loadPeople(engagementId: number, skipLoader = false): void {
+    if (skipLoader) {
+      this.isLoading.set(true);
+    }
+    this.personService.getPeopleByEngagement(engagementId, skipLoader).subscribe({
       next: (data) => {
         this.people.set(data ?? []);
-        this.loaderService.hide();
+        if (skipLoader) {
+          this.isLoading.set(false);
+        }
       },
       error: (err) => {
         console.error('Error fetching people directory:', err);
-        this.loaderService.hide();
+        if (skipLoader) {
+          this.isLoading.set(false);
+        }
       }
     });
   }
@@ -149,14 +154,14 @@ export class PeopleComponent {
         this.personService.updatePerson(engagementId, person.personId, { ...payload, personId: person.personId }).subscribe({
           next: () => {
             this.toastService.success('Contact updated successfully');
-            this.loadPeople(engagementId);
+            this.loadPeople(engagementId, true);
           }
         });
       } else {
         this.personService.createPerson(engagementId, payload).subscribe({
           next: () => {
             this.toastService.success('Contact added successfully');
-            this.loadPeople(engagementId);
+            this.loadPeople(engagementId, true);
           }
         });
       }
@@ -183,7 +188,7 @@ export class PeopleComponent {
         this.toastService.success(`Removed ${person.name} from directory`);
         this.isDeleting.set(false);
         this.personToDelete.set(null);
-        this.loadPeople(engagementId);
+        this.loadPeople(engagementId, true);
       },
       error: () => {
         this.isDeleting.set(false);
@@ -194,7 +199,7 @@ export class PeopleComponent {
   onTransitionSaved(): void {
     const engagementId = this.engagementId();
     if (engagementId) {
-      this.loadPeople(engagementId);
+      this.loadPeople(engagementId, true);
     }
   }
 }

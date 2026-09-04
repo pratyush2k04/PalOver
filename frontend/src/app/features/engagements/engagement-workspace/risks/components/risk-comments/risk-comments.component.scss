@@ -12,22 +12,7 @@
   max-height: 22rem;
   overflow-y: auto;
 
-  &::-webkit-scrollbar {
-    width: 0.375rem;
-  }
 
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: $color-slate-300;
-    border-radius: $radius-full;
-
-    &:hover {
-      background-color: $color-slate-400;
-    }
-  }
 
   .chat-bubble-wrapper {
     display: flex;
@@ -95,6 +80,20 @@
             --btn-padding: #{$spacing-1} #{$spacing-2};
             --btn-font-size: #{$font-size-xs};
             --btn-line-height: 1.2;
+          }
+
+          .action-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1rem;
+            height: 1rem;
+
+            ::ng-deep svg {
+              width: 1rem;
+              height: 1rem;
+              display: block;
+            }
           }
         }
       }

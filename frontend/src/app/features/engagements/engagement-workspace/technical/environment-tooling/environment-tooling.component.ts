@@ -1,4 +1,3 @@
-import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { Component, inject, input, output, signal, computed, effect, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -16,28 +15,30 @@ import { ToastService } from '@common/services/toast/toast';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { StatusSelectComponent, StatusSelectOption } from '@common/components/form/status-select/status-select';
 import { ButtonComponent } from '@common/components/button/button';
+import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import {
   AddEnvironmentItemDialogComponent,
   AddEnvironmentItemDialogResult
 } from './dialogs/add-environment-item-dialog/add-environment-item-dialog.component';
 import {
-  NotApplicableReasonDialogComponent,
-  NotApplicableReasonDialogData,
-  NotApplicableReasonDialogResult
-} from './dialogs/not-applicable-reason-dialog/not-applicable-reason-dialog.component';
+  BlockEnvironmentItemDialogComponent,
+  BlockEnvironmentItemDialogData,
+  BlockEnvironmentItemDialogResult
+} from './dialogs/block-environment-item-dialog/block-environment-item-dialog.component';
 
 @Component({
   selector: 'app-environment-tooling',
   standalone: true,
   imports: [
-    LoadingSpinnerComponent,
     CommonModule,
     FormsModule,
     InlineSVGModule,
+    TooltipDirective,
     StatusBadgeComponent,
     StatusSelectComponent,
-    ButtonComponent
+    ButtonComponent,
+    ConfirmDialogComponent
   ],
   templateUrl: './environment-tooling.component.html',
   styleUrl: './environment-tooling.component.scss'
@@ -54,14 +55,15 @@ export class EnvironmentToolingComponent {
   private dialog = inject(DialogService);
 
   items = signal<EnvironmentToolingItemDto[]>([]);
-  isLoading = signal<boolean>(true);
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
   canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
+  itemToDelete = signal<EnvironmentToolingItemDto | null>(null);
+  isDeleting = signal<boolean>(false);
 
   readonly statusOptions: StatusSelectOption[] = [
-    { label: 'Ready', value: EnvironmentToolingStatus.Ready, tone: 'success' },
-    { label: 'In Progress', value: EnvironmentToolingStatus.NotReady, tone: 'info' },
-    { label: 'Not Applicable', value: EnvironmentToolingStatus.NotApplicable, tone: 'neutral' }
+    { label: 'In Progress', value: EnvironmentToolingStatus.InProgress, tone: 'info' },
+    { label: 'Granted', value: EnvironmentToolingStatus.Granted, tone: 'success' },
+    { label: 'Blocked', value: EnvironmentToolingStatus.Blocked, tone: 'danger' }
   ];
 
   constructor() {
@@ -74,7 +76,6 @@ export class EnvironmentToolingComponent {
   }
 
   loadItems(id: number) {
-    this.isLoading.set(true);
     this.service.getItems(id).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
@@ -82,13 +83,11 @@ export class EnvironmentToolingComponent {
         const list = res?.items ?? [];
         this.items.set(list);
         this.itemsUpdated.emit(list);
-        this.isLoading.set(false);
       },
       error: (err) => {
         console.error('API load environment tooling failed', err);
         this.items.set([]);
         this.itemsUpdated.emit([]);
-        this.isLoading.set(false);
       }
     });
   }
@@ -96,18 +95,28 @@ export class EnvironmentToolingComponent {
   onStatusChange(item: EnvironmentToolingItemDto, newStatus: unknown): void {
     const statusVal = typeof newStatus === 'string' ? parseInt(newStatus, 10) : (newStatus as EnvironmentToolingStatus);
 
-    if (statusVal === EnvironmentToolingStatus.NotApplicable) {
-      this.openNaDialog(item);
+    if (+item.status === statusVal) {
+      return;
+    }
+
+    if (+item.status === EnvironmentToolingStatus.Granted && statusVal === EnvironmentToolingStatus.InProgress) {
+      this.toastService.error(`Cannot change status from Granted to In Progress for ${item.name}`);
+      this.items.update((items) => items.map((i) => i.id === item.id ? { ...i } : i));
+      return;
+    }
+
+    if (statusVal === EnvironmentToolingStatus.Blocked) {
+      this.openBlockDialog(item);
       return;
     }
 
     this.updateStatus(item, statusVal);
   }
 
-  private openNaDialog(item: EnvironmentToolingItemDto): void {
-    const dialogRef = this.dialog.open<NotApplicableReasonDialogComponent, NotApplicableReasonDialogData, NotApplicableReasonDialogResult>(
-      NotApplicableReasonDialogComponent,
-      { data: { itemName: item.name, currentReason: item.notApplicableReason }, disableClose: true }
+  private openBlockDialog(item: EnvironmentToolingItemDto): void {
+    const dialogRef = this.dialog.open<BlockEnvironmentItemDialogComponent, BlockEnvironmentItemDialogData, BlockEnvironmentItemDialogResult>(
+      BlockEnvironmentItemDialogComponent,
+      { data: { itemName: item.name, currentReason: item.blockReason }, disableClose: true }
     );
 
     dialogRef.closed$.subscribe((result) => {
@@ -116,14 +125,14 @@ export class EnvironmentToolingComponent {
         this.items.update((items) => items.map((i) => i.id === item.id ? { ...i } : i));
         return;
       }
-      this.updateStatus(item, EnvironmentToolingStatus.NotApplicable, result.reason);
+      this.updateStatus(item, EnvironmentToolingStatus.Blocked, result.reason);
     });
   }
 
-  private updateStatus(item: EnvironmentToolingItemDto, newStatus: EnvironmentToolingStatus, naReason?: string): void {
+  private updateStatus(item: EnvironmentToolingItemDto, newStatus: EnvironmentToolingStatus, blockReason?: string): void {
     const payload = {
       status: newStatus,
-      notApplicableReason: newStatus === EnvironmentToolingStatus.NotApplicable ? naReason : undefined
+      blockReason: newStatus === EnvironmentToolingStatus.Blocked ? blockReason : undefined
     };
 
     this.service.updateStatus(item.id, payload).pipe(
@@ -149,12 +158,12 @@ export class EnvironmentToolingComponent {
   getStatusTone(status: EnvironmentToolingStatus | number | string): StatusBadgeTone {
     const val = typeof status === 'string' ? parseInt(status, 10) : status;
     switch (val) {
-      case EnvironmentToolingStatus.Ready:
+      case EnvironmentToolingStatus.Granted:
       case 2:
         return 'success';
-      case EnvironmentToolingStatus.NotApplicable:
+      case EnvironmentToolingStatus.Blocked:
       case 3:
-        return 'neutral';
+        return 'danger';
       default:
         return 'info';
     }
@@ -163,12 +172,12 @@ export class EnvironmentToolingComponent {
   getStatusLabel(status: EnvironmentToolingStatus | number | string): string {
     const val = typeof status === 'string' ? parseInt(status, 10) : status;
     switch (val) {
-      case EnvironmentToolingStatus.Ready:
+      case EnvironmentToolingStatus.Granted:
       case 2:
-        return 'Ready';
-      case EnvironmentToolingStatus.NotApplicable:
+        return 'Granted';
+      case EnvironmentToolingStatus.Blocked:
       case 3:
-        return 'Not Applicable';
+        return 'Blocked';
       default:
         return 'In Progress';
     }
@@ -206,19 +215,40 @@ export class EnvironmentToolingComponent {
         this.toastService.success(`Environment item "${newItem.name}" added successfully`);
       },
       error: (err) => {
-        console.warn('API add environment item failed, adding local item for testing', err);
-        const localNewItem: EnvironmentToolingItemDto = {
-          id: Date.now(),
-          name: requestData.customName,
-          customName: requestData.customName,
-          engagementId: this.engagementId(),
-          ownerId: currentUserId,
-          ownerFullName: currentUser?.fullName ?? 'Tech Lead',
-          status: EnvironmentToolingStatus.NotReady
-        };
-        const updatedList = [...this.items(), localNewItem];
+        console.error('API add environment tooling item failed', err);
+      }
+    });
+  }
+
+  onDeleteItem(item: EnvironmentToolingItemDto): void {
+    if (!this.canManage()) return;
+    this.itemToDelete.set(item);
+  }
+
+  cancelDelete(): void {
+    this.itemToDelete.set(null);
+  }
+
+  confirmDelete(): void {
+    const item = this.itemToDelete();
+    if (!item) return;
+
+    this.isDeleting.set(true);
+    this.service.deleteItem(item.id).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: () => {
+        const updatedList = this.items().filter(i => i.id !== item.id);
         this.items.set(updatedList);
         this.itemsUpdated.emit(updatedList);
+        this.toastService.success(`Environment item "${item.name}" deleted successfully`);
+        this.isDeleting.set(false);
+        this.itemToDelete.set(null);
+      },
+      error: (err) => {
+        this.toastService.error(`Failed to delete "${item.name}"`);
+        console.error('API delete environment item failed', err);
+        this.isDeleting.set(false);
       }
     });
   }

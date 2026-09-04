@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal, output } from '@angular/core';
+import { Component, OnInit, computed, inject, signal, output, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
@@ -103,6 +103,13 @@ export class EngagementsComponent implements OnInit {
 
   closeModal(): void {
     this.showModal.set(false);
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    if (this.showModal()) {
+      this.closeModal();
+    }
   }
 
   onSubmit(): void {

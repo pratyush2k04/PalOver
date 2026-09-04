@@ -313,6 +313,8 @@
       p {
         margin: 0;
         color: $color-rose-900;
+        overflow-wrap: anywhere;
+        word-break: break-word;
       }
     }
   }
@@ -345,6 +347,7 @@
 
     .features-table {
       width: 100%;
+      table-layout: fixed;
       border-collapse: collapse;
       text-align: left;
       font-size: 0.875rem;
@@ -355,13 +358,31 @@
         padding: 0.75rem 1rem;
         border-bottom: 1px solid $color-gray-200;
         background-color: $color-gray-50;
+
+        &.feature-th {
+          width: 48%;
+        }
+
+        &.estimate-th {
+          width: 22%;
+        }
+
+        &.sprint-th {
+          width: 18%;
+        }
+
+        &.actions-col {
+          width: 12%;
+          min-width: 6.25rem;
+          text-align: right;
+        }
       }
 
       td {
         padding: 0.875rem 1rem;
         border-bottom: 1px solid $color-gray-100;
         color: $color-gray-700;
-        vertical-align: middle;
+        vertical-align: top;
       }
 
       tr:last-child td {
@@ -369,9 +390,15 @@
       }
 
       .feature-name-cell {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+
         strong {
           color: $color-gray-900;
           font-weight: 500;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          display: block;
         }
       }
 

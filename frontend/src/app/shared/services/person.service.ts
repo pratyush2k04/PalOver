@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PersonDto } from '@shared/models/person.model';
+import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 
 @Injectable({
   providedIn: 'root'
@@ -9,8 +10,10 @@ import { PersonDto } from '@shared/models/person.model';
 export class PersonService {
   private http = inject(HttpClient);
 
-  getPeopleByEngagement(engagementId: number): Observable<PersonDto[]> {
-    return this.http.get<PersonDto[]>(`/api/engagements/${engagementId}/people`);
+  getPeopleByEngagement(engagementId: number, skipLoader = false): Observable<PersonDto[]> {
+    return this.http.get<PersonDto[]>(`/api/engagements/${engagementId}/people`, {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
   createPerson(engagementId: number, person: Partial<PersonDto>): Observable<PersonDto> {

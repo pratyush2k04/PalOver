@@ -71,6 +71,15 @@ export class MyEngagementsComponent implements OnInit {
 
   totalPages = computed(() => Math.max(1, Math.ceil(this.totalCount() / this.pageSize())));
 
+  readonly showingStart = computed(() => {
+    if (this.totalCount() === 0) return 0;
+    return (this.page() - 1) * this.pageSize() + 1;
+  });
+
+  readonly showingEnd = computed(() => {
+    return Math.min(this.page() * this.pageSize(), this.totalCount());
+  });
+
   setTab(tabId: 'Active' | 'Past'): void {
     this.activeTab.set(tabId);
     this.page.set(1);

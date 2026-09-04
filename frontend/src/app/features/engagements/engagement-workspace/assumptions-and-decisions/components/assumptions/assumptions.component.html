@@ -1,11 +1,4 @@
 <div class="panel-card">
-  @if (unvalidatedCount() > 0) {
-    <div class="banner-alert">
-      <span [inlineSVG]="'assets/icons/flag.svg'"></span>
-      <span>{{ unvalidatedCount() }} assumption(s) still unvalidated</span>
-    </div>
-  }
-
   <div class="panel-header">
     <div class="title-section">
       <h2>Assumptions</h2>
@@ -52,7 +45,9 @@
 
                 <div class="item-actions">
                   @if (canEdit(item)) {
-                    <app-button class="btn-edit" variant="stroked" (click)="openAssumptionDialog(item)">Edit</app-button>
+                    <app-button variant="icon" size="sm" (click)="openAssumptionDialog(item)" title="Edit Assumption" ariaLabel="Edit Assumption">
+                      <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                    </app-button>
                   }
                   @if (item.status === AssumptionStatus.Unvalidated && isPm()) {
                     <app-button class="btn-validate" variant="flat" (click)="validateAssumption(item.id, AssumptionStatus.Validated)">Validate</app-button>

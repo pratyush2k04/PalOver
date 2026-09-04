@@ -49,10 +49,22 @@
       <!-- 5. Documentation & Brief Reference -->
       <section class="section-container doc-reference-box">
         <div class="doc-ref-content">
-          <span class="doc-ref-icon">📄</span>
-          <div>
+          <span class="doc-ref-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
+          <div class="doc-ref-text">
             <h4>Engagement Documentation & Scope</h4>
-            <p>For technical design, architecture specifications, and handover documents, refer to <strong>{{ s.briefDocumentName || 'Engagement Documents' }}</strong> in the PDR workspace.</p>
+            @if (s.isBrownfieldApplicable && s.brownfieldDocumentNames && s.brownfieldDocumentNames.length > 0) {
+              <p class="doc-names-intro">Refer to the following review document(s):</p>
+              <ul class="doc-names-list">
+                @for (docName of s.brownfieldDocumentNames; track docName) {
+                  <li class="doc-name-item">
+                    <span class="doc-item-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
+                    <span class="doc-name-text">{{ docName }}</span>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p>For technical design, architecture specifications, and handover documents, refer to <strong>Engagement Brief & Documents</strong> in the PDR workspace.</p>
+            }
           </div>
         </div>
       </section>

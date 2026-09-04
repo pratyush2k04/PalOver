@@ -29,6 +29,23 @@
   scrollbar-gutter: stable;
   background-color: $color-surface-subtle-alt;
   box-sizing: border-box;
+
+  &::-webkit-scrollbar {
+    width: 0.375rem;
+    height: 0.375rem;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $color-slate-400;
+
+    &:hover {
+      background-color: $color-slate-500;
+    }
+  }
 }
 
 .mobile-sidebar-backdrop {

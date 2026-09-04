@@ -49,7 +49,7 @@ export class AssignLeadershipDialogComponent implements OnInit {
   readonly isLoadingHandover = signal<boolean>(true);
 
   ngOnInit(): void {
-    this.allocationService.getHandoverDraftStatus(this.engagement.engagementId).subscribe({
+    this.allocationService.getHandoverDraftStatus(this.engagement.engagementId, true).subscribe({
       next: (status) => {
         this.handover.set(status);
         this.isLoadingHandover.set(false);
