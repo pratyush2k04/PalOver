@@ -17,7 +17,6 @@ public static class AuditActionCategoryRegistry
         [AuditActionEnum.UserDeleted] = AuditCategoryEnum.Access,
         [AuditActionEnum.ResourcingGapFlagRaised] = AuditCategoryEnum.Escalation,
         [AuditActionEnum.ResourcingGapFlagCleared] = AuditCategoryEnum.Escalation,
-        [AuditActionEnum.ClientContactDetailsChanged] = AuditCategoryEnum.Handover,
         [AuditActionEnum.ClientPersonaChanged] = AuditCategoryEnum.Handover,
         [AuditActionEnum.LeadershipAllocated] = AuditCategoryEnum.ResourceAllocation,
         [AuditActionEnum.UserRoleAllocated] = AuditCategoryEnum.ResourceAllocation,
@@ -35,6 +34,7 @@ public static class AuditActionCategoryRegistry
         [AuditActionEnum.KickoffReadyMarked] = AuditCategoryEnum.TechnicalReadiness,
         [AuditActionEnum.KickoffReadyReverted] = AuditCategoryEnum.TechnicalReadiness,
         [AuditActionEnum.AccessItemBlocked] = AuditCategoryEnum.TechnicalReadiness,
-        [AuditActionEnum.PersonAdded] = AuditCategoryEnum.People
+        [AuditActionEnum.PersonAdded] = AuditCategoryEnum.People,
+        [AuditActionEnum.ClientContactTransitioned] = AuditCategoryEnum.People
     };
 }

@@ -236,6 +236,12 @@ public class AuditActionConfiguration : IEntityTypeConfiguration<AuditAction>
                 Id = (int)AuditActionEnum.PersonAdded,
                 Action = AuditActionEnum.PersonAdded.ToString(),
                 Details = "Person {personName} with role {roleName} was added by {actorName}"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.ClientContactTransitioned,
+                Action = AuditActionEnum.ClientContactTransitioned.ToString(),
+                Details = "Client contact transitioned from {outgoingName} to {incomingName} by {actorName}"
             });
     }
 }

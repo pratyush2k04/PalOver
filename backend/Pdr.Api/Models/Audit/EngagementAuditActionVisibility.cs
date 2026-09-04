@@ -36,7 +36,6 @@ public static class EngagementAuditActionVisibilityRegistry
         [AuditActionEnum.MasterChecklistPublished] = new(VisibleToRoles: null),
 
         [AuditActionEnum.BrownfieldItemAdded] = new(VisibleToRoles: AllRoles),
-        [AuditActionEnum.ClientContactDetailsChanged] = new(VisibleToRoles: AllRoles),
         [AuditActionEnum.ClientPersonaChanged] = new(VisibleToRoles: AllRoles),
         [AuditActionEnum.DayOneSummaryGenerated] = new(VisibleToRoles: AllRoles),
         [AuditActionEnum.DiscoveryItemAdded] = new(VisibleToRoles: AllRoles),
@@ -54,6 +53,7 @@ public static class EngagementAuditActionVisibilityRegistry
         [AuditActionEnum.KickoffReadyMarked] = new(VisibleToRoles: AllRoles),
         [AuditActionEnum.KickoffReadyReverted] = new(VisibleToRoles: AllRoles),
         [AuditActionEnum.AccessItemBlocked] = new(VisibleToRoles: AllRoles),
-        [AuditActionEnum.PersonAdded] = new(VisibleToRoles: AllRoles)
+        [AuditActionEnum.PersonAdded] = new(VisibleToRoles: AllRoles),
+        [AuditActionEnum.ClientContactTransitioned] = new(VisibleToRoles: AllRoles)
     };
 }

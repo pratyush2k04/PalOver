@@ -17,6 +17,7 @@ public static class AuditMapperRegistry
         services.AddScoped<IAuditTemplateMapper, DocumentVersionedMapper>();
         services.AddScoped<IAuditTemplateMapper, DocumentUploadedMapper>();
         services.AddScoped<IAuditTemplateMapper, ClientContactDetailsChangedMapper>();
+        services.AddScoped<IAuditTemplateMapper, ClientContactTransitionedMapper>();
         services.AddScoped<IAuditTemplateMapper, ClientPersonaChangedMapper>();
         services.AddScoped<IAuditTemplateMapper, LeadershipAllocatedMapper>();
         services.AddScoped<IAuditTemplateMapper, UserRoleAllocatedMapper>();

@@ -7,7 +7,7 @@ export type AuditAction =
   | 'DocumentUploaded' 
   | 'UnauthorizedAccess' 
   | 'AccountLockout' 
-  | 'ClientContactDetailsChanged' 
+  | 'ClientContactTransitioned' 
   | 'ClientPersonaChanged' 
   | 'LeadershipAllocated' 
   | 'UserRoleAllocated' 

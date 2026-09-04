@@ -67,19 +67,7 @@ public class PersonService(
             actorUserId
         );
 
-        if (person.PersonType == PersonType.Client)
-        {
-            await auditLogService.LogAsync(
-                AuditActionEnum.ClientContactDetailsChanged,
-                new Dictionary<string, object?>
-                {
-                    ["EngagementId"] = engagementId,
-                    ["ClientName"] = person.Name,
-                    ["ActorUserId"] = actorUserId
-                },
-                engagementId: engagementId,
-                actingUserId: actorUserId > 0 ? actorUserId : null);
-        }
+
 
         return MapToDto(person);
     }
@@ -132,19 +120,7 @@ public class PersonService(
                     actingUserId: actorUserId > 0 ? actorUserId : null);
             }
 
-            if (!string.Equals(oldName, person.Name?.Trim(), StringComparison.OrdinalIgnoreCase))
-            {
-                await auditLogService.LogAsync(
-                    AuditActionEnum.ClientContactDetailsChanged,
-                    new Dictionary<string, object?>
-                    {
-                        ["EngagementId"] = engagementId,
-                        ["ClientName"] = person.Name,
-                        ["ActorUserId"] = actorUserId
-                    },
-                    engagementId: engagementId,
-                    actingUserId: actorUserId > 0 ? actorUserId : null);
-            }
+
         }
 
         if (!string.Equals(oldName, person.Name?.Trim(), StringComparison.OrdinalIgnoreCase) || 

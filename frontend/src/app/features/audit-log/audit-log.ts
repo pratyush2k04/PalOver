@@ -117,7 +117,6 @@ export class AuditLogComponent implements OnInit {
     UserDeleted: 'Access',
     ResourcingGapFlagRaised: 'Escalation',
     ResourcingGapFlagCleared: 'Escalation',
-    ClientContactDetailsChanged: 'Handover',
     ClientPersonaChanged: 'Handover',
     LeadershipAllocated: 'Resource Allocation',
     UserRoleAllocated: 'Resource Allocation',
@@ -135,7 +134,8 @@ export class AuditLogComponent implements OnInit {
     KickoffReadyMarked: 'Technical Readiness',
     KickoffReadyReverted: 'Technical Readiness',
     AccessItemBlocked: 'Technical Readiness',
-    PersonAdded: 'People'
+    PersonAdded: 'People',
+    ClientContactTransitioned: 'People'
   };
 
   getEventCategory(action: string): string {

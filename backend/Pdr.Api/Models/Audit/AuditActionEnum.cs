@@ -36,5 +36,6 @@ public enum AuditActionEnum
     HandoverQueryRaised = 856017,
     HandoverQueryResponded = 856018,
     HandoverQueryResolved = 856019,
-    PersonAdded = 32
+    PersonAdded = 32,
+    ClientContactTransitioned = 33
 }
