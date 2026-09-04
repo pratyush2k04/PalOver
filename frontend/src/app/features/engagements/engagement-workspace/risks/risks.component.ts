@@ -28,6 +28,7 @@ import { RISK_MESSAGES } from '@shared/constants/app.constants';
 import { AuthService } from '@shared/services/auth';
 import { USER_ROLES } from '@shared/constants/users.constants';
 
+import { InlineSVGModule } from 'ng-inline-svg-2';
 import { RiskCommentsComponent } from './components/risk-comments/risk-comments.component';
 import { RiskFormDialogComponent, RiskFormDialogResult } from './components/risk-form-dialog/risk-form-dialog.component';
 import { RISK_STATUSES } from '@shared/constants/risk.constants';
@@ -40,6 +41,7 @@ import { RISK_STATUSES } from '@shared/constants/risk.constants';
     ReactiveFormsModule,
     FormsModule,
     RouterLink,
+    InlineSVGModule,
     ButtonComponent,
     AlertComponent,
     StatusBadgeComponent,

@@ -134,7 +134,9 @@
               <div class="risk-card-footer">
                 <div class="action-buttons">
                   @if (risk.status !== 'Closed') {
-                    <app-button variant="stroked" size="sm" (click)="openEditModal(risk)">Edit</app-button>
+                    <app-button variant="icon" size="sm" (click)="openEditModal(risk)" title="Edit Risk" ariaLabel="Edit Risk">
+                      <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                    </app-button>
                     @if (canCloseRisk(risk)) {
                       <app-button variant="danger" size="sm" (click)="openCloseModal(risk)">Close Risk</app-button>
                     }
