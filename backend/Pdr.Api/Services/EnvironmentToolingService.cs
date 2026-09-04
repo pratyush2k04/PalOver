@@ -24,7 +24,7 @@ public class EnvironmentToolingService(
         var items = await repository.GetByEngagementIdAsync(engagementId);
         var dtos = items.Select(MapToDto).ToList();
 
-        var readyCount = dtos.Count(i => i.Status == EnvironmentToolingStatus.Ready || i.Status == EnvironmentToolingStatus.NotApplicable);
+        var readyCount = dtos.Count(i => i.Status == EnvironmentToolingStatus.Ready);
         var totalCount = dtos.Count;
 
         return new EnvironmentToolingReadinessResponse
@@ -33,7 +33,7 @@ public class EnvironmentToolingService(
             ReadyCount = readyCount,
             TotalCount = totalCount,
             IsTechnicallyReady = readyCount == totalCount && totalCount > 0,
-            OutstandingItems = dtos.Where(i => i.Status == EnvironmentToolingStatus.NotReady).ToList(),
+            OutstandingItems = dtos.Where(i => i.Status != EnvironmentToolingStatus.Ready).ToList(),
             Items = dtos
         };
     }
@@ -78,18 +78,18 @@ public class EnvironmentToolingService(
 
         await engagementRepository.EnsureNotSignedOffAsync(item.EngagementId);
 
-        // Validate NotApplicableReason
-        if (request.Status == EnvironmentToolingStatus.NotApplicable)
+        // Validate BlockReason
+        if (request.Status == EnvironmentToolingStatus.Blocked)
         {
-            if (string.IsNullOrWhiteSpace(request.NotApplicableReason))
+            if (string.IsNullOrWhiteSpace(request.BlockReason))
             {
-                throw new NotApplicableReasonRequiredException();
+                throw new BlockReasonRequiredException();
             }
-            item.NotApplicableReason = request.NotApplicableReason;
+            item.BlockReason = request.BlockReason;
         }
         else
         {
-            item.NotApplicableReason = null;
+            item.BlockReason = null;
         }
 
         var wasReady = await readinessNotificationService.IsReadyAsync(item.EngagementId);
@@ -158,6 +158,6 @@ public class EnvironmentToolingService(
             OwnerFullName = item.Owner?.FullName ?? string.Empty,
             CustomName = item.CustomName,
             Status = item.Status,
-            NotApplicableReason = item.NotApplicableReason
+            BlockReason = item.BlockReason
         };
 }

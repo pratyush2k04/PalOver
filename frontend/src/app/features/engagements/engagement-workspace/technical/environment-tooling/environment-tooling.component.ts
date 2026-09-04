@@ -23,10 +23,10 @@ import {
   AddEnvironmentItemDialogResult
 } from './dialogs/add-environment-item-dialog/add-environment-item-dialog.component';
 import {
-  NotApplicableReasonDialogComponent,
-  NotApplicableReasonDialogData,
-  NotApplicableReasonDialogResult
-} from './dialogs/not-applicable-reason-dialog/not-applicable-reason-dialog.component';
+  BlockEnvironmentItemDialogComponent,
+  BlockEnvironmentItemDialogData,
+  BlockEnvironmentItemDialogResult
+} from './dialogs/block-environment-item-dialog/block-environment-item-dialog.component';
 
 @Component({
   selector: 'app-environment-tooling',
@@ -66,7 +66,7 @@ export class EnvironmentToolingComponent {
   readonly statusOptions: StatusSelectOption[] = [
     { label: 'Ready', value: EnvironmentToolingStatus.Ready, tone: 'success' },
     { label: 'In Progress', value: EnvironmentToolingStatus.NotReady, tone: 'info' },
-    { label: 'Not Applicable', value: EnvironmentToolingStatus.NotApplicable, tone: 'neutral' }
+    { label: 'Blocked', value: EnvironmentToolingStatus.Blocked, tone: 'danger' }
   ];
 
   constructor() {
@@ -101,18 +101,18 @@ export class EnvironmentToolingComponent {
   onStatusChange(item: EnvironmentToolingItemDto, newStatus: unknown): void {
     const statusVal = typeof newStatus === 'string' ? parseInt(newStatus, 10) : (newStatus as EnvironmentToolingStatus);
 
-    if (statusVal === EnvironmentToolingStatus.NotApplicable) {
-      this.openNaDialog(item);
+    if (statusVal === EnvironmentToolingStatus.Blocked) {
+      this.openBlockDialog(item);
       return;
     }
 
     this.updateStatus(item, statusVal);
   }
 
-  private openNaDialog(item: EnvironmentToolingItemDto): void {
-    const dialogRef = this.dialog.open<NotApplicableReasonDialogComponent, NotApplicableReasonDialogData, NotApplicableReasonDialogResult>(
-      NotApplicableReasonDialogComponent,
-      { data: { itemName: item.name, currentReason: item.notApplicableReason }, disableClose: true }
+  private openBlockDialog(item: EnvironmentToolingItemDto): void {
+    const dialogRef = this.dialog.open<BlockEnvironmentItemDialogComponent, BlockEnvironmentItemDialogData, BlockEnvironmentItemDialogResult>(
+      BlockEnvironmentItemDialogComponent,
+      { data: { itemName: item.name, currentReason: item.blockReason }, disableClose: true }
     );
 
     dialogRef.closed$.subscribe((result) => {
@@ -121,14 +121,14 @@ export class EnvironmentToolingComponent {
         this.items.update((items) => items.map((i) => i.id === item.id ? { ...i } : i));
         return;
       }
-      this.updateStatus(item, EnvironmentToolingStatus.NotApplicable, result.reason);
+      this.updateStatus(item, EnvironmentToolingStatus.Blocked, result.reason);
     });
   }
 
-  private updateStatus(item: EnvironmentToolingItemDto, newStatus: EnvironmentToolingStatus, naReason?: string): void {
+  private updateStatus(item: EnvironmentToolingItemDto, newStatus: EnvironmentToolingStatus, blockReason?: string): void {
     const payload = {
       status: newStatus,
-      notApplicableReason: newStatus === EnvironmentToolingStatus.NotApplicable ? naReason : undefined
+      blockReason: newStatus === EnvironmentToolingStatus.Blocked ? blockReason : undefined
     };
 
     this.service.updateStatus(item.id, payload).pipe(
@@ -157,9 +157,9 @@ export class EnvironmentToolingComponent {
       case EnvironmentToolingStatus.Ready:
       case 2:
         return 'success';
-      case EnvironmentToolingStatus.NotApplicable:
+      case EnvironmentToolingStatus.Blocked:
       case 3:
-        return 'neutral';
+        return 'danger';
       default:
         return 'info';
     }
@@ -171,9 +171,9 @@ export class EnvironmentToolingComponent {
       case EnvironmentToolingStatus.Ready:
       case 2:
         return 'Ready';
-      case EnvironmentToolingStatus.NotApplicable:
+      case EnvironmentToolingStatus.Blocked:
       case 3:
-        return 'Not Applicable';
+        return 'Blocked';
       default:
         return 'In Progress';
     }

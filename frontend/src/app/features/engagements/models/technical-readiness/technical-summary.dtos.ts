@@ -36,8 +36,7 @@ export interface DayOneReadinessSummaryDto {
   totalToolingCount: number;
   readyToolingCount: number;
   notReadyToolingCount: number;
-  notApplicableToolingCount: number;
-  applicableToolingCount: number;
+  blockedToolingCount: number;
   toolingPercentReady: number;
   isToolingReady: boolean;
 

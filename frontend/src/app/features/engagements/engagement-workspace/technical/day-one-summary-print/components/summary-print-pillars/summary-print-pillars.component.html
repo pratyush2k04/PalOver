@@ -31,21 +31,21 @@
         <div class="pillar-header">
           <h4>2. Environment & Tooling</h4>
           <app-status-badge [tone]="toolingStatusTone()">
-            {{ s.isToolingReady ? 'Ready' : 'Pending' }}
+            {{ s.isToolingReady ? 'Ready' : (s.blockedToolingCount > 0 ? 'Blocked' : 'In Progress') }}
           </app-status-badge>
         </div>
         <div class="pillar-metric">
           <span class="metric-number">{{ s.toolingPercentReady }}%</span>
-          <span class="metric-caption">{{ s.readyToolingCount }} of {{ s.applicableToolingCount }} ready</span>
+          <span class="metric-caption">{{ s.readyToolingCount }} of {{ s.totalToolingCount }} ready</span>
         </div>
         <div class="pillar-details">
           <div class="detail-row">
             <span>Not Ready:</span>
-            <span class="font-medium" [class.text-danger]="s.notReadyToolingCount > 0">{{ s.notReadyToolingCount }}</span>
+            <span class="font-medium">{{ s.notReadyToolingCount }}</span>
           </div>
           <div class="detail-row">
-            <span>N/A Excluded:</span>
-            <span class="font-medium">{{ s.notApplicableToolingCount }}</span>
+            <span>Blocked:</span>
+            <span class="font-medium" [class.text-danger]="s.blockedToolingCount > 0">{{ s.blockedToolingCount }}</span>
           </div>
         </div>
       </div>

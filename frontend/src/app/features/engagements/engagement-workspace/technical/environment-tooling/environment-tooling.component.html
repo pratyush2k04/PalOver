@@ -54,8 +54,8 @@
                       {{ getStatusLabel(item.status) }}
                     </app-status-badge>
                   }
-                  @if (item.notApplicableReason) {
-                    <span class="na-reason-text">({{ item.notApplicableReason }})</span>
+                  @if (item.blockReason) {
+                    <span class="na-reason-text">({{ item.blockReason }})</span>
                   }
                 </div>
               </td>

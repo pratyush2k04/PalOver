@@ -10,7 +10,7 @@ public static class EnvironmentToolingConstants
 
     public static class Messages
     {
-        public const string NotApplicableReasonRequired = "NotApplicableReason is required when setting status to NotApplicable.";
+        public const string BlockReasonRequired = "A block reason must be provided when setting the status to Blocked.";
 
         public static string NotFound(int id) => $"Environment/tooling item with id {id} was not found.";
         public static string InvalidStatusTransition(string from, string to) => $"Cannot transition status from {from} to {to}.";

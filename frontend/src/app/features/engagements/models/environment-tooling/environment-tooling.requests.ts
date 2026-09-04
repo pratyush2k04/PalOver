@@ -7,7 +7,6 @@ export interface AddCustomEnvironmentToolingItemRequest {
 
 export interface UpdateEnvironmentToolingStatusRequest {
   status: EnvironmentToolingStatus;
-  notApplicableReason?: string;
   blockReason?: string;
 }
 

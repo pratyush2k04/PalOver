@@ -23,7 +23,7 @@ namespace Pdr.Api.Models.EnvironmentTooling
         public EnvironmentToolingStatus Status { get; set; }
             = EnvironmentToolingStatus.NotReady;
 
-        // Required when Status = NotApplicable
-        public string? NotApplicableReason { get; set; }
+        // Required when Status = Blocked
+        public string? BlockReason { get; set; }
     }
 }
