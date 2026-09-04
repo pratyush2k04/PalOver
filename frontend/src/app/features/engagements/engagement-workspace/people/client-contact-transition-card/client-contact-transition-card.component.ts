@@ -15,10 +15,7 @@ import {
   DIALOG_LABELS,
   STATUS_MESSAGES,
 } from '@shared/constants/client-contact-transition.constants';
-import {
-  AddClientContactTransitionDialogComponent,
-  AddClientContactTransitionDialogResult
-} from '../../handover/dialogs/add-client-contact-transition-dialog/add-client-contact-transition-dialog.component';
+import { AddClientContactTransitionDialogComponent } from '../../handover/dialogs/add-client-contact-transition-dialog/add-client-contact-transition-dialog.component';
 
 @Component({
   selector: 'app-client-contact-transition-card',
@@ -85,7 +82,7 @@ export class ClientContactTransitionCardComponent {
       activeTransitions: this.transitions(),
     };
 
-    const dialogRef = this.dialog.open<AddClientContactTransitionDialogComponent, AddClientContactTransitionDialogData, AddClientContactTransitionDialogResult>(
+    const dialogRef = this.dialog.open<AddClientContactTransitionDialogComponent, AddClientContactTransitionDialogData, boolean>(
       AddClientContactTransitionDialogComponent,
       { data }
     );
@@ -93,16 +90,8 @@ export class ClientContactTransitionCardComponent {
     dialogRef.closed$.subscribe((result) => {
       if (!result) return;
 
-      this.transitionService.saveTransition(this.engagementId(), result, true).subscribe({
-        next: () => {
-          this.loadHistory(() => this.toastService.success(this.statusMessages.SAVE_SUCCESS));
-          this.onSaved.emit();
-        },
-        error: (err: any) => {
-          const msg = err?.error?.message || this.statusMessages.SAVE_ERROR;
-          this.toastService.error(msg);
-        },
-      });
+      this.loadHistory(() => this.toastService.success(this.statusMessages.SAVE_SUCCESS));
+      this.onSaved.emit();
     });
   }
 

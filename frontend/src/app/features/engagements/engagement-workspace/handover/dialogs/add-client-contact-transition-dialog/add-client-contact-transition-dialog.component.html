@@ -52,17 +52,21 @@
           </p>
         </div>
       </div>
+
+      @if (errorMessage()) {
+        <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+      }
     }
 
   </div>
 
   <div class="app-dialog__actions">
     @if (showConfirm()) {
-      <app-button type="button" variant="stroked" (click)="cancelConfirm()">
+      <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="cancelConfirm()">
         {{ buttonLabels.BACK }}
       </app-button>
-      <app-button type="button" variant="flat" (click)="confirmAndSave()">
-        {{ buttonLabels.CONFIRM_SAVE }}
+      <app-button type="button" variant="flat" [disabled]="isSubmitting()" [loading]="isSubmitting()" (click)="confirmAndSave()">
+        {{ isSubmitting() ? buttonLabels.SAVING : buttonLabels.CONFIRM_SAVE }}
       </app-button>
     } @else {
       <app-button type="button" variant="stroked" (click)="onCancel()">
