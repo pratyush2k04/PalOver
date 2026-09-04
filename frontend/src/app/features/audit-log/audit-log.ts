@@ -15,12 +15,26 @@ import { DatepickerComponent } from '@common/components/form/datepicker/datepick
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { PageHeaderComponent } from '@common/components/page-header/page-header';
 import { SectionHeaderComponent } from '@common/components/section-header/section-header';
+import { AvatarComponent } from '@common/components/avatar/avatar';
 import { downloadCsv } from '@shared/utils/csv.util';
 
 @Component({
   selector: 'app-audit-log',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, AlertComponent, EmptyStateComponent, PaginatorComponent, ButtonComponent, DatepickerComponent, PageHeaderComponent, SectionHeaderComponent, SelectComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    LoadingSpinnerComponent,
+    AlertComponent,
+    EmptyStateComponent,
+    PaginatorComponent,
+    ButtonComponent,
+    DatepickerComponent,
+    PageHeaderComponent,
+    SectionHeaderComponent,
+    SelectComponent,
+    AvatarComponent
+  ],
   templateUrl: './audit-log.html',
   styleUrl: './audit-log.scss'
 })

@@ -12,7 +12,10 @@
       [required]="true"
       formControlName="description"
       [rows]="3"
-      [errorMessages]="{ required: constants.ERROR_DESCRIPTION_REQUIRED }"
+      [errorMessages]="{
+        required: constants.ERROR_DESCRIPTION_REQUIRED,
+        minlength: constants.ERROR_DESCRIPTION_MINLENGTH
+      }"
     />
 
     <app-input
@@ -20,7 +23,10 @@
       [label]="constants.LABEL_IMPACT"
       [required]="true"
       formControlName="impact"
-      [errorMessages]="{ required: constants.ERROR_IMPACT_REQUIRED }"
+      [errorMessages]="{
+        required: constants.ERROR_IMPACT_REQUIRED,
+        minlength: constants.ERROR_IMPACT_MINLENGTH
+      }"
     />
   </div>
 

@@ -131,6 +131,9 @@
       </div>
 
       <div class="pagination-footer">
+        <div class="showing-text">
+          Showing {{ showingStart() }} to {{ showingEnd() }} of {{ totalCount() }} notifications
+        </div>
         <app-paginator
           [page]="page()"
           [totalPages]="totalPages()"

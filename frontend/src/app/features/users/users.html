@@ -91,7 +91,14 @@
           </div>
           @if (totalCount() > 0) {
             <div class="pagination-controls">
-              <app-paginator [page]="page()" [totalPages]="totalPages" (pageChange)="goToPage($event)" />
+              <app-paginator
+                [page]="page()"
+                [totalPages]="totalPages()"
+                [pageSize]="pageSize()"
+                [pageSizeOptions]="pageSizeOptions"
+                (pageChange)="goToPage($event)"
+                (pageSizeChange)="onPageSizeChange($event)"
+              />
             </div>
           }
         </div>
