@@ -68,6 +68,15 @@ public class EnvironmentToolingService(
         return MapToDto(createdItem!);
     }
 
+    private static readonly HashSet<(EnvironmentToolingStatus From, EnvironmentToolingStatus To)> AllowedTransitions =
+    [
+        (EnvironmentToolingStatus.NotReady, EnvironmentToolingStatus.Ready),
+        (EnvironmentToolingStatus.NotReady, EnvironmentToolingStatus.Blocked),
+        (EnvironmentToolingStatus.Ready,    EnvironmentToolingStatus.Blocked),
+        (EnvironmentToolingStatus.Blocked,  EnvironmentToolingStatus.NotReady),
+        (EnvironmentToolingStatus.Blocked,  EnvironmentToolingStatus.Ready),
+    ];
+
     public async Task<EnvironmentToolingItemDto> UpdateStatusAsync(int id, UpdateEnvironmentToolingStatusRequest request)
     {
         var item = await repository.GetByIdAsync(id);
@@ -77,6 +86,18 @@ public class EnvironmentToolingService(
         }
 
         await engagementRepository.EnsureNotSignedOffAsync(item.EngagementId);
+
+        // Guard: same-status transition is never allowed
+        if (item.Status == request.Status)
+        {
+            throw new InvalidEnvironmentToolingStatusTransitionException(item.Status, request.Status);
+        }
+
+        // Guard: check against the allowed transition table
+        if (!AllowedTransitions.Contains((item.Status, request.Status)))
+        {
+            throw new InvalidEnvironmentToolingStatusTransitionException(item.Status, request.Status);
+        }
 
         // Validate BlockReason
         if (request.Status == EnvironmentToolingStatus.Blocked)

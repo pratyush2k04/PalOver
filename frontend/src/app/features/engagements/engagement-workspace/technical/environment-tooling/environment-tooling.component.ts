@@ -101,6 +101,16 @@ export class EnvironmentToolingComponent {
   onStatusChange(item: EnvironmentToolingItemDto, newStatus: unknown): void {
     const statusVal = typeof newStatus === 'string' ? parseInt(newStatus, 10) : (newStatus as EnvironmentToolingStatus);
 
+    if (+item.status === statusVal) {
+      return;
+    }
+
+    if (+item.status === EnvironmentToolingStatus.Ready && statusVal === EnvironmentToolingStatus.NotReady) {
+      this.toastService.error(`Cannot change status from Ready to In Progress for ${item.name}`);
+      this.items.update((items) => items.map((i) => i.id === item.id ? { ...i } : i));
+      return;
+    }
+
     if (statusVal === EnvironmentToolingStatus.Blocked) {
       this.openBlockDialog(item);
       return;
