@@ -101,6 +101,16 @@
   &.active {
     background-color: $color-bg;
   }
+
+  @include respond-to-down('xs') {
+    gap: 0;
+    padding: $spacing-1;
+
+    .user-text,
+    .chevron {
+      display: none;
+    }
+  }
 }
 
 .user-text {
