@@ -49,6 +49,7 @@
 
     .env-table {
       width: 100%;
+      table-layout: fixed;
       border-collapse: collapse;
       text-align: left;
       font-size: 0.875rem;
@@ -59,6 +60,25 @@
         padding: 0.75rem 1rem;
         border-bottom: 1px solid $color-gray-200;
         background-color: $color-gray-50;
+
+        &.item-th {
+          width: 45%;
+        }
+
+        &.owner-th {
+          width: 25%;
+        }
+
+        &.status-th {
+          width: 18%;
+          text-align: center;
+        }
+
+        &.actions-th {
+          width: 12%;
+          min-width: 5rem;
+          text-align: right;
+        }
       }
 
       td {
@@ -71,13 +91,20 @@
       .item-name-cell {
         font-weight: 500;
         color: $color-gray-900;
+        overflow-wrap: anywhere;
+        word-break: break-word;
       }
 
       .owner-cell {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+
         .owner-content {
           display: flex;
           align-items: center;
           gap: 0.5rem;
+          overflow-wrap: anywhere;
+          word-break: break-word;
         }
       }
 
