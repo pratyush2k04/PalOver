@@ -31,6 +31,10 @@
     gap: 1.5rem;
     width: 100%;
 
+    ::ng-deep .header-subtitle {
+      display: inline-block;
+    }
+
     .main-left {
       overflow: auto;
 
