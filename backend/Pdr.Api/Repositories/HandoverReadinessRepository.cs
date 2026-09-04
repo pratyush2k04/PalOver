@@ -16,6 +16,8 @@ public class HandoverReadinessRepository(AppDbContext context) : IHandoverReadin
         return await context.HandoverReadinessItems
             .Include(h => h.Owner)
             .Include(h => h.HandoverReadinessDefinition)
+            .Include(h => h.EvidenceDocument)
+            .Include(h => h.EvidenceSubmittedBy)
             .Where(h => h.EngagementId == engagementId && !h.IsDeleted)
             .OrderBy(h => h.HandoverReadinessDefinition != null ? h.HandoverReadinessDefinition.DisplayOrder : int.MaxValue)
             .ThenBy(h => h.Id)
@@ -27,6 +29,8 @@ public class HandoverReadinessRepository(AppDbContext context) : IHandoverReadin
         return await context.HandoverReadinessItems
             .Include(h => h.Owner)
             .Include(h => h.HandoverReadinessDefinition)
+            .Include(h => h.EvidenceDocument)
+            .Include(h => h.EvidenceSubmittedBy)
             .FirstOrDefaultAsync(h => h.Id == id && !h.IsDeleted);
     }
 
