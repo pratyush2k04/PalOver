@@ -126,6 +126,22 @@ public class EnvironmentToolingService(
         return MapToDto(updatedItem!);
     }
 
+    public async Task DeleteItemAsync(int id)
+    {
+        var item = await repository.GetByIdAsync(id)
+            ?? throw new EnvironmentToolingItemNotFoundException(id);
+
+        await engagementRepository.EnsureNotSignedOffAsync(item.EngagementId);
+
+        var wasReady = await readinessNotificationService.IsReadyAsync(item.EngagementId);
+
+        await repository.DeleteAsync(item);
+
+        await riskService.SyncAutoCreatedRisksAsync(item.EngagementId);
+
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(item.EngagementId, wasReady);
+    }
+
     private static string GetItemDisplayName(EnvironmentToolingItem item) =>
         item.EnvironmentToolingDefinition != null
             ? item.EnvironmentToolingDefinition.Name

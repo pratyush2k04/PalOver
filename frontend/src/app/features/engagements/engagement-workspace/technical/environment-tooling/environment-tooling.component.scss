@@ -133,6 +133,18 @@
         }
       }
 
+      .actions-cell {
+        text-align: right;
+        width: 5rem;
+
+        .action-btn-group {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 0.25rem;
+        }
+      }
+
       .empty-cell {
         text-align: center;
         color: $color-gray-400;

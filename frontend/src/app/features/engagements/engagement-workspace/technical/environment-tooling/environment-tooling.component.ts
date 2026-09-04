@@ -16,6 +16,7 @@ import { ToastService } from '@common/services/toast/toast';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { StatusSelectComponent, StatusSelectOption } from '@common/components/form/status-select/status-select';
 import { ButtonComponent } from '@common/components/button/button';
+import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import {
   AddEnvironmentItemDialogComponent,
@@ -35,9 +36,11 @@ import {
     CommonModule,
     FormsModule,
     InlineSVGModule,
+    TooltipDirective,
     StatusBadgeComponent,
     StatusSelectComponent,
-    ButtonComponent
+    ButtonComponent,
+    ConfirmDialogComponent
   ],
   templateUrl: './environment-tooling.component.html',
   styleUrl: './environment-tooling.component.scss'
@@ -57,6 +60,8 @@ export class EnvironmentToolingComponent {
   isLoading = signal<boolean>(true);
   isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
   canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
+  itemToDelete = signal<EnvironmentToolingItemDto | null>(null);
+  isDeleting = signal<boolean>(false);
 
   readonly statusOptions: StatusSelectOption[] = [
     { label: 'Ready', value: EnvironmentToolingStatus.Ready, tone: 'success' },
@@ -219,6 +224,39 @@ export class EnvironmentToolingComponent {
         const updatedList = [...this.items(), localNewItem];
         this.items.set(updatedList);
         this.itemsUpdated.emit(updatedList);
+      }
+    });
+  }
+
+  onDeleteItem(item: EnvironmentToolingItemDto): void {
+    if (!this.canManage()) return;
+    this.itemToDelete.set(item);
+  }
+
+  cancelDelete(): void {
+    this.itemToDelete.set(null);
+  }
+
+  confirmDelete(): void {
+    const item = this.itemToDelete();
+    if (!item) return;
+
+    this.isDeleting.set(true);
+    this.service.deleteItem(item.id).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: () => {
+        const updatedList = this.items().filter(i => i.id !== item.id);
+        this.items.set(updatedList);
+        this.itemsUpdated.emit(updatedList);
+        this.toastService.success(`Environment item "${item.name}" deleted successfully`);
+        this.isDeleting.set(false);
+        this.itemToDelete.set(null);
+      },
+      error: (err) => {
+        this.toastService.error(`Failed to delete "${item.name}"`);
+        console.error('API delete environment item failed', err);
+        this.isDeleting.set(false);
       }
     });
   }
