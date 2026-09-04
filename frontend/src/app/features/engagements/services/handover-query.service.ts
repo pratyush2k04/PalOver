@@ -35,4 +35,10 @@ export class HandoverQueryService {
       {}
     );
   }
+
+  deleteQuery(engagementId: number, queryId: number): Observable<void> {
+    return this.http.delete<void>(
+      HANDOVER_API_ENDPOINTS.HANDOVER_QUERY_BY_ID(engagementId, queryId)
+    );
+  }
 }
