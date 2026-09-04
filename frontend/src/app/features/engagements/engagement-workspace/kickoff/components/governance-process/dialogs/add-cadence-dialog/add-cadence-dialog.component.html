@@ -41,9 +41,9 @@
   </div>
 
   <div class="app-dialog__actions">
-    <app-button type="button" variant="stroked" (click)="onCancel()">{{ constants.BTN_CANCEL }}</app-button>
-    <app-button type="submit" variant="flat">
-      {{ constants.BTN_ADD }}
+    <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="onCancel()">{{ constants.BTN_CANCEL }}</app-button>
+    <app-button type="submit" variant="flat" [disabled]="isSubmitting()" [loading]="isSubmitting()">
+      {{ isSubmitting() ? constants.BTN_ADDING : constants.BTN_ADD }}
     </app-button>
   </div>
 </form>

@@ -10,6 +10,7 @@ import { SelectComponent, SelectOption } from '@common/components/form/select/se
 import { MultiSelectListComponent } from '@common/components/multi-select-list/multi-select-list';
 import { CreateCommunicationCadence, EngagementParticipant, CadenceTypeEnum } from '../../../../../../models/cadence.model';
 import { CADENCE_CONSTANTS } from '@shared/constants/cadence.constants';
+import { CommunicationCadenceService } from '../../../../../../services/communication-cadence.service';
 
 export interface AddCadenceDialogData {
   engagementId: number;
@@ -32,8 +33,9 @@ export interface AddCadenceDialogData {
   styleUrl: './add-cadence-dialog.component.scss'
 })
 export class AddCadenceDialogComponent {
-  private dialogRef = inject<DialogRef<CreateCommunicationCadence>>(DialogRef);
+  private dialogRef = inject<DialogRef<boolean>>(DialogRef);
   private fb = inject(FormBuilder);
+  private cadenceService = inject(CommunicationCadenceService);
   readonly data = inject<AddCadenceDialogData>(DIALOG_DATA);
 
   readonly constants = CADENCE_CONSTANTS;
@@ -53,6 +55,7 @@ export class AddCadenceDialogComponent {
 
   selectedParticipantUserIds = signal<number[]>([]);
   errorMessage = signal<string | null>(null);
+  isSubmitting = signal(false);
 
   cadenceForm: FormGroup = this.fb.group({
     stakeholderRole: ['', [Validators.required, Validators.maxLength(200)]],
@@ -64,6 +67,7 @@ export class AddCadenceDialogComponent {
   }
 
   onCancel(): void {
+    if (this.isSubmitting()) return;
     this.dialogRef.close();
   }
 
@@ -79,11 +83,24 @@ export class AddCadenceDialogComponent {
       return;
     }
 
-    this.errorMessage.set(null);
-    this.dialogRef.close({
+    const request: CreateCommunicationCadence = {
       stakeholderRole: this.cadenceForm.value.stakeholderRole,
       cadence: +this.cadenceForm.value.cadence,
       participantUserIds: participantIds
+    };
+
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
+
+    this.cadenceService.addCadence(this.data.engagementId, request, true).subscribe({
+      next: () => {
+        this.isSubmitting.set(false);
+        this.dialogRef.close(true);
+      },
+      error: (err) => {
+        this.isSubmitting.set(false);
+        this.errorMessage.set(err?.error?.message || err?.error || this.constants.ERROR_GENERIC);
+      }
     });
   }
 }

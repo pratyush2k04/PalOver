@@ -4,7 +4,7 @@
       <h2 class="section-title">{{ constants.TITLE }}</h2>
     </div>
     @if (isProjectManager()) {
-      <app-button type="button" variant="flat" (click)="openAddCadenceModal()">
+      <app-button type="button" variant="flat" [disabled]="isLoadingCadences()" (click)="openAddCadenceModal()">
         <span class="plus-icon"></span> {{ constants.BTN_ADD_CADENCE }}
       </app-button>
     }

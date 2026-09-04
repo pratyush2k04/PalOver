@@ -5,11 +5,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { CommunicationCadenceService } from '../../../../services/communication-cadence.service';
 import { EngagementService } from '../../../../services/engagement.service';
 import { AuthService } from '@shared/services/auth';
-import { CommunicationCadence, CreateCommunicationCadence, EngagementParticipant } from '../../../../models/cadence.model';
+import { CommunicationCadence, EngagementParticipant } from '../../../../models/cadence.model';
 import { CADENCE_CONSTANTS } from '@shared/constants/cadence.constants';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { ButtonComponent } from '@common/components/button/button';
 import { DialogService } from '@common/services/dialog/dialog.service';
+import { ToastService } from '@common/services/toast/toast';
 import { AddCadenceDialogComponent, AddCadenceDialogData } from './dialogs/add-cadence-dialog/add-cadence-dialog.component';
 
 @Component({
@@ -29,6 +30,7 @@ export class GovernanceProcessComponent {
   private authService = inject(AuthService);
   private engagementService = inject(EngagementService);
   private dialog = inject(DialogService);
+  private toastService = inject(ToastService);
 
   readonly constants = CADENCE_CONSTANTS;
 
@@ -44,6 +46,7 @@ export class GovernanceProcessComponent {
   });
 
   cadences = signal<CommunicationCadence[]>([]);
+  isLoadingCadences = signal(false);
 
   constructor() {
     effect(() => {
@@ -54,10 +57,18 @@ export class GovernanceProcessComponent {
     });
   }
 
-  loadCadences(engagementId: number): void {
+  loadCadences(engagementId: number, onDone?: () => void): void {
+    this.isLoadingCadences.set(true);
     this.cadenceService.getCadences(engagementId).subscribe({
-      next: (data) => this.cadences.set(data),
-      error: (err) => console.error('Failed to load communication cadences:', err)
+      next: (data) => {
+        this.cadences.set(data);
+        this.isLoadingCadences.set(false);
+        onDone?.();
+      },
+      error: (err) => {
+        console.error('Failed to load communication cadences:', err);
+        this.isLoadingCadences.set(false);
+      }
     });
   }
 
@@ -75,22 +86,15 @@ export class GovernanceProcessComponent {
   }
 
   private openAddCadenceDialog(engagementId: number, participants: EngagementParticipant[]): void {
-    const dialogRef = this.dialog.open<AddCadenceDialogComponent, AddCadenceDialogData, CreateCommunicationCadence>(
+    const dialogRef = this.dialog.open<AddCadenceDialogComponent, AddCadenceDialogData, boolean>(
       AddCadenceDialogComponent,
       { data: { engagementId, participants } }
     );
 
-    dialogRef.closed$.subscribe((request) => {
-      if (!request) return;
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
 
-      this.cadenceService.addCadence(engagementId, request).subscribe({
-        next: (newCadence) => {
-          this.cadences.update(list => [...list, newCadence]);
-        },
-        error: (err) => {
-          console.error('Failed to add communication cadence:', err);
-        }
-      });
+      this.loadCadences(engagementId, () => this.toastService.success(this.constants.MSG_SUCCESS_ADDED));
     });
   }
 }
