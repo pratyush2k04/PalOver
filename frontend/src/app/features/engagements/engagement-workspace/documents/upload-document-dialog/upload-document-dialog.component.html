@@ -59,10 +59,10 @@
 </div>
 
 <div class="app-dialog__actions">
-  <app-button type="button" variant="stroked" [disabled]="isUploading()" (click)="onClose()">
+  <app-button type="button" variant="stroked" (click)="onClose()">
     Cancel
   </app-button>
-  <app-button type="button" variant="flat" [disabled]="isUploading()" [loading]="isUploading()" (click)="onSubmit()">
+  <app-button type="button" variant="flat" (click)="onSubmit()">
     Upload
   </app-button>
 </div>

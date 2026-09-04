@@ -23,18 +23,22 @@ import { DialogService } from '@common/services/dialog/dialog.service';
 import {
   UploadDocumentDialogComponent,
   UploadDocumentDialogData,
+  UploadDocumentDialogResult,
 } from '../upload-document-dialog/upload-document-dialog.component';
 import {
   RemoveDocumentDialogComponent,
   RemoveDocumentDialogData,
+  RemoveDocumentDialogResult,
 } from '../remove-document-dialog/remove-document-dialog.component';
 import {
   CustomVisibilityDialogComponent,
   CustomVisibilityDialogData,
+  CustomVisibilityDialogResult,
 } from '../custom-visibility-dialog/custom-visibility-dialog.component';
 import {
   UploadVersionDialogComponent,
   UploadVersionDialogData,
+  UploadVersionDialogResult,
 } from '../upload-version-dialog/upload-version-dialog.component';
 import {
   VersionHistoryDialogComponent,
@@ -158,7 +162,7 @@ export class EngagementDocumentsComponent {
       });
   }
 
-  loadDocuments(id?: number): void {
+  loadDocuments(id?: number, onDone?: () => void): void {
     const targetId = id ?? this.engagementId();
     if (!targetId) return;
 
@@ -172,6 +176,7 @@ export class EngagementDocumentsComponent {
         next: (docs) => {
           this.documents.set(docs);
           this.isLoading.set(false);
+          onDone?.();
         },
         error: (err) => {
           this.isLoading.set(false);
@@ -180,6 +185,7 @@ export class EngagementDocumentsComponent {
               ? err.error
               : err.error?.message || DOCUMENT_MESSAGES.LOAD_FAILED;
           this.errorMessage.set(msg);
+          onDone?.();
         },
       });
   }
@@ -191,23 +197,65 @@ export class EngagementDocumentsComponent {
     const dialogRef = this.dialog.open<
       UploadDocumentDialogComponent,
       UploadDocumentDialogData,
-      boolean
+      UploadDocumentDialogResult
     >(UploadDocumentDialogComponent, { data: { engagementId } });
 
-    dialogRef.closed$.subscribe((uploaded) => {
-      if (uploaded) this.loadDocuments();
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+
+      this.documentService
+        .uploadDocuments(result.files, engagementId, result.categoryId, result.visibility, true)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (results) => {
+            const failed = results.filter((r) => !r.success);
+            this.loadDocuments(undefined, () => {
+              if (failed.length > 0) {
+                const msgs = failed.flatMap((r) => r.errors ?? [r.fileName ?? 'Unknown file']);
+                this.errorMessage.set(msgs.join(', '));
+              }
+            });
+          },
+          error: (err) => {
+            this.errorMessage.set(this.extractUploadErrorMessage(err));
+          },
+        });
     });
+  }
+
+  private extractUploadErrorMessage(err: any): string {
+    if (err?.name === 'TypeError' || err?.status === 0 || (typeof err?.message === 'string' && err.message.toLowerCase().includes('fetch'))) {
+      return DOCUMENT_MESSAGES.UPLOAD_NETWORK_OR_SERVER_LIMIT_ERROR;
+    }
+    const body = err?.error;
+    if (Array.isArray(body)) {
+      return body.flatMap((r: any) => r.errors || []).join(', ') || DOCUMENT_MESSAGES.UPLOAD_FAILED;
+    }
+    return body?.message || (typeof body === 'string' ? body : DOCUMENT_MESSAGES.UPLOAD_FAILED);
   }
 
   openRemoveModal(doc: DocumentItem): void {
     const dialogRef = this.dialog.open<
       RemoveDocumentDialogComponent,
       RemoveDocumentDialogData,
-      boolean
+      RemoveDocumentDialogResult
     >(RemoveDocumentDialogComponent, { data: { documentId: doc.id, documentName: doc.fileName } });
 
-    dialogRef.closed$.subscribe((removed) => {
-      if (removed) this.loadDocuments();
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+
+      this.documentService
+        .deleteDocument(doc.id, result.reason, true)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            this.loadDocuments();
+          },
+          error: (err) => {
+            const msg = typeof err.error === 'string' ? err.error : err.error?.message || DOCUMENT_MESSAGES.REMOVE_FAILED;
+            this.errorMessage.set(msg);
+          },
+        });
     });
   }
 
@@ -231,16 +279,38 @@ export class EngagementDocumentsComponent {
     const dialogRef = this.dialog.open<
       CustomVisibilityDialogComponent,
       CustomVisibilityDialogData,
-      DocumentItem
+      CustomVisibilityDialogResult
     >(CustomVisibilityDialogComponent, { data: { document: doc } });
 
-    dialogRef.closed$.subscribe((updatedDoc) => {
-      if (!updatedDoc) {
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) {
         // Trigger update to re-sync select value if modal was cancelled
         this.documents.update((docs) => [...docs]);
         return;
       }
-      this.documents.update((docs) => docs.map((d) => (d.id === updatedDoc.id ? updatedDoc : d)));
+
+      const payload =
+        result.allowedRoles === null
+          ? { resetToCategoryDefault: true }
+          : { visibility: 'Custom' as DocumentVisibility, allowedRoles: result.allowedRoles, resetToCategoryDefault: false };
+
+      this.documentService
+        .updateVisibility(doc.id, payload, true)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (updatedDoc) => {
+            this.documents.update((docs) => docs.map((d) => (d.id === updatedDoc.id ? updatedDoc : d)));
+          },
+          error: (err) => {
+            this.documents.update((docs) => [...docs]);
+            const msg =
+              err.error?.message ||
+              (result.allowedRoles === null
+                ? DOCUMENT_MESSAGES.CUSTOM_VISIBILITY_REMOVE_FAILED
+                : DOCUMENT_MESSAGES.CUSTOM_VISIBILITY_UPDATE_FAILED);
+            this.errorMessage.set(msg);
+          },
+        });
     });
   }
 
@@ -300,11 +370,24 @@ export class EngagementDocumentsComponent {
     const dialogRef = this.dialog.open<
       UploadVersionDialogComponent,
       UploadVersionDialogData,
-      boolean
+      UploadVersionDialogResult
     >(UploadVersionDialogComponent, { data: { documentId, file } });
 
-    dialogRef.closed$.subscribe((uploaded) => {
-      if (uploaded) this.loadDocuments();
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+
+      this.documentService
+        .uploadNewVersion(documentId, file, result.changeNote, true)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            this.loadDocuments();
+          },
+          error: (err) => {
+            const msg = typeof err.error === 'string' ? err.error : err.error?.message || DOCUMENT_MESSAGES.UPLOAD_VERSION_FAILED;
+            this.errorMessage.set(msg);
+          },
+        });
     });
   }
 

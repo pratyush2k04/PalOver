@@ -6,10 +6,6 @@
     <p class="sub-text">The document will be preserved in history but hidden from normal lists.</p>
   </div>
 
-  @if (errorMessage()) {
-    <app-alert variant="danger">{{ errorMessage() }}</app-alert>
-  }
-
   <app-textarea
     id="remove-reason"
     label="Reason for removal"
@@ -24,7 +20,7 @@
 </div>
 
 <div class="app-dialog__actions">
-  <app-button type="button" variant="stroked" (click)="onClose()" [disabled]="isSubmitting()">
+  <app-button type="button" variant="stroked" (click)="onClose()">
     Cancel
   </app-button>
   <app-button
@@ -32,7 +28,6 @@
     variant="danger"
     (click)="onSubmit()"
     [disabled]="!isValidReason()"
-    [loading]="isSubmitting()"
   >
     Remove Document
   </app-button>

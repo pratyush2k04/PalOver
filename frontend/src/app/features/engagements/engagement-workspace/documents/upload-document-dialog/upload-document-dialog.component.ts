@@ -17,6 +17,12 @@ export interface UploadDocumentDialogData {
   engagementId: number;
 }
 
+export interface UploadDocumentDialogResult {
+  files: File[];
+  categoryId: number;
+  visibility: DocumentVisibility;
+}
+
 @Component({
   selector: 'app-upload-document-dialog',
   standalone: true,
@@ -35,7 +41,7 @@ export interface UploadDocumentDialogData {
 export class UploadDocumentDialogComponent implements OnInit {
   private documentService = inject(DocumentService);
   private destroyRef = inject(DestroyRef);
-  private dialogRef = inject<DialogRef<boolean>>(DialogRef);
+  private dialogRef = inject<DialogRef<UploadDocumentDialogResult>>(DialogRef);
   private data = inject<UploadDocumentDialogData>(DIALOG_DATA);
 
   categories = signal<DocumentCategory[]>([]);
@@ -48,7 +54,6 @@ export class UploadDocumentDialogComponent implements OnInit {
   renamedFileNames = signal<string[]>([]);
 
   selectedVisibility = signal<DocumentVisibility>(DOCUMENT_CONFIG.VISIBILITY.TEAM_WIDE);
-  isUploading = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
 
   readonly categoryOptions = computed<SelectOption[]>(() =>
@@ -152,35 +157,7 @@ export class UploadDocumentDialogComponent implements OnInit {
       }
     }
 
-    this.isUploading.set(true);
     this.errorMessage.set(null);
-
-    this.documentService.uploadDocuments(finalFiles, this.data.engagementId, catId, this.selectedVisibility()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (results) => {
-        this.isUploading.set(false);
-        const failed = results.filter((r) => !r.success);
-        if (failed.length > 0) {
-          const msgs = failed.flatMap((r) => r.errors ?? [r.fileName ?? 'Unknown file']);
-          this.errorMessage.set(msgs.join(', '));
-        } else {
-          this.dialogRef.close(true);
-        }
-      },
-      error: (err) => {
-        this.isUploading.set(false);
-        this.errorMessage.set(this.extractErrorMessage(err));
-      }
-    });
-  }
-
-  private extractErrorMessage(err: any): string {
-    if (err?.name === 'TypeError' || err?.status === 0 || (typeof err?.message === 'string' && err.message.toLowerCase().includes('fetch'))) {
-      return DOCUMENT_MESSAGES.UPLOAD_NETWORK_OR_SERVER_LIMIT_ERROR;
-    }
-    const body = err?.error;
-    if (Array.isArray(body)) {
-      return body.flatMap((r: any) => r.errors || []).join(', ') || DOCUMENT_MESSAGES.UPLOAD_FAILED;
-    }
-    return body?.message || (typeof body === 'string' ? body : DOCUMENT_MESSAGES.UPLOAD_FAILED);
+    this.dialogRef.close({ files: finalFiles, categoryId: catId, visibility: this.selectedVisibility() });
   }
 }

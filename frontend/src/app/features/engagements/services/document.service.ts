@@ -23,7 +23,7 @@ export class DocumentService {
     return this.uploadDocuments([file], engagementId, categoryId, visibility);
   }
 
-  uploadDocuments(files: File[], engagementId: number, categoryId: number, visibility: DocumentVisibility): Observable<DocumentUploadResult[]> {
+  uploadDocuments(files: File[], engagementId: number, categoryId: number, visibility: DocumentVisibility, skipLoader = false): Observable<DocumentUploadResult[]> {
     const formData = new FormData();
     files.forEach((file, i) => {
       formData.append(`[${i}].File`, file, file.name);
@@ -31,7 +31,9 @@ export class DocumentService {
       formData.append(`[${i}].CategoryId`, categoryId.toString());
       formData.append(`[${i}].Visibility`, visibility);
     });
-    return this.http.post<DocumentUploadResult[]>(DOCUMENT_API_ENDPOINTS.UPLOAD, formData);
+    return this.http.post<DocumentUploadResult[]>(DOCUMENT_API_ENDPOINTS.UPLOAD, formData, {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
   downloadDocument(id: number, fileName: string): Observable<void> {
@@ -49,16 +51,20 @@ export class DocumentService {
     );
   }
 
-  deleteDocument(id: number, reason: string): Observable<void> {
-    return this.http.post<void>(DOCUMENT_API_ENDPOINTS.REMOVE(id), { reason });
+  deleteDocument(id: number, reason: string, skipLoader = false): Observable<void> {
+    return this.http.post<void>(DOCUMENT_API_ENDPOINTS.REMOVE(id), { reason }, {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
-  updateVisibility(id: number, request: UpdateDocumentVisibilityRequest | DocumentVisibility): Observable<DocumentItem> {
+  updateVisibility(id: number, request: UpdateDocumentVisibilityRequest | DocumentVisibility, skipLoader = false): Observable<DocumentItem> {
     const body: UpdateDocumentVisibilityRequest =
       typeof request === 'string'
         ? { visibility: request as DocumentVisibility }
         : request;
-    return this.http.patch<DocumentItem>(DOCUMENT_API_ENDPOINTS.VISIBILITY(id), body);
+    return this.http.patch<DocumentItem>(DOCUMENT_API_ENDPOINTS.VISIBILITY(id), body, {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
   getVersionHistory(documentId: number): Observable<DocumentVersion[]> {
@@ -67,13 +73,15 @@ export class DocumentService {
     });
   }
 
-  uploadNewVersion(documentId: number, file: File, changeNote: string): Observable<DocumentItem> {
+  uploadNewVersion(documentId: number, file: File, changeNote: string, skipLoader = false): Observable<DocumentItem> {
     const formData = new FormData();
     formData.append('File', file, file.name);
     if (changeNote) {
       formData.append('ChangeNote', changeNote);
     }
-    return this.http.post<DocumentItem>(DOCUMENT_API_ENDPOINTS.VERSIONS(documentId), formData);
+    return this.http.post<DocumentItem>(DOCUMENT_API_ENDPOINTS.VERSIONS(documentId), formData, {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
   downloadVersion(documentId: number, versionId: number, fileName: string): Observable<void> {

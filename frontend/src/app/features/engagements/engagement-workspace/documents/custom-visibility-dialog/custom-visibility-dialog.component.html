@@ -40,25 +40,22 @@
       type="button"
       variant="warning"
       (click)="onRemoveOverride()"
-      [disabled]="isSubmitting()"
-      [loading]="isSubmitting()"
     >
       Remove Override
     </app-button>
   }
 
   <div class="footer-actions">
-    <app-button type="button" variant="stroked" (click)="onCancel()" [disabled]="isSubmitting()">
+    <app-button type="button" variant="stroked" (click)="onCancel()">
       Cancel
     </app-button>
     <app-button
       type="button"
       variant="accent"
       (click)="onSave()"
-      [disabled]="selectedRoles().length === 0 || isSubmitting()"
-      [loading]="isSubmitting()"
+      [disabled]="selectedRoles().length === 0"
     >
-      {{ isSubmitting() ? 'Saving...' : 'Apply Restriction' }}
+      Apply Restriction
     </app-button>
   </div>
 </div>
