@@ -1,15 +1,12 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
-import { AlertComponent } from '@common/components/alert/alert';
 import { InputComponent } from '@common/components/form/input/input';
-import { ToastService } from '@common/services/toast/toast';
 import { RESOURCE_REQUEST_CONSTANTS } from '@shared/constants/app.constants';
-import { ResourceAllocationItem, ResourceRequestItem } from '../../../models/resource-request.model';
-import { ResourceRequestService } from '../../../services/resource-request.service';
+import { AllocateResourcesPayload, ResourceAllocationItem } from '../../../models/resource-request.model';
 
 export interface AllocateResourcesDialogData {
   engagementId: number;
@@ -22,15 +19,13 @@ export interface AllocateResourcesDialogData {
 @Component({
   selector: 'app-allocate-resources-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, AlertComponent, InputComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, InputComponent],
   templateUrl: './allocate-resources-dialog.component.html',
   styleUrl: './allocate-resources-dialog.component.scss',
 })
 export class AllocateResourcesDialogComponent {
   private fb = inject(FormBuilder);
-  private dialogRef = inject<DialogRef<ResourceRequestItem | null>>(DialogRef);
-  private resourceRequestService = inject(ResourceRequestService);
-  private toastService = inject(ToastService);
+  private dialogRef = inject<DialogRef<AllocateResourcesPayload>>(DialogRef);
   readonly data = inject<AllocateResourcesDialogData>(DIALOG_DATA);
 
   readonly constants = RESOURCE_REQUEST_CONSTANTS;
@@ -53,37 +48,16 @@ export class AllocateResourcesDialogComponent {
 
   readonly namesArrayHost = this.fb.group({ names: this.namesArray });
 
-  errorMessage = signal<string | null>(null);
-  isSubmitting = signal<boolean>(false);
-
   slotLabel(index: number): string {
     return `${this.data.standardRoleLabel} ${index + 1}`;
   }
 
   onSubmit(): void {
-    this.isSubmitting.set(true);
-    this.errorMessage.set(null);
-
     const names = this.namesArray.getRawValue().map((name) => name.trim());
-
-    this.resourceRequestService
-      .allocateResources(this.data.engagementId, this.data.requestId, { names })
-      .subscribe({
-        next: (updated: ResourceRequestItem) => {
-          this.toastService.success(RESOURCE_REQUEST_CONSTANTS.MSG_SUCCESS_ALLOCATED);
-          this.isSubmitting.set(false);
-          this.dialogRef.close(updated);
-        },
-        error: (err: { error?: { message?: string; title?: string } }) => {
-          this.isSubmitting.set(false);
-          const errorMsg =
-            err.error?.message || err.error?.title || 'Failed to save named resources. Please try again.';
-          this.errorMessage.set(errorMsg);
-        },
-      });
+    this.dialogRef.close({ names });
   }
 
   onCancel(): void {
-    this.dialogRef.close(null);
+    this.dialogRef.close();
   }
 }

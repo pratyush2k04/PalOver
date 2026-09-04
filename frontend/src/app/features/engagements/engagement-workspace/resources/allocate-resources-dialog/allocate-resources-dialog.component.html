@@ -2,10 +2,6 @@
 
 <form [formGroup]="namesArrayHost" (ngSubmit)="onSubmit()">
   <div class="app-dialog__content">
-    @if (errorMessage()) {
-      <app-alert variant="danger">{{ errorMessage() }}</app-alert>
-    }
-
     <div formArrayName="names" class="names-list">
       @for (control of namesArray.controls; track $index) {
         <app-input
@@ -18,15 +14,10 @@
   </div>
 
   <div class="app-dialog__actions">
-    <app-button type="button" variant="stroked" (click)="onCancel()" [disabled]="isSubmitting()">
+    <app-button type="button" variant="stroked" (click)="onCancel()">
       {{ constants.BTN_CANCEL }}
     </app-button>
-    <app-button
-      type="submit"
-      variant="flat"
-      [disabled]="isSubmitting()"
-      [loading]="isSubmitting()"
-    >
+    <app-button type="submit" variant="flat">
       {{ constants.BTN_ALLOCATE }}
     </app-button>
   </div>
