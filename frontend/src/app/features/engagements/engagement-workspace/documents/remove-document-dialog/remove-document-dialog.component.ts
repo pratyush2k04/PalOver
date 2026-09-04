@@ -45,13 +45,11 @@ export class RemoveDocumentDialogComponent {
     const len = this.trimmedReason().length;
     return len >= 10 && len <= 500;
   });
-  minLengthError = computed(() => {
-    const len = this.trimmedReason().length;
-    return len > 0 && len < 10 ? 'Reason must be at least 10 characters long.' : null;
-  });
+  reasonError = signal<string | null>(null);
 
   onReasonChange(value: string): void {
     this.reason.set(value);
+    this.reasonError.set(null);
   }
 
   onClose(): void {
@@ -59,7 +57,13 @@ export class RemoveDocumentDialogComponent {
   }
 
   onSubmit(): void {
-    if (!this.isValidReason()) return;
+    if (!this.isValidReason()) {
+      const len = this.trimmedReason().length;
+      this.reasonError.set(
+        len === 0 ? 'Reason for removal is required.' : 'Reason must be at least 10 characters long.'
+      );
+      return;
+    }
 
     this.errorMessage.set(null);
     this.isSubmitting.set(true);

@@ -15,7 +15,7 @@
     [ngModel]="reason()"
     (ngModelChange)="onReasonChange($event)"
     placeholder="Please enter a short reason for removing this document (minimum 10 characters)..."
-    [extraError]="minLengthError()"
+    [extraError]="reasonError()"
   />
 
   @if (errorMessage()) {
@@ -31,7 +31,7 @@
     type="button"
     variant="danger"
     (click)="onSubmit()"
-    [disabled]="!isValidReason() || isSubmitting()"
+    [disabled]="isSubmitting()"
     [loading]="isSubmitting()"
   >
     Remove Document

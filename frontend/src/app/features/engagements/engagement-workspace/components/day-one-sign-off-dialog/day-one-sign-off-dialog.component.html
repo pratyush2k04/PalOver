@@ -76,7 +76,7 @@
     type="button"
     [variant]="isException() && data.isLeadership ? 'warning' : 'flat'"
     [loading]="isSubmitting()"
-    [disabled]="!canSubmit() || isSubmitting()"
+    [disabled]="!canAttemptSubmit() || isSubmitting()"
     (click)="onSubmit()"
   >
     {{ isSubmitting() ? 'Submitting...' : (isException() && data.isLeadership ? 'Sign Off with Exception' : 'Confirm Sign-Off') }}

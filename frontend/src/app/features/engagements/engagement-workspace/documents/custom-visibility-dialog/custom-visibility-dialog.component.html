@@ -55,7 +55,7 @@
       type="button"
       variant="accent"
       (click)="onSave()"
-      [disabled]="selectedRoles().length === 0 || isSubmitting()"
+      [disabled]="isSubmitting()"
       [loading]="isSubmitting()"
     >
       Apply Restriction

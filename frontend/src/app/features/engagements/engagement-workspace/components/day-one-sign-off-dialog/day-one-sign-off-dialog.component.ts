@@ -37,17 +37,13 @@ export class DayOneSignOffDialogComponent {
     exceptionJustification: ['']
   });
 
-  private readonly formStatus = toSignal(this.form.statusChanges, { initialValue: this.form.status });
   private readonly formValue = toSignal(this.form.valueChanges, { initialValue: this.form.value });
 
   readonly justificationLength = computed(() => {
     return this.formValue()?.exceptionJustification?.length ?? 0;
   });
 
-  readonly canSubmit = computed(() => {
-    if (this.isException() && !this.data.isLeadership) return false;
-    return this.formStatus() === 'VALID';
-  });
+  readonly canAttemptSubmit = computed(() => !(this.isException() && !this.data.isLeadership));
 
   readonly isSubmitting = signal(false);
   readonly errorMessage = signal<string | null>(null);
@@ -86,7 +82,12 @@ export class DayOneSignOffDialogComponent {
   }
 
   onSubmit(): void {
-    if (!this.canSubmit()) return;
+    if (!this.canAttemptSubmit()) return;
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
     const val = this.form.getRawValue();
     const request: DayOneSignOffRequest = {
