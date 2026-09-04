@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -326,6 +326,13 @@ export class RisksComponent implements OnInit {
     this.closeFormSubmitted.set(false);
     this.closingRisk.set(null);
     this.closeForm.reset();
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    if (this.showCloseModal()) {
+      this.closeCloseModal();
+    }
   }
 
   submitCloseRisk(): void {

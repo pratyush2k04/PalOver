@@ -153,8 +153,8 @@
 
   <!-- Close Risk Modal -->
   @if (showCloseModal()) {
-    <div class="modal-backdrop" (click)="closeCloseModal()">
-      <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-backdrop">
+      <div class="modal-content">
         <div class="modal-header">
           <h3>Close Risk: {{ closingRisk()?.title }}</h3>
         </div>
