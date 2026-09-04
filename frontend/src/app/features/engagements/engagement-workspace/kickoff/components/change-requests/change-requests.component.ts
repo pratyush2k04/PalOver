@@ -5,7 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ChangeRequestService } from '@features/engagements/services/change-request.service';
 import { EngagementService } from '@features/engagements/services/engagement.service';
 import { AuthService } from '@shared/services/auth';
-import { ChangeRequest } from '@features/engagements/models/change-request.model';
+import { ChangeRequest, CreateChangeRequest, RejectChangeRequest } from '@features/engagements/models/change-request.model';
 import { CHANGE_REQUEST_CONSTANTS } from '@shared/constants/change-request.constants';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
@@ -96,14 +96,22 @@ export class ChangeRequestsComponent {
     const id = this.engagementId();
     if (!id || !this.isProjectManager()) return;
 
-    const dialogRef = this.dialog.open<LogCrDialogComponent, LogCrDialogData, ChangeRequest>(
+    const dialogRef = this.dialog.open<LogCrDialogComponent, LogCrDialogData, CreateChangeRequest>(
       LogCrDialogComponent,
       { data: { engagementId: id } }
     );
 
-    dialogRef.closed$.subscribe((newCr) => {
-      if (!newCr) return;
-      this.changeRequests.update(list => [newCr, ...list]);
+    dialogRef.closed$.subscribe((request) => {
+      if (!request) return;
+
+      this.changeRequestService.createChangeRequest(id, request).subscribe({
+        next: (newCr) => {
+          this.changeRequests.update(list => [newCr, ...list]);
+        },
+        error: (err) => {
+          console.error('Failed to log change request:', err);
+        }
+      });
     });
   }
 
@@ -127,16 +135,24 @@ export class ChangeRequestsComponent {
   openRejectModal(cr: ChangeRequest): void {
     if (!this.isLeadership() || cr.status !== 'Under Review') return;
 
-    const dialogRef = this.dialog.open<RejectCrDialogComponent, RejectCrDialogData, ChangeRequest>(
+    const dialogRef = this.dialog.open<RejectCrDialogComponent, RejectCrDialogData, RejectChangeRequest>(
       RejectCrDialogComponent,
       { data: { cr } }
     );
 
-    dialogRef.closed$.subscribe((updatedCr) => {
-      if (!updatedCr) return;
-      this.changeRequests.update(list =>
-        list.map(item => item.id === updatedCr.id ? updatedCr : item)
-      );
+    dialogRef.closed$.subscribe((request) => {
+      if (!request) return;
+
+      this.changeRequestService.rejectChangeRequest(cr.id, request).subscribe({
+        next: (updatedCr) => {
+          this.changeRequests.update(list =>
+            list.map(item => item.id === updatedCr.id ? updatedCr : item)
+          );
+        },
+        error: (err) => {
+          console.error('Failed to reject change request:', err);
+        }
+      });
     });
   }
 

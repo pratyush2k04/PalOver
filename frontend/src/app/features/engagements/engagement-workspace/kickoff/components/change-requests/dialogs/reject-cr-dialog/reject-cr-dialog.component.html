@@ -2,10 +2,6 @@
 
 <form [formGroup]="rejectForm" (ngSubmit)="onSubmit()">
   <div class="app-dialog__content">
-    @if (errorMessage()) {
-      <app-alert variant="danger">{{ errorMessage() }}</app-alert>
-    }
-
     <app-textarea
       id="rejectionReason"
       [label]="constants.LABEL_REASON_REQUIRED"
@@ -20,7 +16,7 @@
     <app-button type="button" variant="stroked" (click)="onCancel()">
       {{ constants.BTN_CANCEL }}
     </app-button>
-    <app-button type="submit" variant="danger" [disabled]="isSubmitting()">
+    <app-button type="submit" variant="danger">
       {{ constants.BTN_REJECT }}
     </app-button>
   </div>
