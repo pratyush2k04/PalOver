@@ -29,9 +29,9 @@
       <table class="findings-table">
         <thead>
           <tr>
-            <th class="title-th">TITLE & DESCRIPTION</th>
-            <th class="severity-th">SEVERITY</th>
-            <th class="doc-th">LINKED DOCUMENT</th>
+            <th class="title-col">TITLE & DESCRIPTION</th>
+            <th class="severity-col">SEVERITY</th>
+            <th class="doc-col">LINKED DOCUMENT</th>
             <th class="decision-col">CLIENT DECISION</th>
             @if (canManage()) {
               <th class="actions-col">ACTIONS</th>
@@ -41,7 +41,7 @@
         <tbody>
           @for (item of findings(); track item.id) {
             <tr>
-              <td>
+              <td class="title-col">
                 <div class="finding-info">
                   <strong>{{ item.title }}</strong>
                   @if (item.description) {
@@ -49,12 +49,12 @@
                   }
                 </div>
               </td>
-              <td>
+              <td class="severity-col">
                 <app-status-badge [tone]="getSeverityTone(item.severity)">
                   {{ getSeverityLabel(item.severity) }}
                 </app-status-badge>
               </td>
-              <td>
+              <td class="doc-col">
                 @if (item.documentName) {
                   <span class="doc-link">
                     <span class="file-icon" [inlineSVG]="'assets/icons/file.svg'"></span>

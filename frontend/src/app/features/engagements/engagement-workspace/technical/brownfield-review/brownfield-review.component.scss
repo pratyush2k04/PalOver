@@ -52,6 +52,7 @@
 
     .findings-table {
       width: 100%;
+      min-width: 52rem;
       table-layout: fixed;
       border-collapse: collapse;
       text-align: left;
@@ -64,26 +65,28 @@
         border-bottom: 1px solid $color-gray-200;
         background-color: $color-gray-50;
 
-        &.title-th {
-          width: 42%;
+        &.title-col {
+          width: 32%;
         }
 
-        &.severity-th {
+        &.severity-col {
           width: 12%;
+          text-align: center;
         }
 
-        &.doc-th {
+        &.doc-col {
           width: 16%;
+          text-align: center;
         }
 
         &.decision-col {
-          width: 15%;
+          width: 16%;
           text-align: center;
         }
 
         &.actions-col {
-          width: 15%;
-          min-width: 8rem;
+          width: 24%;
+          min-width: 14.5rem;
           text-align: center;
         }
       }
@@ -93,6 +96,74 @@
         border-bottom: 1px solid $color-gray-100;
         color: $color-gray-700;
         vertical-align: top;
+
+        &.severity-col {
+          text-align: center;
+
+          app-status-badge {
+            --badge-min-width: 5rem;
+            --badge-justify: center;
+          }
+        }
+
+        &.doc-col {
+          text-align: center;
+
+          .doc-link {
+            justify-content: center;
+          }
+
+          .no-doc {
+            display: inline-block;
+            text-align: center;
+          }
+        }
+
+        &.decision-col {
+          text-align: center;
+
+          app-status-badge {
+            display: inline-flex;
+            justify-content: center;
+            --badge-min-width: 6.5rem;
+            --badge-justify: center;
+          }
+        }
+
+        &.actions-col {
+          text-align: center;
+          white-space: nowrap;
+
+          .actions-group {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap;
+            gap: $spacing-2;
+
+            app-button {
+              flex-shrink: 0;
+            }
+
+            .btn-accept {
+              --btn-bg-hover: #{$color-success-bg-alt};
+              --btn-color-hover: #{$color-emerald-700};
+              --btn-border-hover: #{$color-success-border-alt};
+            }
+
+            .btn-defer {
+              --btn-bg-hover: #{$color-orange-50};
+              --btn-color-hover: #{$color-orange-700};
+              --btn-border-hover: #{$color-orange-200};
+            }
+
+            .btn-remove {
+              --btn-color: #{$color-gray-500};
+              --btn-color-hover: #{$color-danger};
+              --btn-bg-hover: #{$color-danger-light};
+            }
+          }
+        }
       }
 
       .finding-info {
@@ -141,47 +212,6 @@
       .no-doc {
         font-size: 0.825rem;
         color: $color-gray-400;
-      }
-
-      .decision-col {
-        text-align: center;
-
-        app-status-badge {
-          display: inline-flex;
-          justify-content: center;
-          --badge-min-width: 6.5rem;
-          --badge-justify: center;
-        }
-      }
-
-      .actions-col {
-        text-align: center;
-        white-space: nowrap;
-
-        .actions-group {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: $spacing-2;
-
-          .btn-accept {
-            --btn-bg-hover: #{$color-success-bg-alt};
-            --btn-color-hover: #{$color-emerald-700};
-            --btn-border-hover: #{$color-success-border-alt};
-          }
-
-          .btn-defer {
-            --btn-bg-hover: #{$color-orange-50};
-            --btn-color-hover: #{$color-orange-700};
-            --btn-border-hover: #{$color-orange-200};
-          }
-
-          .btn-remove {
-            --btn-color: #{$color-gray-500};
-            --btn-color-hover: #{$color-danger};
-            --btn-bg-hover: #{$color-danger-light};
-          }
-        }
       }
     }
   }
