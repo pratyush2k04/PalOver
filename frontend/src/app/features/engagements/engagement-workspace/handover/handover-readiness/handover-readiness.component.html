@@ -3,12 +3,6 @@
     <h3 class="card-title">Readiness Checklist</h3>
   </div>
 
-  @if (isLoading()) {
-    <div class="loading-state">
-      <app-loading-spinner size="md"></app-loading-spinner>
-      <span>Loading readiness checklist...</span>
-    </div>
-  } @else {
     <div class="readiness-content">
       <!-- COMMERCIAL AREA SECTION -->
       <div class="area-section">
@@ -157,14 +151,12 @@
         </div>
       </div>
     </div>
-  }
 </div>
 
 @if (pendingDeleteItem(); as item) {
   <app-confirm-dialog
     title="Delete Handover Item"
     confirmLabel="Delete"
-    [isBusy]="isDeletingItem()"
     (confirmed)="confirmDeleteItem(item)"
     (cancelled)="cancelDeleteItem()"
   >

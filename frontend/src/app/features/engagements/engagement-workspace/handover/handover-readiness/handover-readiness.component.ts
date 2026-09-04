@@ -15,7 +15,6 @@ import { DialogService } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { StatusSelectComponent, StatusSelectOption } from '@common/components/form/status-select/status-select';
-import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { AddHandoverItemDialogComponent } from './dialogs/add-handover-item-dialog/add-handover-item-dialog.component';
@@ -30,7 +29,6 @@ import { BlockHandoverItemDialogComponent } from './dialogs/block-handover-item-
     ButtonComponent,
     StatusBadgeComponent,
     StatusSelectComponent,
-    LoadingSpinnerComponent,
     ConfirmDialogComponent,
     InlineSVGModule,
   ],
@@ -50,7 +48,6 @@ export class HandoverReadinessComponent implements OnInit {
   items = signal<HandoverReadinessItemDto[]>([]);
   isLoading = signal<boolean>(false);
   pendingDeleteItem = signal<HandoverReadinessItemDto | null>(null);
-  isDeletingItem = signal<boolean>(false);
 
   readonly isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
 
@@ -76,7 +73,7 @@ export class HandoverReadinessComponent implements OnInit {
     this.loadItems();
   }
 
-  loadItems(skipLoader = false): void {
+  loadItems(skipLoader = false, onDone?: () => void): void {
     if (skipLoader) {
       this.isLoading.set(true);
     }
@@ -87,12 +84,14 @@ export class HandoverReadinessComponent implements OnInit {
           this.isLoading.set(false);
         }
         this.itemsUpdated.emit(data);
+        onDone?.();
       },
       error: () => {
-        this.toastService.error('Failed to load Handover Readiness items');
         if (skipLoader) {
           this.isLoading.set(false);
         }
+        this.toastService.error('Failed to load Handover Readiness items');
+        onDone?.();
       }
     });
   }
@@ -137,8 +136,9 @@ export class HandoverReadinessComponent implements OnInit {
         this.itemsUpdated.emit(this.items());
       },
       error: (err) => {
-        this.toastService.error(err?.error?.message || 'Failed to update status');
-        this.loadItems(true);
+        this.loadItems(true, () =>
+          this.toastService.error(err?.error?.message || 'Failed to update status')
+        );
       }
     });
   }
@@ -176,18 +176,18 @@ export class HandoverReadinessComponent implements OnInit {
   }
 
   confirmDeleteItem(item: HandoverReadinessItemDto): void {
-    this.isDeletingItem.set(true);
-    this.readinessService.deleteItem(item.id).subscribe({
+    this.pendingDeleteItem.set(null);
+    this.isLoading.set(true);
+    this.readinessService.deleteItem(item.id, true).subscribe({
       next: () => {
         this.items.update(current => current.filter(i => i.id !== item.id));
-        this.toastService.success('Item deleted successfully');
         this.itemsUpdated.emit(this.items());
-        this.pendingDeleteItem.set(null);
-        this.isDeletingItem.set(false);
+        this.isLoading.set(false);
+        this.toastService.success('Item deleted successfully');
       },
       error: (err) => {
+        this.isLoading.set(false);
         this.toastService.error(err?.error?.message || 'Failed to delete item');
-        this.isDeletingItem.set(false);
       }
     });
   }

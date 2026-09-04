@@ -41,9 +41,10 @@ export class HandoverReadinessService {
     );
   }
 
-  deleteItem(id: number): Observable<void> {
+  deleteItem(id: number, skipLoader = false): Observable<void> {
     return this.http.delete<void>(
-      `/api/handover-readiness/${id}`
+      `/api/handover-readiness/${id}`,
+      { context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined }
     );
   }
 }
