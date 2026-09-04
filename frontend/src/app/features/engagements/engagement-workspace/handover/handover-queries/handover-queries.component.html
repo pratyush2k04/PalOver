@@ -13,8 +13,8 @@
     }
   </div>
 
-  @if (message()) {
-    <app-alert [variant]="isError() ? 'danger' : 'neutral'">
+  @if (message() && isError()) {
+    <app-alert variant="danger">
       {{ message() }}
     </app-alert>
   }

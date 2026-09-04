@@ -206,7 +206,6 @@ export class HandoverQueriesComponent {
           return next;
         });
         this.updateMessageDraft(query.id, '');
-        this.showMessage(HANDOVER_MESSAGES.QUERY_MESSAGE_SUBMIT_SUCCESS, false);
       },
       error: (err) => this.showMessage(this.extractErrorMessage(err, HANDOVER_MESSAGES.QUERY_MESSAGE_SUBMIT_ERROR), true),
       complete: () => {
@@ -265,7 +264,6 @@ export class HandoverQueriesComponent {
         });
         this.pendingDeleteQuery.set(null);
         this.isDeletingQuery.set(false);
-        this.showMessage(HANDOVER_MESSAGES.QUERY_DELETED, false);
       },
       error: (err) => {
         this.isDeletingQuery.set(false);
