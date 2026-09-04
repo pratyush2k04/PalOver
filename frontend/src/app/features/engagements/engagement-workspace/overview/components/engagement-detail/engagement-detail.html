@@ -63,9 +63,7 @@
 
         <div class="modal-actions">
           <app-button type="button" variant="stroked" (click)="closeAssignModal()">Cancel</app-button>
-          <app-button type="submit" variant="flat" [loading]="isSubmitting()">
-            {{ isSubmitting() ? 'Saving...' : 'Save assignment' }}
-          </app-button>
+          <app-button type="submit" variant="flat">Save assignment</app-button>
         </div>
       </form>
     </div>
@@ -76,7 +74,6 @@
   <app-confirm-dialog
     title="Reassign mid-engagement?"
     confirmLabel="Reassign"
-    [isBusy]="isSavingConfirmation()"
     (confirmed)="confirmPendingChange()"
     (cancelled)="cancelPendingChange()"
   >
