@@ -356,6 +356,14 @@ export class RisksComponent implements OnInit {
     }
   }
 
+  onResolutionNoteEnter(event: Event): void {
+    const kbEvent = event as KeyboardEvent;
+    if (!kbEvent.shiftKey) {
+      kbEvent.preventDefault();
+      this.submitCloseRisk();
+    }
+  }
+
   submitCloseRisk(): void {
     this.closeFormSubmitted.set(true);
 

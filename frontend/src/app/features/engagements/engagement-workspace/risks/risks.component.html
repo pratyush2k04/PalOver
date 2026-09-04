@@ -170,6 +170,7 @@
               [rows]="4"
               placeholder="Describe how this risk was resolved or why it is closed"
               [maxLength]="500"
+              (keydown.enter)="onResolutionNoteEnter($event)"
             />
           </div>
 
