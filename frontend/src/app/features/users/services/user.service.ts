@@ -1,9 +1,10 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PagedResult, UserListItem } from '../models/user.model';
 import { Role } from '../models/role.model';
 import { API_ENDPOINTS } from '@shared/constants/app.constants';
+import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 
 @Injectable({
   providedIn: 'root'
@@ -11,12 +12,15 @@ import { API_ENDPOINTS } from '@shared/constants/app.constants';
 export class UserService {
   private http = inject(HttpClient);
 
-  getUsers(search: string, page = 1, pageSize = 50): Observable<PagedResult<UserListItem>> {
+  getUsers(search: string, page = 1, pageSize = 50, skipLoader = false): Observable<PagedResult<UserListItem>> {
     let params = new HttpParams().set('page', page).set('pageSize', pageSize);
     if (search) {
       params = params.set('search', search);
     }
-    return this.http.get<PagedResult<UserListItem>>(API_ENDPOINTS.USERS, { params });
+    return this.http.get<PagedResult<UserListItem>>(API_ENDPOINTS.USERS, {
+      params,
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
   getRoles(): Observable<Role[]> {

@@ -13,9 +13,11 @@ export const HANDOVER_API_ENDPOINTS = {
     `/api/engagements/${engagementId}/handover/queries/${queryId}/messages`,
   HANDOVER_QUERY_TOGGLE_RESOLUTION: (engagementId: number, queryId: number) =>
     `/api/engagements/${engagementId}/handover/queries/${queryId}/toggle-resolution`,
+  HANDOVER_QUERY_BY_ID: (engagementId: number, queryId: number) =>
+    `/api/engagements/${engagementId}/handover/queries/${queryId}`,
 } as const;
 
-export const MAX_FREE_TEXT_LENGTH = 500;
+export const MAX_FREE_TEXT_LENGTH = 2000;
 export const HANDOVER_SENTIMENT_OPTIONS = ['New', 'Warm', 'Strained'] as const;
 export const HANDOVER_TIMELINE_UNITS = ['Days', 'Weeks', 'Months'] as const;
 
@@ -100,6 +102,8 @@ export const HANDOVER_MESSAGES = {
   QUERY_MESSAGE_SUBMIT_ERROR: 'Failed to submit message.',
   QUERY_UPDATE_ERROR: 'Failed to update query.',
   QUERY_RAISE_ERROR: 'Failed to raise query.',
+  QUERY_DELETED: 'Query deleted successfully.',
+  QUERY_DELETE_ERROR: 'Failed to delete query.',
 } as const;
 
 export const HANDOVER_QUERY_FIELD_LABELS = {

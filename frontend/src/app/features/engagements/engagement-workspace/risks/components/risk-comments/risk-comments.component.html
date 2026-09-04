@@ -30,8 +30,8 @@
                     <span class="edited-badge" [appTooltip]="'This comment was edited'">(edited)</span>
                   }
                   @if (comment.canEdit && !isSignedOff() && editingCommentId() !== comment.id) {
-                    <app-button variant="stroked" size="sm" (click)="startEditing(comment)">
-                      Edit
+                    <app-button variant="icon" size="sm" (click)="startEditing(comment)" title="Edit comment" ariaLabel="Edit comment">
+                      <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
                     </app-button>
                   }
                   <span class="bubble-time">{{ getRelativeTime(comment.createdAt) }}</span>

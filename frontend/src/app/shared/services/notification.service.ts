@@ -34,7 +34,10 @@ export class NotificationService {
       params = params.set('priority', priority.toString());
     }
 
-    return this.http.get<PagedResult<Notification>>(NOTIFICATIONS_API_ENDPOINTS.NOTIFICATIONS, { params });
+    return this.http.get<PagedResult<Notification>>(NOTIFICATIONS_API_ENDPOINTS.NOTIFICATIONS, {
+      params,
+      context: new HttpContext().set(SKIP_LOADER, true)
+    });
   }
 
   getUnreadCount(): Observable<number> {
@@ -48,7 +51,9 @@ export class NotificationService {
   }
 
   markAllAsRead(): Observable<void> {
-    return this.http.put<void>(NOTIFICATIONS_API_ENDPOINTS.MARK_ALL_AS_READ, {});
+    return this.http.put<void>(NOTIFICATIONS_API_ENDPOINTS.MARK_ALL_AS_READ, {}, {
+      context: new HttpContext().set(SKIP_LOADER, true)
+    });
   }
 
   bulkDelete(ids: number[]): Observable<void> {

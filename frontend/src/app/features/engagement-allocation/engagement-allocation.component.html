@@ -108,37 +108,31 @@
                   <div class="model-sub">{{ eng.commercialModel }}</div>
                 </td>
                 <td class="col-contacts">
-                  @if (eng.isLoadingLeadership) {
-                    <span class="loading-text">Loading contacts...</span>
-                  } @else {
-                    @if (eng.leadershipUsers && eng.leadershipUsers.length > 0) {
-                      <div class="contacts-chips">
-                        @for (user of eng.leadershipUsers; track user.id) {
-                          <span class="leadership-chip">
-                            <span [inlineSVG]="'assets/icons/user.svg'"></span>
-                            {{ user.fullName }}
-                          </span>
-                        }
-                      </div>
-                    }
+                  @if (eng.leadershipUsers && eng.leadershipUsers.length > 0) {
+                    <div class="contacts-chips">
+                      @for (user of eng.leadershipUsers; track user.id) {
+                        <span class="leadership-chip">
+                          <span [inlineSVG]="'assets/icons/user.svg'"></span>
+                          {{ user.fullName }}
+                        </span>
+                      }
+                    </div>
                   }
                 </td>
                 <td class="actions-col">
-                  @if (!eng.isLoadingHandover) {
-                    @if (eng.hasHandoverDraft) {
-                      <app-button
-                        type="button"
-                        variant="flat"
-                        (click)="openAssignModal(eng)"
-                      >
-                        <span class="assign-icon" [inlineSVG]="'assets/icons/user-plus.svg'"></span>
-                        Assign Leadership
-                      </app-button>
-                    } @else {
-                      <app-status-badge tone="warning">
-                        Handover Not Submitted
-                      </app-status-badge>
-                    }
+                  @if (eng.hasHandoverDraft) {
+                    <app-button
+                      type="button"
+                      variant="flat"
+                      (click)="openAssignModal(eng)"
+                    >
+                      <span class="assign-icon" [inlineSVG]="'assets/icons/user-plus.svg'"></span>
+                      Assign Leadership
+                    </app-button>
+                  } @else {
+                    <app-status-badge tone="warning">
+                      Handover Not Submitted
+                    </app-status-badge>
                   }
                 </td>
               </tr>

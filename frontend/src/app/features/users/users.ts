@@ -103,11 +103,11 @@ export class UsersComponent implements OnInit {
     }
     this.searchDebounce = setTimeout(() => {
       this.page.set(1);
-      this.loadUsers();
+      this.loadUsers(true);
     }, 300);
   }
 
-  loadUsers(): void {
+  loadUsers(skipLoader = false): void {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 

@@ -151,6 +151,8 @@
       display: flex;
       align-items: center;
       gap: $spacing-2;
+      flex: 1;
+      min-width: 0;
 
       .risk-id {
         font-size: $font-size-xs;
@@ -159,6 +161,7 @@
         background: $color-bg;
         padding: 0.15rem 0.4rem;
         border-radius: $radius-sm;
+        flex-shrink: 0;
       }
 
       .risk-title {
@@ -166,6 +169,8 @@
         font-size: $font-size-lg;
         font-weight: $font-weight-semibold;
         color: $color-text;
+        word-break: break-word;
+        overflow-wrap: anywhere;
       }
     }
 
@@ -173,6 +178,7 @@
       display: flex;
       align-items: center;
       gap: $spacing-2;
+      flex-shrink: 0;
 
       .open-days-badge {
         font-size: $font-size-xs;
@@ -197,6 +203,8 @@
       font-size: $font-size-sm;
       color: $color-text-muted;
       line-height: 1.45;
+      word-break: break-word;
+      overflow-wrap: anywhere;
     }
 
     .source-link-badge {
@@ -271,6 +279,8 @@
       padding: $spacing-2 $spacing-3;
       border-radius: $radius-md;
       font-size: $font-size-sm;
+      word-break: break-word;
+      overflow-wrap: anywhere;
 
       strong {
         display: block;
@@ -278,6 +288,8 @@
       }
       p {
         margin: 0;
+        word-break: break-word;
+        overflow-wrap: anywhere;
       }
 
       &.mitigation-section {
@@ -305,7 +317,22 @@
 
     .action-buttons {
       display: flex;
+      align-items: center;
       gap: $spacing-2;
+
+      .action-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1rem;
+        height: 1rem;
+
+        ::ng-deep svg {
+          width: 1rem;
+          height: 1rem;
+          display: block;
+        }
+      }
     }
   }
 }
@@ -315,9 +342,11 @@
   @include modal-overlay;
 
   .modal-content {
-    @include modal-card(35rem);
+    @include modal-card;
     padding: 0;
     animation: modalSlide $transition-base;
+    max-width: min(28.75rem, calc(100vw - 2rem));
+    box-sizing: border-box;
 
     .modal-header {
       @include flex-between;
@@ -330,6 +359,8 @@
         font-size: $font-size-lg;
         font-weight: $font-weight-semibold;
         color: $color-text;
+        word-break: break-word;
+        overflow-wrap: anywhere;
       }
 
       .close-btn {
