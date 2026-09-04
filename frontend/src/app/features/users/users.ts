@@ -100,15 +100,15 @@ export class UsersComponent implements OnInit {
     }
     this.searchDebounce = setTimeout(() => {
       this.page.set(1);
-      this.loadUsers();
+      this.loadUsers(true);
     }, 300);
   }
 
-  loadUsers(): void {
+  loadUsers(skipLoader = false): void {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    this.userService.getUsers(this.searchTerm, this.page(), this.pageSize).subscribe({
+    this.userService.getUsers(this.searchTerm, this.page(), this.pageSize, skipLoader).subscribe({
       next: (result) => {
         this.users.set(result.items);
         this.totalCount.set(result.totalCount);
