@@ -18,9 +18,9 @@ export interface UploadDocumentDialogData {
 }
 
 export interface UploadDocumentDialogResult {
-  files: File[];
-  categoryId: number;
-  visibility: DocumentVisibility;
+  success: true;
+  /** Names of files that failed to upload, empty when the whole batch succeeded. */
+  failedFileNames: string[];
 }
 
 @Component({
@@ -55,6 +55,7 @@ export class UploadDocumentDialogComponent implements OnInit {
 
   selectedVisibility = signal<DocumentVisibility>(DOCUMENT_CONFIG.VISIBILITY.TEAM_WIDE);
   errorMessage = signal<string | null>(null);
+  isSubmitting = signal(false);
 
   readonly categoryOptions = computed<SelectOption[]>(() =>
     this.categories().map((cat) => ({ value: cat.id, label: cat.categoryName }))
@@ -158,6 +159,45 @@ export class UploadDocumentDialogComponent implements OnInit {
     }
 
     this.errorMessage.set(null);
-    this.dialogRef.close({ files: finalFiles, categoryId: catId, visibility: this.selectedVisibility() });
+    this.isSubmitting.set(true);
+
+    this.documentService
+      .uploadDocuments(finalFiles, this.data.engagementId, catId, this.selectedVisibility(), true)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (results) => {
+          const failed = results.filter((r) => !r.success);
+
+          if (results.length > 0 && failed.length === results.length) {
+            // Entire batch failed — keep the dialog open so the user can retry.
+            this.isSubmitting.set(false);
+            const msgs = failed.flatMap((r) => r.errors ?? [r.fileName ?? 'Unknown file']);
+            this.errorMessage.set(msgs.join(', ') || 'All files failed to upload.');
+            return;
+          }
+
+          const failedFileNames = failed.flatMap((r) => r.errors ?? [r.fileName ?? 'Unknown file']);
+          this.dialogRef.close({ success: true, failedFileNames });
+        },
+        error: (err) => {
+          this.isSubmitting.set(false);
+          this.errorMessage.set(this.extractUploadErrorMessage(err));
+        },
+      });
+  }
+
+  private extractUploadErrorMessage(err: any): string {
+    if (
+      err?.name === 'TypeError' ||
+      err?.status === 0 ||
+      (typeof err?.message === 'string' && err.message.toLowerCase().includes('fetch'))
+    ) {
+      return DOCUMENT_MESSAGES.UPLOAD_NETWORK_OR_SERVER_LIMIT_ERROR;
+    }
+    const body = err?.error;
+    if (Array.isArray(body)) {
+      return body.flatMap((r: any) => r.errors || []).join(', ') || DOCUMENT_MESSAGES.UPLOAD_FAILED;
+    }
+    return body?.message || (typeof body === 'string' ? body : DOCUMENT_MESSAGES.UPLOAD_FAILED);
   }
 }

@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InlineSVGModule } from 'ng-inline-svg-2';
@@ -8,17 +9,15 @@ import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
 import { SelectOption } from '@common/components/form/select/select';
 import { MultiSelectListComponent } from '@common/components/multi-select-list/multi-select-list';
-import { DocumentItem } from '../../../models/document.model';
+import { DocumentItem, DocumentVisibility, UpdateDocumentVisibilityRequest } from '../../../models/document.model';
 import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from '@shared/constants/document.constants';
+import { DocumentService } from '../../../services/document.service';
 
 export interface CustomVisibilityDialogData {
   document: DocumentItem;
 }
 
-export interface CustomVisibilityDialogResult {
-  /** null means "remove override" (reset to category default) */
-  allowedRoles: number[] | null;
-}
+export type CustomVisibilityDialogResult = true;
 
 @Component({
   selector: 'app-custom-visibility-dialog',
@@ -29,6 +28,8 @@ export interface CustomVisibilityDialogResult {
 })
 export class CustomVisibilityDialogComponent implements OnInit {
   private dialogRef = inject<DialogRef<CustomVisibilityDialogResult>>(DialogRef);
+  private documentService = inject(DocumentService);
+  private destroyRef = inject(DestroyRef);
   readonly data = inject<CustomVisibilityDialogData>(DIALOG_DATA);
 
   // Project Management (ID 2) is intentionally excluded — PMs always have access regardless.
@@ -41,6 +42,7 @@ export class CustomVisibilityDialogComponent implements OnInit {
 
   selectedRoles = signal<number[]>([]);
   errorMessage = signal<string | null>(null);
+  isSubmitting = signal(false);
 
   ngOnInit(): void {
     const roles = this.data.document.allowedRoles;
@@ -63,14 +65,35 @@ export class CustomVisibilityDialogComponent implements OnInit {
       return;
     }
 
-    this.dialogRef.close({ allowedRoles: roles });
+    this.submit(
+      { visibility: 'Custom' as DocumentVisibility, allowedRoles: roles, resetToCategoryDefault: false },
+      DOCUMENT_MESSAGES.CUSTOM_VISIBILITY_UPDATE_FAILED,
+    );
   }
 
   onRemoveOverride(): void {
-    this.dialogRef.close({ allowedRoles: null });
+    this.submit({ resetToCategoryDefault: true }, DOCUMENT_MESSAGES.CUSTOM_VISIBILITY_REMOVE_FAILED);
   }
 
   onCancel(): void {
     this.dialogRef.close();
+  }
+
+  private submit(payload: UpdateDocumentVisibilityRequest, failureMessage: string): void {
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
+
+    this.documentService
+      .updateVisibility(this.data.document.id, payload, true)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.dialogRef.close(true);
+        },
+        error: (err) => {
+          this.isSubmitting.set(false);
+          this.errorMessage.set(err?.error?.message || err?.error || failureMessage);
+        },
+      });
   }
 }

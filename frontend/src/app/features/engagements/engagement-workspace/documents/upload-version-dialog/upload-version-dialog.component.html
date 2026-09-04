@@ -12,16 +12,22 @@
     (ngModelChange)="onChangeNoteChange($event)"
     placeholder="Describe what changed in this version..."
   />
+
+  @if (errorMessage()) {
+    <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+  }
 </div>
 
 <div class="app-dialog__actions">
-  <app-button type="button" variant="stroked" (click)="onClose()">
+  <app-button type="button" variant="stroked" (click)="onClose()" [disabled]="isSubmitting()">
     Cancel
   </app-button>
   <app-button
     type="button"
     variant="flat"
     (click)="onSubmit()"
+    [disabled]="isSubmitting()"
+    [loading]="isSubmitting()"
   >
     Upload version
   </app-button>

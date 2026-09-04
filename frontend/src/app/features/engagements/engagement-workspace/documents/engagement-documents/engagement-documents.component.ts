@@ -20,6 +20,7 @@ import { EngagementService } from '../../../services/engagement.service';
 import { DocumentCategory, DocumentItem, DocumentVisibility } from '../../../models/document.model';
 import { AuthService } from '@shared/services/auth';
 import { DialogService } from '@common/services/dialog/dialog.service';
+import { ToastService } from '@common/services/toast/toast';
 import {
   UploadDocumentDialogComponent,
   UploadDocumentDialogData,
@@ -80,6 +81,7 @@ export class EngagementDocumentsComponent {
   private authService = inject(AuthService);
   private destroyRef = inject(DestroyRef);
   private dialog = inject(DialogService);
+  private toastService = inject(ToastService);
 
   readonly versionFileInput = viewChild<ElementRef<HTMLInputElement>>('versionFileInput');
   private pendingVersionDocId: number | null = null;
@@ -203,35 +205,14 @@ export class EngagementDocumentsComponent {
     dialogRef.closed$.subscribe((result) => {
       if (!result) return;
 
-      this.documentService
-        .uploadDocuments(result.files, engagementId, result.categoryId, result.visibility, true)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({
-          next: (results) => {
-            const failed = results.filter((r) => !r.success);
-            this.loadDocuments(undefined, () => {
-              if (failed.length > 0) {
-                const msgs = failed.flatMap((r) => r.errors ?? [r.fileName ?? 'Unknown file']);
-                this.errorMessage.set(msgs.join(', '));
-              }
-            });
-          },
-          error: (err) => {
-            this.errorMessage.set(this.extractUploadErrorMessage(err));
-          },
-        });
+      this.loadDocuments(undefined, () => {
+        if (result.failedFileNames.length > 0) {
+          this.toastService.error(DOCUMENT_MESSAGES.UPLOAD_PARTIAL_FAILURE(result.failedFileNames.join(', ')));
+        } else {
+          this.toastService.success(DOCUMENT_MESSAGES.UPLOAD_SUCCESS);
+        }
+      });
     });
-  }
-
-  private extractUploadErrorMessage(err: any): string {
-    if (err?.name === 'TypeError' || err?.status === 0 || (typeof err?.message === 'string' && err.message.toLowerCase().includes('fetch'))) {
-      return DOCUMENT_MESSAGES.UPLOAD_NETWORK_OR_SERVER_LIMIT_ERROR;
-    }
-    const body = err?.error;
-    if (Array.isArray(body)) {
-      return body.flatMap((r: any) => r.errors || []).join(', ') || DOCUMENT_MESSAGES.UPLOAD_FAILED;
-    }
-    return body?.message || (typeof body === 'string' ? body : DOCUMENT_MESSAGES.UPLOAD_FAILED);
   }
 
   openRemoveModal(doc: DocumentItem): void {
@@ -244,18 +225,7 @@ export class EngagementDocumentsComponent {
     dialogRef.closed$.subscribe((result) => {
       if (!result) return;
 
-      this.documentService
-        .deleteDocument(doc.id, result.reason, true)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({
-          next: () => {
-            this.loadDocuments();
-          },
-          error: (err) => {
-            const msg = typeof err.error === 'string' ? err.error : err.error?.message || DOCUMENT_MESSAGES.REMOVE_FAILED;
-            this.errorMessage.set(msg);
-          },
-        });
+      this.loadDocuments(undefined, () => this.toastService.success(DOCUMENT_MESSAGES.REMOVE_SUCCESS));
     });
   }
 
@@ -289,28 +259,7 @@ export class EngagementDocumentsComponent {
         return;
       }
 
-      const payload =
-        result.allowedRoles === null
-          ? { resetToCategoryDefault: true }
-          : { visibility: 'Custom' as DocumentVisibility, allowedRoles: result.allowedRoles, resetToCategoryDefault: false };
-
-      this.documentService
-        .updateVisibility(doc.id, payload, true)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({
-          next: (updatedDoc) => {
-            this.documents.update((docs) => docs.map((d) => (d.id === updatedDoc.id ? updatedDoc : d)));
-          },
-          error: (err) => {
-            this.documents.update((docs) => [...docs]);
-            const msg =
-              err.error?.message ||
-              (result.allowedRoles === null
-                ? DOCUMENT_MESSAGES.CUSTOM_VISIBILITY_REMOVE_FAILED
-                : DOCUMENT_MESSAGES.CUSTOM_VISIBILITY_UPDATE_FAILED);
-            this.errorMessage.set(msg);
-          },
-        });
+      this.loadDocuments(undefined, () => this.toastService.success(DOCUMENT_MESSAGES.UPDATE_VISIBILITY_SUCCESS));
     });
   }
 
@@ -376,18 +325,7 @@ export class EngagementDocumentsComponent {
     dialogRef.closed$.subscribe((result) => {
       if (!result) return;
 
-      this.documentService
-        .uploadNewVersion(documentId, file, result.changeNote, true)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({
-          next: () => {
-            this.loadDocuments();
-          },
-          error: (err) => {
-            const msg = typeof err.error === 'string' ? err.error : err.error?.message || DOCUMENT_MESSAGES.UPLOAD_VERSION_FAILED;
-            this.errorMessage.set(msg);
-          },
-        });
+      this.loadDocuments(undefined, () => this.toastService.success(DOCUMENT_MESSAGES.UPLOAD_VERSION_SUCCESS));
     });
   }
 

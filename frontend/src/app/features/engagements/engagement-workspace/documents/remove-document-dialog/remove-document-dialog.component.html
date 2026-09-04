@@ -17,17 +17,22 @@
     placeholder="Please enter a short reason for removing this document (minimum 10 characters)..."
     [extraError]="minLengthError()"
   />
+
+  @if (errorMessage()) {
+    <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+  }
 </div>
 
 <div class="app-dialog__actions">
-  <app-button type="button" variant="stroked" (click)="onClose()">
+  <app-button type="button" variant="stroked" (click)="onClose()" [disabled]="isSubmitting()">
     Cancel
   </app-button>
   <app-button
     type="button"
     variant="danger"
     (click)="onSubmit()"
-    [disabled]="!isValidReason()"
+    [disabled]="!isValidReason() || isSubmitting()"
+    [loading]="isSubmitting()"
   >
     Remove Document
   </app-button>

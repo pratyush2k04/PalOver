@@ -1,7 +1,7 @@
 <div class="documents-container">
   <app-section-header title="Documents">
     @if (canUpload()) {
-      <app-button type="button" variant="flat" (click)="openUploadModal()">
+      <app-button type="button" variant="flat" [disabled]="isLoading()" (click)="openUploadModal()">
         <span class="upload-icon" [inlineSVG]="'assets/icons/upload.svg'"></span>
         Upload
       </app-button>
@@ -82,6 +82,7 @@
                           variant="icon"
                           ariaLabel="Edit allowed roles"
                           [appTooltip]="'Edit allowed roles'"
+                          [disabled]="isLoading()"
                           (click)="openCustomVisibilityModal(doc)"
                         >
                           <span class="edit-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
