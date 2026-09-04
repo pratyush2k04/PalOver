@@ -45,7 +45,6 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IResourceRequestRepository, ResourceRequestRepository>();
         services.AddScoped<IDependencyRepository, DependencyRepository>();
         services.AddScoped<IAssumptionRepository, AssumptionRepository>();
-        services.AddScoped<IDependencySpikeRepository, DependencySpikeRepository>();
         services.AddScoped<IHomeRepository, HomeRepository>();
 
         // Services
@@ -90,7 +89,6 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ITechnicalReadinessNotificationService, TechnicalReadinessNotificationService>();
         services.AddScoped<IDependencyService, DependencyService>();
         services.AddScoped<IAssumptionService, AssumptionService>();
-        services.AddScoped<IDependencySpikeService, DependencySpikeService>();
         services.AddScoped<IKpiReportService, KpiReportService>();
         services.AddScoped<TemplateMapperResolver<INotificationTemplateMapper>>();
         services.AddScoped<TemplateMapperResolver<IAuditTemplateMapper>>();

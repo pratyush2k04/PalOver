@@ -18,7 +18,6 @@ public class TechnicalSummaryService(
     IEnvironmentToolingRepository environmentToolingRepository,
     IArchitectureValidationRepository architectureValidationRepository,
     IBrownfieldFindingRepository brownfieldFindingRepository,
-    IDependencySpikeRepository dependencySpikeRepository,
     IDocumentRepository documentRepository,
     ICurrentUserService currentUserService,
     IAuditLogService auditLogService,
@@ -36,7 +35,6 @@ public class TechnicalSummaryService(
         var archValidation = await architectureValidationRepository.GetByEngagementIdAsync(engagementId);
         var committedWeeks = await architectureValidationRepository.GetCommittedTimelineWeeksAsync(engagementId);
         var brownfieldFindings = await brownfieldFindingRepository.GetByEngagementIdAsync(engagementId);
-        var dependencySpikes = await dependencySpikeRepository.GetByEngagementIdAsync(engagementId);
         var documents = (await documentRepository.GetByEngagementIdAsync(engagementId, null, true, true)).ToList();
 
         // 1. Access Readiness Evaluation
@@ -80,14 +78,7 @@ public class TechnicalSummaryService(
         var highSeverityPending = isBrownfield ? brownfieldFindings.Count(f => f.Severity == BrownfieldSeverity.High && f.ClientDecision != ClientDecision.AcceptNow) : 0;
         var isBrownfieldReady = !isBrownfield || highSeverityPending == 0;
 
-        // 5. Dependency Spikes Readiness Evaluation
-        var totalSpikes = dependencySpikes.Count;
-        var passedSpikes = dependencySpikes.Count(s => s.Status == Models.DependencySpikes.DependencySpikeStatus.Passed);
-        var failedSpikes = dependencySpikes.Count(s => s.Status == Models.DependencySpikes.DependencySpikeStatus.Failed);
-        var inProgressSpikes = dependencySpikes.Count(s => s.Status == Models.DependencySpikes.DependencySpikeStatus.InProgress);
-        var isDependencySpikesReady = inProgressSpikes == 0;
-
-        // 6. Compile Outstanding Blockers
+        // 5. Compile Outstanding Blockers
         var blockers = new List<DayOneBlockerItemDto>();
 
         foreach (var a in accessItems.Where(a => a.Status == AccessItemStatus.Blocked))
@@ -149,22 +140,8 @@ public class TechnicalSummaryService(
             });
         }
 
-        foreach (var s in dependencySpikes.Where(s => s.Status == Models.DependencySpikes.DependencySpikeStatus.Failed))
-        {
-            blockers.Add(new DayOneBlockerItemDto
-            {
-                Id = s.Id,
-                Category = "Dependency Spikes",
-                Name = s.DependencyName,
-                OwnerName = s.Owner?.FullName,
-                Status = "Failed",
-                Detail = s.OutcomeFindings ?? "Dependency spike failed",
-                TargetSection = "dependency-spikes"
-            });
-        }
-
-        // 7. Overall Day-1 Readiness Determination
-        var isAbleToStart = isAccessReady && isToolingReady && isArchitectureReady && isBrownfieldReady && isDependencySpikesReady && blockers.Count == 0;
+        // 6. Overall Day-1 Readiness Determination
+        var isAbleToStart = isAccessReady && isToolingReady && isArchitectureReady && isBrownfieldReady && blockers.Count == 0;
         var overallStatusMessage = isAbleToStart
             ? "Able to start Day-1 - All technical prerequisites are ready and unblocked."
             : "Action required - Technical blockers or incomplete prerequisites must be resolved prior to Day-1 kickoff.";
@@ -234,12 +211,6 @@ public class TechnicalSummaryService(
             HighSeverityAcceptedCount = highSeverityAccepted,
             HighSeverityPendingCount = highSeverityPending,
             IsBrownfieldReady = isBrownfieldReady,
-
-            TotalDependencySpikes = totalSpikes,
-            PassedDependencySpikes = passedSpikes,
-            FailedDependencySpikes = failedSpikes,
-            InProgressDependencySpikes = inProgressSpikes,
-            IsDependencySpikesReady = isDependencySpikesReady,
 
             OutstandingBlockers = blockers
         };

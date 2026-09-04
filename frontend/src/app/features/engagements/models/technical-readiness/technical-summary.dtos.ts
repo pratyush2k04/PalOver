@@ -60,13 +60,6 @@ export interface DayOneReadinessSummaryDto {
   highSeverityPendingCount: number;
   isBrownfieldReady: boolean;
 
-  // Dependency Spikes Readiness
-  totalDependencySpikes: number;
-  passedDependencySpikes: number;
-  failedDependencySpikes: number;
-  inProgressDependencySpikes: number;
-  isDependencySpikesReady: boolean;
-
   // Blockers & Action Items
   outstandingBlockers: DayOneBlockerItemDto[];
 }
