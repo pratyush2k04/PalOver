@@ -59,9 +59,10 @@
 
             <!-- Discussion Accordion -->
             <app-accordion
-              [title]="getDiscussionTitle(query.id)"
-              [badge]="getReplies(query).length"
-              [expanded]="isExpanded(query.id)"
+              [title]="getDiscussionTitle(query)"
+              [badge]="hasNoDiscussion(query) ? undefined : getReplies(query).length"
+              [disabled]="hasNoDiscussion(query)"
+              [expanded]="hasNoDiscussion(query) ? false : isExpanded(query.id)"
               (expandedChange)="toggleExpand(query.id, $event)"
             >
               <div class="discussion-container">

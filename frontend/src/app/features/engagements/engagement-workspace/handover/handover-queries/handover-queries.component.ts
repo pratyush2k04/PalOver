@@ -170,8 +170,15 @@ export class HandoverQueriesComponent {
     return this.expandedQueries()[queryId] ?? false;
   }
 
-  getDiscussionTitle(queryId: number): string {
-    return this.isExpanded(queryId) ? 'Close Discussion' : 'Open Discussion';
+  hasNoDiscussion(query: HandoverQueryDto): boolean {
+    return query.isResolved && this.getReplies(query).length === 0;
+  }
+
+  getDiscussionTitle(query: HandoverQueryDto): string {
+    if (this.hasNoDiscussion(query)) {
+      return 'Nothing Discussed';
+    }
+    return this.isExpanded(query.id) ? 'Close Discussion' : 'Open Discussion';
   }
 
   toggleExpand(queryId: number, expanded: boolean): void {
