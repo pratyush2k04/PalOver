@@ -13,12 +13,8 @@
     </div>
   </div>
 
-  <!-- Loading State -->
-  @if (isLoading()) {
-    <app-loading-spinner label="Loading environment & tooling items..." />
-  } @else {
-    <!-- Table -->
-    <div class="table-responsive">
+  <!-- Table -->
+  <div class="table-responsive">
       <table class="env-table">
         <thead>
           <tr>
@@ -80,8 +76,7 @@
         </tbody>
       </table>
     </div>
-  }
-</div>
+  </div>
 
 <!-- Delete Confirmation Dialog -->
 @if (itemToDelete(); as item) {

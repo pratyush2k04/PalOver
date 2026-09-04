@@ -13,12 +13,8 @@
     </div>
   </div>
 
-  <!-- Loading state -->
-  @if (isLoading()) {
-    <app-loading-spinner label="Loading access items..." />
-  } @else {
-    <!-- Table -->
-    <div class="table-responsive">
+  <!-- Table -->
+  <div class="table-responsive">
       <table class="access-table">
         <thead>
           <tr>
@@ -96,8 +92,7 @@
         </tbody>
       </table>
     </div>
-  }
-</div>
+  </div>
 
 <!-- Delete Confirmation Dialog -->
 @if (itemToDelete(); as item) {
