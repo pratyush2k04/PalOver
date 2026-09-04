@@ -45,23 +45,5 @@ public class ChangeRequestConfiguration : IEntityTypeConfiguration<Models.Change
 
         // Global Query Filter (Soft Delete)
         builder.HasQueryFilter(cr => !cr.IsDeleted);
-
-        // Seed Sample Data
-        var seededAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        builder.HasData(
-            new Models.ChangeRequest.ChangeRequest
-            {
-                Id = 1,
-                EngagementId = 1,
-                Description = "Add SMS notifications to the rewards flow",
-                Impact = "+1.5 weeks, +1 developer-week",
-                Status = ChangeRequestStatus.UnderReview,
-                CreatedAt = seededAt,
-                UpdatedAt = seededAt,
-                IsDeleted = false,
-                CreatedBy = "2", // Asha Rao (PM user ID 2)
-                UpdatedBy = "2"
-            }
-        );
     }
 }

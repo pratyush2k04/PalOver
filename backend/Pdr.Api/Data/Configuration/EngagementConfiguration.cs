@@ -54,41 +54,6 @@ public class EngagementConfiguration : IEntityTypeConfiguration<Engagement>
                .WithOne(c => c.Engagement)
                .HasForeignKey<EngagementChecklist>(c => c.EngagementId)
                .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasData(
-            new Engagement
-            {
-                EngagementId = 1,
-                EngagementName = "FinTech Core Banking",
-                ClientName = "FinTech Solutions",
-                EngagementDescription = "Core Banking Greenfield Implementation",
-                EngagementTypeId = 1, // Greenfield
-                CommercialModelId = 1, // Time and Material
-                KickoffDate = new DateOnly(2026, 8, 15),
-                StatusId = 1, // KickoffPending
-                IsKickoffReady = false,
-                CreatedAt = SeedTimestamp,
-                UpdatedAt = SeedTimestamp,
-                CreatedBy = "System",
-                IsDeleted = false
-            },
-            new Engagement
-            {
-                EngagementId = 2,
-                EngagementName = "HealthCare Legacy Upgrade",
-                ClientName = "HealthCare Plus",
-                EngagementDescription = "Legacy System Upgrade and Support",
-                EngagementTypeId = 2, // Brownfield
-                CommercialModelId = 2, // Fixed
-                KickoffDate = new DateOnly(2026, 6, 1),
-                BillingStartDate = new DateOnly(2026, 7, 1),
-                StatusId = 2, // Active
-                IsKickoffReady = false,
-                CreatedAt = SeedTimestamp,
-                UpdatedAt = SeedTimestamp,
-                CreatedBy = "System",
-                IsDeleted = false
-            }
-        );
     }
 }
+

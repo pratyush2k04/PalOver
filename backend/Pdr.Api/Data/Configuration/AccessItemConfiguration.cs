@@ -37,17 +37,6 @@ namespace Pdr.Api.Data.Configuration
                 .WithMany(x => x.AccessItems)
                 .HasForeignKey(x => x.AccessItemDefinitionId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            var seededAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-            builder.HasData(
-                new AccessItem { Id = 1, EngagementId = 1, AccessItemDefinitionId = 1, Name = "VPN Access", IsClientSide = false, OwnerId = 1, Status = AccessItemStatus.InProgress, CreatedAt = seededAt, UpdatedAt = seededAt },
-                new AccessItem { Id = 2, EngagementId = 1, AccessItemDefinitionId = 2, Name = "Jira", IsClientSide = true, OwnerId = 1, Status = AccessItemStatus.InProgress, CreatedAt = seededAt, UpdatedAt = seededAt },
-                new AccessItem { Id = 3, EngagementId = 1, AccessItemDefinitionId = 3, Name = "SandBox", IsClientSide = true, OwnerId = 1, Status = AccessItemStatus.InProgress, CreatedAt = seededAt, UpdatedAt = seededAt },
-                new AccessItem { Id = 4, EngagementId = 2, AccessItemDefinitionId = 1, Name = "VPN Access", IsClientSide = false, OwnerId = 1, Status = AccessItemStatus.Granted, GrantedDate = new DateOnly(2026, 6, 2), CreatedAt = seededAt, UpdatedAt = seededAt },
-                new AccessItem { Id = 5, EngagementId = 2, AccessItemDefinitionId = 2, Name = "Jira", IsClientSide = true, OwnerId = 1, Status = AccessItemStatus.Granted, GrantedDate = new DateOnly(2026, 6, 2), CreatedAt = seededAt, UpdatedAt = seededAt },
-                new AccessItem { Id = 6, EngagementId = 2, AccessItemDefinitionId = 3, Name = "SandBox", IsClientSide = true, OwnerId = 1, Status = AccessItemStatus.InProgress, CreatedAt = seededAt, UpdatedAt = seededAt }
-            );
         }
     }
 }
