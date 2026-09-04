@@ -81,12 +81,16 @@
                 </div>
               </div>
             } @else if (isAuthorizedForSignOff()) {
-              <app-button
-                variant="flat"
-                [disabled]="!isFullyReady()"
-                (click)="openSignOffDialog()">
-                Sign Off Day-1
-              </app-button>
+              <span
+                class="sign-off-btn-wrapper"
+                [appTooltip]="signOffTooltip()">
+                <app-button
+                  variant="flat"
+                  [disabled]="isSignOffDisabled()"
+                  (click)="openSignOffDialog()">
+                  Sign Off Day-1
+                </app-button>
+              </span>
             }
           </div>
         }

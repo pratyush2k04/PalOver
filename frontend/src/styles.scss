@@ -148,8 +148,8 @@ body.app-dialog-open {
   font-size: $font-size-sm;
   color: $color-text-muted;
   line-height: 1.5;
-  word-break: break-word;
   overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .app-dialog__content {
@@ -159,6 +159,9 @@ body.app-dialog-open {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   display: flex;
   flex-direction: column;
   gap: $spacing-4;

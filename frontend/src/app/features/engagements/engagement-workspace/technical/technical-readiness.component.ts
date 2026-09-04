@@ -100,25 +100,35 @@ export class TechnicalReadinessComponent {
   accessTotalCount = computed(() => this.accessItems().length);
 
   // Tooling Metrics
-  toolingApplicableItems = computed(() =>
-    this.toolingItems().filter(i =>
-      +i.status !== EnvironmentToolingStatus.NotApplicable &&
-      i.status !== (EnvironmentToolingStatus[EnvironmentToolingStatus.NotApplicable] as any)
-    )
-  );
+  private isToolingReadyStatus(status: string | number): boolean {
+    return status === EnvironmentToolingStatus[EnvironmentToolingStatus.Granted] || +status === EnvironmentToolingStatus.Granted;
+  }
+  private isToolingNotReadyStatus(status: string | number): boolean {
+    return status === EnvironmentToolingStatus[EnvironmentToolingStatus.InProgress] || +status === EnvironmentToolingStatus.InProgress;
+  }
+  private isToolingBlockedStatus(status: string | number): boolean {
+    return status === EnvironmentToolingStatus[EnvironmentToolingStatus.Blocked] || +status === EnvironmentToolingStatus.Blocked;
+  }
+
   toolingReadyCount = computed(() =>
-    this.toolingApplicableItems().filter(i =>
-      +i.status === EnvironmentToolingStatus.Ready ||
-      i.status === (EnvironmentToolingStatus[EnvironmentToolingStatus.Ready] as any)
-    ).length
+    this.toolingItems().filter(i => this.isToolingReadyStatus(i.status)).length
   );
-  toolingTotalCount = computed(() => this.toolingApplicableItems().length);
+  toolingNotReadyCount = computed(() =>
+    this.toolingItems().filter(i => this.isToolingNotReadyStatus(i.status)).length
+  );
+  toolingBlockedCount = computed(() =>
+    this.toolingItems().filter(i => this.isToolingBlockedStatus(i.status)).length
+  );
+  toolingTotalCount = computed(() => this.toolingItems().length);
 
   // Blockers Check
   hasAccessBlockers = computed(() =>
     this.accessBlockedCount() > 0
   );
-  hasBlockers = computed(() => this.hasAccessBlockers());
+  hasToolingBlockers = computed(() =>
+    this.toolingBlockedCount() > 0
+  );
+  hasBlockers = computed(() => this.hasAccessBlockers() || this.hasToolingBlockers());
 
   // Brownfield Readiness
   brownfieldHighPriorityCount = computed(() =>

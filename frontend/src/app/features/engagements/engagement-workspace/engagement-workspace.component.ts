@@ -20,6 +20,8 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
+import { DayOneReadinessSummaryDto } from '../models/technical-readiness/technical-summary.dtos';
 
 @Component({
   selector: 'app-engagement-workspace',
@@ -33,7 +35,8 @@ import { StatusBadgeComponent } from '@common/components/status-badge/status-bad
     ButtonComponent,
     InlineSVGModule,
     ReadinessCircleComponent,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    TooltipDirective
   ],
   templateUrl: './engagement-workspace.component.html',
   styleUrl: './engagement-workspace.component.scss'
@@ -56,6 +59,7 @@ export class EngagementWorkspaceComponent {
   });
 
   engagement = signal<EngagementInfoDto | null>(null);
+  technicalSummary = signal<DayOneReadinessSummaryDto | null>(null);
   readiness = this.kickoffReadinessService.readiness;
   readonly owners = this.engagementService.owners;
   isLoading = signal<boolean>(true);
@@ -73,6 +77,29 @@ export class EngagementWorkspaceComponent {
     const user = this.authService.currentUser();
     if (!user) return false;
     return this.authService.hasRole(USER_ROLES.LEADERSHIP);
+  });
+
+  readonly isProjectManager = computed(() => {
+    const user = this.authService.currentUser();
+    if (!user) return false;
+    return this.authService.hasRole(USER_ROLES.PROJECT_MANAGEMENT);
+  });
+
+  readonly isTechnicalReady = computed(() => {
+    return this.technicalSummary()?.isAbleToStartDayOne ?? false;
+  });
+
+  readonly isSignOffDisabled = computed(() => {
+    if (this.isLeadership()) return false;
+    if (this.isProjectManager()) return !this.isTechnicalReady();
+    return true;
+  });
+
+  readonly signOffTooltip = computed(() => {
+    if (this.isProjectManager() && !this.isTechnicalReady()) {
+      return 'Technical readiness is not 100%';
+    }
+    return null;
   });
 
   readonly tabs = computed<TabItem[]>(() => {
@@ -156,6 +183,11 @@ export class EngagementWorkspaceComponent {
     this.engagementService.getEngagementOwners(id).subscribe({
       error: () => {}
     });
+
+    this.technicalReadinessService.getTechnicalSummary(id).subscribe({
+      next: (summary) => this.technicalSummary.set(summary),
+      error: () => this.technicalSummary.set(null)
+    });
   }
 
   openSignOffDialog(): void {
@@ -164,6 +196,7 @@ export class EngagementWorkspaceComponent {
 
     this.technicalReadinessService.getTechnicalSummary(id).subscribe({
       next: (summary) => {
+        this.technicalSummary.set(summary);
         this.launchSignOffDialog(id, summary.isAbleToStartDayOne);
       },
       error: () => {

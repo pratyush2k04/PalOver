@@ -49,6 +49,7 @@
 
     .env-table {
       width: 100%;
+      table-layout: fixed;
       border-collapse: collapse;
       text-align: left;
       font-size: 0.875rem;
@@ -59,39 +60,57 @@
         padding: 0.75rem 1rem;
         border-bottom: 1px solid $color-gray-200;
         background-color: $color-gray-50;
+
+        &.item-th {
+          width: 45%;
+        }
+
+        &.owner-th {
+          width: 25%;
+        }
+
+        &.status-th {
+          width: 18%;
+          text-align: center;
+        }
+
+        &.actions-th {
+          width: 12%;
+          min-width: 5rem;
+          text-align: right;
+        }
       }
 
       td {
         padding: 0.875rem 1rem;
         border-bottom: 1px solid $color-gray-100;
         color: $color-gray-700;
-        vertical-align: middle;
+        vertical-align: top;
       }
 
       .item-name-cell {
         font-weight: 500;
         color: $color-gray-900;
+        overflow-wrap: anywhere;
+        word-break: break-word;
       }
 
       .owner-cell {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+
         .owner-content {
           display: flex;
           align-items: center;
           gap: 0.5rem;
+          overflow-wrap: anywhere;
+          word-break: break-word;
         }
       }
 
       th.status-th,
       .status-cell {
         text-align: center;
-
-        .cell-content {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-          flex-wrap: wrap;
-        }
 
         app-status-badge {
           --badge-min-width: 6.5rem;
@@ -118,18 +137,15 @@
         height: 1rem;
       }
 
-      .status-cell {
-        .cell-content {
+      .actions-cell {
+        text-align: right;
+        width: 5rem;
+
+        .action-btn-group {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
-          flex-wrap: wrap;
-        }
-
-        .na-reason-text {
-          font-size: 0.8rem;
-          color: $color-gray-500;
-          font-style: italic;
+          justify-content: flex-end;
+          gap: 0.25rem;
         }
       }
 

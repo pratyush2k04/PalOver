@@ -326,7 +326,7 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
                 EnvironmentToolingDefinitionId = def.Id,
                 Name = def.Name,
                 OwnerId = ownerId,
-                Status = Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingStatus.NotReady
+                Status = Pdr.Api.Models.EnvironmentTooling.EnvironmentToolingStatus.InProgress
             });
         }
 
