@@ -162,16 +162,7 @@ export class ResourcesComponent {
     dialogRef.closed$.subscribe((payload) => {
       if (!payload) return;
 
-      this.isLoading.set(true);
-      this.resourceRequestService.createResourceRequest(id, payload, true).subscribe({
-        next: () => {
-          this.loadData(id, () => this.toastService.success(RESOURCE_REQUEST_CONSTANTS.MSG_SUCCESS_RAISED));
-        },
-        error: (err: { error?: { message?: string; title?: string } }) => {
-          this.isLoading.set(false);
-          this.toastService.error(err.error?.message || err.error?.title || 'Failed to raise resource request. Please try again.');
-        }
-      });
+      this.loadData(id, () => this.toastService.success(RESOURCE_REQUEST_CONSTANTS.MSG_SUCCESS_RAISED));
     });
   }
 
@@ -196,16 +187,7 @@ export class ResourcesComponent {
     dialogRef.closed$.subscribe((payload) => {
       if (!payload) return;
 
-      this.isLoading.set(true);
-      this.resourceRequestService.allocateResources(id, request.id, payload, true).subscribe({
-        next: () => {
-          this.loadData(id, () => this.toastService.success(RESOURCE_REQUEST_CONSTANTS.MSG_SUCCESS_ALLOCATED));
-        },
-        error: (err: { error?: { message?: string; title?: string } }) => {
-          this.isLoading.set(false);
-          this.toastService.error(err.error?.message || err.error?.title || 'Failed to save named resources. Please try again.');
-        }
-      });
+      this.loadData(id, () => this.toastService.success(RESOURCE_REQUEST_CONSTANTS.MSG_SUCCESS_ALLOCATED));
     });
   }
 
@@ -229,16 +211,7 @@ export class ResourcesComponent {
     dialogRef.closed$.subscribe((payload) => {
       if (!payload) return;
 
-      this.isLoading.set(true);
-      this.resourceRequestService.removeAllocation(id, request.id, allocation.id, payload, true).subscribe({
-        next: () => {
-          this.loadData(id, () => this.toastService.success(RESOURCE_REQUEST_CONSTANTS.MSG_SUCCESS_REMOVED));
-        },
-        error: (err: { error?: { message?: string; title?: string } }) => {
-          this.isLoading.set(false);
-          this.toastService.error(err.error?.message || err.error?.title || 'Failed to remove resource. Please try again.');
-        }
-      });
+      this.loadData(id, () => this.toastService.success(RESOURCE_REQUEST_CONSTANTS.MSG_SUCCESS_REMOVED));
     });
   }
 

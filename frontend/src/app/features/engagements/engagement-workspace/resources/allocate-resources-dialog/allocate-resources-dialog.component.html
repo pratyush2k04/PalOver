@@ -11,13 +11,17 @@
         />
       }
     </div>
+
+    @if (errorMessage()) {
+      <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+    }
   </div>
 
   <div class="app-dialog__actions">
-    <app-button type="button" variant="stroked" (click)="onCancel()">
+    <app-button type="button" variant="stroked" (click)="onCancel()" [disabled]="isSubmitting()">
       {{ constants.BTN_CANCEL }}
     </app-button>
-    <app-button type="submit" variant="flat">
+    <app-button type="submit" variant="flat" [disabled]="isSubmitting()" [loading]="isSubmitting()">
       {{ constants.BTN_ALLOCATE }}
     </app-button>
   </div>

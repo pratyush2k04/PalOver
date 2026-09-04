@@ -1,4 +1,5 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, DestroyRef, inject, signal, computed } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
@@ -11,6 +12,7 @@ import {
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
+import { AlertComponent } from '@common/components/alert/alert';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { InputComponent } from '@common/components/form/input/input';
 import { DatepickerComponent } from '@common/components/form/datepicker/datepicker';
@@ -27,6 +29,7 @@ import {
 } from '../../../models/resource-request.model';
 import { futureDateValidator } from '@common/validators/date.validators';
 import { EngagementService } from '@features/engagements/services/engagement.service';
+import { ResourceRequestService } from '@features/engagements/services/resource-request.service';
 
 export interface RaiseResourceRequestDialogData {
   engagementId: number;
@@ -49,6 +52,7 @@ function notAfterBillingDateValidator(billingStartDate: string | null | undefine
     CommonModule,
     ReactiveFormsModule,
     ButtonComponent,
+    AlertComponent,
     SelectComponent,
     InputComponent,
     DatepickerComponent,
@@ -62,6 +66,8 @@ export class RaiseResourceRequestDialogComponent {
   private fb = inject(FormBuilder);
   private dialogRef = inject<DialogRef<CreateResourceRequestPayload>>(DialogRef);
   private engagementService = inject(EngagementService);
+  private resourceRequestService = inject(ResourceRequestService);
+  private destroyRef = inject(DestroyRef);
   readonly data = inject<RaiseResourceRequestDialogData>(DIALOG_DATA);
 
   readonly billingStartDate = computed(() => this.data.billingStartDate || this.engagementService.currentEngagement()?.billingStartDate || null);
@@ -97,6 +103,9 @@ export class RaiseResourceRequestDialogComponent {
   selectedSkills = signal<number[]>([]);
   skillsTouched = signal(false);
 
+  isSubmitting = signal(false);
+  errorMessage = signal<string | null>(null);
+
   onSkillsChange(values: unknown[]): void {
     this.selectedSkills.set(values as number[]);
     this.skillsTouched.set(true);
@@ -121,7 +130,21 @@ export class RaiseResourceRequestDialogComponent {
       jobDescription: jobDescription.trim(),
     };
 
-    this.dialogRef.close(payload);
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
+
+    this.resourceRequestService
+      .createResourceRequest(this.data.engagementId, payload, true)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.dialogRef.close(payload);
+        },
+        error: (err) => {
+          this.isSubmitting.set(false);
+          this.errorMessage.set(err?.error?.message || err?.error || 'Failed to raise resource request. Please try again.');
+        },
+      });
   }
 
   onCancel(): void {
