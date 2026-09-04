@@ -16,16 +16,22 @@ export class PersonService {
     });
   }
 
-  createPerson(engagementId: number, person: Partial<PersonDto>): Observable<PersonDto> {
-    return this.http.post<PersonDto>(`/api/engagements/${engagementId}/people`, person);
+  createPerson(engagementId: number, person: Partial<PersonDto>, skipLoader = false): Observable<PersonDto> {
+    return this.http.post<PersonDto>(`/api/engagements/${engagementId}/people`, person, {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
-  updatePerson(engagementId: number, personId: number, person: Partial<PersonDto>): Observable<PersonDto> {
-    return this.http.put<PersonDto>(`/api/engagements/${engagementId}/people/${personId}`, person);
+  updatePerson(engagementId: number, personId: number, person: Partial<PersonDto>, skipLoader = false): Observable<PersonDto> {
+    return this.http.put<PersonDto>(`/api/engagements/${engagementId}/people/${personId}`, person, {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
-  deletePerson(engagementId: number, personId: number): Observable<void> {
-    return this.http.delete<void>(`/api/engagements/${engagementId}/people/${personId}`);
+  deletePerson(engagementId: number, personId: number, skipLoader = false): Observable<void> {
+    return this.http.delete<void>(`/api/engagements/${engagementId}/people/${personId}`, {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
   importFromHandover(engagementId: number): Observable<ImportResponse> {
