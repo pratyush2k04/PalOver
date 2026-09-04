@@ -15,7 +15,10 @@ import {
   DIALOG_LABELS,
   STATUS_MESSAGES,
 } from '@shared/constants/client-contact-transition.constants';
-import { AddClientContactTransitionDialogComponent } from '../../handover/dialogs/add-client-contact-transition-dialog/add-client-contact-transition-dialog.component';
+import {
+  AddClientContactTransitionDialogComponent,
+  AddClientContactTransitionDialogResult
+} from '../../handover/dialogs/add-client-contact-transition-dialog/add-client-contact-transition-dialog.component';
 
 @Component({
   selector: 'app-client-contact-transition-card',
@@ -59,17 +62,19 @@ export class ClientContactTransitionCardComponent {
     });
   }
 
-  loadHistory(): void {
+  loadHistory(onDone?: () => void): void {
     this.isLoading.set(true);
     this.transitionService.getTransitions(this.engagementId()).subscribe({
       next: (data) => {
         this.transitions.set(data);
         this.transitionsLoaded.emit(data);
         this.isLoading.set(false);
+        onDone?.();
       },
       error: () => {
         this.transitions.set([]);
         this.isLoading.set(false);
+        onDone?.();
       },
     });
   }
@@ -80,16 +85,24 @@ export class ClientContactTransitionCardComponent {
       activeTransitions: this.transitions(),
     };
 
-    const dialogRef = this.dialog.open<AddClientContactTransitionDialogComponent, AddClientContactTransitionDialogData, TransitionResponse>(
+    const dialogRef = this.dialog.open<AddClientContactTransitionDialogComponent, AddClientContactTransitionDialogData, AddClientContactTransitionDialogResult>(
       AddClientContactTransitionDialogComponent,
       { data }
     );
 
-    dialogRef.closed$.subscribe((response) => {
-      if (!response) return;
-      this.toastService.success(this.statusMessages.SAVE_SUCCESS);
-      this.loadHistory();
-      this.onSaved.emit();
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+
+      this.transitionService.saveTransition(this.engagementId(), result, true).subscribe({
+        next: () => {
+          this.loadHistory(() => this.toastService.success(this.statusMessages.SAVE_SUCCESS));
+          this.onSaved.emit();
+        },
+        error: (err: any) => {
+          const msg = err?.error?.message || this.statusMessages.SAVE_ERROR;
+          this.toastService.error(msg);
+        },
+      });
     });
   }
 

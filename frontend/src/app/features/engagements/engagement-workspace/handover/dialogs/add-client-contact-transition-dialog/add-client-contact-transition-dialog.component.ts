@@ -4,11 +4,9 @@ import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angula
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
-import { AlertComponent } from '@common/components/alert/alert';
 import { InputComponent } from '@common/components/form/input/input';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
-import { ClientContactTransitionService } from '@features/engagements/services/client-contact-transition.service';
-import { TransitionResponse, AddClientContactTransitionDialogData } from '@features/engagements/models/client-contact-transition.model';
+import { AddClientContactTransitionDialogData } from '@features/engagements/models/client-contact-transition.model';
 import { PersonService } from '@shared/services/person.service';
 import { PersonType } from '@shared/models/person.model';
 import {
@@ -20,6 +18,14 @@ import {
   STATUS_MESSAGES,
 } from '@shared/constants/client-contact-transition.constants';
 
+export interface AddClientContactTransitionDialogResult {
+  outgoingPersonId: number;
+  outgoingContactName: string;
+  outgoingContactRole: string;
+  incomingContactName: string;
+  incomingContactRole: string;
+}
+
 @Component({
   selector: 'app-add-client-contact-transition-dialog',
   standalone: true,
@@ -27,7 +33,6 @@ import {
     CommonModule,
     ReactiveFormsModule,
     ButtonComponent,
-    AlertComponent,
     InputComponent,
     SelectComponent,
   ],
@@ -35,8 +40,7 @@ import {
   styleUrl: './add-client-contact-transition-dialog.component.scss',
 })
 export class AddClientContactTransitionDialogComponent {
-  private dialogRef = inject<DialogRef<TransitionResponse>>(DialogRef);
-  private transitionService = inject(ClientContactTransitionService);
+  private dialogRef = inject<DialogRef<AddClientContactTransitionDialogResult>>(DialogRef);
   private personService = inject(PersonService);
   private fb = inject(FormBuilder);
   readonly data = inject<AddClientContactTransitionDialogData>(DIALOG_DATA);
@@ -57,8 +61,6 @@ export class AddClientContactTransitionDialogComponent {
   });
 
   showConfirm = signal(false);
-  isSubmitting = signal(false);
-  errorMessage = signal<string>('');
   outgoingContactOptions = signal<SelectOption[]>([]);
 
   private peopleById = new Map<number, { name: string; role: string }>();
@@ -97,7 +99,6 @@ export class AddClientContactTransitionDialogComponent {
       return;
     }
     this.showConfirm.set(true);
-    this.errorMessage.set('');
   }
 
   cancelConfirm(): void {
@@ -106,21 +107,6 @@ export class AddClientContactTransitionDialogComponent {
 
   confirmAndSave(): void {
     if (!this.form.valid) return;
-
-    this.isSubmitting.set(true);
-    this.errorMessage.set('');
-    const data = this.form.getRawValue();
-
-    this.transitionService.saveTransition(this.data.engagementId, data).subscribe({
-      next: (response: TransitionResponse) => {
-        this.isSubmitting.set(false);
-        this.dialogRef.close(response);
-      },
-      error: (err: any) => {
-        this.isSubmitting.set(false);
-        const msg = err?.error?.message || this.statusMessages.SAVE_ERROR;
-        this.errorMessage.set(msg);
-      },
-    });
+    this.dialogRef.close(this.form.getRawValue());
   }
 }
