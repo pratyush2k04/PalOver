@@ -18,6 +18,10 @@ export interface AssignLeadershipDialogData {
   availableLeadershipUsers: LeadershipUserItem[];
 }
 
+export interface AssignLeadershipDialogResult {
+  userIds: number[];
+}
+
 @Component({
   selector: 'app-assign-leadership-dialog',
   standalone: true,
@@ -35,7 +39,7 @@ export interface AssignLeadershipDialogData {
   styleUrl: './assign-leadership-dialog.component.scss'
 })
 export class AssignLeadershipDialogComponent implements OnInit {
-  private dialogRef = inject<DialogRef<LeadershipUserItem[]>>(DialogRef);
+  private dialogRef = inject<DialogRef<AssignLeadershipDialogResult>>(DialogRef);
   private allocationService = inject(EngagementAllocationService);
   private toastService = inject(ToastService);
   readonly data = inject<AssignLeadershipDialogData>(DIALOG_DATA);
@@ -44,7 +48,6 @@ export class AssignLeadershipDialogComponent implements OnInit {
 
   modalLeadershipUsers = signal<LeadershipUserItem[]>([...(this.data.engagement.leadershipUsers || [])]);
   modalSearchTerm = signal<string>('');
-  isSaving = signal<boolean>(false);
   readonly handover = signal<HandoverDraftStatus | null>(null);
   readonly isLoadingHandover = signal<boolean>(true);
 
@@ -111,42 +114,6 @@ export class AssignLeadershipDialogComponent implements OnInit {
   }
 
   saveAndClose(): void {
-    const originalIds = new Set(this.engagement.leadershipUsers?.map(u => u.id) || []);
-    const newIds = new Set(this.modalLeadershipUsers().map(u => u.id));
-    
-    // If no changes, just close
-    if (originalIds.size === newIds.size && [...originalIds].every(id => newIds.has(id))) {
-      this.dialogRef.close(this.modalLeadershipUsers());
-      return;
-    }
-
-    this.isSaving.set(true);
-    const userIds = Array.from(newIds);
-    this.allocationService.updateLeadershipUsers(this.engagement.engagementId, userIds).subscribe({
-      next: (updatedUsers) => {
-        this.isSaving.set(false);
-        this.modalLeadershipUsers.set(updatedUsers);
-        
-        const addedUsers = updatedUsers.filter(u => !originalIds.has(u.id));
-        const removedUsers = (this.engagement.leadershipUsers || []).filter(u => !newIds.has(u.id));
-
-        if (addedUsers.length > 0 && removedUsers.length === 0) {
-          const names = addedUsers.map(u => u.fullName).join(', ');
-          this.toastService.success(`Assigned ${names} to ${this.engagement.engagementName}`);
-        } else if (removedUsers.length > 0 && addedUsers.length === 0) {
-          const names = removedUsers.map(u => u.fullName).join(', ');
-          this.toastService.success(`Removed ${names} from ${this.engagement.engagementName}`);
-        } else if (addedUsers.length > 0 && removedUsers.length > 0) {
-          this.toastService.success(`Updated leadership contacts for ${this.engagement.engagementName}`);
-        }
-
-        this.dialogRef.close(this.modalLeadershipUsers());
-      },
-      error: (err) => {
-        this.isSaving.set(false);
-        const errorMsg = err.error?.message || 'Failed to update leadership contacts.';
-        this.toastService.error(errorMsg);
-      }
-    });
+    this.dialogRef.close({ userIds: this.modalLeadershipUsers().map(u => u.id) });
   }
 }

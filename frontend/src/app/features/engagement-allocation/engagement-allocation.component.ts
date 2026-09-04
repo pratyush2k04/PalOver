@@ -14,7 +14,8 @@ import { PageHeaderComponent } from '@common/components/page-header/page-header'
 import { DialogService } from '@common/services/dialog/dialog.service';
 import {
   AssignLeadershipDialogComponent,
-  AssignLeadershipDialogData
+  AssignLeadershipDialogData,
+  AssignLeadershipDialogResult
 } from './dialogs/assign-leadership-dialog/assign-leadership-dialog.component';
 
 @Component({
@@ -121,8 +122,8 @@ export class EngagementAllocationComponent implements OnInit {
         });
       },
       error: () => {
-        this.toastService.error('Failed to load engagements.');
         this.loading.set(false);
+        this.toastService.error('Failed to load engagements.');
       }
     });
 
@@ -162,14 +163,46 @@ export class EngagementAllocationComponent implements OnInit {
   }
 
   openAssignModal(engagement: EngagementAllocationItem): void {
-    const dialogRef = this.dialog.open<AssignLeadershipDialogComponent, AssignLeadershipDialogData, LeadershipUserItem[]>(
+    const dialogRef = this.dialog.open<AssignLeadershipDialogComponent, AssignLeadershipDialogData, AssignLeadershipDialogResult>(
       AssignLeadershipDialogComponent,
       { data: { engagement, availableLeadershipUsers: this.availableLeadershipUsers() } }
     );
 
-    dialogRef.closed$.subscribe((updatedUsers) => {
-      if (!updatedUsers) return;
-      this.updateEngagementInList(engagement.engagementId, updatedUsers);
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+
+      const originalIds = new Set(engagement.leadershipUsers?.map(u => u.id) || []);
+      const newIds = new Set(result.userIds);
+
+      if (originalIds.size === newIds.size && [...originalIds].every(id => newIds.has(id))) {
+        return;
+      }
+
+      this.loading.set(true);
+      this.allocationService.updateLeadershipUsers(engagement.engagementId, result.userIds, true).subscribe({
+        next: (updatedUsers) => {
+          this.updateEngagementInList(engagement.engagementId, updatedUsers);
+          this.loading.set(false);
+
+          const addedUsers = updatedUsers.filter(u => !originalIds.has(u.id));
+          const removedUsers = (engagement.leadershipUsers || []).filter(u => !newIds.has(u.id));
+
+          if (addedUsers.length > 0 && removedUsers.length === 0) {
+            const names = addedUsers.map(u => u.fullName).join(', ');
+            this.toastService.success(`Assigned ${names} to ${engagement.engagementName}`);
+          } else if (removedUsers.length > 0 && addedUsers.length === 0) {
+            const names = removedUsers.map(u => u.fullName).join(', ');
+            this.toastService.success(`Removed ${names} from ${engagement.engagementName}`);
+          } else if (addedUsers.length > 0 && removedUsers.length > 0) {
+            this.toastService.success(`Updated leadership contacts for ${engagement.engagementName}`);
+          }
+        },
+        error: (err) => {
+          this.loading.set(false);
+          const errorMsg = err.error?.message || 'Failed to update leadership contacts.';
+          this.toastService.error(errorMsg);
+        }
+      });
     });
   }
 
