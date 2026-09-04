@@ -2,7 +2,6 @@ import { Component, effect, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AlertComponent } from '@common/components/alert/alert';
-import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { EngagementService, EngagementOpenItemsSummary } from '../../../../services/engagement.service';
 import { OPEN_ITEMS_ERROR_MESSAGES } from '@shared/constants/engagements.constants';
 import { APP_ROUTES, ENGAGEMENT_ROUTES, TECHNICAL_READINESS_ROUTES, RISK_ROUTES } from '@shared/constants/app.constants';
@@ -10,7 +9,7 @@ import { APP_ROUTES, ENGAGEMENT_ROUTES, TECHNICAL_READINESS_ROUTES, RISK_ROUTES 
 @Component({
   selector: 'app-open-items-by-area',
   standalone: true,
-  imports: [CommonModule, RouterLink, AlertComponent, LoadingSpinnerComponent],
+  imports: [CommonModule, RouterLink, AlertComponent],
   templateUrl: './open-items-by-area.component.html',
   styleUrls: ['./open-items-by-area.component.scss']
 })
@@ -25,7 +24,6 @@ export class OpenItemsByAreaComponent {
   private engagementService = inject(EngagementService);
 
   summary = signal<EngagementOpenItemsSummary | null>(null);
-  isLoading = signal<boolean>(false);
   error = signal<string | null>(null);
 
   constructor() {
@@ -38,12 +36,10 @@ export class OpenItemsByAreaComponent {
   }
 
   loadSummary(id: number): void {
-    this.isLoading.set(true);
     this.error.set(null);
     this.engagementService.getOpenItemsSummary(id).subscribe({
       next: (data: EngagementOpenItemsSummary) => {
         this.summary.set(data);
-        this.isLoading.set(false);
       },
       error: (err) => {
         this.summary.set(null);
@@ -53,7 +49,6 @@ export class OpenItemsByAreaComponent {
             : OPEN_ITEMS_ERROR_MESSAGES.LOAD_FAILED
         );
         this.error.set(errorMessage);
-        this.isLoading.set(false);
       }
     });
   }

@@ -31,6 +31,7 @@ export class NotificationsDropdownComponent implements OnInit {
   readonly notifications = signal<Notification[]>([]);
   readonly unreadCount = signal(0);
   readonly loading = signal(false);
+  readonly isMarkingAllRead = signal(false);
 
   ngOnInit(): void {
     timer(0, UNREAD_COUNT_POLL_INTERVAL_MS)
@@ -82,9 +83,11 @@ export class NotificationsDropdownComponent implements OnInit {
   }
 
   markAllAsRead(): void {
+    this.isMarkingAllRead.set(true);
     this.notificationService.markAllAsRead().subscribe(() => {
       this.notifications.set([]);
       this.unreadCount.set(0);
+      this.isMarkingAllRead.set(false);
     });
   }
 

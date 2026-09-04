@@ -13,18 +13,17 @@
     </div>
   </div>
 
-  <!-- Loading State -->
-  @if (isLoading()) {
-    <app-loading-spinner label="Loading environment & tooling items..." />
-  } @else {
-    <!-- Table -->
-    <div class="table-responsive">
+  <!-- Table -->
+  <div class="table-responsive">
       <table class="env-table">
         <thead>
           <tr>
-            <th>ITEM</th>
-            <th>OWNER</th>
+            <th class="item-th">ITEM</th>
+            <th class="owner-th">OWNER</th>
             <th class="status-th">STATUS</th>
+            @if (canManage()) {
+              <th class="actions-th">ACTIONS</th>
+            }
           </tr>
         </thead>
         <tbody>
@@ -39,27 +38,37 @@
                 </div>
               </td>
               <td class="status-cell">
-                <div class="cell-content">
-                  @if (canManage()) {
-                    <app-status-select
-                      [options]="statusOptions"
-                      [ngModel]="+item.status"
-                      (ngModelChange)="onStatusChange(item, $event)"
-                    />
-                  } @else {
-                    <app-status-badge [tone]="getStatusTone(item.status)">
-                      {{ getStatusLabel(item.status) }}
-                    </app-status-badge>
-                  }
-                  @if (item.notApplicableReason) {
-                    <span class="na-reason-text">({{ item.notApplicableReason }})</span>
-                  }
-                </div>
+                @if (canManage()) {
+                  <app-status-select
+                    [options]="statusOptions"
+                    [ngModel]="+item.status"
+                    (ngModelChange)="onStatusChange(item, $event)"
+                  />
+                } @else {
+                  <app-status-badge [tone]="getStatusTone(item.status)">
+                    {{ getStatusLabel(item.status) }}
+                  </app-status-badge>
+                }
               </td>
+              @if (canManage()) {
+                <td class="actions-cell">
+                  <div class="action-btn-group">
+                    <app-button
+                      type="button"
+                      variant="icon"
+                      class="btn-action btn-danger"
+                      ariaLabel="Delete environment item"
+                      [appTooltip]="'Delete environment item'"
+                      (click)="onDeleteItem(item)">
+                      <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
+                    </app-button>
+                  </div>
+                </td>
+              }
             </tr>
           } @empty {
             <tr>
-              <td colspan="3" class="empty-cell">
+              <td [attr.colspan]="canManage() ? 4 : 3" class="empty-cell">
                 No environment or tooling items found.
               </td>
             </tr>
@@ -67,5 +76,17 @@
         </tbody>
       </table>
     </div>
-  }
-</div>
+  </div>
+
+<!-- Delete Confirmation Dialog -->
+@if (itemToDelete(); as item) {
+  <app-confirm-dialog
+    title="Delete Environment Item"
+    confirmLabel="Delete"
+    [isBusy]="isDeleting()"
+    [isDestructive]="true"
+    (confirmed)="confirmDelete()"
+    (cancelled)="cancelDelete()">
+    Are you sure you want to delete <strong>{{ item.name }}</strong>? This action cannot be undone.
+  </app-confirm-dialog>
+}

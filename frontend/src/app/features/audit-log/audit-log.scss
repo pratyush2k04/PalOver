@@ -136,6 +136,18 @@ td {
 .col-user {
   font-weight: $font-weight-medium;
   color: $color-text;
+
+  .user-cell {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    white-space: nowrap;
+
+    .user-name {
+      font-weight: $font-weight-medium;
+      color: $color-text;
+    }
+  }
 }
 
 .empty-row {

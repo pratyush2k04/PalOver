@@ -12,6 +12,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { AlertComponent } from '@common/components/alert/alert';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { InputComponent } from '@common/components/form/input/input';
+import { TabsComponent, TabItem } from '@common/components/tabs/tabs';
 
 export interface AttachEvidenceDialogData {
   item: EngagementChecklistItem;
@@ -30,7 +31,7 @@ type EvidenceMode = 'upload' | 'select';
 @Component({
   selector: 'app-attach-evidence-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, AlertComponent, SelectComponent, InputComponent],
+  imports: [CommonModule, FormsModule, ButtonComponent, AlertComponent, SelectComponent, InputComponent, TabsComponent],
   templateUrl: './attach-evidence-dialog.component.html',
   styleUrl: './attach-evidence-dialog.component.scss'
 })
@@ -44,6 +45,11 @@ export class AttachEvidenceDialogComponent implements OnInit {
   readonly isMandatoryCompletion = this.data.isMandatoryCompletion ?? false;
 
   mode = signal<EvidenceMode>('upload');
+
+  readonly evidenceTabs: TabItem[] = [
+    { id: 'upload', label: 'Upload New' },
+    { id: 'select', label: 'Select Existing' }
+  ];
 
   // Upload New section state
   categories = signal<DocumentCategory[]>([]);
@@ -132,6 +138,10 @@ export class AttachEvidenceDialogComponent implements OnInit {
   setMode(mode: EvidenceMode): void {
     this.mode.set(mode);
     this.errorMessage.set(null);
+  }
+
+  onTabChange(tabId: string): void {
+    this.setMode(tabId as EvidenceMode);
   }
 
   onFileSelected(event: Event): void {

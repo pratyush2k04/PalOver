@@ -87,10 +87,16 @@ export class AddFindingDialogComponent implements OnInit {
     if (!titleVal) {
       this.titleError.set('Finding title is required');
       isValid = false;
+    } else if (titleVal.length > 200) {
+      this.titleError.set('Finding title cannot exceed 200 characters');
+      isValid = false;
     }
 
     if (!descVal) {
       this.descriptionError.set('Finding description is required');
+      isValid = false;
+    } else if (descVal.length > 1000) {
+      this.descriptionError.set('Finding description cannot exceed 1000 characters');
       isValid = false;
     }
 

@@ -24,7 +24,5 @@ export interface EngagementAllocationItem {
   status: string;
   isKickoffReady: boolean;
   leadershipUsers?: LeadershipUserItem[];
-  isLoadingLeadership?: boolean;
   hasHandoverDraft?: boolean;
-  isLoadingHandover?: boolean;
 }

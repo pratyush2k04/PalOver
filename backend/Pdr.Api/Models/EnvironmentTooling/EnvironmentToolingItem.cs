@@ -21,9 +21,9 @@ namespace Pdr.Api.Models.EnvironmentTooling
         public string? CustomName { get; set; }
 
         public EnvironmentToolingStatus Status { get; set; }
-            = EnvironmentToolingStatus.NotReady;
+            = EnvironmentToolingStatus.InProgress;
 
-        // Required when Status = NotApplicable
-        public string? NotApplicableReason { get; set; }
+        // Required when Status = Blocked
+        public string? BlockReason { get; set; }
     }
 }

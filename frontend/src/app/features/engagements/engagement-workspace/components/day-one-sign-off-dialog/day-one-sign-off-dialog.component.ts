@@ -76,7 +76,11 @@ export class DayOneSignOffDialogComponent {
       const justificationCtrl = this.form.get('exceptionJustification');
       if (justificationCtrl) {
         if (exception) {
-          justificationCtrl.setValidators([Validators.required, Validators.minLength(20)]);
+          justificationCtrl.setValidators([
+            Validators.required,
+            Validators.minLength(20),
+            Validators.maxLength(500)
+          ]);
         } else {
           justificationCtrl.clearValidators();
         }

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   RiskComment,
@@ -8,6 +8,7 @@ import {
   EngagementMember
 } from '../models/risk.model';
 import { RISK_COMMENT_API_ENDPOINTS } from '@shared/constants/app.constants';
+import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,9 @@ export class RiskCommentService {
   private http = inject(HttpClient);
 
   getComments(engagementId: number, riskId: number): Observable<RiskComment[]> {
-    return this.http.get<RiskComment[]>(RISK_COMMENT_API_ENDPOINTS.GET_COMMENTS(engagementId, riskId));
+    return this.http.get<RiskComment[]>(RISK_COMMENT_API_ENDPOINTS.GET_COMMENTS(engagementId, riskId), {
+      context: new HttpContext().set(SKIP_LOADER, true)
+    });
   }
 
   addComment(engagementId: number, riskId: number, request: CreateRiskCommentRequest): Observable<RiskComment> {
@@ -28,6 +31,8 @@ export class RiskCommentService {
   }
 
   getEngagementMembers(engagementId: number): Observable<EngagementMember[]> {
-    return this.http.get<EngagementMember[]>(RISK_COMMENT_API_ENDPOINTS.GET_MEMBERS(engagementId));
+    return this.http.get<EngagementMember[]>(RISK_COMMENT_API_ENDPOINTS.GET_MEMBERS(engagementId), {
+      context: new HttpContext().set(SKIP_LOADER, true)
+    });
   }
 }
