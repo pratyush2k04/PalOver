@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { TECHNICAL_READINESS_API_ENDPOINTS } from '@shared/constants/technical-readiness.constants';
 import { ArchitectureValidationDto, DiscoveryFeatureItemDto } from '../models/architecture-validation/architecture-validation.dtos';
@@ -8,6 +8,7 @@ import {
   CreateDiscoveryFeatureItemRequest,
   UpdateDiscoveryFeatureItemRequest
 } from '../models/architecture-validation/architecture-validation.requests';
+import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 
 @Injectable({
   providedIn: 'root'
@@ -15,9 +16,10 @@ import {
 export class ArchitectureValidationService {
   private http = inject(HttpClient);
 
-  getValidation(engagementId: number): Observable<ArchitectureValidationDto> {
+  getValidation(engagementId: number, skipLoader = false): Observable<ArchitectureValidationDto> {
     return this.http.get<ArchitectureValidationDto>(
-      TECHNICAL_READINESS_API_ENDPOINTS.ARCHITECTURE_VALIDATION(engagementId)
+      TECHNICAL_READINESS_API_ENDPOINTS.ARCHITECTURE_VALIDATION(engagementId),
+      { context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined }
     );
   }
 

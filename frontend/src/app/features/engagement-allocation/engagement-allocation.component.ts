@@ -2,6 +2,8 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { EngagementAllocationService } from './services/engagement-allocation.service';
 import { EngagementAllocationItem, LeadershipUserItem } from './models/engagement-allocation.model';
 import { ToastService } from '@common/services/toast/toast';
@@ -80,63 +82,42 @@ export class EngagementAllocationComponent implements OnInit {
         const items: EngagementAllocationItem[] = data.map(e => ({
           ...e,
           leadershipUsers: [],
-          isLoadingLeadership: true,
-          hasHandoverDraft: false,
-          isLoadingHandover: true
+          hasHandoverDraft: false
         }));
-        this.engagements.set(items);
-        this.loading.set(false);
 
-        // Fetch leadership users for each engagement
-        items.forEach(eng => {
-          this.allocationService.getLeadershipUsers(eng.engagementId).subscribe({
-            next: (users) => {
-              this.engagements.update(list =>
-                list.map(item =>
-                  item.engagementId === eng.engagementId
-                    ? { ...item, leadershipUsers: users, isLoadingLeadership: false }
-                    : item
-                )
-              );
-            },
-            error: () => {
-              this.engagements.update(list =>
-                list.map(item =>
-                  item.engagementId === eng.engagementId
-                    ? { ...item, isLoadingLeadership: false }
-                    : item
-                )
-              );
-            }
-          });
-        });
+        if (items.length === 0) {
+          this.engagements.set(items);
+          this.loading.set(false);
+          return;
+        }
 
-        // Fetch handover draft status for each engagement
-        items.forEach(eng => {
-          this.allocationService.getHandoverDraftStatus(eng.engagementId).subscribe({
-            next: (status) => {
-              this.engagements.update(list =>
-                list.map(item =>
-                  item.engagementId === eng.engagementId
-                    ? {
-                        ...item,
-                        hasHandoverDraft: !!status.hasHandoverDraft && status.status?.toLowerCase() === 'submitted',
-                        isLoadingHandover: false
-                      }
-                    : item
-                )
-              );
-            },
-            error: () => {
-              this.engagements.update(list =>
-                list.map(item =>
-                  item.engagementId === eng.engagementId
-                    ? { ...item, isLoadingHandover: false }
-                    : item
-                )
-              );
-            }
-          });
+        const leadershipRequests = items.map(eng =>
+          this.allocationService.getLeadershipUsers(eng.engagementId).pipe(
+            map(users => ({ engagementId: eng.engagementId, users })),
+            catchError(() => of({ engagementId: eng.engagementId, users: [] as LeadershipUserItem[] }))
+          )
+        );
+
+        const handoverRequests = items.map(eng =>
+          this.allocationService.getHandoverDraftStatus(eng.engagementId).pipe(
+            map(status => ({
+              engagementId: eng.engagementId,
+              hasHandoverDraft: !!status.hasHandoverDraft && status.status?.toLowerCase() === 'submitted'
+            })),
+            catchError(() => of({ engagementId: eng.engagementId, hasHandoverDraft: false }))
+          )
+        );
+
+        forkJoin([forkJoin(leadershipRequests), forkJoin(handoverRequests)]).subscribe(([leadershipResults, handoverResults]) => {
+          const leadershipMap = new Map(leadershipResults.map(r => [r.engagementId, r.users]));
+          const handoverMap = new Map(handoverResults.map(r => [r.engagementId, r.hasHandoverDraft]));
+
+          this.engagements.set(items.map(item => ({
+            ...item,
+            leadershipUsers: leadershipMap.get(item.engagementId) ?? [],
+            hasHandoverDraft: handoverMap.get(item.engagementId) ?? false
+          })));
+          this.loading.set(false);
         });
       },
       error: () => {

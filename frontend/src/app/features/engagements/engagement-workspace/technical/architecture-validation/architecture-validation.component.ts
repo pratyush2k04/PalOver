@@ -59,7 +59,7 @@ export class ArchitectureValidationComponent {
   ArchitectureStatus = ArchitectureStatus;
 
   validation = signal<ArchitectureValidationDto | null>(null);
-  isLoading = signal<boolean>(true);
+  isLoading = signal<boolean>(false);
   featureToDelete = signal<DiscoveryFeatureItemDto | null>(null);
   isDeleting = signal<boolean>(false);
   selectedStatus = signal<ArchitectureStatus>(ArchitectureStatus.StillValid);
@@ -100,9 +100,11 @@ export class ArchitectureValidationComponent {
     });
   }
 
-  loadValidation(id: number = this.engagementId()): void {
-    this.isLoading.set(true);
-    this.service.getValidation(id).pipe(
+  loadValidation(id: number = this.engagementId(), skipLoader = false): void {
+    if (skipLoader) {
+      this.isLoading.set(true);
+    }
+    this.service.getValidation(id, skipLoader).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (res: ArchitectureValidationDto) => {
@@ -110,14 +112,18 @@ export class ArchitectureValidationComponent {
         this.selectedStatus.set(res.status);
         this.rationale.set(res.rationale ?? '');
         this.validationUpdated.emit(res);
-        this.isLoading.set(false);
+        if (skipLoader) {
+          this.isLoading.set(false);
+        }
 
         if (this.isTechLead() && this.route.snapshot.queryParamMap.get('action') === 'create') {
           this.onAddFeature();
         }
       },
       error: () => {
-        this.isLoading.set(false);
+        if (skipLoader) {
+          this.isLoading.set(false);
+        }
       }
     });
   }
@@ -179,7 +185,7 @@ export class ArchitectureValidationComponent {
       this.service.addFeatureItem(this.engagementId(), result).pipe(
         takeUntilDestroyed(this.destroyRef)
       ).subscribe({
-        next: () => this.loadValidation()
+        next: () => this.loadValidation(this.engagementId(), true)
       });
     });
   }
@@ -197,7 +203,7 @@ export class ArchitectureValidationComponent {
       this.service.updateFeatureItem(feature.id, result).pipe(
         takeUntilDestroyed(this.destroyRef)
       ).subscribe({
-        next: () => this.loadValidation()
+        next: () => this.loadValidation(this.engagementId(), true)
       });
     });
   }
@@ -223,7 +229,7 @@ export class ArchitectureValidationComponent {
         this.toastService.success(`Feature "${feature.featureName}" deleted successfully`);
         this.isDeleting.set(false);
         this.featureToDelete.set(null);
-        this.loadValidation();
+        this.loadValidation(this.engagementId(), true);
       },
       error: (err) => {
         this.toastService.error(`Failed to delete feature "${feature.featureName}"`);

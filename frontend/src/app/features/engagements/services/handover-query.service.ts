@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   CreateHandoverQueryRequest,
@@ -7,6 +7,7 @@ import {
   AddHandoverQueryMessageRequest
 } from '../models/handover-query.model';
 import { HANDOVER_API_ENDPOINTS } from '@shared/constants/app.constants';
+import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,9 @@ export class HandoverQueryService {
   private http = inject(HttpClient);
 
   getQueries(engagementId: number): Observable<HandoverQueryDto[]> {
-    return this.http.get<HandoverQueryDto[]>(HANDOVER_API_ENDPOINTS.HANDOVER_QUERIES(engagementId));
+    return this.http.get<HandoverQueryDto[]>(HANDOVER_API_ENDPOINTS.HANDOVER_QUERIES(engagementId), {
+      context: new HttpContext().set(SKIP_LOADER, true)
+    });
   }
 
   raiseQuery(engagementId: number, request: CreateHandoverQueryRequest): Observable<HandoverQueryDto> {

@@ -13,59 +13,54 @@
     </div>
   </div>
 
-  <!-- Loading State -->
-  @if (isLoading()) {
-    <app-loading-spinner label="Loading environment & tooling items..." />
-  } @else {
-    <!-- Table -->
-    <div class="table-responsive">
-      <table class="env-table">
-        <thead>
+  <!-- Table -->
+  <div class="table-responsive">
+    <table class="env-table">
+      <thead>
+        <tr>
+          <th>ITEM</th>
+          <th>OWNER</th>
+          <th class="status-th">STATUS</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items(); track item.id) {
           <tr>
-            <th>ITEM</th>
-            <th>OWNER</th>
-            <th class="status-th">STATUS</th>
+            <td class="item-name-cell">
+              {{ item.name }}
+            </td>
+            <td class="owner-cell">
+              <div class="owner-content">
+                <span>{{ item.ownerFullName || 'Unassigned' }}</span>
+              </div>
+            </td>
+            <td class="status-cell">
+              <div class="cell-content">
+                @if (canManage()) {
+                  <app-status-select
+                    [options]="statusOptions"
+                    [ngModel]="+item.status"
+                    (ngModelChange)="onStatusChange(item, $event)"
+                  />
+                } @else {
+                  <app-status-badge [tone]="getStatusTone(item.status)">
+                    {{ getStatusLabel(item.status) }}
+                  </app-status-badge>
+                }
+                @if (item.notApplicableReason) {
+                  <span class="na-reason-text">({{ item.notApplicableReason }})</span>
+                }
+              </div>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          @for (item of items(); track item.id) {
-            <tr>
-              <td class="item-name-cell">
-                {{ item.name }}
-              </td>
-              <td class="owner-cell">
-                <div class="owner-content">
-                  <span>{{ item.ownerFullName || 'Unassigned' }}</span>
-                </div>
-              </td>
-              <td class="status-cell">
-                <div class="cell-content">
-                  @if (canManage()) {
-                    <app-status-select
-                      [options]="statusOptions"
-                      [ngModel]="+item.status"
-                      (ngModelChange)="onStatusChange(item, $event)"
-                    />
-                  } @else {
-                    <app-status-badge [tone]="getStatusTone(item.status)">
-                      {{ getStatusLabel(item.status) }}
-                    </app-status-badge>
-                  }
-                  @if (item.notApplicableReason) {
-                    <span class="na-reason-text">({{ item.notApplicableReason }})</span>
-                  }
-                </div>
-              </td>
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="3" class="empty-cell">
-                No environment or tooling items found.
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  }
+        } @empty {
+          <tr>
+            <td colspan="3" class="empty-cell">
+              No environment or tooling items found.
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 </div>

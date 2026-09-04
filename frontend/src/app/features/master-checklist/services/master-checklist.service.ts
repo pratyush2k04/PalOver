@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpErrorResponse } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 import {
   MasterChecklistCategory,
   MasterChecklistItem,
@@ -121,7 +122,9 @@ export class MasterChecklistService {
   }
 
   getVersionById(versionId: number): Observable<MasterChecklistVersion> {
-    return this.http.get<MasterChecklistVersion>(`/api/masterchecklist/versions/${versionId}`);
+    return this.http.get<MasterChecklistVersion>(`/api/masterchecklist/versions/${versionId}`, {
+      context: new HttpContext().set(SKIP_LOADER, true)
+    });
   }
 
   fetchPublished(): Observable<MasterChecklistVersion> {

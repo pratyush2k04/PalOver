@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { EngagementAllocationItem, HandoverDraftStatus, LeadershipUserItem } from '../models/engagement-allocation.model';
 import { ENGAGEMENT_API_ENDPOINTS } from '@shared/constants/app.constants';
+import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 
 @Injectable({
   providedIn: 'root'
@@ -22,8 +23,10 @@ export class EngagementAllocationService {
     return this.http.get<LeadershipUserItem[]>(ENGAGEMENT_API_ENDPOINTS.LEADERSHIP_ROLE_USERS);
   }
 
-  getHandoverDraftStatus(engagementId: number): Observable<HandoverDraftStatus> {
-    return this.http.get<HandoverDraftStatus>(ENGAGEMENT_API_ENDPOINTS.HANDOVER_DRAFT_STATUS(engagementId));
+  getHandoverDraftStatus(engagementId: number, skipLoader = false): Observable<HandoverDraftStatus> {
+    return this.http.get<HandoverDraftStatus>(ENGAGEMENT_API_ENDPOINTS.HANDOVER_DRAFT_STATUS(engagementId), {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
   assignLeadershipUser(engagementId: number, userId: number): Observable<LeadershipUserItem[]> {
