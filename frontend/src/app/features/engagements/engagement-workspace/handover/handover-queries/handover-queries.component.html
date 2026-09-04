@@ -161,11 +161,13 @@
 @if (pendingDeleteQuery(); as queryToDelete) {
   <app-confirm-dialog
     title="Delete Query"
-    message="Are you sure you want to delete this handover query? This action cannot be undone."
+    message="Destructive Action! Query once deleted cant be recovered."
     confirmLabel="Delete"
     [isBusy]="isDeletingQuery()"
     [isDestructive]="true"
     (confirmed)="confirmDeleteQuery(queryToDelete)"
     (cancelled)="cancelDeleteQuery()"
-  />
+  >
+    Destructive Action! Query once deleted cant be recovered.
+  </app-confirm-dialog>
 }
