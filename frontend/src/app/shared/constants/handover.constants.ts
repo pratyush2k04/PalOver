@@ -109,3 +109,36 @@ export const HANDOVER_QUERY_FIELD_LABELS = {
   DealOrigin: 'Deal Origin',
   Commitment: 'Commitment',
 } as const;
+
+export const HANDOVER_READINESS_LABELS = {
+  TITLE: 'Readiness Checklist',
+  LOADING: 'Loading readiness checklist...',
+  COMMERCIAL: 'COMMERCIAL',
+  HANDOVER: 'HANDOVER',
+  ITEMS: 'Items',
+  ADD_ITEM: '+ Add Item',
+  ITEM: 'Item',
+  OWNER: 'Owner',
+  EVIDENCE: 'Evidence',
+  STATUS: 'Status',
+  ACTIONS: 'Actions',
+  BLOCK_REASON: 'Block Reason:',
+  DOWNLOAD_EVIDENCE: 'Download evidence',
+  VIEW_OR_REPLACE_EVIDENCE: 'View or replace evidence',
+  ATTACH_EVIDENCE: '+ Attach',
+  DELETE_ITEM: 'Delete Item',
+  DELETE_CONFIRM_TITLE: 'Delete Handover Item',
+  DELETE_CONFIRM_LABEL: 'Delete',
+} as const;
+
+export const HANDOVER_READINESS_MESSAGES = {
+  LOAD_ERROR: 'Failed to load Handover Readiness items',
+  STATUS_UPDATED: 'Status updated',
+  STATUS_UPDATE_ERROR: 'Failed to update status',
+  ADD_SUCCESS: (area: string) => `Custom ${area.toLowerCase()} item added successfully`,
+  ADD_ERROR: 'Failed to add custom item',
+  EVIDENCE_SAVE_SUCCESS: 'Evidence saved successfully',
+  EVIDENCE_SAVE_ERROR: 'Failed to save evidence',
+  DELETE_SUCCESS: 'Item deleted successfully',
+  DELETE_ERROR: 'Failed to delete item',
+} as const;

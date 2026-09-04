@@ -149,10 +149,10 @@
   }
 
   .col-item {
-    width: 50%;
+    width: 35%;
 
     @include respond-to-down('md') {
-      width: 40%;
+      width: 30%;
     }
 
     .item-name-group {
@@ -190,15 +190,20 @@
   }
 
   .col-owner {
-    width: 25%;
+    width: 20%;
 
     .owner-name {
       color: $color-text-muted;
     }
   }
 
+  .col-evidence {
+    width: 22%;
+    text-align: center;
+  }
+
   .col-status {
-    width: 20%;
+    width: 18%;
     text-align: center;
 
     app-status-badge {
@@ -213,24 +218,99 @@
   }
 }
 
+.col-evidence {
+  .evidence-attached-wrapper {
+    @include flex-center($gap: $spacing-1);
+  }
 
+  .btn-evidence-details {
+    @include flex-center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    background: transparent;
+    border: 1px solid $color-border-soft;
+    border-radius: $radius-sm;
+    color: $color-text-muted;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: color $transition-base, border-color $transition-base;
+
+    .view-icon {
+      @include flex-center;
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+
+    &:hover {
+      border-color: $color-primary;
+      color: $color-primary;
+    }
+  }
+
+  .btn-evidence-view {
+    @include flex-align-center;
+    gap: $spacing-1;
+    height: 1.75rem;
+    padding: 0 $spacing-2;
+    background: $color-primary-light;
+    color: $color-primary;
+    border: 1px solid $color-border-soft;
+    border-radius: $radius-sm;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+    max-width: 10rem;
+    text-decoration: none;
+    box-sizing: border-box;
+
+    .evidence-icon {
+      @include flex-center;
+      width: 0.875rem;
+      height: 0.875rem;
+      flex-shrink: 0;
+    }
+
+    .evidence-text {
+      @include text-truncate;
+    }
+
+    &:hover {
+      background: $color-primary-light;
+      color: $color-primary;
+    }
+  }
+
+  .btn-evidence-add {
+    padding: $spacing-1 $spacing-2;
+    background: transparent;
+    border: 1px dashed $color-border-soft;
+    border-radius: $radius-sm;
+    color: $color-text-muted;
+    font-size: $font-size-xs;
+    cursor: pointer;
+    transition: all $transition-base;
+
+    &:hover {
+      border-color: $color-primary;
+      color: $color-primary;
+      background: $color-primary-light;
+    }
+  }
+}
 
 .delete-btn {
+  @include flex-center;
   background: transparent;
   border: none;
-  color: $color-gray-400;
+  color: $color-text-subdued;
   cursor: pointer;
   padding: $spacing-1;
   border-radius: $radius-md;
   transition: color $transition-base, background-color $transition-base;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 
   .action-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    @include flex-center;
     width: 1rem;
     height: 1rem;
   }

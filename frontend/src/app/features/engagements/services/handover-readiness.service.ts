@@ -44,4 +44,15 @@ export class HandoverReadinessService {
       `/api/handover-readiness/${id}`
     );
   }
+
+  saveEvidence(
+    engagementId: number,
+    itemId: number,
+    documentId: number
+  ): Observable<HandoverReadinessItemDto> {
+    return this.http.put<HandoverReadinessItemDto>(
+      `/api/engagements/${engagementId}/handover-readiness/${itemId}/evidence`,
+      { documentId }
+    );
+  }
 }
