@@ -38,12 +38,4 @@ export class SummaryPrintPillarsComponent {
     if (s.isBrownfieldReady) return 'success';
     return 'danger';
   });
-
-  dependencySpikesStatusTone = computed<StatusBadgeTone>(() => {
-    const s = this.summary();
-    if (s.totalDependencySpikes === 0) return 'neutral';
-    if (s.failedDependencySpikes > 0) return 'danger';
-    if (s.inProgressDependencySpikes > 0) return 'warning';
-    return 'success';
-  });
 }
