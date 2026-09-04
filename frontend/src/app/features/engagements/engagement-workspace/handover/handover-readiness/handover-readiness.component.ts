@@ -16,6 +16,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { StatusSelectComponent, StatusSelectOption } from '@common/components/form/status-select/status-select';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
+import { AlertComponent } from '@common/components/alert/alert';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { AddHandoverItemDialogComponent } from './dialogs/add-handover-item-dialog/add-handover-item-dialog.component';
 import { BlockHandoverItemDialogComponent } from './dialogs/block-handover-item-dialog/block-handover-item-dialog.component';
@@ -30,6 +31,7 @@ import { BlockHandoverItemDialogComponent } from './dialogs/block-handover-item-
     StatusBadgeComponent,
     StatusSelectComponent,
     ConfirmDialogComponent,
+    AlertComponent,
     InlineSVGModule,
   ],
   templateUrl: './handover-readiness.component.html',
@@ -48,6 +50,7 @@ export class HandoverReadinessComponent implements OnInit {
   items = signal<HandoverReadinessItemDto[]>([]);
   isLoading = signal<boolean>(false);
   pendingDeleteItem = signal<HandoverReadinessItemDto | null>(null);
+  errorMessage = signal<string>('');
 
   readonly isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
 
@@ -168,26 +171,29 @@ export class HandoverReadinessComponent implements OnInit {
 
   onDeleteItem(item: HandoverReadinessItemDto): void {
     if (!this.isPreSales()) return;
+    this.errorMessage.set('');
     this.pendingDeleteItem.set(item);
   }
 
   cancelDeleteItem(): void {
     this.pendingDeleteItem.set(null);
+    this.errorMessage.set('');
   }
 
   confirmDeleteItem(item: HandoverReadinessItemDto): void {
-    this.pendingDeleteItem.set(null);
+    this.errorMessage.set('');
     this.isLoading.set(true);
     this.readinessService.deleteItem(item.id, true).subscribe({
       next: () => {
-        this.items.update(current => current.filter(i => i.id !== item.id));
-        this.itemsUpdated.emit(this.items());
+        this.pendingDeleteItem.set(null);
         this.isLoading.set(false);
-        this.toastService.success('Item deleted successfully');
+        this.loadItems(true, () =>
+          this.toastService.success('Item deleted successfully')
+        );
       },
       error: (err) => {
         this.isLoading.set(false);
-        this.toastService.error(err?.error?.message || 'Failed to delete item');
+        this.errorMessage.set(err?.error?.message || 'Failed to delete item');
       }
     });
   }

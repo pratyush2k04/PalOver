@@ -122,8 +122,12 @@
     title="Delete Finding"
     confirmLabel="Delete"
     [isDestructive]="true"
+    [isBusy]="isLoading()"
     (confirmed)="confirmDeleteFinding()"
     (cancelled)="cancelDeleteFinding()">
     Are you sure you want to delete <strong>{{ finding.title }}</strong>? This action cannot be undone.
+    @if (errorMessage()) {
+      <app-alert>{{ errorMessage() }}</app-alert>
+    }
   </app-confirm-dialog>
 }

@@ -60,6 +60,7 @@
                       <button
                         type="button"
                         class="delete-btn"
+                        [disabled]="isLoading()"
                         (click)="onDeleteItem(item)"
                         title="Delete Item"
                         aria-label="Delete item"
@@ -136,6 +137,7 @@
                       <button
                         type="button"
                         class="delete-btn"
+                        [disabled]="isLoading()"
                         (click)="onDeleteItem(item)"
                         title="Delete Item"
                         aria-label="Delete item"
@@ -157,9 +159,13 @@
   <app-confirm-dialog
     title="Delete Handover Item"
     confirmLabel="Delete"
+    [isBusy]="isLoading()"
     (confirmed)="confirmDeleteItem(item)"
     (cancelled)="cancelDeleteItem()"
   >
     Are you sure you want to delete "{{ item.name }}"?
+    @if (errorMessage()) {
+      <app-alert>{{ errorMessage() }}</app-alert>
+    }
   </app-confirm-dialog>
 }
