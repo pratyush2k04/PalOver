@@ -34,10 +34,7 @@
 }
 
 .report-tag {
-  font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  @include text-overline;
   color: $color-text-faint;
 }
 

@@ -73,7 +73,7 @@
     border-bottom: 1px solid var(--border-light, $color-border-table);
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
 
-    @media screen and (max-width: 768px) {
+    @include respond-to-down('md') {
       flex-direction: column;
       gap: 0.75rem;
       align-items: stretch;
@@ -174,39 +174,25 @@
 
       app-button {
         display: block;
-        min-width: 80px;
-
-        ::ng-deep button {
-          width: 100%;
-          justify-content: center;
-          padding: 0.35rem 0.5rem;
-          min-height: 28px;
-          font-size: 0.8rem;
-        }
+        min-width: 5rem;
+        --btn-width: 100%;
+        --btn-padding: 0.35rem 0.5rem;
+        --btn-min-height: 1.75rem;
+        --btn-font-size: 0.8rem;
       }
 
       .btn-edit {
-        ::ng-deep button {
-          background-color: $color-slate-50 !important;
-          border-color: $color-slate-200 !important;
-          color: $color-slate-700 !important;
-
-          &:hover {
-            background-color: $color-slate-100 !important;
-          }
-        }
+        --btn-bg: #{$color-slate-50};
+        --btn-border: #{$color-slate-200};
+        --btn-color: #{$color-slate-700};
+        --btn-bg-hover: #{$color-slate-100};
       }
 
       .btn-met {
-        ::ng-deep button {
-          background-color: $color-success-bg !important;
-          border-color: $color-success-border !important;
-          color: $color-success-dark !important;
-
-          &:hover {
-            background-color: $color-success-light !important;
-          }
-        }
+        --btn-bg: #{$color-success-bg};
+        --btn-border: #{$color-success-border};
+        --btn-color: #{$color-success-dark};
+        --btn-bg-hover: #{$color-success-light};
       }
     }
   }

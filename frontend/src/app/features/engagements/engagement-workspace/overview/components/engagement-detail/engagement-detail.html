@@ -3,7 +3,7 @@
     <div class="team-card-header">
       <h3>Team</h3>
       @if (canAssignOwners()) {
-        <app-button type="button" variant="stroked" (click)="openAssignModal()">
+        <app-button type="button" variant="flat" (click)="openAssignModal()">
           {{ assignButtonLabel }}
         </app-button>
       }
@@ -36,8 +36,6 @@
         <h3>Assign Project Manager and Tech Lead</h3>
       </div>
 
-      <p class="modal-subtitle">Routine start-of-engagement assignment — Leadership only.</p>
-
       <form [formGroup]="assignForm" (ngSubmit)="onSubmitAssignment()" novalidate>
         @if (errorMessage()) {
           <app-alert>{{ errorMessage() }}</app-alert>
@@ -46,22 +44,26 @@
         <app-select
           id="projectManagerId"
           label="Project Manager"
+          placeholder="Select Project Manager"
           formControlName="projectManagerId"
           [options]="projectManagerOptions()"
+          [required]="true"
           [errorMessages]="{ required: 'Project Manager is required.' }"
         />
 
         <app-select
           id="techLeadId"
-          label="Tech / Delivery Lead"
+          label="Tech Lead"
+          placeholder="Select Tech Lead"
           formControlName="techLeadId"
           [options]="techLeadOptions()"
-          [errorMessages]="{ required: 'Tech / Delivery Lead is required.' }"
+          [required]="true"
+          [errorMessages]="{ required: 'Tech Lead is required.' }"
         />
 
         <div class="modal-actions">
           <app-button type="button" variant="stroked" (click)="closeAssignModal()">Cancel</app-button>
-          <app-button type="submit" variant="accent" [loading]="isSubmitting()">
+          <app-button type="submit" variant="flat" [loading]="isSubmitting()">
             {{ isSubmitting() ? 'Saving...' : 'Save assignment' }}
           </app-button>
         </div>

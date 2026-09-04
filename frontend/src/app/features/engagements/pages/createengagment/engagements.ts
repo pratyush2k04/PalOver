@@ -15,6 +15,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
+import { DatepickerComponent } from '@common/components/form/datepicker/datepicker';
 import { ToastService } from '@common/services/toast/toast';
 import { futureDateValidator } from '@common/validators/date.validators';
 
@@ -32,7 +33,7 @@ function billingNotBeforeKickoffValidator(group: AbstractControl): ValidationErr
 @Component({
   selector: 'app-engagements',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AlertComponent, ButtonComponent, InputComponent, TextareaComponent, SelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, AlertComponent, ButtonComponent, InputComponent, TextareaComponent, SelectComponent, DatepickerComponent],
   templateUrl: './engagements.html',
   styleUrl: './engagements.scss'
 })

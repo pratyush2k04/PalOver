@@ -17,6 +17,7 @@ import { AuthService } from '@shared/services/auth';
 import { KickoffReadinessService } from '@shared/services/kickoff-readiness.service';
 import { EngagementInfoDto } from '../../models/engagement.model';
 import { DialogService } from '@common/services/dialog/dialog.service';
+import { InlineSVGModule } from 'ng-inline-svg-2';
 import { AddCommitmentDialogComponent } from './dialogs/add-commitment-dialog/add-commitment-dialog.component';
 import {
   HANDOVER_MESSAGES,
@@ -38,6 +39,7 @@ import {
   AddCommitmentDialogData
 } from '../../models/handover.model';
 import { HandoverReadinessItemDto } from '../../models/handover-readiness.model';
+import { HandoverQueryDto } from '../../models/handover-query.model';
 import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
@@ -46,13 +48,14 @@ import { SelectComponent, SelectOption } from '@common/components/form/select/se
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { SectionHeaderComponent } from '@common/components/section-header/section-header';
-
+import { HandoverQueryService } from '../../services/handover-query.service';
 import { HandoverQueriesComponent } from './handover-queries/handover-queries.component';
 import { ToastService } from '@common/services/toast/toast';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { HandoverReadinessComponent } from './handover-readiness/handover-readiness.component';
+
 
 function timelinesMatch(timeline1: number, unit1: string, timeline2: number, unit2: string): boolean {
   return timeline1 === timeline2 && unit1 === unit2;
@@ -72,6 +75,7 @@ interface RealisticEditForm {
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
+    InlineSVGModule,
     SectionHeaderComponent,
     AlertComponent,
     ButtonComponent,
@@ -83,6 +87,7 @@ interface RealisticEditForm {
     HandoverQueriesComponent,
     ConfirmDialogComponent,
     HandoverReadinessComponent,
+    InlineSVGModule,
   ],
   templateUrl: './handover.component.html',
   styleUrl: './handover.component.scss',
@@ -99,6 +104,7 @@ export class HandoverComponent {
 
   private route = inject(ActivatedRoute);
   private handoverService = inject(HandoverService);
+  private handoverQueryService = inject(HandoverQueryService);
   private engagementService = inject(EngagementService);
   private kickoffReadinessService = inject(KickoffReadinessService);
   private authService = inject(AuthService);
@@ -114,11 +120,14 @@ export class HandoverComponent {
   });
 
   handover = signal<HandoverInfoDto | null>(null);
+  queries = signal<HandoverQueryDto[]>([]);
   isLoading = signal(true);
   isSaving = signal(false);
   message = signal('');
   isError = signal(false);
   handoverReadinessItems = signal<HandoverReadinessItemDto[]>([]);
+
+  hasUnresolvedQueries = computed(() => this.queries().some((q) => !q.isResolved));
 
   kickoffReadiness = this.kickoffReadinessService.readiness;
 
@@ -126,18 +135,31 @@ export class HandoverComponent {
     this.handoverReadinessItems.set(items);
   }
 
+  readonly blockedChecklistCount = computed(() =>
+    this.handoverReadinessItems().filter(i => i.status === 'Blocked').length
+  );
+
+  readonly totalChecklistCount = computed(() =>
+    this.handoverReadinessItems().length
+  );
+
+  readonly grantedChecklistCount = computed(() =>
+    this.handoverReadinessItems().filter(i => i.status === 'Granted').length
+  );
+
   readonly readinessItemsApplicable = computed(() =>
     this.handoverReadinessItems().filter(i => i.status !== 'Blocked').length
   );
 
   readonly readinessItemsPassed = computed(() =>
-    this.handoverReadinessItems().filter(i => i.status === 'Granted').length
+    this.grantedChecklistCount()
   );
 
   readonly isReadinessChecklistComplete = computed(() => {
-    const applicable = this.readinessItemsApplicable();
-    const passed = this.readinessItemsPassed();
-    return applicable > 0 && passed === applicable;
+    const total = this.totalChecklistCount();
+    const granted = this.grantedChecklistCount();
+    const blocked = this.blockedChecklistCount();
+    return total > 0 && granted === total && blocked === 0;
   });
 
   isHandoverReadyToSubmit = computed(() => {
@@ -148,6 +170,32 @@ export class HandoverComponent {
       this.isReadinessChecklistComplete()
     );
   });
+
+  readonly totalQueriesCount = computed(() => this.queries().length);
+
+  readonly resolvedQueriesCount = computed(() =>
+    this.queries().filter(q => q.isResolved).length
+  );
+
+  readonly allQueriesResolved = computed(() =>
+    this.queries().every(q => q.isResolved)
+  );
+
+  readonly totalCommitmentsCount = computed(() => this.commitments().length);
+
+  readonly realisticCommitmentsCount = computed(() =>
+    this.commitments().filter(c => !!c.realisticCommitment).length
+  );
+
+  readonly allRealisticProvided = computed(() =>
+    this.commitments().length === 0
+      ? true
+      : this.realisticCommitmentsCount() === this.totalCommitmentsCount()
+  );
+
+  readonly isPMReviewReady = computed(() =>
+    this.allQueriesResolved() && this.allRealisticProvided()
+  );
 
 
   readonly sentimentOptions: SelectOption[] = HANDOVER_SENTIMENT_OPTIONS.map((value) => ({ value, label: value }));
@@ -282,6 +330,10 @@ export class HandoverComponent {
         this.isLoading.set(false);
         if (!this.isDraft()) {
           this.clientContextForm.disable();
+          this.handoverQueryService.getQueries(id).subscribe({
+            next: (qs) => this.queries.set(qs),
+            error: () => {},
+          });
         }
 
         if (
@@ -311,7 +363,6 @@ export class HandoverComponent {
     const { businessProblem, clientSentiment } = this.clientContextForm.getRawValue();
     if (!businessProblem || !clientSentiment) {
       this.clientContextForm.markAllAsTouched();
-      this.toastService.error(HANDOVER_MESSAGES.DRAFT_REQUIRED_FIELDS);
       return;
     }
 
@@ -325,8 +376,7 @@ export class HandoverComponent {
         this.isSaving.set(false);
         this.kickoffReadinessService.refresh();
       },
-      error: (err) => {
-        this.toastService.error(this.extractErrorMessage(err, HANDOVER_MESSAGES.SAVE_DRAFT_ERROR));
+      error: () => {
         this.isSaving.set(false);
       },
     });

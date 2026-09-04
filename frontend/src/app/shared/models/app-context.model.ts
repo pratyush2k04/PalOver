@@ -16,8 +16,17 @@ export interface WorkspaceMetadata {
   welcomeMessage: string;
   emptyState: string;
   cards: DashboardCard[];
-  engagements: DashboardEngagement[];
+  upcomingEngagements: DashboardEngagement[];
+  totalUpcomingEngagements: number;
   criticalBlockers: DashboardBlocker[];
+  totalCriticalBlockers: number;
+}
+
+export interface PagedResult<T> {
+  items: T[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
 }
 
 export interface DashboardEngagement {
@@ -33,6 +42,7 @@ export interface DashboardBlocker {
   riskId: number;
   projectName: string;
   dueDate: string;
+  link: string | null;
 }
 
 export interface HomeResponse {

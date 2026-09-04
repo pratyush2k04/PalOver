@@ -8,12 +8,10 @@
 
 .my-engagements-page {
   padding: $spacing-8;
-  max-width: 87.5rem;
-  margin: 0 auto;
   font-family: $font-family-base;
   color: $color-text;
 
-  @media (max-width: 768px) {
+  @include respond-to-down('md') {
     padding: $spacing-4;
   }
 }
@@ -62,10 +60,10 @@
     &::after {
       content: '';
       position: absolute;
-      bottom: -1px;
+      bottom: -0.0625rem;
       left: 0;
       right: 0;
-      height: 2px;
+      height: 0.125rem;
       background-color: $color-primary;
     }
   }
@@ -90,25 +88,26 @@
   }
 }
 
-app-paginator {
-  display: block;
-  margin-top: $spacing-5;
-}
-
-.engagement-list {
+.engagement-list-card {
   background: $color-surface;
   border-radius: $radius-2xl;
   box-shadow: $shadow-card;
   overflow: hidden;
 }
 
+.pagination-footer {
+  padding: $spacing-3 $spacing-5;
+  border-top: 1px solid $color-border-soft;
+  background-color: $color-surface-hover;
+}
+
 .engagement-row {
   @include flex-between;
-  padding: $spacing-5 $spacing-6;
+  padding: $spacing-3 $spacing-6;
   cursor: pointer;
   transition: background-color $transition-fast;
 
-  @media (max-width: 768px) {
+  @include respond-to-down('md') {
     flex-direction: column;
     align-items: flex-start;
     padding: $spacing-4;

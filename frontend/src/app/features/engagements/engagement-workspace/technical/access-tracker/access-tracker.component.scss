@@ -1,4 +1,5 @@
 @use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
 
 .access-tracker-card {
   background-color: $color-surface;
@@ -54,17 +55,8 @@
       gap: 0.5rem;
 
       .btn-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
         width: 1rem;
         height: 1rem;
-
-        ::ng-deep svg {
-          width: 100%;
-          height: 100%;
-          display: block;
-        }
       }
     }
   }
@@ -85,11 +77,8 @@
       font-size: 0.875rem;
 
       th {
-        font-size: 0.75rem;
-        font-weight: 600;
+        @include text-overline;
         color: $color-gray-500;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
         padding: 0.75rem 1rem;
         border-bottom: 1px solid $color-gray-200;
         background-color: $color-gray-50;
@@ -129,9 +118,24 @@
         }
       }
 
+      th.days-th,
+      .days-cell {
+        text-align: center;
+      }
+
+      th.status-th,
+      .status-cell {
+        text-align: center;
+
+        app-status-badge {
+          --badge-min-width: 6.5rem;
+          --badge-justify: center;
+        }
+      }
+
       .actions-cell {
         text-align: right;
-        width: 80px;
+        width: 5rem;
 
         .action-btn-group {
           display: inline-flex;
@@ -141,23 +145,13 @@
       }
 
       .btn-action {
-        ::ng-deep .btn {
-          color: $color-gray-500;
-          transition: color 0.15s ease, background-color 0.15s ease;
-
-          &:hover {
-            color: $color-primary;
-            background-color: $color-primary-light;
-          }
-        }
+        --btn-color: #{$color-gray-500};
+        --btn-color-hover: #{$color-primary};
+        --btn-bg-hover: #{$color-primary-light};
 
         &.btn-danger {
-          ::ng-deep .btn {
-            &:hover {
-              color: $color-danger;
-              background-color: $color-danger-light;
-            }
-          }
+          --btn-color-hover: #{$color-danger};
+          --btn-bg-hover: #{$color-danger-light};
         }
       }
 
@@ -165,15 +159,8 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 16px;
-        height: 16px;
-
-        ::ng-deep svg,
-        svg {
-          width: 16px;
-          height: 16px;
-          display: block;
-        }
+        width: 1rem;
+        height: 1rem;
       }
 
       .empty-cell {
@@ -185,30 +172,3 @@
   }
 }
 
-/* Badges (native <select> status coloring — read-only status uses app-status-badge instead) */
-.badge-inprogress {
-  background-color: $color-primary-subtle;
-  color: $color-primary-dark;
-}
-
-.badge-granted {
-  background-color: $color-success-light;
-  color: $color-success-text;
-}
-
-.badge-blocked {
-  background-color: $color-danger-light;
-  color: $color-danger-hover;
-}
-
-/* Editable Status Select */
-.status-select {
-  font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
-  border-radius: $radius-full;
-  padding: 0.25rem 0.6rem;
-  border: 1px solid transparent;
-  outline: none;
-  cursor: pointer;
-  appearance: auto;
-}

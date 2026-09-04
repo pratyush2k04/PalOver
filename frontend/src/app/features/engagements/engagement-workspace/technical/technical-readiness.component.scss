@@ -9,48 +9,99 @@
 }
 
 .readiness-banner {
-  @include flex-between;
-  background-color: $color-primary-light;
-  border: 1px solid $color-primary-border;
-  border-radius: $radius-2xl;
+  border-radius: $radius-lg;
   padding: $spacing-4 $spacing-5;
-  color: $color-primary-dark;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
   font-family: $font-family-base;
 
-  @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: stretch;
-    gap: $spacing-3;
-    padding: $spacing-3 $spacing-4;
+  &.readiness-incomplete {
+    background-color: $color-warning-bg;
+    border: 1px solid $color-warning-border;
+    color: $color-warning-text;
 
-    .share-btn {
-      justify-content: center;
-      width: 100%;
+    .banner-title,
+    .banner-icon-svg,
+    .metric-label,
+    .metric-value {
+      color: $color-warning-text;
     }
   }
 
-  &.ready {
+  &.readiness-ready {
     background-color: $color-success-bg;
-    border-color: $color-success-border;
-    color: $color-success-dark;
+    border: 1px solid $color-success-border;
+    color: $color-success-text;
+
+    .banner-title,
+    .banner-icon-svg,
+    .metric-label,
+    .metric-value {
+      color: $color-success-text;
+    }
   }
 
-  .banner-content {
+  .banner-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: $spacing-3;
 
-    .banner-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    @include respond-to-down('md') {
+      flex-direction: column;
+      align-items: stretch;
+      gap: $spacing-3;
+
+      .share-btn {
+        justify-content: center;
+        width: 100%;
+      }
+    }
+  }
+
+  .banner-title-group {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+
+    .banner-icon-svg {
+      width: 1.125rem;
+      height: 1.125rem;
+      flex-shrink: 0;
     }
 
-    .banner-text {
+    .banner-title {
       font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+    }
+  }
 
-      strong {
+  .readiness-bullets {
+    margin: 0;
+    padding-left: $spacing-5;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-1;
+    list-style-type: disc;
+
+    .bullet-item {
+      font-size: $font-size-sm;
+      line-height: 1.5;
+
+      .bullet-label {
+        font-weight: $font-weight-medium;
+        margin-right: $spacing-1;
+      }
+
+      .bullet-value {
+        font-weight: $font-weight-normal;
+      }
+
+      .bullet-danger {
+        color: $color-danger;
         font-weight: $font-weight-semibold;
+        margin-left: $spacing-1;
       }
     }
   }

@@ -5,7 +5,7 @@
   @include card-surface($padding: $spacing-6, $radius: $radius-2xl);
   margin-bottom: $spacing-8;
 
-  @media (max-width: 768px) {
+  @include respond-to-down('md') {
     padding: $spacing-4;
     margin-bottom: $spacing-6;
   }
@@ -22,9 +22,9 @@
       color: $color-text;
       font-size: 1.17rem;
       font-weight: $font-weight-bold;
-      border-bottom: none !important;
-      padding-bottom: 0 !important;
-      margin-bottom: 0 !important;
+      border-bottom: none;
+      padding-bottom: 0;
+      margin-bottom: 0;
     }
   }
 }
@@ -41,6 +41,23 @@
   @include flex-column($spacing-6);
 }
 
+.checklist-blocked-banner {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  padding: $spacing-3 $spacing-4;
+  background-color: $color-danger-bg;
+  border: 1px solid $color-danger-border;
+  border-radius: $radius-lg;
+  color: $color-danger-text;
+  font-size: $font-size-sm;
+
+  .blocked-icon {
+    flex-shrink: 0;
+    color: $color-danger;
+  }
+}
+
 .area-section {
   @include flex-column($spacing-3);
 
@@ -48,7 +65,7 @@
     @include flex-between;
     gap: $spacing-3;
 
-    @media (max-width: 640px) {
+    @include respond-to-down('sm') {
       flex-direction: column;
       align-items: flex-start;
       gap: $spacing-2;
@@ -61,12 +78,9 @@
     }
 
     .area-badge {
-      font-size: $font-size-xs;
-      font-weight: $font-weight-bold;
-      letter-spacing: 0.05em;
+      @include text-overline;
       padding: $spacing-1 $spacing-2;
       border-radius: $radius-md;
-      text-transform: uppercase;
 
       &.commercial {
         background-color: $color-primary-light;
@@ -106,11 +120,8 @@
 
     th {
       padding: $spacing-3 $spacing-4;
-      font-weight: $font-weight-semibold;
+      @include text-overline;
       color: $color-text-muted;
-      font-size: $font-size-xs;
-      text-transform: uppercase;
-      letter-spacing: 0.025em;
     }
   }
 
@@ -140,7 +151,7 @@
   .col-item {
     width: 50%;
 
-    @media (max-width: 768px) {
+    @include respond-to-down('md') {
       width: 40%;
     }
 
@@ -167,6 +178,11 @@
         border: 1px solid $color-danger-border;
 
         .warning-icon {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 0.875rem;
+          height: 0.875rem;
           flex-shrink: 0;
         }
       }
@@ -183,6 +199,12 @@
 
   .col-status {
     width: 20%;
+    text-align: center;
+
+    app-status-badge {
+      --badge-min-width: 6.5rem;
+      --badge-justify: center;
+    }
   }
 
   .col-actions {
@@ -191,37 +213,7 @@
   }
 }
 
-.status-select {
-  padding: $spacing-1 $spacing-3;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
-  border-radius: $radius-full;
-  border: 1px solid transparent;
-  outline: none;
-  cursor: pointer;
 
-  &:focus {
-    box-shadow: 0 0 0 2px $color-primary-focus-ring;
-  }
-
-  &.inprogress {
-    color: $color-warning-dark;
-    border-color: $color-warning-border;
-    background-color: $color-amber-50;
-  }
-
-  &.granted {
-    color: $color-success-text;
-    border-color: $color-success-border-alt;
-    background-color: $color-success-bg-alt;
-  }
-
-  &.blocked {
-    color: $color-danger-text;
-    border-color: $color-danger-border;
-    background-color: $color-danger-bg;
-  }
-}
 
 .delete-btn {
   background: transparent;
@@ -231,6 +223,17 @@
   padding: $spacing-1;
   border-radius: $radius-md;
   transition: color $transition-base, background-color $transition-base;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  .action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+  }
 
   &:hover {
     color: $color-danger;

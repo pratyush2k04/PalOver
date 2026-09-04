@@ -13,10 +13,10 @@
     <!-- Row 2: Main Content (2-Column Layout) -->
     <div class="main-content-grid">
       <div class="main-left">
-        <app-dashboard-engagements-list [engagements]="ws.engagements"></app-dashboard-engagements-list>
+        <app-dashboard-engagements-list [engagements]="ws.upcomingEngagements" [totalCount]="ws.totalUpcomingEngagements"></app-dashboard-engagements-list>
       </div>
       <div class="main-right">
-        <app-dashboard-critical-blockers [blockers]="ws.criticalBlockers"></app-dashboard-critical-blockers>
+        <app-dashboard-critical-blockers [blockers]="ws.criticalBlockers" [totalCount]="ws.totalCriticalBlockers"></app-dashboard-critical-blockers>
       </div>
     </div>
   </div>

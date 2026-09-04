@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using Pdr.Api.Constants;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.DTOs.Dependencies;
 using Pdr.Api.Exceptions;
@@ -7,6 +9,7 @@ using Pdr.Api.Models.Engagements.Dependencies;
 using Pdr.Api.Models.Risks;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
+using Pdr.Api.Services.Notifications.Mappers;
 
 namespace Pdr.Api.Services;
 
@@ -15,7 +18,8 @@ public class DependencyService(
     IEngagementRepository engagementRepository,
     IRiskRepository riskRepository,
     IAuditLogService auditLogService,
-    ICurrentUserService currentUserService) : IDependencyService
+    ICurrentUserService currentUserService,
+    INotificationService notificationService) : IDependencyService
 {
     public async Task<IEnumerable<DependencyDto>> GetDependenciesAsync(int engagementId)
     {
@@ -88,7 +92,34 @@ public class DependencyService(
         );
 
         var savedDependency = await dependencyRepository.GetByIdAsync(dependency.Id);
+
+        await NotifyDependencyAssignedAsync(savedDependency!, engagementId);
+
         return MapToDto(savedDependency!);
+    }
+
+    private async Task NotifyDependencyAssignedAsync(Dependency dependency, int engagementId)
+    {
+        var data = JsonSerializer.Serialize(
+            new DependencyAssignedToOwnerMapper.DependencyAssignedPayload(dependency.Id, engagementId));
+
+        if (dependency.Type == DependencyType.Internal && dependency.Owner?.UserId is int ownerUserId)
+        {
+            await notificationService.CreateFromTemplateAsync(
+                NotificationConstants.TemplateKeys.DependencyAssignedToOwner,
+                ownerUserId,
+                data,
+                DateTime.UtcNow);
+        }
+        else
+        {
+            await notificationService.CreateFromTemplateAsync(
+                NotificationConstants.TemplateKeys.DependencyAssignedExternal,
+                engagementId,
+                RoleEnum.ProjectManagement,
+                data,
+                DateTime.UtcNow);
+        }
     }
 
     public async Task<DependencyDto> UpdateDependencyAsync(int engagementId, int id, UpdateDependencyDto dto)

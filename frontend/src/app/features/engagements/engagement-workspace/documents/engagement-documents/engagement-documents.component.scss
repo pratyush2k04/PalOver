@@ -22,7 +22,7 @@
   gap: 0.75rem;
   margin-bottom: 1.25rem;
 
-  @media screen and (max-width: 768px) {
+  @include respond-to-down('md') {
     flex-direction: column;
     align-items: stretch;
     gap: 0.5rem;
@@ -39,7 +39,7 @@
     background-color: $color-surface;
     transition: border-color 0.15s, box-shadow 0.15s;
 
-    @media screen and (max-width: 768px) {
+    @include respond-to-down('md') {
       max-width: 100%;
       width: 100%;
       box-sizing: border-box;
@@ -61,36 +61,11 @@
   }
 
   .category-select {
-    appearance: none;
-    -webkit-appearance: none;
-    border: 1px solid $color-slate-200;
-    border-radius: $radius-md;
-    padding: 0.5rem 1.75rem 0.5rem 0.875rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: $color-slate-600;
-    background-color: $color-slate-50;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.625rem center;
-    cursor: pointer;
-    transition: border-color 0.15s, box-shadow 0.15s;
+    min-width: 12rem;
 
-    @media screen and (max-width: 768px) {
+    @include respond-to-down('md') {
       width: 100%;
       box-sizing: border-box;
-    }
-
-    &:hover {
-      border-color: $color-slate-300;
-      background-color: $color-surface;
-    }
-
-    &:focus {
-      outline: none;
-      border-color: $color-orange-brand;
-      box-shadow: 0 0 0 3px rgba($color-orange-brand, 0.15);
-      background-color: $color-surface;
     }
   }
 }
@@ -122,11 +97,8 @@
 
     th {
       padding: 0.875rem 1.25rem;
-      font-size: 0.725rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
+      @include text-overline;
       color: $color-slate-400;
-      text-transform: uppercase;
       white-space: nowrap;
     }
   }
@@ -174,19 +146,13 @@
   }
 
   .file-icon {
-    width: 18px;
-    height: 18px;
+    width: 1.125rem;
+    height: 1.125rem;
     color: $color-slate-500;
     flex-shrink: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
-    ::ng-deep svg,
-    svg {
-      width: 18px;
-      height: 18px;
-    }
   }
 
   .file-name {
@@ -217,41 +183,15 @@
   white-space: nowrap;
 
   .btn-upload-version {
-    ::ng-deep button.btn,
-    ::ng-deep .btn {
-      color: $color-slate-500;
-      transition: all 0.15s ease;
-
-      &:hover:not(:disabled) {
-        color: $color-accent-amber-hover !important;
-        background-color: $color-accent-amber-light !important;
-
-        .upload-version-icon,
-        svg {
-          stroke: $color-accent-amber-hover !important;
-          color: $color-accent-amber-hover !important;
-        }
-      }
-    }
+    --btn-color: #{$color-slate-500};
+    --btn-color-hover: #{$color-accent-amber-hover};
+    --btn-bg-hover: #{$color-accent-amber-light};
   }
 
   .btn-remove {
-    ::ng-deep button.btn,
-    ::ng-deep .btn {
-      color: $color-slate-500;
-      transition: all 0.15s ease;
-
-      &:hover:not(:disabled) {
-        color: $color-danger !important;
-        background-color: $color-danger-light !important;
-
-        .remove-icon,
-        svg {
-          stroke: $color-danger !important;
-          color: $color-danger !important;
-        }
-      }
-    }
+    --btn-color: #{$color-slate-500};
+    --btn-color-hover: #{$color-danger};
+    --btn-bg-hover: #{$color-danger-light};
   }
 }
 
@@ -260,12 +200,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  ::ng-deep svg,
-  svg {
-    width: 16px;
-    height: 16px;
-  }
+  width: 1rem;
+  height: 1rem;
 }
 
 .col-nowrap {
@@ -280,16 +216,22 @@
 }
 
 .btn-version-history {
-  background: none;
-  border: none;
-  padding: 0;
+  display: inline-flex;
+  align-items: center;
   margin-left: 0.5rem;
+  padding: 0.15rem 0.5rem;
+  background: $color-surface;
+  border: 1px solid $color-border-input;
+  border-radius: $radius-sm;
   color: $color-orange-brand;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
 
   &:hover {
-    text-decoration: underline;
+    border-color: $color-orange-brand;
+    background: $color-orange-50;
   }
 }
 
@@ -297,37 +239,31 @@
 
 // Read-only badge (Leadership and other view-only roles)
 .badge-icon {
-  width: 12px;
-  height: 12px;
+  width: 0.75rem;
+  height: 0.75rem;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   margin-right: 0.35rem;
-
-  ::ng-deep svg,
-  svg {
-    width: 12px;
-    height: 12px;
-  }
 }
 
 .visibility-cell-wrapper {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
+
+  .visibility-app-select {
+    min-width: 9.5rem;
+  }
 }
 
 .edit-icon {
+  width: 0.875rem;
+  height: 0.875rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  ::ng-deep svg,
-  svg {
-    width: 14px;
-    height: 14px;
-  }
 }
 
 // Inline editable dropdown (PM and Admin)

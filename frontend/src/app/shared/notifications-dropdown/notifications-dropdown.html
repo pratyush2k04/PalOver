@@ -1,13 +1,13 @@
 <div class="notifications-dropdown">
-  <button class="notification-button" type="button" aria-label="Notifications" [appTooltip]="'Notifications'" (click)="toggle()">
-    <span [inlineSVG]="'assets/icons/bell.svg'"></span>
+  <button class="notification-button" type="button" aria-label="Notifications" [appTooltip]="'Notifications'" (click)="toggle()" [class.has-dropdown]="isOpen()">
+    <span class="icon" [inlineSVG]="'assets/icons/bell.svg'"></span>
     @if (unreadCount() > 0) {
-      <span class="notification-badge">{{ unreadCount() }}</span>
+      <span class="badge">{{ unreadCount() }}</span>
     }
   </button>
 
   @if (isOpen()) {
-    <div class="dropdown-panel">
+    <div class="notifications-panel">
       <div class="dropdown-header">
         <span class="dropdown-title">Notifications</span>
         @if (unreadCount() > 0) {

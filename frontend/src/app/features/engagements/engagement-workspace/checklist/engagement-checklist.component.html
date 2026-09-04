@@ -85,32 +85,34 @@
         [ngModel]="searchTerm()"
         (ngModelChange)="searchTerm.set($event)"
       />
-      <select class="filter-select" [ngModel]="selectedCategoryId()" (ngModelChange)="selectedCategoryId.set($event)">
-        <option [ngValue]="'all'">All Categories</option>
-        @for (cat of categoriesList(); track cat.id) {
-          <option [ngValue]="cat.id">{{ cat.name }}</option>
-        }
-      </select>
-      <select class="filter-select" [ngModel]="selectedStatus()" (ngModelChange)="selectedStatus.set($event)">
-        <option value="all">All Statuses</option>
-        <option value="Incomplete">Incomplete</option>
-        <option value="Complete">Complete</option>
-        <option value="Blocked">Blocked</option>
-        <option value="Pending">Pending Approval</option>
-      </select>
-      <select class="filter-select" [ngModel]="selectedEvidenceFilter()" (ngModelChange)="selectedEvidenceFilter.set($event)">
-        <option value="all">All Evidence</option>
-        <option value="required">Evidence Required</option>
-        <option value="attached">Evidence Attached</option>
-        <option value="missing">Evidence Missing</option>
-      </select>
-      <select class="filter-select" [ngModel]="selectedOwnerId()" (ngModelChange)="selectedOwnerId.set($event)">
-        <option [ngValue]="'all'">All Owners</option>
-        <option [ngValue]="'unassigned'">Unassigned</option>
-        @for (user of assignedUsers(); track user.userId) {
-          <option [ngValue]="user.userId">{{ user.fullName }}</option>
-        }
-      </select>
+      <app-select
+        id="checklist-filter-category"
+        class="filter-select"
+        [options]="categoryFilterOptions()"
+        [ngModel]="selectedCategoryId()"
+        (ngModelChange)="selectedCategoryId.set($event)"
+      />
+      <app-select
+        id="checklist-filter-status"
+        class="filter-select"
+        [options]="statusFilterOptions"
+        [ngModel]="selectedStatus()"
+        (ngModelChange)="selectedStatus.set($event)"
+      />
+      <app-select
+        id="checklist-filter-evidence"
+        class="filter-select"
+        [options]="evidenceFilterOptions"
+        [ngModel]="selectedEvidenceFilter()"
+        (ngModelChange)="selectedEvidenceFilter.set($event)"
+      />
+      <app-select
+        id="checklist-filter-owner"
+        class="filter-select"
+        [options]="ownerFilterOptions()"
+        [ngModel]="selectedOwnerId()"
+        (ngModelChange)="selectedOwnerId.set($event)"
+      />
       @if (hasActiveFilters()) {
         <app-button type="button" variant="stroked" (click)="clearFilters()">
           Clear Filters
@@ -120,12 +122,7 @@
 
     <!-- Empty filtered state -->
     @if (filteredCategories().length === 0) {
-      <div class="empty-filter-state">
-        <p>No checklist items match the selected filter criteria.</p>
-        <app-button type="button" variant="stroked" (click)="clearFilters()">
-          Clear Filters
-        </app-button>
-      </div>
+      <app-empty-state icon="assets/icons/search.svg" message="No checklist items match the selected filter criteria." />
     }
 
     <!-- Category Cards -->
@@ -166,8 +163,9 @@
                       </div>
 
                       @if (item.blockReason) {
-                        <div class="item-reason-note">
-                          <span class="reason-label">Blocked:</span> {{ item.blockReason }}
+                        <div class="block-reason-callout">
+                          <span class="warning-icon" [inlineSVG]="'assets/icons/alert-triangle.svg'"></span>
+                          <span><strong>Blocked:</strong> {{ item.blockReason }}</span>
                         </div>
                       }
 
@@ -180,30 +178,40 @@
 
                     <td class="cell-owner">
                       @if (canToggleStatus()) {
-                        <select
-                          class="owner-select"
+                        <app-select
+                          [id]="'owner-' + item.id"
+                          class="owner-app-select"
+                          [options]="rowOwnerOptions()"
+                          [ngModel]="item.ownerId"
+                          (ngModelChange)="onOwnerChange(item, $event)"
                           [disabled]="isUpdating()"
-                          (change)="onOwnerChange(item, $any($event.target).value)">
-                          <option value="" [selected]="!item.ownerId">Unassigned</option>
-                          @for (user of assignedUsers(); track user.userId) {
-                            <option [value]="user.userId" [selected]="item.ownerId === user.userId">{{ user.fullName }}</option>
-                          }
-                        </select>
+                        />
                       } @else {
                         {{ item.ownerName || 'Unassigned' }}
                       }
                     </td>
 
                     <td class="cell-evidence">
-                      @if (item.evidenceNote || item.evidenceLink) {
-                        <button
-                          type="button"
-                          class="btn-evidence-view"
-                          (click)="openAttachEvidenceDialog(item, false)"
-                          [title]="item.evidenceNote || item.evidenceLink || 'View Evidence'">
-                          <span class="evidence-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
-                          <span class="evidence-text">{{ item.evidenceNote ? (item.evidenceNote | slice:0:20) + (item.evidenceNote.length > 20 ? '...' : '') : 'View Link' }}</span>
-                        </button>
+                      @if (item.evidenceDocumentId) {
+                        <div class="evidence-attached-wrapper">
+                          <button
+                            type="button"
+                            class="btn-evidence-view"
+                            (click)="downloadEvidence(item)"
+                            [title]="item.evidenceDocumentFileName || 'Download evidence'">
+                            <span class="evidence-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
+                            <span class="evidence-text">{{ item.evidenceDocumentFileName ? (item.evidenceDocumentFileName | slice:0:20) + (item.evidenceDocumentFileName.length > 20 ? '...' : '') : 'Download' }}</span>
+                          </button>
+                          @if (canToggleStatus()) {
+                            <button
+                              type="button"
+                              class="btn-evidence-details"
+                              (click)="openAttachEvidenceDialog(item, false)"
+                              title="View or replace evidence">
+                              <span class="view-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                            </button>
+                          }
+                        </div>
                       } @else if (item.evidenceRequired) {
                         <div class="evidence-required-wrapper">
                           <app-status-badge tone="warning" [appTooltip]="'Evidence is required to complete this item'">
@@ -218,7 +226,7 @@
                       } @else {
                         @if (canToggleStatus()) {
                           <button type="button" class="btn-evidence-add" (click)="openAttachEvidenceDialog(item, false)">
-                            + Add
+                            + Attach
                           </button>
                         } @else {
                           <span class="text-faint">&mdash;</span>
@@ -240,44 +248,55 @@
 
                     @if (canPerformAnyAction()) {
                       <td class="cell-actions">
-                        <div class="actions-group">
-                          <!-- Status Toggle / Unblock (PM & Tech Lead) -->
-                          @if (canToggleStatus()) {
-                            @if (item.status === 'Blocked') {
-                              <app-button type="button" variant="danger" [disabled]="isUpdating()" (click)="unblockItem(item)">
-                                Unblock
-                              </app-button>
-                            } @else if (item.status === 'Complete') {
-                              <app-button type="button" variant="stroked" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
-                                Reopen
-                              </app-button>
-                            } @else {
-                              <app-button class="btn-complete" type="button" variant="stroked" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
-                                Complete
+                        @if (canToggleStatus() || (canChangeApplicability() && item.exemptionStatus !== 'Pending') || (isLeadership() && item.exemptionStatus === 'Pending')) {
+                          <div class="actions-group">
+                            <!-- Status Toggle / Unblock (PM & Tech Lead) -->
+                            @if (canToggleStatus()) {
+                              @if (item.status === 'Blocked') {
+                                <app-button type="button" variant="danger" [disabled]="isUpdating()" (click)="unblockItem(item)">
+                                  Unblock
+                                </app-button>
+                              } @else if (item.status === 'Complete') {
+                                <app-button type="button" variant="stroked" [disabled]="isUpdating()" (click)="toggleItemStatus(item)">
+                                  Reopen
+                                </app-button>
+                              } @else {
+                                <app-button
+                                  class="btn-complete"
+                                  type="button"
+                                  variant="stroked"
+                                  [disabled]="isUpdating() || !item.ownerId"
+                                  [appTooltip]="!item.ownerId ? 'Assign an owner before completing' : ''"
+                                  (click)="toggleItemStatus(item)"
+                                >
+                                  Complete
+                                </app-button>
+                              }
+
+                              @if (item.status !== 'Blocked') {
+                                <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openBlockDialog(item)" ariaLabel="Flag as Blocked" [appTooltip]="'Flag as Blocked'">
+                                  <span class="action-icon" [inlineSVG]="'assets/icons/flag.svg'"></span>
+                                </app-button>
+                              }
+                            }
+
+                            <!-- Applicability Actions (PM only) -->
+                            @if (canChangeApplicability() && item.exemptionStatus !== 'Pending') {
+                              <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openMarkNaDialog(item)" ariaLabel="Mark Not Applicable" [appTooltip]="'Mark Not Applicable'">
+                                <span class="action-icon" [inlineSVG]="'assets/icons/not-applicable.svg'"></span>
                               </app-button>
                             }
 
-                            @if (item.status !== 'Blocked') {
-                              <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openBlockDialog(item)" ariaLabel="Flag as Blocked" [appTooltip]="'Flag as Blocked'">
-                                <span class="action-icon" [inlineSVG]="'assets/icons/flag.svg'"></span>
+                            <!-- Leadership Exemption Review -->
+                            @if (isLeadership() && item.exemptionStatus === 'Pending') {
+                              <app-button type="button" variant="flat" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
+                                Review Request
                               </app-button>
                             }
-                          }
-
-                          <!-- Applicability Actions (PM only) -->
-                          @if (canChangeApplicability() && item.exemptionStatus !== 'Pending') {
-                            <app-button type="button" variant="icon" [disabled]="isUpdating()" (click)="openMarkNaDialog(item)" ariaLabel="Mark Not Applicable" [appTooltip]="'Mark Not Applicable'">
-                              <span class="action-icon" [inlineSVG]="'assets/icons/close.svg'"></span>
-                            </app-button>
-                          }
-
-                          <!-- Leadership Exemption Review -->
-                          @if (isLeadership() && item.exemptionStatus === 'Pending') {
-                            <app-button type="button" variant="flat" [disabled]="isUpdating()" (click)="openReviewDialog(item)">
-                              Review Request
-                            </app-button>
-                          }
-                        </div>
+                          </div>
+                        } @else {
+                          <span class="text-faint">&mdash;</span>
+                        }
                       </td>
                     }
                   </tr>

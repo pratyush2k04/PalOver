@@ -246,8 +246,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Rationale")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -740,8 +740,8 @@ namespace Pdr.Api.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("description");
 
                     b.Property<int>("EngagementId")
@@ -750,8 +750,8 @@ namespace Pdr.Api.Migrations
 
                     b.Property<string>("Impact")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("impact");
 
                     b.Property<bool>("IsDeleted")
@@ -761,8 +761,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnName("is_deleted");
 
                     b.Property<string>("RejectionReason")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("rejection_reason");
 
                     b.Property<DateTime?>("ReviewedAt")
@@ -810,61 +810,6 @@ namespace Pdr.Api.Migrations
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             UpdatedBy = "2"
                         });
-                });
-
-            modelBuilder.Entity("Pdr.Api.Models.DependencySpikes.DependencySpike", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("DependencyName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<int>("EngagementId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Objective")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("OutcomeFindings")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<int?>("OwnerId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EngagementId");
-
-                    b.HasIndex("OwnerId");
-
-                    b.ToTable("dependency_spikes", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Documents.Document", b =>
@@ -1261,8 +1206,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnName("created_by");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("description");
 
                     b.Property<int>("DisplayOrder")
@@ -1273,15 +1218,9 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("engagement_checklist_id");
 
-                    b.Property<string>("EvidenceLink")
-                        .HasMaxLength(2048)
-                        .HasColumnType("character varying(2048)")
-                        .HasColumnName("evidence_link");
-
-                    b.Property<string>("EvidenceNote")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("evidence_note");
+                    b.Property<int?>("EvidenceDocumentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("evidence_document_id");
 
                     b.Property<bool>("EvidenceRequired")
                         .ValueGeneratedOnAdd()
@@ -1385,6 +1324,8 @@ namespace Pdr.Api.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("EngagementChecklistId");
+
+                    b.HasIndex("EvidenceDocumentId");
 
                     b.HasIndex("EvidenceSubmittedById");
 
@@ -2197,8 +2138,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnName("engagement_id");
 
                     b.Property<string>("ExceptionJustification")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("exception_justification");
 
                     b.Property<bool>("IsDeleted")
@@ -2258,8 +2199,8 @@ namespace Pdr.Api.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<int>("EngagementId")
                         .HasColumnType("integer");
@@ -2596,15 +2537,14 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("display_order");
 
-                    b.Property<string>("EvidenceLink")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
-                        .HasColumnName("evidence_link");
+                    b.Property<string>("EvidenceDocumentFileName")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("evidence_document_file_name");
 
-                    b.Property<string>("EvidenceNote")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("evidence_note");
+                    b.Property<int?>("EvidenceDocumentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("evidence_document_id");
 
                     b.Property<int>("EvidenceSnapshotId")
                         .HasColumnType("integer")
@@ -2944,8 +2884,8 @@ namespace Pdr.Api.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("description");
 
                     b.Property<int>("HandoverId")
@@ -3056,13 +2996,13 @@ namespace Pdr.Api.Migrations
 
                     b.Property<string>("BusinessProblem")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("business_problem");
 
                     b.Property<string>("ClientBackground")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("client_background");
 
                     b.Property<string>("ClientSentiment")
@@ -3082,8 +3022,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnName("created_by");
 
                     b.Property<string>("DealOrigin")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("deal_origin");
 
                     b.Property<int>("EngagementId")
@@ -3211,10 +3151,6 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("resolved_by_user_id");
 
-                    b.Property<int?>("RespondedByUserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("responded_by_user_id");
-
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -3233,8 +3169,6 @@ namespace Pdr.Api.Migrations
                     b.HasIndex("RaisedByUserId");
 
                     b.HasIndex("ResolvedByUserId");
-
-                    b.HasIndex("RespondedByUserId");
 
                     b.HasIndex("HandoverId", "IsResolved");
 
@@ -3288,11 +3222,14 @@ namespace Pdr.Api.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.Handover.HandoverQueryQuestion", b =>
+            modelBuilder.Entity("Pdr.Api.Models.Handover.HandoverQueryMessage", b =>
                 {
-                    b.Property<int>("QueryId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("query_id");
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -3311,56 +3248,29 @@ namespace Pdr.Api.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("is_deleted");
 
-                    b.Property<string>("QuestionText")
+                    b.Property<string>("MessageText")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
-                        .HasColumnName("question_text");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("message_text");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at")
-                        .HasDefaultValueSql("NOW()");
+                    b.Property<int>("MessageType")
+                        .HasColumnType("integer")
+                        .HasColumnName("message_type");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("updated_by");
-
-                    b.HasKey("QueryId");
-
-                    b.ToTable("handover_query_questions", (string)null);
-                });
-
-            modelBuilder.Entity("Pdr.Api.Models.Handover.HandoverQueryResponse", b =>
-                {
                     b.Property<int>("QueryId")
                         .HasColumnType("integer")
                         .HasColumnName("query_id");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<int>("SenderUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("sender_user_id");
+
+                    b.Property<int>("SequenceNumber")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("created_by");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<string>("ResponseText")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
-                        .HasColumnName("response_text");
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1)
+                        .HasColumnName("sequence_number");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -3373,9 +3283,13 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("updated_by");
 
-                    b.HasKey("QueryId");
+                    b.HasKey("Id");
 
-                    b.ToTable("handover_query_responses", (string)null);
+                    b.HasIndex("SenderUserId");
+
+                    b.HasIndex("QueryId", "SequenceNumber");
+
+                    b.ToTable("handover_query_messages", (string)null);
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Handover.HandoverStatus", b =>
@@ -3422,8 +3336,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnName("commitment_id");
 
                     b.Property<string>("AcknowledgementMessage")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("acknowledgement_message");
 
                     b.Property<DateTime>("CreatedAt")
@@ -3439,8 +3353,8 @@ namespace Pdr.Api.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("description");
 
                     b.Property<bool>("IsDeleted")
@@ -3675,7 +3589,7 @@ namespace Pdr.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasDefaultValue("Open")
+                        .HasDefaultValue("InProgress")
                         .HasColumnName("status");
 
                     b.Property<string>("Title")
@@ -5252,19 +5166,6 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            Id = 6,
-                            Body = "Named resources have been allocated for your {RoleName} request on {EngagementName}.",
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
-                            DefaultPriority = 2,
-                            IsDeleted = false,
-                            Key = "ResourceRequestAllocated",
-                            LinkPattern = "/engagements/{EngagementId}/workspace/resources",
-                            Title = "Resource Request Allocated — {EngagementName}",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
                             Id = 11,
                             Body = "A confirmed resource was removed from your {RoleName} request on {EngagementName}; it is now reopened for allocation.",
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -5430,6 +5331,58 @@ namespace Pdr.Api.Migrations
                             Key = "HandoverQueryRaised",
                             LinkPattern = "/engagements/{EngagementId}/workspace/handover",
                             Title = "Handover Query Raised — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 918273,
+                            Body = "You have been assigned the kickoff action \"{ActionTitle}\" for {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 1,
+                            IsDeleted = false,
+                            Key = "KickoffActionItemAssigned",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/kickoff",
+                            Title = "Action Item Assigned — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 629481,
+                            Body = "Assumption \"{AssumptionDescription}\" needs to be validated for {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 2,
+                            IsDeleted = false,
+                            Key = "AssumptionNeedsValidation",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/assumptions-and-decisions",
+                            Title = "Assumption Needs Validation — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 742619,
+                            Body = "You have been assigned the dependency \"{DependencyDescription}\" for {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 2,
+                            IsDeleted = false,
+                            Key = "DependencyAssignedToOwner",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/assumptions-and-decisions",
+                            Title = "Dependency Assigned — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 853720,
+                            Body = "Dependency \"{DependencyDescription}\" was assigned to external owner {OwnerName} for {EngagementName}.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 2,
+                            IsDeleted = false,
+                            Key = "DependencyAssignedExternal",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/assumptions-and-decisions",
+                            Title = "External Dependency Added — {EngagementName}",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
@@ -5719,8 +5672,8 @@ namespace Pdr.Api.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("description");
 
                     b.Property<int>("EngagementId")
@@ -5742,8 +5695,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnName("likelihood");
 
                     b.Property<string>("Mitigation")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("mitigation");
 
                     b.Property<int?>("OwnerId")
@@ -5751,8 +5704,8 @@ namespace Pdr.Api.Migrations
                         .HasColumnName("owner_id");
 
                     b.Property<string>("ResolutionNote")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("resolution_note");
 
                     b.Property<int?>("SourceItemId")
@@ -6042,24 +5995,6 @@ namespace Pdr.Api.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.DependencySpikes.DependencySpike", b =>
-                {
-                    b.HasOne("Pdr.Api.Models.Engagements.Engagement", "Engagement")
-                        .WithMany()
-                        .HasForeignKey("EngagementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Engagement");
-
-                    b.Navigation("Owner");
-                });
-
             modelBuilder.Entity("Pdr.Api.Models.Documents.Document", b =>
                 {
                     b.HasOne("Pdr.Api.Models.Documents.DocumentCategory", "Category")
@@ -6134,6 +6069,11 @@ namespace Pdr.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Pdr.Api.Models.Documents.Document", "EvidenceDocument")
+                        .WithMany()
+                        .HasForeignKey("EvidenceDocumentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Pdr.Api.Models.LoginEntity.User", "EvidenceSubmittedBy")
                         .WithMany()
                         .HasForeignKey("EvidenceSubmittedById")
@@ -6147,6 +6087,8 @@ namespace Pdr.Api.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("EngagementChecklist");
+
+                    b.Navigation("EvidenceDocument");
 
                     b.Navigation("EvidenceSubmittedBy");
 
@@ -6374,40 +6316,30 @@ namespace Pdr.Api.Migrations
                         .HasForeignKey("ResolvedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "RespondedByUser")
-                        .WithMany()
-                        .HasForeignKey("RespondedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.Navigation("FieldSection");
 
                     b.Navigation("RaisedByUser");
 
                     b.Navigation("ResolvedByUser");
-
-                    b.Navigation("RespondedByUser");
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.Handover.HandoverQueryQuestion", b =>
+            modelBuilder.Entity("Pdr.Api.Models.Handover.HandoverQueryMessage", b =>
                 {
                     b.HasOne("Pdr.Api.Models.Handover.HandoverQuery", "Query")
-                        .WithOne("Question")
-                        .HasForeignKey("Pdr.Api.Models.Handover.HandoverQueryQuestion", "QueryId")
+                        .WithMany("Messages")
+                        .HasForeignKey("QueryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Query");
-                });
-
-            modelBuilder.Entity("Pdr.Api.Models.Handover.HandoverQueryResponse", b =>
-                {
-                    b.HasOne("Pdr.Api.Models.Handover.HandoverQuery", "Query")
-                        .WithOne("Response")
-                        .HasForeignKey("Pdr.Api.Models.Handover.HandoverQueryResponse", "QueryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("Pdr.Api.Models.LoginEntity.User", "SenderUser")
+                        .WithMany()
+                        .HasForeignKey("SenderUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Query");
+
+                    b.Navigation("SenderUser");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Handover.RealisticCommitment", b =>
@@ -6707,9 +6639,7 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.Handover.HandoverQuery", b =>
                 {
-                    b.Navigation("Question");
-
-                    b.Navigation("Response");
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.HandoverReadiness.HandoverReadinessDefinition", b =>

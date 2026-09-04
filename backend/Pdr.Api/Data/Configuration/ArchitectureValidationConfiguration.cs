@@ -13,7 +13,7 @@ public class ArchitectureValidationConfiguration : IEntityTypeConfiguration<Arch
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Rationale)
-            .HasMaxLength(2000);
+            .HasMaxLength(500);
 
         builder.HasQueryFilter(x => !x.IsDeleted);
 

@@ -6,7 +6,7 @@ export const CHANGE_REQUEST_CONSTANTS = {
 
   // UI Strings
   TITLE: 'Change Requests',
-  BTN_LOG_CR: '+ Log CR',
+  BTN_LOG_CR: 'Log CR',
 
   TABLE_HEADER_DESCRIPTION: 'DESCRIPTION',
   TABLE_HEADER_IMPACT: 'IMPACT',

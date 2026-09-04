@@ -19,9 +19,9 @@ public class EvidenceSnapshotItem : BaseAuditableEntity
 
     public EvidenceSnapshotItemStatus StatusAtSignOff { get; set; }
 
-    public string? EvidenceNote { get; set; }
+    public int? EvidenceDocumentId { get; set; }
 
-    public string? EvidenceLink { get; set; }
+    public string? EvidenceDocumentFileName { get; set; }
 
     public DateTime? EvidenceSubmittedAt { get; set; }
 

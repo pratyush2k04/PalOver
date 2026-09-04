@@ -17,8 +17,10 @@ public class HomeDashboardDto
     public string WelcomeMessage { get; set; } = string.Empty;
     public string EmptyState { get; set; } = string.Empty;
     public List<DashboardCardsDto> Cards { get; set; } = [];
-    public List<DashboardEngagementDto> Engagements { get; set; } = [];
+    public List<DashboardEngagementDto> UpcomingEngagements { get; set; } = [];
+    public int TotalUpcomingEngagements { get; set; }
     public List<DashboardBlockerDto> CriticalBlockers { get; set; } = [];
+    public int TotalCriticalBlockers { get; set; }
 }
 
 public class DashboardEngagementDto
@@ -36,6 +38,7 @@ public class DashboardBlockerDto
     public int RiskId { get; set; }
     public string ProjectName { get; set; } = string.Empty;
     public DateTime? DueDate { get; set; }
+    public string? Link { get; set; }
 }
 
 public class HomeResponseDto

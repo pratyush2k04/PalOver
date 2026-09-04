@@ -10,6 +10,7 @@ import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { HandoverQueryService } from '../../../../../services/handover-query.service';
 import { CommitmentDto } from '../../../../../models/handover.model';
 import { HandoverQueryDto, HandoverQueryFieldSection } from '../../../../../models/handover-query.model';
+import { HANDOVER_MESSAGES } from '@shared/constants/handover.constants';
 
 export interface RaiseHandoverQueryDialogData {
   engagementId: number;
@@ -89,7 +90,7 @@ export class RaiseHandoverQueryDialogComponent {
         error: (err) => {
           this.isSubmitting.set(false);
           const msg = (err as { error?: { message?: string } })?.error?.message;
-          this.errorMessage.set(msg || 'Failed to raise query.');
+          this.errorMessage.set(msg || HANDOVER_MESSAGES.QUERY_RAISE_ERROR);
         },
       });
   }

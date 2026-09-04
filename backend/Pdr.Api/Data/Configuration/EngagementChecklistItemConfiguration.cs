@@ -16,7 +16,7 @@ public class EngagementChecklistItemConfiguration : IEntityTypeConfiguration<Eng
         builder.Property(e => e.EngagementChecklistId).HasColumnName("engagement_checklist_id").IsRequired();
         builder.Property(e => e.SourceMasterItemId).HasColumnName("source_master_item_id");
         builder.Property(e => e.Title).HasColumnName("title").HasMaxLength(255).IsRequired();
-        builder.Property(e => e.Description).HasColumnName("description").HasMaxLength(2000);
+        builder.Property(e => e.Description).HasColumnName("description").HasMaxLength(500);
         builder.Property(e => e.CategoryId).HasColumnName("category_id").IsRequired();
         builder.Property(e => e.IsMandatory).HasColumnName("is_mandatory").HasDefaultValue(true).IsRequired();
         builder.Property(e => e.DisplayOrder).HasColumnName("display_order").IsRequired();
@@ -40,8 +40,7 @@ public class EngagementChecklistItemConfiguration : IEntityTypeConfiguration<Eng
 
         // Evidence tracking (FTR-026 / US-045)
         builder.Property(e => e.EvidenceRequired).HasColumnName("evidence_required").HasDefaultValue(false).IsRequired();
-        builder.Property(e => e.EvidenceNote).HasColumnName("evidence_note").HasMaxLength(500);
-        builder.Property(e => e.EvidenceLink).HasColumnName("evidence_link").HasMaxLength(2048);
+        builder.Property(e => e.EvidenceDocumentId).HasColumnName("evidence_document_id");
         builder.Property(e => e.EvidenceSubmittedAt).HasColumnName("evidence_submitted_at");
         builder.Property(e => e.EvidenceSubmittedById).HasColumnName("evidence_submitted_by_id");
 

@@ -1,12 +1,6 @@
 <div class="meeting-record-card">
   <h3 class="title">Kickoff Meeting Record</h3>
 
-  @if (message()) {
-    <div class="alert" [class.alert-error]="isError()" [class.alert-success]="!isError()">
-      {{ message() }}
-    </div>
-  }
-
   <app-textarea
     id="outcomes-input"
     placeholder="Outcomes and notes..."
@@ -19,13 +13,13 @@
   <h4 class="actions-heading">ACTIONS</h4>
 
   <ul class="action-list">
-    @for (item of actionItems(); track item.kickoffActionItemId) {
+    @for (item of sortedActionItems(); track item.kickoffActionItemId) {
       <li class="action-item">
         <div class="action-details">
           <p class="action-title">{{ item.title }}</p>
           <p class="action-meta">{{ item.ownerName }} &middot; due {{ item.dueDate | date: 'd MMM y' }}</p>
         </div>
-        @if (isProjectManager()) {
+        @if (canEditStatus(item)) {
           <app-select
             id="action-status-{{ item.kickoffActionItemId }}"
             [options]="statusOptions"
@@ -33,13 +27,13 @@
             (ngModelChange)="onStatusChange(item, $event)"
           />
         } @else {
-          <app-status-badge tone="neutral">{{ item.status }}</app-status-badge>
+          <app-status-badge [tone]="getStatusTone(item.status)">{{ statusLabel(item.status) }}</app-status-badge>
         }
       </li>
     }
   </ul>
 
   @if (isProjectManager()) {
-    <app-button type="button" variant="flat" (click)="openAddActionDialog()">+ Add action</app-button>
+    <app-button type="button" variant="flat" (click)="openAddActionDialog()"> Add action</app-button>
   }
 </div>

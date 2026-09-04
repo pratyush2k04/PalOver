@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Common;
 using Pdr.Api.DTOs.Notifications;
+using Pdr.Api.Models.Notifications;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Controllers;
@@ -27,9 +28,11 @@ public class NotificationsController(
     public async Task<ActionResult<PagedResult<NotificationDto>>> GetNotifications(
         [FromQuery] int? engagementId,
         [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 20)
+        [FromQuery] int pageSize = 20,
+        [FromQuery] bool? isRead = null,
+        [FromQuery] NotificationPriority? priority = null)
     {
-        var result = await notificationService.GetForUserAsync(currentUserService.GetUserId(), engagementId, page, pageSize);
+        var result = await notificationService.GetForUserAsync(currentUserService.GetUserId(), engagementId, page, pageSize, isRead, priority);
         return Ok(result);
     }
 

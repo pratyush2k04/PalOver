@@ -7,6 +7,7 @@ import { AlertComponent } from '@common/components/alert/alert';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { BadgeComponent } from '@common/components/badge/badge';
 import { ButtonComponent } from '@common/components/button/button';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { MasterChecklistService } from '../services/master-checklist.service';
 import { MasterChecklistItem } from '../models/master-checklist.model';
 
@@ -15,6 +16,7 @@ import { MasterChecklistItem } from '../models/master-checklist.model';
   standalone: true,
   imports: [
     FormsModule,
+    SelectComponent,
     LoadingSpinnerComponent,
     StatusBadgeComponent,
     AlertComponent,
@@ -42,6 +44,13 @@ export class PublishedChecklistComponent implements OnInit {
     const items = this.version()?.items ?? [];
     const names = new Set(items.map((item) => item.categoryName));
     return Array.from(names).sort();
+  });
+
+  readonly categoryOptions = computed<SelectOption[]>(() => {
+    return [
+      { value: 'all', label: 'All Categories' },
+      ...this.categories().map((c) => ({ value: c, label: c }))
+    ];
   });
 
   readonly groupedCategories = computed(() => {

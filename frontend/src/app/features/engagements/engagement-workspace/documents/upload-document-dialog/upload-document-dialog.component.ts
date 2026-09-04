@@ -44,11 +44,8 @@ export class UploadDocumentDialogComponent implements OnInit {
   /** All files selected by the user */
   selectedFiles = signal<File[]>([]);
 
-  /** Rename field — only relevant when exactly one file is selected */
-  simulatedFileName = signal<string>('');
-
-  /** True when only a single file is selected (rename is available) */
-  isSingleFile = computed(() => this.selectedFiles().length === 1);
+  /** Rename field per selected file, same order as selectedFiles() */
+  renamedFileNames = signal<string[]>([]);
 
   selectedVisibility = signal<DocumentVisibility>(DOCUMENT_CONFIG.VISIBILITY.TEAM_WIDE);
   isUploading = signal<boolean>(false);
@@ -89,18 +86,12 @@ export class UploadDocumentDialogComponent implements OnInit {
 
     const files = Array.from(input.files);
     this.selectedFiles.set(files);
+    this.renamedFileNames.set(files.map((f) => f.name));
     this.errorMessage.set(null);
-
-    // Pre-fill rename field only for single file selection
-    if (files.length === 1) {
-      this.simulatedFileName.set(files[0].name);
-    } else {
-      this.simulatedFileName.set('');
-    }
   }
 
-  onSimulatedNameChange(name: string): void {
-    this.simulatedFileName.set(name);
+  onRenamedFileNameChange(index: number, name: string): void {
+    this.renamedFileNames.update((names) => names.map((n, i) => (i === index ? name : n)));
   }
 
   onCategoryChange(catId: string): void {
@@ -135,18 +126,15 @@ export class UploadDocumentDialogComponent implements OnInit {
       return;
     }
 
-    // Resolve final files — apply rename only for single-file uploads
-    const finalFiles: File[] = files.map((file) => {
-      if (files.length === 1) {
-        // Preserve original extension if user omitted it when renaming
-        const originalExt = file.name.includes('.')
-          ? file.name.substring(file.name.lastIndexOf('.')).toLowerCase()
-          : '';
-        const typedName = this.simulatedFileName().trim() || file.name;
-        const finalName = typedName.includes('.') ? typedName : typedName + originalExt;
-        return new File([file], finalName, { type: file.type });
-      }
-      return file;
+    // Resolve final files — apply the per-file rename, preserving each file's own extension
+    const renamedNames = this.renamedFileNames();
+    const finalFiles: File[] = files.map((file, i) => {
+      const originalExt = file.name.includes('.')
+        ? file.name.substring(file.name.lastIndexOf('.')).toLowerCase()
+        : '';
+      const typedName = (renamedNames[i] ?? '').trim() || file.name;
+      const finalName = typedName.includes('.') ? typedName : typedName + originalExt;
+      return new File([file], finalName, { type: file.type });
     });
 
     // Client-side validation: extension + size for every file

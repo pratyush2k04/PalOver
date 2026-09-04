@@ -17,10 +17,10 @@ public class ChangeRequestConfiguration : IEntityTypeConfiguration<Models.Change
         builder.Property(cr => cr.Id).HasColumnName("id");
 
         builder.Property(cr => cr.EngagementId).HasColumnName("engagement_id").IsRequired();
-        builder.Property(cr => cr.Description).HasColumnName("description").HasMaxLength(2000).IsRequired();
-        builder.Property(cr => cr.Impact).HasColumnName("impact").HasMaxLength(2000).IsRequired();
+        builder.Property(cr => cr.Description).HasColumnName("description").HasMaxLength(500).IsRequired();
+        builder.Property(cr => cr.Impact).HasColumnName("impact").HasMaxLength(500).IsRequired();
         builder.Property(cr => cr.Status).HasColumnName("status").IsRequired();
-        builder.Property(cr => cr.RejectionReason).HasColumnName("rejection_reason").HasMaxLength(2000);
+        builder.Property(cr => cr.RejectionReason).HasColumnName("rejection_reason").HasMaxLength(500);
 
         builder.Property(cr => cr.ReviewedById).HasColumnName("reviewed_by_id");
         builder.Property(cr => cr.ReviewedAt).HasColumnName("reviewed_at");

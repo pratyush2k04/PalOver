@@ -25,8 +25,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ICommitmentRepository, CommitmentRepository>();
         services.AddScoped<IRealisticCommitmentRepository, RealisticCommitmentRepository>();
         services.AddScoped<IHandoverQueryRepository, HandoverQueryRepository>();
-        services.AddScoped<IHandoverQueryQuestionRepository, HandoverQueryQuestionRepository>();
-        services.AddScoped<IHandoverQueryResponseRepository, HandoverQueryResponseRepository>();
+        services.AddScoped<IHandoverQueryMessageRepository, HandoverQueryMessageRepository>();
         services.AddScoped<IMasterChecklistRepository, MasterChecklistRepository>();
         services.AddScoped<ICommunicationCadenceRepository, CommunicationCadenceRepository>();
         services.AddScoped<IEngagementChecklistRepository, EngagementChecklistRepository>();
@@ -46,7 +45,6 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IResourceRequestRepository, ResourceRequestRepository>();
         services.AddScoped<IDependencyRepository, DependencyRepository>();
         services.AddScoped<IAssumptionRepository, AssumptionRepository>();
-        services.AddScoped<IDependencySpikeRepository, DependencySpikeRepository>();
         services.AddScoped<IHomeRepository, HomeRepository>();
 
         // Services
@@ -91,7 +89,6 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ITechnicalReadinessNotificationService, TechnicalReadinessNotificationService>();
         services.AddScoped<IDependencyService, DependencyService>();
         services.AddScoped<IAssumptionService, AssumptionService>();
-        services.AddScoped<IDependencySpikeService, DependencySpikeService>();
         services.AddScoped<IKpiReportService, KpiReportService>();
         services.AddScoped<TemplateMapperResolver<INotificationTemplateMapper>>();
         services.AddScoped<TemplateMapperResolver<IAuditTemplateMapper>>();

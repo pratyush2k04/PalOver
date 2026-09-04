@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ButtonComponent } from '@common/components/button/button';
 import { AlertComponent } from '@common/components/alert/alert';
+import { DatepickerComponent } from '@common/components/form/datepicker/datepicker';
 import { DayOneSignOffRequest } from '@features/engagements/models/engagement.model';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
@@ -14,7 +15,7 @@ import { futureDateValidator } from '@common/validators/date.validators';
 @Component({
   selector: 'app-day-one-sign-off-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, AlertComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, AlertComponent, DatepickerComponent],
   templateUrl: './day-one-sign-off-dialog.component.html',
   styleUrl: './day-one-sign-off-dialog.component.scss'
 })

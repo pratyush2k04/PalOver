@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import {
   CreateHandoverQueryRequest,
   HandoverQueryDto,
-  RespondHandoverQueryRequest
+  AddHandoverQueryMessageRequest
 } from '../models/handover-query.model';
 import { HANDOVER_API_ENDPOINTS } from '@shared/constants/app.constants';
 
@@ -22,9 +22,9 @@ export class HandoverQueryService {
     return this.http.post<HandoverQueryDto>(HANDOVER_API_ENDPOINTS.HANDOVER_QUERIES(engagementId), request);
   }
 
-  respondToQuery(engagementId: number, queryId: number, request: RespondHandoverQueryRequest): Observable<HandoverQueryDto> {
-    return this.http.put<HandoverQueryDto>(
-      HANDOVER_API_ENDPOINTS.HANDOVER_QUERY_RESPOND(engagementId, queryId),
+  addMessage(engagementId: number, queryId: number, request: AddHandoverQueryMessageRequest): Observable<HandoverQueryDto> {
+    return this.http.post<HandoverQueryDto>(
+      HANDOVER_API_ENDPOINTS.HANDOVER_QUERY_MESSAGES(engagementId, queryId),
       request
     );
   }

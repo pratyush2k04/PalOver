@@ -7,11 +7,11 @@
 }
 
 .section.transition-section {
-  @include card-surface($spacing-6, $radius-2xl);
+  @include card-surface($spacing-5, $radius-2xl);
   margin-bottom: $spacing-8;
   width: 100%;
 
-  @media (max-width: 768px) {
+  @include respond-to-down('md') {
     padding: $spacing-4;
   }
 }
@@ -26,9 +26,9 @@
   h3 {
     margin: 0;
     color: $color-text;
-    border-bottom: none !important;
-    padding-bottom: 0 !important;
-    margin-bottom: 0 !important;
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
   }
 
   .add-button {

@@ -3,12 +3,14 @@
     <app-section-header title="Audit Log">
       <div class="header-actions-group">
         <app-select
+          class="audit-user-select"
           [id]="'audit-user-select'"
           [options]="userOptions()"
           [(ngModel)]="filterUserId"
           (ngModelChange)="onFilterChange()"
         ></app-select>
         <app-select
+          class="audit-category-select"
           [id]="'audit-category-select'"
           [options]="categoryOptions"
           [(ngModel)]="filterCategory"
@@ -23,19 +25,20 @@
       description="Track system activities, access events, and administrative changes across the platform."
     >
       <div class="header-actions-group">
-        <app-input
-          [id]="'audit-log-from-date'"
-          type="date"
+        <app-datepicker
+          id="audit-log-from-date"
+          placeholder="From date"
           [(ngModel)]="filterFromDate"
           (ngModelChange)="onFilterChange()"
         />
-        <app-input
-          [id]="'audit-log-to-date'"
-          type="date"
+        <app-datepicker
+          id="audit-log-to-date"
+          placeholder="To date"
           [(ngModel)]="filterToDate"
           (ngModelChange)="onFilterChange()"
         />
         <app-select
+          class="audit-category-select"
           [id]="'audit-category-select'"
           [options]="categoryOptions"
           [(ngModel)]="filterCategory"

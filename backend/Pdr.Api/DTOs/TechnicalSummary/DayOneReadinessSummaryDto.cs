@@ -53,13 +53,6 @@ public class DayOneReadinessSummaryDto
     public int HighSeverityPendingCount { get; set; }
     public bool IsBrownfieldReady { get; set; }
 
-    // Dependency Spikes Readiness
-    public int TotalDependencySpikes { get; set; }
-    public int PassedDependencySpikes { get; set; }
-    public int FailedDependencySpikes { get; set; }
-    public int InProgressDependencySpikes { get; set; }
-    public bool IsDependencySpikesReady { get; set; }
-
     // Blockers & Action Items
     public List<DayOneBlockerItemDto> OutstandingBlockers { get; set; } = [];
 }

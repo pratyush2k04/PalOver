@@ -42,7 +42,7 @@
   flex: 1;
   min-height: 0;
 
-  @media screen and (max-width: 900px) {
+  @include respond-to-down('lg') {
     flex-direction: column;
     gap: 1rem;
     height: auto;
@@ -55,7 +55,7 @@
   @include flex-column;
   height: 100%;
 
-  @media screen and (max-width: 900px) {
+  @include respond-to-down('lg') {
     width: 100%;
     height: auto;
   }

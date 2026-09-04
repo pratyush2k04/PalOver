@@ -76,15 +76,13 @@ export class EngagementDetailComponent implements OnInit {
     return this.hasAnyOwnerAssigned ? 'Reassign' : 'Assign';
   }
 
-  readonly projectManagerOptions = computed<SelectOption[]>(() => [
-    { value: null, label: '— Select —' },
-    ...this.projectManagers().map((user) => ({ value: user.id, label: user.fullName }))
-  ]);
+  readonly projectManagerOptions = computed<SelectOption[]>(() =>
+    this.projectManagers().map((user) => ({ value: user.id, label: user.fullName }))
+  );
 
-  readonly techLeadOptions = computed<SelectOption[]>(() => [
-    { value: null, label: '— Select —' },
-    ...this.techLeads().map((user) => ({ value: user.id, label: user.fullName }))
-  ]);
+  readonly techLeadOptions = computed<SelectOption[]>(() =>
+    this.techLeads().map((user) => ({ value: user.id, label: user.fullName }))
+  );
 
   openAssignModal(): void {
     if (!this.canAssignOwners) return;
@@ -129,7 +127,7 @@ export class EngagementDetailComponent implements OnInit {
     if (techLeadId !== (currentOwners?.techLeadId ?? null)) {
       this.pendingChanges.push({
         kind: 'techLead',
-        label: 'Tech / Delivery Lead',
+        label: 'Tech Lead',
         userId: techLeadId,
         userName: this.techLeads().find((u) => u.id === techLeadId)?.fullName ?? ''
       });

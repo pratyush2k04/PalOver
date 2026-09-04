@@ -8,53 +8,50 @@
 .comments-list {
   @include flex-column($spacing-3);
   width: 100%;
-  padding: $spacing-2 0;
+  padding: $spacing-2 $spacing-1 $spacing-2 0;
+  max-height: 22rem;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 0.375rem;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $color-slate-300;
+    border-radius: $radius-full;
+
+    &:hover {
+      background-color: $color-slate-400;
+    }
+  }
 
   .chat-bubble-wrapper {
     display: flex;
+    align-items: flex-start;
+    gap: $spacing-3;
     width: 100%;
     box-sizing: border-box;
 
-    &.is-other-message {
-      justify-content: flex-start;
-
-      .chat-bubble {
-        background: $color-white;
-        border: 1px solid $color-slate-200;
-        border-radius: $radius-lg $radius-lg $radius-lg $radius-xs;
-        box-shadow: $shadow-xs;
-
-        .author-name {
-          color: $color-slate-900;
-        }
-      }
-    }
-
-    &.is-own-message {
-      justify-content: flex-end;
-
-      .chat-bubble {
-        background: $color-info-light;
-        border: 1px solid $color-info-border;
-        border-radius: $radius-lg $radius-lg $radius-xs $radius-lg;
-        box-shadow: $shadow-xs;
-
-        .author-name {
-          color: $color-info-text;
-        }
-      }
+    .comment-avatar {
+      flex-shrink: 0;
+      padding-top: calc($spacing-1 / 2);
     }
 
     .chat-bubble {
-      min-width: 50rem;
-      max-width: 70%;
+      flex: 1;
+      min-width: 0;
+      background: $color-slate-50;
+      border: 1px solid $color-slate-200;
+      border-radius: $radius-2xl;
       padding: $spacing-3 $spacing-4;
       @include flex-column($spacing-2);
       transition: all $transition-fast;
 
       &.is-editing {
-        max-width: 100%;
-        width: 100%;
         background: $color-surface;
         border-color: $color-primary;
       }
@@ -64,25 +61,40 @@
         gap: $spacing-2;
         width: 100%;
 
-        .author-info {
-          display: flex;
-          align-items: center;
-          gap: $spacing-2;
-
-          .author-name {
-            font-size: $font-size-sm;
-            font-weight: $font-weight-bold;
-          }
+        .author-name {
+          font-size: $font-size-sm;
+          font-weight: $font-weight-bold;
+          color: $color-slate-900;
         }
 
         .header-right-actions {
           display: flex;
           align-items: center;
-          gap: $spacing-3;
+          gap: $spacing-2;
+
+          .editing-badge {
+            font-size: $font-size-xs;
+            color: $color-primary;
+            font-style: italic;
+            font-weight: $font-weight-semibold;
+          }
+
+          .edited-badge {
+            font-size: $font-size-xs;
+            color: $color-slate-400;
+            font-style: italic;
+          }
 
           .bubble-time {
             font-size: $font-size-xs;
-            color: $color-slate-500;
+            color: $color-slate-400;
+          }
+
+          app-button {
+            --btn-border-radius: #{$radius-md};
+            --btn-padding: #{$spacing-1} #{$spacing-2};
+            --btn-font-size: #{$font-size-xs};
+            --btn-line-height: 1.2;
           }
         }
       }
@@ -93,31 +105,36 @@
         line-height: 1.45;
         white-space: pre-wrap;
         word-break: break-word;
-        padding-left: $spacing-8;
+        padding-left: 0;
+        margin-top: $spacing-1;
       }
 
       .inline-edit-box {
         @include flex-column($spacing-2);
-        padding-left: $spacing-8;
+        padding-left: 0;
+        margin-top: $spacing-1;
+
+        app-textarea {
+          --field-margin-bottom: 0;
+          --textarea-border-radius: #{$radius-3xl};
+          --textarea-padding: #{$spacing-2} #{$spacing-4};
+          --textarea-min-height: 2.25rem;
+          --textarea-max-height: 8rem;
+          --textarea-resize: none;
+          --char-counter-display: none;
+        }
 
         .edit-actions {
           display: flex;
           align-items: center;
           justify-content: flex-end;
           gap: $spacing-2;
-        }
-      }
 
-      .bubble-footer {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        gap: $spacing-2;
-
-        .edited-badge {
-          font-size: $font-size-xs;
-          color: $color-text-fainter;
-          font-style: italic;
+          app-button {
+            --btn-border-radius: #{$radius-3xl};
+            --btn-padding: #{$spacing-1} #{$spacing-3};
+            --btn-font-size: #{$font-size-xs};
+          }
         }
       }
     }
@@ -126,13 +143,23 @@
 
 .add-comment-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: $spacing-3;
-  margin-top: $spacing-3;
+  margin-top: $spacing-4;
 
   .textarea-container {
     flex: 1;
     position: relative;
+
+    app-textarea {
+      --field-margin-bottom: 0;
+      --textarea-border-radius: #{$radius-3xl};
+      --textarea-padding: #{$spacing-2} #{$spacing-5};
+      --textarea-min-height: 2.625rem;
+      --textarea-max-height: 8rem;
+      --textarea-resize: none;
+      --char-counter-display: none;
+    }
 
     .mention-dropdown {
       position: absolute;
@@ -145,15 +172,13 @@
       border: 1px solid $color-border-input;
       border-radius: $radius-md;
       box-shadow: $shadow-card;
-      z-index: 100;
+      z-index: $z-index-dropdown;
       padding: $spacing-1 0;
 
       .dropdown-header {
         padding: $spacing-1 $spacing-3;
-        font-size: $font-size-xs;
-        font-weight: $font-weight-semibold;
+        @include text-overline;
         color: $color-text-faint;
-        text-transform: uppercase;
         border-bottom: 1px solid $color-border-soft;
       }
 
@@ -171,13 +196,22 @@
         .member-item {
           padding: $spacing-2 $spacing-3;
           font-size: $font-size-sm;
-          color: $color-text;
+          color: $color-primary;
+          font-weight: $font-weight-medium;
           cursor: pointer;
           transition: background-color $transition-fast;
 
+          .member-name {
+            color: $color-primary;
+          }
+
           &:hover {
             background-color: $color-primary-light;
-            color: $color-primary;
+            color: $color-primary-dark;
+
+            .member-name {
+              color: $color-primary-dark;
+            }
           }
         }
       }
@@ -185,6 +219,17 @@
   }
 
   .post-button-wrapper {
-    padding-top: $spacing-1;
+    @include flex-center;
+    gap: $spacing-2;
+
+    app-button {
+      --btn-border-radius: #{$radius-3xl};
+      --btn-padding: #{$spacing-2} #{$spacing-4};
+      --btn-font-size: #{$font-size-xs};
+      --btn-font-weight: #{$font-weight-semibold};
+    }
   }
 }
+
+
+

@@ -89,7 +89,7 @@
     background-color: $color-surface;
     transition: opacity $transition-fast, background-color $transition-fast;
 
-    @media (max-width: 640px) {
+    @include respond-to-down('sm') {
       padding: $spacing-3 $spacing-4;
       gap: $spacing-3;
       flex-wrap: wrap;

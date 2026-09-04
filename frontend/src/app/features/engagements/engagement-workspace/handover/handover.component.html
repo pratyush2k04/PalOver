@@ -18,7 +18,8 @@
         @if (isProjectManagement() && isSubmitted() && !handover()?.reviewedAt) {
           <app-button
             variant="flat"
-            [disabled]="isSaving()"
+            [disabled]="isSaving() || !isPMReviewReady()"
+            [title]="hasUnresolvedQueries() ? 'All queries must be resolved before marking handover as reviewed' : (!allRealisticProvided() ? 'All commitments must have realistic estimates before marking handover as reviewed' : '')"
             (click)="markReviewed()"
           >
             Mark Reviewed
@@ -27,7 +28,7 @@
       </div>
     </app-section-header>
 
-    @if (isSubmitted() && handover()?.submittedAt) {
+    @if (isSubmitted() && handover()?.submittedAt && !handover()?.reviewedAt) {
       <p class="submitted-info">
         Submitted by {{ handover()?.submittedByName || 'Unknown' }} on {{ handover()?.submittedAt | date: 'medium' }}
       </p>
@@ -48,16 +49,10 @@
       <div class="readiness-banner" [class.readiness-ready]="isHandoverReadyToSubmit()" [class.readiness-incomplete]="!isHandoverReadyToSubmit()">
         <div class="banner-header">
           @if (isHandoverReadyToSubmit()) {
-            <svg class="banner-icon-svg ready-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
+            <span class="banner-icon-svg ready-icon" [inlineSVG]="'assets/icons/check-circle.svg'"></span>
             <span class="banner-title">Handover is ready for submission</span>
           } @else {
-            <svg class="banner-icon-svg warning-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-              <line x1="12" y1="9" x2="12" y2="13"></line>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
+            <span class="banner-icon-svg warning-icon" [inlineSVG]="'assets/icons/alert-triangle.svg'"></span>
             <span class="banner-title">Not yet able to submit handover</span>
           }
         </div>
@@ -72,6 +67,41 @@
             <span class="metric-label">Readiness Checklist:</span>
             <span class="metric-value">{{ readinessItemsPassed() }}/{{ readinessItemsApplicable() }}</span>
           </div>
+
+          @if (blockedChecklistCount() > 0) {
+            <div class="metric-item metric-item-blocked">
+              <span class="metric-label">Blocked checklist items:</span>
+              <span class="metric-value">{{ blockedChecklistCount() }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    @if (isSubmitted() && isProjectManagement()) {
+      <div class="readiness-banner" [class.readiness-ready]="isPMReviewReady()" [class.readiness-incomplete]="!isPMReviewReady()">
+        <div class="banner-header">
+          @if (isPMReviewReady()) {
+            <span class="banner-icon-svg ready-icon" [inlineSVG]="'assets/icons/check-circle.svg'"></span>
+            <span class="banner-title">Handover is ready for review</span>
+          } @else {
+            <span class="banner-icon-svg warning-icon" [inlineSVG]="'assets/icons/alert-triangle.svg'"></span>
+            <span class="banner-title">Review pending </span>
+          }
+        </div>
+
+        <div class="readiness-metrics">
+          @if (totalQueriesCount() > 0) {
+            <div class="metric-item">
+              <span class="metric-label">Queries resolved:</span>
+              <span class="metric-value">{{ resolvedQueriesCount() }}/{{ totalQueriesCount() }}</span>
+            </div>
+          }
+
+          <div class="metric-item">
+            <span class="metric-label">Realistic estimates:</span>
+            <span class="metric-value">{{ realisticCommitmentsCount() }}/{{ totalCommitmentsCount() }}</span>
+          </div>
         </div>
       </div>
     }
@@ -82,7 +112,7 @@
           <h3>{{ HANDOVER_LABELS.CLIENT_CONTEXT }}</h3>
 
           <app-textarea
-            id="clientBackground"
+            id="handover-client-background"
             [label]="HANDOVER_LABELS.CLIENT_BACKGROUND"
             [placeholder]="HANDOVER_PLACEHOLDERS.CLIENT_BACKGROUND"
             formControlName="clientBackground"
@@ -90,33 +120,35 @@
           />
 
           <app-textarea
-            id="businessProblem"
+            id="handover-business-problem"
             [label]="HANDOVER_LABELS.BUSINESS_PROBLEM"
             [placeholder]="HANDOVER_PLACEHOLDERS.BUSINESS_PROBLEM"
             formControlName="businessProblem"
             [maxLength]="maxFreeTextLength"
+            [required]="true"
             [errorMessages]="{ required: 'Business Problem is required.' }"
           />
 
-          <app-select
-            id="clientSentiment"
-            [label]="HANDOVER_LABELS.CLIENT_SENTIMENT"
-            [placeholder]="HANDOVER_PLACEHOLDERS.CLIENT_SENTIMENT"
-            formControlName="clientSentiment"
-            [options]="sentimentOptions"
-            [errorMessages]="{ required: 'Client Sentiment is required.' }"
-          />
-
-          <app-input
-            id="dealOrigin"
+          <app-textarea
+            id="handover-deal-origin"
             [label]="HANDOVER_LABELS.DEAL_ORIGIN"
             [placeholder]="HANDOVER_PLACEHOLDERS.DEAL_ORIGIN"
             formControlName="dealOrigin"
             [maxLength]="maxFreeTextLength"
           />
 
+          <app-select
+            id="handover-client-sentiment"
+            [label]="HANDOVER_LABELS.CLIENT_SENTIMENT"
+            [placeholder]="HANDOVER_PLACEHOLDERS.CLIENT_SENTIMENT"
+            formControlName="clientSentiment"
+            [options]="sentimentOptions"
+            [required]="true"
+            [errorMessages]="{ required: 'Client Sentiment is required.' }"
+          />
+
           <div class="client-context-actions">
-            <app-button variant="stroked" [disabled]="isSaving() || !isDraft()" (click)="saveDraft()">{{ HANDOVER_BUTTONS.SAVE_DRAFT }}</app-button>
+            <app-button variant="flat" [disabled]="isSaving() || !isDraft()" (click)="saveDraft()">{{ HANDOVER_BUTTONS.SAVE_DRAFT }}</app-button>
           </div>
         </div>
       </form>
@@ -137,24 +169,24 @@
         </div>
 
         <div class="readonly-grid">
-          <div class="readonly-card">
+          <div id="handover-client-background" class="readonly-card">
             <span class="readonly-label">Client Background</span>
             <p class="readonly-value" [class.readonly-value-empty]="!handover()?.clientBackground">
               {{ handover()?.clientBackground || HANDOVER_LABELS.NOT_PROVIDED }}
             </p>
           </div>
 
-          <div class="readonly-card">
-            <span class="readonly-label">Deal Origin</span>
-            <p class="readonly-value" [class.readonly-value-empty]="!handover()?.dealOrigin">
-              {{ handover()?.dealOrigin || HANDOVER_LABELS.NOT_PROVIDED }}
-            </p>
-          </div>
-
-          <div class="readonly-card">
+          <div id="handover-business-problem" class="readonly-card">
             <span class="readonly-label">Business Problem</span>
             <p class="readonly-value" [class.readonly-value-empty]="!handover()?.businessProblem">
               {{ handover()?.businessProblem || HANDOVER_LABELS.NOT_PROVIDED }}
+            </p>
+          </div>
+
+          <div id="handover-deal-origin" class="readonly-card">
+            <span class="readonly-label">Deal Origin</span>
+            <p class="readonly-value" [class.readonly-value-empty]="!handover()?.dealOrigin">
+              {{ handover()?.dealOrigin || HANDOVER_LABELS.NOT_PROVIDED }}
             </p>
           </div>
         </div>
@@ -175,7 +207,7 @@
               [disabled]="!hasHandoverDraft()"
               (click)="openAddCommitmentDialog()"
             >
-              + {{ HANDOVER_BUTTONS.ADD_COMMITMENT }}
+              {{ HANDOVER_BUTTONS.ADD_COMMITMENT }}
             </app-button>
           </div>
         }
@@ -188,7 +220,7 @@
       @if (commitments().length > 0) {
         <div class="commitment-cards">
           @for (c of commitments(); track c.commitmentId) {
-            <div class="commitment-card">
+            <div [id]="'handover-commitment-' + c.commitmentId" class="commitment-card">
               <div class="commitment-square promised-square">
                 <div class="square-header">
                   <span class="square-label">{{ HANDOVER_LABELS.PROMISED }}</span>
@@ -375,7 +407,8 @@
                   <div class="realistic-edit-form">
                     <app-textarea
                       [id]="'edit-realistic-desc-' + c.commitmentId"
-                      [label]="HANDOVER_LABELS.DESCRIPTION + ' *'"
+                      [label]="HANDOVER_LABELS.DESCRIPTION"
+                      [required]="true"
                       [(ngModel)]="realisticEditForm().description"
                       [ngModelOptions]="{ standalone: true }"
                       [maxLength]="2000"
@@ -411,7 +444,8 @@
                     <div class="form-group">
                       <app-input
                         [id]="'edit-realistic-ack-' + c.commitmentId"
-                        [label]="editFormNeedsAcknowledgement(c) ? HANDOVER_LABELS.ACKNOWLEDGEMENT_MESSAGE_REQ : HANDOVER_LABELS.ACKNOWLEDGEMENT_MESSAGE"
+                        [label]="HANDOVER_LABELS.ACKNOWLEDGEMENT_MESSAGE"
+                        [required]="editFormNeedsAcknowledgement(c)"
                         [(ngModel)]="realisticEditForm().acknowledgementMessage"
                         [ngModelOptions]="{ standalone: true }"
                         [maxLength]="2000"
@@ -452,6 +486,7 @@
         [engagementId]="engagementId()!"
         [commitments]="commitments()"
         [isReviewed]="isReviewed()"
+        (queriesChange)="queries.set($event)"
       ></app-handover-queries>
     }
   </div>

@@ -25,8 +25,8 @@ public class EvidenceSnapshotItemConfiguration : IEntityTypeConfiguration<Eviden
             .HasMaxLength(30)
             .IsRequired();
 
-        builder.Property(i => i.EvidenceNote).HasColumnName("evidence_note").HasMaxLength(500);
-        builder.Property(i => i.EvidenceLink).HasColumnName("evidence_link").HasMaxLength(2000);
+        builder.Property(i => i.EvidenceDocumentId).HasColumnName("evidence_document_id");
+        builder.Property(i => i.EvidenceDocumentFileName).HasColumnName("evidence_document_file_name").HasMaxLength(255);
         builder.Property(i => i.EvidenceSubmittedAt).HasColumnName("evidence_submitted_at");
         builder.Property(i => i.EvidenceSubmittedByName).HasColumnName("evidence_submitted_by_name").HasMaxLength(200);
 

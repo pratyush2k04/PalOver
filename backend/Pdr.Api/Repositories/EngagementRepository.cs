@@ -35,6 +35,47 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
         return await query.ToListAsync();
     }
 
+    private IQueryable<Engagement> BuildMyEngagementsQuery(int userId, bool isSignedOff)
+    {
+        return context.Engagements
+            .AsNoTracking()
+            .Include(e => e.EngagementType)
+            .Include(e => e.CommercialModel)
+            .Include(e => e.DayOneSignOffRecord)
+            .Where(e => e.EngagementAssignments.Any(a => a.UserId == userId)
+                     && (isSignedOff ? e.DayOneSignOffRecord != null : e.DayOneSignOffRecord == null));
+    }
+
+    private static IQueryable<Engagement> ApplySort(IQueryable<Engagement> query, string sortBy) =>
+        sortBy switch
+        {
+            "client" => query.OrderBy(e => e.ClientName),
+            _ => query.OrderBy(e => e.KickoffDate)
+        };
+
+    public async Task<(List<Engagement> Items, int TotalCount)> GetEngagementsForUserPageAsync(int userId, bool isSignedOff, string sortBy, int page, int pageSize)
+    {
+        var query = BuildMyEngagementsQuery(userId, isSignedOff);
+
+        var totalCount = await query.CountAsync();
+
+        var items = await ApplySort(query, sortBy)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
+    }
+
+    public async Task<List<Engagement>> GetEngagementsForUserFilteredAsync(int userId, bool isSignedOff, string sortBy)
+    {
+        var query = BuildMyEngagementsQuery(userId, isSignedOff);
+        return await ApplySort(query, sortBy).ToListAsync();
+    }
+
+    public async Task<int> GetEngagementsForUserStatusCountAsync(int userId, bool isSignedOff) =>
+        await BuildMyEngagementsQuery(userId, isSignedOff).CountAsync();
+
     public async Task<List<int>> GetEngagementIdsForUserAsync(int userId) =>
         await context.Engagements
             .AsNoTracking()
@@ -316,8 +357,8 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
                     i.Title,
                     i.CategoryName,
                     i.StatusAtSignOff,
-                    i.EvidenceNote,
-                    i.EvidenceLink,
+                    i.EvidenceDocumentId,
+                    i.EvidenceDocumentFileName,
                     i.EvidenceSubmittedAt,
                     i.EvidenceSubmittedByName))
                 .ToList());
@@ -354,4 +395,16 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
             throw new EngagementSignedOffException();
         }
     }
+
+    public async Task<bool> HasAnyAssignmentAsync(int engagementId) =>
+        await context.EngagementAssignments
+            .AsNoTracking()
+            .AnyAsync(a => a.EngagementId == engagementId);
+
+    public async Task<Engagement?> GetForOnePagerAsync(int engagementId) =>
+        await context.Engagements
+            .AsNoTracking()
+            .Include(e => e.CommercialModel)
+            .Include(e => e.DayOneSignOffRecord)
+            .FirstOrDefaultAsync(e => e.EngagementId == engagementId);
 }

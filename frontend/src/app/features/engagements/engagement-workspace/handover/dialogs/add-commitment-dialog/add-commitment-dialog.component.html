@@ -10,7 +10,6 @@
           [required]="true"
           [placeholder]="HANDOVER_PLACEHOLDERS.TITLE_REQ"
           formControlName="title"
-          [maxLength]="100"
           [errorMessages]="{ required: 'Title is required.' }"
         />
       </div>
@@ -31,7 +30,7 @@
       [required]="true"
       [placeholder]="HANDOVER_PLACEHOLDERS.DESCRIPTION_REQ"
       formControlName="description"
-      [maxLength]="2000"
+      [maxLength]="500"
       [rows]="3"
       [errorMessages]="{ required: 'Description is required.' }"
     />

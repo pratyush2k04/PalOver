@@ -11,22 +11,17 @@
 .user-directory {
   box-sizing: border-box;
   padding: $spacing-8;
-  max-width: 87.5rem;
-  margin: 0 auto;
   font-family: $font-family-base;
   color: $color-text;
 
-  @media (max-width: 768px) {
+  @include respond-to-down('md') {
     padding: $spacing-4;
   }
 
   app-page-header {
     display: block;
+    --page-header-margin-bottom: 0;
     margin-bottom: $spacing-2;
-
-    ::ng-deep .page-header {
-      margin-bottom: 0;
-    }
   }
 
   /* Header Controls & Cards */
@@ -37,7 +32,7 @@
     flex-wrap: wrap;
     margin-bottom: $spacing-4;
 
-    @media (max-width: 768px) {
+    @include respond-to-down('md') {
       flex-direction: column;
       align-items: stretch;
       gap: $spacing-2;
@@ -49,7 +44,7 @@
       display: flex;
       align-items: center;
 
-      @media (max-width: 768px) {
+      @include respond-to-down('md') {
         width: 100%;
       }
 
@@ -63,26 +58,15 @@
         color: $color-text-fainter;
         display: flex;
         align-items: center;
-
-        ::ng-deep svg,
-        svg {
-          width: $font-size-base;
-          height: $font-size-base;
-        }
+        width: $font-size-base;
+        height: $font-size-base;
       }
 
       app-input {
         width: 100%;
-      }
-
-      ::ng-deep .app-field {
-        margin-bottom: 0;
-
-        input {
-          padding-left: 2.5rem;
-          height: 2.375rem;
-          box-sizing: border-box;
-        }
+        --field-margin-bottom: 0;
+        --input-padding-left: 2.5rem;
+        --input-height: 2.375rem;
       }
     }
 
@@ -91,21 +75,13 @@
       display: flex;
       align-items: center;
 
-      @media (max-width: 768px) {
+      @include respond-to-down('md') {
         width: 100%;
       }
 
       app-select {
         width: 100%;
-      }
-
-      ::ng-deep .app-field {
-        margin-bottom: 0;
-
-        select {
-          height: 2.375rem;
-          box-sizing: border-box;
-        }
+        --field-margin-bottom: 0;
       }
     }
   }
@@ -122,7 +98,7 @@
     min-width: 16.25rem;
     box-shadow: $shadow-card;
 
-    @media (max-width: 768px) {
+    @include respond-to-down('md') {
       width: 100%;
       min-width: 0;
       box-sizing: border-box;
@@ -137,8 +113,7 @@
       background: $color-primary-light;
       color: $color-primary;
 
-      ::ng-deep svg,
-      svg {
+      span {
         width: 1.5rem;
         height: 1.5rem;
       }
@@ -181,10 +156,7 @@
       th {
         background: $color-surface-hover;
         padding: 0.65rem $spacing-5;
-        font-size: $font-size-xs;
-        font-weight: $font-weight-bold;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+        @include text-overline;
         color: $color-text-muted;
         border-bottom: 1px solid $color-border-soft;
       }
@@ -225,49 +197,44 @@
         width: 17.5rem;
         min-width: 17.5rem;
 
-        ::ng-deep .app-field {
-          margin-bottom: 0;
-
-          select {
-            font-weight: $font-weight-semibold;
-            border-radius: $radius-lg;
-            padding: 0.4rem 1.85rem 0.4rem 0.85rem;
-            width: 100%;
-            transition: border-color $transition-fast, background-color $transition-fast, color $transition-fast;
-          }
+        app-select {
+          --field-margin-bottom: 0;
+          --select-font-weight: #{$font-weight-semibold};
+          --select-border-radius: #{$radius-lg};
+          --select-padding: 0.4rem 1.85rem 0.4rem 0.85rem;
         }
 
         /* Distinct color schemes for each role */
         &[data-role="Leadership"],
         &[data-role="Admin"] {
-          ::ng-deep select {
-            background-color: $color-role-admin-bg;
-            color: $color-role-admin-text;
-            border: 1px solid $color-role-admin-border;
+          app-select {
+            --select-bg: #{$color-role-admin-bg};
+            --select-color: #{$color-role-admin-text};
+            --select-border: #{$color-role-admin-border};
           }
         }
 
         &[data-role="Project Management"] {
-          ::ng-deep select {
-            background-color: $color-primary-light;
-            color: $color-primary;
-            border: 1px solid $color-primary-border;
+          app-select {
+            --select-bg: #{$color-primary-light};
+            --select-color: #{$color-primary};
+            --select-border: #{$color-primary-border};
           }
         }
 
         &[data-role="Pre Sales"] {
-          ::ng-deep select {
-            background-color: $color-success-bg;
-            color: $color-success;
-            border: 1px solid $color-success-border;
+          app-select {
+            --select-bg: #{$color-success-bg};
+            --select-color: #{$color-success};
+            --select-border: #{$color-success-border};
           }
         }
 
         &[data-role="Tech Lead"] {
-          ::ng-deep select {
-            background-color: $color-orange-50;
-            color: $color-accent-amber-hover;
-            border: 1px solid $color-orange-200;
+          app-select {
+            --select-bg: #{$color-orange-50};
+            --select-color: #{$color-accent-amber-hover};
+            --select-border: #{$color-orange-200};
           }
         }
       }
@@ -281,7 +248,7 @@
       background: $color-surface;
       border-top: 1px solid $color-border-soft;
 
-      @media (max-width: 768px) {
+      @include respond-to-down('md') {
         flex-direction: column;
         align-items: center;
         gap: $spacing-3;

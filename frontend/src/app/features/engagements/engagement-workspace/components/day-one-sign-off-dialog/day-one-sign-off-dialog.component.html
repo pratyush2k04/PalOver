@@ -18,25 +18,17 @@
   }
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="sign-off-form">
-    <div class="form-group">
-      <label for="billingStartDate">Billing Start Date <span class="required-asterisk">*</span></label>
-      <input
-        id="billingStartDate"
-        type="date"
-        class="form-control"
-        [min]="minDate"
-        formControlName="billingStartDate"
-      />
-      @if (form.get('billingStartDate')?.invalid && (form.get('billingStartDate')?.touched || form.get('billingStartDate')?.dirty)) {
-        <span class="error-text">
-          @if (form.get('billingStartDate')?.errors?.['required']) {
-            Billing start date is required.
-          } @else if (form.get('billingStartDate')?.errors?.['pastDate']) {
-            Date cannot be in the past.
-          }
-        </span>
-      }
-    </div>
+    <app-datepicker
+      id="billingStartDate"
+      label="Billing Start Date"
+      [required]="true"
+      [min]="minDate"
+      formControlName="billingStartDate"
+      [errorMessages]="{
+        required: 'Billing start date is required.',
+        pastDate: 'Date cannot be in the past.'
+      }"
+    />
 
     @if (isException() && data.isLeadership) {
       <div class="form-group">

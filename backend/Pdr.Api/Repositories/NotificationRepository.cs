@@ -13,7 +13,9 @@ public class NotificationRepository(AppDbContext context) : INotificationReposit
             .Include(n => n.Template)
             .FirstOrDefaultAsync(n => n.Id == id);
 
-    public async Task<(List<Notification> Notifications, int TotalCount)> GetForUserAsync(int userId, int? engagementId, int page, int pageSize)
+    public async Task<(List<Notification> Notifications, int TotalCount)> GetForUserAsync(
+        int userId, int? engagementId, int page, int pageSize,
+        bool? isRead = null, NotificationPriority? priority = null)
     {
         var query = context.Notifications
             .AsNoTracking()
@@ -23,6 +25,18 @@ public class NotificationRepository(AppDbContext context) : INotificationReposit
         if (engagementId.HasValue)
         {
             query = query.Where(n => EF.Functions.JsonContains(n.Data!, $"{{\"EngagementId\":{engagementId.Value}}}"));
+        }
+
+        if (isRead.HasValue)
+        {
+            query = isRead.Value
+                ? query.Where(n => n.ReadAt != null)
+                : query.Where(n => n.ReadAt == null);
+        }
+
+        if (priority.HasValue)
+        {
+            query = query.Where(n => n.Priority == priority.Value);
         }
 
         var totalCount = await query.CountAsync();

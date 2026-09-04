@@ -29,7 +29,7 @@
     [required]="true"
     placeholder="What would you like to ask?"
     [rows]="4"
-    [maxLength]="2000"
+    [maxLength]="500"
     [ngModel]="question()"
     (ngModelChange)="question.set($event)"
     [ngModelOptions]="{ standalone: true }"

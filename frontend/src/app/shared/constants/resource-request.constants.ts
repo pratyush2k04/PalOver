@@ -6,14 +6,12 @@ export const RESOURCE_REQUEST_CONSTANTS = {
     `/api/engagements/${engagementId}/resource-requests`,
   API_ENGAGEMENT_RESOURCE_ALLOCATIONS: (engagementId: number, requestId: number) =>
     `/api/engagements/${engagementId}/resource-requests/${requestId}/allocations`,
-  API_CONFIRM_ALLOCATION: (engagementId: number, requestId: number, allocationId: number) =>
-    `/api/engagements/${engagementId}/resource-requests/${requestId}/allocations/${allocationId}/confirm`,
   API_REMOVE_ALLOCATION: (engagementId: number, requestId: number, allocationId: number) =>
     `/api/engagements/${engagementId}/resource-requests/${requestId}/allocations/${allocationId}/remove`,
 
   // UI Strings
   PAGE_TITLE: 'Resource Requests',
-  BTN_RAISE_REQUEST: '+ Raise request',
+  BTN_RAISE_REQUEST: ' Raise request',
   MODAL_TITLE: 'Raise resource request',
 
   LABEL_STANDARD_ROLE: 'Standard role',
@@ -41,24 +39,16 @@ export const RESOURCE_REQUEST_CONSTANTS = {
 
   // Allocation lifecycle
   MODAL_TITLE_ALLOCATE: 'Allocate named resources',
-  MODAL_TITLE_CONFIRM: 'Confirm resource',
   MODAL_TITLE_REMOVE: 'Remove confirmed resource',
 
   BTN_ALLOCATE: 'Allocate named resources',
-  BTN_CONFIRM: 'Confirm',
   BTN_REMOVE: 'Remove',
 
-  LABEL_CONFIRMED_DATE: 'Confirmation date',
   LABEL_REMOVAL_REASON: 'Reason for removal',
 
-  MSG_NAME_REQUIRED: 'Name cannot be blank.',
-  MSG_FUTURE_CONFIRMED_DATE: 'Confirmation date cannot be in the future.',
   MSG_REMOVAL_REASON_LENGTH: 'Reason must be between 10 and 500 characters.',
-  MSG_SUCCESS_ALLOCATED: 'Named resources saved.',
-  MSG_SUCCESS_CONFIRMED: 'Resource confirmed.',
+  MSG_SUCCESS_ALLOCATED: 'Resource names saved.',
   MSG_SUCCESS_REMOVED: 'Resource removed and request reopened.',
-
-  PENDING_CONFIRMATION: 'Pending confirmation',
 } as const;
 
 export const STANDARD_ROLE_OPTIONS: readonly SelectOption[] = [

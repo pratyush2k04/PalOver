@@ -73,7 +73,7 @@
   display: flex;
   gap: $spacing-4;
 
-  @media (max-width: 640px) {
+  @include respond-to-down('sm') {
     flex-direction: column;
     gap: $spacing-3;
   }
