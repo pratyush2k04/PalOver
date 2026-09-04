@@ -76,7 +76,7 @@ export class EngagementAllocationComponent implements OnInit {
     this.loadData();
   }
 
-  loadData(): void {
+  loadData(onDone?: () => void): void {
     this.loading.set(true);
     this.allocationService.getAllEngagements().subscribe({
       next: (data) => {
@@ -89,6 +89,7 @@ export class EngagementAllocationComponent implements OnInit {
         if (items.length === 0) {
           this.engagements.set(items);
           this.loading.set(false);
+          onDone?.();
           return;
         }
 
@@ -119,11 +120,13 @@ export class EngagementAllocationComponent implements OnInit {
             hasHandoverDraft: handoverMap.get(item.engagementId) ?? false
           })));
           this.loading.set(false);
+          onDone?.();
         });
       },
       error: () => {
         this.loading.set(false);
         this.toastService.error('Failed to load engagements.');
+        onDone?.();
       }
     });
 
@@ -171,48 +174,17 @@ export class EngagementAllocationComponent implements OnInit {
     dialogRef.closed$.subscribe((result) => {
       if (!result) return;
 
-      const originalIds = new Set(engagement.leadershipUsers?.map(u => u.id) || []);
-      const newIds = new Set(result.userIds);
+      this.loadData(() => {
+        const { addedNames, removedNames } = result;
 
-      if (originalIds.size === newIds.size && [...originalIds].every(id => newIds.has(id))) {
-        return;
-      }
-
-      this.loading.set(true);
-      this.allocationService.updateLeadershipUsers(engagement.engagementId, result.userIds, true).subscribe({
-        next: (updatedUsers) => {
-          this.updateEngagementInList(engagement.engagementId, updatedUsers);
-          this.loading.set(false);
-
-          const addedUsers = updatedUsers.filter(u => !originalIds.has(u.id));
-          const removedUsers = (engagement.leadershipUsers || []).filter(u => !newIds.has(u.id));
-
-          if (addedUsers.length > 0 && removedUsers.length === 0) {
-            const names = addedUsers.map(u => u.fullName).join(', ');
-            this.toastService.success(`Assigned ${names} to ${engagement.engagementName}`);
-          } else if (removedUsers.length > 0 && addedUsers.length === 0) {
-            const names = removedUsers.map(u => u.fullName).join(', ');
-            this.toastService.success(`Removed ${names} from ${engagement.engagementName}`);
-          } else if (addedUsers.length > 0 && removedUsers.length > 0) {
-            this.toastService.success(`Updated leadership contacts for ${engagement.engagementName}`);
-          }
-        },
-        error: (err) => {
-          this.loading.set(false);
-          const errorMsg = err.error?.message || 'Failed to update leadership contacts.';
-          this.toastService.error(errorMsg);
+        if (addedNames.length > 0 && removedNames.length === 0) {
+          this.toastService.success(`Assigned ${addedNames.join(', ')} to ${engagement.engagementName}`);
+        } else if (removedNames.length > 0 && addedNames.length === 0) {
+          this.toastService.success(`Removed ${removedNames.join(', ')} from ${engagement.engagementName}`);
+        } else if (addedNames.length > 0 && removedNames.length > 0) {
+          this.toastService.success(`Updated leadership contacts for ${engagement.engagementName}`);
         }
       });
     });
-  }
-
-  private updateEngagementInList(engagementId: number, updatedUsers: LeadershipUserItem[]): void {
-    this.engagements.update(list =>
-      list.map(item =>
-        item.engagementId === engagementId
-          ? { ...item, leadershipUsers: updatedUsers }
-          : item
-      )
-    );
   }
 }

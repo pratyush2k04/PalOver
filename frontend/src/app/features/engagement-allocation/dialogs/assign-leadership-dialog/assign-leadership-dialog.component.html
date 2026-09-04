@@ -68,9 +68,13 @@
   </div>
 
   <p class="app-dialog__hint">Select a Leadership user from the dropdown to assign. At least one Leadership user must remain assigned at all times.</p>
+
+  @if (errorMessage()) {
+    <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+  }
 </div>
 
 <div class="app-dialog__actions">
-  <app-button type="button" variant="stroked" (click)="onClose()">Cancel</app-button>
-  <app-button type="button" variant="flat" (click)="saveAndClose()">Save</app-button>
+  <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="onClose()">Cancel</app-button>
+  <app-button type="button" variant="flat" [disabled]="isSubmitting()" (click)="saveAndClose()">{{ isSubmitting() ? 'Saving...' : 'Save' }}</app-button>
 </div>

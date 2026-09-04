@@ -10,7 +10,7 @@ import { AuthService } from '@shared/services/auth';
 import { ToastService } from '@common/services/toast/toast';
 import { ENGAGEMENT_WORKSPACE_CONFIG } from '@shared/constants/engagements.constants';
 import { USER_ROLES } from '@shared/constants/users.constants';
-import { DayOneSignOffRequest, EngagementInfoDto } from '../models/engagement.model';
+import { EngagementInfoDto } from '../models/engagement.model';
 import { ENGAGEMENT_ROUTES } from '@shared/constants/routes.constants';
 import { TabItem, TabsComponent } from '@common/components/tabs/tabs';
 import { ReadinessCircleComponent } from '@shared/readiness-circle/readiness-circle';
@@ -182,17 +182,10 @@ export class EngagementWorkspaceComponent {
       }
     });
 
-    dialogRef.closed$.subscribe((request) => {
-      if (!request) return;
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
 
-      this.engagementService.signOffDayOne(engagementId, request).subscribe({
-        next: () => {
-          this.loadEngagement(engagementId, () => this.toastService.success('Day-1 successfully signed off!'));
-        },
-        error: (err) => {
-          this.toastService.error(err.error?.message || 'Failed to sign off Day-1 readiness.');
-        }
-      });
+      this.loadEngagement(engagementId, () => this.toastService.success('Day-1 successfully signed off!'));
     });
   }
 

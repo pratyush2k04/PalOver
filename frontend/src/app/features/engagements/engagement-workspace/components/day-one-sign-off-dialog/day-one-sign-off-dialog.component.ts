@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -6,6 +6,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { AlertComponent } from '@common/components/alert/alert';
 import { DatepickerComponent } from '@common/components/form/datepicker/datepicker';
 import { DayOneSignOffRequest } from '@features/engagements/models/engagement.model';
+import { EngagementService } from '@features/engagements/services/engagement.service';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { futureDateValidator } from '@common/validators/date.validators';
@@ -19,7 +20,8 @@ import { futureDateValidator } from '@common/validators/date.validators';
 })
 export class DayOneSignOffDialogComponent {
   private fb = inject(FormBuilder);
-  private dialogRef = inject(DialogRef<DayOneSignOffRequest>);
+  private dialogRef = inject(DialogRef<boolean>);
+  private engagementService = inject(EngagementService);
   public data = inject(DIALOG_DATA) as {
     engagementId: number;
     isAbleToStartDayOne: boolean;
@@ -46,6 +48,9 @@ export class DayOneSignOffDialogComponent {
     if (this.isException() && !this.data.isLeadership) return false;
     return this.formStatus() === 'VALID';
   });
+
+  readonly isSubmitting = signal(false);
+  readonly errorMessage = signal<string | null>(null);
 
   constructor() {
     effect(() => {
@@ -86,6 +91,17 @@ export class DayOneSignOffDialogComponent {
       exceptionJustification: this.isException() ? val.exceptionJustification?.trim() : undefined
     };
 
-    this.dialogRef.close(request);
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
+
+    this.engagementService.signOffDayOne(this.data.engagementId, request, true).subscribe({
+      next: () => {
+        this.dialogRef.close(true);
+      },
+      error: (err) => {
+        this.isSubmitting.set(false);
+        this.errorMessage.set(err?.error?.message || err?.error || 'Something went wrong');
+      }
+    });
   }
 }

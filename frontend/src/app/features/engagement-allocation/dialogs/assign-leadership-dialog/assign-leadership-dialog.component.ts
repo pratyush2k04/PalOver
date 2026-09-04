@@ -19,7 +19,9 @@ export interface AssignLeadershipDialogData {
 }
 
 export interface AssignLeadershipDialogResult {
-  userIds: number[];
+  success: true;
+  addedNames: string[];
+  removedNames: string[];
 }
 
 @Component({
@@ -50,6 +52,8 @@ export class AssignLeadershipDialogComponent implements OnInit {
   modalSearchTerm = signal<string>('');
   readonly handover = signal<HandoverDraftStatus | null>(null);
   readonly isLoadingHandover = signal<boolean>(true);
+  readonly isSubmitting = signal(false);
+  readonly errorMessage = signal<string | null>(null);
 
   ngOnInit(): void {
     this.allocationService.getHandoverDraftStatus(this.engagement.engagementId, true).subscribe({
@@ -114,6 +118,30 @@ export class AssignLeadershipDialogComponent implements OnInit {
   }
 
   saveAndClose(): void {
-    this.dialogRef.close({ userIds: this.modalLeadershipUsers().map(u => u.id) });
+    const originalUsers = this.data.engagement.leadershipUsers || [];
+    const originalIds = new Set(originalUsers.map(u => u.id));
+    const newUsers = this.modalLeadershipUsers();
+    const newIds = new Set(newUsers.map(u => u.id));
+
+    if (originalIds.size === newIds.size && [...originalIds].every(id => newIds.has(id))) {
+      this.dialogRef.close();
+      return;
+    }
+
+    const addedNames = newUsers.filter(u => !originalIds.has(u.id)).map(u => u.fullName);
+    const removedNames = originalUsers.filter(u => !newIds.has(u.id)).map(u => u.fullName);
+
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
+
+    this.allocationService.updateLeadershipUsers(this.engagement.engagementId, [...newIds], true).subscribe({
+      next: () => {
+        this.dialogRef.close({ success: true, addedNames, removedNames });
+      },
+      error: (err) => {
+        this.isSubmitting.set(false);
+        this.errorMessage.set(err?.error?.message || err?.error || 'Something went wrong');
+      }
+    });
   }
 }
