@@ -128,6 +128,7 @@
                       class="btn-upload-version"
                       ariaLabel="Upload new version"
                       [appTooltip]="'Upload new version'"
+                      [disabled]="isLoading()"
                       (click)="triggerVersionUpload(doc)"
                     >
                       <span class="upload-version-icon" [inlineSVG]="'assets/icons/upload.svg'"></span>
@@ -138,6 +139,7 @@
                       class="btn-remove"
                       ariaLabel="Remove document"
                       [appTooltip]="'Remove document'"
+                      [disabled]="isLoading()"
                       (click)="openRemoveModal(doc)"
                     >
                       <span class="remove-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
