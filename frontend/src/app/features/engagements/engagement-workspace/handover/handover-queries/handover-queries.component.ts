@@ -11,11 +11,14 @@ import {
   HANDOVER_SECTION_FRAGMENT_IDS
 } from '../../../models/handover-query.model';
 import { CommitmentDto } from '../../../models/handover.model';
+import { AccordionComponent } from '@common/components/accordion/accordion';
+import { AvatarComponent } from '@common/components/avatar/avatar';
 import { ButtonComponent } from '@common/components/button/button';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { AlertComponent } from '@common/components/alert/alert';
+import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import {
   RaiseHandoverQueryDialogComponent,
   RaiseHandoverQueryDialogData
@@ -28,7 +31,18 @@ import {
 @Component({
   selector: 'app-handover-queries',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, StatusBadgeComponent, TextareaComponent, EmptyStateComponent, AlertComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    AccordionComponent,
+    AvatarComponent,
+    ButtonComponent,
+    StatusBadgeComponent,
+    TextareaComponent,
+    EmptyStateComponent,
+    AlertComponent,
+    ConfirmDialogComponent
+  ],
   templateUrl: './handover-queries.component.html',
   styleUrl: './handover-queries.component.scss',
 })
@@ -49,8 +63,13 @@ export class HandoverQueriesComponent {
   isError = signal(false);
 
   messageDrafts = signal<Record<number, string>>({});
+  expandedQueries = signal<Record<number, boolean>>({});
   pendingResolutionToggles = signal<ReadonlySet<number>>(new Set());
   submittingMessages = signal<ReadonlySet<number>>(new Set());
+
+  // Delete Confirmation State
+  pendingDeleteQuery = signal<HandoverQueryDto | null>(null);
+  isDeletingQuery = signal<boolean>(false);
 
   isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
   isProjectManagement = computed(() => this.authService.hasRole('Project Management'));
@@ -90,11 +109,13 @@ export class HandoverQueriesComponent {
       const commitment = this.commitments().find((c) => c.commitmentId === query.referenceId);
       return commitment ? `Commitment: ${commitment.title}` : HANDOVER_QUERY_FIELD_LABELS[query.fieldSection];
     }
-    return HANDOVER_QUERY_FIELD_LABELS[query.fieldSection];
+    return HANDOVER_QUERY_FIELD_LABELS[query.fieldSection] ?? query.fieldSection;
   }
 
   jumpToField(query: HandoverQueryDto): void {
     const baseId = HANDOVER_SECTION_FRAGMENT_IDS[query.fieldSection];
+    if (!baseId) return;
+
     const fragmentId =
       query.fieldSection === HandoverQueryFieldSection.Commitment && query.referenceId
         ? `${baseId}-${query.referenceId}`
@@ -108,14 +129,38 @@ export class HandoverQueriesComponent {
     }
   }
 
-  isMessageOutgoing(msg: HandoverQueryMessageDto): boolean {
-    if (this.isPreSales()) {
-      return msg.messageType === 'Response';
-    }
-    if (this.isProjectManagement()) {
-      return msg.messageType === 'Question';
-    }
-    return msg.messageType === 'Response';
+  getInitialQuestion(query: HandoverQueryDto): string {
+    return query.messages?.[0]?.messageText ?? '';
+  }
+
+  getReplies(query: HandoverQueryDto): HandoverQueryMessageDto[] {
+    return query.messages?.slice(1) ?? [];
+  }
+
+  getRelativeTime(dateStr: string | Date | undefined): string {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffSecs = Math.floor(diffMs / 1000);
+    const diffMins = Math.floor(diffSecs / 60);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffSecs < 60) return 'just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays === 1) return 'yesterday';
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  }
+
+  isExpanded(queryId: number): boolean {
+    return this.expandedQueries()[queryId] ?? true;
+  }
+
+  toggleExpand(queryId: number, expanded: boolean): void {
+    this.expandedQueries.update((map) => ({ ...map, [queryId]: expanded }));
   }
 
   messageDraft(queryId: number): string {
@@ -126,17 +171,25 @@ export class HandoverQueriesComponent {
     this.messageDrafts.update((drafts) => ({ ...drafts, [queryId]: value }));
   }
 
-  canUserSubmitMessage(query: HandoverQueryDto): boolean {
-    if (query.isResolved) return false;
-    if (this.isPreSales() && query.canRespond) return true;
-    if (this.isProjectManagement() && query.canAddFollowUp) return true;
-    return false;
+  canSubmitMessage(): boolean {
+    return this.isPreSales() || this.isProjectManagement();
+  }
+
+  isSubmitting(queryId: number): boolean {
+    return this.submittingMessages().has(queryId);
+  }
+
+  onTextareaKeyDown(event: KeyboardEvent, query: HandoverQueryDto): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.submitMessage(query);
+    }
   }
 
   submitMessage(query: HandoverQueryDto): void {
     const id = this.engagementId();
     const text = this.messageDraft(query.id).trim();
-    if (!text || this.submittingMessages().has(query.id)) return;
+    if (!text || this.isSubmitting(query.id)) return;
 
     this.submittingMessages.update((s) => new Set(s).add(query.id));
 
@@ -161,14 +214,6 @@ export class HandoverQueriesComponent {
     });
   }
 
-  canResolve(query: HandoverQueryDto): boolean {
-    if (query.isResolved) return true; // Can always toggle to reopen
-    // To resolve: must not be waiting on a response (cannot have pending question) and must have at least 1 response
-    const hasResponse = query.messages.some((m) => m.messageType === 'Response');
-    const latestIsResponse = query.latestMessageType === 'Response';
-    return hasResponse && latestIsResponse;
-  }
-
   toggleResolve(query: HandoverQueryDto): void {
     if (this.pendingResolutionToggles().has(query.id)) return;
 
@@ -190,6 +235,36 @@ export class HandoverQueriesComponent {
           next.delete(query.id);
           return next;
         });
+      },
+    });
+  }
+
+  openDeleteConfirm(query: HandoverQueryDto): void {
+    this.pendingDeleteQuery.set(query);
+  }
+
+  cancelDeleteQuery(): void {
+    this.pendingDeleteQuery.set(null);
+  }
+
+  confirmDeleteQuery(query: HandoverQueryDto): void {
+    const id = this.engagementId();
+    this.isDeletingQuery.set(true);
+
+    this.handoverQueryService.deleteQuery(id, query.id).subscribe({
+      next: () => {
+        this.queries.update((qs) => {
+          const next = qs.filter((q) => q.id !== query.id);
+          this.queriesChange.emit(next);
+          return next;
+        });
+        this.pendingDeleteQuery.set(null);
+        this.isDeletingQuery.set(false);
+        this.showMessage(HANDOVER_MESSAGES.QUERY_DELETED, false);
+      },
+      error: (err) => {
+        this.isDeletingQuery.set(false);
+        this.showMessage(this.extractErrorMessage(err, HANDOVER_MESSAGES.QUERY_DELETE_ERROR), true);
       },
     });
   }

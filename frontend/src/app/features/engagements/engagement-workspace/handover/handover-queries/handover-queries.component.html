@@ -1,8 +1,15 @@
-<div class="section handover-queries">
+<div class="handover-queries-container">
   <div class="queries-header">
-    <h3>Handover Queries</h3>
+    <div class="header-title-section">
+      <h3 class="queries-title">Handover Queries</h3>
+      @if (queries().length > 0) {
+        <span class="count-badge">{{ openQueries().length }} Open / {{ queries().length }} Total</span>
+      }
+    </div>
     @if (!loadError() && isProjectManagement() && !isReviewed()) {
-      <app-button variant="flat" (click)="openRaiseQueryDialog()"> Raise Query</app-button>
+      <app-button variant="flat" (click)="openRaiseQueryDialog()">
+        Raise Query
+      </app-button>
     }
   </div>
 
@@ -13,130 +20,152 @@
   }
 
   @if (!isLoading() && !loadError() && queries().length === 0) {
-    <app-empty-state message="No queries raised" />
+    <app-empty-state message="No handover queries have been raised yet." />
   }
 
   @if (!loadError() && queries().length > 0) {
-    @if (openQueries().length > 0) {
-      <div class="query-section">
-        <h4 class="query-section-heading">Open Queries</h4>
-        <div class="query-cards">
-          @for (query of openQueries(); track query.id) {
-            <ng-container [ngTemplateOutlet]="queryCard" [ngTemplateOutletContext]="{ query: query }" />
-          }
-        </div>
-      </div>
-    }
+    <div class="queries-grid">
+      @for (query of queries(); track query.id) {
+        <div class="query-card" [class.resolved]="query.isResolved">
+          <!-- Card Header -->
+          <div class="query-card-header">
+            <div class="title-section">
+              <h4
+                class="query-field-title clickable"
+                [title]="'Jump to ' + fieldSectionLabel(query)"
+                (click)="jumpToField(query)"
+              >
+                {{ fieldSectionLabel(query) }}
+              </h4>
+            </div>
 
-    @if (resolvedQueries().length > 0) {
-      <div class="query-section">
-        <h4 class="query-section-heading">Resolved Queries</h4>
-        <div class="query-cards">
-          @for (query of resolvedQueries(); track query.id) {
-            <ng-container [ngTemplateOutlet]="queryCard" [ngTemplateOutletContext]="{ query: query }" />
-          }
+            <div class="right-section">
+              <app-status-badge [tone]="query.isResolved ? 'success' : 'warning'">
+                {{ query.isResolved ? 'Resolved' : 'Open' }}
+              </app-status-badge>
+            </div>
+          </div>
+
+          <!-- Card Body -->
+          <div class="query-card-body">
+            <!-- Initial Question Description -->
+            <p class="query-description">{{ getInitialQuestion(query) }}</p>
+
+            <div class="query-meta-info">
+              <span class="meta-author">Raised by {{ query.raisedByName }}</span>
+              <span class="meta-dot">•</span>
+              <span class="meta-time">{{ getRelativeTime(query.raisedAt) }}</span>
+            </div>
+
+            <!-- Discussion Accordion -->
+            <app-accordion
+              [title]="'Discussion'"
+              [badge]="getReplies(query).length"
+              [expanded]="isExpanded(query.id)"
+              (expandedChange)="toggleExpand(query.id, $event)"
+            >
+              <div class="discussion-container">
+                @if (getReplies(query).length === 0) {
+                  <div class="no-replies-msg">
+                    <span>No responses yet.</span>
+                  </div>
+                } @else {
+                  <div class="comments-list">
+                    @for (msg of getReplies(query); track msg.id) {
+                      <div class="chat-bubble-wrapper">
+                        <div class="comment-avatar">
+                          <app-avatar [name]="msg.senderName" size="sm" />
+                        </div>
+                        <div class="chat-bubble">
+                          <div class="bubble-header">
+                            <div class="author-info">
+                              <span class="author-name">{{ msg.senderName }}</span>
+                              <span
+                                class="role-pill"
+                                [class.role-pm]="msg.senderRole === 'Project Management' || msg.messageType === 'Question'"
+                                [class.role-ps]="msg.senderRole === 'Pre Sales' || msg.messageType === 'Response'"
+                              >
+                                {{ msg.senderRole || msg.messageType }}
+                              </span>
+                            </div>
+                            <span class="bubble-time">{{ getRelativeTime(msg.createdAt) }}</span>
+                          </div>
+                          <div class="bubble-body">{{ msg.messageText }}</div>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+
+                <!-- Add Comment / Reply Row (Plain message, supports consecutive replies) -->
+                @if (!query.isResolved && canSubmitMessage()) {
+                  <div class="add-reply-row">
+                    <div class="textarea-container">
+                      <app-textarea
+                        [id]="'reply-' + query.id"
+                        [rows]="1"
+                        [placeholder]="isPreSales() ? 'Type a response from Pre Sales...' : 'Type a follow-up or reply...'"
+                        [maxLength]="500"
+                        [ngModel]="messageDraft(query.id)"
+                        (ngModelChange)="updateMessageDraft(query.id, $event)"
+                        (keydown)="onTextareaKeyDown($event, query)"
+                      />
+                    </div>
+                    <div class="post-button-wrapper">
+                      <app-button
+                        variant="flat"
+                        size="sm"
+                        [disabled]="isSubmitting(query.id) || !messageDraft(query.id).trim()"
+                        (click)="submitMessage(query)"
+                      >
+                        {{ isSubmitting(query.id) ? 'Posting...' : 'Post' }}
+                      </app-button>
+                    </div>
+                  </div>
+                }
+              </div>
+            </app-accordion>
+          </div>
+
+          <!-- Card Footer Actions -->
+          <div class="query-card-footer">
+            <div class="action-buttons">
+              @if (isProjectManagement()) {
+                <app-button
+                  variant="danger"
+                  size="sm"
+                  (click)="openDeleteConfirm(query)"
+                >
+                  Delete
+                </app-button>
+              }
+
+              @if (isProjectManagement() || isPreSales()) {
+                <app-button
+                  variant="stroked"
+                  size="sm"
+                  [disabled]="pendingResolutionToggles().has(query.id)"
+                  (click)="toggleResolve(query)"
+                >
+                  {{ query.isResolved ? 'Reopen' : 'Resolve' }}
+                </app-button>
+              }
+            </div>
+          </div>
         </div>
-      </div>
-    }
+      }
+    </div>
   }
 </div>
 
-<ng-template #queryCard let-query="query">
-  <div class="query-card" [class.query-card-resolved]="query.isResolved" [class.query-card-open]="!query.isResolved">
-    <div class="query-card-header">
-      <div class="query-field">
-        <span class="query-field-label query-field-label-clickable" (click)="jumpToField(query)">{{ fieldSectionLabel(query) }}</span>
-      </div>
-      <div class="query-status-tags">
-        @if (query.isResolved) {
-          <app-status-badge tone="success">Resolved</app-status-badge>
-        } @else if (query.latestMessageType === 'Question') {
-          <app-status-badge tone="warning">Awaiting Pre Sales</app-status-badge>
-        } @else {
-          <app-status-badge tone="neutral">Awaiting PM Review</app-status-badge>
-        }
-      </div>
-    </div>
-
-    <!-- Conversation Timeline -->
-    <div class="conversation-stream">
-      @for (msg of query.messages; track msg.id) {
-        <div
-          class="message-turn"
-          [class.message-turn-outgoing]="isMessageOutgoing(msg)"
-          [class.message-turn-incoming]="!isMessageOutgoing(msg)"
-          [class.message-turn-question]="msg.messageType === 'Question'"
-          [class.message-turn-response]="msg.messageType === 'Response'"
-        >
-          <div class="message-turn-header">
-            <div class="sender-info">
-              <span class="sender-name">{{ msg.senderName }}</span>
-              <span class="sender-role-pill" [class.sender-role-pm]="msg.messageType === 'Question'" [class.sender-role-ps]="msg.messageType === 'Response'">
-                {{ msg.senderRole || msg.messageType }}
-              </span>
-            </div>
-            <span class="message-time" [title]="msg.createdAt | date: 'MMM d, y, h:mm:ss a'">
-              {{ msg.createdAt | date: 'MMM d - hh:mm a' }}
-            </span>
-          </div>
-          <div class="message-body">
-            <p class="message-text">{{ msg.messageText }}</p>
-          </div>
-        </div>
-      }
-    </div>
-
-    <!-- Next Turn Reply or Status Box -->
-    @if (!query.isResolved) {
-      @if (canUserSubmitMessage(query)) {
-        <div class="query-reply-form">
-          <app-textarea
-            [id]="'reply-' + query.id"
-            [placeholder]="isPreSales() ? 'Type response from Pre Sales...' : 'Ask follow-up question...'"
-            [rows]="2"
-            [ngModel]="messageDraft(query.id)"
-            (ngModelChange)="updateMessageDraft(query.id, $event)"
-            [ngModelOptions]="{ standalone: true }"
-          />
-          <div class="reply-form-actions">
-            <app-button
-              variant="flat"
-              size="sm"
-              [disabled]="!messageDraft(query.id).trim() || submittingMessages().has(query.id)"
-              (click)="submitMessage(query)"
-            >
-              {{ isPreSales() ? 'Submit Response' : 'Submit Follow-Up Question' }}
-            </app-button>
-          </div>
-        </div>
-      } @else {
-        <div class="awaiting-turn-banner">
-          @if (query.canRespond) {
-            <p class="turn-prompt">Awaiting response from Pre Sales.</p>
-          } @else if (query.canAddFollowUp) {
-            <p class="turn-prompt">Awaiting follow-up question or resolution from Project Management.</p>
-          }
-        </div>
-      }
-    } @else {
-      <div class="resolved-banner">
-        <span>Resolved by {{ query.resolvedByName }} ({{ query.resolvedByRole }}) on {{ query.resolvedAt | date: 'medium' }}</span>
-      </div>
-    }
-
-    <!-- Thread Actions (Resolve / Reopen) -->
-    @if (isProjectManagement() || isPreSales()) {
-      <div class="query-actions">
-        <app-button
-          variant="stroked"
-          size="sm"
-          [disabled]="pendingResolutionToggles().has(query.id) || !canResolve(query)"
-          [title]="!canResolve(query) ? 'A response from Pre Sales is required before resolving' : ''"
-          (click)="toggleResolve(query)"
-        >
-          {{ query.isResolved ? 'Reopen Query' : 'Mark Resolved' }}
-        </app-button>
-      </div>
-    }
-  </div>
-</ng-template>
+@if (pendingDeleteQuery(); as queryToDelete) {
+  <app-confirm-dialog
+    title="Delete Query"
+    message="Are you sure you want to delete this handover query? This action cannot be undone."
+    confirmLabel="Delete"
+    [isBusy]="isDeletingQuery()"
+    [isDestructive]="true"
+    (confirmed)="confirmDeleteQuery(queryToDelete)"
+    (cancelled)="cancelDeleteQuery()"
+  />
+}

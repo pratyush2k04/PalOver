@@ -1,233 +1,285 @@
-@use 'styles/tokens' as *;
 @use 'styles/mixins' as *;
 
-.handover-queries {
-  background: $color-surface;
-  border: 1px solid $color-border-soft;
-  border-radius: $radius-md;
-  padding: $spacing-6;
-  margin-top: $spacing-6;
+.handover-queries-container {
+  padding: 0;
+  @include flex-column($spacing-4);
 }
 
 .queries-header {
   @include flex-between;
-  border-bottom: 1px solid $color-border-soft;
-  padding-bottom: $spacing-3;
-  margin-bottom: $spacing-4;
+  padding: $spacing-2 0;
 
-  h3 {
-    margin: 0;
-    color: $color-text;
+  .header-title-section {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+
+    .queries-title {
+      margin: 0;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-semibold;
+      color: $color-text;
+    }
+
+    .count-badge {
+      font-size: $font-size-xs;
+      font-weight: $font-weight-semibold;
+      background: $color-border-soft;
+      color: $color-text-muted;
+      padding: $spacing-1 $spacing-3;
+      border-radius: $radius-full;
+    }
   }
 }
 
-.query-section + .query-section {
-  margin-top: $spacing-6;
-}
-
-.query-section-heading {
-  margin: $spacing-4 0 0;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-semibold;
-  color: $color-text-muted;
-}
-
-.query-cards {
+.queries-grid {
   @include flex-column($spacing-4);
-  margin-top: $spacing-3;
 }
 
 .query-card {
-  border: 1px solid $color-border-soft;
-  border-left-width: $spacing-1;
-  border-radius: $radius-md;
-  padding: $spacing-5;
   background: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &:hover {
+    box-shadow: $shadow-card;
+  }
+
+  &.resolved {
+    background: $color-surface-hover;
+    border-left: 4px solid $color-success;
+  }
+
+  .query-card-header {
+    @include flex-between;
+    padding: $spacing-4 $spacing-5 $spacing-2 $spacing-5;
+
+    @include respond-to-down('md') {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: $spacing-2;
+      padding: $spacing-3 $spacing-4 $spacing-2 $spacing-4;
+    }
+
+    .title-section {
+      display: flex;
+      align-items: center;
+      gap: $spacing-2;
+
+      .query-field-title {
+        margin: 0;
+        font-size: $font-size-base;
+        font-weight: $font-weight-semibold;
+        color: $color-text;
+
+        &.clickable {
+          cursor: pointer;
+          transition: color $transition-fast;
+
+          &:hover {
+            color: $color-primary;
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+
+    .right-section {
+      display: flex;
+      align-items: center;
+      gap: $spacing-2;
+    }
+  }
+
+  .query-card-body {
+    padding: $spacing-2 $spacing-5 $spacing-4 $spacing-5;
+
+    @include respond-to-down('md') {
+      padding: $spacing-2 $spacing-4 $spacing-3 $spacing-4;
+    }
+
+    .query-description {
+      margin: 0 0 $spacing-2 0;
+      font-size: $font-size-sm;
+      color: $color-text;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .query-meta-info {
+      display: flex;
+      align-items: center;
+      gap: $spacing-2;
+      font-size: $font-size-xs;
+      color: $color-text-faint;
+      margin-bottom: $spacing-4;
+
+      .meta-dot {
+        color: $color-text-fainter;
+      }
+    }
+
+    .discussion-container {
+      padding-top: $spacing-2;
+
+      .no-replies-msg {
+        padding: $spacing-3 0;
+        font-size: $font-size-xs;
+        color: $color-text-faint;
+        font-style: italic;
+      }
+    }
+  }
+
+  .query-card-footer {
+    padding: $spacing-3 $spacing-5;
+    border-top: 1px solid $color-border-soft;
+    background: $color-surface-hover;
+    border-bottom-left-radius: $radius-2xl;
+    border-bottom-right-radius: $radius-2xl;
+
+    .action-buttons {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: $spacing-3;
+    }
+  }
 }
 
-.query-card-resolved {
-  border-left-color: $color-success-border;
+.comments-list {
+  @include flex-column($spacing-3);
+  width: 100%;
+  padding: $spacing-2 $spacing-1 $spacing-2 0;
+  max-height: 22rem;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 0.375rem;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $color-slate-300;
+    border-radius: $radius-full;
+
+    &:hover {
+      background-color: $color-slate-400;
+    }
+  }
+
+  .chat-bubble-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-3;
+    width: 100%;
+    box-sizing: border-box;
+
+    .comment-avatar {
+      flex-shrink: 0;
+      padding-top: calc($spacing-1 / 2);
+    }
+
+    .chat-bubble {
+      flex: 1;
+      min-width: 0;
+      background: $color-slate-50;
+      border: 1px solid $color-slate-200;
+      border-radius: $radius-2xl;
+      padding: $spacing-3 $spacing-4;
+      @include flex-column($spacing-2);
+      transition: all $transition-fast;
+
+      .bubble-header {
+        @include flex-between;
+        gap: $spacing-2;
+        width: 100%;
+
+        .author-info {
+          display: flex;
+          align-items: center;
+          gap: $spacing-2;
+
+          .author-name {
+            font-size: $font-size-sm;
+            font-weight: $font-weight-bold;
+            color: $color-slate-900;
+          }
+
+          .role-pill {
+            font-size: 0.6875rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: $radius-full;
+            font-weight: $font-weight-semibold;
+            background: $color-slate-200;
+            color: $color-slate-700;
+
+            &.role-pm {
+              background: #dbeafe;
+              color: #1e40af;
+            }
+
+            &.role-ps {
+              background: #fef3c7;
+              color: #92400e;
+            }
+          }
+        }
+
+        .bubble-time {
+          font-size: $font-size-xs;
+          color: $color-slate-400;
+        }
+      }
+
+      .bubble-body {
+        font-size: $font-size-sm;
+        color: $color-slate-800;
+        line-height: 1.45;
+        white-space: pre-wrap;
+        word-break: break-word;
+        padding-left: 0;
+        margin-top: $spacing-1;
+      }
+    }
+  }
 }
 
-.query-card-open {
-  border-left-color: $color-warning-border;
-}
-
-.query-card-header {
-  @include flex-between;
-  gap: $spacing-4;
-  padding-bottom: $spacing-3;
-  border-bottom: 1px solid $color-border-soft;
-}
-
-.query-field {
+.add-reply-row {
   display: flex;
   align-items: center;
   gap: $spacing-3;
-}
-
-.query-field-label {
-  font-size: 0.9375rem;
-  font-weight: $font-weight-semibold;
-  color: $color-text;
-}
-
-.query-field-label-clickable {
-  cursor: pointer;
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  transition: text-decoration-color $transition-base;
-
-  &:hover {
-    text-decoration-color: currentColor;
-    color: $color-primary;
-  }
-}
-
-.conversation-stream {
-  @include flex-column($spacing-4);
-  margin: $spacing-4 0;
-}
-
-.message-turn {
-  position: relative;
-  width: calc(100% - 2.5rem);
-  box-sizing: border-box;
-  padding: $spacing-3 $spacing-4;
-  border-radius: $radius-lg;
-  border: 1px solid $color-border-soft;
-
-  @include respond-to-down('sm') {
-    width: calc(100% - #{$spacing-4});
-  }
-}
-
-.message-turn-incoming {
-  margin-right: auto;
-  margin-left: 0;
-  background: $color-surface;
-}
-
-.message-turn-outgoing {
-  margin-left: auto;
-  margin-right: 0;
-  background: $color-slate-100;
-  border-bottom-right-radius: $radius-xs;
-
-  &::before {
-    content: '';
-    position: absolute;
-    width: $radius-xl;
-    height: $radius-xl;
-    right: 0.875rem;
-    bottom: -0.375rem;
-    background: $color-border-soft;
-    transform: rotate(45deg);
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    width: $radius-xl;
-    height: $radius-xl;
-    right: 0.875rem;
-    bottom: -$spacing-1;
-    background: $color-slate-100;
-    transform: rotate(45deg);
-  }
-}
-
-.message-turn-header {
-  @include flex-between;
-  gap: $spacing-2;
-  margin-bottom: $radius-md;
-}
-
-.sender-info {
-  display: flex;
-  align-items: center;
-  gap: $spacing-2;
-}
-
-.sender-name {
-  font-weight: $font-weight-semibold;
-  font-size: 0.8125rem;
-  color: $color-text;
-}
-
-.sender-role-pill {
-  @include text-overline;
-  font-size: 0.6875rem;
-  padding: $radius-xs $radius-md;
-  border-radius: $radius-full;
-}
-
-.sender-role-pm {
-  background: $color-primary-light;
-  color: $color-primary;
-}
-
-.sender-role-ps {
-  background: $color-success-light;
-  color: $color-success-text;
-}
-
-.message-time {
-  font-size: 0.6875rem;
-  color: $color-text-fainter;
-  cursor: default;
-  user-select: none;
-}
-
-.message-body {
-  .message-text {
-    font-size: $font-size-sm;
-    color: $color-text;
-    line-height: 1.45;
-    margin: 0;
-    white-space: pre-wrap;
-  }
-}
-
-.query-reply-form {
-  @include flex-column($spacing-2);
   margin-top: $spacing-4;
-  padding: $spacing-3;
-  background: $color-surface-hover;
-  border-radius: $radius-md;
-  border: 1px dashed $color-border-soft;
-}
 
-.reply-form-actions {
-  display: flex;
-  justify-content: flex-end;
-}
+  .textarea-container {
+    flex: 1;
 
-.awaiting-turn-banner {
-  margin-top: $spacing-3;
-  padding: $spacing-2 $spacing-3;
-  border-radius: $radius-sm;
-  background: $color-surface-hover;
-
-  .turn-prompt {
-    font-size: 0.8125rem;
-    color: $color-text-muted;
-    font-style: italic;
-    margin: 0;
+    app-textarea {
+      --field-margin-bottom: 0;
+      --textarea-border-radius: #{$radius-3xl};
+      --textarea-padding: #{$spacing-2} #{$spacing-5};
+      --textarea-min-height: 2.625rem;
+      --textarea-max-height: 8rem;
+      --textarea-resize: none;
+      --char-counter-display: none;
+    }
   }
-}
 
-.resolved-banner {
-  margin-top: $spacing-3;
-  padding: $spacing-2 $spacing-3;
-  border-radius: $radius-sm;
-  background: $color-success-bg;
-  font-size: 0.8125rem;
-  color: $color-text-subdued;
-}
+  .post-button-wrapper {
+    @include flex-center;
+    gap: $spacing-2;
 
-.query-actions {
-  margin-top: $spacing-3;
-  display: flex;
-  justify-content: flex-end;
+    app-button {
+      --btn-border-radius: #{$radius-3xl};
+      --btn-padding: #{$spacing-2} #{$spacing-4};
+      --btn-font-size: #{$font-size-xs};
+      --btn-font-weight: #{$font-weight-semibold};
+    }
+  }
 }
