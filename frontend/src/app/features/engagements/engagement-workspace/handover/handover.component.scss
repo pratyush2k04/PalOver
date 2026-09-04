@@ -108,6 +108,7 @@
 
       &.metric-item-danger,
       &.metric-item-blocked {
+
         .metric-label,
         .metric-value {
           color: $color-danger;
@@ -144,7 +145,7 @@
     padding: $spacing-4;
   }
 
-  > h3 {
+  >h3 {
     margin: 0 0 $spacing-4;
     border-bottom: 1px solid $color-border-soft;
     padding-bottom: $spacing-3;
@@ -307,6 +308,7 @@ select {
 
   &.is-invalid {
     border-color: $color-danger;
+
     &:focus {
       box-shadow: 0 0 0 3px $color-danger-focus-ring;
     }
@@ -365,7 +367,7 @@ select {
   border: 1px solid $color-border-soft;
   border-radius: $radius-2xl;
   box-shadow: $shadow-card;
-  border-top: 3px solid transparent;
+  border-top: 0.5px solid $color-border-soft;
   overflow: hidden;
 
   @include respond-to-down('md') {
@@ -605,6 +607,7 @@ select {
   0% {
     box-shadow: 0 0 0 0.375rem rgba($color-primary, 0.35);
   }
+
   100% {
     box-shadow: 0 0 0 0 transparent;
   }
