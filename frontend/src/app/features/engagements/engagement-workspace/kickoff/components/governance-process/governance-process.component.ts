@@ -5,7 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { CommunicationCadenceService } from '../../../../services/communication-cadence.service';
 import { EngagementService } from '../../../../services/engagement.service';
 import { AuthService } from '@shared/services/auth';
-import { CommunicationCadence, EngagementParticipant } from '../../../../models/cadence.model';
+import { CommunicationCadence, CreateCommunicationCadence, EngagementParticipant } from '../../../../models/cadence.model';
 import { CADENCE_CONSTANTS } from '@shared/constants/cadence.constants';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { ButtonComponent } from '@common/components/button/button';
@@ -75,14 +75,22 @@ export class GovernanceProcessComponent {
   }
 
   private openAddCadenceDialog(engagementId: number, participants: EngagementParticipant[]): void {
-    const dialogRef = this.dialog.open<AddCadenceDialogComponent, AddCadenceDialogData, CommunicationCadence>(
+    const dialogRef = this.dialog.open<AddCadenceDialogComponent, AddCadenceDialogData, CreateCommunicationCadence>(
       AddCadenceDialogComponent,
       { data: { engagementId, participants } }
     );
 
-    dialogRef.closed$.subscribe((newCadence) => {
-      if (!newCadence) return;
-      this.cadences.update(list => [...list, newCadence]);
+    dialogRef.closed$.subscribe((request) => {
+      if (!request) return;
+
+      this.cadenceService.addCadence(engagementId, request).subscribe({
+        next: (newCadence) => {
+          this.cadences.update(list => [...list, newCadence]);
+        },
+        error: (err) => {
+          console.error('Failed to add communication cadence:', err);
+        }
+      });
     });
   }
 }

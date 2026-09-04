@@ -8,8 +8,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { MultiSelectListComponent } from '@common/components/multi-select-list/multi-select-list';
-import { CommunicationCadenceService } from '../../../../../../services/communication-cadence.service';
-import { CommunicationCadence, EngagementParticipant, CadenceTypeEnum } from '../../../../../../models/cadence.model';
+import { CreateCommunicationCadence, EngagementParticipant, CadenceTypeEnum } from '../../../../../../models/cadence.model';
 import { CADENCE_CONSTANTS } from '@shared/constants/cadence.constants';
 
 export interface AddCadenceDialogData {
@@ -33,8 +32,7 @@ export interface AddCadenceDialogData {
   styleUrl: './add-cadence-dialog.component.scss'
 })
 export class AddCadenceDialogComponent {
-  private dialogRef = inject<DialogRef<CommunicationCadence>>(DialogRef);
-  private cadenceService = inject(CommunicationCadenceService);
+  private dialogRef = inject<DialogRef<CreateCommunicationCadence>>(DialogRef);
   private fb = inject(FormBuilder);
   readonly data = inject<AddCadenceDialogData>(DIALOG_DATA);
 
@@ -54,7 +52,6 @@ export class AddCadenceDialogComponent {
   }));
 
   selectedParticipantUserIds = signal<number[]>([]);
-  isSubmitting = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
 
   cadenceForm: FormGroup = this.fb.group({
@@ -82,25 +79,11 @@ export class AddCadenceDialogComponent {
       return;
     }
 
-    this.isSubmitting.set(true);
     this.errorMessage.set(null);
-
-    const payload = {
+    this.dialogRef.close({
       stakeholderRole: this.cadenceForm.value.stakeholderRole,
       cadence: +this.cadenceForm.value.cadence,
       participantUserIds: participantIds
-    };
-
-    this.cadenceService.addCadence(this.data.engagementId, payload).subscribe({
-      next: (newCadence) => {
-        this.isSubmitting.set(false);
-        this.dialogRef.close(newCadence);
-      },
-      error: (err) => {
-        this.isSubmitting.set(false);
-        const backendMessage = err?.error?.message || err?.error || this.constants.ERROR_GENERIC;
-        this.errorMessage.set(backendMessage);
-      }
     });
   }
 }
