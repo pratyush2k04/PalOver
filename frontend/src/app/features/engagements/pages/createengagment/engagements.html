@@ -84,11 +84,15 @@
               />
             </div>
           </div>
+
+          @if (errorMessage()) {
+            <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+          }
         </div>
 
         <div class="modal-footer">
-          <app-button type="button" variant="stroked" (click)="closeModal()">Cancel</app-button>
-          <app-button type="submit" variant="flat">Create</app-button>
+          <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="closeModal()">Cancel</app-button>
+          <app-button type="submit" variant="flat" [disabled]="isSubmitting()">Create</app-button>
         </div>
       </form>
     </div>
