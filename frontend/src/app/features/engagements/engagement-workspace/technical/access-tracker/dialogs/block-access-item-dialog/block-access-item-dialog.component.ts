@@ -44,6 +44,10 @@ export class BlockAccessItemDialogComponent {
       this.reasonError.set('Reason is required to block an item');
       return;
     }
+    if (reason.length > 500) {
+      this.reasonError.set('Reason cannot exceed 500 characters');
+      return;
+    }
 
     this.dialogRef.close({ reason });
   }

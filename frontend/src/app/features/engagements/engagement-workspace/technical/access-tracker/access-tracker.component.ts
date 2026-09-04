@@ -239,21 +239,7 @@ export class AccessTrackerComponent {
         this.toastService.success(`Access item "${newItem.name}" added successfully`);
       },
       error: (err) => {
-        console.warn('API add item failed, adding item locally for testing', err);
-        const localNewItem: AccessItemDto = {
-          id: Date.now(),
-          name: requestData.name,
-          isClientSide: requestData.isClientSide,
-          ownerId: currentUserId,
-          ownerFullName: currentUser?.fullName ?? 'Tech Lead',
-          status: 'InProgress',
-          timeZoneNote: requestData.timeZoneNote,
-          daysUntilBillingDate: 5,
-          isOverdueWithClient: false
-        };
-        const updatedList = [...this.accessItems(), localNewItem];
-        this.accessItems.set(updatedList);
-        this.itemsUpdated.emit(updatedList);
+        console.error('API add access item failed', err);
       }
     });
   }

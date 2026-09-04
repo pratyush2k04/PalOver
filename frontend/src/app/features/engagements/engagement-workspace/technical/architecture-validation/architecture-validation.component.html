@@ -93,6 +93,7 @@
           <app-textarea
             id="arch-rationale"
             label="Rationale"
+            [maxLength]="500"
             [ngModel]="rationale()"
             (ngModelChange)="onRationaleChange($event)"
             name="archRationale"

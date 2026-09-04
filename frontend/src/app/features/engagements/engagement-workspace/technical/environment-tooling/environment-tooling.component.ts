@@ -221,19 +221,7 @@ export class EnvironmentToolingComponent {
         this.toastService.success(`Environment item "${newItem.name}" added successfully`);
       },
       error: (err) => {
-        console.warn('API add environment item failed, adding local item for testing', err);
-        const localNewItem: EnvironmentToolingItemDto = {
-          id: Date.now(),
-          name: requestData.customName,
-          customName: requestData.customName,
-          engagementId: this.engagementId(),
-          ownerId: currentUserId,
-          ownerFullName: currentUser?.fullName ?? 'Tech Lead',
-          status: EnvironmentToolingStatus.InProgress
-        };
-        const updatedList = [...this.items(), localNewItem];
-        this.items.set(updatedList);
-        this.itemsUpdated.emit(updatedList);
+        console.error('API add environment tooling item failed', err);
       }
     });
   }

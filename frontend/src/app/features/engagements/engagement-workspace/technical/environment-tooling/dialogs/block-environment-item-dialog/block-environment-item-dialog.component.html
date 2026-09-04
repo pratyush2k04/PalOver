@@ -10,6 +10,7 @@
       id="block-reason"
       label="Block Reason"
       [required]="true"
+      [maxLength]="500"
       [rows]="3"
       [ngModel]="reason()"
       (ngModelChange)="onReasonChange($event)"
