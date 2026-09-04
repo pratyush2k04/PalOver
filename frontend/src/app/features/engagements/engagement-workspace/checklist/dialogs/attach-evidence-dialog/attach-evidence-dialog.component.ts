@@ -20,10 +20,9 @@ export interface AttachEvidenceDialogData {
   isReadOnly?: boolean;
 }
 
-export interface AttachEvidenceDialogResult {
-  documentId: number;
-  markComplete?: boolean;
-}
+export type AttachEvidenceDialogResult =
+  | { mode: 'select'; documentId: number; markComplete?: boolean }
+  | { mode: 'upload'; file: File; categoryId: number; visibility: DocumentVisibility; markComplete?: boolean };
 
 type EvidenceMode = 'upload' | 'select';
 
@@ -51,7 +50,6 @@ export class AttachEvidenceDialogComponent implements OnInit {
   selectedVisibility = signal<DocumentVisibility>(DOCUMENT_CONFIG.VISIBILITY.TEAM_WIDE);
   selectedFile = signal<File | null>(null);
   renamedFileName = signal<string>('');
-  isUploading = signal<boolean>(false);
 
   // Select Existing section state
   existingDocuments = signal<DocumentItem[]>([]);
@@ -195,7 +193,7 @@ export class AttachEvidenceDialogComponent implements OnInit {
         this.errorMessage.set('Please select a document.');
         return;
       }
-      this.dialogRef.close({ documentId, markComplete });
+      this.dialogRef.close({ mode: 'select', documentId, markComplete });
       return;
     }
 
@@ -229,36 +227,7 @@ export class AttachEvidenceDialogComponent implements OnInit {
       return;
     }
 
-    this.isUploading.set(true);
     this.errorMessage.set(null);
-
-    this.documentService.uploadDocuments([file], this.data.engagementId, catId, this.selectedVisibility())
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (results) => {
-          this.isUploading.set(false);
-          const result = results[0];
-          if (!result?.success || !result.document) {
-            this.errorMessage.set(result?.errors?.join(', ') || DOCUMENT_MESSAGES.UPLOAD_FAILED);
-            return;
-          }
-          this.dialogRef.close({ documentId: result.document.id, markComplete });
-        },
-        error: (err) => {
-          this.isUploading.set(false);
-          this.errorMessage.set(this.extractErrorMessage(err));
-        }
-      });
-  }
-
-  private extractErrorMessage(err: any): string {
-    if (err?.name === 'TypeError' || err?.status === 0 || (typeof err?.message === 'string' && err.message.toLowerCase().includes('fetch'))) {
-      return DOCUMENT_MESSAGES.UPLOAD_NETWORK_OR_SERVER_LIMIT_ERROR;
-    }
-    const body = err?.error;
-    if (Array.isArray(body)) {
-      return body.flatMap((r: any) => r.errors || []).join(', ') || DOCUMENT_MESSAGES.UPLOAD_FAILED;
-    }
-    return body?.message || (typeof body === 'string' ? body : DOCUMENT_MESSAGES.UPLOAD_FAILED);
+    this.dialogRef.close({ mode: 'upload', file, categoryId: catId, visibility: this.selectedVisibility(), markComplete });
   }
 }

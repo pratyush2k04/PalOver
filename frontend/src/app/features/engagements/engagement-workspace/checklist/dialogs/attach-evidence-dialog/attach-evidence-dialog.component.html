@@ -104,7 +104,7 @@
     <app-button type="button" variant="stroked" (click)="onCancel()">Close</app-button>
   } @else {
     <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
-    <app-button type="button" variant="flat" [disabled]="isUploading()" [loading]="isUploading()" (click)="onSubmit()">
+    <app-button type="button" variant="flat" (click)="onSubmit()">
       {{ submitButtonText }}
     </app-button>
   }

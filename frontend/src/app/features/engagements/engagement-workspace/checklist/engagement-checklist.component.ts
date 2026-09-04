@@ -9,6 +9,7 @@ import { EngagementChecklistService } from '@features/engagements/services/engag
 import { DocumentService } from '@features/engagements/services/document.service';
 import { EngagementChecklist, EngagementChecklistItem } from '../../models/engagement-checklist.model';
 import { ENGAGEMENT_CHECKLIST_MESSAGES } from '@shared/constants/engagements.constants';
+import { DOCUMENT_MESSAGES } from '@shared/constants/document.constants';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { ToastService } from '@common/services/toast/toast';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
@@ -336,17 +337,41 @@ export class EngagementChecklistComponent {
     });
 
     dialogRef.closed$.subscribe((result) => {
-      if (result && result.documentId) {
-        this.isUpdating.set(true);
-        this.checklistService.saveItemEvidence(engId, item.id, {
-          documentId: result.documentId,
-          markComplete: result.markComplete
-        }).subscribe({
-          next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist),
+      if (!result) return;
+
+      this.isUpdating.set(true);
+
+      if (result.mode === 'select') {
+        this.saveItemEvidence(engId, item.id, result.documentId, result.markComplete);
+        return;
+      }
+
+      this.documentService
+        .uploadDocuments([result.file], engId, result.categoryId, result.visibility, true)
+        .subscribe({
+          next: (uploadResults) => {
+            const uploaded = uploadResults[0];
+            if (!uploaded?.success || !uploaded.document) {
+              this.isUpdating.set(false);
+              this.toastService.error(uploaded?.errors?.join(', ') || DOCUMENT_MESSAGES.UPLOAD_FAILED);
+              return;
+            }
+            this.saveItemEvidence(engId, item.id, uploaded.document.id, result.markComplete);
+          },
           error: () => {
             this.isUpdating.set(false);
+            this.toastService.error(DOCUMENT_MESSAGES.UPLOAD_FAILED);
           }
         });
+    });
+  }
+
+  private saveItemEvidence(engId: number, itemId: number, documentId: number, markComplete?: boolean): void {
+    this.checklistService.saveItemEvidence(engId, itemId, { documentId, markComplete }).subscribe({
+      next: (updatedChecklist) => this.applyUpdatedChecklist(updatedChecklist),
+      error: () => {
+        this.isUpdating.set(false);
+        this.toastService.error('Failed to save evidence.');
       }
     });
   }
