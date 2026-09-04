@@ -47,8 +47,8 @@ public class TechnicalSummaryService(
 
         // 2. Environment & Tooling Readiness Evaluation
         var totalTooling = toolingItems.Count;
-        var readyTooling = toolingItems.Count(t => t.Status == EnvironmentToolingStatus.Ready);
-        var notReadyTooling = toolingItems.Count(t => t.Status == EnvironmentToolingStatus.NotReady);
+        var readyTooling = toolingItems.Count(t => t.Status == EnvironmentToolingStatus.Granted);
+        var notReadyTooling = toolingItems.Count(t => t.Status == EnvironmentToolingStatus.InProgress);
         var blockedTooling = toolingItems.Count(t => t.Status == EnvironmentToolingStatus.Blocked);
         var toolingPercent = totalTooling == 0 ? 100m : Math.Round((decimal)readyTooling * 100m / totalTooling, 1);
         var isToolingReady = totalTooling == 0 || readyTooling == totalTooling;

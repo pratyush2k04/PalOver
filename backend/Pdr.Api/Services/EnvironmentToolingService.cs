@@ -24,7 +24,7 @@ public class EnvironmentToolingService(
         var items = await repository.GetByEngagementIdAsync(engagementId);
         var dtos = items.Select(MapToDto).ToList();
 
-        var readyCount = dtos.Count(i => i.Status == EnvironmentToolingStatus.Ready);
+        var readyCount = dtos.Count(i => i.Status == EnvironmentToolingStatus.Granted);
         var totalCount = dtos.Count;
 
         return new EnvironmentToolingReadinessResponse
@@ -33,7 +33,7 @@ public class EnvironmentToolingService(
             ReadyCount = readyCount,
             TotalCount = totalCount,
             IsTechnicallyReady = readyCount == totalCount && totalCount > 0,
-            OutstandingItems = dtos.Where(i => i.Status != EnvironmentToolingStatus.Ready).ToList(),
+            OutstandingItems = dtos.Where(i => i.Status != EnvironmentToolingStatus.Granted).ToList(),
             Items = dtos
         };
     }
@@ -58,7 +58,7 @@ public class EnvironmentToolingService(
             CustomName = request.CustomName,
             Name = request.CustomName,
             OwnerId = request.OwnerId,
-            Status = EnvironmentToolingStatus.NotReady
+            Status = EnvironmentToolingStatus.InProgress
         };
 
         await repository.AddAsync(item);
@@ -70,11 +70,11 @@ public class EnvironmentToolingService(
 
     private static readonly HashSet<(EnvironmentToolingStatus From, EnvironmentToolingStatus To)> AllowedTransitions =
     [
-        (EnvironmentToolingStatus.NotReady, EnvironmentToolingStatus.Ready),
-        (EnvironmentToolingStatus.NotReady, EnvironmentToolingStatus.Blocked),
-        (EnvironmentToolingStatus.Ready,    EnvironmentToolingStatus.Blocked),
-        (EnvironmentToolingStatus.Blocked,  EnvironmentToolingStatus.NotReady),
-        (EnvironmentToolingStatus.Blocked,  EnvironmentToolingStatus.Ready),
+        (EnvironmentToolingStatus.InProgress, EnvironmentToolingStatus.Granted),
+        (EnvironmentToolingStatus.InProgress, EnvironmentToolingStatus.Blocked),
+        (EnvironmentToolingStatus.Granted,    EnvironmentToolingStatus.Blocked),
+        (EnvironmentToolingStatus.Blocked,  EnvironmentToolingStatus.InProgress),
+        (EnvironmentToolingStatus.Blocked,  EnvironmentToolingStatus.Granted),
     ];
 
     public async Task<EnvironmentToolingItemDto> UpdateStatusAsync(int id, UpdateEnvironmentToolingStatusRequest request)

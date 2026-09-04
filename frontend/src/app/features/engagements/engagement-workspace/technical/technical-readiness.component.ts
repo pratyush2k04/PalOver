@@ -101,10 +101,10 @@ export class TechnicalReadinessComponent {
 
   // Tooling Metrics
   private isToolingReadyStatus(status: string | number): boolean {
-    return status === EnvironmentToolingStatus[EnvironmentToolingStatus.Ready] || +status === EnvironmentToolingStatus.Ready;
+    return status === EnvironmentToolingStatus[EnvironmentToolingStatus.Granted] || +status === EnvironmentToolingStatus.Granted;
   }
   private isToolingNotReadyStatus(status: string | number): boolean {
-    return status === EnvironmentToolingStatus[EnvironmentToolingStatus.NotReady] || +status === EnvironmentToolingStatus.NotReady;
+    return status === EnvironmentToolingStatus[EnvironmentToolingStatus.InProgress] || +status === EnvironmentToolingStatus.InProgress;
   }
   private isToolingBlockedStatus(status: string | number): boolean {
     return status === EnvironmentToolingStatus[EnvironmentToolingStatus.Blocked] || +status === EnvironmentToolingStatus.Blocked;

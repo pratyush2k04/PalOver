@@ -39,7 +39,7 @@
         <li class="bullet-item">
           <span class="bullet-label">Environment & Tooling:</span>
           <span class="bullet-value">
-            {{ toolingReadyCount() }}/{{ toolingTotalCount() }} ready@if (toolingNotReadyCount() > 0) {, {{ toolingNotReadyCount() }} in progress}
+            {{ toolingReadyCount() }}/{{ toolingTotalCount() }} granted@if (toolingNotReadyCount() > 0) {, {{ toolingNotReadyCount() }} in progress}
           </span>
           @if (toolingBlockedCount() > 0) {
             <span class="bullet-danger">({{ toolingBlockedCount() }} blocked)</span>

@@ -64,8 +64,8 @@ export class EnvironmentToolingComponent {
   isDeleting = signal<boolean>(false);
 
   readonly statusOptions: StatusSelectOption[] = [
-    { label: 'Ready', value: EnvironmentToolingStatus.Ready, tone: 'success' },
-    { label: 'In Progress', value: EnvironmentToolingStatus.NotReady, tone: 'info' },
+    { label: 'In Progress', value: EnvironmentToolingStatus.InProgress, tone: 'info' },
+    { label: 'Granted', value: EnvironmentToolingStatus.Granted, tone: 'success' },
     { label: 'Blocked', value: EnvironmentToolingStatus.Blocked, tone: 'danger' }
   ];
 
@@ -105,8 +105,8 @@ export class EnvironmentToolingComponent {
       return;
     }
 
-    if (+item.status === EnvironmentToolingStatus.Ready && statusVal === EnvironmentToolingStatus.NotReady) {
-      this.toastService.error(`Cannot change status from Ready to In Progress for ${item.name}`);
+    if (+item.status === EnvironmentToolingStatus.Granted && statusVal === EnvironmentToolingStatus.InProgress) {
+      this.toastService.error(`Cannot change status from Granted to In Progress for ${item.name}`);
       this.items.update((items) => items.map((i) => i.id === item.id ? { ...i } : i));
       return;
     }
@@ -164,7 +164,7 @@ export class EnvironmentToolingComponent {
   getStatusTone(status: EnvironmentToolingStatus | number | string): StatusBadgeTone {
     const val = typeof status === 'string' ? parseInt(status, 10) : status;
     switch (val) {
-      case EnvironmentToolingStatus.Ready:
+      case EnvironmentToolingStatus.Granted:
       case 2:
         return 'success';
       case EnvironmentToolingStatus.Blocked:
@@ -178,9 +178,9 @@ export class EnvironmentToolingComponent {
   getStatusLabel(status: EnvironmentToolingStatus | number | string): string {
     const val = typeof status === 'string' ? parseInt(status, 10) : status;
     switch (val) {
-      case EnvironmentToolingStatus.Ready:
+      case EnvironmentToolingStatus.Granted:
       case 2:
-        return 'Ready';
+        return 'Granted';
       case EnvironmentToolingStatus.Blocked:
       case 3:
         return 'Blocked';
@@ -229,7 +229,7 @@ export class EnvironmentToolingComponent {
           engagementId: this.engagementId(),
           ownerId: currentUserId,
           ownerFullName: currentUser?.fullName ?? 'Tech Lead',
-          status: EnvironmentToolingStatus.NotReady
+          status: EnvironmentToolingStatus.InProgress
         };
         const updatedList = [...this.items(), localNewItem];
         this.items.set(updatedList);
