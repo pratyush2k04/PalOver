@@ -157,6 +157,11 @@ export class ArchitectureValidationComponent {
       return;
     }
 
+    if (rationaleVal.length > 500) {
+      this.rationaleError.set('Rationale cannot exceed 500 characters.');
+      return;
+    }
+
     this.service.saveValidation(this.engagementId(), {
       status: statusVal,
       rationale: statusVal === ArchitectureStatus.Modified ? rationaleVal : undefined

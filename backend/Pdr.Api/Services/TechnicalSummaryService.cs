@@ -45,14 +45,13 @@ public class TechnicalSummaryService(
         var accessPercent = totalAccess == 0 ? 100m : Math.Round((decimal)grantedAccess * 100m / totalAccess, 1);
         var isAccessReady = totalAccess == 0 || grantedAccess == totalAccess;
 
-        // 2. Environment & Tooling Readiness Evaluation (excluding N/A from required denominator)
+        // 2. Environment & Tooling Readiness Evaluation
         var totalTooling = toolingItems.Count;
-        var readyTooling = toolingItems.Count(t => t.Status == EnvironmentToolingStatus.Ready);
-        var notReadyTooling = toolingItems.Count(t => t.Status == EnvironmentToolingStatus.NotReady);
-        var naTooling = toolingItems.Count(t => t.Status == EnvironmentToolingStatus.NotApplicable);
-        var applicableTooling = totalTooling - naTooling;
-        var toolingPercent = applicableTooling <= 0 ? 100m : Math.Round((decimal)readyTooling * 100m / applicableTooling, 1);
-        var isToolingReady = notReadyTooling == 0;
+        var readyTooling = toolingItems.Count(t => t.Status == EnvironmentToolingStatus.Granted);
+        var notReadyTooling = toolingItems.Count(t => t.Status == EnvironmentToolingStatus.InProgress);
+        var blockedTooling = toolingItems.Count(t => t.Status == EnvironmentToolingStatus.Blocked);
+        var toolingPercent = totalTooling == 0 ? 100m : Math.Round((decimal)readyTooling * 100m / totalTooling, 1);
+        var isToolingReady = totalTooling == 0 || readyTooling == totalTooling;
 
         // 3. Architecture & Discovery Validation Evaluation (Overlook StillValid status, evaluate Sizing Delta < 20%)
         var archStatus = archValidation?.Status.ToString() ?? "StillValid";
@@ -95,7 +94,7 @@ public class TechnicalSummaryService(
             });
         }
 
-        foreach (var t in toolingItems.Where(t => t.Status == EnvironmentToolingStatus.NotReady))
+        foreach (var t in toolingItems.Where(t => t.Status == EnvironmentToolingStatus.Blocked))
         {
             blockers.Add(new DayOneBlockerItemDto
             {
@@ -103,8 +102,8 @@ public class TechnicalSummaryService(
                 Category = "Environment Tooling",
                 Name = t.EnvironmentToolingDefinition?.Name ?? t.CustomName ?? t.Name,
                 OwnerName = t.Owner?.FullName,
-                Status = "Not Ready",
-                Detail = "Tooling setup incomplete",
+                Status = "Blocked",
+                Detail = t.BlockReason ?? "Tooling setup is blocked",
                 TargetSection = "tooling"
             });
         }
@@ -155,6 +154,17 @@ public class TechnicalSummaryService(
         var briefDocName = briefDoc?.FileName ?? "Engagement Brief & Documents";
         var briefDocLink = $"/engagements/{engagementId}/documents";
 
+        // Extract finding-linked document names for Brownfield engagements
+        var brownfieldDocNames = new List<string>();
+        if (isBrownfield)
+        {
+            brownfieldDocNames = brownfieldFindings
+                .Where(f => f.Document != null && !string.IsNullOrWhiteSpace(f.Document.FileName))
+                .Select(f => f.Document!.FileName)
+                .Distinct()
+                .ToList();
+        }
+
         // Current User Name or Email for metadata
         var generatedBy = currentUserService.GetFullName();
         if (string.IsNullOrWhiteSpace(generatedBy))
@@ -190,8 +200,7 @@ public class TechnicalSummaryService(
             TotalToolingCount = totalTooling,
             ReadyToolingCount = readyTooling,
             NotReadyToolingCount = notReadyTooling,
-            NotApplicableToolingCount = naTooling,
-            ApplicableToolingCount = applicableTooling,
+            BlockedToolingCount = blockedTooling,
             ToolingPercentReady = toolingPercent,
             IsToolingReady = isToolingReady,
 
@@ -211,6 +220,7 @@ public class TechnicalSummaryService(
             HighSeverityAcceptedCount = highSeverityAccepted,
             HighSeverityPendingCount = highSeverityPending,
             IsBrownfieldReady = isBrownfieldReady,
+            BrownfieldDocumentNames = brownfieldDocNames,
 
             OutstandingBlockers = blockers
         };

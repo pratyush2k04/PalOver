@@ -2,8 +2,8 @@ namespace Pdr.Api.Models.EnvironmentTooling
 {
     public enum EnvironmentToolingStatus
     {
-        NotReady = 1,
-        Ready = 2,
-        NotApplicable = 3
+        InProgress = 1,
+        Granted = 2,
+        Blocked = 3
     }
 }

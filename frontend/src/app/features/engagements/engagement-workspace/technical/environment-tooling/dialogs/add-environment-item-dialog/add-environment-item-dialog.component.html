@@ -6,6 +6,7 @@
       id="env-item-name"
       label="Item Name"
       [required]="true"
+      [maxLength]="200"
       [ngModel]="name()"
       (ngModelChange)="onNameChange($event)"
       name="itemName"

@@ -23,6 +23,7 @@ export class SummaryPrintPillarsComponent {
   toolingStatusTone = computed<StatusBadgeTone>(() => {
     const s = this.summary();
     if (s.isToolingReady) return 'success';
+    if (s.blockedToolingCount > 0) return 'danger';
     return 'warning';
   });
 

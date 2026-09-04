@@ -50,7 +50,7 @@
 
 .blockers-table {
   width: 100%;
-  min-width: 37.5rem;
+  table-layout: fixed;
   border-collapse: collapse;
   border: 0.0625rem solid $color-slate-200;
   border-radius: 0.5rem;
@@ -64,11 +64,51 @@
   }
 
   th {
+    vertical-align: middle;
+  }
+
+  td {
+    vertical-align: top;
+  }
+
+  th {
     background: $color-slate-50;
     @include text-overline;
     font-size: 0.75rem;
     color: $color-slate-600;
     white-space: nowrap;
+
+    &.col-category {
+      width: 18%;
+    }
+
+    &.col-name {
+      width: 22%;
+    }
+
+    &.col-owner {
+      width: 15%;
+    }
+
+    &.col-status {
+      width: 15%;
+    }
+
+    &.col-detail {
+      width: 30%;
+    }
+  }
+
+  td {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+
+    &.name-cell,
+    &.owner-cell,
+    &.detail-cell {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
   }
 
   tbody tr:last-child td { border-bottom: none; }
@@ -124,8 +164,17 @@
 }
 
 @media print {
-  .blockers-table tr {
-    break-inside: avoid;
-    page-break-inside: avoid;
+  .table-responsive {
+    overflow: visible;
+  }
+
+  .blockers-table {
+    width: 100%;
+    table-layout: fixed;
+
+    tr {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
   }
 }

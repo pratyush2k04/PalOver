@@ -42,11 +42,20 @@ export class AddAccessItemDialogComponent {
       this.nameError.set('This field is required');
       return;
     }
+    if (name.length > 200) {
+      this.nameError.set('Item name cannot exceed 200 characters');
+      return;
+    }
+
+    const tzNote = this.timeZoneNote().trim();
+    if (tzNote.length > 100) {
+      return;
+    }
 
     this.dialogRef.close({
       name,
       isClientSide: this.isClientSide(),
-      timeZoneNote: this.timeZoneNote().trim() || undefined
+      timeZoneNote: tzNote || undefined
     });
   }
 }

@@ -24,7 +24,7 @@ public class EnvironmentToolingService(
         var items = await repository.GetByEngagementIdAsync(engagementId);
         var dtos = items.Select(MapToDto).ToList();
 
-        var readyCount = dtos.Count(i => i.Status == EnvironmentToolingStatus.Ready || i.Status == EnvironmentToolingStatus.NotApplicable);
+        var readyCount = dtos.Count(i => i.Status == EnvironmentToolingStatus.Granted);
         var totalCount = dtos.Count;
 
         return new EnvironmentToolingReadinessResponse
@@ -33,7 +33,7 @@ public class EnvironmentToolingService(
             ReadyCount = readyCount,
             TotalCount = totalCount,
             IsTechnicallyReady = readyCount == totalCount && totalCount > 0,
-            OutstandingItems = dtos.Where(i => i.Status == EnvironmentToolingStatus.NotReady).ToList(),
+            OutstandingItems = dtos.Where(i => i.Status != EnvironmentToolingStatus.Granted).ToList(),
             Items = dtos
         };
     }
@@ -58,7 +58,7 @@ public class EnvironmentToolingService(
             CustomName = request.CustomName,
             Name = request.CustomName,
             OwnerId = request.OwnerId,
-            Status = EnvironmentToolingStatus.NotReady
+            Status = EnvironmentToolingStatus.InProgress
         };
 
         await repository.AddAsync(item);
@@ -67,6 +67,15 @@ public class EnvironmentToolingService(
         var createdItem = await repository.GetByIdAsync(item.Id);
         return MapToDto(createdItem!);
     }
+
+    private static readonly HashSet<(EnvironmentToolingStatus From, EnvironmentToolingStatus To)> AllowedTransitions =
+    [
+        (EnvironmentToolingStatus.InProgress, EnvironmentToolingStatus.Granted),
+        (EnvironmentToolingStatus.InProgress, EnvironmentToolingStatus.Blocked),
+        (EnvironmentToolingStatus.Granted,    EnvironmentToolingStatus.Blocked),
+        (EnvironmentToolingStatus.Blocked,  EnvironmentToolingStatus.InProgress),
+        (EnvironmentToolingStatus.Blocked,  EnvironmentToolingStatus.Granted),
+    ];
 
     public async Task<EnvironmentToolingItemDto> UpdateStatusAsync(int id, UpdateEnvironmentToolingStatusRequest request)
     {
@@ -78,18 +87,30 @@ public class EnvironmentToolingService(
 
         await engagementRepository.EnsureNotSignedOffAsync(item.EngagementId);
 
-        // Validate NotApplicableReason
-        if (request.Status == EnvironmentToolingStatus.NotApplicable)
+        // Guard: same-status transition is never allowed
+        if (item.Status == request.Status)
         {
-            if (string.IsNullOrWhiteSpace(request.NotApplicableReason))
+            throw new InvalidEnvironmentToolingStatusTransitionException(item.Status, request.Status);
+        }
+
+        // Guard: check against the allowed transition table
+        if (!AllowedTransitions.Contains((item.Status, request.Status)))
+        {
+            throw new InvalidEnvironmentToolingStatusTransitionException(item.Status, request.Status);
+        }
+
+        // Validate BlockReason
+        if (request.Status == EnvironmentToolingStatus.Blocked)
+        {
+            if (string.IsNullOrWhiteSpace(request.BlockReason))
             {
-                throw new NotApplicableReasonRequiredException();
+                throw new BlockReasonRequiredException();
             }
-            item.NotApplicableReason = request.NotApplicableReason;
+            item.BlockReason = request.BlockReason;
         }
         else
         {
-            item.NotApplicableReason = null;
+            item.BlockReason = null;
         }
 
         var wasReady = await readinessNotificationService.IsReadyAsync(item.EngagementId);
@@ -126,6 +147,22 @@ public class EnvironmentToolingService(
         return MapToDto(updatedItem!);
     }
 
+    public async Task DeleteItemAsync(int id)
+    {
+        var item = await repository.GetByIdAsync(id)
+            ?? throw new EnvironmentToolingItemNotFoundException(id);
+
+        await engagementRepository.EnsureNotSignedOffAsync(item.EngagementId);
+
+        var wasReady = await readinessNotificationService.IsReadyAsync(item.EngagementId);
+
+        await repository.DeleteAsync(item);
+
+        await riskService.SyncAutoCreatedRisksAsync(item.EngagementId);
+
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(item.EngagementId, wasReady);
+    }
+
     private static string GetItemDisplayName(EnvironmentToolingItem item) =>
         item.EnvironmentToolingDefinition != null
             ? item.EnvironmentToolingDefinition.Name
@@ -142,6 +179,6 @@ public class EnvironmentToolingService(
             OwnerFullName = item.Owner?.FullName ?? string.Empty,
             CustomName = item.CustomName,
             Status = item.Status,
-            NotApplicableReason = item.NotApplicableReason
+            BlockReason = item.BlockReason
         };
 }

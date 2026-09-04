@@ -31,8 +31,14 @@ public class EnvironmentToolingRepository(AppDbContext context) : IEnvironmentTo
     public async Task SaveChangesAsync() =>
         await context.SaveChangesAsync();
 
+    public async Task DeleteAsync(EnvironmentToolingItem item)
+    {
+        item.IsDeleted = true;
+        await context.SaveChangesAsync();
+    }
+
     public async Task<bool> EngagementExistsAsync(int engagementId) =>
         await context.Engagements.AnyAsync(e => e.EngagementId == engagementId);
 
     public async Task<bool> UserExistsAsync(int userId) =>
-        await context.Users.AnyAsync(u => u.Id == userId);}
+        await context.Users.AnyAsync(u => u.Id == userId);}

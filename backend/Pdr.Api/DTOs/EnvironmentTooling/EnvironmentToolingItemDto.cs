@@ -12,6 +12,6 @@ namespace Pdr.Api.DTOs.EnvironmentTooling
         public string OwnerFullName { get; set; } = string.Empty;
         public string? CustomName { get; set; }
         public EnvironmentToolingStatus Status { get; set; }
-        public string? NotApplicableReason { get; set; }
+        public string? BlockReason { get; set; }
     }
 }

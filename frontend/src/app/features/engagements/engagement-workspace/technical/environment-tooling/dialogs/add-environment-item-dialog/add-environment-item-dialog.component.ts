@@ -37,6 +37,10 @@ export class AddEnvironmentItemDialogComponent {
       this.nameError.set('This field is required');
       return;
     }
+    if (name.length > 200) {
+      this.nameError.set('Item name cannot exceed 200 characters');
+      return;
+    }
 
     this.dialogRef.close({ name });
   }

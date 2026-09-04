@@ -109,13 +109,13 @@ public class RiskRepository(AppDbContext context) : IRiskRepository
             .AsNoTracking()
             .Include(e => e.EnvironmentToolingDefinition)
             .Where(e => e.EngagementId == engagementId &&
-                        e.Status == EnvironmentToolingStatus.NotApplicable &&
+                        e.Status == EnvironmentToolingStatus.Blocked &&
                         !e.IsDeleted)
             .Select(e => new RiskBlockerSourceItem(
                 RiskConstants.SourceTypes.EnvironmentTooling,
                 e.Id,
                 e.EnvironmentToolingDefinition != null ? e.EnvironmentToolingDefinition.Name : (e.CustomName ?? e.Name),
-                e.NotApplicableReason ?? string.Empty,
+                e.BlockReason ?? string.Empty,
                 (int?)e.OwnerId))
             .ToListAsync();
     }
