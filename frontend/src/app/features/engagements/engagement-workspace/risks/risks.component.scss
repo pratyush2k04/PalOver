@@ -327,10 +327,10 @@
   @include modal-overlay;
 
   .modal-content {
-    @include modal-card(35rem);
+    @include modal-card;
     padding: 0;
     animation: modalSlide $transition-base;
-    max-width: calc(100vw - 2rem);
+    max-width: min(28.75rem, calc(100vw - 2rem));
     box-sizing: border-box;
 
     .modal-header {

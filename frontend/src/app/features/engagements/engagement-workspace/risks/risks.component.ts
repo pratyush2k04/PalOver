@@ -25,6 +25,8 @@ import { APP_ROUTES, ENGAGEMENT_ROUTES, TECHNICAL_READINESS_ROUTES } from '@shar
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { ToastService } from '@common/services/toast/toast';
 import { RISK_MESSAGES } from '@shared/constants/app.constants';
+import { AuthService } from '@shared/services/auth';
+import { USER_ROLES } from '@shared/constants/users.constants';
 
 import { RiskCommentsComponent } from './components/risk-comments/risk-comments.component';
 import { RiskFormDialogComponent, RiskFormDialogResult } from './components/risk-form-dialog/risk-form-dialog.component';
@@ -59,6 +61,7 @@ export class RisksComponent implements OnInit {
   private fb = inject(FormBuilder);
   private toastService = inject(ToastService);
   private dialogService = inject(DialogService);
+  private authService = inject(AuthService);
 
   engagementId = signal<number | null>(null);
   risks = signal<Risk[]>([]);
@@ -69,6 +72,23 @@ export class RisksComponent implements OnInit {
 
   readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
   readonly canManage = computed(() => !this.isSignedOff());
+
+  canCloseRisk(risk: Risk): boolean {
+    if (!this.canManage() || risk.status === 'Closed' || risk.sourceType) {
+      return false;
+    }
+
+    if (this.authService.hasRole(USER_ROLES.PROJECT_MANAGEMENT)) {
+      return true;
+    }
+
+    const currentUserId = this.authService.getUserId();
+    if (currentUserId != null && risk.ownerId != null && Number(risk.ownerId) === Number(currentUserId)) {
+      return true;
+    }
+
+    return false;
+  }
 
   // Filter signals
   statusFilter = signal<RiskStatus | 'ALL'>('ALL');
@@ -315,6 +335,7 @@ export class RisksComponent implements OnInit {
   }
 
   openCloseModal(risk: Risk): void {
+    if (!this.canCloseRisk(risk)) return;
     this.closingRisk.set(risk);
     this.closeFormSubmitted.set(false);
     this.closeForm.reset({ resolutionNote: '' });
