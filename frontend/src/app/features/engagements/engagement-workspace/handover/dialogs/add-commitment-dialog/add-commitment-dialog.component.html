@@ -2,6 +2,10 @@
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <div class="app-dialog__content">
+    @if (errorMessage()) {
+      <app-alert>{{ errorMessage() }}</app-alert>
+    }
+
     <div class="form-row">
       <div class="flex-2">
         <app-input
@@ -60,10 +64,10 @@
   </div>
 
   <div class="app-dialog__actions">
-    <app-button type="button" variant="stroked" (click)="onCancel()">
+    <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="onCancel()">
       {{ HANDOVER_BUTTONS.CANCEL }}
     </app-button>
-    <app-button type="submit" variant="flat">
+    <app-button type="submit" variant="flat" [disabled]="isSubmitting()" [loading]="isSubmitting()">
       {{ isEditMode() ? HANDOVER_BUTTONS.SAVE : HANDOVER_BUTTONS.ADD_COMMITMENT }}
     </app-button>
   </div>

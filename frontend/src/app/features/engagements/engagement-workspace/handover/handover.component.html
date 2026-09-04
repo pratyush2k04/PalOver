@@ -204,7 +204,7 @@
             }
             <app-button
               variant="flat"
-              [disabled]="!hasHandoverDraft()"
+              [disabled]="!hasHandoverDraft() || isSaving() || isLoading()"
               (click)="openAddCommitmentDialog()"
             >
               {{ HANDOVER_BUTTONS.ADD_COMMITMENT }}
@@ -229,6 +229,7 @@
                       <app-button
                         variant="stroked"
                         size="sm"
+                        [disabled]="isSaving() || isLoading()"
                         (click)="startEditCommitment(c)"
                         ariaLabel="Edit promised commitment"
                       >
@@ -237,6 +238,7 @@
                       <app-button
                         variant="danger"
                         size="sm"
+                        [disabled]="isSaving() || isLoading()"
                         (click)="requestDeleteCommitment(c.commitmentId)"
                         ariaLabel="Delete promised commitment"
                       >
@@ -496,9 +498,13 @@
   <app-confirm-dialog
     title="Delete Commitment"
     confirmLabel="Delete"
+    [isBusy]="isLoading()"
     (confirmed)="confirmDeleteCommitment(commitmentId)"
     (cancelled)="cancelDeleteCommitment()"
   >
     Are you sure you want to delete this commitment?
+    @if (deleteCommitmentError()) {
+      <app-alert>{{ deleteCommitmentError() }}</app-alert>
+    }
   </app-confirm-dialog>
 }

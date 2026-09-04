@@ -7,7 +7,13 @@ import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
-import { CreateCommitmentRequest, AddCommitmentDialogData } from '../../../../models/handover.model';
+import { AlertComponent } from '@common/components/alert/alert';
+import {
+  CreateCommitmentRequest,
+  UpdateCommitmentRequest,
+  AddCommitmentDialogData,
+} from '../../../../models/handover.model';
+import { HandoverService } from '../../../../services/handover.service';
 import {
   HANDOVER_LABELS,
   HANDOVER_PLACEHOLDERS,
@@ -26,13 +32,15 @@ import {
     InputComponent,
     TextareaComponent,
     SelectComponent,
+    AlertComponent,
   ],
   templateUrl: './add-commitment-dialog.component.html',
   styleUrl: './add-commitment-dialog.component.scss',
 })
 export class AddCommitmentDialogComponent {
-  private dialogRef = inject<DialogRef<CreateCommitmentRequest>>(DialogRef);
+  private dialogRef = inject<DialogRef<boolean>>(DialogRef);
   private fb = inject(FormBuilder);
+  private handoverService = inject(HandoverService);
   readonly data = inject<AddCommitmentDialogData>(DIALOG_DATA);
 
   HANDOVER_LABELS = HANDOVER_LABELS;
@@ -60,6 +68,8 @@ export class AddCommitmentDialogComponent {
   });
 
   isEditMode = signal(false);
+  isSubmitting = signal(false);
+  errorMessage = signal<string | null>(null);
 
   constructor() {
     if (this.data.commitment) {
@@ -75,6 +85,7 @@ export class AddCommitmentDialogComponent {
   }
 
   onCancel(): void {
+    if (this.isSubmitting()) return;
     this.dialogRef.close();
   }
 
@@ -84,7 +95,41 @@ export class AddCommitmentDialogComponent {
       return;
     }
 
-    this.dialogRef.close(this.form.getRawValue());
+    const engagementId = this.data.engagementId;
+    const request = this.form.getRawValue();
+
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
+
+    const request$ = this.isEditMode()
+      ? this.handoverService.updateCommitment(
+          engagementId,
+          this.data.commitment!.commitmentId,
+          request as UpdateCommitmentRequest,
+          true
+        )
+      : this.handoverService.addCommitment(engagementId, request as CreateCommitmentRequest, true);
+
+    request$.subscribe({
+      next: () => {
+        this.isSubmitting.set(false);
+        this.dialogRef.close(true);
+      },
+      error: (err) => {
+        this.isSubmitting.set(false);
+        this.errorMessage.set(
+          this.extractErrorMessage(
+            err,
+            this.isEditMode() ? HANDOVER_MESSAGES.COMMITMENT_UPDATE_ERROR : HANDOVER_MESSAGES.COMMITMENT_ADD_ERROR
+          )
+        );
+      },
+    });
+  }
+
+  private extractErrorMessage(err: unknown, fallback: string): string {
+    const errorMessage = (err as { error?: { message?: string } })?.error?.message;
+    return errorMessage || fallback;
   }
 }
 
