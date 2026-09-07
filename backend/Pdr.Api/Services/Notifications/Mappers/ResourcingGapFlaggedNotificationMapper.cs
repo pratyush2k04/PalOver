@@ -29,10 +29,10 @@ public class ResourcingGapFlaggedNotificationMapper : INotificationTemplateMappe
 
         return new Dictionary<string, object?>
         {
-            ["EngagementName"] = engagement?.EngagementName ?? "Engagement",
+            ["EngagementName"] = engagement?.EngagementName,
             ["UnconfirmedCount"] = payload.UnconfirmedCount,
             ["DaysToBilling"] = payload.DaysToBilling,
-            ["BillingDate"] = engagement?.BillingStartDate?.ToString("dd MMM yyyy") ?? "unspecified",
+            ["BillingDate"] = engagement?.BillingStartDate?.ToString("dd MMM yyyy"),
             ["EngagementId"] = payload.EngagementId
         };
     }

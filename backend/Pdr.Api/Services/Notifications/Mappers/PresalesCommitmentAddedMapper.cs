@@ -30,7 +30,7 @@ public class PresalesCommitmentAddedMapper : INotificationTemplateMapper
 
         return new Dictionary<string, object?>
         {
-            ["EngagementName"] = engagement?.EngagementName ?? "Engagement",
+            ["EngagementName"] = engagement?.EngagementName,
             ["EngagementId"] = payload.EngagementId,
             ["CommitmentTitle"] = payload.CommitmentTitle,
             ["CommitmentId"] = payload.CommitmentId

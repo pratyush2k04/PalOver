@@ -27,7 +27,7 @@ public class TechnicalReadinessCompleteMapper : INotificationTemplateMapper
 
         return new Dictionary<string, object?>
         {
-            ["EngagementName"] = engagement?.EngagementName ?? "Engagement",
+            ["EngagementName"] = engagement?.EngagementName,
             ["EngagementId"] = payload.EngagementId
         };
     }
