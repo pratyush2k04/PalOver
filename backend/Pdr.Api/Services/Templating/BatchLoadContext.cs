@@ -27,6 +27,7 @@ public class BatchLoadContext
     public HashSet<int> KickoffActionItemIds { get; } = [];
     public HashSet<int> RoleIds { get; } = [];
     public HashSet<int> AssumptionIds { get; } = [];
+    public HashSet<int> KickoffReadinessEngagementIds { get; } = [];
 
     // Preloaded entity dictionaries for Phase 3 (Mapper)
     public Dictionary<int, User> Users { get; set; } = [];
@@ -42,4 +43,5 @@ public class BatchLoadContext
     public Dictionary<int, KickoffActionItem> KickoffActionItems { get; set; } = [];
     public Dictionary<int, Role> Roles { get; set; } = [];
     public Dictionary<int, Assumption> Assumptions { get; set; } = [];
+    public Dictionary<int, string?> KickoffReadinessNextTabs { get; set; } = [];
 }

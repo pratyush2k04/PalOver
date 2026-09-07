@@ -15,6 +15,7 @@ public class KickoffReadinessReminderMapper : INotificationTemplateMapper
         if (payload is null) return;
 
         context.EngagementIds.Add(payload.EngagementId);
+        context.KickoffReadinessEngagementIds.Add(payload.EngagementId);
     }
 
 
@@ -24,13 +25,14 @@ public class KickoffReadinessReminderMapper : INotificationTemplateMapper
             ?? throw new InvalidOperationException("KickoffReadinessReminder notification data could not be parsed.");
 
         var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
+        var nextTab = context.KickoffReadinessNextTabs.GetValueOrDefault(payload.EngagementId) ?? "handover";
         
         return new Dictionary<string, object?>
         {
             ["EngagementId"] = payload.EngagementId,
             ["EngagementName"] = engagement?.EngagementName,
             ["DaysBeforeKickoff"] = payload.ThresholdDays,
-            ["TabKey"] = "overview"
+            ["TabKey"] = nextTab
         };
     }
 }

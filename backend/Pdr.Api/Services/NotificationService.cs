@@ -198,10 +198,16 @@ public class NotificationService(
         var initialValues = TemplateRenderer.ExtractInitialValues(notification.Data);
         var staticFallback = notification.StaticFallback;
 
-        var link = notification.Link
-            ?? (notification.Template.LinkPattern is null
-                ? null
-                : renderer.Render(notification.Template.LinkPattern, values, initialValues, staticFallback));
+        var renderedLink = notification.Template.LinkPattern is null
+            ? null
+            : renderer.Render(notification.Template.LinkPattern, values, initialValues, staticFallback: null);
+
+        if (renderedLink is not null && renderedLink.Contains(TemplateRenderer.DeletedPlaceholder))
+        {
+            renderedLink = null;
+        }
+
+        var link = notification.Link ?? renderedLink;
 
         return (
             renderer.Render(notification.Template.Title, values, initialValues, staticFallback),

@@ -1,4 +1,6 @@
+using Microsoft.Extensions.DependencyInjection;
 using Pdr.Api.Repositories.Interfaces;
+using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services.Templating;
 
@@ -14,7 +16,8 @@ public class BatchDataPreloader(
     IEngagementChecklistRepository checklistRepository,
     IKickoffRepository kickoffRepository,
     IRoleRepository roleRepository,
-    IAssumptionRepository assumptionRepository) : IBatchDataPreloader
+    IAssumptionRepository assumptionRepository,
+    IServiceProvider serviceProvider) : IBatchDataPreloader
 {
     public async Task PreloadAsync(BatchLoadContext context, CancellationToken cancellationToken = default)
     {
@@ -146,6 +149,19 @@ public class BatchDataPreloader(
             foreach (var (k, v) in assumptions)
             {
                 context.Assumptions[k] = v;
+            }
+        }
+
+        if (context.KickoffReadinessEngagementIds.Count > 0)
+        {
+            var kickoffReadinessService = serviceProvider.GetRequiredService<IKickoffReadinessService>();
+            foreach (var engId in context.KickoffReadinessEngagementIds)
+            {
+                if (!context.KickoffReadinessNextTabs.ContainsKey(engId))
+                {
+                    var readiness = await kickoffReadinessService.GetReadinessAsync(engId);
+                    context.KickoffReadinessNextTabs[engId] = readiness.NextIncompleteTabKey ?? "handover";
+                }
             }
         }
     }
