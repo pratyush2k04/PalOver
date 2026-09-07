@@ -11,6 +11,7 @@ import { AddClientContactTransitionDialogData, AddTransitionRequest } from '@fea
 import { ClientContactTransitionService } from '@features/engagements/services/client-contact-transition.service';
 import { PersonService } from '@shared/services/person.service';
 import { PersonType } from '@shared/models/person.model';
+import { ToastService } from '@common/services/toast/toast';
 import {
   FORM_LABELS,
   FORM_PLACEHOLDERS,
@@ -39,6 +40,7 @@ export class AddClientContactTransitionDialogComponent {
   private personService = inject(PersonService);
   private transitionService = inject(ClientContactTransitionService);
   private fb = inject(FormBuilder);
+  private toastService = inject(ToastService);
   readonly data = inject<AddClientContactTransitionDialogData>(DIALOG_DATA);
 
   formLabels = FORM_LABELS;
@@ -89,6 +91,12 @@ export class AddClientContactTransitionDialogComponent {
 
   onCancel(): void {
     this.dialogRef.close();
+  }
+
+  onOutgoingSelectClick(): void {
+    if (this.outgoingContactOptions().length === 0) {
+      this.toastService.info(this.validationMessages.NO_OUTGOING_CONTACTS);
+    }
   }
 
   reviewAndConfirm(): void {

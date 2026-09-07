@@ -47,6 +47,7 @@ export const VALIDATION_MESSAGES = {
   OUTGOING_ROLE_REQUIRED: 'Outgoing contact role is required.',
   INCOMING_NAME_REQUIRED: 'Incoming contact name is required.',
   INCOMING_ROLE_REQUIRED: 'Incoming contact role is required.',
+  NO_OUTGOING_CONTACTS: 'No client contacts available to transition.',
 } as const;
 
 export const STATUS_MESSAGES = {
