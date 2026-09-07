@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Pdr.Api.Constants;
 using Pdr.Api.Services.Templating;
 using Pdr.Api.Models.Audit;
 
@@ -22,7 +23,7 @@ public class AccessItemBlockedAuditMapper : IAuditTemplateMapper
     public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<AccessItemBlockedData>(data)
-            ?? throw new InvalidOperationException("AccessItemBlocked audit payload could not be parsed.");
+            ?? throw new InvalidOperationException(AuditConstants.Messages.ParsePayloadFailed(TemplateKey));
 
         var item = context.AccessItems.GetValueOrDefault(payload.AccessItemId);
         var engagement = item is null ? null : context.Engagements.GetValueOrDefault(item.EngagementId);

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Pdr.Api.Constants;
 using Pdr.Api.Services.Templating;
 using Pdr.Api.Models.Audit;
 
@@ -22,7 +23,7 @@ public class UserUpdatedMapper : IAuditTemplateMapper
     public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<UserUpdatedData>(data)
-            ?? throw new InvalidOperationException("UserUpdated audit payload could not be parsed.");
+            ?? throw new InvalidOperationException(AuditConstants.Messages.ParsePayloadFailed(TemplateKey));
 
         var user = context.Users.GetValueOrDefault(payload.UserId);
         var actor = context.Users.GetValueOrDefault(payload.ActorUserId) ?? (actorUserId.HasValue ? context.Users.GetValueOrDefault(actorUserId.Value) : null);

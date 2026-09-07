@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Pdr.Api.Constants;
 using Pdr.Api.Services.Templating;
 using Pdr.Api.Models.Audit;
 
@@ -23,7 +24,7 @@ public class DocumentUploadedMapper : IAuditTemplateMapper
     public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<DocumentUploadedData>(data)
-            ?? throw new InvalidOperationException("DocumentUploaded audit payload could not be parsed.");
+            ?? throw new InvalidOperationException(AuditConstants.Messages.ParsePayloadFailed(TemplateKey));
 
         var doc = context.Documents.GetValueOrDefault(payload.DocumentId);
                 var category = doc?.Category ?? context.DocumentCategories.GetValueOrDefault(payload.CategoryId);

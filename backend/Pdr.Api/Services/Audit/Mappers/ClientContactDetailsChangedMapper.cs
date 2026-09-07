@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Pdr.Api.Constants;
 using Pdr.Api.Services.Templating;
 using Pdr.Api.Models.Audit;
 
@@ -22,7 +23,7 @@ public class ClientContactDetailsChangedMapper : IAuditTemplateMapper
     public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<ClientContactDetailsData>(data)
-            ?? throw new InvalidOperationException("ClientContactDetailsChanged audit payload could not be parsed.");
+            ?? throw new InvalidOperationException(AuditConstants.Messages.ParsePayloadFailed(TemplateKey));
 
         var actor = payload.ActorUserId.HasValue
             ? context.Users.GetValueOrDefault(payload.ActorUserId.Value) ?? (actorUserId.HasValue ? context.Users.GetValueOrDefault(actorUserId.Value) : null)

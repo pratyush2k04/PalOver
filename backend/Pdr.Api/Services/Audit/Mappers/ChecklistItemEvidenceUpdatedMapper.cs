@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using Pdr.Api.Constants;
 using Pdr.Api.Services.Templating;
 using Pdr.Api.Models.Audit;
 
@@ -25,7 +26,7 @@ public class ChecklistItemEvidenceUpdatedMapper : IAuditTemplateMapper
     public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<ChecklistItemEvidenceUpdatedData>(data)
-            ?? throw new InvalidOperationException("ChecklistItemEvidenceUpdated audit payload could not be parsed.");
+            ?? throw new InvalidOperationException(AuditConstants.Messages.ParsePayloadFailed(TemplateKey));
 
         var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
         var item = context.ChecklistItems.GetValueOrDefault(payload.ChecklistItemId);
