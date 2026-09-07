@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Pdr.Api.Constants;
 using Pdr.Api.Models.Audit;
 using Pdr.Api.Repositories.Interfaces;
 
@@ -9,23 +8,23 @@ public class DocumentVersionedMapper(
     IDocumentRepository documentRepository,
     IUserRepository userRepository) : IAuditTemplateMapper
 {
-    public string TemplateKey => AuditConstants.DocumentVersioned.TemplateKey;
+    public string TemplateKey => nameof(AuditActionEnum.DocumentVersioned);
 
     private record DocumentVersionedData(int DocumentId, int Version, int ActorUserId, string? DocumentName);
 
     public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
     {
         var payload = JsonSerializer.Deserialize<DocumentVersionedData>(data)
-            ?? throw new InvalidOperationException(AuditConstants.DocumentVersioned.ParseErrorMessage);
+            ?? throw new InvalidOperationException("DocumentVersioned audit payload could not be parsed.");
 
         var doc = await documentRepository.GetByIdAsync(payload.DocumentId);
         var actor = await userRepository.GetByIdAsync(payload.ActorUserId);
 
         return new Dictionary<string, object?>
         {
-            [AuditConstants.DocumentVersioned.DocumentNameKey] = doc?.FileName ?? payload.DocumentName ?? "Unknown Document",
-            [AuditConstants.DocumentVersioned.VersionKey] = payload.Version.ToString(),
-            [AuditConstants.DocumentVersioned.ActorNameKey] = actor?.FullName ?? "Unknown User"
+            ["documentName"] = doc?.FileName ?? payload.DocumentName ?? "Unknown Document",
+            ["version"] = payload.Version.ToString(),
+            ["actorName"] = actor?.FullName ?? "Unknown User"
         };
     }
 }

@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Pdr.Api.Constants;
 using Pdr.Api.Models.Audit;
 using Pdr.Api.Repositories.Interfaces;
 
@@ -10,14 +9,14 @@ public class HandoverQueryRaisedMapper(
     IHandoverQueryRepository queryRepository,
     IEngagementRepository engagementRepository) : IAuditTemplateMapper
 {
-    public string TemplateKey => AuditConstants.HandoverQueryRaised.TemplateKey;
+    public string TemplateKey => nameof(AuditActionEnum.HandoverQueryRaised);
 
     public record HandoverQueryRaisedData(int QueryId, int HandoverId, int EngagementId, int ActorUserId);
 
     public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
     {
         var payload = JsonSerializer.Deserialize<HandoverQueryRaisedData>(data)
-            ?? throw new InvalidOperationException(AuditConstants.HandoverQueryRaised.ParseErrorMessage);
+            ?? throw new InvalidOperationException("HandoverQueryRaised audit payload could not be parsed.");
 
         var actor = await userRepository.GetByIdAsync(payload.ActorUserId);
         var query = await queryRepository.GetByIdAsync(payload.QueryId, payload.HandoverId);
@@ -25,9 +24,9 @@ public class HandoverQueryRaisedMapper(
 
         return new Dictionary<string, object?>
         {
-            [AuditConstants.HandoverQueryRaised.ActorNameKey] = actor?.FullName,
-            [AuditConstants.HandoverQueryRaised.FieldSectionKey] = query?.FieldSection.Name,
-            [AuditConstants.HandoverQueryRaised.EngagementNameKey] = engagement?.EngagementName
+            ["actorName"] = actor?.FullName,
+            ["fieldSection"] = query?.FieldSection.Name,
+            ["engagementName"] = engagement?.EngagementName
         };
     }
 }
