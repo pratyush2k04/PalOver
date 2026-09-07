@@ -29,9 +29,9 @@ public class DiscoveryItemAddedMapper : IAuditTemplateMapper
 
         return new Dictionary<string, object?>
         {
-            ["itemName"] = payload.ItemName ?? "Item",
-            ["engagementName"] = engagement?.EngagementName ?? "Engagement",
-            ["actorName"] = actor?.FullName ?? "Unknown User"
+            ["itemName"] = payload.ItemName,
+            ["engagementName"] = engagement?.EngagementName,
+            ["actorName"] = actor?.FullName
         };
     }
 }

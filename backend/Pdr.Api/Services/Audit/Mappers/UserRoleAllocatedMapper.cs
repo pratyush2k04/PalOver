@@ -31,9 +31,9 @@ public class UserRoleAllocatedMapper : IAuditTemplateMapper
 
         return new Dictionary<string, object?>
         {
-            ["roleName"] = role?.Name ?? "Role",
-            ["targetUserName"] = targetUser?.FullName ?? "User",
-            ["actorName"] = actor?.FullName ?? "Unknown User"
+            ["roleName"] = role?.Name,
+            ["targetUserName"] = targetUser?.FullName,
+            ["actorName"] = actor?.FullName
         };
     }
 }

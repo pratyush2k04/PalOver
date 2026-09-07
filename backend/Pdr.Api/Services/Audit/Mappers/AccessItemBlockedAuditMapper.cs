@@ -30,9 +30,9 @@ public class AccessItemBlockedAuditMapper : IAuditTemplateMapper
 
         return new Dictionary<string, object?>
         {
-            ["itemName"] = item?.Name ?? "Access item",
-            ["engagementName"] = engagement?.EngagementName ?? "Engagement",
-            ["actorName"] = actor?.FullName ?? "Unknown User"
+            ["itemName"] = item?.Name,
+            ["engagementName"] = engagement?.EngagementName,
+            ["actorName"] = actor?.FullName
         };
     }
 }

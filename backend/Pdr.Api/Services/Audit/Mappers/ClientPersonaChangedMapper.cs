@@ -30,8 +30,8 @@ public class ClientPersonaChangedMapper : IAuditTemplateMapper
 
         return new Dictionary<string, object?>
         {
-            ["clientName"] = payload.ClientName ?? "Client",
-            ["actorName"] = actor?.FullName ?? "Unknown User"
+            ["clientName"] = payload.ClientName,
+            ["actorName"] = actor?.FullName
         };
     }
 }

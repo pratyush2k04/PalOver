@@ -29,9 +29,9 @@ public class BrownfieldItemAddedMapper : IAuditTemplateMapper
 
         return new Dictionary<string, object?>
         {
-            ["findingName"] = payload.FindingName ?? "Finding",
-            ["engagementName"] = engagement?.EngagementName ?? "Engagement",
-            ["actorName"] = actor?.FullName ?? "Unknown User"
+            ["findingName"] = payload.FindingName,
+            ["engagementName"] = engagement?.EngagementName,
+            ["actorName"] = actor?.FullName
         };
     }
 }

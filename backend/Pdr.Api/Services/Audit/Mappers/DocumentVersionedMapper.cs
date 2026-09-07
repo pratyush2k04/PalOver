@@ -29,9 +29,9 @@ public class DocumentVersionedMapper : IAuditTemplateMapper
 
         return new Dictionary<string, object?>
         {
-            ["documentName"] = doc?.FileName ?? payload.DocumentName ?? "Unknown Document",
+            ["documentName"] = doc?.FileName ?? payload.DocumentName,
             ["version"] = payload.Version.ToString(),
-            ["actorName"] = actor?.FullName ?? "Unknown User"
+            ["actorName"] = actor?.FullName
         };
     }
 }

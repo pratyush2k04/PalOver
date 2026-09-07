@@ -27,9 +27,9 @@ public class DocumentDeletedMapper : IAuditTemplateMapper
 
         return new Dictionary<string, object?>
         {
-            ["documentName"] = payload.DocumentName ?? "Unknown Document",
+            ["documentName"] = payload.DocumentName,
             ["reason"] = payload.Reason,
-            ["actorName"] = actor?.FullName ?? "Unknown User"
+            ["actorName"] = actor?.FullName
         };
     }
 }

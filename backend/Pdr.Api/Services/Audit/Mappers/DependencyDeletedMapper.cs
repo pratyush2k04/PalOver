@@ -29,7 +29,7 @@ public class DependencyDeletedMapper : IAuditTemplateMapper
         return new Dictionary<string, object?>
         {
             ["dependencyDescription"] = TruncateDescription(payload.Description),
-            ["engagementName"] = engagement?.EngagementName ?? "Engagement"
+            ["engagementName"] = engagement?.EngagementName
         };
     }
 

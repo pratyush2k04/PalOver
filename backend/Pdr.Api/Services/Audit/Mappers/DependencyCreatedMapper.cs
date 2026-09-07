@@ -32,7 +32,7 @@ public class DependencyCreatedMapper : IAuditTemplateMapper
         {
             ["dependencyDescription"] = TruncateDescription(dependency?.Description),
             ["dependencyType"] = payload.Type,
-            ["engagementName"] = engagement?.EngagementName ?? "Engagement"
+            ["engagementName"] = engagement?.EngagementName
         };
     }
 

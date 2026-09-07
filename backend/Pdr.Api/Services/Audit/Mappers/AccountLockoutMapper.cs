@@ -27,7 +27,7 @@ public class AccountLockoutMapper : IAuditTemplateMapper
 
         return new Dictionary<string, object?>
         {
-            ["userName"] = user?.FullName ?? user?.Email ?? "Unknown User"
+            ["userName"] = user?.FullName ?? user?.Email
         };
     }
 }

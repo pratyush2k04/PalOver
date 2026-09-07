@@ -33,8 +33,8 @@ public class DependencyEscalatedMapper : IAuditTemplateMapper
         return new Dictionary<string, object?>
         {
             ["dependencyDescription"] = TruncateDescription(dependency?.Description),
-            ["riskTitle"] = risk?.Title ?? "Escalated Risk",
-            ["engagementName"] = engagement?.EngagementName ?? "Engagement"
+            ["riskTitle"] = risk?.Title,
+            ["engagementName"] = engagement?.EngagementName
         };
     }
 

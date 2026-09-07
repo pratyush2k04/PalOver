@@ -29,7 +29,7 @@ public class ResourcingGapFlagRaisedMapper : IAuditTemplateMapper
 
         return new Dictionary<string, object?>
         {
-            ["engagementName"] = engagement?.EngagementName ?? "Engagement",
+            ["engagementName"] = engagement?.EngagementName,
             ["unconfirmedCount"] = payload.UnconfirmedCount,
             ["daysToBilling"] = payload.DaysToBilling ?? 0
         };

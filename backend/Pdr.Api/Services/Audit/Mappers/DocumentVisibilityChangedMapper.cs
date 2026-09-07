@@ -29,9 +29,9 @@ public class DocumentVisibilityChangedMapper : IAuditTemplateMapper
 
         return new Dictionary<string, object?>
         {
-            ["documentName"] = doc?.FileName ?? payload.DocumentName ?? "Unknown Document",
+            ["documentName"] = doc?.FileName ?? payload.DocumentName,
             ["visibility"] = payload.Visibility,
-            ["actorName"] = actor?.FullName ?? "Unknown User"
+            ["actorName"] = actor?.FullName
         };
     }
 }

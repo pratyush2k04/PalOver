@@ -29,8 +29,8 @@ public class PmAndTlAssignedMapper : IAuditTemplateMapper
 
         return new Dictionary<string, object?>
         {
-            ["engagementName"] = engagement?.EngagementName ?? "Engagement",
-            ["actorName"] = actor?.FullName ?? "Unknown User"
+            ["engagementName"] = engagement?.EngagementName,
+            ["actorName"] = actor?.FullName
         };
     }
 }

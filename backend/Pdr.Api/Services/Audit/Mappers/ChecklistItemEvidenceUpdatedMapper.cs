@@ -33,9 +33,9 @@ public class ChecklistItemEvidenceUpdatedMapper : IAuditTemplateMapper
 
         return new Dictionary<string, object?>
         {
-            ["itemTitle"] = item?.Title ?? "Checklist Item",
-            ["engagementName"] = engagement?.EngagementName ?? "Engagement",
-            ["actorName"] = actor?.FullName ?? "Unknown User"
+            ["itemTitle"] = item?.Title,
+            ["engagementName"] = engagement?.EngagementName,
+            ["actorName"] = actor?.FullName
         };
     }
 }

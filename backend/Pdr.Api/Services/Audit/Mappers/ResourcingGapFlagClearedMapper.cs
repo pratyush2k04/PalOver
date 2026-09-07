@@ -29,7 +29,7 @@ public class ResourcingGapFlagClearedMapper : IAuditTemplateMapper
 
         return new Dictionary<string, object?>
         {
-            ["engagementName"] = engagement?.EngagementName ?? "Engagement"
+            ["engagementName"] = engagement?.EngagementName
         };
     }
 }

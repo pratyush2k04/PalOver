@@ -28,7 +28,7 @@ public class MasterChecklistPublishedMapper : IAuditTemplateMapper
         return new Dictionary<string, object?>
         {
             ["version"] = payload.Version.ToString(),
-            ["actorName"] = actor?.FullName ?? "Unknown User"
+            ["actorName"] = actor?.FullName
         };
     }
 }

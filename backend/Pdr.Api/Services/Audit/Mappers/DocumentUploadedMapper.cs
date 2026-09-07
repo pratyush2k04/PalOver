@@ -31,9 +31,9 @@ public class DocumentUploadedMapper : IAuditTemplateMapper
 
         return new Dictionary<string, object?>
         {
-            ["documentName"] = doc?.FileName ?? payload.DocumentName ?? "Unknown Document",
-            ["categoryName"] = category?.CategoryName ?? "Unknown Category",
-            ["actorName"] = actor?.FullName ?? "Unknown User"
+            ["documentName"] = doc?.FileName ?? payload.DocumentName,
+            ["categoryName"] = category?.CategoryName,
+            ["actorName"] = actor?.FullName
         };
     }
 }

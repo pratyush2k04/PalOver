@@ -25,9 +25,9 @@ public class UnauthorizedAccessMapper : IAuditTemplateMapper
 
         return new Dictionary<string, object?>
         {
-            ["email"] = payload.Email ?? "unknown"
+            ["email"] = payload.Email
         };
 
-        
+
     }
 }
