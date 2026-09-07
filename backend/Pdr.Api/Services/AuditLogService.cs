@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Audit;
 using Pdr.Api.DTOs.Common;
 using Pdr.Api.Models.Audit;
@@ -27,7 +28,7 @@ public class AuditLogService(
         var userId = actingUserId ?? currentUserService.GetUserId();
 
         var auditAction = await repository.GetAuditActionByIdAsync((int)action)
-            ?? throw new InvalidOperationException($"No AuditAction row found for {action}.");
+            ?? throw new InvalidOperationException(AuditConstants.Messages.ActionNotFound(action.ToString()));
 
         var payloadJson = JsonSerializer.Serialize(payload);
 
@@ -169,7 +170,7 @@ public class AuditLogService(
         var actionKey = auditLog.AuditAction?.Action ?? string.Empty;
 
         var mapper = mapperResolver.Resolve(actionKey)
-            ?? throw new InvalidOperationException($"No IAuditTemplateMapper registered for action {actionKey}.");
+            ?? throw new InvalidOperationException(AuditConstants.Messages.MapperNotFound(actionKey));
 
         var values = mapper.Map(auditLog.PayloadJson, context, auditLog.UserId);
         var initialValues = TemplateRenderer.ExtractInitialValues(auditLog.PayloadJson);
