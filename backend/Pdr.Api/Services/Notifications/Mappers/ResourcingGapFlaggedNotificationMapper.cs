@@ -23,7 +23,7 @@ public class ResourcingGapFlaggedNotificationMapper : INotificationTemplateMappe
     public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<ResourcingGapFlaggedNotificationData>(data)
-            ?? throw new InvalidOperationException("ResourcingGapFlagRaised notification data could not be parsed.");
+            ?? throw new InvalidOperationException(NotificationConstants.Messages.ParsePayloadFailed(TemplateKey));
 
         var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
 

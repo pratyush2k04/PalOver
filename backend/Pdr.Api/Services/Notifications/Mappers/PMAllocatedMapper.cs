@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Pdr.Api.Constants;
 using Pdr.Api.Services.Templating;
 
 namespace Pdr.Api.Services.Notifications.Mappers;
@@ -21,7 +22,7 @@ public class PMAllocatedMapper : INotificationTemplateMapper
     public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<PMAllocatedData>(data)
-            ?? throw new InvalidOperationException("PMAllocated notification data could not be parsed.");
+            ?? throw new InvalidOperationException(NotificationConstants.Messages.ParsePayloadFailed(TemplateKey));
 
         var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
         var pm = context.Users.GetValueOrDefault(payload.AssignedUserId);

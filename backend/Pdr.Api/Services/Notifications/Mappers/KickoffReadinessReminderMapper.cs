@@ -22,7 +22,7 @@ public class KickoffReadinessReminderMapper : INotificationTemplateMapper
     public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<KickoffReadinessReminderData>(data)
-            ?? throw new InvalidOperationException("KickoffReadinessReminder notification data could not be parsed.");
+            ?? throw new InvalidOperationException(NotificationConstants.Messages.ParsePayloadFailed(TemplateKey));
 
         var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
         var nextTab = context.KickoffReadinessNextTabs.GetValueOrDefault(payload.EngagementId) ?? "handover";

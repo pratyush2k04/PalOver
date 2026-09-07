@@ -24,7 +24,7 @@ public class ResourceRequestConfirmedMapper : INotificationTemplateMapper
     public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<ResourceRequestConfirmedData>(data)
-            ?? throw new InvalidOperationException("ResourceRequestConfirmed notification data could not be parsed.");
+            ?? throw new InvalidOperationException(NotificationConstants.Messages.ParsePayloadFailed(TemplateKey));
 
         var request = context.ResourceRequests.GetValueOrDefault(payload.ResourceRequestId);
         var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);

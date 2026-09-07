@@ -23,7 +23,7 @@ public class RiskCommentMentionMapper : INotificationTemplateMapper
     public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<RiskCommentMentionData>(data)
-            ?? throw new InvalidOperationException(NotificationConstants.RiskCommentMention.ParseErrorMessage);
+            ?? throw new InvalidOperationException(NotificationConstants.Messages.ParsePayloadFailed(TemplateKey));
 
         var risk = context.Risks.GetValueOrDefault(payload.RiskId);
         var author = context.Users.GetValueOrDefault(payload.AuthorId);

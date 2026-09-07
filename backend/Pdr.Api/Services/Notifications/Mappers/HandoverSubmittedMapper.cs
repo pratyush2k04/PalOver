@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Pdr.Api.Constants;
 using Pdr.Api.Services.Templating;
 
 namespace Pdr.Api.Services.Notifications.Mappers;
@@ -21,7 +22,7 @@ public class HandoverSubmittedMapper : INotificationTemplateMapper
     public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<HandoverSubmittedData>(data)
-            ?? throw new InvalidOperationException("HandoverSubmitted notification data could not be parsed.");
+            ?? throw new InvalidOperationException(NotificationConstants.Messages.ParsePayloadFailed(TemplateKey));
 
         var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
         var triggerUser = context.Users.GetValueOrDefault(payload.TriggerUserId);

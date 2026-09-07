@@ -31,7 +31,7 @@ public class CommitmentVarianceEscalatedNotificationMapper : INotificationTempla
     public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<CommitmentVarianceNotificationData>(data)
-            ?? throw new InvalidOperationException(NotificationConstants.CommitmentVarianceEscalated.ParseErrorMessage);
+            ?? throw new InvalidOperationException(NotificationConstants.Messages.ParsePayloadFailed(TemplateKey));
 
         var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
 
