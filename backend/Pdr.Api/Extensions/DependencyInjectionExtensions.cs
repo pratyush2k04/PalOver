@@ -92,6 +92,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IKpiReportService, KpiReportService>();
         services.AddScoped<TemplateMapperResolver<INotificationTemplateMapper>>();
         services.AddScoped<TemplateMapperResolver<IAuditTemplateMapper>>();
+        services.AddScoped<IBatchDataPreloader, BatchDataPreloader>();
         services.AddSingleton<TemplateRenderer>();
 
         return services;
