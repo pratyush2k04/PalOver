@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Pdr.Api.Constants;
 using Pdr.Api.Models.Audit;
 using Pdr.Api.Repositories.Interfaces;
 
@@ -8,22 +9,22 @@ public class PmAndTlAssignedMapper(
     IEngagementRepository engagementRepository,
     IUserRepository userRepository) : IAuditTemplateMapper
 {
-    public string TemplateKey => nameof(AuditActionEnum.PmAndTlAssigned);
+    public string TemplateKey => AuditConstants.PmAndTlAssigned.TemplateKey;
 
     private record PmAndTlAssignedData(int EngagementId, int ActorUserId);
 
     public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
     {
         var payload = JsonSerializer.Deserialize<PmAndTlAssignedData>(data)
-            ?? throw new InvalidOperationException("PmAndTlAssigned audit payload could not be parsed.");
+            ?? throw new InvalidOperationException(AuditConstants.PmAndTlAssigned.ParseErrorMessage);
 
         var engagement = await engagementRepository.GetByIdAsync(payload.EngagementId);
         var actor = await userRepository.GetByIdAsync(payload.ActorUserId);
 
         return new Dictionary<string, object?>
         {
-            ["engagementName"] = engagement?.EngagementName ?? "Engagement",
-            ["actorName"] = actor?.FullName ?? "Unknown User"
+            [AuditConstants.PmAndTlAssigned.EngagementNameKey] = engagement?.EngagementName ?? "Engagement",
+            [AuditConstants.PmAndTlAssigned.ActorNameKey] = actor?.FullName ?? "Unknown User"
         };
     }
 }

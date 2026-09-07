@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Pdr.Api.Constants;
 using Pdr.Api.Models.Audit;
 using Pdr.Api.Repositories.Interfaces;
 
@@ -9,14 +10,14 @@ public class AccessItemBlockedAuditMapper(
     IEngagementRepository engagementRepository,
     IUserRepository userRepository) : IAuditTemplateMapper
 {
-    public string TemplateKey => nameof(AuditActionEnum.AccessItemBlocked);
+    public string TemplateKey => AuditConstants.AccessItemBlocked.TemplateKey;
 
     private record AccessItemBlockedData(int AccessItemId, int ActorUserId);
 
     public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
     {
         var payload = JsonSerializer.Deserialize<AccessItemBlockedData>(data)
-            ?? throw new InvalidOperationException("AccessItemBlocked audit payload could not be parsed.");
+            ?? throw new InvalidOperationException(AuditConstants.AccessItemBlocked.ParseErrorMessage);
 
         var item = await accessTrackerRepository.GetAccessItemByIdAsync(payload.AccessItemId);
         var engagement = item is null ? null : await engagementRepository.GetByIdAsync(item.EngagementId);
@@ -24,9 +25,9 @@ public class AccessItemBlockedAuditMapper(
 
         return new Dictionary<string, object?>
         {
-            ["itemName"] = item?.Name ?? "Access item",
-            ["engagementName"] = engagement?.EngagementName ?? "Engagement",
-            ["actorName"] = actor?.FullName ?? "Unknown User"
+            [AuditConstants.AccessItemBlocked.ItemNameKey] = item?.Name ?? "Access item",
+            [AuditConstants.AccessItemBlocked.EngagementNameKey] = engagement?.EngagementName ?? "Engagement",
+            [AuditConstants.AccessItemBlocked.ActorNameKey] = actor?.FullName ?? "Unknown User"
         };
     }
 }

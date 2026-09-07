@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Pdr.Api.Constants;
 using Pdr.Api.Models.Audit;
 using Pdr.Api.Repositories.Interfaces;
 
@@ -9,14 +10,14 @@ public class DependencyEscalatedMapper(
     IEngagementRepository engagementRepository,
     IRiskRepository riskRepository) : IAuditTemplateMapper
 {
-    public string TemplateKey => nameof(AuditActionEnum.DependencyEscalated);
+    public string TemplateKey => AuditConstants.DependencyEscalated.TemplateKey;
 
     private record DependencyEscalatedData(int DependencyId, int RiskId);
 
     public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
     {
         var payload = JsonSerializer.Deserialize<DependencyEscalatedData>(data)
-            ?? throw new InvalidOperationException("DependencyEscalated audit payload could not be parsed.");
+            ?? throw new InvalidOperationException(AuditConstants.DependencyEscalated.ParseErrorMessage);
 
         var dependency = await dependencyRepository.GetByIdAsync(payload.DependencyId);
         var engagement = dependency != null
@@ -26,9 +27,9 @@ public class DependencyEscalatedMapper(
 
         return new Dictionary<string, object?>
         {
-            ["dependencyDescription"] = TruncateDescription(dependency?.Description),
-            ["riskTitle"] = risk?.Title ?? "Escalated Risk",
-            ["engagementName"] = engagement?.EngagementName ?? "Engagement"
+            [AuditConstants.DependencyEscalated.DependencyDescriptionKey] = TruncateDescription(dependency?.Description),
+            [AuditConstants.DependencyEscalated.RiskTitleKey] = risk?.Title ?? "Escalated Risk",
+            [AuditConstants.DependencyEscalated.EngagementNameKey] = engagement?.EngagementName ?? "Engagement"
         };
     }
 

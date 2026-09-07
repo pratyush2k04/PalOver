@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Pdr.Api.Constants;
 using Pdr.Api.Models.Audit;
 using Pdr.Api.Repositories.Interfaces;
 
@@ -8,14 +9,14 @@ public class AssumptionCreatedMapper(
     IAssumptionRepository assumptionRepository,
     IEngagementRepository engagementRepository) : IAuditTemplateMapper
 {
-    public string TemplateKey => nameof(AuditActionEnum.AssumptionCreated);
+    public string TemplateKey => AuditConstants.AssumptionCreated.TemplateKey;
 
     private record AssumptionData(int AssumptionId);
 
     public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
     {
         var payload = JsonSerializer.Deserialize<AssumptionData>(data)
-            ?? throw new InvalidOperationException("AssumptionCreated audit payload could not be parsed.");
+            ?? throw new InvalidOperationException(AuditConstants.AssumptionCreated.ParseErrorMessage);
 
         var assumption = await assumptionRepository.GetByIdAsync(payload.AssumptionId);
         var engagement = assumption != null
@@ -24,8 +25,8 @@ public class AssumptionCreatedMapper(
 
         return new Dictionary<string, object?>
         {
-            ["assumptionDescription"] = TruncateDescription(assumption?.Description),
-            ["engagementName"] = engagement?.EngagementName ?? "Engagement"
+            [AuditConstants.AssumptionCreated.AssumptionDescriptionKey] = TruncateDescription(assumption?.Description),
+            [AuditConstants.AssumptionCreated.EngagementNameKey] = engagement?.EngagementName ?? "Engagement"
         };
     }
 

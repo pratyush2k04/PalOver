@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using Pdr.Api.Constants;
 using System.Threading;
 using System.Threading.Tasks;
 using Pdr.Api.Models.Audit;
@@ -13,14 +14,14 @@ public class ChecklistItemEvidenceUpdatedMapper(
     IEngagementChecklistRepository checklistRepository,
     IUserRepository userRepository) : IAuditTemplateMapper
 {
-    public string TemplateKey => nameof(AuditActionEnum.ChecklistItemEvidenceUpdated);
+    public string TemplateKey => AuditConstants.ChecklistItemEvidenceUpdated.TemplateKey;
 
     private record ChecklistItemEvidenceUpdatedData(int EngagementId, int ChecklistItemId, int ActorUserId);
 
     public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
     {
         var payload = JsonSerializer.Deserialize<ChecklistItemEvidenceUpdatedData>(data)
-            ?? throw new InvalidOperationException("ChecklistItemEvidenceUpdated audit payload could not be parsed.");
+            ?? throw new InvalidOperationException(AuditConstants.ChecklistItemEvidenceUpdated.ParseErrorMessage);
 
         var engagement = await engagementRepository.GetByIdAsync(payload.EngagementId);
         var item = await checklistRepository.GetItemByIdAsync(payload.EngagementId, payload.ChecklistItemId);
@@ -28,9 +29,9 @@ public class ChecklistItemEvidenceUpdatedMapper(
 
         return new Dictionary<string, object?>
         {
-            ["itemTitle"] = item?.Title ?? "Checklist Item",
-            ["engagementName"] = engagement?.EngagementName ?? "Engagement",
-            ["actorName"] = actor?.FullName ?? "Unknown User"
+            [AuditConstants.ChecklistItemEvidenceUpdated.ItemTitleKey] = item?.Title ?? "Checklist Item",
+            [AuditConstants.ChecklistItemEvidenceUpdated.EngagementNameKey] = engagement?.EngagementName ?? "Engagement",
+            [AuditConstants.ChecklistItemEvidenceUpdated.ActorNameKey] = actor?.FullName ?? "Unknown User"
         };
     }
 }
