@@ -9,6 +9,7 @@ namespace Pdr.Api.Services;
 
 public class ClientContactTransitionService(
     IClientContactTransitionRepository repository,
+    IEngagementRepository engagementRepository,
     IAuditLogService auditLogService,
     IPersonRepository personRepository,
     ICurrentUserService currentUserService) : IClientContactTransitionService
@@ -32,6 +33,8 @@ public class ClientContactTransitionService(
 
     public async Task<ClientContactTransitionResponseDto> SaveTransitionAsync(int engagementId, SaveClientContactTransitionRequest request, string? currentUserId)
     {
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var transition = new ClientContactTransition
         {
             EngagementId = engagementId,

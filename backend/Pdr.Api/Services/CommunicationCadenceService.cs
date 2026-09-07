@@ -22,6 +22,7 @@ public class CommunicationCadenceService(
     public async Task<CommunicationCadenceResponseDto> AddCadenceAsync(int engagementId, CreateCommunicationCadenceRequest request)
     {
         await EnsureEngagementExistsAsync(engagementId);
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var roleName = request.StakeholderRole.Trim();
         if (await cadenceRepository.ExistsByRoleAsync(engagementId, roleName))

@@ -18,6 +18,7 @@ public class HandoverQueriesService : IHandoverQueriesService
     private readonly IHandoverQueryRepository _queryRepository;
     private readonly IHandoverQueryMessageRepository _messageRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IEngagementRepository _engagementRepository;
     private readonly IAuditLogService _auditLogService;
     private readonly INotificationService _notificationService;
 
@@ -27,6 +28,7 @@ public class HandoverQueriesService : IHandoverQueriesService
         IHandoverQueryRepository queryRepository,
         IHandoverQueryMessageRepository messageRepository,
         IUserRepository userRepository,
+        IEngagementRepository engagementRepository,
         IAuditLogService auditLogService,
         INotificationService notificationService)
     {
@@ -35,6 +37,7 @@ public class HandoverQueriesService : IHandoverQueriesService
         _queryRepository = queryRepository;
         _messageRepository = messageRepository;
         _userRepository = userRepository;
+        _engagementRepository = engagementRepository;
         _auditLogService = auditLogService;
         _notificationService = notificationService;
     }
@@ -59,6 +62,8 @@ public class HandoverQueriesService : IHandoverQueriesService
 
     public async Task<HandoverQueryDto> RaiseQueryAsync(int engagementId, CreateHandoverQueryRequest request, string userIdStr)
     {
+        await _engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var handover = await GetHandoverOrThrowAsync(engagementId);
 
         var status = await _handoverRepository.GetStatusByIdAsync(handover.StatusId);
@@ -125,6 +130,8 @@ public class HandoverQueriesService : IHandoverQueriesService
 
     public async Task<HandoverQueryDto> AddMessageAsync(int engagementId, int queryId, AddHandoverQueryMessageRequest request, string userIdStr)
     {
+        await _engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var handover = await GetHandoverOrThrowAsync(engagementId);
 
         var query = await _queryRepository.GetByIdAsync(queryId, handover.HandoverId);
@@ -208,6 +215,8 @@ public class HandoverQueriesService : IHandoverQueriesService
 
     public async Task<HandoverQueryDto> ToggleResolutionAsync(int engagementId, int queryId, string userIdStr)
     {
+        await _engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var handover = await GetHandoverOrThrowAsync(engagementId);
 
         var query = await _queryRepository.GetByIdAsync(queryId, handover.HandoverId);
@@ -243,6 +252,8 @@ public class HandoverQueriesService : IHandoverQueriesService
 
     public async Task DeleteQueryAsync(int engagementId, int queryId, string userIdStr)
     {
+        await _engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var handover = await GetHandoverOrThrowAsync(engagementId);
 
         var query = await _queryRepository.GetByIdAsync(queryId, handover.HandoverId);

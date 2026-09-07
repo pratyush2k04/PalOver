@@ -232,6 +232,8 @@ public class HandoverService : IHandoverService
 
     public async Task<HandoverInfoDto> MarkReviewedAsync(int engagementId, string userIdStr)
     {
+        await _engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var handover = await _handoverRepository.GetByEngagementIdAsync(engagementId);
 
         if (handover == null)

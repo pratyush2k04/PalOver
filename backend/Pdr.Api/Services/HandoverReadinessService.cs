@@ -12,6 +12,7 @@ namespace Pdr.Api.Services;
 
 public class HandoverReadinessService(
     IHandoverReadinessRepository repository,
+    IEngagementRepository engagementRepository,
     IRiskService riskService,
     IDocumentRepository documentRepository,
     ICurrentUserService currentUserService) : IHandoverReadinessService
@@ -54,6 +55,8 @@ public class HandoverReadinessService(
         if (!await repository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         if (string.IsNullOrWhiteSpace(request.Name))
             throw new HandoverReadinessItemNameRequiredException();
 
@@ -83,6 +86,8 @@ public class HandoverReadinessService(
     {
         var item = await repository.GetByIdAsync(id)
             ?? throw new HandoverReadinessItemNotFoundException(id);
+
+        await engagementRepository.EnsureNotSignedOffAsync(item.EngagementId);
 
         if (request.Status == HandoverReadinessStatus.Blocked && string.IsNullOrWhiteSpace(request.BlockReason))
         {
@@ -114,6 +119,8 @@ public class HandoverReadinessService(
         var item = await repository.GetByIdAsync(id)
             ?? throw new HandoverReadinessItemNotFoundException(id);
 
+        await engagementRepository.EnsureNotSignedOffAsync(item.EngagementId);
+
         item.IsDeleted = true;
         await repository.SaveChangesAsync();
 
@@ -124,6 +131,8 @@ public class HandoverReadinessService(
     {
         if (!await repository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
+
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var item = await repository.GetByIdAsync(itemId)
             ?? throw new HandoverReadinessItemNotFoundException(itemId);
