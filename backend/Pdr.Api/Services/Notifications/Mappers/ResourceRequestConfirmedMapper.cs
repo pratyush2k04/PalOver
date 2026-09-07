@@ -1,27 +1,33 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Constants;
-using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Notifications.Mappers;
 
-public class ResourceRequestConfirmedMapper(IResourceRequestRepository resourceRequestRepository)
-    : INotificationTemplateMapper
+public class ResourceRequestConfirmedMapper : INotificationTemplateMapper
 {
     public string TemplateKey => "ResourceRequestConfirmed";
 
     public record ResourceRequestConfirmedData(int ResourceRequestId, int EngagementId);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<ResourceRequestConfirmedData>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.EngagementIds.Add(payload.EngagementId);
+        context.ResourceRequestIds.Add(payload.ResourceRequestId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<ResourceRequestConfirmedData>(data)
             ?? throw new InvalidOperationException("ResourceRequestConfirmed notification data could not be parsed.");
 
-        var request = await resourceRequestRepository.GetByIdAsync(payload.ResourceRequestId);
-        var engagement = await resourceRequestRepository.GetEngagementAsync(payload.EngagementId);
+        var request = context.ResourceRequests.GetValueOrDefault(payload.ResourceRequestId);
+        var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
 
         var roleName = request != null && ResourceRequestConstants.StandardRoleDisplayNames.TryGetValue(request.StandardRole, out var name)
             ? name

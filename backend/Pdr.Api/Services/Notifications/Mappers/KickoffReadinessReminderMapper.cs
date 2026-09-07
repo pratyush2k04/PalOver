@@ -1,32 +1,36 @@
 using System.Text.Json;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Constants;
-using Pdr.Api.Repositories.Interfaces;
-using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Services.Notifications.Mappers;
 
-public class KickoffReadinessReminderMapper(
-    IEngagementRepository engagementRepository,
-    IKickoffReadinessService kickoffReadinessService) : INotificationTemplateMapper
+public class KickoffReadinessReminderMapper : INotificationTemplateMapper
 {
     public string TemplateKey => KickoffReminderConstants.TemplateKey;
 
     public record KickoffReadinessReminderData(int EngagementId, int ThresholdDays);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<KickoffReadinessReminderData>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.EngagementIds.Add(payload.EngagementId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<KickoffReadinessReminderData>(data)
             ?? throw new InvalidOperationException("KickoffReadinessReminder notification data could not be parsed.");
 
-        var engagement = await engagementRepository.GetByIdAsync(payload.EngagementId);
-        var readiness = await kickoffReadinessService.GetReadinessAsync(payload.EngagementId);
-
+        var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
+        
         return new Dictionary<string, object?>
         {
             ["EngagementId"] = payload.EngagementId,
             ["EngagementName"] = engagement?.EngagementName,
             ["DaysBeforeKickoff"] = payload.ThresholdDays,
-            ["TabKey"] = readiness.NextIncompleteTabKey ?? "handover"
+            ["TabKey"] = "overview"
         };
     }
 }

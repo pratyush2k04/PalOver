@@ -1,27 +1,33 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Constants;
-using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Notifications.Mappers;
 
-public class ResourceRequestReopenedMapper(IResourceRequestRepository resourceRequestRepository)
-    : INotificationTemplateMapper
+public class ResourceRequestReopenedMapper : INotificationTemplateMapper
 {
     public string TemplateKey => "ResourceRequestReopened";
 
     public record ResourceRequestReopenedData(int ResourceRequestId, int EngagementId);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<ResourceRequestReopenedData>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.EngagementIds.Add(payload.EngagementId);
+        context.ResourceRequestIds.Add(payload.ResourceRequestId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<ResourceRequestReopenedData>(data)
             ?? throw new InvalidOperationException("ResourceRequestReopened notification data could not be parsed.");
 
-        var request = await resourceRequestRepository.GetByIdAsync(payload.ResourceRequestId);
-        var engagement = await resourceRequestRepository.GetEngagementAsync(payload.EngagementId);
+        var request = context.ResourceRequests.GetValueOrDefault(payload.ResourceRequestId);
+        var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
 
         var roleName = request != null && ResourceRequestConstants.StandardRoleDisplayNames.TryGetValue(request.StandardRole, out var name)
             ? name

@@ -1,25 +1,31 @@
 using System.Text.Json;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Constants;
-using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Notifications.Mappers;
 
-public class DocumentDeletedMapper(
-    IEngagementRepository engagementRepository,
-    IUserRepository userRepository)
-    : INotificationTemplateMapper
+public class DocumentDeletedMapper : INotificationTemplateMapper
 {
     public string TemplateKey => NotificationConstants.TemplateKeys.DocumentDeleted;
 
     public record DocumentDeletedPayload(int DocumentId, int EngagementId, int ActorUserId, string DocumentName);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<DocumentDeletedPayload>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.EngagementIds.Add(payload.EngagementId);
+        context.UserIds.Add(payload.ActorUserId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<DocumentDeletedPayload>(data)
             ?? throw new InvalidOperationException(NotificationConstants.Messages.ParsePayloadFailed(NotificationConstants.TemplateKeys.DocumentDeleted));
 
-        var engagement = await engagementRepository.GetByIdAsync(payload.EngagementId);
-        var actor = await userRepository.GetByIdAsync(payload.ActorUserId);
+        var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
+        var actor = context.Users.GetValueOrDefault(payload.ActorUserId);
 
         return new Dictionary<string, object?>
         {

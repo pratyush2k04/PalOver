@@ -1,26 +1,31 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Constants;
-using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Notifications.Mappers;
 
-public class ResourcingGapFlaggedNotificationMapper(IEngagementRepository engagementRepository)
-    : INotificationTemplateMapper
+public class ResourcingGapFlaggedNotificationMapper : INotificationTemplateMapper
 {
     public string TemplateKey => NotificationConstants.TemplateKeys.ResourcingGapFlagRaised;
 
     public record ResourcingGapFlaggedNotificationData(int EngagementId, int UnconfirmedCount, int DaysToBilling);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<ResourcingGapFlaggedNotificationData>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.EngagementIds.Add(payload.EngagementId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<ResourcingGapFlaggedNotificationData>(data)
             ?? throw new InvalidOperationException("ResourcingGapFlagRaised notification data could not be parsed.");
 
-        var engagement = await engagementRepository.GetByIdAsync(payload.EngagementId);
+        var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
 
         return new Dictionary<string, object?>
         {

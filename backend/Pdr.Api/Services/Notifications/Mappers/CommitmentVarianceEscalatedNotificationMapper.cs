@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Constants;
-using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Notifications.Mappers;
 
-public class CommitmentVarianceEscalatedNotificationMapper(IEngagementRepository engagementRepository)
-    : INotificationTemplateMapper
+public class CommitmentVarianceEscalatedNotificationMapper : INotificationTemplateMapper
 {
     public string TemplateKey => NotificationConstants.TemplateKeys.CommitmentVarianceEscalated;
 
@@ -21,13 +18,22 @@ public class CommitmentVarianceEscalatedNotificationMapper(IEngagementRepository
         int PercentGap,
         int WeekGap,
         int TriggerUserId);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<CommitmentVarianceNotificationData>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.EngagementIds.Add(payload.EngagementId);
+        context.UserIds.Add(payload.TriggerUserId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<CommitmentVarianceNotificationData>(data)
             ?? throw new InvalidOperationException(NotificationConstants.CommitmentVarianceEscalated.ParseErrorMessage);
 
-        var engagement = await engagementRepository.GetByIdAsync(payload.EngagementId);
+        var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
 
         return new Dictionary<string, object?>
         {
