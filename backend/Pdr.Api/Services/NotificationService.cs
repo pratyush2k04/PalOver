@@ -16,6 +16,7 @@ public class NotificationService(
     INotificationRepository repository,
     IEngagementRepository engagementRepository,
     TemplateMapperResolver<INotificationTemplateMapper> mapperResolver,
+    IBatchDataPreloader batchPreloader,
     TemplateRenderer renderer,
     ILogger<NotificationService> logger) : INotificationService
 {
@@ -26,6 +27,7 @@ public class NotificationService(
         string data,
         DateTime scheduledFor,
         NotificationPriority? priorityOverride = null,
+        string? staticFallback = null,
         CancellationToken cancellationToken = default)
     {
         var assignment = await engagementRepository.GetAssignmentByRoleIdAsync(engagementId, (int)receiverRole);
@@ -52,7 +54,8 @@ public class NotificationService(
             ReceiverUserId = assignment.UserId,
             Priority = priorityOverride ?? template.DefaultPriority,
             ScheduledFor = scheduledFor,
-            Data = data
+            Data = data,
+            StaticFallback = staticFallback
         });
     }
 
@@ -62,6 +65,7 @@ public class NotificationService(
         string data,
         DateTime scheduledFor,
         NotificationPriority? priorityOverride = null,
+        string? staticFallback = null,
         CancellationToken cancellationToken = default)
     {
         var template = await repository.GetTemplateByKeyAsync(templateKey)
@@ -73,7 +77,8 @@ public class NotificationService(
             ReceiverUserId = receiverUserId,
             Priority = priorityOverride ?? template.DefaultPriority,
             ScheduledFor = scheduledFor,
-            Data = data
+            Data = data,
+            StaticFallback = staticFallback
         });
     }
 
@@ -82,6 +87,7 @@ public class NotificationService(
         IEnumerable<int> receiverUserIds,
         string data,
         DateTime scheduledFor,
+        string? staticFallback = null,
         CancellationToken cancellationToken = default)
     {
         var template = await repository.GetTemplateByKeyAsync(templateKey)
@@ -93,7 +99,8 @@ public class NotificationService(
             ReceiverUserId = receiverUserId,
             Priority = template.DefaultPriority,
             ScheduledFor = scheduledFor,
-            Data = data
+            Data = data,
+            StaticFallback = staticFallback
         });
 
         await repository.AddRangeAsync(notifications);
@@ -105,10 +112,25 @@ public class NotificationService(
     {
         var (notifications, totalCount) = await repository.GetForUserAsync(userId, engagementId, page, pageSize, isRead, priority);
 
-        var items = new List<NotificationDto>();
+        // Phase 1: Collect IDs across all notifications in page
+        var context = new BatchLoadContext();
         foreach (var notification in notifications)
         {
-            var (title, body, link) = await ResolveContentAsync(notification);
+            if (notification.Template?.Key is not null && notification.Data is not null)
+            {
+                var mapper = mapperResolver.Resolve(notification.Template.Key);
+                mapper?.CollectIds(notification.Data, context);
+            }
+        }
+
+        // Phase 2: Bulk preload referenced entities in batch queries
+        await batchPreloader.PreloadAsync(context);
+
+        // Phase 3: Synchronous in-memory mapping and template rendering
+        var items = new List<NotificationDto>(notifications.Count);
+        foreach (var notification in notifications)
+        {
+            var (title, body, link) = ResolveContent(notification, context);
             items.Add(new NotificationDto(
                 notification.Id,
                 title,
@@ -159,7 +181,7 @@ public class NotificationService(
             adminUserId, idList);
     }
 
-    private async Task<(string Title, string Body, string? Link)> ResolveContentAsync(Notification notification)
+    private (string Title, string Body, string? Link) ResolveContent(Notification notification, BatchLoadContext context)
     {
         if (notification.TemplateId is null || notification.Template is null)
         {
@@ -172,15 +194,18 @@ public class NotificationService(
             return (notification.Template.Title, notification.Template.Body, notification.Link);
         }
 
-        var values = await mapper.MapAsync(notification.Data);
+        var values = mapper.Map(notification.Data, context);
+        var initialValues = TemplateRenderer.ExtractInitialValues(notification.Data);
+        var staticFallback = notification.StaticFallback;
+
         var link = notification.Link
             ?? (notification.Template.LinkPattern is null
                 ? null
-                : renderer.Render(notification.Template.LinkPattern, values));
+                : renderer.Render(notification.Template.LinkPattern, values, initialValues, staticFallback));
 
         return (
-            renderer.Render(notification.Template.Title, values),
-            renderer.Render(notification.Template.Body, values),
+            renderer.Render(notification.Template.Title, values, initialValues, staticFallback),
+            renderer.Render(notification.Template.Body, values, initialValues, staticFallback),
             link);
     }
 
