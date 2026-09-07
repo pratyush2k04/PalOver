@@ -166,6 +166,7 @@ Mappers implement two methods:
 
 ```csharp
 using System.Text.Json;
+using Pdr.Api.Constants;
 using Pdr.Api.Models.Audit;
 using Pdr.Api.Services.Templating;
 
@@ -188,7 +189,7 @@ public class UserLoggedInMapper : IAuditTemplateMapper
     public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<UserLoggedInData>(data)
-            ?? throw new InvalidOperationException("UserLoggedIn audit payload could not be parsed.");
+            ?? throw new InvalidOperationException(AuditConstants.Messages.ParsePayloadFailed(TemplateKey));
 
         var user = context.Users.GetValueOrDefault(payload.UserId);
 
