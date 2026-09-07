@@ -1,4 +1,4 @@
-﻿using Pdr.Api.Repositories.Interfaces;
+using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Templating;
 
@@ -102,7 +102,7 @@ public class BatchDataPreloader(
         var missingHandoverQueryIds = context.HandoverQueryIds.Where(id => !context.HandoverQueries.ContainsKey(id)).ToList();
         if (missingHandoverQueryIds.Count > 0)
         {
-            var queries = await handoverQueryRepository.GetByIdsAsync(missingHandoverQueryIds);
+            var queries = await handoverQueryRepository.GetByIdsAsync(missingHandoverQueryIds, cancellationToken);
             foreach (var (k, v) in queries)
             {
                 context.HandoverQueries[k] = v;
@@ -112,7 +112,7 @@ public class BatchDataPreloader(
         var missingChecklistItemIds = context.ChecklistItemIds.Where(id => !context.ChecklistItems.ContainsKey(id)).ToList();
         if (missingChecklistItemIds.Count > 0)
         {
-            var items = await checklistRepository.GetItemsByIdsAsync(missingChecklistItemIds);
+            var items = await checklistRepository.GetItemsByIdsAsync(missingChecklistItemIds, cancellationToken);
             foreach (var (k, v) in items)
             {
                 context.ChecklistItems[k] = v;
@@ -122,7 +122,7 @@ public class BatchDataPreloader(
         var missingActionItemIds = context.KickoffActionItemIds.Where(id => !context.KickoffActionItems.ContainsKey(id)).ToList();
         if (missingActionItemIds.Count > 0)
         {
-            var actionItems = await kickoffRepository.GetActionItemsByIdsAsync(missingActionItemIds);
+            var actionItems = await kickoffRepository.GetActionItemsByIdsAsync(missingActionItemIds, cancellationToken);
             foreach (var (k, v) in actionItems)
             {
                 context.KickoffActionItems[k] = v;
@@ -132,7 +132,7 @@ public class BatchDataPreloader(
         var missingRoleIds = context.RoleIds.Where(id => !context.Roles.ContainsKey(id)).ToList();
         if (missingRoleIds.Count > 0)
         {
-            var roles = await roleRepository.GetByIdsAsync(missingRoleIds);
+            var roles = await roleRepository.GetByIdsAsync(missingRoleIds, cancellationToken);
             foreach (var (k, v) in roles)
             {
                 context.Roles[k] = v;
@@ -142,7 +142,7 @@ public class BatchDataPreloader(
         var missingAssumptionIds = context.AssumptionIds.Where(id => !context.Assumptions.ContainsKey(id)).ToList();
         if (missingAssumptionIds.Count > 0)
         {
-            var assumptions = await assumptionRepository.GetByIdsAsync(missingAssumptionIds);
+            var assumptions = await assumptionRepository.GetByIdsAsync(missingAssumptionIds, cancellationToken);
             foreach (var (k, v) in assumptions)
             {
                 context.Assumptions[k] = v;
