@@ -25,6 +25,19 @@ public class DependencyRepository(AppDbContext context) : IDependencyRepository
             .FirstOrDefaultAsync(d => d.Id == id);
     }
 
+    public async Task<Dictionary<int, Dependency>> GetByIdsAsync(IEnumerable<int> ids)
+    {
+        var idList = ids.Distinct().ToList();
+        if (idList.Count == 0) return new();
+
+        return await context.Dependencies
+            .AsNoTracking()
+            .Include(d => d.Owner)
+            .Include(d => d.LinkedRisk)
+            .Where(d => idList.Contains(d.Id))
+            .ToDictionaryAsync(d => d.Id);
+    }
+
     public async Task AddAsync(Dependency dependency)
     {
         await context.Dependencies.AddAsync(dependency);

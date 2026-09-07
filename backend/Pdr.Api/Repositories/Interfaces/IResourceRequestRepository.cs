@@ -11,6 +11,7 @@ public interface IResourceRequestRepository
 {
     Task<ResourceRequest> AddAsync(ResourceRequest resourceRequest);
     Task<ResourceRequest?> GetByIdAsync(int id);
+    Task<Dictionary<int, ResourceRequest>> GetByIdsAsync(IEnumerable<int> ids);
     Task<List<ResourceRequest>> GetByEngagementIdAsync(int engagementId);
     Task<Engagement?> GetEngagementAsync(int engagementId);
     Task<EngagementAssignment?> GetUserEngagementAssignmentAsync(int engagementId, int userId);

@@ -23,12 +23,22 @@ public class AccessTrackerRepository(AppDbContext context) : IAccessTrackerRepos
             .ThenBy(a => a.Id)
             .ToListAsync();
 
-    // Fetch a single access item with owner info for status/owner updates
     public async Task<AccessItem?> GetAccessItemByIdAsync(int id) =>
         await context.AccessItems
             .Include(a => a.Owner)
             .Include(a => a.Engagement)
             .FirstOrDefaultAsync(a => a.Id == id);
+
+    public async Task<Dictionary<int, AccessItem>> GetAccessItemsByIdsAsync(IEnumerable<int> ids)
+    {
+        var idList = ids.Distinct().ToList();
+        if (idList.Count == 0) return new();
+
+        return await context.AccessItems
+            .AsNoTracking()
+            .Where(a => idList.Contains(a.Id))
+            .ToDictionaryAsync(a => a.Id);
+    }
 
     public async Task AddAccessItemAsync(AccessItem item)
     {

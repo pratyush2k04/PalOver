@@ -28,6 +28,18 @@ public class HandoverQueryRepository(AppDbContext context) : IHandoverQueryRepos
                 .ThenInclude(m => m.SenderUser).ThenInclude(u => u.Role)
             .FirstOrDefaultAsync(q => q.Id == queryId && q.HandoverId == handoverId);
 
+    public async Task<Dictionary<int, HandoverQuery>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken cancellationToken = default)
+    {
+        var idList = ids.Distinct().ToList();
+        if (idList.Count == 0) return new Dictionary<int, HandoverQuery>();
+
+        return await context.HandoverQueries
+            .AsNoTracking()
+            .Include(q => q.FieldSection)
+            .Where(q => idList.Contains(q.Id))
+            .ToDictionaryAsync(q => q.Id, cancellationToken);
+    }
+
     public async Task AddAsync(HandoverQuery query) =>
         await context.HandoverQueries.AddAsync(query);
 

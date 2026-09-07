@@ -57,6 +57,17 @@ public class RiskRepository(AppDbContext context) : IRiskRepository
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 
+    public async Task<Dictionary<int, Risk>> GetByIdsAsync(IEnumerable<int> ids)
+    {
+        var idList = ids.Distinct().ToList();
+        if (idList.Count == 0) return new();
+
+        return await context.Risks
+            .AsNoTracking()
+            .Where(r => idList.Contains(r.Id))
+            .ToDictionaryAsync(r => r.Id);
+    }
+
     public async Task AddAsync(Risk risk)
     {
         await context.Risks.AddAsync(risk);

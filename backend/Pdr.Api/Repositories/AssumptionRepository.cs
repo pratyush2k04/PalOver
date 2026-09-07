@@ -22,6 +22,17 @@ public class AssumptionRepository(AppDbContext context) : IAssumptionRepository
             .FirstOrDefaultAsync(a => a.Id == id);
     }
 
+    public async Task<Dictionary<int, Assumption>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken cancellationToken = default)
+    {
+        var idList = ids.Distinct().ToList();
+        if (idList.Count == 0) return new Dictionary<int, Assumption>();
+
+        return await context.Assumptions
+            .AsNoTracking()
+            .Where(a => idList.Contains(a.Id))
+            .ToDictionaryAsync(a => a.Id, cancellationToken);
+    }
+
     public async Task<Assumption> AddAsync(Assumption assumption)
     {
         context.Assumptions.Add(assumption);
