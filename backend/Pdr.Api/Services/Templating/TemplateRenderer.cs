@@ -1,10 +1,11 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace Pdr.Api.Services.Templating;
 
 public class TemplateRenderer
 {
+    public const string DeletedPlaceholder = "<DELETED>";
     private static readonly Regex PlaceholderRegex = new(@"\{([a-zA-Z0-9_]+)\}", RegexOptions.Compiled);
 
     public string Render(string template, IDictionary<string, object?> values) =>
@@ -46,24 +47,23 @@ public class TemplateRenderer
 
         if (missingKeys.Count > 0)
         {
-            var resolvedByInitial = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             if (initialLookup != null)
             {
                 foreach (var key in missingKeys)
                 {
                     if (initialLookup.TryGetValue(key, out var initVal) && !string.IsNullOrWhiteSpace(initVal))
                     {
-                        resolvedByInitial.Add(key);
                         resolvedValues[key] = initVal;
                     }
                 }
             }
 
             // Fallback hierarchy:
-            // 1. If NO missing keys had initialValues (resolvedByInitial.Count == 0), check staticFallback.
+            // 1. If ANY missing key lacks an initial value snapshot, check staticFallback.
             //    If staticFallback is provided, replace entire template with staticFallback.
-            // 2. Otherwise (or if no staticFallback), replace any remaining unresolved missing keys with "<DELETED>".
-            if (resolvedByInitial.Count == 0 && !string.IsNullOrWhiteSpace(staticFallback))
+            // 2. Otherwise (or if no staticFallback), replace any remaining unresolved missing keys with DeletedPlaceholder ("<DELETED>").
+            var hasUnresolvedKeys = missingKeys.Any(k => !resolvedValues.ContainsKey(k));
+            if (hasUnresolvedKeys && !string.IsNullOrWhiteSpace(staticFallback))
             {
                 return staticFallback;
             }
@@ -72,7 +72,7 @@ public class TemplateRenderer
             {
                 if (!resolvedValues.ContainsKey(key))
                 {
-                    resolvedValues[key] = "<DELETED>";
+                    resolvedValues[key] = DeletedPlaceholder;
                 }
             }
         }
