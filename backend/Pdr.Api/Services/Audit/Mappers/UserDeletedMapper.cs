@@ -1,22 +1,31 @@
 using System.Text.Json;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Models.Audit;
-using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Audit.Mappers;
 
-public class UserDeletedMapper(IUserRepository userRepository) : IAuditTemplateMapper
+public class UserDeletedMapper : IAuditTemplateMapper
 {
     public string TemplateKey => nameof(AuditActionEnum.UserDeleted);
 
     private record UserDeletedData(int UserId, int ActorUserId);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<UserDeletedData>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.UserIds.Add(payload.ActorUserId);
+        context.UserIds.Add(payload.UserId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<UserDeletedData>(data)
             ?? throw new InvalidOperationException("UserDeleted audit payload could not be parsed.");
 
-        var user = await userRepository.GetByIdAsync(payload.UserId);
-        var actor = await userRepository.GetByIdAsync(payload.ActorUserId);
+        var user = context.Users.GetValueOrDefault(payload.UserId);
+        var actor = context.Users.GetValueOrDefault(payload.ActorUserId) ?? (actorUserId.HasValue ? context.Users.GetValueOrDefault(actorUserId.Value) : null);
 
         return new Dictionary<string, object?>
         {

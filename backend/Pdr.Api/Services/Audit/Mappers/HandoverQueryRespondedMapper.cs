@@ -1,26 +1,33 @@
 using System.Text.Json;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Models.Audit;
-using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Audit.Mappers;
 
-public class HandoverQueryRespondedMapper(
-    IUserRepository userRepository,
-    IHandoverQueryRepository queryRepository,
-    IEngagementRepository engagementRepository) : IAuditTemplateMapper
+public class HandoverQueryRespondedMapper : IAuditTemplateMapper
 {
     public string TemplateKey => nameof(AuditActionEnum.HandoverQueryResponded);
 
     public record HandoverQueryRespondedData(int QueryId, int HandoverId, int EngagementId, int ActorUserId);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<HandoverQueryRespondedData>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.EngagementIds.Add(payload.EngagementId);
+        context.UserIds.Add(payload.ActorUserId);
+        context.HandoverQueryIds.Add(payload.QueryId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<HandoverQueryRespondedData>(data)
             ?? throw new InvalidOperationException("HandoverQueryResponded audit payload could not be parsed.");
 
-        var actor = await userRepository.GetByIdAsync(payload.ActorUserId);
-        var query = await queryRepository.GetByIdAsync(payload.QueryId, payload.HandoverId);
-        var engagement = await engagementRepository.GetByIdAsync(payload.EngagementId);
+        var actor = context.Users.GetValueOrDefault(payload.ActorUserId) ?? (actorUserId.HasValue ? context.Users.GetValueOrDefault(actorUserId.Value) : null);
+        var query = context.HandoverQueries.GetValueOrDefault(payload.QueryId);
+        var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
 
         return new Dictionary<string, object?>
         {

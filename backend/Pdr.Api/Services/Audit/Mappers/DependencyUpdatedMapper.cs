@@ -1,25 +1,31 @@
 using System.Text.Json;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Models.Audit;
-using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Audit.Mappers;
 
-public class DependencyUpdatedMapper(
-    IDependencyRepository dependencyRepository,
-    IEngagementRepository engagementRepository) : IAuditTemplateMapper
+public class DependencyUpdatedMapper : IAuditTemplateMapper
 {
     public string TemplateKey => nameof(AuditActionEnum.DependencyUpdated);
 
     private record DependencyUpdatedData(int DependencyId, string Status);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<DependencyUpdatedData>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.DependencyIds.Add(payload.DependencyId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<DependencyUpdatedData>(data)
             ?? throw new InvalidOperationException("DependencyUpdated audit payload could not be parsed.");
 
-        var dependency = await dependencyRepository.GetByIdAsync(payload.DependencyId);
+        var dependency = context.Dependencies.GetValueOrDefault(payload.DependencyId);
         var engagement = dependency != null
-            ? await engagementRepository.GetByIdAsync(dependency.EngagementId)
+            ? context.Engagements.GetValueOrDefault(dependency.EngagementId)
             : null;
 
         return new Dictionary<string, object?>

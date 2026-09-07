@@ -1,30 +1,35 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Models.Audit;
-using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Audit.Mappers;
 
-public class ChecklistItemEvidenceUpdatedMapper(
-    IEngagementRepository engagementRepository,
-    IEngagementChecklistRepository checklistRepository,
-    IUserRepository userRepository) : IAuditTemplateMapper
+public class ChecklistItemEvidenceUpdatedMapper : IAuditTemplateMapper
 {
     public string TemplateKey => nameof(AuditActionEnum.ChecklistItemEvidenceUpdated);
 
     private record ChecklistItemEvidenceUpdatedData(int EngagementId, int ChecklistItemId, int ActorUserId);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<ChecklistItemEvidenceUpdatedData>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.EngagementIds.Add(payload.EngagementId);
+        context.UserIds.Add(payload.ActorUserId);
+        context.ChecklistItemIds.Add(payload.ChecklistItemId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<ChecklistItemEvidenceUpdatedData>(data)
             ?? throw new InvalidOperationException("ChecklistItemEvidenceUpdated audit payload could not be parsed.");
 
-        var engagement = await engagementRepository.GetByIdAsync(payload.EngagementId);
-        var item = await checklistRepository.GetItemByIdAsync(payload.EngagementId, payload.ChecklistItemId);
-        var actor = await userRepository.GetByIdAsync(payload.ActorUserId);
+        var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
+        var item = context.ChecklistItems.GetValueOrDefault(payload.ChecklistItemId);
+        var actor = context.Users.GetValueOrDefault(payload.ActorUserId) ?? (actorUserId.HasValue ? context.Users.GetValueOrDefault(actorUserId.Value) : null);
 
         return new Dictionary<string, object?>
         {

@@ -1,21 +1,29 @@
 using System.Text.Json;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Models.Audit;
-using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Audit.Mappers;
 
-public class AccountLockoutMapper(IUserRepository userRepository) : IAuditTemplateMapper
+public class AccountLockoutMapper : IAuditTemplateMapper
 {
     public string TemplateKey => nameof(AuditActionEnum.AccountLockout);
 
     private record AccountLockoutData(int UserId);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<AccountLockoutData>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.UserIds.Add(payload.UserId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<AccountLockoutData>(data)
             ?? throw new InvalidOperationException("AccountLockout audit payload could not be parsed.");
 
-        var user = await userRepository.GetByIdAsync(payload.UserId);
+        var user = context.Users.GetValueOrDefault(payload.UserId);
 
         return new Dictionary<string, object?>
         {
