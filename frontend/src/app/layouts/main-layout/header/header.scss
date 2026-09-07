@@ -3,6 +3,8 @@
 :host {
   display: block;
   width: 100%;
+  position: relative;
+  z-index: 500;
 }
 
 .header {
@@ -13,6 +15,8 @@
   padding: 0 $spacing-8;
   box-sizing: border-box;
   font-family: $font-family-base;
+  position: relative;
+  z-index: 500;
 
   @include respond-to-down('md') {
     padding: 0 $spacing-3;
