@@ -109,8 +109,8 @@ export class DatepickerComponent extends BaseControlComponent<string> implements
 
   readonly weekdays = WEEKDAY_NAMES;
 
-  dropdownTop = 0;
-  dropdownLeft = 0;
+  readonly dropdownTop = signal<number>(0);
+  readonly dropdownLeft = signal<number>(0);
   dropdownMinWidth = 0;
 
   private onScrollFn = (event: Event) => {
@@ -461,13 +461,18 @@ export class DatepickerComponent extends BaseControlComponent<string> implements
       ) as HTMLElement | null;
       const dropdownHeight = dropdownEl ? dropdownEl.offsetHeight : 340;
 
+      if (rect.bottom < 0 || rect.top > viewportHeight) {
+        this.closeDropdown();
+        return;
+      }
+
       if (spaceBelow < dropdownHeight && rect.top > dropdownHeight) {
-        this.dropdownTop = Math.max(8, rect.top - dropdownHeight - 4);
+        this.dropdownTop.set(Math.max(8, rect.top - dropdownHeight - 4));
       } else {
-        this.dropdownTop = rect.bottom + 4;
+        this.dropdownTop.set(rect.bottom + 4);
       }
       const maxLeft = Math.max(8, window.innerWidth - 320);
-      this.dropdownLeft = Math.min(Math.max(8, rect.left), maxLeft);
+      this.dropdownLeft.set(Math.min(Math.max(8, rect.left), maxLeft));
     }
   }
 }

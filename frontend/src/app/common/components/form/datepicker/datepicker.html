@@ -55,8 +55,8 @@
         aria-modal="true"
         [attr.aria-label]="label() || 'Choose Date'"
         [style.position]="'fixed'"
-        [style.top.px]="dropdownTop"
-        [style.left.px]="dropdownLeft"
+        [style.top.px]="dropdownTop()"
+        [style.left.px]="dropdownLeft()"
         (click)="$event.stopPropagation()"
       >
         <!-- Calendar Header -->

@@ -28,9 +28,9 @@
          role="listbox" 
          [attr.aria-labelledby]="id()"
          [style.position]="'fixed'"
-         [style.top.px]="dropdownTop"
-         [style.left.px]="dropdownLeft"
-         [style.min-width.px]="dropdownMinWidth">
+         [style.top.px]="dropdownTop()"
+         [style.left.px]="dropdownLeft()"
+         [style.min-width.px]="dropdownMinWidth()">
       @for (option of options(); track option.value; let i = $index) {
         <button type="button" 
                 class="status-select-option" 
