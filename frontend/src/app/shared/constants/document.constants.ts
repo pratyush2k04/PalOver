@@ -16,6 +16,7 @@ export const DOCUMENT_MESSAGES = {
   LOAD_FAILED: 'Failed to load documents.',
   DOWNLOAD_FAILED: (fileName: string) => `Failed to download ${fileName}`,
   UPDATE_VISIBILITY_FAILED: 'Failed to update visibility.',
+  UPDATE_VISIBILITY_SUCCESS: 'Document visibility updated successfully.',
   NO_SEARCH_RESULTS: 'No documents match your search.',
 
   // Custom Visibility Dialog
@@ -30,12 +31,16 @@ export const DOCUMENT_MESSAGES = {
   UPLOAD_FILE_EXCEEDS_SIZE_LIMIT: (fileName: string) => `"${fileName}" exceeds the 50 MB size limit.`,
   UPLOAD_NETWORK_OR_SERVER_LIMIT_ERROR: 'File exceeds server upload size limit or network connection failed.',
   UPLOAD_FAILED: 'Failed to upload document.',
+  UPLOAD_SUCCESS: 'Document(s) uploaded successfully.',
+  UPLOAD_PARTIAL_FAILURE: (failedFileNames: string) => `Some files failed to upload: ${failedFileNames}`,
 
   // Remove Document Dialog
   REMOVE_FAILED: 'Failed to remove document.',
+  REMOVE_SUCCESS: 'Document removed successfully.',
 
   // Upload Version Dialog
   UPLOAD_VERSION_FAILED: 'Failed to upload new version.',
+  UPLOAD_VERSION_SUCCESS: 'New version uploaded successfully.',
 
   // Version History Dialog
   VERSION_HISTORY_LOAD_FAILED: 'Failed to load version history.',

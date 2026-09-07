@@ -97,18 +97,39 @@
   border-radius: $radius-2xl;
   border: 1px solid $color-border-soft;
   margin-bottom: $spacing-6;
+
+  @include respond-to-down('xs') {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 .filter-group {
   display: flex;
   flex-direction: column;
   gap: $spacing-1;
+  flex-grow: 1;
+  flex-shrink: 1;
+  max-width: 12rem;
 
   app-select {
-    min-width: 11.25rem;
+    width: 100%;
+    max-width: 11.25rem;
+    min-width: 7rem;
 
     ::ng-deep .app-field {
       margin-bottom: 0;
+    }
+  }
+
+  @include respond-to-down('xs') {
+    width: 100%;
+    max-width: 100%;
+
+    app-select {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
     }
   }
 }

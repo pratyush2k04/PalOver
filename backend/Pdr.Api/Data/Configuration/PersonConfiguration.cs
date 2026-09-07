@@ -42,33 +42,5 @@ public class PersonConfiguration : IEntityTypeConfiguration<Person>
             .WithMany(e => e.People)
             .HasForeignKey(p => p.EngagementId)
             .OnDelete(DeleteBehavior.Cascade);
-
-        // Data Seeding
-        builder.HasData(
-            new Person
-            {
-                PersonId = 1,
-                EngagementId = 1,
-                Name = "Sarah Jenkins",
-                Role = "Client Executive Sponsor",
-                PersonType = PersonType.Client,
-                CreatedAt = SeedTimestamp,
-                UpdatedAt = SeedTimestamp,
-                CreatedBy = "System",
-                IsDeleted = false
-            },
-            new Person
-            {
-                PersonId = 2,
-                EngagementId = 1,
-                Name = "Alex Rivera",
-                Role = "Internal Technical Lead",
-                PersonType = PersonType.Internal,
-                CreatedAt = SeedTimestamp,
-                UpdatedAt = SeedTimestamp,
-                CreatedBy = "System",
-                IsDeleted = false
-            }
-        );
     }
 }

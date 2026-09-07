@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 import {
   CommitmentDto,
   CreateCommitmentRequest,
@@ -35,16 +36,22 @@ export class HandoverService {
     return this.http.post<HandoverInfoDto>(HANDOVER_API_ENDPOINTS.HANDOVER_REVIEW(engagementId), {});
   }
 
-  addCommitment(engagementId: number, request: CreateCommitmentRequest): Observable<CommitmentDto> {
-    return this.http.post<CommitmentDto>(HANDOVER_API_ENDPOINTS.HANDOVER_COMMITMENTS(engagementId), request);
+  addCommitment(engagementId: number, request: CreateCommitmentRequest, skipLoader = false): Observable<CommitmentDto> {
+    return this.http.post<CommitmentDto>(HANDOVER_API_ENDPOINTS.HANDOVER_COMMITMENTS(engagementId), request, {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
-  updateCommitment(engagementId: number, commitmentId: number, request: UpdateCommitmentRequest): Observable<CommitmentDto> {
-    return this.http.put<CommitmentDto>(HANDOVER_API_ENDPOINTS.HANDOVER_COMMITMENT_BY_ID(engagementId, commitmentId), request);
+  updateCommitment(engagementId: number, commitmentId: number, request: UpdateCommitmentRequest, skipLoader = false): Observable<CommitmentDto> {
+    return this.http.put<CommitmentDto>(HANDOVER_API_ENDPOINTS.HANDOVER_COMMITMENT_BY_ID(engagementId, commitmentId), request, {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
-  deleteCommitment(engagementId: number, commitmentId: number): Observable<void> {
-    return this.http.delete<void>(HANDOVER_API_ENDPOINTS.HANDOVER_COMMITMENT_BY_ID(engagementId, commitmentId));
+  deleteCommitment(engagementId: number, commitmentId: number, skipLoader = false): Observable<void> {
+    return this.http.delete<void>(HANDOVER_API_ENDPOINTS.HANDOVER_COMMITMENT_BY_ID(engagementId, commitmentId), {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
   createRealisticCommitment(

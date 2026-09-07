@@ -34,33 +34,5 @@ public class EngagementChecklistConfiguration : IEntityTypeConfiguration<Engagem
                .WithOne(i => i.EngagementChecklist)
                .HasForeignKey(i => i.EngagementChecklistId)
                .OnDelete(DeleteBehavior.Cascade);
-
-        var seedTimestamp = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        builder.HasData(
-            new
-            {
-                Id = 1,
-                EngagementId = 1,
-                SourceMasterVersionId = 1, // Published Version 0
-                VersionNumber = 0,
-                CreatedAt = seedTimestamp,
-                UpdatedAt = seedTimestamp,
-                CreatedBy = "System",
-                UpdatedBy = "System",
-                IsDeleted = false
-            },
-            new
-            {
-                Id = 2,
-                EngagementId = 2,
-                SourceMasterVersionId = 1, // Published Version 0
-                VersionNumber = 0,
-                CreatedAt = seedTimestamp,
-                UpdatedAt = seedTimestamp,
-                CreatedBy = "System",
-                UpdatedBy = "System",
-                IsDeleted = false
-            }
-        );
     }
 }

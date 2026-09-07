@@ -38,6 +38,9 @@ export const CHANGE_REQUEST_CONSTANTS = {
   ERROR_IMPACT_MINLENGTH: 'Impact estimate must be at least 5 characters long.',
   ERROR_REASON_REQUIRED: 'Reason is required when rejecting a change request.',
 
+  MSG_LOG_SUCCESS: 'Change request logged successfully.',
+  MSG_REJECT_SUCCESS: 'Change request rejected.',
+
   EMPTY_STATE_TITLE: 'No change requests found',
   EMPTY_STATE_SUBTITLE: 'Logged change requests for this engagement will appear here.'
 };

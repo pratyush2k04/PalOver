@@ -1,5 +1,6 @@
 import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
@@ -7,6 +8,7 @@ import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { EngagementChecklistItem } from '@features/engagements/models/engagement-checklist.model';
 import { DocumentCategory, DocumentItem, DocumentVisibility } from '@features/engagements/models/document.model';
 import { DocumentService } from '@features/engagements/services/document.service';
+import { EngagementChecklistService } from '@features/engagements/services/engagement-checklist.service';
 import { DOCUMENT_CONFIG, DOCUMENT_MESSAGES } from '@shared/constants/document.constants';
 import { ButtonComponent } from '@common/components/button/button';
 import { AlertComponent } from '@common/components/alert/alert';
@@ -19,12 +21,15 @@ export interface AttachEvidenceDialogData {
   engagementId: number;
   isMandatoryCompletion?: boolean;
   isReadOnly?: boolean;
+  /**
+   * Overrides how the selected/uploaded document id is persisted against the
+   * item. Defaults to the checklist's saveItemEvidence endpoint; callers
+   * outside the checklist feature (e.g. handover readiness) pass their own.
+   */
+  saveEvidence?: (documentId: number, markComplete?: boolean) => Observable<unknown>;
 }
 
-export interface AttachEvidenceDialogResult {
-  documentId: number;
-  markComplete?: boolean;
-}
+export type AttachEvidenceDialogResult = true;
 
 type EvidenceMode = 'upload' | 'select';
 
@@ -37,6 +42,7 @@ type EvidenceMode = 'upload' | 'select';
 })
 export class AttachEvidenceDialogComponent implements OnInit {
   private documentService = inject(DocumentService);
+  private checklistService = inject(EngagementChecklistService);
   private destroyRef = inject(DestroyRef);
   private dialogRef = inject<DialogRef<AttachEvidenceDialogResult>>(DialogRef);
   readonly data = inject<AttachEvidenceDialogData>(DIALOG_DATA);
@@ -57,7 +63,6 @@ export class AttachEvidenceDialogComponent implements OnInit {
   selectedVisibility = signal<DocumentVisibility>(DOCUMENT_CONFIG.VISIBILITY.TEAM_WIDE);
   selectedFile = signal<File | null>(null);
   renamedFileName = signal<string>('');
-  isUploading = signal<boolean>(false);
 
   // Select Existing section state
   existingDocuments = signal<DocumentItem[]>([]);
@@ -66,6 +71,7 @@ export class AttachEvidenceDialogComponent implements OnInit {
 
   errorMessage = signal<string | null>(null);
   isDownloading = signal<boolean>(false);
+  isSubmitting = signal<boolean>(false);
 
   readonly categoryOptions = computed<SelectOption[]>(() =>
     this.categories().map((cat) => ({ value: cat.id, label: cat.categoryName }))
@@ -196,6 +202,9 @@ export class AttachEvidenceDialogComponent implements OnInit {
       this.dialogRef.close();
       return;
     }
+    if (this.isSubmitting()) {
+      return;
+    }
 
     const markComplete = this.isMandatoryCompletion ? true : undefined;
 
@@ -205,7 +214,7 @@ export class AttachEvidenceDialogComponent implements OnInit {
         this.errorMessage.set('Please select a document.');
         return;
       }
-      this.dialogRef.close({ documentId, markComplete });
+      this.submitSelectedDocument(documentId, markComplete);
       return;
     }
 
@@ -239,29 +248,62 @@ export class AttachEvidenceDialogComponent implements OnInit {
       return;
     }
 
-    this.isUploading.set(true);
-    this.errorMessage.set(null);
-
-    this.documentService.uploadDocuments([file], this.data.engagementId, catId, this.selectedVisibility())
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (results) => {
-          this.isUploading.set(false);
-          const result = results[0];
-          if (!result?.success || !result.document) {
-            this.errorMessage.set(result?.errors?.join(', ') || DOCUMENT_MESSAGES.UPLOAD_FAILED);
-            return;
-          }
-          this.dialogRef.close({ documentId: result.document.id, markComplete });
-        },
-        error: (err) => {
-          this.isUploading.set(false);
-          this.errorMessage.set(this.extractErrorMessage(err));
-        }
-      });
+    this.submitUpload(file, catId, this.selectedVisibility(), markComplete);
   }
 
-  private extractErrorMessage(err: any): string {
+  private saveEvidence(documentId: number, markComplete?: boolean): Observable<unknown> {
+    return this.data.saveEvidence
+      ? this.data.saveEvidence(documentId, markComplete)
+      : this.checklistService.saveItemEvidence(this.data.engagementId, this.data.item.id, { documentId, markComplete }, true);
+  }
+
+  private submitSelectedDocument(documentId: number, markComplete?: boolean): void {
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
+
+    this.saveEvidence(documentId, markComplete).subscribe({
+      next: () => {
+        this.isSubmitting.set(false);
+        this.dialogRef.close(true);
+      },
+      error: (err) => {
+        this.isSubmitting.set(false);
+        this.errorMessage.set(this.extractSaveEvidenceErrorMessage(err));
+      }
+    });
+  }
+
+  private submitUpload(file: File, categoryId: number, visibility: DocumentVisibility, markComplete?: boolean): void {
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
+
+    this.documentService.uploadDocuments([file], this.data.engagementId, categoryId, visibility, true).subscribe({
+      next: (uploadResults) => {
+        const uploaded = uploadResults[0];
+        if (!uploaded?.success || !uploaded.document) {
+          this.isSubmitting.set(false);
+          this.errorMessage.set(uploaded?.errors?.join(', ') || DOCUMENT_MESSAGES.UPLOAD_FAILED);
+          return;
+        }
+        this.saveEvidence(uploaded.document.id, markComplete).subscribe({
+          next: () => {
+            this.isSubmitting.set(false);
+            this.dialogRef.close(true);
+          },
+          error: (err) => {
+            this.isSubmitting.set(false);
+            this.errorMessage.set(this.extractSaveEvidenceErrorMessage(err));
+          }
+        });
+      },
+      error: (err) => {
+        this.isSubmitting.set(false);
+        this.errorMessage.set(this.extractUploadErrorMessage(err));
+      }
+    });
+  }
+
+  private extractUploadErrorMessage(err: any): string {
     if (err?.name === 'TypeError' || err?.status === 0 || (typeof err?.message === 'string' && err.message.toLowerCase().includes('fetch'))) {
       return DOCUMENT_MESSAGES.UPLOAD_NETWORK_OR_SERVER_LIMIT_ERROR;
     }
@@ -270,5 +312,9 @@ export class AttachEvidenceDialogComponent implements OnInit {
       return body.flatMap((r: any) => r.errors || []).join(', ') || DOCUMENT_MESSAGES.UPLOAD_FAILED;
     }
     return body?.message || (typeof body === 'string' ? body : DOCUMENT_MESSAGES.UPLOAD_FAILED);
+  }
+
+  private extractSaveEvidenceErrorMessage(err: any): string {
+    return err?.error?.message || err?.error || 'Something went wrong. Please try again.';
   }
 }

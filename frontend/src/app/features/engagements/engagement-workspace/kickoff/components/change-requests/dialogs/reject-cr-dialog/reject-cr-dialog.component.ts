@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
-import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
-import { ChangeRequestService } from '@features/engagements/services/change-request.service';
+import { AlertComponent } from '@common/components/alert/alert';
 import { ChangeRequest } from '@features/engagements/models/change-request.model';
+import { ChangeRequestService } from '@features/engagements/services/change-request.service';
 import { CHANGE_REQUEST_CONSTANTS } from '@shared/constants/change-request.constants';
 
 export interface RejectCrDialogData {
@@ -17,26 +17,27 @@ export interface RejectCrDialogData {
 @Component({
   selector: 'app-reject-cr-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AlertComponent, ButtonComponent, TextareaComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, TextareaComponent, AlertComponent],
   templateUrl: './reject-cr-dialog.component.html',
   styleUrl: './reject-cr-dialog.component.scss'
 })
 export class RejectCrDialogComponent {
-  private dialogRef = inject<DialogRef<ChangeRequest>>(DialogRef);
-  private changeRequestService = inject(ChangeRequestService);
+  private dialogRef = inject<DialogRef<boolean>>(DialogRef);
   private fb = inject(FormBuilder);
+  private changeRequestService = inject(ChangeRequestService);
   readonly data = inject<RejectCrDialogData>(DIALOG_DATA);
 
   readonly constants = CHANGE_REQUEST_CONSTANTS;
-
-  isSubmitting = signal<boolean>(false);
-  errorMessage = signal<string | null>(null);
 
   rejectForm: FormGroup = this.fb.group({
     rejectionReason: ['', [Validators.required, Validators.maxLength(500)]]
   });
 
+  isSubmitting = signal(false);
+  errorMessage = signal<string | null>(null);
+
   onCancel(): void {
+    if (this.isSubmitting()) return;
     this.dialogRef.close();
   }
 
@@ -46,22 +47,21 @@ export class RejectCrDialogComponent {
       return;
     }
 
-    this.isSubmitting.set(true);
-    this.errorMessage.set(null);
-
-    const payload = {
+    const request = {
       rejectionReason: this.rejectForm.value.rejectionReason
     };
 
-    this.changeRequestService.rejectChangeRequest(this.data.cr.id, payload).subscribe({
-      next: (updatedCr) => {
+    this.errorMessage.set(null);
+    this.isSubmitting.set(true);
+
+    this.changeRequestService.rejectChangeRequest(this.data.cr.id, request, true).subscribe({
+      next: () => {
         this.isSubmitting.set(false);
-        this.dialogRef.close(updatedCr);
+        this.dialogRef.close(true);
       },
       error: (err) => {
         this.isSubmitting.set(false);
-        const backendMessage = err?.error?.message || err?.error || this.constants.ERROR_GENERIC;
-        this.errorMessage.set(backendMessage);
+        this.errorMessage.set(err?.error?.message || err?.error || this.constants.ERROR_GENERIC);
       }
     });
   }

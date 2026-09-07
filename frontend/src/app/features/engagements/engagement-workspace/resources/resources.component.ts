@@ -9,8 +9,15 @@ import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status
 import { AlertComponent } from '@common/components/alert/alert';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { DialogService } from '@common/services/dialog/dialog.service';
+import { ToastService } from '@common/services/toast/toast';
 import { RESOURCE_REQUEST_CONSTANTS } from '@shared/constants/app.constants';
-import { ResourceAllocationItem, ResourceRequestItem } from '../../models/resource-request.model';
+import {
+  AllocateResourcesPayload,
+  CreateResourceRequestPayload,
+  RemoveAllocationPayload,
+  ResourceAllocationItem,
+  ResourceRequestItem,
+} from '../../models/resource-request.model';
 import { EngagementInfoDto } from '../../models/engagement.model';
 import { ResourceRequestService } from '../../services/resource-request.service';
 import { EngagementService } from '../../services/engagement.service';
@@ -48,6 +55,7 @@ export class ResourcesComponent {
   private engagementService = inject(EngagementService);
   private authService = inject(AuthService);
   private dialog = inject(DialogService);
+  private toastService = inject(ToastService);
 
   readonly constants = RESOURCE_REQUEST_CONSTANTS;
 
@@ -115,7 +123,7 @@ export class ResourcesComponent {
     });
   }
 
-  loadData(engagementId: number): void {
+  loadData(engagementId: number, onDone?: () => void): void {
     this.engagementService.getEngagementInfo(engagementId).subscribe({
       next: (info) => this.engagementInfo.set(info),
       error: () => this.engagementInfo.set(null),
@@ -126,10 +134,12 @@ export class ResourcesComponent {
       next: (data) => {
         this.requests.set(data);
         this.isLoading.set(false);
+        onDone?.();
       },
       error: () => {
         this.requests.set([]);
         this.isLoading.set(false);
+        onDone?.();
       },
     });
   }
@@ -141,7 +151,7 @@ export class ResourcesComponent {
     const dialogRef = this.dialog.open<
       RaiseResourceRequestDialogComponent,
       RaiseResourceRequestDialogData,
-      ResourceRequestItem | null
+      CreateResourceRequestPayload
     >(RaiseResourceRequestDialogComponent, {
       data: {
         engagementId: id,
@@ -149,10 +159,10 @@ export class ResourcesComponent {
       },
     });
 
-    dialogRef.closed$.subscribe((created) => {
-      if (created) {
-        this.loadData(id);
-      }
+    dialogRef.closed$.subscribe((payload) => {
+      if (!payload) return;
+
+      this.loadData(id, () => this.toastService.success(RESOURCE_REQUEST_CONSTANTS.MSG_SUCCESS_RAISED));
     });
   }
 
@@ -163,7 +173,7 @@ export class ResourcesComponent {
     const dialogRef = this.dialog.open<
       AllocateResourcesDialogComponent,
       AllocateResourcesDialogData,
-      ResourceRequestItem | null
+      AllocateResourcesPayload
     >(AllocateResourcesDialogComponent, {
       data: {
         engagementId: id,
@@ -174,10 +184,10 @@ export class ResourcesComponent {
       },
     });
 
-    dialogRef.closed$.subscribe((updated) => {
-      if (updated) {
-        this.loadData(id);
-      }
+    dialogRef.closed$.subscribe((payload) => {
+      if (!payload) return;
+
+      this.loadData(id, () => this.toastService.success(RESOURCE_REQUEST_CONSTANTS.MSG_SUCCESS_ALLOCATED));
     });
   }
 
@@ -188,7 +198,7 @@ export class ResourcesComponent {
     const dialogRef = this.dialog.open<
       RemoveAllocationDialogComponent,
       RemoveAllocationDialogData,
-      ResourceRequestItem | null
+      RemoveAllocationPayload
     >(RemoveAllocationDialogComponent, {
       data: {
         engagementId: id,
@@ -198,10 +208,10 @@ export class ResourcesComponent {
       },
     });
 
-    dialogRef.closed$.subscribe((updated) => {
-      if (updated) {
-        this.loadData(id);
-      }
+    dialogRef.closed$.subscribe((payload) => {
+      if (!payload) return;
+
+      this.loadData(id, () => this.toastService.success(RESOURCE_REQUEST_CONSTANTS.MSG_SUCCESS_REMOVED));
     });
   }
 

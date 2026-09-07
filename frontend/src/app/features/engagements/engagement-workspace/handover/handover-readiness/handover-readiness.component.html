@@ -103,6 +103,7 @@
                       <button
                         type="button"
                         class="delete-btn"
+                        [disabled]="isLoading()"
                         (click)="onDeleteItem(item)"
                         [title]="LABELS.DELETE_ITEM"
                         [attr.aria-label]="LABELS.DELETE_ITEM"
@@ -211,6 +212,7 @@
                       <button
                         type="button"
                         class="delete-btn"
+                        [disabled]="isLoading()"
                         (click)="onDeleteItem(item)"
                         [title]="LABELS.DELETE_ITEM"
                         [attr.aria-label]="LABELS.DELETE_ITEM"
@@ -238,5 +240,8 @@
     (cancelled)="cancelDeleteItem()"
   >
     Are you sure you want to delete "{{ item.name }}"?
+    @if (errorMessage()) {
+      <app-alert>{{ errorMessage() }}</app-alert>
+    }
   </app-confirm-dialog>
 }

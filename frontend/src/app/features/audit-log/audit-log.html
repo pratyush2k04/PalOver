@@ -25,18 +25,20 @@
       description="Track system activities, access events, and administrative changes across the platform."
     >
       <div class="header-actions-group">
-        <app-datepicker
-          id="audit-log-from-date"
-          placeholder="From date"
-          [(ngModel)]="filterFromDate"
-          (ngModelChange)="onFilterChange()"
-        />
-        <app-datepicker
-          id="audit-log-to-date"
-          placeholder="To date"
-          [(ngModel)]="filterToDate"
-          (ngModelChange)="onFilterChange()"
-        />
+        <div class="to-fro-date-group">
+          <app-datepicker
+            id="audit-log-from-date"
+            placeholder="From date"
+            [(ngModel)]="filterFromDate"
+            (ngModelChange)="onFilterChange()"
+          />
+          <app-datepicker
+            id="audit-log-to-date"
+            placeholder="To date"
+            [(ngModel)]="filterToDate"
+            (ngModelChange)="onFilterChange()"
+          />
+        </div>
         <app-select
           class="audit-category-select"
           [id]="'audit-category-select'"

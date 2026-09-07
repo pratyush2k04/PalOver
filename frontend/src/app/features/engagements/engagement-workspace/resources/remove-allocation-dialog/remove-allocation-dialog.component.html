@@ -7,10 +7,6 @@
       <p class="sub-text">This reopens the request to Raised so a replacement can be named.</p>
     </div>
 
-    @if (errorMessage()) {
-      <app-alert variant="danger">{{ errorMessage() }}</app-alert>
-    }
-
     <app-textarea
       id="remove-allocation-reason"
       name="reason"
@@ -22,18 +18,17 @@
       placeholder="Please enter a short reason for removing this resource (minimum 10 characters)..."
       [extraError]="minLengthError()"
     />
+
+    @if (errorMessage()) {
+      <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+    }
   </div>
 
   <div class="app-dialog__actions">
     <app-button type="button" variant="stroked" (click)="onCancel()" [disabled]="isSubmitting()">
       {{ constants.BTN_CANCEL }}
     </app-button>
-    <app-button
-      type="submit"
-      variant="danger"
-      [disabled]="isSubmitting()"
-      [loading]="isSubmitting()"
-    >
+    <app-button type="submit" variant="danger" [disabled]="isSubmitting()" [loading]="isSubmitting()">
       {{ constants.BTN_REMOVE }}
     </app-button>
   </div>

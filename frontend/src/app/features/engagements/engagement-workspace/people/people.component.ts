@@ -64,7 +64,6 @@ export class PeopleComponent {
     return this.people().filter(p => !t.some(x => x.outgoingContactName === p.name));
   });
 
-  isDeleting = signal(false);
   personToDelete = signal<PersonDto | null>(null);
   isImporting = signal(false);
   
@@ -84,7 +83,7 @@ export class PeopleComponent {
     });
   }
 
-  private loadPeople(engagementId: number, skipLoader = false): void {
+  private loadPeople(engagementId: number, skipLoader = false, onDone?: () => void): void {
     if (skipLoader) {
       this.isLoading.set(true);
     }
@@ -94,12 +93,14 @@ export class PeopleComponent {
         if (skipLoader) {
           this.isLoading.set(false);
         }
+        onDone?.();
       },
       error: (err) => {
         console.error('Error fetching people directory:', err);
         if (skipLoader) {
           this.isLoading.set(false);
         }
+        onDone?.();
       }
     });
   }
@@ -150,19 +151,21 @@ export class PeopleComponent {
         personType: result.personType
       };
 
+      this.isLoading.set(true);
+
       if (person) {
-        this.personService.updatePerson(engagementId, person.personId, { ...payload, personId: person.personId }).subscribe({
+        this.personService.updatePerson(engagementId, person.personId, { ...payload, personId: person.personId }, true).subscribe({
           next: () => {
-            this.toastService.success('Contact updated successfully');
-            this.loadPeople(engagementId, true);
-          }
+            this.loadPeople(engagementId, true, () => this.toastService.success('Contact updated successfully'));
+          },
+          error: () => this.isLoading.set(false)
         });
       } else {
-        this.personService.createPerson(engagementId, payload).subscribe({
+        this.personService.createPerson(engagementId, payload, true).subscribe({
           next: () => {
-            this.toastService.success('Contact added successfully');
-            this.loadPeople(engagementId, true);
-          }
+            this.loadPeople(engagementId, true, () => this.toastService.success('Contact added successfully'));
+          },
+          error: () => this.isLoading.set(false)
         });
       }
     });
@@ -182,16 +185,14 @@ export class PeopleComponent {
 
     if (!person || !engagementId) return;
 
-    this.isDeleting.set(true);
-    this.personService.deletePerson(engagementId, person.personId).subscribe({
+    this.personToDelete.set(null);
+    this.isLoading.set(true);
+    this.personService.deletePerson(engagementId, person.personId, true).subscribe({
       next: () => {
-        this.toastService.success(`Removed ${person.name} from directory`);
-        this.isDeleting.set(false);
-        this.personToDelete.set(null);
-        this.loadPeople(engagementId, true);
+        this.loadPeople(engagementId, true, () => this.toastService.success(`Removed ${person.name} from directory`));
       },
       error: () => {
-        this.isDeleting.set(false);
+        this.isLoading.set(false);
       }
     });
   }

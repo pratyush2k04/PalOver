@@ -35,9 +35,10 @@ export class BrownfieldReviewService {
     );
   }
 
-  deleteFinding(id: number): Observable<void> {
+  deleteFinding(id: number, skipLoader = false): Observable<void> {
     return this.http.delete<void>(
-      TECHNICAL_READINESS_API_ENDPOINTS.BROWNFIELD_ITEM(id)
+      TECHNICAL_READINESS_API_ENDPOINTS.BROWNFIELD_ITEM(id),
+      { context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined }
     );
   }
 }

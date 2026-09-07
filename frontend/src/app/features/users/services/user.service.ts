@@ -31,8 +31,10 @@ export class UserService {
     return this.http.get<UserListItem[]>(API_ENDPOINTS.ROLE_USERS(roleId));
   }
 
-  changeUserRole(userId: number, newRoleId: number): Observable<UserListItem> {
-    return this.http.patch<UserListItem>(API_ENDPOINTS.USER_ROLE(userId), { newRoleId });
+  changeUserRole(userId: number, newRoleId: number, skipLoader = false): Observable<UserListItem> {
+    return this.http.patch<UserListItem>(API_ENDPOINTS.USER_ROLE(userId), { newRoleId }, {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 }
 

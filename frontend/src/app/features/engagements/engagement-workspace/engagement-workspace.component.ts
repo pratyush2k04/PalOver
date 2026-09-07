@@ -10,7 +10,7 @@ import { AuthService } from '@shared/services/auth';
 import { ToastService } from '@common/services/toast/toast';
 import { ENGAGEMENT_WORKSPACE_CONFIG } from '@shared/constants/engagements.constants';
 import { USER_ROLES } from '@shared/constants/users.constants';
-import { DayOneSignOffRequest, EngagementInfoDto } from '../models/engagement.model';
+import { EngagementInfoDto } from '../models/engagement.model';
 import { ENGAGEMENT_ROUTES } from '@shared/constants/routes.constants';
 import { TabItem, TabsComponent } from '@common/components/tabs/tabs';
 import { ReadinessCircleComponent } from '@shared/readiness-circle/readiness-circle';
@@ -162,17 +162,19 @@ export class EngagementWorkspaceComponent {
     });
   }
 
-  private loadEngagement(id: number) {
+  private loadEngagement(id: number, onDone?: () => void) {
     this.isLoading.set(true);
     this.engagementService.getEngagementInfo(id).subscribe({
       next: (data) => {
         this.engagement.set(data);
         this.isLoading.set(false);
+        onDone?.();
       },
       error: (error) => {
         console.error(error);
         this.engagement.set(null);
         this.isLoading.set(false);
+        onDone?.();
       }
     });
 
@@ -213,10 +215,10 @@ export class EngagementWorkspaceComponent {
       }
     });
 
-    dialogRef.closed$.subscribe((success) => {
-      if (success) {
-        this.loadEngagement(engagementId);
-      }
+    dialogRef.closed$.subscribe((result) => {
+      if (!result) return;
+
+      this.loadEngagement(engagementId, () => this.toastService.success('Day-1 successfully signed off!'));
     });
   }
 

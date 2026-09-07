@@ -1,15 +1,15 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
-import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
+import { AlertComponent } from '@common/components/alert/alert';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
-import { ToastService } from '@common/services/toast/toast';
 import { RESOURCE_REQUEST_CONSTANTS } from '@shared/constants/app.constants';
-import { ResourceRequestItem } from '../../../models/resource-request.model';
-import { ResourceRequestService } from '../../../services/resource-request.service';
+import { RemoveAllocationPayload } from '../../../models/resource-request.model';
+import { ResourceRequestService } from '@features/engagements/services/resource-request.service';
 
 export interface RemoveAllocationDialogData {
   engagementId: number;
@@ -21,22 +21,22 @@ export interface RemoveAllocationDialogData {
 @Component({
   selector: 'app-remove-allocation-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, AlertComponent, ButtonComponent, TextareaComponent],
+  imports: [CommonModule, FormsModule, ButtonComponent, AlertComponent, TextareaComponent],
   templateUrl: './remove-allocation-dialog.component.html',
   styleUrl: './remove-allocation-dialog.component.scss',
 })
 export class RemoveAllocationDialogComponent {
+  private dialogRef = inject<DialogRef<RemoveAllocationPayload>>(DialogRef);
   private resourceRequestService = inject(ResourceRequestService);
-  private toastService = inject(ToastService);
-  private dialogRef = inject<DialogRef<ResourceRequestItem | null>>(DialogRef);
+  private destroyRef = inject(DestroyRef);
   readonly data = inject<RemoveAllocationDialogData>(DIALOG_DATA);
 
   readonly constants = RESOURCE_REQUEST_CONSTANTS;
 
   reason = signal<string>('');
-  isSubmitting = signal<boolean>(false);
-  errorMessage = signal<string | null>(null);
   submitted = signal<boolean>(false);
+  isSubmitting = signal(false);
+  errorMessage = signal<string | null>(null);
 
   trimmedReason = computed(() => this.reason().trim());
   isValidReason = computed(() => {
@@ -50,40 +50,33 @@ export class RemoveAllocationDialogComponent {
 
   onReasonChange(value: string): void {
     this.reason.set(value);
-    if (this.errorMessage()) {
-      this.errorMessage.set(null);
-    }
   }
 
   onCancel(): void {
-    if (!this.isSubmitting()) {
-      this.dialogRef.close(null);
-    }
+    this.dialogRef.close();
   }
 
   onSubmit(): void {
-    if (!this.isValidReason() || this.isSubmitting()) {
+    if (!this.isValidReason()) {
       this.submitted.set(true);
       return;
     }
 
-    this.isSubmitting.set(true);
+    const payload: RemoveAllocationPayload = { reason: this.trimmedReason() };
+
     this.errorMessage.set(null);
+    this.isSubmitting.set(true);
 
     this.resourceRequestService
-      .removeAllocation(this.data.engagementId, this.data.requestId, this.data.allocationId, {
-        reason: this.trimmedReason(),
-      })
+      .removeAllocation(this.data.engagementId, this.data.requestId, this.data.allocationId, payload, true)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (updated: ResourceRequestItem) => {
-          this.toastService.success(RESOURCE_REQUEST_CONSTANTS.MSG_SUCCESS_REMOVED);
-          this.isSubmitting.set(false);
-          this.dialogRef.close(updated);
+        next: () => {
+          this.dialogRef.close(payload);
         },
-        error: (err: { error?: { message?: string; title?: string } }) => {
+        error: (err) => {
           this.isSubmitting.set(false);
-          const errorMsg = err.error?.message || err.error?.title || 'Failed to remove resource. Please try again.';
-          this.errorMessage.set(errorMsg);
+          this.errorMessage.set(err?.error?.message || err?.error || 'Failed to remove resource. Please try again.');
         },
       });
   }

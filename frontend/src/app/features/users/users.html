@@ -110,10 +110,13 @@
 @if (pendingChange(); as pending) {
   <app-confirm-dialog
     confirmLabel="Confirm"
-    [isBusy]="isSavingRoleChange()"
+    [isBusy]="isSubmitting()"
     (confirmed)="confirmRoleChange()"
     (cancelled)="cancelRoleChange()"
   >
     Change {{ pending.user.fullName }} from {{ pending.user.roleName }} to {{ pending.newRoleName }}?
+    @if (errorMessage()) {
+      <app-alert>{{ errorMessage() }}</app-alert>
+    }
   </app-confirm-dialog>
 }

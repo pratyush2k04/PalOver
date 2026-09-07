@@ -17,6 +17,7 @@ export const CADENCE_CONSTANTS = {
   ERROR_ROLE_REQUIRED: 'Stakeholder role is required.',
   ERROR_PARTICIPANT_REQUIRED: 'At least one participant must be selected.',
   ERROR_GENERIC: 'Failed to add communication cadence.',
+  MSG_SUCCESS_ADDED: 'Communication cadence added successfully.',
   BTN_CANCEL: 'Cancel',
   BTN_ADD: 'Add',
   BTN_ADDING: 'Adding...'

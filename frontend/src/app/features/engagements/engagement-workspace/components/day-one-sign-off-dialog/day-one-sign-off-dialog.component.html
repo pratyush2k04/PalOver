@@ -57,24 +57,28 @@
       </div>
     }
   </form>
+
+  @if (errorMessage()) {
+    <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+  }
 </div>
 
 <div class="app-dialog__actions">
   <app-button
     type="button"
     variant="stroked"
-    [disabled]="isBusy()"
+    [disabled]="isSubmitting()"
     (click)="onCancel()"
   >
     Cancel
   </app-button>
   <app-button
     type="button"
-    variant="flat"
-    [loading]="isBusy()"
-    [disabled]="!canSubmit()"
+    [variant]="isException() && data.isLeadership ? 'warning' : 'flat'"
+    [loading]="isSubmitting()"
+    [disabled]="!canAttemptSubmit() || isSubmitting()"
     (click)="onSubmit()"
   >
-    {{ isException() && data.isLeadership ? 'Sign Off with Exception' : 'Confirm Sign-Off' }}
+    {{ isSubmitting() ? 'Submitting...' : (isException() && data.isLeadership ? 'Sign Off with Exception' : 'Confirm Sign-Off') }}
   </app-button>
 </div>

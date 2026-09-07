@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { ENGAGEMENT_API_ENDPOINTS } from '@shared/constants/app.constants';
+import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 import {
   EngagementChecklist,
   UpdateItemStatusRequest,
@@ -17,9 +18,10 @@ import {
 export class EngagementChecklistService {
   private http = inject(HttpClient);
 
-  getEngagementChecklist(engagementId: number): Observable<EngagementChecklist> {
+  getEngagementChecklist(engagementId: number, skipLoader = false): Observable<EngagementChecklist> {
     return this.http.get<EngagementChecklist>(
-      ENGAGEMENT_API_ENDPOINTS.ENGAGEMENT_CHECKLIST(engagementId)
+      ENGAGEMENT_API_ENDPOINTS.ENGAGEMENT_CHECKLIST(engagementId),
+      { context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined }
     );
   }
 
@@ -88,11 +90,13 @@ export class EngagementChecklistService {
   saveItemEvidence(
     engagementId: number,
     itemId: number,
-    request: SaveChecklistItemEvidenceRequest
+    request: SaveChecklistItemEvidenceRequest,
+    skipLoader = false
   ): Observable<EngagementChecklist> {
     return this.http.put<EngagementChecklist>(
       ENGAGEMENT_API_ENDPOINTS.CHECKLIST_ITEM_EVIDENCE(engagementId, itemId),
-      request
+      request,
+      { context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined }
     );
   }
 }

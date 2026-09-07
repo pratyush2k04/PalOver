@@ -27,23 +27,5 @@ public class CommunicationCadenceConfiguration : IEntityTypeConfiguration<Commun
 
         // Global Query Filter for Soft Delete
         builder.HasQueryFilter(c => !c.IsDeleted);
-
-        // Seed Data matching prototype
-        var seedTimestamp = new System.DateTime(2026, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
-        builder.HasData(
-            new CommunicationCadence
-            {
-                Id = 1,
-                EngagementId = 1,
-                StakeholderRole = "Client Sponsor",
-                Cadence = CadenceTypeEnum.Weekly,
-                Participants = "Rahul Verma, Asha Rao",
-                CreatedAt = seedTimestamp,
-                UpdatedAt = seedTimestamp,
-                CreatedBy = "System",
-                IsDeleted = false
-            }
-            
-        );
     }
 }

@@ -1,5 +1,5 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Observable, map, tap } from 'rxjs';
 import {
   CommercialModelOption,
@@ -17,6 +17,7 @@ import {
 } from '../models/engagement.model';
 import { EvidenceSnapshot } from '../models/evidence-snapshot.model';
 import { ENGAGEMENT_API_ENDPOINTS } from '@shared/constants/app.constants';
+import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 
 export interface EngagementOpenItemsSummary {
   checklistOpenCount: number;
@@ -42,8 +43,10 @@ export class EngagementService {
     this.currentEngagementState.set(info);
   }
 
-  markSowSigned(request: MarkSowSignedRequest): Observable<MarkSowSignedResponse> {
-    return this.http.post<MarkSowSignedResponse>(ENGAGEMENT_API_ENDPOINTS.MARK_SOW_SIGNED, request);
+  markSowSigned(request: MarkSowSignedRequest, skipLoader = false): Observable<MarkSowSignedResponse> {
+    return this.http.post<MarkSowSignedResponse>(ENGAGEMENT_API_ENDPOINTS.MARK_SOW_SIGNED, request, {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
   getEngagementTypes(): Observable<EngagementTypeOption[]> {
@@ -74,15 +77,19 @@ export class EngagementService {
     return this.http.get<any[]>(ENGAGEMENT_API_ENDPOINTS.ENGAGEMENT_USERS(id));
   }
 
-  assignProjectManager(id: number, userId: number): Observable<EngagementOwners> {
+  assignProjectManager(id: number, userId: number, skipLoader = false): Observable<EngagementOwners> {
     return this.http
-      .put<EngagementOwners>(ENGAGEMENT_API_ENDPOINTS.ASSIGN_PROJECT_MANAGER(id), { userId })
+      .put<EngagementOwners>(ENGAGEMENT_API_ENDPOINTS.ASSIGN_PROJECT_MANAGER(id), { userId }, {
+        context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+      })
       .pipe(tap((owners) => this.ownersState.set(owners)));
   }
 
-  assignTechLead(id: number, userId: number): Observable<EngagementOwners> {
+  assignTechLead(id: number, userId: number, skipLoader = false): Observable<EngagementOwners> {
     return this.http
-      .put<EngagementOwners>(ENGAGEMENT_API_ENDPOINTS.ASSIGN_TECH_LEAD(id), { userId })
+      .put<EngagementOwners>(ENGAGEMENT_API_ENDPOINTS.ASSIGN_TECH_LEAD(id), { userId }, {
+        context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+      })
       .pipe(tap((owners) => this.ownersState.set(owners)));
   }
 
@@ -105,9 +112,11 @@ export class EngagementService {
     return this.http.get<EngagementOpenItemsSummary>(ENGAGEMENT_API_ENDPOINTS.OPEN_ITEMS_SUMMARY(id));
   }
 
-  signOffDayOne(id: number, request: DayOneSignOffRequest): Observable<EngagementInfo> {
+  signOffDayOne(id: number, request: DayOneSignOffRequest, skipLoader = false): Observable<EngagementInfo> {
     return this.http
-      .post<EngagementInfo>(ENGAGEMENT_API_ENDPOINTS.DAY_ONE_SIGN_OFF(id), request)
+      .post<EngagementInfo>(ENGAGEMENT_API_ENDPOINTS.DAY_ONE_SIGN_OFF(id), request, {
+        context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+      })
       .pipe(tap((info) => this.currentEngagementState.set(info)));
   }
 

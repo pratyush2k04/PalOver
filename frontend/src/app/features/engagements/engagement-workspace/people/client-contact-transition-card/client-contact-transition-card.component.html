@@ -5,6 +5,7 @@
     @if ((isPm() || isPreSales()) && !isSubmitted()) {
       <app-button
         variant="flat"
+        [disabled]="isLoading()"
         (click)="openAddTransitionDialog()"
         class="add-button"
       >

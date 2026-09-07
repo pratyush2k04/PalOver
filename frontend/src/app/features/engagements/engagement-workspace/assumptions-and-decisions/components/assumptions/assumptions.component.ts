@@ -67,23 +67,25 @@ export class AssumptionsComponent implements OnInit {
     });
   }
 
-  loadAssumptions(skipLoader = false) {
+  loadAssumptions(skipLoader = false, onDone?: () => void) {
     if (skipLoader) {
       this.isLoading.set(true);
     }
     this.assumptionService.getAssumptions(this.engagementId(), skipLoader).subscribe({
       next: (data) => {
         this.assumptions.set(data);
-        this.isLoading.set(false);
         this.metricsChanged.emit({
           invalidCount: this.invalidCount(),
           unvalidatedCount: this.unvalidatedCount(),
           totalCount: data.length
         });
+        this.isLoading.set(false);
+        onDone?.();
       },
       error: (err) => {
         this.handleError(err, ASSUMPTION_MESSAGES.LOAD_ERROR);
         this.isLoading.set(false);
+        onDone?.();
       }
     });
   }
@@ -131,16 +133,14 @@ export class AssumptionsComponent implements OnInit {
       if (assumption) {
         this.assumptionService.updateAssumption(this.engagementId(), assumption.id, result).subscribe({
           next: () => {
-            this.toastService.success(ASSUMPTION_MESSAGES.UPDATE_SUCCESS);
-            this.loadAssumptions(true);
+            this.loadAssumptions(true, () => this.toastService.success(ASSUMPTION_MESSAGES.UPDATE_SUCCESS));
           },
           error: (err) => this.handleError(err, ASSUMPTION_MESSAGES.UPDATE_ERROR)
         });
       } else {
         this.assumptionService.createAssumption(this.engagementId(), result).subscribe({
           next: () => {
-            this.toastService.success(ASSUMPTION_MESSAGES.CREATE_SUCCESS);
-            this.loadAssumptions(true);
+            this.loadAssumptions(true, () => this.toastService.success(ASSUMPTION_MESSAGES.CREATE_SUCCESS));
           },
           error: (err) => this.handleError(err, ASSUMPTION_MESSAGES.CREATE_ERROR)
         });
@@ -151,8 +151,9 @@ export class AssumptionsComponent implements OnInit {
   validateAssumption(id: number, status: AssumptionStatus) {
     this.assumptionService.validateAssumption(this.engagementId(), id, { status }).subscribe({
       next: () => {
-        this.toastService.success(ASSUMPTION_MESSAGES.UPDATE_STATUS_SUCCESS(this.getStatusLabel(status)));
-        this.loadAssumptions(true);
+        this.loadAssumptions(true, () =>
+          this.toastService.success(ASSUMPTION_MESSAGES.UPDATE_STATUS_SUCCESS(this.getStatusLabel(status)))
+        );
       },
       error: (err) => {
         this.handleError(err, ASSUMPTION_MESSAGES.UPDATE_STATUS_ERROR);

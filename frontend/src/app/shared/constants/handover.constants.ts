@@ -101,6 +101,7 @@ export const HANDOVER_MESSAGES = {
   QUERY_MESSAGE_SUBMIT_SUCCESS: 'Message submitted.',
   QUERY_MESSAGE_SUBMIT_ERROR: 'Failed to submit message.',
   QUERY_UPDATE_ERROR: 'Failed to update query.',
+  QUERY_RAISE_SUCCESS: 'Query raised.',
   QUERY_RAISE_ERROR: 'Failed to raise query.',
   QUERY_DELETED: 'Query deleted successfully.',
   QUERY_DELETE_ERROR: 'Failed to delete query.',

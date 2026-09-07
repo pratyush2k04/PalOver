@@ -34,17 +34,6 @@ namespace Pdr.Api.Data.Configuration
                 .HasForeignKey(x => x.EnvironmentToolingDefinitionId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            var seededAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-            builder.HasData(
-                new EnvironmentToolingItem { Id = 1, EngagementId = 1, EnvironmentToolingDefinitionId = 1, Name = "CI/CD", OwnerId = 1, Status = EnvironmentToolingStatus.InProgress, CreatedAt = seededAt, UpdatedAt = seededAt },
-                new EnvironmentToolingItem { Id = 2, EngagementId = 1, EnvironmentToolingDefinitionId = 2, Name = "Dev", OwnerId = 1, Status = EnvironmentToolingStatus.InProgress, CreatedAt = seededAt, UpdatedAt = seededAt },
-                new EnvironmentToolingItem { Id = 3, EngagementId = 1, EnvironmentToolingDefinitionId = 3, Name = "UAT Environment", OwnerId = 1, Status = EnvironmentToolingStatus.InProgress, CreatedAt = seededAt, UpdatedAt = seededAt },
-                new EnvironmentToolingItem { Id = 4, EngagementId = 2, EnvironmentToolingDefinitionId = 1, Name = "CI/CD", OwnerId = 1, Status = EnvironmentToolingStatus.Granted, CreatedAt = seededAt, UpdatedAt = seededAt },
-                new EnvironmentToolingItem { Id = 5, EngagementId = 2, EnvironmentToolingDefinitionId = 2, Name = "Dev", OwnerId = 1, Status = EnvironmentToolingStatus.Granted, CreatedAt = seededAt, UpdatedAt = seededAt },
-                new EnvironmentToolingItem { Id = 6, EngagementId = 2, EnvironmentToolingDefinitionId = 3, Name = "UAT Environment", OwnerId = 1, Status = EnvironmentToolingStatus.InProgress, CreatedAt = seededAt, UpdatedAt = seededAt }
-            );
         }
     }
 }

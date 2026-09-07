@@ -7,7 +7,7 @@
     </div>
 
     @if (isProjectManager()) {
-      <app-button type="button" variant="flat" (click)="openLogModal()">
+      <app-button type="button" variant="flat" [disabled]="isLoading()" (click)="openLogModal()">
         {{ constants.BTN_LOG_CR }}
       </app-button>
     }
@@ -47,7 +47,9 @@
 
   <!-- Table View -->
   <div class="table-container">
-    @if (filteredChangeRequests().length > 0) {
+    @if (isLoading()) {
+      <app-loading-spinner label="Loading change requests..." />
+    } @else if (filteredChangeRequests().length > 0) {
       <table class="cr-table">
         <thead>
           <tr>
@@ -90,7 +92,7 @@
                       <app-button type="button" variant="stroked" (click)="onApprove(cr)">
                         {{ constants.BTN_APPROVE }}
                       </app-button>
-                      <app-button type="button" variant="danger" (click)="openRejectModal(cr)">
+                      <app-button type="button" variant="danger" [disabled]="isLoading()" (click)="openRejectModal(cr)">
                         {{ constants.BTN_REJECT }}
                       </app-button>
                     </div>

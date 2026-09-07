@@ -9,7 +9,7 @@ import { SelectComponent, SelectOption } from '@common/components/form/select/se
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { HandoverQueryService } from '../../../../../services/handover-query.service';
 import { CommitmentDto } from '../../../../../models/handover.model';
-import { HandoverQueryDto, HandoverQueryFieldSection } from '../../../../../models/handover-query.model';
+import { HandoverQueryFieldSection } from '../../../../../models/handover-query.model';
 import { HANDOVER_MESSAGES } from '@shared/constants/handover.constants';
 
 export interface RaiseHandoverQueryDialogData {
@@ -34,7 +34,7 @@ const FIELD_SECTION_OPTIONS: SelectOption[] = [
   styleUrl: './raise-handover-query-dialog.component.scss',
 })
 export class RaiseHandoverQueryDialogComponent {
-  private dialogRef = inject<DialogRef<HandoverQueryDto>>(DialogRef);
+  private dialogRef = inject<DialogRef<boolean>>(DialogRef);
   private handoverQueryService = inject(HandoverQueryService);
   private fb = inject(FormBuilder);
   readonly data = inject<RaiseHandoverQueryDialogData>(DIALOG_DATA);
@@ -47,7 +47,7 @@ export class RaiseHandoverQueryDialogComponent {
 
   isCommitmentSection = signal(false);
   isSubmitting = signal(false);
-  errorMessage = signal('');
+  errorMessage = signal<string | null>(null);
 
   form: FormGroup = this.fb.group({
     fieldSection: [null, [Validators.required]],
@@ -88,25 +88,30 @@ export class RaiseHandoverQueryDialogComponent {
       return;
     }
 
+    this.errorMessage.set(null);
     this.isSubmitting.set(true);
-    this.errorMessage.set('');
 
     const formVal = this.form.getRawValue();
 
     this.handoverQueryService
-      .raiseQuery(this.data.engagementId, {
-        fieldSection: formVal.fieldSection!,
-        referenceId: formVal.referenceId ?? undefined,
-        question: formVal.question.trim(),
-      })
+      .raiseQuery(
+        this.data.engagementId,
+        {
+          fieldSection: formVal.fieldSection!,
+          referenceId: formVal.referenceId ?? undefined,
+          question: formVal.question.trim(),
+        },
+        true,
+      )
       .subscribe({
-        next: (created) => {
+        next: () => {
           this.isSubmitting.set(false);
-          this.dialogRef.close(created);
+          this.dialogRef.close(true);
         },
         error: (err) => {
           this.isSubmitting.set(false);
-          const msg = (err as { error?: { message?: string } })?.error?.message;
+          const error = (err as { error?: { message?: string } | string })?.error;
+          const msg = typeof error === 'string' ? error : error?.message;
           this.errorMessage.set(msg || HANDOVER_MESSAGES.QUERY_RAISE_ERROR);
         },
       });
