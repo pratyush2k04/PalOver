@@ -20,4 +20,6 @@ public class AuditLog : BaseAuditableEntity
     public string PayloadJson { get; set; } = "{}";
 
     public int? EngagementId { get; set; }
+
+    public string? StaticFallback { get; set; }
 }

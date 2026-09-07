@@ -22,6 +22,10 @@ public class AuditLogConfiguration : IEntityTypeConfiguration<AuditLog>
         builder.Property(x => x.PayloadJson)
             .IsRequired();
 
+        builder.Property(x => x.StaticFallback)
+            .HasColumnName("static_fallback")
+            .IsRequired(false);
+
         builder.HasOne(x => x.User)
             .WithMany()
             .HasForeignKey(x => x.UserId)
