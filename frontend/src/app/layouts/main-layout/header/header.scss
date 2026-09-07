@@ -29,6 +29,11 @@
   align-items: center;
   gap: $spacing-3;
   min-width: 0;
+  flex: 1;
+
+  @include respond-to-down('md') {
+    gap: $spacing-2;
+  }
 }
 
 .mobile-logo-btn {
