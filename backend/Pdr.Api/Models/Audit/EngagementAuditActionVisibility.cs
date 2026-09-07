@@ -54,6 +54,9 @@ public static class EngagementAuditActionVisibilityRegistry
         [AuditActionEnum.KickoffReadyReverted] = new(VisibleToRoles: AllRoles),
         [AuditActionEnum.AccessItemBlocked] = new(VisibleToRoles: AllRoles),
         [AuditActionEnum.PersonAdded] = new(VisibleToRoles: AllRoles),
-        [AuditActionEnum.ClientContactTransitioned] = new(VisibleToRoles: AllRoles)
+        [AuditActionEnum.ClientContactTransitioned] = new(VisibleToRoles: AllRoles),
+        [AuditActionEnum.AssumptionCreated] = new(VisibleToRoles: AllRoles),
+        [AuditActionEnum.AssumptionUpdated] = new(VisibleToRoles: AllRoles),
+        [AuditActionEnum.AssumptionValidated] = new(VisibleToRoles: AllRoles)
     };
 }

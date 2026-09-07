@@ -37,5 +37,8 @@ public enum AuditActionEnum
     HandoverQueryResponded = 856018,
     HandoverQueryResolved = 856019,
     PersonAdded = 32,
-    ClientContactTransitioned = 33
+    ClientContactTransitioned = 33,
+    AssumptionCreated = 42,
+    AssumptionUpdated = 43,
+    AssumptionValidated = 44
 }

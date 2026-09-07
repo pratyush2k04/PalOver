@@ -10,5 +10,7 @@ public enum AuditCategoryEnum
     Escalation = 6,
     ResourceAllocation = 7,
     TechnicalReadiness = 8,
-    People = 9
+    People = 9,
+    Dependency = 10,
+    Assumption = 11
 }

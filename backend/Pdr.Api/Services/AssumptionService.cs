@@ -8,6 +8,7 @@ using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Models.Risks;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
+using Pdr.Api.Models.Audit;
 using Pdr.Api.Services.Notifications.Mappers;
 
 namespace Pdr.Api.Services;
@@ -16,7 +17,8 @@ public class AssumptionService(
     IAssumptionRepository assumptionRepository,
     IEngagementRepository engagementRepository,
     ICurrentUserService currentUserService,
-    INotificationService notificationService) : IAssumptionService
+    INotificationService notificationService,
+    IAuditLogService auditLogService) : IAssumptionService
 {
     public async Task<List<AssumptionDto>> GetAssumptionsAsync(int engagementId)
     {
@@ -78,6 +80,14 @@ public class AssumptionService(
                 DateTime.UtcNow);
         }
 
+        await auditLogService.LogAsync(
+            AuditActionEnum.AssumptionCreated,
+            new Dictionary<string, object?>
+            {
+                ["AssumptionId"] = created.Id
+            },
+            engagementId);
+
         return MapToDto(created);
     }
 
@@ -102,6 +112,14 @@ public class AssumptionService(
         assumption.Rationale = updateDto.Rationale;
 
         var updated = await assumptionRepository.UpdateAsync(assumption);
+
+        await auditLogService.LogAsync(
+            AuditActionEnum.AssumptionUpdated,
+            new Dictionary<string, object?>
+            {
+                ["AssumptionId"] = updated.Id
+            },
+            engagementId);
 
         return MapToDto(updated);
     }
@@ -132,6 +150,15 @@ public class AssumptionService(
         assumption.Status = validateDto.Status;
 
         var updated = await assumptionRepository.UpdateAsync(assumption);
+
+        await auditLogService.LogAsync(
+            AuditActionEnum.AssumptionValidated,
+            new Dictionary<string, object?>
+            {
+                ["AssumptionId"] = updated.Id,
+                ["Status"] = validateDto.Status.ToString()
+            },
+            engagementId);
 
         return MapToDto(updated);
     }

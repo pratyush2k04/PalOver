@@ -242,6 +242,24 @@ public class AuditActionConfiguration : IEntityTypeConfiguration<AuditAction>
                 Id = (int)AuditActionEnum.ClientContactTransitioned,
                 Action = AuditActionEnum.ClientContactTransitioned.ToString(),
                 Details = "Client contact transitioned from {outgoingName} to {incomingName} by {actorName}"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.AssumptionCreated,
+                Action = AuditActionEnum.AssumptionCreated.ToString(),
+                Details = "Assumption {assumptionDescription} created for engagement {engagementName}"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.AssumptionUpdated,
+                Action = AuditActionEnum.AssumptionUpdated.ToString(),
+                Details = "Assumption {assumptionDescription} updated for engagement {engagementName}"
+            },
+            new AuditAction
+            {
+                Id = (int)AuditActionEnum.AssumptionValidated,
+                Action = AuditActionEnum.AssumptionValidated.ToString(),
+                Details = "Assumption {assumptionDescription} validated to status {assumptionStatus} for engagement {engagementName}"
             });
     }
 }

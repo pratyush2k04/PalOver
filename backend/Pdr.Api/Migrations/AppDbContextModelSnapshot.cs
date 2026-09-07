@@ -114,7 +114,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AccessItemDefinitions", (string)null);
+                    b.ToTable("AccessItemDefinitions");
 
                     b.HasData(
                         new
@@ -456,6 +456,36 @@ namespace Pdr.Api.Migrations
                             Id = 856019,
                             Action = "HandoverQueryResolved",
                             Details = "{actorName} marked a query on {fieldSection} resolved for the handover on {engagementName}"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            Action = "PersonAdded",
+                            Details = "Person {personName} with role {roleName} was added by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            Action = "ClientContactTransitioned",
+                            Details = "Client contact transitioned from {outgoingName} to {incomingName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 42,
+                            Action = "AssumptionCreated",
+                            Details = "Assumption {assumptionDescription} created for engagement {engagementName}"
+                        },
+                        new
+                        {
+                            Id = 43,
+                            Action = "AssumptionUpdated",
+                            Details = "Assumption {assumptionDescription} updated for engagement {engagementName}"
+                        },
+                        new
+                        {
+                            Id = 44,
+                            Action = "AssumptionValidated",
+                            Details = "Assumption {assumptionDescription} validated to status {assumptionStatus} for engagement {engagementName}"
                         });
                 });
 
@@ -1218,7 +1248,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Assumptions", (string)null);
+                    b.ToTable("Assumptions");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Engagements.CommercialModel", b =>
@@ -1390,7 +1420,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Dependencies", (string)null);
+                    b.ToTable("Dependencies");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Engagements.Engagement", b =>
@@ -1739,7 +1769,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EnvironmentToolingDefinitions", (string)null);
+                    b.ToTable("EnvironmentToolingDefinitions");
 
                     b.HasData(
                         new
@@ -2425,7 +2455,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HandoverReadinessDefinitions", (string)null);
+                    b.ToTable("HandoverReadinessDefinitions");
 
                     b.HasData(
                         new
@@ -2548,7 +2578,7 @@ namespace Pdr.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("HandoverReadinessItems", (string)null);
+                    b.ToTable("HandoverReadinessItems");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.Kickoff.KickoffActionItem", b =>
