@@ -1679,6 +1679,15 @@ namespace Pdr.Api.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("is_deleted");
 
+                    b.Property<int?>("OwnerId")
+                        .HasColumnType("integer")
+                        .HasColumnName("owner_id");
+
+                    b.Property<string>("OwnerName")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("owner_name");
+
                     b.Property<int?>("SourceChecklistItemId")
                         .HasColumnType("integer")
                         .HasColumnName("source_checklist_item_id");

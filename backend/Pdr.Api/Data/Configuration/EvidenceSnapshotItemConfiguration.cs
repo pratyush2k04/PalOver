@@ -29,6 +29,8 @@ public class EvidenceSnapshotItemConfiguration : IEntityTypeConfiguration<Eviden
         builder.Property(i => i.EvidenceDocumentFileName).HasColumnName("evidence_document_file_name").HasMaxLength(255);
         builder.Property(i => i.EvidenceSubmittedAt).HasColumnName("evidence_submitted_at");
         builder.Property(i => i.EvidenceSubmittedByName).HasColumnName("evidence_submitted_by_name").HasMaxLength(200);
+        builder.Property(i => i.OwnerId).HasColumnName("owner_id");
+        builder.Property(i => i.OwnerName).HasColumnName("owner_name").HasMaxLength(200);
 
         // BaseAuditableEntity Column Mappings
         builder.Property(i => i.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");

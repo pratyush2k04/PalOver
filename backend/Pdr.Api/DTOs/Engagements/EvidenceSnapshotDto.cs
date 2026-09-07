@@ -17,4 +17,6 @@ public record EvidenceSnapshotItemDto(
     int? EvidenceDocumentId,
     string? EvidenceDocumentFileName,
     DateTime? EvidenceSubmittedAt,
-    string? EvidenceSubmittedByName);
+    string? EvidenceSubmittedByName,
+    int? OwnerId,
+    string? OwnerName);

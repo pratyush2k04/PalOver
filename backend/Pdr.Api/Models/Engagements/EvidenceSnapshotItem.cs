@@ -27,6 +27,10 @@ public class EvidenceSnapshotItem : BaseAuditableEntity
 
     public string? EvidenceSubmittedByName { get; set; }
 
+    public int? OwnerId { get; set; }
+
+    public string? OwnerName { get; set; }
+
     [JsonIgnore]
     public EvidenceSnapshot EvidenceSnapshot { get; set; } = null!;
 }

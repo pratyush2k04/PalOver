@@ -743,7 +743,9 @@ public class EngagementService(
                         EvidenceDocumentId = i.EvidenceDocumentId,
                         EvidenceDocumentFileName = i.EvidenceDocument != null ? i.EvidenceDocument.FileName : null,
                         EvidenceSubmittedAt = i.EvidenceSubmittedAt,
-                        EvidenceSubmittedByName = i.EvidenceSubmittedBy?.FullName
+                        EvidenceSubmittedByName = i.EvidenceSubmittedBy?.FullName,
+                        OwnerId = i.OwnerId,
+                        OwnerName = i.Owner?.FullName
                     }).ToList()
             };
         }
