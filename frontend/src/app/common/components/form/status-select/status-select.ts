@@ -38,9 +38,9 @@ export class StatusSelectComponent extends BaseControlComponent<unknown> impleme
   value: unknown = null;
   readonly selectedIndex = signal<number | null>(null);
   
-  dropdownTop = 0;
-  dropdownLeft = 0;
-  dropdownMinWidth = 0;
+  readonly dropdownTop = signal<number>(0);
+  readonly dropdownLeft = signal<number>(0);
+  readonly dropdownMinWidth = signal<number>(0);
 
   private onScrollFn = (event: Event) => {
     const dropdown = this.elementRef.nativeElement.querySelector('.status-select-dropdown');
@@ -160,16 +160,21 @@ export class StatusSelectComponent extends BaseControlComponent<unknown> impleme
       const dropdownEl = this.elementRef.nativeElement.querySelector('.status-select-dropdown') as HTMLElement | null;
       const dropdownHeight = dropdownEl ? dropdownEl.offsetHeight : Math.min(this.options().length * 38 + 12, 256);
 
+      if (rect.bottom < 0 || rect.top > viewportHeight) {
+        this.closeDropdown();
+        return;
+      }
+
       if (spaceBelow < dropdownHeight && rect.top > spaceBelow) {
-        this.dropdownTop = Math.max(8, rect.top - dropdownHeight - 6);
+        this.dropdownTop.set(Math.max(8, rect.top - dropdownHeight - 6));
       } else {
-        this.dropdownTop = rect.bottom + 6;
+        this.dropdownTop.set(rect.bottom + 6);
       }
 
       const dropdownWidth = dropdownEl ? dropdownEl.offsetWidth : 152;
       const maxLeft = Math.max(8, window.innerWidth - dropdownWidth - 8);
-      this.dropdownLeft = Math.min(Math.max(8, rect.left), maxLeft);
-      this.dropdownMinWidth = rect.width;
+      this.dropdownLeft.set(Math.min(Math.max(8, rect.left), maxLeft));
+      this.dropdownMinWidth.set(rect.width);
     }
   }
 

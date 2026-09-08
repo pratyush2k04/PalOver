@@ -37,9 +37,9 @@ export class SelectComponent extends BaseControlComponent<unknown> implements On
   value: unknown = null;
   readonly selectedIndex = signal<number | null>(null);
 
-  dropdownTop = 0;
-  dropdownLeft = 0;
-  dropdownMinWidth = 0;
+  readonly dropdownTop = signal<number>(0);
+  readonly dropdownLeft = signal<number>(0);
+  readonly dropdownMinWidth = signal<number>(0);
 
   private onScrollFn = (event: Event) => {
     const dropdown = this.elementRef.nativeElement.querySelector('.select-dropdown');
@@ -161,13 +161,18 @@ export class SelectComponent extends BaseControlComponent<unknown> implements On
       const dropdownEl = this.elementRef.nativeElement.querySelector('.select-dropdown') as HTMLElement | null;
       const dropdownHeight = dropdownEl ? dropdownEl.offsetHeight : Math.min(this.options().length * 38 + 12, 256);
 
-      if (spaceBelow < dropdownHeight && rect.top > dropdownHeight) {
-        this.dropdownTop = Math.max(8, rect.top - dropdownHeight - 4);
-      } else {
-        this.dropdownTop = rect.bottom + 4;
+      if (rect.bottom < 0 || rect.top > viewportHeight) {
+        this.closeDropdown();
+        return;
       }
-      this.dropdownLeft = rect.left;
-      this.dropdownMinWidth = rect.width;
+
+      if (spaceBelow < dropdownHeight && rect.top > dropdownHeight) {
+        this.dropdownTop.set(Math.max(8, rect.top - dropdownHeight - 4));
+      } else {
+        this.dropdownTop.set(rect.bottom + 4);
+      }
+      this.dropdownLeft.set(rect.left);
+      this.dropdownMinWidth.set(rect.width);
     }
   }
 

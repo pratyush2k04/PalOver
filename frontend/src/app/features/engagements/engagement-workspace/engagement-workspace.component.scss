@@ -319,7 +319,17 @@
 }
 
 .workspace-tabs-wrapper {
-  margin-top: $spacing-1;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: $color-surface-subtle-alt;
+  padding-top: $spacing-2;
+  padding-bottom: $spacing-2;
+  margin-top: -$spacing-1;
+}
+
+app-tabs {
+  display: block;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   max-width: 100%;
