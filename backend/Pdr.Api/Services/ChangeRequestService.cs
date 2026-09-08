@@ -9,6 +9,7 @@ namespace Pdr.Api.Services;
 
 public class ChangeRequestService(
     IChangeRequestRepository changeRequestRepository,
+    IEngagementRepository engagementRepository,
     ICurrentUserService currentUserService,
     ILogger<ChangeRequestService> logger) : IChangeRequestService
 {
@@ -34,6 +35,8 @@ public class ChangeRequestService(
             throw new EngagementNotFoundException(engagementId);
         }
 
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var currentUserId = currentUserService.GetUserId();
 
         var entity = new ChangeRequest
@@ -56,6 +59,8 @@ public class ChangeRequestService(
         var changeRequest = await changeRequestRepository.GetByIdAsync(id)
             ?? throw new ChangeRequestNotFoundException(id);
 
+        await engagementRepository.EnsureNotSignedOffAsync(changeRequest.EngagementId);
+
         if (changeRequest.Status != ChangeRequestStatus.UnderReview)
         {
             throw new ChangeRequestInvalidStateTransitionException($"Cannot approve change request in status {FormatStatus(changeRequest.Status)}.");
@@ -77,6 +82,8 @@ public class ChangeRequestService(
     {
         var changeRequest = await changeRequestRepository.GetByIdAsync(id)
             ?? throw new ChangeRequestNotFoundException(id);
+
+        await engagementRepository.EnsureNotSignedOffAsync(changeRequest.EngagementId);
 
         if (string.IsNullOrWhiteSpace(dto.RejectionReason))
         {

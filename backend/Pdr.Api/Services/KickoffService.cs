@@ -10,7 +10,10 @@ using Pdr.Api.Services.Notifications.Mappers;
 
 namespace Pdr.Api.Services;
 
-public class KickoffService(IKickoffRepository repository, INotificationService notificationService) : IKickoffService
+public class KickoffService(
+    IKickoffRepository repository,
+    IEngagementRepository engagementRepository,
+    INotificationService notificationService) : IKickoffService
 {
     public async Task<KickoffRecordDto> GetKickoffRecordAsync(int engagementId, string? currentUserId)
     {
@@ -33,6 +36,7 @@ public class KickoffService(IKickoffRepository repository, INotificationService 
     public async Task<KickoffRecordDto> SaveKickoffRecordAsync(int engagementId, SaveKickoffRecordRequest request, string? currentUserId)
     {
         await ValidateUserAccessAsync(engagementId, currentUserId);
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var existingRecord = await repository.GetByEngagementIdAsync(engagementId);
 
@@ -77,6 +81,7 @@ public class KickoffService(IKickoffRepository repository, INotificationService 
     public async Task<KickoffActionItemDto> CreateActionItemAsync(int engagementId, KickoffActionItemDto dto, string? currentUserId)
     {
         await ValidateUserAccessAsync(engagementId, currentUserId);
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var record = await repository.GetByEngagementIdAsync(engagementId);
         if (record is null)
@@ -142,6 +147,7 @@ public class KickoffService(IKickoffRepository repository, INotificationService 
     public async Task<KickoffActionItemDto> UpdateActionItemStatusAsync(int engagementId, int actionItemId, KickoffActionItemStatus status, string? currentUserId)
     {
         await ValidateUserAccessAsync(engagementId, currentUserId);
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var item = await repository.GetActionItemByIdAsync(actionItemId);
         if (item is null || item.EngagementId != engagementId)
@@ -167,6 +173,7 @@ public class KickoffService(IKickoffRepository repository, INotificationService 
     public async Task<KickoffActionItemDto> UpdateActionItemAsync(int engagementId, int actionItemId, KickoffActionItemDto dto, string? currentUserId)
     {
         await ValidateUserAccessAsync(engagementId, currentUserId);
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var item = await repository.GetActionItemByIdAsync(actionItemId);
         if (item is null || item.EngagementId != engagementId)

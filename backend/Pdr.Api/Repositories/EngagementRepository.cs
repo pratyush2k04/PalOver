@@ -360,7 +360,9 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
                     i.EvidenceDocumentId,
                     i.EvidenceDocumentFileName,
                     i.EvidenceSubmittedAt,
-                    i.EvidenceSubmittedByName))
+                    i.EvidenceSubmittedByName,
+                    i.OwnerId,
+                    i.OwnerName))
                 .ToList());
     }
 

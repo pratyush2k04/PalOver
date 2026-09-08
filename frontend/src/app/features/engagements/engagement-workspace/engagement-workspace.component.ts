@@ -90,12 +90,16 @@ export class EngagementWorkspaceComponent {
   });
 
   readonly isSignOffDisabled = computed(() => {
+    if (!this.isFullyReady()) return true;
     if (this.isLeadership()) return false;
     if (this.isProjectManager()) return !this.isTechnicalReady();
     return true;
   });
 
   readonly signOffTooltip = computed(() => {
+    if (!this.isFullyReady()) {
+      return 'Kickoff readiness is not 100%';
+    }
     if (this.isProjectManager() && !this.isTechnicalReady()) {
       return 'Technical readiness is not 100%';
     }
