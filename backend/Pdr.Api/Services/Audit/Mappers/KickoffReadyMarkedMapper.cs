@@ -1,29 +1,37 @@
 using System.Text.Json;
+using Pdr.Api.Constants;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Models.Audit;
-using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Audit.Mappers;
 
-public class KickoffReadyMarkedMapper(
-    IEngagementRepository engagementRepository,
-    IUserRepository userRepository) : IAuditTemplateMapper
+public class KickoffReadyMarkedMapper : IAuditTemplateMapper
 {
     public string TemplateKey => nameof(AuditActionEnum.KickoffReadyMarked);
 
     private record KickoffReadyMarkedData(int EngagementId, int ActorUserId);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<KickoffReadyMarkedData>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.EngagementIds.Add(payload.EngagementId);
+        context.UserIds.Add(payload.ActorUserId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<KickoffReadyMarkedData>(data)
-            ?? throw new InvalidOperationException("KickoffReadyMarked audit payload could not be parsed.");
+            ?? throw new InvalidOperationException(AuditConstants.Messages.ParsePayloadFailed(TemplateKey));
 
-        var engagement = await engagementRepository.GetByIdAsync(payload.EngagementId);
-        var actor = await userRepository.GetByIdAsync(payload.ActorUserId);
+        var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
+        var actor = context.Users.GetValueOrDefault(payload.ActorUserId) ?? (actorUserId.HasValue ? context.Users.GetValueOrDefault(actorUserId.Value) : null);
 
         return new Dictionary<string, object?>
         {
-            ["engagementName"] = engagement?.EngagementName ?? "Engagement",
-            ["actorName"] = actor?.FullName ?? "Unknown User"
+            ["engagementName"] = engagement?.EngagementName,
+            ["actorName"] = actor?.FullName
         };
     }
 }

@@ -10,6 +10,7 @@ public interface IAccessTrackerRepository
     // Access Item queries
     Task<List<AccessItem>> GetAccessItemsByEngagementIdAsync(int engagementId);
     Task<AccessItem?> GetAccessItemByIdAsync(int id);
+    Task<Dictionary<int, AccessItem>> GetAccessItemsByIdsAsync(IEnumerable<int> ids);
     Task AddAccessItemAsync(AccessItem item);
     Task SaveChangesAsync();
     Task<List<AccessItemDelayInfoDto>> GetResolvedAccessItemsByEngagementIdsAsync(List<int> engagementIds);

@@ -26,6 +26,18 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
             .FirstOrDefaultAsync(d => d.Id == id);
     }
 
+    public async Task<Dictionary<int, Document>> GetByIdsAsync(IEnumerable<int> ids)
+    {
+        var idList = ids.Distinct().ToList();
+        if (idList.Count == 0) return new();
+
+        return await context.Documents
+            .AsNoTracking()
+            .Include(d => d.Category)
+            .Where(d => idList.Contains(d.Id))
+            .ToDictionaryAsync(d => d.Id);
+    }
+
     public async Task<IEnumerable<Document>> GetByEngagementIdAsync(int engagementId, int? userRoleId, bool isAdmin, bool isPm)
     {
         var query = context.Documents
@@ -52,6 +64,17 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
             .OrderBy(c => c.CategoryName == DocumentCategoryNames.Other ? 1 : 0)
             .ThenBy(c => c.Id)
             .ToListAsync();
+    }
+
+    public async Task<Dictionary<int, DocumentCategory>> GetCategoriesByIdsAsync(IEnumerable<int> ids)
+    {
+        var idList = ids.Distinct().ToList();
+        if (idList.Count == 0) return new();
+
+        return await context.DocumentCategories
+            .AsNoTracking()
+            .Where(c => idList.Contains(c.Id))
+            .ToDictionaryAsync(c => c.Id);
     }
 
     public async Task<bool> SoftDeleteAsync(Document document, string reason, string updatedBy)

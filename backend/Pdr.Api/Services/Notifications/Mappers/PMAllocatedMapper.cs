@@ -1,22 +1,31 @@
 using System.Text.Json;
-using Pdr.Api.Repositories.Interfaces;
+using Pdr.Api.Constants;
+using Pdr.Api.Services.Templating;
 
 namespace Pdr.Api.Services.Notifications.Mappers;
 
-public class PMAllocatedMapper(IEngagementRepository engagementRepository, IUserRepository userRepository)
-    : INotificationTemplateMapper
+public class PMAllocatedMapper : INotificationTemplateMapper
 {
     public string TemplateKey => "PMAllocated";
 
     public record PMAllocatedData(int AssignedUserId, int EngagementId);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<PMAllocatedData>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.EngagementIds.Add(payload.EngagementId);
+        context.UserIds.Add(payload.AssignedUserId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<PMAllocatedData>(data)
-            ?? throw new InvalidOperationException("PMAllocated notification data could not be parsed.");
+            ?? throw new InvalidOperationException(NotificationConstants.Messages.ParsePayloadFailed(TemplateKey));
 
-        var engagement = await engagementRepository.GetByIdAsync(payload.EngagementId);
-        var pm = await userRepository.GetByIdAsync(payload.AssignedUserId);
+        var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
+        var pm = context.Users.GetValueOrDefault(payload.AssignedUserId);
 
         return new Dictionary<string, object?>
         {

@@ -1,22 +1,29 @@
 using System.Text.Json;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Constants;
-using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Notifications.Mappers;
 
-public class TechLeadAssignedMapper(IEngagementRepository engagementRepository)
-    : INotificationTemplateMapper
+public class TechLeadAssignedMapper : INotificationTemplateMapper
 {
     public string TemplateKey => NotificationConstants.TemplateKeys.TechLeadAssigned;
 
     public record TechLeadAssignedPayload(int EngagementId);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<TechLeadAssignedPayload>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.EngagementIds.Add(payload.EngagementId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<TechLeadAssignedPayload>(data)
             ?? throw new InvalidOperationException(NotificationConstants.Messages.ParsePayloadFailed(NotificationConstants.TemplateKeys.TechLeadAssigned));
 
-        var engagement = await engagementRepository.GetByIdAsync(payload.EngagementId);
+        var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
 
         return new Dictionary<string, object?>
         {

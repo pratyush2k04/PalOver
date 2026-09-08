@@ -1,32 +1,39 @@
 using System.Text.Json;
+using Pdr.Api.Constants;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Models.Audit;
-using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Audit.Mappers;
 
-public class AccessItemBlockedAuditMapper(
-    IAccessTrackerRepository accessTrackerRepository,
-    IEngagementRepository engagementRepository,
-    IUserRepository userRepository) : IAuditTemplateMapper
+public class AccessItemBlockedAuditMapper : IAuditTemplateMapper
 {
     public string TemplateKey => nameof(AuditActionEnum.AccessItemBlocked);
 
     private record AccessItemBlockedData(int AccessItemId, int ActorUserId);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<AccessItemBlockedData>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.UserIds.Add(payload.ActorUserId);
+        context.AccessItemIds.Add(payload.AccessItemId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<AccessItemBlockedData>(data)
-            ?? throw new InvalidOperationException("AccessItemBlocked audit payload could not be parsed.");
+            ?? throw new InvalidOperationException(AuditConstants.Messages.ParsePayloadFailed(TemplateKey));
 
-        var item = await accessTrackerRepository.GetAccessItemByIdAsync(payload.AccessItemId);
-        var engagement = item is null ? null : await engagementRepository.GetByIdAsync(item.EngagementId);
-        var actor = await userRepository.GetByIdAsync(payload.ActorUserId);
+        var item = context.AccessItems.GetValueOrDefault(payload.AccessItemId);
+        var engagement = item is null ? null : context.Engagements.GetValueOrDefault(item.EngagementId);
+        var actor = context.Users.GetValueOrDefault(payload.ActorUserId) ?? (actorUserId.HasValue ? context.Users.GetValueOrDefault(actorUserId.Value) : null);
 
         return new Dictionary<string, object?>
         {
-            ["itemName"] = item?.Name ?? "Access item",
-            ["engagementName"] = engagement?.EngagementName ?? "Engagement",
-            ["actorName"] = actor?.FullName ?? "Unknown User"
+            ["itemName"] = item?.Name,
+            ["engagementName"] = engagement?.EngagementName,
+            ["actorName"] = actor?.FullName
         };
     }
 }

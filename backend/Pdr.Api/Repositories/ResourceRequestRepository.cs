@@ -29,6 +29,17 @@ public class ResourceRequestRepository(AppDbContext context) : IResourceRequestR
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 
+    public async Task<Dictionary<int, ResourceRequest>> GetByIdsAsync(IEnumerable<int> ids)
+    {
+        var idList = ids.Distinct().ToList();
+        if (idList.Count == 0) return new();
+
+        return await context.ResourceRequests
+            .AsNoTracking()
+            .Where(r => idList.Contains(r.Id))
+            .ToDictionaryAsync(r => r.Id);
+    }
+
     public async Task<List<ResourceRequest>> GetByEngagementIdAsync(int engagementId)
     {
         return await context.ResourceRequests

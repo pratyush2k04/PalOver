@@ -100,10 +100,20 @@ dotnet ef migrations add Add<YourActionName>AuditAction
 **Signature** (`Pdr.Api/Services/Interfaces/IAuditLogService.cs`):
 
 ```csharp
-Task LogAsync(AuditActionEnum action, IDictionary<string, object?> payload, int? engagementId = null, int? actingUserId = null);
+Task LogAsync(
+    AuditActionEnum action,
+    IDictionary<string, object?> payload,
+    int? engagementId = null,
+    int? actingUserId = null,
+    string? staticFallback = null);
 ```
 
 **The payload holds ids, not resolved display strings.** `LogAsync` doesn't render anything itself — it just serializes whatever dictionary you pass and stores it as-is. Resolution to display values (e.g. an id to a user's full name) happens later, at read time, via the action's registered `IAuditTemplateMapper`.
+
+**Optional Snapshotting & Static Fallback:**
+You can optionally provide fallback data at log time:
+1. `_initialValues` inside the payload: A dictionary of pre-computed entity names/titles (e.g., `["_initialValues"] = new Dictionary<string, string?> { ["engagementName"] = "Falcon", ["actorName"] = "Alice" }`). If an entity is later deleted from the database, the template renderer uses this snapshot while keeping all other live entities intact.
+2. `staticFallback`: An optional pre-rendered static string saved directly to the `static_fallback` column on `audit_logs`. If ANY required entity in the template is deleted and lacks an `_initialValues` snapshot, the entire template falls back to this static string. If no static fallback is supplied, missing items render as `"<DELETED>"`.
 
 **Example** — the real `UserLoggedIn` call site, from `AuthService.LoginAsync`, fired only on a successful login:
 
@@ -135,37 +145,53 @@ No DI registration is needed for `IAuditLogService` itself — it's already regi
 
 ### What happens internally, step by step
 
-1. **The acting user defaults to the current caller, via an optional override.** `LogAsync(action, payload, engagementId, actingUserId)` resolves the user via `ICurrentUserService.GetUserId()` when `actingUserId` is omitted.
+1. **The acting user defaults to the current caller, via an optional override.** `LogAsync(action, payload, engagementId, actingUserId, staticFallback)` resolves the user via `ICurrentUserService.GetUserId()` when `actingUserId` is omitted.
 2. **EngagementId is tracked explicitly.** If the action relates to a specific engagement, you MUST pass `engagementId` as an explicit parameter (e.g., `engagementId: 42`). This populates the `EngagementId` column in the database, allowing the `GET /api/engagementaudits` endpoint to efficiently filter audits by engagement. While you may *also* include `"EngagementId"` in the payload JSON if your mapper needs it to resolve the engagement's name, you must still pass it as the explicit parameter so the database column gets populated.
 3. **The action row is looked up by the enum's int value.** If no seeded `AuditAction` row exists for that value (e.g. you forgot section 1, or passed a value that was never seeded), it throws a raw `InvalidOperationException`. Note this bypasses this repo's usual `AppException`-based exception convention — that's a known gap in this feature, not a pattern to copy elsewhere.
-4. **The payload is serialized to JSON exactly as given, with no schema enforced by `LogAsync` itself.** `PayloadJson` accepts any `IDictionary<string, object?>` — there is no fixed shape checked at write time. But the keys/values you choose are only useful if they match what your action's registered `IAuditTemplateMapper.MapAsync` expects to deserialize (ids, keyed to that mapper's private payload record) — not the `Details` template's placeholder names.
+4. **The payload is serialized to JSON exactly as given, with no schema enforced by `LogAsync` itself.** `PayloadJson` accepts any `IDictionary<string, object?>` — there is no fixed shape checked at write time. But the keys/values you choose are only useful if they match what your action's registered `IAuditTemplateMapper.Map` expects to deserialize (ids, keyed to that mapper's private payload record) — not the `Details` template's placeholder names.
 5. **The write is its own, separate save.** The repository calls `AddAsync` then its own `SaveChangesAsync` — this is **not** batched with whatever `SaveChangesAsync` your calling code already did (or is about to do). The audit entry commits independently. If your own business save fails *after* you've already called `LogAsync`, the audit entry is **not** automatically rolled back.
 
 ## 2b. Add a mapper (required for a brand-new action type)
 
-Every seeded `AuditAction` needs a matching `IAuditTemplateMapper` — it's what resolves the ids in your payload into the display values the `Details` template needs. Mirrors `INotificationTemplateMapper`/the notification mappers exactly.
+Every seeded `AuditAction` needs a matching `IAuditTemplateMapper`.
+**CRITICAL ARCHITECTURAL RULE:**
+> ⚠️ **Mappers must NEVER inject repositories or services!**
+> Mappers are pure, synchronous, in-memory components. All data loading is executed in bulk by the central `IBatchDataPreloader` to prevent N+1 database queries.
+
+Mappers implement two methods:
+1. `CollectIds(string data, BatchLoadContext context)`: Deserializes the payload and registers entity IDs into `context.UserIds`, `context.EngagementIds`, etc.
+2. `Map(string data, BatchLoadContext context, int? actorUserId = null)`: Reads preloaded entities synchronously from `context` dictionaries and returns the placeholder dictionary.
 
 **File:** `Pdr.Api/Services/Audit/Mappers/<YourAction>Mapper.cs`
 
 ```csharp
 using System.Text.Json;
+using Pdr.Api.Constants;
 using Pdr.Api.Models.Audit;
-using Pdr.Api.Repositories.Interfaces;
+using Pdr.Api.Services.Templating;
 
 namespace Pdr.Api.Services.Audit.Mappers;
 
-public class UserLoggedInMapper(IUserRepository userRepository) : IAuditTemplateMapper
+public class UserLoggedInMapper : IAuditTemplateMapper
 {
     public string TemplateKey => nameof(AuditActionEnum.UserLoggedIn);
 
     private record UserLoggedInData(int UserId);
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<UserLoggedInData>(data);
+        if (payload is null) return;
+
+        context.UserIds.Add(payload.UserId);
+    }
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<UserLoggedInData>(data)
-            ?? throw new InvalidOperationException("UserLoggedIn audit payload could not be parsed.");
+            ?? throw new InvalidOperationException(AuditConstants.Messages.ParsePayloadFailed(TemplateKey));
 
-        var user = await userRepository.GetByIdAsync(payload.UserId);
+        var user = context.Users.GetValueOrDefault(payload.UserId);
 
         return new Dictionary<string, object?>
         {
@@ -174,6 +200,14 @@ public class UserLoggedInMapper(IUserRepository userRepository) : IAuditTemplate
     }
 }
 ```
+
+**Actor User Eager Loading:**
+`AuditLogService` automatically pre-seeds `context.Users` with the eager-loaded `log.User` (`AuditLog.UserId`). When resolving actor information:
+```csharp
+var actor = context.Users.GetValueOrDefault(payload.ActorUserId)
+    ?? (actorUserId.HasValue ? context.Users.GetValueOrDefault(actorUserId.Value) : null);
+```
+This avoids redundant user queries altogether.
 
 `TemplateKey` must exactly match the `AuditAction.Action` value, which is always `AuditActionEnum.<YourAction>.ToString()` — using `nameof(AuditActionEnum.<YourAction>)` keeps them in sync automatically.
 
@@ -199,25 +233,29 @@ No other DI changes needed — `TemplateMapperResolver<IAuditTemplateMapper>` is
 
 ## 3. How reads and rendering work (informational — you don't need to build this)
 
-`GET /api/audit-logs?page={p}&pageSize={n}&categories={category}` is already fully implemented, using standard offset pagination. Every authenticated user can call it (`AuditLogController`, `[Authorize]`), but the rows returned are scoped: `Leadership`/`Admin` callers (inline `IsInRole`/`IsAdmin` check, computed in `AuditLogService.GetAuditLogsAsync`) see every user's entries; everyone else only sees rows where they were the acting user. It returns a `PagedResult<AuditLogDto>` (`Items`, `TotalCount`, `Page`, `PageSize`), newest entries first. `categories` is optional and repeatable (`?categories=Document&categories=Access`), filtering to actions whose `AuditActionCategoryRegistry` entry matches one of the given `AuditCategoryEnum` values.
+`GET /api/audit-logs` and `GET /api/engagementaudits` read and render audit logs in a 3-phase batch pipeline:
 
-The engagement-scoped equivalent, `GET /api/engagementaudits?engagementId={id}&page={p}&pageSize={n}&userId={id}&categories={category}` (`EngagementAuditsController`), works the same way but additionally restricts results to actions visible to the caller's role per `EngagementAuditActionVisibilityRegistry`, and supports an optional `userId` filter. `GET /api/engagementaudits/users?engagementId={id}` returns the distinct list of users who have entries for that engagement (only those whose actions the caller is authorized to see).
-
-Internally, `AuditLogService.GetAuditLogsAsync`:
-
-1. Computes whether the caller is elevated (`Leadership` or `Admin`) and passes `null` (no filter) or the caller's own user id as `scopedUserId`.
-2. If `categories` was supplied, resolves it to the set of action ids whose `AuditActionCategoryRegistry` entry matches (`validActionIds`). (`GetEngagementAuditLogsAsync` additionally starts `validActionIds` from the role-visible action ids per `EngagementAuditActionVisibilityRegistry`, then intersects with the category filter if both are present.)
-3. Calls `repository.GetPageAsync(page, pageSize, scopedUserId, engagementId, validActionIds)`, which returns the page's rows plus a total count for that filtered set.
-4. Maps each `AuditLog` row to an `AuditLogDto` by resolving the row's mapper and rendering against its output:
+1. **Phase 1 (ID Collection):**
+   `AuditLogService` instantiates a `BatchLoadContext`. It pre-seeds `context.Users` with `log.User` from each row and adds `log.EngagementId` to `context.EngagementIds`. Then it calls `mapper.CollectIds(log.PayloadJson, context)` for every log on the page.
+2. **Phase 2 (Bulk Preload):**
+   `batchPreloader.PreloadAsync(context)` runs bulk `WHERE id IN (...)` queries only for entity types that were actually referenced. This drops database queries from 60+ down to 1–3 per page!
+3. **Phase 3 (Synchronous Mapping & Priority Rendering):**
+   Each log is mapped and rendered synchronously via `templateRenderer.Render(template, values, initialValues, staticFallback)`:
 
 ```csharp
-var mapper = mapperResolver.Resolve(auditLog.AuditAction.Action)
-    ?? throw new InvalidOperationException($"No IAuditTemplateMapper registered for action {actionKey}.");
+var values = mapper.Map(auditLog.PayloadJson, context, auditLog.UserId);
+var initialValues = TemplateRenderer.ExtractInitialValues(auditLog.PayloadJson);
+var staticFallback = auditLog.StaticFallback;
 
-var values = await mapper.MapAsync(auditLog.PayloadJson);
-
-Details = templateRenderer.Render(auditLog.AuditAction?.Details ?? string.Empty, values);
+Details = templateRenderer.Render(auditLog.AuditAction?.Details ?? string.Empty, values, initialValues, staticFallback);
 ```
+
+### Fallback Priority Hierarchy
+When rendering template placeholders `{variable}`:
+1. **Live Entity:** Values resolved from preloaded database entities take top priority.
+2. **`_initialValues` Snapshot:** If an entity has been deleted or is missing, the renderer checks if an `_initialValues` snapshot was stored in the payload JSON. If found, it uses the snapshot while preserving all other live entity values!
+3. **`staticFallback` Column:** If ANY missing entity placeholder lacks an initial value, and a `staticFallback` string is present in the `static_fallback` column, the ENTIRE template is replaced by `staticFallback`.
+4. **`"<DELETED>"` Default:** If no static fallback is available, unresolved placeholders render as `"<DELETED>"` (never raw braces or empty strings).
 
 `TemplateRenderer.Render` is a simple loop of `template.Replace("{key}", value)` calls over the mapper's returned dictionary. Two things to know about how loose this is:
 

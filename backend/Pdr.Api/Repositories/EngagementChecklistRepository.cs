@@ -32,6 +32,17 @@ public class EngagementChecklistRepository(AppDbContext context) : IEngagementCh
             .FirstOrDefaultAsync(i => i.Id == itemId && i.EngagementChecklist.EngagementId == engagementId);
     }
 
+    public async Task<Dictionary<int, EngagementChecklistItem>> GetItemsByIdsAsync(IEnumerable<int> ids, CancellationToken cancellationToken = default)
+    {
+        var idList = ids.Distinct().ToList();
+        if (idList.Count == 0) return new Dictionary<int, EngagementChecklistItem>();
+
+        return await context.EngagementChecklistItems
+            .AsNoTracking()
+            .Where(i => idList.Contains(i.Id))
+            .ToDictionaryAsync(i => i.Id, cancellationToken);
+    }
+
     public async Task AddAsync(EngagementChecklist checklist)
     {
         await context.EngagementChecklists.AddAsync(checklist);

@@ -1,34 +1,41 @@
 using System.Text.Json;
+using Pdr.Api.Constants;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Models.Audit;
-using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Audit.Mappers;
 
-public class DependencyEscalatedMapper(
-    IDependencyRepository dependencyRepository,
-    IEngagementRepository engagementRepository,
-    IRiskRepository riskRepository) : IAuditTemplateMapper
+public class DependencyEscalatedMapper : IAuditTemplateMapper
 {
     public string TemplateKey => nameof(AuditActionEnum.DependencyEscalated);
 
     private record DependencyEscalatedData(int DependencyId, int RiskId);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<DependencyEscalatedData>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.DependencyIds.Add(payload.DependencyId);
+        context.RiskIds.Add(payload.RiskId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<DependencyEscalatedData>(data)
-            ?? throw new InvalidOperationException("DependencyEscalated audit payload could not be parsed.");
+            ?? throw new InvalidOperationException(AuditConstants.Messages.ParsePayloadFailed(TemplateKey));
 
-        var dependency = await dependencyRepository.GetByIdAsync(payload.DependencyId);
+        var dependency = context.Dependencies.GetValueOrDefault(payload.DependencyId);
         var engagement = dependency != null
-            ? await engagementRepository.GetByIdAsync(dependency.EngagementId)
+            ? context.Engagements.GetValueOrDefault(dependency.EngagementId)
             : null;
-        var risk = await riskRepository.GetByIdAsync(payload.RiskId);
+        var risk = context.Risks.GetValueOrDefault(payload.RiskId);
 
         return new Dictionary<string, object?>
         {
             ["dependencyDescription"] = TruncateDescription(dependency?.Description),
-            ["riskTitle"] = risk?.Title ?? "Escalated Risk",
-            ["engagementName"] = engagement?.EngagementName ?? "Engagement"
+            ["riskTitle"] = risk?.Title,
+            ["engagementName"] = engagement?.EngagementName
         };
     }
 

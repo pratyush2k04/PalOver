@@ -8,9 +8,13 @@ public interface IDocumentRepository
 
     Task<Document?> GetByIdAsync(int id);
 
+    Task<Dictionary<int, Document>> GetByIdsAsync(IEnumerable<int> ids);
+
     Task<IEnumerable<Document>> GetByEngagementIdAsync(int engagementId, int? userRoleId, bool isAdmin, bool isPm);
 
     Task<IEnumerable<DocumentCategory>> GetCategoriesAsync();
+
+    Task<Dictionary<int, DocumentCategory>> GetCategoriesByIdsAsync(IEnumerable<int> ids);
 
     Task<bool> SoftDeleteAsync(Document document, string reason, string updatedBy);
 

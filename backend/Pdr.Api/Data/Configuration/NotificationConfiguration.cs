@@ -24,6 +24,7 @@ public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
         builder.Property(n => n.Body).HasColumnName("body").HasMaxLength(1000);
         builder.Property(n => n.Data).HasColumnName("data").HasColumnType("jsonb");
         builder.Property(n => n.Link).HasColumnName("link").HasColumnType("text");
+        builder.Property(n => n.StaticFallback).HasColumnName("static_fallback").HasColumnType("text");
 
         // BaseAuditableEntity Column Mappings
         builder.Property(n => n.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");

@@ -1,22 +1,31 @@
 using System.Text.Json;
-using Pdr.Api.Repositories.Interfaces;
+using Pdr.Api.Constants;
+using Pdr.Api.Services.Templating;
 
 namespace Pdr.Api.Services.Notifications.Mappers;
 
-public class HandoverDraftFirstSavedMapper(IEngagementRepository engagementRepository, IUserRepository userRepository)
-    : INotificationTemplateMapper
+public class HandoverDraftFirstSavedMapper : INotificationTemplateMapper
 {
     public string TemplateKey => "HandoverDraftFirstSaved";
 
     public record HandoverDraftFirstSavedPayload(int HandoverId, int TriggerUserId, int EngagementId);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<HandoverDraftFirstSavedPayload>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.EngagementIds.Add(payload.EngagementId);
+        context.UserIds.Add(payload.TriggerUserId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<HandoverDraftFirstSavedPayload>(data)
-            ?? throw new InvalidOperationException("HandoverDraftFirstSaved notification data could not be parsed.");
+            ?? throw new InvalidOperationException(NotificationConstants.Messages.ParsePayloadFailed(TemplateKey));
 
-        var engagement = await engagementRepository.GetByIdAsync(payload.EngagementId);
-        var actor = await userRepository.GetByIdAsync(payload.TriggerUserId);
+        var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
+        var actor = context.Users.GetValueOrDefault(payload.TriggerUserId);
 
         return new Dictionary<string, object?>
         {

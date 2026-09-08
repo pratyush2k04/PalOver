@@ -1,23 +1,32 @@
 using System.Text.Json;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Constants;
-using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Notifications.Mappers;
 
-public class RiskCommentMentionMapper(IRiskRepository riskRepository, IUserRepository userRepository)
-    : INotificationTemplateMapper
+public class RiskCommentMentionMapper : INotificationTemplateMapper
 {
     public string TemplateKey => NotificationConstants.RiskCommentMention.TemplateKey;
 
     public record RiskCommentMentionData(int EngagementId, int RiskId, int AuthorId, string Content);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<RiskCommentMentionData>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.EngagementIds.Add(payload.EngagementId);
+        context.UserIds.Add(payload.AuthorId);
+        context.RiskIds.Add(payload.RiskId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<RiskCommentMentionData>(data)
-            ?? throw new InvalidOperationException(NotificationConstants.RiskCommentMention.ParseErrorMessage);
+            ?? throw new InvalidOperationException(NotificationConstants.Messages.ParsePayloadFailed(TemplateKey));
 
-        var risk = await riskRepository.GetByIdAsync(payload.RiskId);
-        var author = await userRepository.GetByIdAsync(payload.AuthorId);
+        var risk = context.Risks.GetValueOrDefault(payload.RiskId);
+        var author = context.Users.GetValueOrDefault(payload.AuthorId);
 
         var snippet = payload.Content.Length > 50
             ? payload.Content[..50] + "..."

@@ -14,6 +14,7 @@ public interface INotificationService
         string data,
         DateTime scheduledFor,
         NotificationPriority? priorityOverride = null,
+        string? staticFallback = null,
         CancellationToken cancellationToken = default);
 
     Task CreateFromTemplateAsync(
@@ -22,6 +23,7 @@ public interface INotificationService
         string data,
         DateTime scheduledFor,
         NotificationPriority? priorityOverride = null,
+        string? staticFallback = null,
         CancellationToken cancellationToken = default);
 
     Task CreateFromTemplateAsync(
@@ -29,6 +31,7 @@ public interface INotificationService
         IEnumerable<int> receiverUserIds,
         string data,
         DateTime scheduledFor,
+        string? staticFallback = null,
         CancellationToken cancellationToken = default);
 
     Task<PagedResult<NotificationDto>> GetForUserAsync(

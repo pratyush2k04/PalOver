@@ -1,29 +1,36 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
+using Pdr.Api.Constants;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Models.Audit;
-using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Audit.Mappers;
 
-public class ResourcingGapFlagClearedMapper(IEngagementRepository engagementRepository) : IAuditTemplateMapper
+public class ResourcingGapFlagClearedMapper : IAuditTemplateMapper
 {
     public string TemplateKey => nameof(AuditActionEnum.ResourcingGapFlagCleared);
 
     private record ResourcingGapFlagClearedData(int EngagementId);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<ResourcingGapFlagClearedData>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.EngagementIds.Add(payload.EngagementId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<ResourcingGapFlagClearedData>(data)
-            ?? throw new InvalidOperationException("ResourcingGapFlagCleared audit payload could not be parsed.");
+            ?? throw new InvalidOperationException(AuditConstants.Messages.ParsePayloadFailed(TemplateKey));
 
-        var engagement = await engagementRepository.GetByIdAsync(payload.EngagementId);
+        var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
 
         return new Dictionary<string, object?>
         {
-            ["engagementName"] = engagement?.EngagementName ?? "Engagement"
+            ["engagementName"] = engagement?.EngagementName
         };
     }
 }

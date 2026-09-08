@@ -52,6 +52,17 @@ public class KickoffRepository(AppDbContext context) : IKickoffRepository
             .FirstOrDefaultAsync(a => a.KickoffActionItemId == actionItemId);
     }
 
+    public async Task<Dictionary<int, KickoffActionItem>> GetActionItemsByIdsAsync(IEnumerable<int> ids, CancellationToken cancellationToken = default)
+    {
+        var idList = ids.Distinct().ToList();
+        if (idList.Count == 0) return new Dictionary<int, KickoffActionItem>();
+
+        return await context.KickoffActionItems
+            .AsNoTracking()
+            .Where(a => idList.Contains(a.KickoffActionItemId))
+            .ToDictionaryAsync(a => a.KickoffActionItemId, cancellationToken);
+    }
+
     public async Task AddActionItemAsync(KickoffActionItem item)
     {
         await context.KickoffActionItems.AddAsync(item);

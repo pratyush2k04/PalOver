@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Audit;
 using Pdr.Api.DTOs.Common;
 using Pdr.Api.Models.Audit;
@@ -14,14 +15,20 @@ public class AuditLogService(
     IAuditLogRepository repository,
     ICurrentUserService currentUserService,
     TemplateMapperResolver<IAuditTemplateMapper> mapperResolver,
+    IBatchDataPreloader batchPreloader,
     TemplateRenderer templateRenderer) : IAuditLogService
 {
-    public async Task LogAsync(AuditActionEnum action, IDictionary<string, object?> payload, int? engagementId = null, int? actingUserId = null)
+    public async Task LogAsync(
+        AuditActionEnum action,
+        IDictionary<string, object?> payload,
+        int? engagementId = null,
+        int? actingUserId = null,
+        string? staticFallback = null)
     {
         var userId = actingUserId ?? currentUserService.GetUserId();
 
         var auditAction = await repository.GetAuditActionByIdAsync((int)action)
-            ?? throw new InvalidOperationException($"No AuditAction row found for {action}.");
+            ?? throw new InvalidOperationException(AuditConstants.Messages.ActionNotFound(action.ToString()));
 
         var payloadJson = JsonSerializer.Serialize(payload);
 
@@ -30,7 +37,8 @@ public class AuditLogService(
             UserId = userId,
             AuditActionId = auditAction.Id,
             PayloadJson = payloadJson,
-            EngagementId = engagementId
+            EngagementId = engagementId,
+            StaticFallback = staticFallback
         });
 
         await repository.SaveChangesAsync();
@@ -53,11 +61,29 @@ public class AuditLogService(
 
         var (items, count) = await repository.GetPageAsync(page, pageSize, scopedUserId, validActionIds: validActionIds);
 
-        var dtos = new List<AuditLogDto>();
+        // Phase 1: Pre-seed eager-loaded actor users and collect entity IDs
+        var context = new BatchLoadContext();
         foreach (var log in items)
         {
-            dtos.Add(await MapToDtoAsync(log));
+            if (log.User != null)
+            {
+                context.Users[log.UserId] = log.User;
+            }
+            if (log.EngagementId.HasValue)
+            {
+                context.EngagementIds.Add(log.EngagementId.Value);
+            }
+
+            var actionKey = log.AuditAction?.Action ?? string.Empty;
+            var mapper = mapperResolver.Resolve(actionKey);
+            mapper?.CollectIds(log.PayloadJson, context);
         }
+
+        // Phase 2: Bulk preload referenced entities in batch queries
+        await batchPreloader.PreloadAsync(context);
+
+        // Phase 3: Synchronous in-memory mapping and template rendering
+        var dtos = items.Select(log => MapToDto(log, context)).ToList();
 
         return new PagedResult<AuditLogDto>
         {
@@ -87,12 +113,34 @@ public class AuditLogService(
 
         var (items, count) = await repository.GetPageAsync(page, pageSize, userId, engagementId, validActionIds);
 
-        var dtos = new List<EngagementAuditLogDto>();
+        // Phase 1: Pre-seed eager-loaded actor users and collect entity IDs
+        var context = new BatchLoadContext();
+        context.EngagementIds.Add(engagementId);
 
         foreach (var log in items)
         {
-            var dto = await MapToDtoAsync(log);
-            dtos.Add(new EngagementAuditLogDto
+            if (log.User != null)
+            {
+                context.Users[log.UserId] = log.User;
+            }
+            if (log.EngagementId.HasValue)
+            {
+                context.EngagementIds.Add(log.EngagementId.Value);
+            }
+
+            var actionKey = log.AuditAction?.Action ?? string.Empty;
+            var mapper = mapperResolver.Resolve(actionKey);
+            mapper?.CollectIds(log.PayloadJson, context);
+        }
+
+        // Phase 2: Bulk preload referenced entities in batch queries
+        await batchPreloader.PreloadAsync(context);
+
+        // Phase 3: Synchronous in-memory mapping and template rendering
+        var dtos = items.Select(log =>
+        {
+            var dto = MapToDto(log, context);
+            return new EngagementAuditLogDto
             {
                 Id = dto.Id,
                 UserId = dto.UserId,
@@ -100,8 +148,8 @@ public class AuditLogService(
                 Action = dto.Action,
                 Details = dto.Details,
                 CreatedAt = dto.CreatedAt
-            });
-        }
+            };
+        }).ToList();
 
         return new PagedResult<EngagementAuditLogDto>
         {
@@ -117,14 +165,16 @@ public class AuditLogService(
         return await repository.GetEngagementAuditUsersAsync(engagementId);
     }
 
-    private async Task<AuditLogDto> MapToDtoAsync(AuditLog auditLog)
+    private AuditLogDto MapToDto(AuditLog auditLog, BatchLoadContext context)
     {
         var actionKey = auditLog.AuditAction?.Action ?? string.Empty;
 
         var mapper = mapperResolver.Resolve(actionKey)
-            ?? throw new InvalidOperationException($"No IAuditTemplateMapper registered for action {actionKey}.");
+            ?? throw new InvalidOperationException(AuditConstants.Messages.MapperNotFound(actionKey));
 
-        var values = await mapper.MapAsync(auditLog.PayloadJson);
+        var values = mapper.Map(auditLog.PayloadJson, context, auditLog.UserId);
+        var initialValues = TemplateRenderer.ExtractInitialValues(auditLog.PayloadJson);
+        var staticFallback = auditLog.StaticFallback;
 
         return new AuditLogDto
         {
@@ -132,7 +182,7 @@ public class AuditLogService(
             UserId = auditLog.UserId,
             UserName = auditLog.User?.FullName ?? string.Empty,
             Action = actionKey,
-            Details = templateRenderer.Render(auditLog.AuditAction?.Details ?? string.Empty, values),
+            Details = templateRenderer.Render(auditLog.AuditAction?.Details ?? string.Empty, values, initialValues, staticFallback),
             CreatedAt = auditLog.CreatedAt,
             EngagementId = auditLog.EngagementId
         };

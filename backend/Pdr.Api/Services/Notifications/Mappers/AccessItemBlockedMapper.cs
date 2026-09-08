@@ -1,22 +1,31 @@
 using System.Text.Json;
-using Pdr.Api.Repositories.Interfaces;
+using Pdr.Api.Constants;
+using Pdr.Api.Services.Templating;
 
 namespace Pdr.Api.Services.Notifications.Mappers;
 
-public class AccessItemBlockedMapper(IAccessTrackerRepository accessTrackerRepository, IUserRepository userRepository)
-    : INotificationTemplateMapper
+public class AccessItemBlockedMapper : INotificationTemplateMapper
 {
     public string TemplateKey => "AccessItemBlocked";
 
     public record AccessItemBlockedData(int AccessItemId, int TriggerUserId);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<AccessItemBlockedData>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.UserIds.Add(payload.TriggerUserId);
+        context.AccessItemIds.Add(payload.AccessItemId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<AccessItemBlockedData>(data)
-            ?? throw new InvalidOperationException("AccessItemBlocked notification data could not be parsed.");
+            ?? throw new InvalidOperationException(NotificationConstants.Messages.ParsePayloadFailed(TemplateKey));
 
-        var accessItem = await accessTrackerRepository.GetAccessItemByIdAsync(payload.AccessItemId);
-        var triggerUser = await userRepository.GetByIdAsync(payload.TriggerUserId);
+        var accessItem = context.AccessItems.GetValueOrDefault(payload.AccessItemId);
+        var triggerUser = context.Users.GetValueOrDefault(payload.TriggerUserId);
 
         return new Dictionary<string, object?>
         {

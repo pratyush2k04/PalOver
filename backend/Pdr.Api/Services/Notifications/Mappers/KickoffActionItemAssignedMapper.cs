@@ -1,24 +1,31 @@
 using System.Text.Json;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Constants;
-using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Notifications.Mappers;
 
-public class KickoffActionItemAssignedMapper(
-    IKickoffRepository kickoffRepository,
-    IEngagementRepository engagementRepository) : INotificationTemplateMapper
+public class KickoffActionItemAssignedMapper : INotificationTemplateMapper
 {
     public string TemplateKey => NotificationConstants.TemplateKeys.KickoffActionItemAssigned;
 
     public record KickoffActionItemAssignedPayload(int ActionItemId, int EngagementId);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<KickoffActionItemAssignedPayload>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.EngagementIds.Add(payload.EngagementId);
+        context.KickoffActionItemIds.Add(payload.ActionItemId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<KickoffActionItemAssignedPayload>(data)
             ?? throw new InvalidOperationException(NotificationConstants.Messages.ParsePayloadFailed(NotificationConstants.TemplateKeys.KickoffActionItemAssigned));
 
-        var actionItem = await kickoffRepository.GetActionItemByIdAsync(payload.ActionItemId);
-        var engagement = await engagementRepository.GetByIdAsync(payload.EngagementId);
+        var actionItem = context.KickoffActionItems.GetValueOrDefault(payload.ActionItemId);
+        var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
 
         return new Dictionary<string, object?>
         {

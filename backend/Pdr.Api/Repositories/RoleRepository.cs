@@ -12,6 +12,17 @@ public class RoleRepository(AppDbContext context) : IRoleRepository
         return await context.Roles.FirstOrDefaultAsync(r => r.Id == id);
     }
 
+    public async Task<Dictionary<int, Role>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken cancellationToken = default)
+    {
+        var idList = ids.Distinct().ToList();
+        if (idList.Count == 0) return new Dictionary<int, Role>();
+
+        return await context.Roles
+            .AsNoTracking()
+            .Where(r => idList.Contains(r.Id))
+            .ToDictionaryAsync(r => r.Id, cancellationToken);
+    }
+
     public async Task<List<Role>> GetAllAsync()
     {
         return await context.Roles.OrderBy(r => r.Name).ToListAsync();

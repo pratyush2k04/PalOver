@@ -1,27 +1,35 @@
 using System.Text.Json;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Constants;
 using Pdr.Api.Exceptions;
-using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Notifications.Mappers;
 
-public class BlockerEscalatedPMMapper(IEngagementRepository engagementRepository)
-    : INotificationTemplateMapper
+public class BlockerEscalatedPMMapper : INotificationTemplateMapper
 {
     public string TemplateKey => NotificationConstants.TemplateKeys.BlockerEscalatedPM;
 
     public record BlockerEscalatedData(int EngagementId, int RiskId, string ItemTitle, int UnresolvedDays);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<BlockerEscalatedData>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.EngagementIds.Add(payload.EngagementId);
+        context.RiskIds.Add(payload.RiskId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<BlockerEscalatedData>(data)
             ?? throw new NotificationDataInvalidException(TemplateKey);
 
-        var engagement = await engagementRepository.GetByIdAsync(payload.EngagementId);
+        var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
 
         return new Dictionary<string, object?>
         {
-            ["EngagementName"] = engagement?.EngagementName ?? "Engagement",
+            ["EngagementName"] = engagement?.EngagementName,
             ["EngagementId"] = payload.EngagementId,
             ["RiskId"] = payload.RiskId,
             ["ItemTitle"] = payload.ItemTitle,

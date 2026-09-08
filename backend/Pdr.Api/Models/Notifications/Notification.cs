@@ -24,6 +24,8 @@ public class Notification : BaseAuditableEntity
 
     public string? Link { get; set; }
 
+    public string? StaticFallback { get; set; }
+
     public NotificationTemplate? Template { get; set; }
 
     [System.Text.Json.Serialization.JsonIgnore]

@@ -1,22 +1,32 @@
 using System.Text.Json;
+using Pdr.Api.Constants;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Models.Audit;
-using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Audit.Mappers;
 
-public class UserUpdatedMapper(IUserRepository userRepository) : IAuditTemplateMapper
+public class UserUpdatedMapper : IAuditTemplateMapper
 {
     public string TemplateKey => nameof(AuditActionEnum.UserUpdated);
 
     private record UserUpdatedData(int UserId, int ActorUserId);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<UserUpdatedData>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.UserIds.Add(payload.ActorUserId);
+        context.UserIds.Add(payload.UserId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<UserUpdatedData>(data)
-            ?? throw new InvalidOperationException("UserUpdated audit payload could not be parsed.");
+            ?? throw new InvalidOperationException(AuditConstants.Messages.ParsePayloadFailed(TemplateKey));
 
-        var user = await userRepository.GetByIdAsync(payload.UserId);
-        var actor = await userRepository.GetByIdAsync(payload.ActorUserId);
+        var user = context.Users.GetValueOrDefault(payload.UserId);
+        var actor = context.Users.GetValueOrDefault(payload.ActorUserId) ?? (actorUserId.HasValue ? context.Users.GetValueOrDefault(actorUserId.Value) : null);
 
         return new Dictionary<string, object?>
         {

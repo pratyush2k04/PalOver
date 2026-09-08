@@ -51,42 +51,56 @@ This matches the existing convention (e.g., `RoleConfiguration` is seeded the sa
 
 ## 2. Write the mapper & register it
 
-The mapper's job is to turn the raw `Data` JSON into a dictionary of placeholder values.
+The mapper's job is two-fold:
+1. **Phase 1 (ID Collection):** Collect referenced entity IDs without touching the database so the central preloader can fetch them in a single batch query.
+2. **Phase 3 (Mapping):** Read the preloaded entities synchronously from `BatchLoadContext` and return a dictionary of placeholder values.
+
 It is called **at fetch time**, not at creation time.
 
 ### 2a. Create the mapper class
 
 **File:** `Pdr.Api/Services/Notifications/Mappers/DocumentUploadedMapper.cs`
 
+**CRITICAL ARCHITECTURAL RULE:**
+> ⚠️ **Mappers must NEVER inject repositories or services!**
+> Mappers are pure, synchronous, in-memory components. All database loading is executed in bulk by the central `IBatchDataPreloader` to prevent N+1 database queries.
+
 ```csharp
 using System.Text.Json;
-using Pdr.Api.Repositories.Interfaces;
+using Pdr.Api.Constants;
+using Pdr.Api.Services.Templating;
 
 namespace Pdr.Api.Services.Notifications.Mappers;
 
-public class DocumentUploadedMapper(
-    IDocumentRepository documentRepository,
-    IEngagementRepository engagementRepository,
-    IUserRepository userRepository)
-    : INotificationTemplateMapper
+public class DocumentUploadedMapper : INotificationTemplateMapper
 {
-    public string TemplateKey => "DocumentUploaded";
+    public string TemplateKey => NotificationConstants.TemplateKeys.DocumentUploaded;
 
     public record DocumentUploadedPayload(int DocumentId, int EngagementId, int UploaderUserId);
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<DocumentUploadedPayload>(data);
+        if (payload is null) return;
+
+        context.EngagementIds.Add(payload.EngagementId);
+        context.UserIds.Add(payload.UploaderUserId);
+        context.DocumentIds.Add(payload.DocumentId);
+    }
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<DocumentUploadedPayload>(data)
-            ?? throw new InvalidOperationException("DocumentUploaded notification data could not be parsed.");
+            ?? throw new InvalidOperationException(NotificationConstants.Messages.ParsePayloadFailed(NotificationConstants.TemplateKeys.DocumentUploaded));
 
-        var document = await documentRepository.GetByIdAsync(payload.DocumentId);
-        var engagement = await engagementRepository.GetByIdAsync(payload.EngagementId);
-        var uploader = await userRepository.GetByIdAsync(payload.UploaderUserId);
+        var document = context.Documents.GetValueOrDefault(payload.DocumentId);
+        var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
+        var uploader = context.Users.GetValueOrDefault(payload.UploaderUserId);
 
         return new Dictionary<string, object?>
         {
-            ["DocumentName"]   = document?.Name,
-            ["EngagementName"] = engagement?.Name,
+            ["DocumentName"]   = document?.FileName,
+            ["EngagementName"] = engagement?.EngagementName,
             ["UploaderName"]   = uploader?.FullName,
             ["EngagementId"]   = payload.EngagementId
         };
@@ -94,14 +108,15 @@ public class DocumentUploadedMapper(
 }
 ```
 
-- The `TemplateKey` must exactly match the `Key` from the template seed.
-- Use a **primary constructor** — all existing mappers use this style.
-- Inject repositories via the primary constructor — all mappers are scoped services.
+- The `TemplateKey` must match the `Key` from the template seed (use `NotificationConstants.TemplateKeys` where available).
+- **Mappers must have a parameterless constructor.** Never inject repositories or services.
 - Place the payload record type **inside** the class, and make it **`public`** (not `private`) — the service that creates this notification (step 3) must construct this exact type instead of a hand-written anonymous object, so the compiler catches a property rename/typo/count mismatch between the two sides instead of it failing silently at deserialize time.
+- Implement `CollectIds`: deserialize payload, register all required IDs into `context.<Entity>Ids`.
+- Implement `Map`: look up preloaded entities synchronously from `context.<Entities>.GetValueOrDefault(...)` and return placeholder keys matching the template.
 - The `data` parameter is the same JSON you pass to `CreateFromTemplateAsync` later. Keep it to **IDs only**, no full objects.
 - If the template defines a `LinkPattern` that references a field not already in your dictionary (commonly `EngagementId`), add it to the dictionary too — the link is rendered with the same values dictionary as `Title`/`Body`.
 - Throw `InvalidOperationException` when the payload cannot be parsed — do **not** return an empty dictionary (that would leave unreplaced `{Placeholder}` tokens in the rendered notification).
-- Import `using Pdr.Api.Repositories.Interfaces;` for repository interfaces and `using System.Text.Json;` for `JsonSerializer`.
+- Import `using Pdr.Api.Services.Templating;` for `BatchLoadContext` and `using System.Text.Json;` for `JsonSerializer`.
 
 ### 2b. Register the mapper
 
@@ -120,6 +135,11 @@ The renderer will automatically pick up the mapper when a notification with this
 ## 3. Fire the notification from a service
 
 You have **three ways** to create a notification: recipient determined by a role on an engagement, a single specific known user, or a batch of specific known users.
+
+**Optional Snapshotting & Static Fallback:**
+You can optionally provide fallback data at creation time:
+1. `_initialValues` inside the JSON `data` string: A dictionary of pre-computed entity values (e.g. `["_initialValues"] = new Dictionary<string, string?> { ["DocumentName"] = "Design.pdf", ["EngagementName"] = "Falcon" }`). If an entity is deleted from the database in the future, the template renderer uses this snapshot while preserving all other live entities!
+2. `staticFallback`: An optional pre-rendered static string saved directly to the `static_fallback` column on `notifications`. If ANY required entity in the template is deleted and lacks an `_initialValues` snapshot, the entire template falls back to this static string. If no static fallback is supplied, missing items render as `"<DELETED>"`.
 
 ### Option A – Notify a role on an engagement (most domain events)
 
@@ -142,7 +162,8 @@ await notificationService.CreateFromTemplateAsync(
 - If no user is assigned → logs and returns (no exception, no row).
 - If the `templateKey` doesn't match any `NotificationTemplate` → logs and returns (no exception, no row). Unlike Option B, a missing template here is **not** an error.
 - Otherwise, creates a notification addressed to that user. Its link is not set here — it's rendered from the template's `LinkPattern` (if any) at fetch time, using the mapper's returned values. There is no `link` parameter on this method; if this specific notification needs a link that differs from its template's default, set `Notification.Link` directly on the entity as an override (rare — most types don't need this).
-- Priority is `priorityOverride ?? template.DefaultPriority` — omit `priorityOverride` (or pass `null`) to use the template's seeded `DefaultPriority`. Pass it when the same template needs different urgency depending on the calling context (e.g. the same reminder template fired at different day-thresholds before a deadline, where the closer threshold should be `High` even though the template's own default is `Low`).
+- Priority is `priorityOverride ?? template.DefaultPriority` — omit `priorityOverride` (or pass `null`) to use the template's seeded `DefaultPriority`. Pass it when the same template needs different urgency depending on the calling context.
+- Static fallback string is saved to the `static_fallback` column if provided.
 
 **Method signature:**
 
@@ -154,6 +175,7 @@ Task CreateFromTemplateAsync(
     string data,
     DateTime scheduledFor,
     NotificationPriority? priorityOverride = null,
+    string? staticFallback = null,
     CancellationToken cancellationToken = default);
 ```
 
@@ -173,6 +195,7 @@ await notificationService.CreateFromTemplateAsync(
 **What happens internally:**
 - Looks up the template by key; throws `NotificationTemplateNotFoundException` if missing.
 - Creates a notification addressed to the given user, using `priorityOverride ?? template.DefaultPriority` (same override rule as Option A — omit it to use the template's default).
+- Static fallback string is saved to the `static_fallback` column if provided.
 
 **Method signature:**
 
@@ -183,6 +206,7 @@ Task CreateFromTemplateAsync(
     string data,
     DateTime scheduledFor,
     NotificationPriority? priorityOverride = null,
+    string? staticFallback = null,
     CancellationToken cancellationToken = default);
 ```
 
@@ -205,6 +229,7 @@ await notificationService.CreateFromTemplateAsync(
 - Looks up the template by key; throws `NotificationTemplateNotFoundException` if missing (same as Option B).
 - Creates one `Notification` row per user ID via `AddRangeAsync`.
 - Unlike Options A and B, there is **no `priorityOverride` parameter** — every row uses the template's `DefaultPriority`.
+- Static fallback string is saved to the `static_fallback` column for all created rows if provided.
 
 **Method signature:**
 
@@ -214,6 +239,7 @@ Task CreateFromTemplateAsync(
     IEnumerable<int> receiverUserIds,
     string data,
     DateTime scheduledFor,
+    string? staticFallback = null,
     CancellationToken cancellationToken = default);
 ```
 
@@ -257,14 +283,47 @@ Repeat: this path should stay rare. Default to sections 1–3.
 
 ---
 
+## 5. How reads and rendering work (informational — you don't need to build this)
+
+`GET /api/notifications` reads and renders notifications in a 3-phase batch pipeline:
+
+1. **Phase 1 (ID Collection):**
+   `NotificationService` instantiates a `BatchLoadContext`. It pre-seeds `context.Users` with recipient users (`notification.ReceiverUserId`). Then for each notification with an attached template, it resolves the mapper and calls `mapper.CollectIds(notification.Data, context)`.
+2. **Phase 2 (Bulk Preload):**
+   `batchPreloader.PreloadAsync(context)` runs bulk `WHERE id IN (...)` queries sequentially for only the entity types that were actually referenced across all notifications on the page. This drops database queries from dozens down to a handful of batch queries per page!
+3. **Phase 3 (Synchronous Mapping & Priority Rendering):**
+   Each notification is mapped and rendered synchronously via `templateRenderer.Render(template, values, initialValues, staticFallback)` for `Title`, `Body`, and `LinkPattern` (unless `Notification.Link` was explicitly overridden):
+
+```csharp
+var values = mapper.Map(notification.Data, context);
+var initialValues = TemplateRenderer.ExtractInitialValues(notification.Data);
+var staticFallback = notification.StaticFallback;
+
+var title = templateRenderer.Render(template.Title, values, initialValues, staticFallback);
+var body = templateRenderer.Render(template.Body, values, initialValues, staticFallback);
+var link = notification.Link ?? (template.LinkPattern is not null
+    ? templateRenderer.Render(template.LinkPattern, values, initialValues, staticFallback)
+    : null);
+```
+
+### Fallback Priority Hierarchy
+When rendering template placeholders `{variable}`:
+1. **Live Entity:** Values resolved from preloaded database entities take top priority.
+2. **`_initialValues` Snapshot:** If an entity has been deleted or is missing, the renderer checks if an `_initialValues` snapshot was stored in the JSON data payload. If found, it uses the snapshot while preserving all other live entity values!
+3. **`staticFallback` Column:** If ANY missing entity placeholder lacks an initial value, and a `staticFallback` string is present in the `static_fallback` column, the ENTIRE template is replaced by `staticFallback`.
+4. **`"<DELETED>"` Default:** If no static fallback is available, unresolved placeholders render as `"<DELETED>"` (never raw braces or empty strings).
+
+---
+
 ## That's all
 
 No changes are needed in controllers, DTOs, or the fetch pipeline.
 Every time a notification is fetched, the service automatically:
 
-1. Finds the matching mapper via the template's `Key`.
-2. Calls `MapAsync(data)` to get a variable dictionary.
-3. Renders `Title`, `Body`, and (if set) `LinkPattern` with `TemplateRenderer` — unless `Notification.Link` was explicitly set as an override, in which case that value wins for the link.
+1. Gathers all referenced entity IDs via `mapper.CollectIds(notification.Data, context)`.
+2. Bulk-preloads required entities in single batch queries via `batchPreloader.PreloadAsync(context)`.
+3. Calls `mapper.Map(notification.Data, context)` to get a variable dictionary.
+4. Renders `Title`, `Body`, and (if set) `LinkPattern` with `TemplateRenderer` respecting the fallback hierarchy — unless `Notification.Link` was explicitly set as an override, in which case that value wins for the link.
 
 Adding a new event is always **four steps**: seed template → mapper → register → fire.
 The ad-hoc path in section 4 is the rare exception to this — not an alternative default.

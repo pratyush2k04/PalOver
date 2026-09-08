@@ -516,6 +516,10 @@ namespace Pdr.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("StaticFallback")
+                        .HasColumnType("text")
+                        .HasColumnName("static_fallback");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -3868,6 +3872,10 @@ namespace Pdr.Api.Migrations
                     b.Property<DateTime>("ScheduledFor")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("scheduled_for");
+
+                    b.Property<string>("StaticFallback")
+                        .HasColumnType("text")
+                        .HasColumnName("static_fallback");
 
                     b.Property<int?>("TemplateId")
                         .HasColumnType("integer")

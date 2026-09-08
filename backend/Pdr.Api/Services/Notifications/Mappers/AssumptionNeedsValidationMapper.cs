@@ -1,24 +1,31 @@
 using System.Text.Json;
+using Pdr.Api.Services.Templating;
 using Pdr.Api.Constants;
-using Pdr.Api.Repositories.Interfaces;
 
 namespace Pdr.Api.Services.Notifications.Mappers;
 
-public class AssumptionNeedsValidationMapper(
-    IEngagementRepository engagementRepository,
-    IAssumptionRepository assumptionRepository) : INotificationTemplateMapper
+public class AssumptionNeedsValidationMapper : INotificationTemplateMapper
 {
     public string TemplateKey => NotificationConstants.TemplateKeys.AssumptionNeedsValidation;
 
     public record AssumptionNeedsValidationPayload(int AssumptionId, int EngagementId);
+    public void CollectIds(string data, BatchLoadContext context)
+    {
+        var payload = JsonSerializer.Deserialize<AssumptionNeedsValidationPayload>(data);
+        if (payload is null) return;
 
-    public async Task<IDictionary<string, object?>> MapAsync(string data, CancellationToken cancellationToken = default)
+        context.EngagementIds.Add(payload.EngagementId);
+        context.AssumptionIds.Add(payload.AssumptionId);
+    }
+
+
+    public IDictionary<string, object?> Map(string data, BatchLoadContext context, int? actorUserId = null)
     {
         var payload = JsonSerializer.Deserialize<AssumptionNeedsValidationPayload>(data)
             ?? throw new InvalidOperationException(NotificationConstants.Messages.ParsePayloadFailed(NotificationConstants.TemplateKeys.AssumptionNeedsValidation));
 
-        var engagement = await engagementRepository.GetByIdAsync(payload.EngagementId);
-        var assumption = await assumptionRepository.GetByIdAsync(payload.AssumptionId);
+        var engagement = context.Engagements.GetValueOrDefault(payload.EngagementId);
+        var assumption = context.Assumptions.GetValueOrDefault(payload.AssumptionId);
 
         return new Dictionary<string, object?>
         {
