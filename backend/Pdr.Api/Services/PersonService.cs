@@ -52,20 +52,22 @@ public class PersonService(
         await personRepository.AddAsync(person);
         await personRepository.SaveChangesAsync();
 
-        if (person.PersonType == PersonType.Client)
-        {
-            var actorUserId = int.TryParse(currentUserId, out var uid) ? uid : currentUserService.GetUserId();
-            await auditLogService.LogAsync(
-                AuditActionEnum.ClientContactDetailsChanged,
-                new Dictionary<string, object?>
-                {
-                    ["EngagementId"] = engagementId,
-                    ["ClientName"] = person.Name,
-                    ["ActorUserId"] = actorUserId
-                },
-                engagementId: engagementId,
-                actingUserId: actorUserId > 0 ? actorUserId : null);
-        }
+        var actorUserId = int.TryParse(currentUserId, out var uid) ? uid : currentUserService.GetUserId();
+
+        await auditLogService.LogAsync(
+            AuditActionEnum.PersonAdded,
+            new Dictionary<string, object?>
+            {
+                ["EngagementId"] = engagementId,
+                ["PersonName"] = person.Name,
+                ["RoleName"] = person.Role,
+                ["ActorUserId"] = actorUserId
+            },
+            engagementId,
+            actorUserId
+        );
+
+
 
         return MapToDto(person);
     }
@@ -88,8 +90,6 @@ public class PersonService(
 
         var oldName = person.Name?.Trim() ?? "";
         var oldRole = person.Role?.Trim() ?? "";
-        var isClient = person.PersonType == PersonType.Client || dto.PersonType == PersonType.Client;
-
         person.Name = dto.Name.Trim();
         person.Role = dto.Role.Trim();
         person.PersonType = dto.PersonType;
@@ -98,40 +98,6 @@ public class PersonService(
 
         personRepository.Update(person);
         await personRepository.SaveChangesAsync();
-
-        if (isClient)
-        {
-            var actorUserId = int.TryParse(currentUserId, out var uid) ? uid : currentUserService.GetUserId();
-
-            if (!string.Equals(oldRole, person.Role?.Trim(), StringComparison.OrdinalIgnoreCase))
-            {
-                await auditLogService.LogAsync(
-                    AuditActionEnum.ClientPersonaChanged,
-                    new Dictionary<string, object?>
-                    {
-                        ["EngagementId"] = engagementId,
-                        ["ClientName"] = person.Name,
-                        ["Persona"] = person.Role,
-                        ["ActorUserId"] = actorUserId
-                    },
-                    engagementId: engagementId,
-                    actingUserId: actorUserId > 0 ? actorUserId : null);
-            }
-
-            if (!string.Equals(oldName, person.Name?.Trim(), StringComparison.OrdinalIgnoreCase))
-            {
-                await auditLogService.LogAsync(
-                    AuditActionEnum.ClientContactDetailsChanged,
-                    new Dictionary<string, object?>
-                    {
-                        ["EngagementId"] = engagementId,
-                        ["ClientName"] = person.Name,
-                        ["ActorUserId"] = actorUserId
-                    },
-                    engagementId: engagementId,
-                    actingUserId: actorUserId > 0 ? actorUserId : null);
-            }
-        }
 
         if (!string.Equals(oldName, person.Name?.Trim(), StringComparison.OrdinalIgnoreCase) || 
             !string.Equals(oldRole, person.Role?.Trim(), StringComparison.OrdinalIgnoreCase))

@@ -17,7 +17,6 @@ public static class AuditActionCategoryRegistry
         [AuditActionEnum.UserDeleted] = AuditCategoryEnum.Access,
         [AuditActionEnum.ResourcingGapFlagRaised] = AuditCategoryEnum.Escalation,
         [AuditActionEnum.ResourcingGapFlagCleared] = AuditCategoryEnum.Escalation,
-        [AuditActionEnum.ClientContactDetailsChanged] = AuditCategoryEnum.Handover,
         [AuditActionEnum.ClientPersonaChanged] = AuditCategoryEnum.Handover,
         [AuditActionEnum.LeadershipAllocated] = AuditCategoryEnum.ResourceAllocation,
         [AuditActionEnum.UserRoleAllocated] = AuditCategoryEnum.ResourceAllocation,
@@ -27,13 +26,18 @@ public static class AuditActionCategoryRegistry
         [AuditActionEnum.BrownfieldItemAdded] = AuditCategoryEnum.TechnicalReadiness,
         [AuditActionEnum.DiscoveryItemAdded] = AuditCategoryEnum.TechnicalReadiness,
         [AuditActionEnum.ChecklistItemEvidenceUpdated] = AuditCategoryEnum.Checklist,
-        [AuditActionEnum.DependencyCreated] = AuditCategoryEnum.Risk,
-        [AuditActionEnum.DependencyUpdated] = AuditCategoryEnum.Risk,
-        [AuditActionEnum.DependencyDeleted] = AuditCategoryEnum.Risk,
+        [AuditActionEnum.DependencyCreated] = AuditCategoryEnum.Dependency,
+        [AuditActionEnum.DependencyUpdated] = AuditCategoryEnum.Dependency,
+        [AuditActionEnum.DependencyDeleted] = AuditCategoryEnum.Dependency,
         [AuditActionEnum.DependencyEscalated] = AuditCategoryEnum.Escalation,
         [AuditActionEnum.ReadinessOnePagerGenerated] = AuditCategoryEnum.TechnicalReadiness,
         [AuditActionEnum.KickoffReadyMarked] = AuditCategoryEnum.TechnicalReadiness,
         [AuditActionEnum.KickoffReadyReverted] = AuditCategoryEnum.TechnicalReadiness,
-        [AuditActionEnum.AccessItemBlocked] = AuditCategoryEnum.TechnicalReadiness
+        [AuditActionEnum.AccessItemBlocked] = AuditCategoryEnum.TechnicalReadiness,
+        [AuditActionEnum.PersonAdded] = AuditCategoryEnum.People,
+        [AuditActionEnum.ClientContactTransitioned] = AuditCategoryEnum.People,
+        [AuditActionEnum.AssumptionCreated] = AuditCategoryEnum.Assumption,
+        [AuditActionEnum.AssumptionUpdated] = AuditCategoryEnum.Assumption,
+        [AuditActionEnum.AssumptionValidated] = AuditCategoryEnum.Assumption
     };
 }

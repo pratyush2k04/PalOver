@@ -127,6 +127,10 @@ export class DependencyFormDialogComponent implements OnInit {
       value: p.personId,
       label: p.name
     })));
+
+    if (filtered.length === 0) {
+      this.toastService.warning(`No ${type} owners are available to assign. Please add them first.`);
+    }
   }
 
   onCancel(): void {

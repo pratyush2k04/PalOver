@@ -61,11 +61,12 @@ public class ClientContactTransitionService(
 
         var actorUserId = int.TryParse(currentUserId, out var uid) ? uid : currentUserService.GetUserId();
         await auditLogService.LogAsync(
-            AuditActionEnum.ClientContactDetailsChanged,
+            AuditActionEnum.ClientContactTransitioned,
             new Dictionary<string, object?>
             {
                 ["EngagementId"] = engagementId,
-                ["ClientName"] = request.IncomingContactName.Trim(),
+                ["OutgoingName"] = request.OutgoingContactName.Trim(),
+                ["IncomingName"] = request.IncomingContactName.Trim(),
                 ["ActorUserId"] = actorUserId
             },
             engagementId: engagementId,

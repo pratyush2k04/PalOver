@@ -7,7 +7,7 @@ export type AuditAction =
   | 'DocumentUploaded' 
   | 'UnauthorizedAccess' 
   | 'AccountLockout' 
-  | 'ClientContactDetailsChanged' 
+  | 'ClientContactTransitioned' 
   | 'ClientPersonaChanged' 
   | 'LeadershipAllocated' 
   | 'UserRoleAllocated' 
@@ -29,7 +29,12 @@ export type AuditAction =
   | 'KickoffReadyReverted'
   | 'AccessItemBlocked'
   | 'DocumentDeleted'
-  | 'DocumentVisibilityChanged';
+  | 'DocumentVisibilityChanged'
+  | 'PersonAdded'
+  | 'AssumptionCreated'
+  | 'AssumptionUpdated'
+  | 'AssumptionValidated';
+
 export interface AuditLogDto {
   id: number;
   userId: number;
@@ -49,7 +54,7 @@ export interface EngagementAuditLogDto {
   createdAt: string;
 }
 
-export type AuditCategory = 'Document' | 'Checklist' | 'Risk' | 'Access' | 'Handover' | 'Escalation' | 'ResourceAllocation' | 'TechnicalReadiness';
+export type AuditCategory = 'Document' | 'Checklist' | 'Risk' | 'Access' | 'Handover' | 'Escalation' | 'ResourceAllocation' | 'TechnicalReadiness' | 'People' | 'Dependency' | 'Assumption';
 
 export interface SimpleUserDto {
   id: number;

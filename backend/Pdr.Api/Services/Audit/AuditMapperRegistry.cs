@@ -17,6 +17,7 @@ public static class AuditMapperRegistry
         services.AddScoped<IAuditTemplateMapper, DocumentVersionedMapper>();
         services.AddScoped<IAuditTemplateMapper, DocumentUploadedMapper>();
         services.AddScoped<IAuditTemplateMapper, ClientContactDetailsChangedMapper>();
+        services.AddScoped<IAuditTemplateMapper, ClientContactTransitionedMapper>();
         services.AddScoped<IAuditTemplateMapper, ClientPersonaChangedMapper>();
         services.AddScoped<IAuditTemplateMapper, LeadershipAllocatedMapper>();
         services.AddScoped<IAuditTemplateMapper, UserRoleAllocatedMapper>();
@@ -42,6 +43,11 @@ public static class AuditMapperRegistry
         services.AddScoped<IAuditTemplateMapper, HandoverQueryRaisedMapper>();
         services.AddScoped<IAuditTemplateMapper, HandoverQueryRespondedMapper>();
         services.AddScoped<IAuditTemplateMapper, HandoverQueryResolvedMapper>();
+        services.AddScoped<IAuditTemplateMapper, PersonAddedMapper>();
+        
+        services.AddScoped<IAuditTemplateMapper, AssumptionCreatedMapper>();
+        services.AddScoped<IAuditTemplateMapper, AssumptionUpdatedMapper>();
+        services.AddScoped<IAuditTemplateMapper, AssumptionValidatedMapper>();
 
         // Add new mappers here when adding new audit action types.
 

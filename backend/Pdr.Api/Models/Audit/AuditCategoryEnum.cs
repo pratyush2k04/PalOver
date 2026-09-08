@@ -9,5 +9,8 @@ public enum AuditCategoryEnum
     Handover = 5,
     Escalation = 6,
     ResourceAllocation = 7,
-    TechnicalReadiness = 8
+    TechnicalReadiness = 8,
+    People = 9,
+    Dependency = 10,
+    Assumption = 11
 }

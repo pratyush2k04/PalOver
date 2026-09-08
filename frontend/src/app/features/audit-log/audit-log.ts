@@ -85,7 +85,10 @@ export class AuditLogComponent implements OnInit {
     { value: 'Handover', label: 'Handover' },
     { value: 'Escalation', label: 'Escalation' },
     { value: 'ResourceAllocation', label: 'Resource Allocation' },
-    { value: 'TechnicalReadiness', label: 'Technical Readiness' }
+    { value: 'TechnicalReadiness', label: 'Technical Readiness' },
+    { value: 'People', label: 'People' },
+    { value: 'Dependency', label: 'Dependency' },
+    { value: 'Assumption', label: 'Assumption' }
   ];
 
   page = signal(1);
@@ -130,7 +133,6 @@ export class AuditLogComponent implements OnInit {
     UserDeleted: 'Access',
     ResourcingGapFlagRaised: 'Escalation',
     ResourcingGapFlagCleared: 'Escalation',
-    ClientContactDetailsChanged: 'Handover',
     ClientPersonaChanged: 'Handover',
     LeadershipAllocated: 'Resource Allocation',
     UserRoleAllocated: 'Resource Allocation',
@@ -140,14 +142,19 @@ export class AuditLogComponent implements OnInit {
     BrownfieldItemAdded: 'Technical Readiness',
     DiscoveryItemAdded: 'Technical Readiness',
     ChecklistItemEvidenceUpdated: 'Checklist',
-    DependencyCreated: 'Risk',
-    DependencyUpdated: 'Risk',
-    DependencyDeleted: 'Risk',
+    DependencyCreated: 'Dependency',
+    DependencyUpdated: 'Dependency',
+    DependencyDeleted: 'Dependency',
     DependencyEscalated: 'Escalation',
     ReadinessOnePagerGenerated: 'Technical Readiness',
     KickoffReadyMarked: 'Technical Readiness',
     KickoffReadyReverted: 'Technical Readiness',
-    AccessItemBlocked: 'Technical Readiness'
+    AccessItemBlocked: 'Technical Readiness',
+    PersonAdded: 'People',
+    ClientContactTransitioned: 'People',
+    AssumptionCreated: 'Assumption',
+    AssumptionUpdated: 'Assumption',
+    AssumptionValidated: 'Assumption'
   };
 
   getEventCategory(action: string): string {

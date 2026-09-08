@@ -456,6 +456,36 @@ namespace Pdr.Api.Migrations
                             Id = 856019,
                             Action = "HandoverQueryResolved",
                             Details = "{actorName} marked a query on {fieldSection} resolved for the handover on {engagementName}"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            Action = "PersonAdded",
+                            Details = "Person {personName} with role {roleName} was added by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            Action = "ClientContactTransitioned",
+                            Details = "Client contact transitioned from {outgoingName} to {incomingName} by {actorName}"
+                        },
+                        new
+                        {
+                            Id = 42,
+                            Action = "AssumptionCreated",
+                            Details = "Assumption {assumptionDescription} created for engagement {engagementName}"
+                        },
+                        new
+                        {
+                            Id = 43,
+                            Action = "AssumptionUpdated",
+                            Details = "Assumption {assumptionDescription} updated for engagement {engagementName}"
+                        },
+                        new
+                        {
+                            Id = 44,
+                            Action = "AssumptionValidated",
+                            Details = "Assumption {assumptionDescription} validated to status {assumptionStatus} for engagement {engagementName}"
                         });
                 });
 
