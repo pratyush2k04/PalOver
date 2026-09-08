@@ -136,7 +136,7 @@
   user-select: none;
   transition: background-color $transition-fast, color $transition-fast;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background-color: $color-slate-100;
     color: $color-slate-900;
   }
@@ -146,9 +146,18 @@
     color: $color-primary;
     font-weight: $font-weight-medium;
 
-    &:hover {
+    &:hover:not(:disabled) {
       background-color: $color-primary-subtle;
     }
+  }
+
+  &.is-disabled,
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+    background-color: transparent;
+    color: $color-slate-400;
   }
 
   &__label {
