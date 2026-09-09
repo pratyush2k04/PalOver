@@ -40,9 +40,9 @@
               <td class="status-cell">
                 @if (canManage()) {
                   <app-status-select
-                    [options]="statusOptions"
-                    [ngModel]="+item.status"
-                    (ngModelChange)="onStatusChange(item, $event)"
+                    [options]="getStatusOptions(item.status)"
+                    [value]="getStatusNumericValue(item.status)"
+                    (statusChange)="onStatusChange(item, $event)"
                   />
                 } @else {
                   <app-status-badge [tone]="getStatusTone(item.status)">

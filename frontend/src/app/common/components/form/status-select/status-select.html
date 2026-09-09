@@ -35,8 +35,11 @@
         <button type="button" 
                 class="status-select-option" 
                 [class.is-selected]="selectedIndex() === i"
+                [class.is-disabled]="option.disabled"
+                [disabled]="option.disabled"
                 role="option"
                 [attr.aria-selected]="selectedIndex() === i"
+                [attr.aria-disabled]="option.disabled"
                 (click)="selectOption(i)">
           <span class="status-select-option__label">{{ option.label }}</span>
           @if (selectedIndex() === i) {
