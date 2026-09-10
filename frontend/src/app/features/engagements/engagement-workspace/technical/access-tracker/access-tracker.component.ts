@@ -68,11 +68,42 @@ export class AccessTrackerComponent {
 
   kickoffReadiness = this.kickoffReadinessService.readiness;
 
-  readonly statusOptions: StatusSelectOption[] = [
-    { label: 'In Progress', value: AccessItemStatus.InProgress, tone: 'info' },
-    { label: 'Granted', value: AccessItemStatus.Granted, tone: 'success' },
-    { label: 'Blocked', value: AccessItemStatus.Blocked, tone: 'danger' }
-  ];
+  private static readonly ALLOWED_TRANSITIONS = new Set<string>([
+    `${AccessItemStatus.InProgress}->${AccessItemStatus.Granted}`,
+    `${AccessItemStatus.InProgress}->${AccessItemStatus.Blocked}`,
+    `${AccessItemStatus.Granted}->${AccessItemStatus.Blocked}`,
+    `${AccessItemStatus.Blocked}->${AccessItemStatus.InProgress}`,
+    `${AccessItemStatus.Blocked}->${AccessItemStatus.Granted}`,
+  ]);
+
+  getStatusOptions(status: AccessItemStatus | string | number): StatusSelectOption[] {
+    const current = this.getStatusNumericValue(status);
+    return [
+      {
+        label: 'In Progress',
+        value: AccessItemStatus.InProgress,
+        tone: 'info',
+        disabled: current !== AccessItemStatus.InProgress && !this.isTransitionAllowed(current, AccessItemStatus.InProgress)
+      },
+      {
+        label: 'Granted',
+        value: AccessItemStatus.Granted,
+        tone: 'success',
+        disabled: current !== AccessItemStatus.Granted && !this.isTransitionAllowed(current, AccessItemStatus.Granted)
+      },
+      {
+        label: 'Blocked',
+        value: AccessItemStatus.Blocked,
+        tone: 'danger',
+        disabled: current !== AccessItemStatus.Blocked && !this.isTransitionAllowed(current, AccessItemStatus.Blocked)
+      }
+    ];
+  }
+
+  isTransitionAllowed(from: AccessItemStatus, to: AccessItemStatus): boolean {
+    if (from === to) return false;
+    return AccessTrackerComponent.ALLOWED_TRANSITIONS.has(`${from}->${to}`);
+  }
 
   constructor() {
     effect(() => {
@@ -102,7 +133,17 @@ export class AccessTrackerComponent {
   }
 
   onStatusChange(item: AccessItemDto, newStatus: unknown): void {
+    const currentStatus = this.getStatusNumericValue(item.status);
     const newStatusNum = this.getStatusNumericValue(newStatus as AccessItemStatus);
+
+    if (currentStatus === newStatusNum) {
+      return;
+    }
+
+    if (!this.isTransitionAllowed(currentStatus, newStatusNum)) {
+      this.toastService.error(`Cannot change status from ${this.getStatusLabel(currentStatus)} to ${this.getStatusLabel(newStatusNum)} for ${item.name}`);
+      return;
+    }
 
     if (newStatusNum === AccessItemStatus.Blocked) {
       this.openBlockDialog(item);
@@ -120,8 +161,6 @@ export class AccessTrackerComponent {
 
     dialogRef.closed$.subscribe((result) => {
       if (!result) {
-        // Force signal update so ngModel re-syncs to original status
-        this.accessItems.update((items) => items.map((i) => i.id === item.id ? { ...i } : i));
         return;
       }
       this.updateStatus(item, AccessItemStatus.Blocked, result.reason);
@@ -145,10 +184,8 @@ export class AccessTrackerComponent {
         this.itemsUpdated.emit(updatedList);
         this.toastService.success('Status updated');
       },
-      error: (err) => {
+      error: () => {
         this.toastService.error(`Failed to update status for ${item.name}`);
-        // Revert UI on error
-        this.accessItems.update((items) => items.map((i) => i.id === item.id ? { ...i } : i));
       }
     });
   }
