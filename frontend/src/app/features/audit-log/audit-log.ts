@@ -4,8 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuditLogService } from './services/audit-log.service';
 import { AuditLogDto, EngagementAuditLogDto, AuditCategory, SimpleUserDto } from './models/audit-log.model';
-import { AUDIT_LOG_MESSAGES, USER_ROLES } from '@shared/constants/app.constants';
+import { AUDIT_LOG_MESSAGES, AUDIT_LOG_TOOLTIPS, USER_ROLES } from '@shared/constants/app.constants';
 import { AuthService } from '@shared/services/auth';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { AlertComponent } from '@common/components/alert/alert';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
@@ -24,6 +25,7 @@ import { downloadCsv } from '@shared/utils/csv.util';
   imports: [
     CommonModule,
     FormsModule,
+    TooltipDirective,
     LoadingSpinnerComponent,
     AlertComponent,
     EmptyStateComponent,
@@ -41,6 +43,8 @@ import { downloadCsv } from '@shared/utils/csv.util';
 export class AuditLogComponent implements OnInit {
   private auditLogService = inject(AuditLogService);
   private authService = inject(AuthService);
+
+  readonly tooltips = AUDIT_LOG_TOOLTIPS;
 
   readonly engagementId = input<number | null>(null);
 
