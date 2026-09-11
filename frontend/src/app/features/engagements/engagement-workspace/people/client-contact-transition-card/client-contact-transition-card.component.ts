@@ -6,6 +6,7 @@ import { LoadingSpinnerComponent } from '@common/components/loading-spinner/load
 import { ClientContactTransitionService } from '../../../services/client-contact-transition.service';
 import { TransitionResponse, AddClientContactTransitionDialogData } from '../../../models/client-contact-transition.model';
 
+import { PersonDto } from '@shared/models/person.model';
 import { AuthService } from '@shared/services/auth';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { ToastService } from '@common/services/toast/toast';
@@ -31,6 +32,7 @@ export class ClientContactTransitionCardComponent {
   engagementId = input.required<number>();
   clientName = input<string>('');
   isSubmitted = input<boolean>(false);
+  people = input<PersonDto[]>([]);
   onSaved = output<void>();
   transitionsLoaded = output<TransitionResponse[]>();
 
@@ -80,6 +82,7 @@ export class ClientContactTransitionCardComponent {
     const data: AddClientContactTransitionDialogData = {
       engagementId: this.engagementId(),
       activeTransitions: this.transitions(),
+      people: this.people(),
     };
 
     const dialogRef = this.dialog.open<AddClientContactTransitionDialogComponent, AddClientContactTransitionDialogData, boolean>(
