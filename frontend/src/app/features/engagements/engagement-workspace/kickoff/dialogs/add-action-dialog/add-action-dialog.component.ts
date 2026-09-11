@@ -7,6 +7,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { DatepickerComponent } from '@common/components/form/datepicker/datepicker';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { KickoffActionItem } from '@shared/models/kickoff.model';
 import { KICKOFF_MESSAGES } from '@shared/constants/kickoff.constants';
 import { futureDateValidator } from '@common/validators/date.validators';
@@ -25,7 +26,7 @@ export interface AddActionDialogData {
 @Component({
   selector: 'app-add-action-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, InputComponent, SelectComponent, DatepickerComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, InputComponent, SelectComponent, DatepickerComponent, LoadingSpinnerComponent],
   templateUrl: './add-action-dialog.component.html',
   styleUrl: './add-action-dialog.component.scss'
 })
@@ -44,6 +45,7 @@ export class AddActionDialogComponent implements OnInit {
   readonly minDate = new Date().toISOString().split('T')[0];
 
   ownerOptions = signal<SelectOption[]>([]);
+  ownersLoading = signal(false);
   private ownersById = new Map<number, string>();
 
   readonly form = this.fb.nonNullable.group({
@@ -69,12 +71,13 @@ export class AddActionDialogComponent implements OnInit {
   }
 
   private loadOwners(engagementId: number): void {
+    this.ownersLoading.set(true);
     forkJoin({
-      owners: this.engagementService.getEngagementOwners(engagementId).pipe(catchError(() => of(null))),
-      leadership: this.engagementAllocationService.getLeadershipUsers(engagementId).pipe(catchError(() => of([]))),
-      projectManagers: this.userService.getUsersInRole(2).pipe(catchError(() => of([]))),
-      techLeads: this.userService.getUsersInRole(3).pipe(catchError(() => of([]))),
-      preSales: this.userService.getUsersInRole(1).pipe(catchError(() => of([])))
+      owners: this.engagementService.getEngagementOwners(engagementId, true).pipe(catchError(() => of(null))),
+      leadership: this.engagementAllocationService.getLeadershipUsers(engagementId, true).pipe(catchError(() => of([]))),
+      projectManagers: this.userService.getUsersInRole(2, true).pipe(catchError(() => of([]))),
+      techLeads: this.userService.getUsersInRole(3, true).pipe(catchError(() => of([]))),
+      preSales: this.userService.getUsersInRole(1, true).pipe(catchError(() => of([])))
     }).subscribe({
       next: ({ owners, leadership, projectManagers, techLeads, preSales }) => {
         const options: SelectOption[] = [];
@@ -98,7 +101,9 @@ export class AddActionDialogComponent implements OnInit {
           { value: '', label: '-- Select Owner --' },
           ...options
         ]);
-      }
+        this.ownersLoading.set(false);
+      },
+      error: () => this.ownersLoading.set(false)
     });
   }
 
