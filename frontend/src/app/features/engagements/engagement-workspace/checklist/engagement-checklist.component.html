@@ -55,7 +55,7 @@
           }
 
           @if (incompleteGateItems().length > 0) {
-            <h3 class="gate-group-title gate-group-title--amber">Incomplete</h3>
+            <h3 class="gate-group-title gate-group-title--amber">Mandatory to Complete</h3>
             <ul class="gate-incomplete-list gate-incomplete-list--amber">
               @for (gateItem of incompleteGateItems(); track gateItem.id) {
                 <li>
