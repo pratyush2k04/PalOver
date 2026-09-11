@@ -1,4 +1,22 @@
 <div class="audit-log" [class.workspace-tab]="engagementId() != null">
+  <ng-template #sharedActions>
+    <app-select
+      class="audit-category-select"
+      [id]="'audit-category-select'"
+      [options]="categoryOptions"
+      [appTooltip]="tooltips.FILTER_CATEGORY"
+      [tooltipPosition]="'bottom'"
+      [(ngModel)]="filterCategory"
+      (ngModelChange)="onFilterChange()"
+    ></app-select>
+    <app-button
+      variant="flat"
+      [appTooltip]="tooltips.EXPORT_CSV"
+      [tooltipPosition]="'bottom'"
+      (click)="exportCsv()"
+    >Export</app-button>
+  </ng-template>
+
   @if (engagementId() != null) {
     <app-section-header title="Audit Log">
       <div class="header-actions-group">
@@ -6,17 +24,12 @@
           class="audit-user-select"
           [id]="'audit-user-select'"
           [options]="userOptions()"
+          [appTooltip]="tooltips.FILTER_USER"
+          [tooltipPosition]="'bottom'"
           [(ngModel)]="filterUserId"
           (ngModelChange)="onFilterChange()"
         ></app-select>
-        <app-select
-          class="audit-category-select"
-          [id]="'audit-category-select'"
-          [options]="categoryOptions"
-          [(ngModel)]="filterCategory"
-          (ngModelChange)="onFilterChange()"
-        ></app-select>
-        <app-button variant="flat" (click)="exportCsv()">Export</app-button>
+        <ng-container *ngTemplateOutlet="sharedActions" />
       </div>
     </app-section-header>
   } @else {
@@ -29,24 +42,21 @@
           <app-datepicker
             id="audit-log-from-date"
             placeholder="From date"
+            [appTooltip]="tooltips.FILTER_FROM_DATE"
+            [tooltipPosition]="'bottom'"
             [(ngModel)]="filterFromDate"
             (ngModelChange)="onFilterChange()"
           />
           <app-datepicker
             id="audit-log-to-date"
             placeholder="To date"
+            [appTooltip]="tooltips.FILTER_TO_DATE"
+            [tooltipPosition]="'bottom'"
             [(ngModel)]="filterToDate"
             (ngModelChange)="onFilterChange()"
           />
         </div>
-        <app-select
-          class="audit-category-select"
-          [id]="'audit-category-select'"
-          [options]="categoryOptions"
-          [(ngModel)]="filterCategory"
-          (ngModelChange)="onFilterChange()"
-        ></app-select>
-        <app-button variant="flat" (click)="exportCsv()">Export</app-button>
+        <ng-container *ngTemplateOutlet="sharedActions" />
       </div>
     </app-page-header>
   }
