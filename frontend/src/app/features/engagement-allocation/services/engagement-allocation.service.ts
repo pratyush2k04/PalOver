@@ -15,8 +15,10 @@ export class EngagementAllocationService {
     return this.http.get<EngagementAllocationItem[]>(ENGAGEMENT_API_ENDPOINTS.ALL_ENGAGEMENTS);
   }
 
-  getLeadershipUsers(engagementId: number): Observable<LeadershipUserItem[]> {
-    return this.http.get<LeadershipUserItem[]>(ENGAGEMENT_API_ENDPOINTS.LEADERSHIP_USERS(engagementId));
+  getLeadershipUsers(engagementId: number, skipLoader = false): Observable<LeadershipUserItem[]> {
+    return this.http.get<LeadershipUserItem[]>(ENGAGEMENT_API_ENDPOINTS.LEADERSHIP_USERS(engagementId), {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
   getAvailableLeadershipUsers(): Observable<LeadershipUserItem[]> {
