@@ -75,7 +75,7 @@
                 <a
                   [routerLink]="getSourceRoute(risk.sourceType)"
                   class="source-link-badge clickable"
-                  [title]="'Click to view linked blocker in ' + (risk.sourceType === 'Checklist' ? 'Checklist' : 'Technical Readiness')"
+                  [appTooltip]="'Click to view linked blocker in ' + (risk.sourceType === 'Checklist' ? 'Checklist' : 'Technical Readiness')"
                 >
                   <span class="link-title">{{ risk.sourceTitle }}</span>
                   <span class="link-type">({{ risk.sourceType }})</span>
@@ -134,7 +134,7 @@
               <div class="risk-card-footer">
                 <div class="action-buttons">
                   @if (risk.status !== 'Closed') {
-                    <app-button variant="icon" size="sm" (click)="openEditModal(risk)" title="Edit Risk" ariaLabel="Edit Risk">
+                    <app-button variant="icon" size="sm" (click)="openEditModal(risk)" [appTooltip]="'Edit Risk'" ariaLabel="Edit Risk">
                       <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
                     </app-button>
                     @if (canCloseRisk(risk)) {
