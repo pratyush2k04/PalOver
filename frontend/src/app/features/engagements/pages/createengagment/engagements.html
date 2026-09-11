@@ -1,8 +1,9 @@
 <div class="engagements-page">
-    <app-button type="button" variant="flat" (click)="openModal()" class="mark-as-sow-btn" appTooltip="Create a new engagement" tooltipPosition="bottom"> Mark SOW Signed</app-button>
+  <app-button type="button" variant="flat" (click)="openModal()" class="mark-as-sow-btn"
+    appTooltip="Create a new engagement" tooltipPosition="bottom"> Mark SOW Signed</app-button>
 
   @if (showModal()) {
-  <div class="modal-overlay">
+  <div class=" modal-overlay">
     <div class="modal-card">
       <div class="modal-header">
         <h3>Mark SOW Signed</h3>
@@ -12,90 +13,61 @@
         <div class="modal-body">
           <div class="form-row">
             <div class="form-group col">
-              <app-input
-                id="engagementName"
-                label="Engagement name"
-                [required]="true"
-                formControlName="engagementName"
-                [errorMessages]="{ required: 'Engagement name is required.' }"
-              />
+              <app-input id="engagementName" label="Engagement name" [required]="true" formControlName="engagementName"
+                [errorMessages]="{ required: 'Engagement name is required.' }" />
             </div>
 
             <div class="form-group col">
-              <app-input
-                id="clientName"
-                label="Client name"
-                [required]="true"
-                formControlName="clientName"
-                [errorMessages]="{ required: 'Client name is required.' }"
-              />
+              <app-input id="clientName" label="Client name" [required]="true" formControlName="clientName"
+                [errorMessages]="{ required: 'Client name is required.' }" />
             </div>
           </div>
 
           <div class="form-group">
-            <app-textarea id="engagementDescription" label="Engagement description" [required]="true" formControlName="engagementDescription" />
+            <app-textarea id="engagementDescription" label="Engagement description" [required]="true"
+              formControlName="engagementDescription" />
           </div>
 
           <div class="form-row">
             <div class="form-group col">
-              <app-select
-                id="engagementTypeId"
-                label="Nature"
-                [required]="true"
-                formControlName="engagementTypeId"
-                [options]="engagementTypeOptions()"
-                [errorMessages]="{ required: 'Nature is required.' }"
-              />
+              <app-select id="engagementTypeId" label="Nature" [required]="true" formControlName="engagementTypeId"
+                [options]="engagementTypeOptions()" [errorMessages]="{ required: 'Nature is required.' }" />
             </div>
 
             <div class="form-group col">
-              <app-select
-                id="commercialModelId"
-                label="Commercial model"
-                [required]="true"
-                formControlName="commercialModelId"
-                [options]="commercialModelOptions()"
-                [errorMessages]="{ required: 'Commercial model is required.' }"
-              />
+              <app-select id="commercialModelId" label="Commercial model" [required]="true"
+                formControlName="commercialModelId" [options]="commercialModelOptions()"
+                [errorMessages]="{ required: 'Commercial model is required.' }" />
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group col">
-              <app-datepicker
-                id="kickoffDate"
-                label="Target kickoff date"
-                [required]="true"
-                [min]="minDate"
+              <app-datepicker id="kickoffDate" label="Target kickoff date" [required]="true" [min]="minDate"
                 formControlName="kickoffDate"
-                [errorMessages]="{ required: 'Target kickoff date is required.', pastDate: 'Date cannot be in the past.' }"
-              />
+                [errorMessages]="{ required: 'Target kickoff date is required.', pastDate: 'Date cannot be in the past.' }" />
             </div>
 
             <div class="form-group col">
-              <app-datepicker
-                id="billingStartDate"
-                label="Billing start date"
-                [required]="true"
-                [min]="minDate"
+              <app-datepicker id="billingStartDate" label="Billing start date" [required]="true" [min]="minDate"
                 formControlName="billingStartDate"
                 [errorMessages]="{ required: 'Billing start date is required.', pastDate: 'Date cannot be in the past.' }"
-                [extraError]="engagementForm.errors?.['billingBeforeKickoff'] ? 'Billing start cannot be before the kickoff date.' : null"
-              />
+                [extraError]="engagementForm.errors?.['billingBeforeKickoff'] ? 'Billing start cannot be before the kickoff date.' : null" />
             </div>
           </div>
 
           @if (errorMessage()) {
-            <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+          <app-alert variant="danger">{{ errorMessage() }}</app-alert>
           }
         </div>
 
         <div class="modal-footer">
-          <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="closeModal()">Cancel</app-button>
-          <app-button type="submit" variant="flat" [disabled]="isSubmitting()" appTooltip="Submit engagement creation" tooltipPosition="bottom">Create</app-button>
+          <app-button type="button" variant="stroked" [disabled]="isSubmitting()"
+            (click)="closeModal()">Cancel</app-button>
+          <app-button type="submit" variant="flat" [disabled]="isSubmitting()">Create</app-button>
         </div>
       </form>
     </div>
-  </div>
-    }
+</div>
+}
 </div>

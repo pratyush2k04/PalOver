@@ -1,4 +1,5 @@
 @use 'styles/mixins' as *;
+@use 'styles/tokens' as *;
 
 :host {
   display: block;
@@ -93,9 +94,12 @@
       border-bottom: none;
     }
 
-    /* Reveal actions gracefully on hover */
     &:hover {
       background-color: var(--surface-hover, $color-gray-50);
+      
+      .item-main .item-text .description {
+        color: $color-primary;
+      }
     }
 
     .item-main {
@@ -113,6 +117,7 @@
           font-size: 0.95rem;
           color: var(--text-primary, $color-gray-950);
           font-weight: 600;
+          transition: color 0.2s ease;
           /* Distinct header weight */
         }
 

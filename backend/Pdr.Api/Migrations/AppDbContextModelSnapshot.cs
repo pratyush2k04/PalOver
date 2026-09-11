@@ -1223,9 +1223,6 @@ namespace Pdr.Api.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("LinkedRiskId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("OwnerId")
                         .HasColumnType("integer");
 
@@ -1247,8 +1244,6 @@ namespace Pdr.Api.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EngagementId");
-
-                    b.HasIndex("LinkedRiskId");
 
                     b.HasIndex("OwnerId");
 
@@ -5058,10 +5053,6 @@ namespace Pdr.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Pdr.Api.Models.Risks.Risk", "LinkedRisk")
-                        .WithMany()
-                        .HasForeignKey("LinkedRiskId");
-
                     b.HasOne("Pdr.Api.Models.LoginEntity.User", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId")
@@ -5069,8 +5060,6 @@ namespace Pdr.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Engagement");
-
-                    b.Navigation("LinkedRisk");
 
                     b.Navigation("Owner");
                 });

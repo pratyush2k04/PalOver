@@ -6,12 +6,11 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DASHBOARD_CONSTANTS } from '@shared/constants/home.constants';
 import { NotificationService } from '@shared/services/notification.service';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
-import { TooltipDirective } from '@common/directives/tooltip.directive';
 
 @Component({
   selector: 'app-dashboard-critical-blockers',
   standalone: true,
-  imports: [CommonModule, RouterModule, InlineSVGModule, EmptyStateComponent, TooltipDirective],
+  imports: [CommonModule, RouterModule, InlineSVGModule, EmptyStateComponent],
   templateUrl: './dashboard-critical-blockers.html',
   styleUrl: './dashboard-critical-blockers.scss'
 })

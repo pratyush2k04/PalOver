@@ -2,7 +2,7 @@ import { Component, inject, input, output, signal, computed, effect } from '@ang
 import { CommonModule } from '@angular/common';
 import { ButtonComponent } from '@common/components/button/button';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
-import { TooltipDirective } from '@common/directives/tooltip.directive';
+
 
 import { ClientContactTransitionService } from '../../../services/client-contact-transition.service';
 import { TransitionResponse, AddClientContactTransitionDialogData } from '../../../models/client-contact-transition.model';
@@ -25,7 +25,6 @@ import { AddClientContactTransitionDialogComponent } from '../dialogs/add-client
   imports: [
     CommonModule,
     ButtonComponent,
-    TooltipDirective,
   ],
   templateUrl: './client-contact-transition-card.component.html',
   styleUrl: './client-contact-transition-card.component.scss',

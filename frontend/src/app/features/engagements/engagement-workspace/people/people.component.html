@@ -2,11 +2,11 @@
   <div class="people-layout-grid">
     <!-- Table Card Section -->
     <div class="people-directory__card">
-      <app-section-header title="People Directory" [attr.title]="null" class="card-inner-header">
+      <app-section-header title="People Directory"  [attr.title]="null" class="card-inner-header">
         @if (canManage()) {
-          <app-button type="button" variant="flat" (click)="onAddPerson()" [appTooltip]="'Add a person'" tooltipPosition="bottom" >
-            <span>Add person</span>
-          </app-button>
+        <app-button type="button" variant="flat" (click)="onAddPerson()">
+          <span>Add person</span>
+        </app-button>
         }
       </app-section-header>
 
@@ -23,7 +23,7 @@
               <th scope="col" class="th-role">ROLE</th>
               <th scope="col" class="th-org">ORG</th>
               @if (canManage()) {
-                <th scope="col" class="th-actions">ACTIONS</th>
+              <th scope="col" class="th-actions">ACTIONS</th>
               }
             </tr>
           </thead>
@@ -34,20 +34,20 @@
               <td class="col-role">{{ person.role }}</td>
               <td class="col-org">{{ getOrgLabel(person.personType) }}</td>
               @if (canManage()) {
-                <td class="col-actions">
-                  <div class="action-buttons">
-                    @if (canEditPerson(person)) {
-                      <app-button type="button" variant="icon" class="edit-btn" ariaLabel="Edit person" [appTooltip]="'Edit person'" tooltipPosition="bottom"
-                        (click)="onEditPerson(person)">
-                        <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
-                      </app-button>
-                    }
-                    <app-button type="button" variant="icon" class="delete-btn" ariaLabel="Delete person"
-                      [appTooltip]="'Delete person'" tooltipPosition="bottom" (click)="onDeletePerson(person)">
-                      <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
-                    </app-button>
-                  </div>
-                </td>
+              <td class="col-actions">
+                <div class="action-buttons">
+                  @if (canEditPerson(person)) {
+                  <app-button type="button" variant="icon" class="edit-btn" ariaLabel="Edit person"
+                    [appTooltip]="'Edit person'" tooltipPosition="bottom" (click)="onEditPerson(person)">
+                    <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                  </app-button>
+                  }
+                  <app-button type="button" variant="icon" class="delete-btn" ariaLabel="Delete person"
+                    [appTooltip]="'Delete person'" tooltipPosition="bottom" (click)="onDeletePerson(person)">
+                    <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
+                  </app-button>
+                </div>
+              </td>
               }
             </tr>
             } @empty {
@@ -65,14 +65,10 @@
 
     <!-- Client Contact Transition Section -->
     @if (engagementId()) {
-      <div class="people-directory__transition-section">
-        <app-client-contact-transition-card
-          [engagementId]="engagementId()!"
-          [people]="people()"
-          (onSaved)="onTransitionSaved()"
-          (transitionsLoaded)="onTransitionsLoaded($event)"
-        ></app-client-contact-transition-card>
-      </div>
+    <div class="people-directory__transition-section">
+      <app-client-contact-transition-card [engagementId]="engagementId()!" (onSaved)="onTransitionSaved()"
+        (transitionsLoaded)="onTransitionsLoaded($event)"></app-client-contact-transition-card>
+    </div>
     }
   </div>
 </div>
