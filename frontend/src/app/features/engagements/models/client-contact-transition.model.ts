@@ -1,3 +1,5 @@
+import { PersonDto } from '@shared/models/person.model';
+
 export interface AddTransitionRequest {
   outgoingContactName: string;
   outgoingContactRole: string;
@@ -18,4 +20,5 @@ export interface TransitionResponse {
 export interface AddClientContactTransitionDialogData {
   engagementId: number;
   activeTransitions: TransitionResponse[];
+  people: PersonDto[];
 }

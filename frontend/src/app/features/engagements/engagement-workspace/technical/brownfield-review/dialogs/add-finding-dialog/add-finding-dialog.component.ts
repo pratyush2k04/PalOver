@@ -7,6 +7,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { BrownfieldSeverity } from '@features/engagements/models/brownfield-review/brownfield-review.enums';
 import { CreateBrownfieldFindingRequest } from '@features/engagements/models/brownfield-review/brownfield-review.requests';
 import { DocumentService } from '@features/engagements/services/document.service';
@@ -26,7 +27,7 @@ export interface AddFindingDialogResult {
 @Component({
   selector: 'app-add-finding-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, InputComponent, TextareaComponent, SelectComponent],
+  imports: [CommonModule, FormsModule, ButtonComponent, InputComponent, TextareaComponent, SelectComponent, LoadingSpinnerComponent],
   templateUrl: './add-finding-dialog.component.html',
   styleUrl: './add-finding-dialog.component.scss'
 })
@@ -49,16 +50,22 @@ export class AddFindingDialogComponent implements OnInit {
   ];
 
   documentOptions = signal<SelectOption[]>([]);
+  documentsLoading = signal(false);
 
   ngOnInit(): void {
     const engagementId = this.data?.engagementId;
     if (engagementId) {
-      this.documentService.getEngagementDocuments(engagementId).subscribe({
+      this.documentsLoading.set(true);
+      this.documentService.getEngagementDocuments(engagementId, true).subscribe({
         next: (docs: DocumentItem[]) => {
           const options: SelectOption[] = docs.map(d => ({ value: d.id, label: d.fileName }));
           this.documentOptions.set([{ value: null, label: 'None (No document)' }, ...options]);
+          this.documentsLoading.set(false);
         },
-        error: () => this.documentOptions.set([{ value: null, label: 'None (No document)' }])
+        error: () => {
+          this.documentOptions.set([{ value: null, label: 'None (No document)' }]);
+          this.documentsLoading.set(false);
+        }
       });
     } else {
       this.documentOptions.set([{ value: null, label: 'None (No document)' }]);

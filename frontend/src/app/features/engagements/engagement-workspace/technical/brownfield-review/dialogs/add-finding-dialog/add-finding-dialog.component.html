@@ -36,14 +36,18 @@
       [extraError]="descriptionError() || null"
     />
 
-    <app-select
-      id="finding-doc"
-      label="Link Document"
-      [options]="documentOptions()"
-      [ngModel]="documentId()"
-      (ngModelChange)="documentId.set($event)"
-      name="findingDoc"
-    />
+    @if (documentsLoading()) {
+      <app-loading-spinner size="sm" [inline]="true" label="Loading documents..." />
+    } @else {
+      <app-select
+        id="finding-doc"
+        label="Link Document"
+        [options]="documentOptions()"
+        [ngModel]="documentId()"
+        (ngModelChange)="documentId.set($event)"
+        name="findingDoc"
+      />
+    }
   </div>
 
   <div class="app-dialog__actions">

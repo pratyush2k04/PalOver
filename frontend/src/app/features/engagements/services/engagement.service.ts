@@ -67,9 +67,11 @@ export class EngagementService {
       .pipe(tap((info) => this.currentEngagementState.set(info)));
   }
 
-  getEngagementOwners(id: number): Observable<EngagementOwners> {
+  getEngagementOwners(id: number, skipLoader = false): Observable<EngagementOwners> {
     return this.http
-      .get<EngagementOwners>(ENGAGEMENT_API_ENDPOINTS.ENGAGEMENT_OWNERS(id))
+      .get<EngagementOwners>(ENGAGEMENT_API_ENDPOINTS.ENGAGEMENT_OWNERS(id), {
+        context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+      })
       .pipe(tap((owners) => this.ownersState.set(owners)));
   }
 

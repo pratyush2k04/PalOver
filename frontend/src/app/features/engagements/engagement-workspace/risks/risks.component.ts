@@ -29,6 +29,7 @@ import { AuthService } from '@shared/services/auth';
 import { USER_ROLES } from '@shared/constants/users.constants';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { RiskCommentsComponent } from './components/risk-comments/risk-comments.component';
 import { RiskFormDialogComponent, RiskFormDialogResult } from './components/risk-form-dialog/risk-form-dialog.component';
 import { RISK_STATUSES } from '@shared/constants/risk.constants';
@@ -49,7 +50,8 @@ import { RISK_STATUSES } from '@shared/constants/risk.constants';
     SelectComponent,
     TextareaComponent,
     RiskCommentsComponent,
-    SectionHeaderComponent
+    SectionHeaderComponent,
+    TooltipDirective
   ],
   templateUrl: './risks.component.html',
   styleUrl: './risks.component.scss'
