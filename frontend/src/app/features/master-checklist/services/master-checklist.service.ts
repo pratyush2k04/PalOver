@@ -127,18 +127,6 @@ export class MasterChecklistService {
     });
   }
 
-  fetchPublished(): Observable<MasterChecklistVersion> {
-    return this.http.get<MasterChecklistVersion>('/api/masterchecklist/published');
-  }
-
-  fetchCurrentDraft(): Observable<MasterChecklistVersion> {
-    return this.http.get<MasterChecklistVersion>('/api/masterchecklist/current-draft');
-  }
-
-  fetchCategories(): Observable<MasterChecklistCategory[]> {
-    return this.http.get<MasterChecklistCategory[]>('/api/masterchecklist/categories');
-  }
-
   createItem(request: CreateMasterChecklistItemRequest): Observable<MasterChecklistItem> {
     return this.http.post<MasterChecklistItem>('/api/masterchecklist/items', request);
   }
@@ -157,9 +145,5 @@ export class MasterChecklistService {
 
   publishVersion(versionId: number): Observable<MasterChecklistVersion> {
     return this.http.post<MasterChecklistVersion>(`/api/masterchecklist/versions/${versionId}/publish`, {});
-  }
-
-  setCurrentDraft(version: MasterChecklistVersion): void {
-    this.currentDraftSignal.set(version);
   }
 }

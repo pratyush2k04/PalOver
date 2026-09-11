@@ -48,10 +48,6 @@ export interface DocumentUploadResult {
   errors?: string[];
 }
 
-export interface RemoveDocumentRequest {
-  reason: string;
-}
-
 export interface UpdateDocumentVisibilityRequest {
   visibility?: DocumentVisibility;
   allowedRoles?: number[];

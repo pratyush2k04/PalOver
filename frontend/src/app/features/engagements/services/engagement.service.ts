@@ -75,10 +75,6 @@ export class EngagementService {
       .pipe(tap((owners) => this.ownersState.set(owners)));
   }
 
-  getEngagementUsers(id: number): Observable<any[]> {
-    return this.http.get<any[]>(ENGAGEMENT_API_ENDPOINTS.ENGAGEMENT_USERS(id));
-  }
-
   assignProjectManager(id: number, userId: number, skipLoader = false): Observable<EngagementOwners> {
     return this.http
       .put<EngagementOwners>(ENGAGEMENT_API_ENDPOINTS.ASSIGN_PROJECT_MANAGER(id), { userId }, {

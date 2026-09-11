@@ -96,7 +96,6 @@ export class EngagementChecklistComponent {
   readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
   isProjectManager = computed(() => this.authService.hasRole('Project Management'));
   isLeadership = computed(() => this.authService.hasRole('Leadership'));
-  isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
   isTechLead = computed(() => this.authService.hasRole('Tech Lead'));
 
   canToggleStatus = computed(() => !this.isSignedOff() && (this.isProjectManager() || this.isTechLead()));

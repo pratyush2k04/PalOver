@@ -30,7 +30,3 @@ export interface NotificationFilterParams {
   status?: 'all' | 'unread' | 'read';
   priority?: NotificationPriority | 'all';
 }
-
-export interface BulkDeleteNotificationsRequest {
-  ids: number[];
-}
