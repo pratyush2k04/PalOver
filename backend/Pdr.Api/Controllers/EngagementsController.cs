@@ -14,6 +14,7 @@ namespace Pdr.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 [Produces("application/json")]
 public class EngagementsController(
     IEngagementService engagementService,
@@ -26,7 +27,6 @@ public class EngagementsController(
     /// <param name="sortBy">Sort field ("kickoff", "created", etc.).</param>
     /// <returns>A list of assigned engagements.</returns>
     [HttpGet("my-engagements")]
-    [Authorize]
     [EndpointSummary("Get my assigned engagements")]
     [ProducesResponseType(typeof(EngagementListResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -45,7 +45,6 @@ public class EngagementsController(
     /// <param name="pageSize">Number of items per page.</param>
     /// <returns>A page of assigned engagements, plus Active/Past tab counts.</returns>
     [HttpGet("my-engagements/page")]
-    [Authorize]
     [EndpointSummary("Get a paged page of my assigned engagements")]
     [ProducesResponseType(typeof(MyEngagementsPageDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -65,15 +64,12 @@ public class EngagementsController(
     /// <returns>List of all engagements.</returns>
     /// <response code="200">List of all engagements returned successfully.</response>
     [HttpGet]
-    [Authorize]
     [ProducesResponseType(typeof(IEnumerable<EngagementInfoDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<EngagementInfoDto>>> GetAllEngagements()
     {
         var engagements = await engagementService.GetAllEngagementsAsync();
         return Ok(engagements);
     }
-
-    //TODO: Authentication & Authorization constraints : Depends on 645
 
     /// <summary>
     /// Retrieves full details for a specific engagement by ID.
@@ -83,6 +79,7 @@ public class EngagementsController(
     [HttpGet("{id:int}")]
     [EndpointSummary("Get engagement details by ID")]
     [ProducesResponseType(typeof(EngagementInfoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<EngagementInfoDto>> GetEngagementInfo(int id)
     {
@@ -100,6 +97,7 @@ public class EngagementsController(
     [EndpointSummary("Edit engagement information")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> EditEngagementInfo(int id, EditEngagementRequest request)
     {
@@ -139,7 +137,6 @@ public class EngagementsController(
     /// <param name="id">The engagement ID.</param>
     /// <returns>Engagement owner details.</returns>
     [HttpGet("{id:int}/owners")]
-    [Authorize]
     [EndpointSummary("Get engagement owners")]
     [ProducesResponseType(typeof(EngagementOwnersDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -157,7 +154,6 @@ public class EngagementsController(
     /// <param name="id">The engagement ID.</param>
     /// <returns>A list of users assigned to the engagement.</returns>
     [HttpGet("{id:int}/users")]
-    [Authorize]
     [EndpointSummary("Get all assigned users")]
     [ProducesResponseType(typeof(IEnumerable<Pdr.Api.DTOs.Users.UserListItemDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -251,7 +247,6 @@ public class EngagementsController(
     /// <response code="200">List of assigned Leadership users returned successfully.</response>
     /// <response code="404">Engagement was not found.</response>
     [HttpGet("{id:int}/leadership-users")]
-    [Authorize]
     [ProducesResponseType(typeof(IEnumerable<LeadershipUserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<LeadershipUserDto>>> GetLeadershipUsers(int id)
@@ -310,8 +305,8 @@ public class EngagementsController(
     /// <param name="userId">The ID of the Leadership user to remove.</param>
     /// <returns>Updated list of assigned Leadership users.</returns>
     /// <response code="200">Leadership user removed successfully.</response>
-    /// <response code="400">Attempted to remove the last remaining Leadership contact on the engagement.</response>
-    /// <response code="404">Engagement or User was not found.</response>
+    /// <response code="400">Attempted to remove the last remaining Leadership contact.</response>
+    /// <response code="404">Engagement or User assignment was not found.</response>
     [HttpDelete("{id:int}/leadership-users/{userId:int}")]
     [Authorize(Policy = "AdminOnly")]
     [ProducesResponseType(typeof(IEnumerable<LeadershipUserDto>), StatusCodes.Status200OK)]
@@ -324,10 +319,10 @@ public class EngagementsController(
     }
 
     /// <summary>
-    /// Syncs the Leadership users assigned to an engagement.
+    /// Replaces the entire set of Leadership users assigned to an engagement (Admin only).
     /// </summary>
     /// <param name="id">The engagement ID.</param>
-    /// <param name="request">Payload containing the final list of UserIds.</param>
+    /// <param name="request">Payload containing the complete list of Leadership UserIds to assign.</param>
     /// <returns>Updated list of assigned Leadership users.</returns>
     /// <response code="200">Leadership users updated successfully.</response>
     /// <response code="400">Attempted to remove the last remaining Leadership contact, or invalid request.</response>
@@ -364,7 +359,6 @@ public class EngagementsController(
     /// </summary>
     /// <param name="id">The engagement ID.</param>
     [HttpGet("{id:int}/open-items-summary")]
-    [Authorize]
     [EndpointSummary("Get open items summary")]
     [ProducesResponseType(typeof(EngagementOpenItemsSummaryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -401,7 +395,6 @@ public class EngagementsController(
     /// <param name="id">The engagement ID.</param>
     /// <returns>The immutable evidence snapshot, including every evidence-required checklist item's status at sign-off.</returns>
     [HttpGet("{id:int}/evidence-snapshot")]
-    [Authorize]
     [EndpointSummary("Get the Day-1 sign-off evidence snapshot")]
     [ProducesResponseType(typeof(EvidenceSnapshotDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
