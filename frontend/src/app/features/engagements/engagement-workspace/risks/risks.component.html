@@ -2,7 +2,7 @@
   <!-- Header / Action Bar -->
   <app-section-header title="Risk Register">
     @if (canManage()) {
-      <app-button variant="flat" (click)="openCreateModal()">
+      <app-button variant="flat" (click)="openCreateModal()" [appTooltip]="'Record Risk'">
          Record Risk
       </app-button>
     }
@@ -138,11 +138,11 @@
                       <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
                     </app-button>
                     @if (canCloseRisk(risk)) {
-                      <app-button variant="danger" size="sm" (click)="openCloseModal(risk)">Close Risk</app-button>
+                      <app-button variant="danger" size="sm" (click)="openCloseModal(risk)" [appTooltip]="'Close Risk'">Close Risk</app-button>
                     }
                   } @else {
                     @if (!risk.sourceType) {
-                      <app-button variant="stroked" size="sm" (click)="reopenRisk(risk)">Reopen Risk</app-button>
+                      <app-button variant="stroked" size="sm" (click)="reopenRisk(risk)" [appTooltip]="'Reopen Risk'">Reopen Risk</app-button>
                     }
                   }
                 </div>
