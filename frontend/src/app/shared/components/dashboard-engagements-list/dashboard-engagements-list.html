@@ -1,7 +1,7 @@
 <div class="list-card">
   <div class="list-header">
     <h3>Engagements approaching kickoff <span class="header-subtitle">({{ totalCount() }} total)</span></h3>
-    <a routerLink="/my-engagements" class="view-all-link">View all &rarr;</a>
+    <a routerLink="/my-engagements" class="view-all-link" appTooltip="View all your engagements" tooltipPosition="bottom">View all &rarr;</a>
   </div>
 
   <div class="list-content">
@@ -26,7 +26,7 @@
           </span>
         </div>
 
-        <div class="engagement-progress-col">
+        <div class="engagement-progress-col" appTooltip="Readiness score" tooltipPosition="bottom">
           <div class="progress-bar">
             <div class="progress-fill" [style.width.%]="engagement.readinessPercentage"
               [ngClass]="getStatusFillClass(engagement.status)"></div>

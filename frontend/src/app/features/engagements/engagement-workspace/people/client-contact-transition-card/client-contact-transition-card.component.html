@@ -8,6 +8,8 @@
         [disabled]="isLoading()"
         (click)="openAddTransitionDialog()"
         class="add-button"
+        [appTooltip]="buttonLabels.ADD_TRANSITION"
+        tooltipPosition="bottom"
       >
         {{ buttonLabels.ADD_TRANSITION }}
       </app-button>
