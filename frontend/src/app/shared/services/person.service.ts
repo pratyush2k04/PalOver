@@ -33,14 +33,4 @@ export class PersonService {
       context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
     });
   }
-
-  importFromHandover(engagementId: number): Observable<ImportResponse> {
-    return this.http.post<ImportResponse>(`/api/engagements/${engagementId}/people/import-from-handover`, {});
-  }
-}
-
-export interface ImportResponse {
-  added: number;
-  alreadyPresent: number;
-  deleted: number;
 }

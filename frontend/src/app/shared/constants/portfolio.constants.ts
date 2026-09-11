@@ -17,7 +17,6 @@ export const PORTFOLIO_MESSAGES = {
   OVERDUE_PREFIX: 'Overdue',
   TODAY: 'Today',
   DAYS_SUFFIX: 'days',
-  UNASSIGNED_PM: 'Unassigned',
   NO_ENGAGEMENTS_DESC: 'No active engagements match your selected filter criteria.',
 } as const;
 

@@ -5,10 +5,6 @@ export const TECHNICAL_READINESS_ROLES = {
   LEADERSHIP: 'Leadership'
 } as const;
 
-export const TECHNICAL_READINESS_ALERTS = {
-  SHARE_SUMMARY: 'Day-1 Summary shared with team!'
-} as const;
-
 export const TECHNICAL_READINESS_API_ENDPOINTS = {
   ACCESS_ITEMS: (engagementId: number) => `/api/engagements/${engagementId}/access-items`,
   ACCESS_ITEM: (id: number) => `/api/access-items/${id}`,
@@ -37,5 +33,10 @@ export const TECHNICAL_READINESS_MESSAGES = {
   ADD_TOOLING_ITEM_ERROR: 'Failed to add custom environment/tooling item.',
   UPDATE_TOOLING_STATUS_ERROR: 'Failed to update environment/tooling status.',
   UPDATE_TOOLING_OWNER_ERROR: 'Failed to update environment/tooling owner.',
-  DELETE_TOOLING_ITEM_ERROR: 'Failed to delete environment and tooling item.'
+  DELETE_TOOLING_ITEM_ERROR: 'Failed to delete environment and tooling item.',
+  ARCHITECTURE_VALIDATION_SAVED: 'Architecture validation saved successfully',
+  FEATURE_ADDED: (name: string) => `Feature "${name}" added successfully`,
+  FEATURE_UPDATED: (name: string) => `Feature "${name}" updated successfully`,
+  FEATURE_DELETED: (name: string) => `Feature "${name}" deleted successfully`,
+  FEATURE_DELETE_ERROR: (name: string) => `Failed to delete feature "${name}"`
 } as const;

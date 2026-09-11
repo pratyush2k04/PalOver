@@ -14,6 +14,3 @@ export interface ChangePasswordRequest {
   currentPassword: string;
   newPassword: string;
 }
-
-export type MeResponse = ProfileResponse;
-export type UpdateMeRequest = UpdateProfileRequest;

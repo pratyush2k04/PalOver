@@ -239,7 +239,6 @@ export class HandoverComponent {
 
   commitments = signal<CommitmentDto[]>([]);
 
-  newCommitment = signal<CreateCommitmentRequest>(this.emptyCommitment());
   editingCommitmentId = signal<number | null>(null);
   editCommitment = signal<UpdateCommitmentRequest>(this.emptyCommitment());
   pendingDeleteId = signal<number | null>(null);
@@ -272,7 +271,6 @@ export class HandoverComponent {
   isReviewed = computed(() => this.handover()?.status === 'Reviewed');
   hasBeenSubmitted = computed(() => this.isSubmitted() || this.isReviewed());
   hasHandoverDraft = computed(() => !!this.handover()?.handoverId);
-  newCommitmentTouched = signal(false);
 
   readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
   isPreSales = computed(() => !this.isSignedOff() && this.authService.hasRole('Pre Sales'));
