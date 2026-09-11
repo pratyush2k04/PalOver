@@ -203,13 +203,16 @@
                             <span class="evidence-text">{{ item.evidenceDocumentFileName ? (item.evidenceDocumentFileName | slice:0:20) + (item.evidenceDocumentFileName.length > 20 ? '...' : '') : 'Download' }}</span>
                           </button>
                           @if (canToggleStatus()) {
-                            <button
+                            <app-button
                               type="button"
+                              variant="icon"
                               class="btn-evidence-details"
+                              ariaLabel="View or replace evidence"
+                              [appTooltip]="'View or replace evidence'"
                               (click)="openAttachEvidenceDialog(item, false)"
-                              title="View or replace evidence">
+                            >
                               <span class="view-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
-                            </button>
+                            </app-button>
                           }
                         </div>
                       } @else if (item.evidenceRequired) {
