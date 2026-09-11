@@ -112,7 +112,7 @@ export class AttachEvidenceDialogComponent implements OnInit {
   }
 
   private loadCategories(): void {
-    this.documentService.getCategories().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.documentService.getCategories(true).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (cats) => {
         this.categories.set(cats);
         if (cats.length > 0) {
@@ -129,7 +129,7 @@ export class AttachEvidenceDialogComponent implements OnInit {
 
   private loadExistingDocuments(): void {
     this.isLoadingDocuments.set(true);
-    this.documentService.getEngagementDocuments(this.data.engagementId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.documentService.getEngagementDocuments(this.data.engagementId, true).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (docs) => {
         this.existingDocuments.set(docs);
         this.isLoadingDocuments.set(false);

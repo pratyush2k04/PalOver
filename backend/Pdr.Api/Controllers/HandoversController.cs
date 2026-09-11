@@ -15,23 +15,27 @@ namespace Pdr.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/engagements/{engagementId:int}/handover")]
+[Authorize]
 [Produces("application/json")]
 public class HandoversController : ControllerBase
 {
     private readonly IHandoverService _handoverService;
     private readonly IHandoverAccessService _accessService;
+    private readonly ICurrentUserService _currentUserService;
 
     public HandoversController(
         IHandoverService handoverService,
-        IHandoverAccessService accessService)
+        IHandoverAccessService accessService,
+        ICurrentUserService currentUserService)
     {
         _handoverService = handoverService;
         _accessService = accessService;
+        _currentUserService = currentUserService;
     }
 
-    private int GetUserId() => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+    private int GetUserId() => _currentUserService.GetUserId();
 
-    private string GetUserIdString() => User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+    private string GetUserIdString() => _currentUserService.GetUserId().ToString();
 
     /// <summary>
     /// Retrieves handover details and commitments for a specific engagement.

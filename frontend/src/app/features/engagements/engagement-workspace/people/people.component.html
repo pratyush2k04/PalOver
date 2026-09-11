@@ -68,6 +68,7 @@
       <div class="people-directory__transition-section">
         <app-client-contact-transition-card
           [engagementId]="engagementId()!"
+          [people]="people()"
           (onSaved)="onTransitionSaved()"
           (transitionsLoaded)="onTransitionsLoaded($event)"
         ></app-client-contact-transition-card>

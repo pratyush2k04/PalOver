@@ -24,6 +24,8 @@
               }
               @if (downloadingId() === version.id) {
                 <app-loading-spinner size="sm" [inline]="true" label="" />
+              } @else {
+                <span class="download-icon" [inlineSVG]="'assets/icons/download.svg'"></span>
               }
             </div>
             <div class="version-row-detail">

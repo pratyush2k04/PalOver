@@ -266,6 +266,12 @@
   justify-content: center;
 }
 
+.btn-edit-visibility {
+  --btn-color: #{$color-slate-500};
+  --btn-color-hover: #{$color-primary};
+  --btn-bg-hover: #{$color-primary-light};
+}
+
 // Inline editable dropdown (PM and Admin)
 .visibility-select {
   appearance: none;
