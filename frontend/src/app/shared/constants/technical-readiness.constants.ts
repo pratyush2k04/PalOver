@@ -5,10 +5,6 @@ export const TECHNICAL_READINESS_ROLES = {
   LEADERSHIP: 'Leadership'
 } as const;
 
-export const TECHNICAL_READINESS_ALERTS = {
-  SHARE_SUMMARY: 'Day-1 Summary shared with team!'
-} as const;
-
 export const TECHNICAL_READINESS_API_ENDPOINTS = {
   ACCESS_ITEMS: (engagementId: number) => `/api/engagements/${engagementId}/access-items`,
   ACCESS_ITEM: (id: number) => `/api/access-items/${id}`,
