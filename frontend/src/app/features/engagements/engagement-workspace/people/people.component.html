@@ -2,7 +2,7 @@
   <div class="people-layout-grid">
     <!-- Table Card Section -->
     <div class="people-directory__card">
-      <app-section-header title="'People Directory'" class="card-inner-header">
+      <app-section-header title="People Directory" [attr.title]="null" class="card-inner-header">
         @if (canManage()) {
           <app-button type="button" variant="flat" (click)="onAddPerson()" [appTooltip]="'Add a person'" tooltipPosition="bottom" >
             <span>Add person</span>
