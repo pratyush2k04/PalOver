@@ -9,7 +9,6 @@ import { SelectComponent, SelectOption } from '@common/components/form/select/se
 import { AlertComponent } from '@common/components/alert/alert';
 import { AddClientContactTransitionDialogData, AddTransitionRequest } from '@features/engagements/models/client-contact-transition.model';
 import { ClientContactTransitionService } from '@features/engagements/services/client-contact-transition.service';
-import { PersonService } from '@shared/services/person.service';
 import { PersonType } from '@shared/models/person.model';
 import { ToastService } from '@common/services/toast/toast';
 import {
@@ -37,7 +36,6 @@ import {
 })
 export class AddClientContactTransitionDialogComponent {
   private dialogRef = inject<DialogRef<boolean>>(DialogRef);
-  private personService = inject(PersonService);
   private transitionService = inject(ClientContactTransitionService);
   private fb = inject(FormBuilder);
   private toastService = inject(ToastService);
@@ -66,19 +64,15 @@ export class AddClientContactTransitionDialogComponent {
   private peopleById = new Map<number, { name: string; role: string }>();
 
   constructor() {
-    this.personService.getPeopleByEngagement(this.data.engagementId).subscribe({
-      next: (people) => {
-        const outgoingNames = new Set(this.data.activeTransitions.map(t => t.outgoingContactName));
-        const clients = people.filter(
-          (p) => (p.personType === PersonType.Client || p.personType === 'Client' || Number(p.personType) === PersonType.Client)
-                 && !outgoingNames.has(p.name)
-        );
-        this.outgoingContactOptions.set(
-          clients.map((p) => ({ value: p.personId, label: `${p.name} - ${p.role}` }))
-        );
-        this.peopleById = new Map(clients.map((p) => [p.personId, { name: p.name, role: p.role }]));
-      },
-    });
+    const outgoingNames = new Set(this.data.activeTransitions.map(t => t.outgoingContactName));
+    const clients = this.data.people.filter(
+      (p) => (p.personType === PersonType.Client || p.personType === 'Client' || Number(p.personType) === PersonType.Client)
+             && !outgoingNames.has(p.name)
+    );
+    this.outgoingContactOptions.set(
+      clients.map((p) => ({ value: p.personId, label: `${p.name} - ${p.role}` }))
+    );
+    this.peopleById = new Map(clients.map((p) => [p.personId, { name: p.name, role: p.role }]));
 
     this.form.get('outgoingPersonId')!.valueChanges.subscribe((personId: number | null) => {
       const person = personId !== null ? this.peopleById.get(personId) : undefined;

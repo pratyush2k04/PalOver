@@ -27,8 +27,10 @@ export class UserService {
     return this.http.get<Role[]>(API_ENDPOINTS.ROLES);
   }
 
-  getUsersInRole(roleId: number): Observable<UserListItem[]> {
-    return this.http.get<UserListItem[]>(API_ENDPOINTS.ROLE_USERS(roleId));
+  getUsersInRole(roleId: number, skipLoader = false): Observable<UserListItem[]> {
+    return this.http.get<UserListItem[]>(API_ENDPOINTS.ROLE_USERS(roleId), {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
   changeUserRole(userId: number, newRoleId: number, skipLoader = false): Observable<UserListItem> {

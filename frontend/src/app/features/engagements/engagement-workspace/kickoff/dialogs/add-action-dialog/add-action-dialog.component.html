@@ -10,14 +10,18 @@
       [errorMessages]="{ required: messages.ACTION_TITLE_REQUIRED }"
     />
 
-    <app-select
-      id="action-owner"
-      label="Owner"
-      [required]="true"
-      formControlName="ownerId"
-      [options]="ownerOptions()"
-      [errorMessages]="{ required: messages.OWNER_NAME_REQUIRED }"
-    />
+    @if (ownersLoading()) {
+      <app-loading-spinner size="sm" [inline]="true" label="Loading owners..." />
+    } @else {
+      <app-select
+        id="action-owner"
+        label="Owner"
+        [required]="true"
+        formControlName="ownerId"
+        [options]="ownerOptions()"
+        [errorMessages]="{ required: messages.OWNER_NAME_REQUIRED }"
+      />
+    }
 
     <app-datepicker
       id="action-due-date"

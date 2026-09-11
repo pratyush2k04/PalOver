@@ -11,12 +11,16 @@ import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 export class DocumentService {
   private http = inject(HttpClient);
 
-  getEngagementDocuments(engagementId: number): Observable<DocumentItem[]> {
-    return this.http.get<DocumentItem[]>(DOCUMENT_API_ENDPOINTS.BY_ENGAGEMENT(engagementId));
+  getEngagementDocuments(engagementId: number, skipLoader = false): Observable<DocumentItem[]> {
+    return this.http.get<DocumentItem[]>(DOCUMENT_API_ENDPOINTS.BY_ENGAGEMENT(engagementId), {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
-  getCategories(): Observable<DocumentCategory[]> {
-    return this.http.get<DocumentCategory[]>(DOCUMENT_API_ENDPOINTS.CATEGORIES);
+  getCategories(skipLoader = false): Observable<DocumentCategory[]> {
+    return this.http.get<DocumentCategory[]>(DOCUMENT_API_ENDPOINTS.CATEGORIES, {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
   uploadDocument(file: File, engagementId: number, categoryId: number, visibility: DocumentVisibility): Observable<DocumentUploadResult[]> {

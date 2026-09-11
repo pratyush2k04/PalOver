@@ -21,14 +21,18 @@
         />
       </div>
       <div class="flex-1">
-        <app-select
-          id="ownerId"
-          label="Owner"
-          [options]="ownerOptions()"
-          [required]="true"
-          formControlName="ownerId"
-          placeholder="Select an owner"
-        />
+        @if (peopleLoading()) {
+          <app-loading-spinner size="sm" [inline]="true" label="Loading owners..." />
+        } @else {
+          <app-select
+            id="ownerId"
+            label="Owner"
+            [options]="ownerOptions()"
+            [required]="true"
+            formControlName="ownerId"
+            placeholder="Select an owner"
+          />
+        }
       </div>
     </div>
 
