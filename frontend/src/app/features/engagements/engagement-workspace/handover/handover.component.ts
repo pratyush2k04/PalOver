@@ -4,7 +4,6 @@ import {
   FormBuilder,
   FormGroup,
   FormsModule,
-  NgModel,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -62,12 +61,7 @@ function timelinesMatch(timeline1: number, unit1: string, timeline2: number, uni
   return timeline1 === timeline2 && unit1 === unit2;
 }
 
-interface RealisticEditForm {
-  description: string;
-  timeline: number;
-  timelineUnit: string;
-  acknowledgementMessage: string;
-}
+
 
 @Component({
   selector: 'app-handover',
@@ -254,9 +248,7 @@ export class HandoverComponent {
   editingRealisticNeedsAck = signal(false);
 
   editCommitmentErrors = signal<string[]>([]);
-  realisticEditErrors = signal<string[]>([]);
   editCommitmentTouched = signal(false);
-  realisticEditTouched = signal(false);
 
   commitmentTypes = [
     { id: 1, name: HANDOVER_LABELS.SOFTWARE },
@@ -326,14 +318,7 @@ export class HandoverComponent {
     return { description: '', commitmentTypeId: 1, title: '', timeline: 1, timelineUnit: 'Weeks' };
   }
 
-  private emptyRealisticEditForm(): RealisticEditForm {
-    return {
-      description: '',
-      timeline: 1,
-      timelineUnit: 'Weeks',
-      acknowledgementMessage: '',
-    };
-  }
+
 
   loadHandover(id: number) {
     this.isLoading.set(true);
@@ -598,17 +583,17 @@ export class HandoverComponent {
   cancelEditRealisticCommitment() {
     this.editingRealisticCommitmentId.set(null);
     this.editingRealisticNeedsAck.set(false);
-    this.realisticEditForm.reset(this.emptyRealisticEditForm());
+    this.realisticEditForm.reset({
+      description: '',
+      timeline: 1,
+      timelineUnit: 'Weeks',
+      acknowledgementMessage: '',
+    });
   }
 
   commitmentNeedsAcknowledgement(c: CommitmentDto): boolean {
     if (!c.realisticCommitment) return false;
     return !timelinesMatch(c.timeline, c.timelineUnit, c.realisticCommitment.timeline, c.realisticCommitment.timelineUnit);
-  }
-
-  editFormNeedsAcknowledgement(c: CommitmentDto): boolean {
-    const form = this.realisticEditForm.getRawValue();
-    return !timelinesMatch(c.timeline, c.timelineUnit, Number(form.timeline), form.timelineUnit);
   }
 
   saveRealisticCommitment(c: CommitmentDto) {
