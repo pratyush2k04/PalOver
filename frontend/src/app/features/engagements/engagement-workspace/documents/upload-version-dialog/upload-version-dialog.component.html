@@ -1,7 +1,13 @@
 <h2 class="app-dialog__title">Upload new version</h2>
 
 <div class="app-dialog__content">
-  <p class="file-preview">{{ data.file.name }}</p>
+  <app-input
+    id="display-name"
+    label="Display Name"
+    [ngModel]="displayName()"
+    (ngModelChange)="onDisplayNameChange($event)"
+    placeholder="e.g. Document.pdf"
+  />
 
   <app-textarea
     id="change-note"

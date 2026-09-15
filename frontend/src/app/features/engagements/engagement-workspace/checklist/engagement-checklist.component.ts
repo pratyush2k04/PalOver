@@ -98,7 +98,7 @@ export class EngagementChecklistComponent {
   isLeadership = computed(() => this.authService.hasRole('Leadership'));
   isTechLead = computed(() => this.authService.hasRole('Tech Lead'));
 
-  canToggleStatus = computed(() => !this.isSignedOff() && (this.isProjectManager() || this.isTechLead()));
+  canToggleStatus = computed(() => !this.isSignedOff() && this.isProjectManager());
   canChangeApplicability = computed(() => !this.isSignedOff() && this.isProjectManager());
   canPerformAnyAction = computed(() => !this.isSignedOff() && (this.canToggleStatus() || this.canChangeApplicability() || this.isLeadership()));
   canLeadershipReview = computed(() => !this.isSignedOff() && this.isLeadership() && (this.checklist()?.pendingExemptionsCount ?? 0) > 0);
