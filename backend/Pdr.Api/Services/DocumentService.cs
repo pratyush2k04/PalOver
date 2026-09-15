@@ -488,6 +488,8 @@ public class DocumentService(
             IsCurrent = true
         };
 
+        doc.FileName = dto.File.FileName;
+
         var updated = await repository.AddVersionAsync(doc, newVersion);
         var reloaded = await repository.GetByIdAsync(updated.Id) ?? updated;
 
