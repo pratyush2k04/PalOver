@@ -1,7 +1,8 @@
 @use 'styles/tokens' as *;
 
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   width: 35rem;
   max-width: calc(100vw - 3rem);
 }
