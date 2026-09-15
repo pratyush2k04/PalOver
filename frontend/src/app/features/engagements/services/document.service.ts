@@ -23,10 +23,6 @@ export class DocumentService {
     });
   }
 
-  uploadDocument(file: File, engagementId: number, categoryId: number, visibility: DocumentVisibility): Observable<DocumentUploadResult[]> {
-    return this.uploadDocuments([file], engagementId, categoryId, visibility);
-  }
-
   uploadDocuments(files: File[], engagementId: number, categoryId: number, visibility: DocumentVisibility, skipLoader = false): Observable<DocumentUploadResult[]> {
     const formData = new FormData();
     files.forEach((file, i) => {

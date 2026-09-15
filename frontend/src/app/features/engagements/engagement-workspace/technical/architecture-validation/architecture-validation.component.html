@@ -13,7 +13,6 @@
     <div class="section-container status-section">
       <div class="section-header">
         <h4>Proposed Architecture Validation</h4>
-        <!-- <p class="section-desc">Verify whether the pre-sales architecture holds or has been modified based on discovery findings.</p> -->
       </div>
 
       <div class="status-selector-row">
@@ -21,13 +20,13 @@
           <div class="status-options">
             <label
               class="status-option-label"
-              [class.selected]="!isModified()"
-              (click)="onStatusSelect(ArchitectureStatus.StillValid)">
+              [class.selected]="!isModified()">
               <input
                 type="radio"
                 name="archStatus"
                 [value]="ArchitectureStatus.StillValid"
                 [checked]="!isModified()"
+                (change)="onStatusSelect(ArchitectureStatus.StillValid)"
               />
               <span class="radio-custom"></span>
               <div class="option-text">
@@ -38,13 +37,13 @@
 
             <label
               class="status-option-label"
-              [class.selected]="isModified()"
-              (click)="onStatusSelect(ArchitectureStatus.Modified)">
+              [class.selected]="isModified()">
               <input
                 type="radio"
                 name="archStatus"
                 [value]="ArchitectureStatus.Modified"
                 [checked]="isModified()"
+                (change)="onStatusSelect(ArchitectureStatus.Modified)"
               />
               <span class="radio-custom"></span>
               <div class="option-text">
@@ -160,7 +159,6 @@
           <div class="section-header-row">
             <div class="section-title-text">
               <h4>Discovery Feature Breakdown</h4>
-              <!-- <p class="section-desc">Individual feature scope breakdown sized into sprint deliverables.</p> -->
             </div>
             @if (canManage()) {
               <app-button

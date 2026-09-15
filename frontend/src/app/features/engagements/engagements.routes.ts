@@ -111,11 +111,6 @@ export const ENGAGEMENTS_ROUTES: Routes = [
             './engagement-workspace/sign-off/sign-off.component'
           ).then((m) => m.SignOffComponent),
       },
-      {
-        path: '',
-        redirectTo: ENGAGEMENT_ROUTES.OVERVIEW,
-        pathMatch: 'full',
-      },
     ],
   },
 ];

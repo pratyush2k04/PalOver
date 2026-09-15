@@ -23,9 +23,7 @@ export const KICKOFF_READINESS_TIERS = [
 
 export const KICKOFF_API_ENDPOINTS = {
   RECORD: (id: number) => `/api/engagements/${id}/workspace/kickoff`,
-  ACTIONS_OPEN: (id: number) => `/api/engagements/${id}/workspace/kickoff/actions/open`,
   ACTIONS_CREATE: (id: number) => `/api/engagements/${id}/workspace/kickoff/actions`,
   ACTIONS_UPDATE_STATUS: (id: number, actionId: number) => `/api/engagements/${id}/workspace/kickoff/actions/${actionId}/status`,
-  ACTIONS_UPDATE: (id: number, actionId: number) => `/api/engagements/${id}/workspace/kickoff/actions/${actionId}`,
   ACTIONS_DELETE: (id: number, actionId: number) => `/api/engagements/${id}/workspace/kickoff/actions/${actionId}`,
 } as const;

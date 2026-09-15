@@ -2,12 +2,6 @@ namespace Pdr.Api.Constants;
 
 public static class AccessTrackerConstants
 {
-    public static class Roles
-    {
-        public const string TechLead = "Tech Lead";
-        public const string ViewerRoles = "Tech Lead,Project Management,Leadership";
-    }
-
     public static class Messages
     {
         public const string BlockReasonRequired = "A block reason must be provided when setting the status to Blocked.";

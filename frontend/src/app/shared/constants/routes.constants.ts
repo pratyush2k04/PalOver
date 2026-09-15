@@ -8,7 +8,6 @@ export const APP_ROUTES = {
   TECHNICAL_READINESS: '/technical-readiness',
   PORTFOLIO: '/portfolio',
   PORTFOLIO_DASHBOARD: '/portfolio-dashboard',
-  USER_DIRECTORY: '/user-directory',
   ENGAGEMENT_ALLOCATION: '/engagement-allocation',
   ACCESS_DENIED: '/access-denied',
   NOTIFICATIONS: '/notifications',
@@ -83,7 +82,6 @@ export const RISK_ROUTES = {
 } as const;
 
 export const HOME_ROUTES_CONFIG = {
-  USER_DIRECTORY: 'user-directory',
   ENGAGEMENT_DASHBOARD: 'engagement-dashboard',
   MY_HANDOVERS: 'my-handovers',
   TECHNICAL_READINESS: 'technical-readiness',
