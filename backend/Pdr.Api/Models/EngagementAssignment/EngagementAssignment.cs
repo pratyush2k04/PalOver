@@ -10,10 +10,15 @@ public class EngagementAssignment
 
     public int EngagementId { get; set; }
 
+    public int EngagementRoleId { get; set; }
+
     // Navigation Properties
     [System.Text.Json.Serialization.JsonIgnore]
     public User User { get; set; } = null!;
 
     [System.Text.Json.Serialization.JsonIgnore]
     public Engagement Engagement { get; set; } = null!;
+
+    [System.Text.Json.Serialization.JsonIgnore]
+    public EngagementRole EngagementRole { get; set; } = null!;
 }

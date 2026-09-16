@@ -118,7 +118,7 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
 
     public async Task RemoveAssignmentAsync(EngagementAssignment assignment)
     {
-        var tracked = await context.EngagementAssignments.FindAsync(assignment.UserId, assignment.EngagementId);
+        var tracked = await context.EngagementAssignments.FindAsync(assignment.UserId, assignment.EngagementId, assignment.EngagementRoleId);
         if (tracked != null)
         {
             context.EngagementAssignments.Remove(tracked);
@@ -126,12 +126,13 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
         }
     }
 
-    public async Task AddAssignmentAsync(int engagementId, int userId)
+    public async Task AddAssignmentAsync(int engagementId, int userId, int engagementRoleId = (int)EngagementRoleEnum.PreSales)
     {
         context.EngagementAssignments.Add(new EngagementAssignment
         {
             EngagementId = engagementId,
-            UserId = userId
+            UserId = userId,
+            EngagementRoleId = engagementRoleId
         });
         await context.SaveChangesAsync();
     }

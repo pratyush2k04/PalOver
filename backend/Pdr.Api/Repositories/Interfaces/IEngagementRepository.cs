@@ -2,6 +2,7 @@ using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Models;
 using Pdr.Api.Models.Engagements;
 using Pdr.Api.Models.EngagementAssignment;
+using Pdr.Api.Models.LoginEntity;
 
 namespace Pdr.Api.Repositories.Interfaces;
 
@@ -20,7 +21,7 @@ public interface IEngagementRepository
     Task<EngagementAssignment?> GetAssignmentByRoleIdAsync(int engagementId, int roleId);
     Task<EngagementAssignment?> GetAssignmentByUserAsync(int engagementId, int userId);
     Task RemoveAssignmentAsync(EngagementAssignment assignment);
-    Task AddAssignmentAsync(int engagementId, int userId);
+    Task AddAssignmentAsync(int engagementId, int userId, int engagementRoleId = (int)EngagementRoleEnum.PreSales);
     Task<EngagementOpenItemsSummaryDto> GetOpenItemsSummaryAsync(int engagementId);
     Task<Dictionary<int, Engagement>> GetByIdsAsync(IEnumerable<int> engagementIds);
     Task<IEnumerable<EngagementTypeDto>> GetEngagementTypesAsync();

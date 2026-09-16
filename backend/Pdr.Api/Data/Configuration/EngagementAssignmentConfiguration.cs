@@ -10,10 +10,11 @@ public class EngagementAssignmentConfiguration : IEntityTypeConfiguration<Engage
     {
         builder.ToTable("engagement_assignments");
 
-        builder.HasKey(ea => new { ea.UserId, ea.EngagementId });
+        builder.HasKey(ea => new { ea.UserId, ea.EngagementId, ea.EngagementRoleId });
 
         builder.Property(ea => ea.UserId).HasColumnName("user_id");
         builder.Property(ea => ea.EngagementId).HasColumnName("engagement_id");
+        builder.Property(ea => ea.EngagementRoleId).HasColumnName("engagement_role_id").HasDefaultValue(1);
 
         builder.HasOne(ea => ea.User)
                .WithMany(u => u.EngagementAssignments)
@@ -25,8 +26,13 @@ public class EngagementAssignmentConfiguration : IEntityTypeConfiguration<Engage
                .HasForeignKey(ea => ea.EngagementId)
                .OnDelete(DeleteBehavior.Cascade);
 
-        // Matching filter: User and Engagement are both required ends with their own
+        builder.HasOne(ea => ea.EngagementRole)
+               .WithMany(er => er.EngagementAssignments)
+               .HasForeignKey(ea => ea.EngagementRoleId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+        // Matching filter: User, Engagement, and EngagementRole are required ends with their own
         // soft-delete query filters, so mirror it here to avoid EF's dangling-required-navigation warning.
-        builder.HasQueryFilter(ea => !ea.User.IsDeleted && !ea.Engagement.IsDeleted);
+        builder.HasQueryFilter(ea => !ea.User.IsDeleted && !ea.Engagement.IsDeleted && !ea.EngagementRole.IsDeleted);
     }
 }

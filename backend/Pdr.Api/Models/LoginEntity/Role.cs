@@ -1,13 +1,1 @@
-namespace Pdr.Api.Models.LoginEntity;
-
-using Pdr.Api.Models;
-
-public class Role : BaseAuditableEntity
-{
-    public int Id { get; set; }
-
-    public required string Name { get; set; }
-
-    [System.Text.Json.Serialization.JsonIgnore]
-    public ICollection<User> Users { get; set; } = new List<User>();
-}
+// Role has been renamed to UserRole. The global type alias 'Role' in UserRole.cs maps Role to UserRole for backward compatibility.
