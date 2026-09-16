@@ -52,8 +52,8 @@ public class EngagementRoleConfiguration : IEntityTypeConfiguration<EngagementRo
         builder.HasData(
             new EngagementRole
             {
-                Id = 1,
-                Name = "Pre Sales",
+                Id = (int)EngagementRoleEnum.PreSales,
+                Name = EngagementRoleEnum.PreSales.ToRoleName(),
                 IsDeleted = false,
                 CreatedBy = "System",
                 CreatedAt = seededAt,
@@ -61,8 +61,8 @@ public class EngagementRoleConfiguration : IEntityTypeConfiguration<EngagementRo
             },
             new EngagementRole
             {
-                Id = 2,
-                Name = "Leadership",
+                Id = (int)EngagementRoleEnum.Leadership,
+                Name = EngagementRoleEnum.Leadership.ToRoleName(),
                 IsDeleted = false,
                 CreatedBy = "System",
                 CreatedAt = seededAt,
@@ -70,8 +70,8 @@ public class EngagementRoleConfiguration : IEntityTypeConfiguration<EngagementRo
             },
             new EngagementRole
             {
-                Id = 3,
-                Name = "Project Manager",
+                Id = (int)EngagementRoleEnum.ProjectManager,
+                Name = EngagementRoleEnum.ProjectManager.ToRoleName(),
                 IsDeleted = false,
                 CreatedBy = "System",
                 CreatedAt = seededAt,
@@ -79,8 +79,8 @@ public class EngagementRoleConfiguration : IEntityTypeConfiguration<EngagementRo
             },
             new EngagementRole
             {
-                Id = 4,
-                Name = "Tech Lead",
+                Id = (int)EngagementRoleEnum.TechLead,
+                Name = EngagementRoleEnum.TechLead.ToRoleName(),
                 IsDeleted = false,
                 CreatedBy = "System",
                 CreatedAt = seededAt,

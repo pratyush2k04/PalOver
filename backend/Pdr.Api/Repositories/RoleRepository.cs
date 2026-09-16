@@ -9,7 +9,7 @@ public class RoleRepository(AppDbContext context) : IRoleRepository
 {
     public async Task<Role?> GetByIdAsync(int id)
     {
-        return await context.Roles.FirstOrDefaultAsync(r => r.Id == id);
+        return await context.UserRoles.FirstOrDefaultAsync(r => r.Id == id);
     }
 
     public async Task<Dictionary<int, Role>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken cancellationToken = default)
@@ -17,7 +17,7 @@ public class RoleRepository(AppDbContext context) : IRoleRepository
         var idList = ids.Distinct().ToList();
         if (idList.Count == 0) return new Dictionary<int, Role>();
 
-        return await context.Roles
+        return await context.UserRoles
             .AsNoTracking()
             .Where(r => idList.Contains(r.Id))
             .ToDictionaryAsync(r => r.Id, cancellationToken);
@@ -25,7 +25,7 @@ public class RoleRepository(AppDbContext context) : IRoleRepository
 
     public async Task<List<Role>> GetAllAsync()
     {
-        return await context.Roles.OrderBy(r => r.Name).ToListAsync();
+        return await context.UserRoles.OrderBy(r => r.Name).ToListAsync();
     }
 
     public async Task<List<User>> GetUsersInRoleAsync(int roleId)

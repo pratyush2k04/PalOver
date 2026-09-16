@@ -14,7 +14,7 @@ public class EngagementAssignmentConfiguration : IEntityTypeConfiguration<Engage
 
         builder.Property(ea => ea.UserId).HasColumnName("user_id");
         builder.Property(ea => ea.EngagementId).HasColumnName("engagement_id");
-        builder.Property(ea => ea.EngagementRoleId).HasColumnName("engagement_role_id").HasDefaultValue(1);
+        builder.Property(ea => ea.EngagementRoleId).HasColumnName("engagement_role_id");
 
         builder.HasOne(ea => ea.User)
                .WithMany(u => u.EngagementAssignments)

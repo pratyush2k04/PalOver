@@ -52,8 +52,8 @@ public class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
         builder.HasData(
             new UserRole
             {
-                Id = 1,
-                Name = "Pre Sales",
+                Id = (int)UserRoleEnum.PreSales,
+                Name = UserRoleEnum.PreSales.ToRoleName(),
                 IsDeleted = false,
                 CreatedBy = "System",
                 CreatedAt = seededAt,
@@ -61,8 +61,8 @@ public class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
             },
             new UserRole
             {
-                Id = 2,
-                Name = "Leadership",
+                Id = (int)UserRoleEnum.Leadership,
+                Name = UserRoleEnum.Leadership.ToRoleName(),
                 IsDeleted = false,
                 CreatedBy = "System",
                 CreatedAt = seededAt,
@@ -70,8 +70,8 @@ public class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
             },
             new UserRole
             {
-                Id = 3,
-                Name = "Delivery",
+                Id = (int)UserRoleEnum.Delivery,
+                Name = UserRoleEnum.Delivery.ToRoleName(),
                 IsDeleted = false,
                 CreatedBy = "System",
                 CreatedAt = seededAt,
