@@ -13,6 +13,7 @@ import { EmptyStateComponent } from '@common/components/empty-state/empty-state'
   styleUrl: './dashboard-engagements-list.scss'
 })
 export class DashboardEngagementsListComponent {
+  title = input<string>('Engagements approaching kickoff');
   engagements = input.required<DashboardEngagement[]>();
   totalCount = input.required<number>();
 

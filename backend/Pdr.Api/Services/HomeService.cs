@@ -29,7 +29,7 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
         var myEngagementIds = await homeRepository.GetUserEngagementIdsAsync(user.Id);
 
         var cards = await GetDashboardCardsAsync(user.Id, (UserRoleEnum)user.RoleId, myEngagementIds);
-        var (upcomingEngagements, totalUpcomingEngagements) = await GetUpcomingEngagementsAsync(myEngagementIds);
+        var (upcomingEngagements, totalUpcomingEngagements) = await GetUpcomingEngagementsAsync(user.Id, myEngagementIds);
         var (blockers, totalBlockers) = await GetDashboardBlockersAsync(user.Id);
 
         var homeDto = new HomeDashboardDto
@@ -127,12 +127,12 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
         ];
     }
 
-    private async Task<(List<DashboardEngagementDto> Items, int TotalCount)> GetUpcomingEngagementsAsync(List<int> engagementIds)
+    private async Task<(List<DashboardEngagementDto> Items, int TotalCount)> GetUpcomingEngagementsAsync(int userId, List<int> engagementIds)
     {
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         var sevenDaysFromNow = today.AddDays(7);
 
-        var (items, totalCount) = await homeRepository.GetTopUpcomingKickoffsAsync(engagementIds, sevenDaysFromNow, take: 5);
+        var (items, totalCount) = await homeRepository.GetTopUpcomingKickoffsAsync(userId, engagementIds, sevenDaysFromNow, take: 10);
 
         foreach (var e in items)
         {
