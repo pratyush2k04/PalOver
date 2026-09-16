@@ -223,7 +223,7 @@ public class HandoverService : IHandoverService
         await _notificationService.CreateFromTemplateAsync(
             "HandoverSubmitted",
             engagementId,
-            RoleEnum.ProjectManagement,
+            EngagementRoleEnum.ProjectManager,
             JsonSerializer.Serialize(new HandoverSubmittedMapper.HandoverSubmittedData(HandoverId: handover.HandoverId, TriggerUserId: int.Parse(userIdStr), EngagementId: engagementId)),
             DateTime.UtcNow);
 

@@ -36,7 +36,7 @@ public class HandoverReadinessController(IHandoverReadinessService service) : Co
     /// <param name="request">The custom item request.</param>
     /// <returns>The created Handover Readiness item.</returns>
     [HttpPost("api/engagements/{engagementId:int}/handover-readiness")]
-    [AuthorizeRoles(RoleEnum.PreSales)]
+    [AuthorizeRoles(UserRoleEnum.PreSales)]
     [ProducesResponseType(typeof(HandoverReadinessItemDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -55,7 +55,7 @@ public class HandoverReadinessController(IHandoverReadinessService service) : Co
     /// <param name="request">The status update request.</param>
     /// <returns>The updated Handover Readiness item.</returns>
     [HttpPatch("api/handover-readiness/{id:int}/status")]
-    [AuthorizeRoles(RoleEnum.PreSales)]
+    [AuthorizeRoles(UserRoleEnum.PreSales)]
     [ProducesResponseType(typeof(HandoverReadinessItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -71,7 +71,7 @@ public class HandoverReadinessController(IHandoverReadinessService service) : Co
     /// </summary>
     /// <param name="id">The item ID.</param>
     [HttpDelete("api/handover-readiness/{id:int}")]
-    [AuthorizeRoles(RoleEnum.PreSales)]
+    [AuthorizeRoles(UserRoleEnum.PreSales)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -85,7 +85,7 @@ public class HandoverReadinessController(IHandoverReadinessService service) : Co
     /// Attaches or updates an evidence document for a Handover Readiness item (Pre-Sales role required).
     /// </summary>
     [HttpPut("api/engagements/{engagementId:int}/handover-readiness/{itemId:int}/evidence")]
-    [AuthorizeRoles(RoleEnum.PreSales)]
+    [AuthorizeRoles(UserRoleEnum.PreSales)]
     [EndpointSummary("Attach or update handover readiness item evidence")]
     [ProducesResponseType(typeof(HandoverReadinessItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

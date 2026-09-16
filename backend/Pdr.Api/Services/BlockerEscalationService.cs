@@ -74,7 +74,7 @@ public class BlockerEscalationService(
                         risk,
                         engagement,
                         RiskEscalationLevel.Leadership,
-                        RoleEnum.ProjectManagement,
+                        EngagementRoleEnum.ProjectManager,
                         NotificationConstants.TemplateKeys.BlockerEscalatedPM,
                         acceleratedReason,
                         openWorkingDays,
@@ -84,7 +84,7 @@ public class BlockerEscalationService(
                         risk,
                         engagement,
                         RiskEscalationLevel.Leadership,
-                        RoleEnum.Leadership,
+                        EngagementRoleEnum.Leadership,
                         NotificationConstants.TemplateKeys.BlockerEscalatedLeadership,
                         acceleratedReason,
                         openWorkingDays,
@@ -102,7 +102,7 @@ public class BlockerEscalationService(
                         risk,
                         engagement,
                         RiskEscalationLevel.PM,
-                        RoleEnum.ProjectManagement,
+                        EngagementRoleEnum.ProjectManager,
                         NotificationConstants.TemplateKeys.BlockerEscalatedPM,
                         BlockerEscalationConstants.Messages.UnresolvedPm(openWorkingDays),
                         openWorkingDays,
@@ -116,7 +116,7 @@ public class BlockerEscalationService(
                         risk,
                         engagement,
                         RiskEscalationLevel.Leadership,
-                        RoleEnum.Leadership,
+                        EngagementRoleEnum.Leadership,
                         NotificationConstants.TemplateKeys.BlockerEscalatedLeadership,
                         BlockerEscalationConstants.Messages.UnresolvedLeadership(daysSinceLastEscalation),
                         openWorkingDays,
@@ -157,18 +157,13 @@ public class BlockerEscalationService(
         Risk risk,
         Engagement engagement,
         RiskEscalationLevel targetLevel,
-        RoleEnum targetRole,
+        EngagementRoleEnum targetRole,
         string templateKey,
         string reason,
         int unresolvedDays,
         DateTime timestamp)
     {
-        var targetEngagementRoleId = targetRole switch
-        {
-            RoleEnum.ProjectManagement => (int)EngagementRoleEnum.ProjectManager,
-            RoleEnum.Leadership => (int)EngagementRoleEnum.Leadership,
-            _ => (int)targetRole
-        };
+        var targetEngagementRoleId = (int)targetRole;
 
         var pmOrLeadershipAssignment = await engagementRepository.GetAssignmentByEngagementRoleIdAsync(engagement.EngagementId, targetEngagementRoleId);
 
@@ -194,7 +189,7 @@ public class BlockerEscalationService(
 
         var link = BlockerEscalationConstants.Routes.RisksWorkspaceLink(engagement.EngagementId);
 
-        if (targetRole == RoleEnum.Leadership)
+        if (targetRole == EngagementRoleEnum.Leadership)
         {
             var leadershipAssignments = await engagementRepository.GetLeadershipAssignmentsAsync(engagement.EngagementId);
             var leadershipUserIds = leadershipAssignments.Select(a => a.UserId).Distinct().ToList();

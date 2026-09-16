@@ -26,14 +26,7 @@ public class KickoffReminderService(
         {
             // CreateFromTemplateAsync silently no-ops if this role is unfilled - check up front so we
             // don't attempt to schedule a notification for a role with no assignment.
-            var targetEngagementRoleId = role switch
-            {
-                RoleEnum.PreSales => (int)EngagementRoleEnum.PreSales,
-                RoleEnum.ProjectManagement => (int)EngagementRoleEnum.ProjectManager,
-                RoleEnum.TechLead => (int)EngagementRoleEnum.TechLead,
-                _ => (int)role
-            };
-
+            var targetEngagementRoleId = (int)role;
             var assignment = assignments.FirstOrDefault(a => a.EngagementRoleId == targetEngagementRoleId);
             if (assignment is null) continue;
 

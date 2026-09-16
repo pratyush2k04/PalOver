@@ -120,7 +120,7 @@ public class HandoverQueriesService : IHandoverQueriesService
         await _notificationService.CreateFromTemplateAsync(
             "HandoverQueryRaised",
             engagementId,
-            RoleEnum.PreSales,
+            EngagementRoleEnum.PreSales,
             JsonSerializer.Serialize(new HandoverQueryRaisedMapper.HandoverQueryRaisedData(
                 QueryId: query.Id, HandoverId: handover.HandoverId, TriggerUserId: actorUserId, EngagementId: engagementId)),
             DateTime.UtcNow);
@@ -183,7 +183,7 @@ public class HandoverQueriesService : IHandoverQueriesService
             await _notificationService.CreateFromTemplateAsync(
                 "HandoverQueryRaised",
                 engagementId,
-                RoleEnum.ProjectManagement,
+                EngagementRoleEnum.ProjectManager,
                 JsonSerializer.Serialize(new HandoverQueryRaisedMapper.HandoverQueryRaisedData(
                     QueryId: queryId, HandoverId: handover.HandoverId, TriggerUserId: actorUserId, EngagementId: engagementId)),
                 DateTime.UtcNow);
@@ -204,7 +204,7 @@ public class HandoverQueriesService : IHandoverQueriesService
             await _notificationService.CreateFromTemplateAsync(
                 "HandoverQueryRaised",
                 engagementId,
-                RoleEnum.PreSales,
+                EngagementRoleEnum.PreSales,
                 JsonSerializer.Serialize(new HandoverQueryRaisedMapper.HandoverQueryRaisedData(
                     QueryId: queryId, HandoverId: handover.HandoverId, TriggerUserId: actorUserId, EngagementId: engagementId)),
                 DateTime.UtcNow);

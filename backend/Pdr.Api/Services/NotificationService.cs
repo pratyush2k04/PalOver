@@ -23,21 +23,14 @@ public class NotificationService(
     public async Task CreateFromTemplateAsync(
         string templateKey,
         int engagementId,
-        RoleEnum receiverRole,
+        EngagementRoleEnum receiverRole,
         string data,
         DateTime scheduledFor,
         NotificationPriority? priorityOverride = null,
         string? staticFallback = null,
         CancellationToken cancellationToken = default)
     {
-        var targetEngagementRoleId = receiverRole switch
-        {
-            RoleEnum.PreSales => (int)EngagementRoleEnum.PreSales,
-            RoleEnum.ProjectManagement => (int)EngagementRoleEnum.ProjectManager,
-            RoleEnum.TechLead => (int)EngagementRoleEnum.TechLead,
-            RoleEnum.Leadership => (int)EngagementRoleEnum.Leadership,
-            _ => (int)receiverRole
-        };
+        var targetEngagementRoleId = (int)receiverRole;
 
         var assignment = await engagementRepository.GetAssignmentByEngagementRoleIdAsync(engagementId, targetEngagementRoleId);
         if (assignment is null)

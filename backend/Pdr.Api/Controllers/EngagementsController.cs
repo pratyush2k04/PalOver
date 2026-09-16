@@ -119,7 +119,7 @@ public class EngagementsController(
     /// <param name="request">The mark SOW signed request payload.</param>
     /// <returns>The updated SOW signed status response.</returns>
     [HttpPost("mark-sow-signed")]
-    [AuthorizeRoles(RoleEnum.PreSales)]
+    [AuthorizeRoles(UserRoleEnum.PreSales)]
     [EndpointSummary("Mark SOW as signed (Pre Sales only)")]
     [ProducesResponseType(typeof(MarkSowSignedResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -173,7 +173,7 @@ public class EngagementsController(
     /// <param name="request">The assigned user payload.</param>
     /// <returns>The updated engagement owners.</returns>
     [HttpPut("{id:int}/project-manager")]
-    [AuthorizeRoles(RoleEnum.Leadership)]
+    [AuthorizeRoles(UserRoleEnum.Leadership)]
     [EndpointSummary("Assign Project Manager (Leadership only)")]
     [ProducesResponseType(typeof(EngagementOwnersDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -193,7 +193,7 @@ public class EngagementsController(
     /// <param name="request">The assigned user payload.</param>
     /// <returns>The updated engagement owners.</returns>
     [HttpPut("{id:int}/tech-lead")]
-    [AuthorizeRoles(RoleEnum.Leadership)]
+    [AuthorizeRoles(UserRoleEnum.Leadership)]
     [EndpointSummary("Assign Tech Lead (Leadership only)")]
     [ProducesResponseType(typeof(EngagementOwnersDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -343,7 +343,7 @@ public class EngagementsController(
     /// </summary>
     /// <returns>Leadership dashboard data with readiness score, open blocker count, days-to-kickoff, and computed status.</returns>
     [HttpGet("leadership-dashboard")]
-    [AuthorizeRoles(RoleEnum.Leadership)]
+    [AuthorizeRoles(UserRoleEnum.Leadership)]
     [EndpointSummary("Get leadership portfolio dashboard engagements")]
     [ProducesResponseType(typeof(IEnumerable<LeadershipEngagementListItemDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

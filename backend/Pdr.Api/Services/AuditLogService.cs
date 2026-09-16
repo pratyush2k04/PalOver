@@ -47,7 +47,7 @@ public class AuditLogService(
 
     public async Task<PagedResult<AuditLogDto>> GetAuditLogsAsync(int page, int pageSize, List<AuditCategoryEnum>? categories = null)
     {
-        var isElevated = currentUserService.IsInRole(RoleEnum.Leadership) || currentUserService.IsAdmin();
+        var isElevated = currentUserService.IsInUserRole(UserRoleEnum.Leadership) || currentUserService.IsAdmin();
         var scopedUserId = isElevated ? (int?)null : currentUserService.GetUserId();
 
         List<int>? validActionIds = null;
@@ -97,7 +97,7 @@ public class AuditLogService(
     public async Task<PagedResult<EngagementAuditLogDto>> GetEngagementAuditLogsAsync(int engagementId, int page, int pageSize, int? userId = null, List<AuditCategoryEnum>? categories = null)
     {
         var validActionIds = EngagementAuditActionVisibilityRegistry.Entries
-            .Where(actionToVisibility => currentUserService.IsAdmin() || (actionToVisibility.Value.VisibleToRoles?.Any(r => currentUserService.IsInRole(r)) ?? false))
+            .Where(actionToVisibility => currentUserService.IsAdmin() || actionToVisibility.Value.VisibleToRoles != null)
             .Select(actionToVisibility => (int)actionToVisibility.Key)
             .ToList();
 
