@@ -5,16 +5,20 @@ export const API_ENDPOINTS = {
   ROLE_USERS: (roleId: number) => `/api/roles/${roleId}/users`,
 } as const;
 
-export const USER_ROLES = {
-  ADMIN: 'Admin',
-  PRE_SALES: 'Pre Sales',
-  LEADERSHIP: 'Leadership',
-  DELIVERY: 'Delivery',
-  TECH_LEAD: 'Tech Lead',
-  PROJECT_MANAGEMENT: 'Project Management',
-} as const;
+export enum UserRoleId {
+  PreSales = 1,
+  Leadership = 2,
+  Delivery = 3,
+}
 
-export const SYSTEM_ROLES = {
+export enum EngagementRoleId {
+  PreSales = 1,
+  Leadership = 2,
+  ProjectManager = 3,
+  TechLead = 4,
+}
+
+export const USER_ROLES = {
   ADMIN: 'Admin',
   PRE_SALES: 'Pre Sales',
   LEADERSHIP: 'Leadership',

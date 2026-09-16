@@ -1,4 +1,5 @@
 import { ENGAGEMENT_ROUTES } from './routes.constants';
+import { UserRoleId } from './users.constants';
 
 export const ENGAGEMENT_API_ENDPOINTS = {
   MARK_SOW_SIGNED: '/api/Engagements/mark-sow-signed',
@@ -14,7 +15,7 @@ export const ENGAGEMENT_API_ENDPOINTS = {
   ALL_ENGAGEMENTS: '/api/Engagements',
   LEADERSHIP_USERS: (id: number) => `/api/Engagements/${id}/leadership-users`,
   UPDATE_LEADERSHIP_USERS: (id: number) => `/api/Engagements/${id}/leadership-users`,
-  LEADERSHIP_ROLE_USERS: '/api/Roles/2/users',
+  LEADERSHIP_ROLE_USERS: `/api/Roles/${UserRoleId.Leadership}/users`,
   HANDOVER_DRAFT_STATUS: (id: number) => `/api/Engagements/${id}/handover-draft-status`,
   ENGAGEMENT_CHECKLIST: (id: number) => `/api/engagements/${id}/workspace/checklist`,
   CHECKLIST_ITEM_EVIDENCE: (engagementId: number, itemId: number) => `/api/engagements/${engagementId}/workspace/checklist/items/${itemId}/evidence`,
@@ -24,10 +25,10 @@ export const ENGAGEMENT_API_ENDPOINTS = {
 } as const;
 
 export const ENGAGEMENT_CONSTANTS = {
-  DELIVERY_ROLE_ID: 3,
-  PROJECT_MANAGEMENT_ROLE_ID: 3,
-  TECH_LEAD_ROLE_ID: 3,
-  LEADERSHIP_ROLE_ID: 2,
+  DELIVERY_ROLE_ID: UserRoleId.Delivery,
+  PROJECT_MANAGEMENT_ROLE_ID: UserRoleId.Delivery,
+  TECH_LEAD_ROLE_ID: UserRoleId.Delivery,
+  LEADERSHIP_ROLE_ID: UserRoleId.Leadership,
   KICKOFF_PENDING_STATUS: 'KickoffPending',
 } as const;
 
