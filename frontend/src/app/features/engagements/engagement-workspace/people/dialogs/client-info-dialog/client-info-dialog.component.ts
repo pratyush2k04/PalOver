@@ -5,10 +5,6 @@ import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { PersonDto } from '@shared/models/person.model';
 
-export interface ClientInfoDialogData {
-  person: PersonDto;
-}
-
 @Component({
   selector: 'app-client-info-dialog',
   standalone: true,
@@ -18,7 +14,7 @@ export interface ClientInfoDialogData {
 })
 export class ClientInfoDialogComponent {
   private dialogRef = inject(DialogRef);
-  readonly data = inject<ClientInfoDialogData>(DIALOG_DATA);
+  readonly data = inject<PersonDto>(DIALOG_DATA);
 
   onClose(): void {
     this.dialogRef.close();

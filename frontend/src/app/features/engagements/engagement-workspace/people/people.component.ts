@@ -23,7 +23,7 @@ import {
 } from './dialogs/person-form-dialog/person-form-dialog.component';
 import { ClientContactTransitionService } from '../../services/client-contact-transition.service';
 import { TransitionResponse } from '../../models/client-contact-transition.model';
-import { ClientInfoDialogComponent, ClientInfoDialogData } from './dialogs/client-info-dialog/client-info-dialog.component';
+import { ClientInfoDialogComponent } from './dialogs/client-info-dialog/client-info-dialog.component';
 
 @Component({
   selector: 'app-people',
@@ -180,9 +180,9 @@ export class PeopleComponent {
   }
 
   onViewClientDetails(person: PersonDto): void {
-    this.dialog.open<ClientInfoDialogComponent, ClientInfoDialogData, void>(
+    this.dialog.open<ClientInfoDialogComponent, PersonDto, void>(
       ClientInfoDialogComponent,
-      { data: { person } }
+      { data: person }
     );
   }
 

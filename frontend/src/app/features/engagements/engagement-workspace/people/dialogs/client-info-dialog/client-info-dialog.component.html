@@ -3,32 +3,32 @@
 <div class="app-dialog__content client-details-content">
   <div class="detail-group">
     <h3>Name</h3>
-    <p>{{ data.person.name }}</p>
+    <p>{{ data.name }}</p>
   </div>
 
   <div class="detail-group">
     <h3>Role</h3>
-    <p>{{ data.person.role }}</p>
+    <p>{{ data.role }}</p>
   </div>
 
-  @if (data.person.email) {
+  @if (data.email) {
     <div class="detail-group">
       <h3>Email</h3>
-      <p><a [href]="'mailto:' + data.person.email">{{ data.person.email }}</a></p>
+      <p><a [href]="'mailto:' + data.email">{{ data.email }}</a></p>
     </div>
   }
 
-  @if (data.person.clientBackground) {
+  @if (data.clientBackground) {
     <div class="detail-group">
       <h3>Client Background</h3>
-      <p class="pre-wrap">{{ data.person.clientBackground }}</p>
+      <p class="pre-wrap">{{ data.clientBackground }}</p>
     </div>
   }
 
-  @if (data.person.clientSentiment) {
+  @if (data.clientSentiment) {
     <div class="detail-group">
       <h3>Client Behaviour</h3>
-      <p>{{ data.person.clientSentiment }}</p>
+      <p>{{ data.clientSentiment }}</p>
     </div>
   }
 
