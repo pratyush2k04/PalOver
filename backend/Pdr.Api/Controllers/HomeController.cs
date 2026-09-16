@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,8 +25,7 @@ public class HomeController(IHomeService homeService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<HomeResponseDto>> GetHome()
     {
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var home = await homeService.GetHomeAsync(userId);
+        var home = await homeService.GetHomeAsync();
         return Ok(home);
     }
 }

@@ -10,10 +10,15 @@ using Pdr.Api.Helpers;
 
 namespace Pdr.Api.Services;
 
-public class HomeService(IHomeRepository homeRepository, IKickoffReadinessService kickoffReadinessService, INotificationService notificationService) : IHomeService
+public class HomeService(
+    IHomeRepository homeRepository,
+    IKickoffReadinessService kickoffReadinessService,
+    INotificationService notificationService,
+    ICurrentUserService currentUserService) : IHomeService
 {
-    public async Task<HomeResponseDto> GetHomeAsync(int userId)
+    public async Task<HomeResponseDto> GetHomeAsync()
     {
+        var userId = currentUserService.GetUserId();
         var user = await homeRepository.GetUserWithRoleAsync(userId);
 
         if (user is null)
