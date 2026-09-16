@@ -414,63 +414,53 @@
                     }
                   }
                 } @else {
-                  <div class="realistic-edit-form">
+                  <div class="realistic-edit-form" [formGroup]="realisticEditForm">
                     <app-textarea
                       [id]="'edit-realistic-desc-' + c.commitmentId"
                       [label]="HANDOVER_LABELS.DESCRIPTION"
                       [required]="true"
-                      [(ngModel)]="realisticEditForm().description"
-                      [ngModelOptions]="{ standalone: true }"
+                      formControlName="description"
                       [maxLength]="2000"
                       [placeholder]="HANDOVER_PLACEHOLDERS.REALISTIC_DESCRIPTION"
                       [rows]="2"
-                      [class.is-invalid]="realisticEditTouched() && !realisticEditForm().description"
+                      [errorMessages]="{ required: 'Description is required.' }"
                     />
-                    @if (realisticEditTouched() && !realisticEditForm().description) {
-                      <div class="invalid-feedback">
-                        {{ HANDOVER_MESSAGES.DESCRIPTION_REQUIRED }}
-                      </div>
-                    }
                     <div class="form-row-timeline">
                       <app-input
                         [id]="'edit-realistic-timeline-' + c.commitmentId"
                         [label]="HANDOVER_LABELS.TIMELINE"
                         type="number"
                         [min]="1"
-                        [(ngModel)]="realisticEditForm().timeline"
-                        [ngModelOptions]="{ standalone: true }"
+                        formControlName="timeline"
                         style="flex: 1"
                       />
                       <app-select
                         [id]="'edit-realistic-unit-' + c.commitmentId"
                         [label]="HANDOVER_LABELS.UNIT"
-                        [(ngModel)]="realisticEditForm().timelineUnit"
-                        [ngModelOptions]="{ standalone: true }"
+                        formControlName="timelineUnit"
                         [options]="timelineUnitOptions"
                         style="flex: 1"
                       />
                     </div>
 
-                    <div class="form-group">
-                      <app-input
-                        [id]="'edit-realistic-ack-' + c.commitmentId"
-                        [label]="HANDOVER_LABELS.ACKNOWLEDGEMENT_MESSAGE"
-                        [required]="editFormNeedsAcknowledgement(c)"
-                        [(ngModel)]="realisticEditForm().acknowledgementMessage"
-                        [ngModelOptions]="{ standalone: true }"
-                        [maxLength]="2000"
-                        [placeholder]="HANDOVER_PLACEHOLDERS.WHY_REALISTIC_DIFFERS"
-                        [class.is-invalid]="realisticEditTouched() && editFormNeedsAcknowledgement(c) && !realisticEditForm().acknowledgementMessage"
-                      />
-                      @if (realisticEditTouched() && editFormNeedsAcknowledgement(c) && !realisticEditForm().acknowledgementMessage) {
-                        <div class="invalid-feedback">
-                          {{ HANDOVER_MESSAGES.ACK_MESSAGE_REQUIRED }}
-                        </div>
-                      }
-                    </div>
+                    @if (editingRealisticNeedsAck()) {
+                      <div class="form-group">
+                        <app-input
+                          [id]="'edit-realistic-ack-' + c.commitmentId"
+                          [label]="HANDOVER_LABELS.ACKNOWLEDGEMENT_MESSAGE"
+                          [required]="true"
+                          formControlName="acknowledgementMessage"
+                          [maxLength]="2000"
+                          [placeholder]="HANDOVER_PLACEHOLDERS.WHY_REALISTIC_DIFFERS"
+                          [errorMessages]="{ required: 'Acknowledgement message is required.' }"
+                        />
+                      </div>
+                    }
 
                     <div class="row-actions">
-                      <app-button variant="flat" size="sm" (click)="saveRealisticCommitment(c)">{{ HANDOVER_BUTTONS.SAVE }}</app-button>
+                      <app-button variant="flat" size="sm" (click)="saveRealisticCommitment(c)">
+                        {{ HANDOVER_BUTTONS.SAVE }}
+                      </app-button>
                       <app-button variant="stroked" size="sm" (click)="cancelEditRealisticCommitment()">
                         {{ HANDOVER_BUTTONS.CANCEL }}
                       </app-button>

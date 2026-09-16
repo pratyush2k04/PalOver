@@ -6,7 +6,7 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { DocumentService } from '../../../services/document.service';
-import { DocumentCategory, DocumentVisibility } from '../../../models/document.model';
+import { DocumentCategory, DocumentCategoryId, DocumentVisibility } from '../../../models/document.model';
 import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from '@shared/constants/document.constants';
 import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
@@ -46,7 +46,11 @@ export class UploadDocumentDialogComponent {
   private data = inject<UploadDocumentDialogData>(DIALOG_DATA);
 
   categories = signal<DocumentCategory[]>(this.data.categories);
-  selectedCategoryId = signal<number | null>(this.data.categories[0]?.id ?? null);
+  selectedCategoryId = signal<number | null>(
+    this.data.categories.find((cat) => cat.id === DocumentCategoryId.Other)?.id
+      ?? this.data.categories[0]?.id
+      ?? null
+  );
 
   /** All files selected by the user */
   selectedFiles = signal<File[]>([]);
