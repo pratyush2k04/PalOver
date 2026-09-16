@@ -40,15 +40,15 @@ public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICur
         var roleName = GetRole();
         if (roleName != null)
         {
-            if (string.Equals(roleName, RoleConstants.PreSales, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(roleName, UserRoleConstants.PreSales, StringComparison.OrdinalIgnoreCase))
                 return (int)UserRoleEnum.PreSales;
-            if (string.Equals(roleName, RoleConstants.Leadership, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(roleName, UserRoleConstants.Leadership, StringComparison.OrdinalIgnoreCase))
                 return (int)UserRoleEnum.Leadership;
-            if (string.Equals(roleName, RoleConstants.Delivery, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(roleName, UserRoleConstants.Delivery, StringComparison.OrdinalIgnoreCase))
                 return (int)UserRoleEnum.Delivery;
-            if (string.Equals(roleName, RoleConstants.ProjectManagement, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(roleName, EngagementRoleConstants.ProjectManager, StringComparison.OrdinalIgnoreCase))
                 return (int)RoleEnum.ProjectManagement;
-            if (string.Equals(roleName, RoleConstants.TechLead, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(roleName, EngagementRoleConstants.TechLead, StringComparison.OrdinalIgnoreCase))
                 return (int)RoleEnum.TechLead;
         }
 

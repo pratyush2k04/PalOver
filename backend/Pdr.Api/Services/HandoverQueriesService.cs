@@ -145,7 +145,7 @@ public class HandoverQueriesService : IHandoverQueriesService
         var actorUser = await _userRepository.GetByIdAsync(actorUserId)
             ?? throw new UserNotFoundException(actorUserId);
 
-        var messageType = actorUser.Role.Name == RoleConstants.PreSales
+        var messageType = actorUser.Role.Name == UserRoleConstants.PreSales
             ? HandoverQueryMessageType.Response
             : HandoverQueryMessageType.Question;
 

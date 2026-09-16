@@ -72,7 +72,7 @@ public class HandoverQueriesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<HandoverQueryDto>> RaiseQuery(int engagementId, [FromBody] CreateHandoverQueryRequest request)
     {
-        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId(), RoleConstants.ProjectManagement);
+        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId(), EngagementRoleConstants.ProjectManager);
 
         await _createValidator.ValidateAndThrowAsync(request);
 
@@ -97,7 +97,7 @@ public class HandoverQueriesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<HandoverQueryDto>> AddMessage(int engagementId, int queryId, [FromBody] AddHandoverQueryMessageRequest request)
     {
-        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId(), RoleConstants.PreSales, RoleConstants.ProjectManagement);
+        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId(), EngagementRoleConstants.PreSales, EngagementRoleConstants.ProjectManager);
 
         await _messageValidator.ValidateAndThrowAsync(request);
 
@@ -120,7 +120,7 @@ public class HandoverQueriesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<HandoverQueryDto>> ToggleResolution(int engagementId, int queryId)
     {
-        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId(), RoleConstants.PreSales, RoleConstants.ProjectManagement);
+        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId(), EngagementRoleConstants.PreSales, EngagementRoleConstants.ProjectManager);
 
         var dto = await _handoverQueriesService.ToggleResolutionAsync(engagementId, queryId, _currentUserService.GetUserId().ToString());
         return Ok(dto);
@@ -140,7 +140,7 @@ public class HandoverQueriesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteQuery(int engagementId, int queryId)
     {
-        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId(), RoleConstants.ProjectManagement);
+        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId(), EngagementRoleConstants.ProjectManager);
 
         await _handoverQueriesService.DeleteQueryAsync(engagementId, queryId, _currentUserService.GetUserId().ToString());
         return NoContent();

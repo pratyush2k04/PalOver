@@ -45,7 +45,7 @@ public class CommitmentsController(
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<CommitmentDto>> AddCommitment(int engagementId, [FromBody] CreateCommitmentRequest request)
     {
-        await CheckAccessAsync(engagementId, RoleConstants.PreSales);
+        await CheckAccessAsync(engagementId, EngagementRoleConstants.PreSales);
 
         var dto = await commitmentService.AddCommitmentAsync(engagementId, request, GetUserId());
         return CreatedAtAction(nameof(AddCommitment), new { engagementId, commitmentId = dto.CommitmentId }, dto);
@@ -67,7 +67,7 @@ public class CommitmentsController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CommitmentDto>> UpdateCommitment(int engagementId, int commitmentId, [FromBody] UpdateCommitmentRequest request)
     {
-        await CheckAccessAsync(engagementId, RoleConstants.PreSales);
+        await CheckAccessAsync(engagementId, EngagementRoleConstants.PreSales);
 
         var dto = await commitmentService.UpdateCommitmentAsync(engagementId, commitmentId, request, GetUserId());
         return Ok(dto);
@@ -87,7 +87,7 @@ public class CommitmentsController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteCommitment(int engagementId, int commitmentId)
     {
-        await CheckAccessAsync(engagementId, RoleConstants.PreSales);
+        await CheckAccessAsync(engagementId, EngagementRoleConstants.PreSales);
 
         await commitmentService.DeleteCommitmentAsync(engagementId, commitmentId);
         return NoContent();
@@ -110,7 +110,7 @@ public class CommitmentsController(
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<RealisticCommitmentDto>> CreateRealisticCommitment(int engagementId, int commitmentId, [FromBody] CreateRealisticCommitmentRequest request)
     {
-        await CheckAccessAsync(engagementId, RoleConstants.ProjectManagement);
+        await CheckAccessAsync(engagementId, EngagementRoleConstants.ProjectManager);
 
         var dto = await realisticCommitmentService.CreateRealisticCommitmentAsync(engagementId, commitmentId, request, GetUserId());
         return CreatedAtAction(nameof(CreateRealisticCommitment), new { engagementId, commitmentId }, dto);
@@ -132,7 +132,7 @@ public class CommitmentsController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<RealisticCommitmentDto>> UpdateRealisticCommitment(int engagementId, int commitmentId, [FromBody] UpdateRealisticCommitmentRequest request)
     {
-        await CheckAccessAsync(engagementId, RoleConstants.ProjectManagement);
+        await CheckAccessAsync(engagementId, EngagementRoleConstants.ProjectManager);
 
         var dto = await realisticCommitmentService.UpdateRealisticCommitmentAsync(engagementId, commitmentId, request, GetUserId());
         return Ok(dto);

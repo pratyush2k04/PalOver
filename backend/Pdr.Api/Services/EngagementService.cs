@@ -36,6 +36,29 @@ public class EngagementService(
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
 
+    private const string InvalidMappingErrorMessageTemplate =
+        "User with role '{0}' cannot be assigned to engagement role '{1}'. Allowed mappings are: Pre Sales -> Pre Sales, Leadership -> Leadership, Delivery -> Project Manager / Tech Lead.";
+
+    private static readonly IReadOnlyDictionary<UserRoleEnum, IReadOnlyList<EngagementRoleEnum>> AllowedMappings =
+        new Dictionary<UserRoleEnum, IReadOnlyList<EngagementRoleEnum>>
+        {
+            [UserRoleEnum.PreSales] = [EngagementRoleEnum.PreSales],
+            [UserRoleEnum.Leadership] = [EngagementRoleEnum.Leadership],
+            [UserRoleEnum.Delivery] = [EngagementRoleEnum.ProjectManager, EngagementRoleEnum.TechLead]
+        };
+
+    private static void ValidateMapping(UserRoleEnum userRole, EngagementRoleEnum engagementRole)
+    {
+        if (!AllowedMappings.TryGetValue(userRole, out var allowed) || !allowed.Contains(engagementRole))
+        {
+            var message = string.Format(
+                InvalidMappingErrorMessageTemplate,
+                userRole.ToRoleName(),
+                engagementRole.ToRoleName());
+            throw new InvalidOperationException(message);
+        }
+    }
+
     public async Task<MarkSowSignedResponse> MarkSowSignedAsync(MarkSowSignedRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.EngagementName))
@@ -333,7 +356,7 @@ public class EngagementService(
         var user = await userRepository.GetByIdAsync(userId)
             ?? throw new UserNotFoundException(userId);
 
-        RoleMappingConstants.ValidateMapping((UserRoleEnum)user.RoleId, requiredRole);
+        ValidateMapping((UserRoleEnum)user.RoleId, requiredRole);
 
         var existingAssignment = await engagementRepository.GetAssignmentByEngagementRoleIdAsync(engagementId, (int)requiredRole);
         var isReassignment = existingAssignment is not null;
