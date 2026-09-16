@@ -153,7 +153,7 @@ export class DependenciesComponent implements OnInit {
   canMarkMet(dependency: DependencyDto): boolean {
     return !this.engagementService.isSignedOff() && (
       dependency.ownerUserId === this.authService.getUserId()
-      || this.authService.hasRole('Project Management')
+      || this.engagementService.isWorkspacePm()
     );
   }
 

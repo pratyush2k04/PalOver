@@ -34,7 +34,7 @@ export class MeetingRecordComponent {
   readonly messages = KICKOFF_MESSAGES;
 
   readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
-  isProjectManager = computed(() => !this.isSignedOff() && (this.engagementService.isWorkspacePm() || this.authService.hasRole('Project Management')));
+  isProjectManager = computed(() => !this.isSignedOff() && this.engagementService.isWorkspacePm());
 
   readonly statusOptions: SelectOption[] = [
     { value: 'InProgress', label: 'In Progress' },

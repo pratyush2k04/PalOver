@@ -9,9 +9,7 @@ import { AlertComponent } from '@common/components/alert/alert';
 import { StatusBadgeComponent } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
 import { DialogService } from '@common/services/dialog/dialog.service';
-import { AuthService } from '@shared/services/auth';
 import { EngagementService } from '@features/engagements/services/engagement.service';
-import { TECHNICAL_READINESS_ROLES } from '@shared/constants/technical-readiness.constants';
 import { BrownfieldFindingDto, BrownfieldReadinessResponse } from '@features/engagements/models/brownfield-review/brownfield-review.dtos';
 import { BrownfieldSeverity, ClientDecision } from '@features/engagements/models/brownfield-review/brownfield-review.enums';
 import { BrownfieldReviewService } from '@features/engagements/services/brownfield-review.service';
@@ -43,7 +41,6 @@ export class BrownfieldReviewComponent {
 
   private brownfieldService = inject(BrownfieldReviewService);
   private toastService = inject(ToastService);
-  private authService = inject(AuthService);
   private engagementService = inject(EngagementService);
   private dialog = inject(DialogService);
 
@@ -52,7 +49,7 @@ export class BrownfieldReviewComponent {
   findingToDelete = signal<BrownfieldFindingDto | null>(null);
   errorMessage = signal<string>('');
 
-  isTechLead = computed(() => this.engagementService.isWorkspaceTechLead() || this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+  isTechLead = computed(() => this.engagementService.isWorkspaceTechLead());
   canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
   findings = computed(() => this.readinessResponse()?.items ?? []);
   totalCount = computed(() => this.readinessResponse()?.totalCount ?? 0);

@@ -10,6 +10,7 @@ import { AuthService } from '@shared/services/auth';
 import { EngagementService } from '../../../services/engagement.service';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { ToastService } from '@common/services/toast/toast';
+import { USER_ROLES } from '@shared/constants/app.constants';
 import {
   FORM_LABELS,
   BUTTON_LABELS,
@@ -50,8 +51,8 @@ export class ClientContactTransitionCardComponent {
   transitions = signal<TransitionResponse[]>([]);
   isLoading = signal(false);
 
-  isPm = computed(() => this.engagementService.isWorkspacePm() || this.authService.hasRole('Project Management'));
-  isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
+  isPm = computed(() => this.engagementService.isWorkspacePm());
+  isPreSales = computed(() => this.authService.hasRole(USER_ROLES.PRE_SALES));
 
   constructor() {
     effect(() => {

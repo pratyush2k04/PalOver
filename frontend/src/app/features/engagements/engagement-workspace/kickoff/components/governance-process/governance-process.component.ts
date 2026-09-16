@@ -4,7 +4,6 @@ import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CommunicationCadenceService } from '../../../../services/communication-cadence.service';
 import { EngagementService } from '../../../../services/engagement.service';
-import { AuthService } from '@shared/services/auth';
 import { CommunicationCadence, EngagementParticipant } from '../../../../models/cadence.model';
 import { CADENCE_CONSTANTS } from '@shared/constants/cadence.constants';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
@@ -27,7 +26,6 @@ import { AddCadenceDialogComponent, AddCadenceDialogData } from './dialogs/add-c
 export class GovernanceProcessComponent {
   private route = inject(ActivatedRoute);
   private cadenceService = inject(CommunicationCadenceService);
-  private authService = inject(AuthService);
   private engagementService = inject(EngagementService);
   private dialog = inject(DialogService);
   private toastService = inject(ToastService);
@@ -35,7 +33,7 @@ export class GovernanceProcessComponent {
   readonly constants = CADENCE_CONSTANTS;
 
   readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
-  isProjectManager = computed(() => !this.isSignedOff() && (this.engagementService.isWorkspacePm() || this.authService.hasRole('Project Management')));
+  isProjectManager = computed(() => !this.isSignedOff() && this.engagementService.isWorkspacePm());
 
   private paramMap = toSignal(this.route.paramMap);
   private parentParamMap = toSignal(this.route.parent?.paramMap ?? this.route.paramMap);

@@ -15,6 +15,7 @@ import {
   OverrideKickoffReadyDialogResult
 } from './dialogs/override-kickoff-ready-dialog/override-kickoff-ready-dialog.component';
 import { KICKOFF_MESSAGES } from '@shared/constants/kickoff.constants';
+import { USER_ROLES } from '@shared/constants/users.constants';
 
 @Component({
   selector: 'app-kickoff',
@@ -44,12 +45,10 @@ export class KickoffComponent {
   message = signal('');
   isError = signal(false);
 
-  isLeadership = computed(() => this.authService.hasRole('Leadership'));
+  isLeadership = computed(() => this.authService.hasRole(USER_ROLES.LEADERSHIP));
   canMarkReady = computed(() =>
     this.engagementService.isWorkspacePm() ||
     this.engagementService.isWorkspaceTechLead() ||
-    this.authService.hasRole('Project Management') ||
-    this.authService.hasRole('Tech Lead') ||
     this.isLeadership());
 
   constructor() {

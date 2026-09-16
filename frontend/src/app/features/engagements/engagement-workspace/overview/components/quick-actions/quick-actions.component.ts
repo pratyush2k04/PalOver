@@ -19,8 +19,8 @@ export class QuickActionsComponent {
 
   private readonly hasRole = (role: string) => this.authService.hasRole(role);
   private readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
-  private readonly isPm = computed(() => this.engagementService.isWorkspacePm() || this.hasRole(USER_ROLES.PROJECT_MANAGEMENT));
-  private readonly isTechLead = computed(() => this.engagementService.isWorkspaceTechLead() || this.hasRole(USER_ROLES.TECH_LEAD));
+  private readonly isPm = computed(() => this.engagementService.isWorkspacePm());
+  private readonly isTechLead = computed(() => this.engagementService.isWorkspaceTechLead());
 
   readonly canLogRisk = computed(() => !this.isSignedOff());
 

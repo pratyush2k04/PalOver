@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '@shared/services/auth';
-import { TECHNICAL_READINESS_ROLES } from '@shared/constants/technical-readiness.constants';
+import { USER_ROLES } from '@shared/constants/users.constants';
 import { AccessItemDto } from '@features/engagements/models/access-tracker/access-tracker.dtos';
 import { AccessItemStatus } from '@features/engagements/models/access-tracker/access-tracker.enums';
 import { EnvironmentToolingItemDto } from '@features/engagements/models/environment-tooling/environment-tooling.dtos';
@@ -40,8 +40,8 @@ export class TechnicalReadinessComponent {
 
   private parentParamMap = toSignal(this.route.parent!.paramMap);
 
-  isPreSales = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.PRE_SALES));
-  isTechLead = computed(() => this.engagementService.isWorkspaceTechLead() || this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+  isPreSales = computed(() => this.authService.hasRole(USER_ROLES.PRE_SALES));
+  isTechLead = computed(() => this.engagementService.isWorkspaceTechLead());
 
   canViewDayOneBanner = computed(() => !this.isPreSales());
   canViewAccessTracker = computed(() => !this.isPreSales());

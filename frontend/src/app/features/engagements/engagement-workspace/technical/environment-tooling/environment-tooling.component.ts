@@ -2,7 +2,6 @@ import { Component, inject, input, output, signal, computed, effect, DestroyRef 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TECHNICAL_READINESS_ROLES } from '@shared/constants/app.constants';
 import { EnvironmentToolingService } from '@features/engagements/services/environment-tooling.service';
 import { EngagementService } from '@features/engagements/services/engagement.service';
 import { AuthService } from '@shared/services/auth';
@@ -55,7 +54,7 @@ export class EnvironmentToolingComponent {
   private dialog = inject(DialogService);
 
   items = signal<EnvironmentToolingItemDto[]>([]);
-  isTechLead = computed(() => this.engagementService.isWorkspaceTechLead() || this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+  isTechLead = computed(() => this.engagementService.isWorkspaceTechLead());
   canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
   itemToDelete = signal<EnvironmentToolingItemDto | null>(null);
   isDeleting = signal<boolean>(false);

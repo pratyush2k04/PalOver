@@ -81,7 +81,7 @@ export class RisksComponent implements OnInit {
       return false;
     }
 
-    if (this.authService.hasRole(USER_ROLES.PROJECT_MANAGEMENT) || this.engagementService.isWorkspacePm()) {
+    if (this.engagementService.isWorkspacePm()) {
       return true;
     }
 

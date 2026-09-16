@@ -5,6 +5,8 @@ import { DashboardEngagementsListComponent } from '@shared/components/dashboard-
 import { DashboardCriticalBlockersComponent } from '@shared/components/dashboard-critical-blockers/dashboard-critical-blockers';
 import { PageHeaderComponent } from '@common/components/page-header/page-header';
 
+import { ENGAGEMENT_ROLES } from '@shared/constants/app.constants';
+
 @Component({
   selector: 'app-delivery-home',
   standalone: true,
@@ -25,12 +27,12 @@ export class DeliveryHomeComponent implements OnInit {
 
   readonly pmEngagements = computed(() => {
     const engagements = this.workspace()?.upcomingEngagements ?? [];
-    return engagements.filter((e) => !e.userRoles || e.userRoles.includes('Project Manager'));
+    return engagements.filter((e) => !e.userRoles || e.userRoles.includes(ENGAGEMENT_ROLES.PROJECT_MANAGER));
   });
 
   readonly tlEngagements = computed(() => {
     const engagements = this.workspace()?.upcomingEngagements ?? [];
-    return engagements.filter((e) => !e.userRoles || e.userRoles.includes('Tech Lead'));
+    return engagements.filter((e) => !e.userRoles || e.userRoles.includes(ENGAGEMENT_ROLES.TECH_LEAD));
   });
 
   ngOnInit() {

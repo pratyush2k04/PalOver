@@ -28,6 +28,7 @@ import {
   HANDOVER_MESSAGES,
   HANDOVER_QUERY_FIELD_LABELS
 } from '@shared/constants/handover.constants';
+import { USER_ROLES } from '@shared/constants/users.constants';
 
 @Component({
   selector: 'app-handover-queries',
@@ -73,8 +74,8 @@ export class HandoverQueriesComponent {
   pendingDeleteQuery = signal<HandoverQueryDto | null>(null);
   isDeletingQuery = signal<boolean>(false);
 
-  isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
-  isProjectManagement = computed(() => this.engagementService.isWorkspacePm() || this.authService.hasRole('Project Management'));
+  isPreSales = computed(() => this.authService.hasRole(USER_ROLES.PRE_SALES));
+  isProjectManagement = computed(() => this.engagementService.isWorkspacePm());
 
   openQueries = computed(() =>
     this.queries()

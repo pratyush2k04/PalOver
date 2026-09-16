@@ -1,10 +1,3 @@
-export const TECHNICAL_READINESS_ROLES = {
-  PRE_SALES: 'Pre Sales',
-  PROJECT_MANAGEMENT: 'Project Management',
-  TECH_LEAD: 'Tech Lead',
-  LEADERSHIP: 'Leadership'
-} as const;
-
 export const TECHNICAL_READINESS_API_ENDPOINTS = {
   ACCESS_ITEMS: (engagementId: number) => `/api/engagements/${engagementId}/access-items`,
   ACCESS_ITEM: (id: number) => `/api/access-items/${id}`,

@@ -8,6 +8,7 @@ import { AuthService } from '@shared/services/auth';
 import { ToastService } from '@common/services/toast/toast';
 import { ChangeRequest } from '@features/engagements/models/change-request.model';
 import { CHANGE_REQUEST_CONSTANTS } from '@shared/constants/change-request.constants';
+import { USER_ROLES } from '@shared/constants/users.constants';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status-badge/status-badge';
 import { ButtonComponent } from '@common/components/button/button';
@@ -43,8 +44,8 @@ export class ChangeRequestsComponent {
   readonly constants = CHANGE_REQUEST_CONSTANTS;
 
   readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
-  isProjectManager = computed(() => !this.isSignedOff() && (this.engagementService.isWorkspacePm() || this.authService.hasRole('Project Management')));
-  isLeadership = computed(() => !this.isSignedOff() && this.authService.hasRole('Leadership'));
+  isProjectManager = computed(() => !this.isSignedOff() && this.engagementService.isWorkspacePm());
+  isLeadership = computed(() => !this.isSignedOff() && this.authService.hasRole(USER_ROLES.LEADERSHIP));
 
   private paramMap = toSignal(this.route.paramMap);
   private parentParamMap = toSignal(this.route.parent?.paramMap ?? this.route.paramMap);
