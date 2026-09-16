@@ -8,9 +8,24 @@ export const API_ENDPOINTS = {
 export const USER_ROLES = {
   ADMIN: 'Admin',
   PRE_SALES: 'Pre Sales',
+  LEADERSHIP: 'Leadership',
+  DELIVERY: 'Delivery',
   TECH_LEAD: 'Tech Lead',
   PROJECT_MANAGEMENT: 'Project Management',
+} as const;
+
+export const SYSTEM_ROLES = {
+  ADMIN: 'Admin',
+  PRE_SALES: 'Pre Sales',
   LEADERSHIP: 'Leadership',
+  DELIVERY: 'Delivery',
+} as const;
+
+export const ENGAGEMENT_ROLES = {
+  PRE_SALES: 'Pre Sales',
+  LEADERSHIP: 'Leadership',
+  PROJECT_MANAGER: 'Project Manager',
+  TECH_LEAD: 'Tech Lead',
 } as const;
 
 export const USER_MESSAGES = {
