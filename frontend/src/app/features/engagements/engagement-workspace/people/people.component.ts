@@ -23,6 +23,7 @@ import {
 } from './dialogs/person-form-dialog/person-form-dialog.component';
 import { ClientContactTransitionService } from '../../services/client-contact-transition.service';
 import { TransitionResponse } from '../../models/client-contact-transition.model';
+import { ClientInfoDialogComponent, ClientInfoDialogData } from './dialogs/client-info-dialog/client-info-dialog.component';
 
 @Component({
   selector: 'app-people',
@@ -148,7 +149,10 @@ export class PeopleComponent {
         engagementId,
         name: result.name,
         role: result.role,
-        personType: result.personType
+        personType: result.personType,
+        clientBackground: result.clientBackground,
+        clientSentiment: result.clientSentiment,
+        email: result.email
       };
 
       this.isLoading.set(true);
@@ -173,6 +177,13 @@ export class PeopleComponent {
 
   onDeletePerson(person: PersonDto): void {
     this.personToDelete.set(person);
+  }
+
+  onViewClientDetails(person: PersonDto): void {
+    this.dialog.open<ClientInfoDialogComponent, ClientInfoDialogData, void>(
+      ClientInfoDialogComponent,
+      { data: { person } }
+    );
   }
 
   cancelDelete(): void {

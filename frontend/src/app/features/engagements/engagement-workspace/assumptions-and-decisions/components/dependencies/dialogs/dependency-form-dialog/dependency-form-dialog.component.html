@@ -24,7 +24,8 @@
         @if (peopleLoading()) {
           <app-loading-spinner size="sm" [inline]="true" label="Loading owners..." />
         } @else {
-          <app-select
+          <div (click)="onOwnerSelectClick()">
+            <app-select
             id="ownerId"
             label="Owner"
             [options]="ownerOptions()"
@@ -32,6 +33,7 @@
             formControlName="ownerId"
             placeholder="Select an owner"
           />
+          </div>
         }
       </div>
     </div>

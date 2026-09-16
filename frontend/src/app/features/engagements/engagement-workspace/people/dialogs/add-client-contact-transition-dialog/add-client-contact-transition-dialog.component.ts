@@ -89,7 +89,7 @@ export class AddClientContactTransitionDialogComponent {
 
   onOutgoingSelectClick(): void {
     if (this.outgoingContactOptions().length === 0) {
-      this.toastService.info(this.validationMessages.NO_OUTGOING_CONTACTS);
+      this.toastService.warning(this.validationMessages.NO_OUTGOING_CONTACTS);
     }
   }
 

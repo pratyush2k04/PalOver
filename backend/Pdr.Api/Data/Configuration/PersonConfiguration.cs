@@ -26,6 +26,9 @@ public class PersonConfiguration : IEntityTypeConfiguration<Person>
             .IsRequired();
         builder.Property(p => p.UserId).HasColumnName("user_id");
         builder.Property(p => p.SourceRoleId).HasColumnName("source_role_id");
+        builder.Property(p => p.ClientBackground).HasColumnName("client_background").HasMaxLength(2000);
+        builder.Property(p => p.ClientSentiment).HasColumnName("client_sentiment");
+        builder.Property(p => p.Email).HasColumnName("email").HasMaxLength(255);
 
         // BaseAuditableEntity Column Mappings
         builder.Property(p => p.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");

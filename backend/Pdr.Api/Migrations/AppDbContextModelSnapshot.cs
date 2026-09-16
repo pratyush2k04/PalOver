@@ -4372,6 +4372,15 @@ namespace Pdr.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("PersonId"));
 
+                    b.Property<string>("ClientBackground")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("client_background");
+
+                    b.Property<string>("ClientSentiment")
+                        .HasColumnType("text")
+                        .HasColumnName("client_sentiment");
+
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -4382,6 +4391,11 @@ namespace Pdr.Api.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("created_by");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("email");
 
                     b.Property<int>("EngagementId")
                         .HasColumnType("integer")
