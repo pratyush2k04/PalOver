@@ -188,10 +188,12 @@ export class EngagementWorkspaceComponent {
       error: () => {}
     });
 
-    this.technicalReadinessService.getTechnicalSummary(id).subscribe({
-      next: (summary) => this.technicalSummary.set(summary),
-      error: () => this.technicalSummary.set(null)
-    });
+    if (this.isProjectManager()) {
+      this.technicalReadinessService.getTechnicalSummary(id).subscribe({
+        next: (summary) => this.technicalSummary.set(summary),
+        error: () => this.technicalSummary.set(null)
+      });
+    }
   }
 
   openSignOffDialog(): void {
