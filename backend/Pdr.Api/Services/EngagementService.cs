@@ -477,10 +477,10 @@ public class EngagementService(
 
     private static EngagementOwnersDto BuildOwnersDto(List<EngagementAssignment> assignments)
     {
-        var pm = assignments.FirstOrDefault(a => a.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager || a.User.RoleId == (int)RoleEnum.ProjectManagement);
-        var techLead = assignments.FirstOrDefault(a => a.EngagementRoleId == (int)EngagementRoleEnum.TechLead || a.User.RoleId == (int)RoleEnum.TechLead);
+        var pm = assignments.FirstOrDefault(a => a.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager);
+        var techLead = assignments.FirstOrDefault(a => a.EngagementRoleId == (int)EngagementRoleEnum.TechLead);
         var leadership = assignments
-            .Where(a => a.EngagementRoleId == (int)EngagementRoleEnum.Leadership || a.User.RoleId == (int)RoleEnum.Leadership)
+            .Where(a => a.EngagementRoleId == (int)EngagementRoleEnum.Leadership)
             .Select(a => new LeadershipUserDto(a.UserId, a.User.FullName, a.User.Email))
             .ToList();
 

@@ -66,7 +66,7 @@ public class AccessTrackerRepository(AppDbContext context) : IAccessTrackerRepos
         await context.EngagementAssignments
             .AsNoTracking()
             .Include(ea => ea.User)
-            .Where(ea => ea.EngagementId == engagementId && ea.User.RoleId == (int)RoleEnum.TechLead)
+            .Where(ea => ea.EngagementId == engagementId && ea.EngagementRoleId == (int)EngagementRoleEnum.TechLead)
             .Select(ea => (int?)ea.UserId)
             .FirstOrDefaultAsync();
     // Access items that have left the pending state (Granted or Blocked), for the KPI access-delay report

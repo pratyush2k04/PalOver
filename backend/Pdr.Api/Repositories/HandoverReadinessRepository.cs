@@ -60,12 +60,12 @@ public class HandoverReadinessRepository(AppDbContext context) : IHandoverReadin
     public async Task<int?> GetPreSalesOwnerIdAsync(int engagementId)
     {
         var preSalesAssignment = await context.EngagementAssignments
-            .FirstOrDefaultAsync(a => a.EngagementId == engagementId && a.User.RoleId == (int)RoleEnum.PreSales);
+            .FirstOrDefaultAsync(a => a.EngagementId == engagementId && a.EngagementRoleId == (int)EngagementRoleEnum.PreSales);
 
         if (preSalesAssignment != null)
             return preSalesAssignment.UserId;
 
-        var preSalesUser = await context.Users.FirstOrDefaultAsync(u => u.RoleId == (int)RoleEnum.PreSales);
+        var preSalesUser = await context.Users.FirstOrDefaultAsync(u => u.RoleId == (int)UserRoleEnum.PreSales);
         if (preSalesUser != null)
             return preSalesUser.Id;
 
