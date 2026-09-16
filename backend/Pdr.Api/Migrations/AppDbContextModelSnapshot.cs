@@ -1888,6 +1888,16 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("engagement_id");
 
+                    b.Property<string>("IncomingContactBackground")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("incoming_contact_background");
+
+                    b.Property<string>("IncomingContactEmail")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("incoming_contact_email");
+
                     b.Property<string>("IncomingContactName")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -1899,6 +1909,10 @@ namespace Pdr.Api.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("incoming_contact_role");
+
+                    b.Property<string>("IncomingContactSentiment")
+                        .HasColumnType("text")
+                        .HasColumnName("incoming_contact_sentiment");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()

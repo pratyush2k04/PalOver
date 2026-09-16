@@ -6,6 +6,7 @@ import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { PersonDto, PersonType } from '@shared/models/person.model';
 
 export interface PersonFormDialogData {
@@ -24,7 +25,7 @@ export interface PersonFormDialogResult {
 @Component({
   selector: 'app-person-form-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, InputComponent, TextareaComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, InputComponent, TextareaComponent, SelectComponent],
   templateUrl: './person-form-dialog.component.html',
   styleUrl: './person-form-dialog.component.scss'
 })
@@ -40,6 +41,14 @@ export class PersonFormDialogComponent {
     clientBackground: ['', [Validators.maxLength(2000)]],
     clientSentiment: ['']
   });
+
+  sentimentOptions: SelectOption[] = [
+    { value: 'Highly Collaborative', label: 'Highly Collaborative' },
+    { value: 'Collaborative', label: 'Collaborative' },
+    { value: 'Responsive', label: 'Responsive' },
+    { value: 'Slow to Respond', label: 'Slow to Respond' },
+    { value: 'Frequently Changes Requirements', label: 'Frequently Changes Requirements' }
+  ];
 
   get isEditing(): boolean {
     return !!this.data.person;

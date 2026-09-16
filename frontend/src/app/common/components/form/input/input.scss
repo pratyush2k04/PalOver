@@ -41,6 +41,7 @@ input {
 
   &::placeholder {
     color: $color-text-placeholder;
+    opacity: 1;
   }
 
   &:focus {

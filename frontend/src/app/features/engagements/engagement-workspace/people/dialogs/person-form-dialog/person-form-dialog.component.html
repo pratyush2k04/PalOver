@@ -32,10 +32,11 @@
       formControlName="clientBackground"
     />
 
-    <app-input
+    <app-select
       id="clientSentiment"
-      label="Client Sentiment"
-      placeholder="e.g. Warm , Neutral, Cold..."
+      label="Client Behaviour"
+      placeholder="Select behavior..."
+      [options]="sentimentOptions"
       formControlName="clientSentiment"
     />
   </div>

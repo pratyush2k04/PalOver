@@ -18,6 +18,9 @@ public class ClientContactTransitionConfiguration : IEntityTypeConfiguration<Cli
         builder.Property(c => c.OutgoingContactRole).HasColumnName("outgoing_contact_role").HasMaxLength(200).IsRequired();
         builder.Property(c => c.IncomingContactName).HasColumnName("incoming_contact_name").HasMaxLength(200).IsRequired();
         builder.Property(c => c.IncomingContactRole).HasColumnName("incoming_contact_role").HasMaxLength(200).IsRequired();
+        builder.Property(c => c.IncomingContactEmail).HasColumnName("incoming_contact_email").HasMaxLength(255);
+        builder.Property(c => c.IncomingContactBackground).HasColumnName("incoming_contact_background").HasMaxLength(2000);
+        builder.Property(c => c.IncomingContactSentiment).HasColumnName("incoming_contact_sentiment");
 
         // BaseAuditableEntity Column Mappings
         builder.Property(c => c.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");

@@ -35,6 +35,27 @@
           [placeholder]="formPlaceholders.INCOMING_ROLE"
           formControlName="incomingContactRole"
         />
+        <app-input
+          id="incoming-email"
+          label="Email Address"
+          placeholder="Enter email address"
+          formControlName="incomingContactEmail"
+          [errorMessages]="{ email: 'Please enter a valid email address' }"
+        />
+        <app-textarea
+          id="incoming-background"
+          label="Client Background"
+          placeholder="Enter background context"
+          formControlName="incomingContactBackground"
+          [rows]="3"
+        />
+        <app-select
+          id="incoming-sentiment"
+          label="Client Behaviour"
+          placeholder="Select behavior..."
+          [options]="sentimentOptions"
+          formControlName="incomingContactSentiment"
+        />
       </div>
     }
 
