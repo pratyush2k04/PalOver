@@ -9,10 +9,12 @@ public interface ICurrentUserService
     string? GetRole();
     int? GetRoleId();
     RoleEnum? GetRoleEnum();
+    UserRoleEnum? GetUserRole();
     string? GetEmail();
     string? GetFullName();
     bool IsInRole(string role);
     bool IsInRole(RoleEnum role);
     bool IsInRole(int roleId);
+    bool IsInUserRole(UserRoleEnum role);
     bool IsAdmin();
 }
