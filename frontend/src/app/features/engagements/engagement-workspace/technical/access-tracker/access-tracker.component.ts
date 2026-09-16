@@ -59,7 +59,7 @@ export class AccessTrackerComponent {
   private dialog = inject(DialogService);
 
   accessItems = signal<AccessItemDto[]>([]);
-  isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+  isTechLead = computed(() => this.engagementService.isWorkspaceTechLead() || this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
   canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
 
   itemToDelete = signal<AccessItemDto | null>(null);

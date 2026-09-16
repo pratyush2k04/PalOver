@@ -43,7 +43,7 @@ export class ChangeRequestsComponent {
   readonly constants = CHANGE_REQUEST_CONSTANTS;
 
   readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
-  isProjectManager = computed(() => !this.isSignedOff() && this.authService.hasRole('Project Management'));
+  isProjectManager = computed(() => !this.isSignedOff() && (this.engagementService.isWorkspacePm() || this.authService.hasRole('Project Management')));
   isLeadership = computed(() => !this.isSignedOff() && this.authService.hasRole('Leadership'));
 
   private paramMap = toSignal(this.route.paramMap);

@@ -19,6 +19,8 @@ export class QuickActionsComponent {
 
   private readonly hasRole = (role: string) => this.authService.hasRole(role);
   private readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
+  private readonly isPm = computed(() => this.engagementService.isWorkspacePm() || this.hasRole(USER_ROLES.PROJECT_MANAGEMENT));
+  private readonly isTechLead = computed(() => this.engagementService.isWorkspaceTechLead() || this.hasRole(USER_ROLES.TECH_LEAD));
 
   readonly canLogRisk = computed(() => !this.isSignedOff());
 
@@ -27,20 +29,20 @@ export class QuickActionsComponent {
   readonly canUpdateChecklist = computed(
     () =>
       !this.isSignedOff() &&
-      (this.hasRole(USER_ROLES.PROJECT_MANAGEMENT) ||
-        this.hasRole(USER_ROLES.TECH_LEAD) ||
+      (this.isPm() ||
+        this.isTechLead() ||
         this.authService.isAdmin())
   );
 
   readonly canRequestResourcing = computed(
-    () => !this.isSignedOff() && this.hasRole(USER_ROLES.PROJECT_MANAGEMENT)
+    () => !this.isSignedOff() && this.isPm()
   );
 
   readonly canAddDependency = computed(
     () =>
       !this.isSignedOff() &&
-      (this.hasRole(USER_ROLES.PROJECT_MANAGEMENT) ||
-        this.hasRole(USER_ROLES.TECH_LEAD) ||
+      (this.isPm() ||
+        this.isTechLead() ||
         this.hasRole(USER_ROLES.PRE_SALES) ||
         this.hasRole(USER_ROLES.LEADERSHIP))
   );
@@ -54,6 +56,6 @@ export class QuickActionsComponent {
   );
 
   readonly canAddFeature = computed(
-    () => !this.isSignedOff() && this.hasRole(USER_ROLES.TECH_LEAD)
+    () => !this.isSignedOff() && this.isTechLead()
   );
 }

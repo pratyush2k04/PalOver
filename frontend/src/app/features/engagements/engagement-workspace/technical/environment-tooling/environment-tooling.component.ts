@@ -55,7 +55,7 @@ export class EnvironmentToolingComponent {
   private dialog = inject(DialogService);
 
   items = signal<EnvironmentToolingItemDto[]>([]);
-  isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+  isTechLead = computed(() => this.engagementService.isWorkspaceTechLead() || this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
   canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
   itemToDelete = signal<EnvironmentToolingItemDto | null>(null);
   isDeleting = signal<boolean>(false);

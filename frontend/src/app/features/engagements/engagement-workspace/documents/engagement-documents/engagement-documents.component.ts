@@ -135,7 +135,7 @@ export class EngagementDocumentsComponent {
 
   /** True for PM and Admin — can edit visibility inline */
   canManageVisibility = computed(
-    () => !this.isSignedOff() && (this.authService.hasRole('Project Management') || this.authService.isAdmin()),
+    () => !this.isSignedOff() && (this.engagementService.isWorkspacePm() || this.authService.hasRole('Project Management') || this.authService.isAdmin()),
   );
 
   constructor() {

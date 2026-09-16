@@ -68,7 +68,7 @@ export class ArchitectureValidationComponent {
   rationale = signal<string>('');
   rationaleError = signal<string>('');
 
-  isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+  isTechLead = computed(() => this.engagementService.isWorkspaceTechLead() || this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
   canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
   features = computed(() => this.validation()?.features ?? []);
   committedTimelineWeeks = computed(() => this.validation()?.committedTimelineWeeks ?? 0);

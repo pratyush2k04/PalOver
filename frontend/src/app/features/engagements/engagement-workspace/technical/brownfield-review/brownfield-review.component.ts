@@ -52,7 +52,7 @@ export class BrownfieldReviewComponent {
   findingToDelete = signal<BrownfieldFindingDto | null>(null);
   errorMessage = signal<string>('');
 
-  isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+  isTechLead = computed(() => this.engagementService.isWorkspaceTechLead() || this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
   canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
   findings = computed(() => this.readinessResponse()?.items ?? []);
   totalCount = computed(() => this.readinessResponse()?.totalCount ?? 0);

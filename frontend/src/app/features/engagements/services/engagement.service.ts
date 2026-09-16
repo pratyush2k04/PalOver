@@ -1,6 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Observable, map, tap } from 'rxjs';
+import { AuthService } from '@shared/services/auth';
 import {
   CommercialModelOption,
   EngagementInfo,
@@ -31,6 +32,7 @@ export interface EngagementOpenItemsSummary {
 })
 export class EngagementService {
   private http = inject(HttpClient);
+  private authService = inject(AuthService);
 
   private currentEngagementState = signal<EngagementInfo | null>(null);
   readonly currentEngagement = this.currentEngagementState.asReadonly();
@@ -38,6 +40,20 @@ export class EngagementService {
 
   private ownersState = signal<EngagementOwners | null>(null);
   readonly owners = this.ownersState.asReadonly();
+
+  readonly isWorkspacePm = computed(() => {
+    const currentUserId = this.authService.getUserId();
+    const pmId = this.owners()?.projectManagerId;
+    return !!currentUserId && !!pmId && currentUserId === pmId;
+  });
+
+  readonly isWorkspaceTechLead = computed(() => {
+    const currentUserId = this.authService.getUserId();
+    const tlId = this.owners()?.techLeadId;
+    return !!currentUserId && !!tlId && currentUserId === tlId;
+  });
+
+  readonly isDualDeliveryRole = computed(() => this.isWorkspacePm() && this.isWorkspaceTechLead());
 
   setCurrentEngagement(info: EngagementInfo | null): void {
     this.currentEngagementState.set(info);

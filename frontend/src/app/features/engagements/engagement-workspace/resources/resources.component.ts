@@ -62,9 +62,7 @@ export class ResourcesComponent {
   readonly isLeadershipOrAdmin = computed(
     () => this.authService.hasRole('Leadership') || this.authService.isAdmin(),
   );
-  // Raising a request has no Admin bypass on the backend (CreateResourceRequestAsync requires
-  // the current user to actually be the PM assigned to the engagement) — gate the button to match.
-  readonly isProjectManager = computed(() => this.authService.hasRole('Project Management'));
+  readonly isProjectManager = computed(() => this.engagementService.isWorkspacePm() || this.authService.hasRole('Project Management'));
 
   readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
   readonly canRaiseRequest = computed(() => !this.isSignedOff() && this.isProjectManager());

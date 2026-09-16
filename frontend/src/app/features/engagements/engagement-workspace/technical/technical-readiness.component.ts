@@ -41,7 +41,7 @@ export class TechnicalReadinessComponent {
   private parentParamMap = toSignal(this.route.parent!.paramMap);
 
   isPreSales = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.PRE_SALES));
-  isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+  isTechLead = computed(() => this.engagementService.isWorkspaceTechLead() || this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
 
   canViewDayOneBanner = computed(() => !this.isPreSales());
   canViewAccessTracker = computed(() => !this.isPreSales());

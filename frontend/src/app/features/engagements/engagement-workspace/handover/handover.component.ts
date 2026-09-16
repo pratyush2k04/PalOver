@@ -272,7 +272,7 @@ export class HandoverComponent {
 
   readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
   isPreSales = computed(() => !this.isSignedOff() && this.authService.hasRole('Pre Sales'));
-  isProjectManagement = computed(() => !this.isSignedOff() && this.authService.hasRole('Project Management'));
+  isProjectManagement = computed(() => !this.isSignedOff() && (this.engagementService.isWorkspacePm() || this.authService.hasRole('Project Management')));
 
 
 

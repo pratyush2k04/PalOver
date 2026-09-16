@@ -46,7 +46,11 @@ export class KickoffComponent {
 
   isLeadership = computed(() => this.authService.hasRole('Leadership'));
   canMarkReady = computed(() =>
-    this.authService.hasRole('Project Management') || this.authService.hasRole('Tech Lead') || this.isLeadership());
+    this.engagementService.isWorkspacePm() ||
+    this.engagementService.isWorkspaceTechLead() ||
+    this.authService.hasRole('Project Management') ||
+    this.authService.hasRole('Tech Lead') ||
+    this.isLeadership());
 
   constructor() {
     effect(() => {
