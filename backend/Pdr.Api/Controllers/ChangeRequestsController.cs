@@ -44,7 +44,6 @@ public class ChangeRequestsController(IChangeRequestService changeRequestService
     /// <param name="request">The description and impact estimate for the change request.</param>
     /// <returns>The created change request details.</returns>
     [HttpPost]
-    [AuthorizeRoles(RoleEnum.ProjectManagement)]
     [EndpointSummary("Create a change request (Project Manager only)")]
     [ProducesResponseType(typeof(ChangeRequestDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -75,7 +74,6 @@ public class ChangeRequestItemController(IChangeRequestService changeRequestServ
     /// <param name="id">The change request ID.</param>
     /// <returns>The updated change request in Approved status.</returns>
     [HttpPut("{id:int}/approve")]
-    [AuthorizeRoles(RoleEnum.Leadership)]
     [EndpointSummary("Approve a change request (Leadership only)")]
     [ProducesResponseType(typeof(ChangeRequestDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -95,7 +93,6 @@ public class ChangeRequestItemController(IChangeRequestService changeRequestServ
     /// <param name="request">The rejection payload containing the reason.</param>
     /// <returns>The updated change request in Rejected status with the recorded rejection reason.</returns>
     [HttpPut("{id:int}/reject")]
-    [AuthorizeRoles(RoleEnum.Leadership)]
     [EndpointSummary("Reject a change request (Leadership only)")]
     [ProducesResponseType(typeof(ChangeRequestDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -23,7 +23,6 @@ public class EngagementChecklistController(IEngagementChecklistService engagemen
     /// <param name="engagementId">The engagement ID.</param>
     /// <returns>The engagement checklist items and summary.</returns>
     [HttpGet]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.PreSales, RoleEnum.TechLead, RoleEnum.Leadership)]
     [EndpointSummary("Get engagement checklist")]
     [ProducesResponseType(typeof(EngagementChecklistResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -43,7 +42,6 @@ public class EngagementChecklistController(IEngagementChecklistService engagemen
     /// <param name="dto">The status update payload.</param>
     /// <returns>The updated engagement checklist.</returns>
     [HttpPatch("items/{itemId:int}/status")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead)]
     [EndpointSummary("Update checklist item completion status")]
     [ProducesResponseType(typeof(EngagementChecklistResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -68,7 +66,6 @@ public class EngagementChecklistController(IEngagementChecklistService engagemen
     /// <param name="dto">The applicability update payload.</param>
     /// <returns>The updated engagement checklist.</returns>
     [HttpPost("items/{itemId:int}/applicability")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement)]
     [EndpointSummary("Update checklist item applicability or request exemption (PM only)")]
     [ProducesResponseType(typeof(EngagementChecklistResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -92,7 +89,6 @@ public class EngagementChecklistController(IEngagementChecklistService engagemen
     /// <param name="dto">The exemption review payload.</param>
     /// <returns>The updated engagement checklist.</returns>
     [HttpPost("items/{itemId:int}/exemption/review")]
-    [AuthorizeRoles(RoleEnum.Leadership)]
     [EndpointSummary("Review exemption request (Leadership only)")]
     [ProducesResponseType(typeof(EngagementChecklistResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -109,7 +105,6 @@ public class EngagementChecklistController(IEngagementChecklistService engagemen
     }
 
     [HttpPatch("items/{itemId:int}/owner")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead)]
     public async Task<ActionResult<EngagementChecklistResponseDto>> UpdateItemOwner(
         int engagementId,
         int itemId,
@@ -120,7 +115,6 @@ public class EngagementChecklistController(IEngagementChecklistService engagemen
     }
 
     [HttpPost("items/{itemId:int}/block")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead)]
     public async Task<ActionResult<EngagementChecklistResponseDto>> BlockItem(
         int engagementId,
         int itemId,
@@ -131,7 +125,6 @@ public class EngagementChecklistController(IEngagementChecklistService engagemen
     }
 
     [HttpPost("items/{itemId:int}/unblock")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead)]
     public async Task<ActionResult<EngagementChecklistResponseDto>> UnblockItem(int engagementId, int itemId)
     {
         var result = await engagementChecklistService.UnblockItemAsync(engagementId, itemId);
@@ -146,7 +139,6 @@ public class EngagementChecklistController(IEngagementChecklistService engagemen
     /// <param name="dto">The evidence payload.</param>
     /// <returns>The updated engagement checklist.</returns>
     [HttpPut("items/{itemId:int}/evidence")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead)]
     [EndpointSummary("Attach or update checklist item evidence")]
     [ProducesResponseType(typeof(EngagementChecklistResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

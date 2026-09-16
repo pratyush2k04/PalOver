@@ -33,14 +33,9 @@ public class DocumentService(
 {
     // ── Helper methods ──────────────────────────────────────────────────────
 
-    /// <summary>Only PM and Admin can change a document's visibility.</summary>
-    private bool CanManageDocumentVisibility() =>
-        currentUserService.IsInRole(RoleEnum.ProjectManagement)
-        || currentUserService.IsAdmin();
-
-    private bool CanAccessDocument(Document doc)
+    private async Task<bool> CanAccessDocumentAsync(Document doc)
     {
-        if (currentUserService.IsAdmin() || currentUserService.IsInRole(RoleEnum.ProjectManagement))
+        if (currentUserService.IsAdmin() || await engagementAccessService.HasEngagementRoleAsync(doc.EngagementId, EngagementRoleEnum.ProjectManager))
         {
             return true;
         }
@@ -50,7 +45,8 @@ public class DocumentService(
             return true;
         }
 
-        if (doc.Visibility == DocumentVisibilityNames.PmOnly && currentUserService.IsInRole(RoleEnum.Leadership))
+        if (doc.Visibility == DocumentVisibilityNames.PmOnly &&
+            (currentUserService.IsInUserRole(UserRoleEnum.Leadership) || await engagementAccessService.HasEngagementRoleAsync(doc.EngagementId, EngagementRoleEnum.Leadership)))
         {
             return true;
         }
@@ -85,13 +81,16 @@ public class DocumentService(
             }
             else if (doc.Visibility == DocumentVisibilityNames.PmOnly)
             {
-                canAccess = assignment.User.RoleId == (int)RoleEnum.ProjectManagement || assignment.User.RoleId == (int)RoleEnum.Leadership;
+                canAccess = assignment.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager ||
+                            assignment.EngagementRoleId == (int)EngagementRoleEnum.Leadership ||
+                            assignment.User.RoleId == (int)UserRoleEnum.Leadership;
             }
             else if (doc.Visibility == DocumentVisibilityNames.Custom)
             {
-                canAccess = assignment.User.RoleId == (int)RoleEnum.ProjectManagement
-                    || assignment.User.RoleId == (int)RoleEnum.Leadership
-                    || (doc.AllowedRoles != null && doc.AllowedRoles.Contains(assignment.User.RoleId));
+                canAccess = assignment.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager
+                    || assignment.EngagementRoleId == (int)EngagementRoleEnum.Leadership
+                    || assignment.User.RoleId == (int)UserRoleEnum.Leadership
+                    || (doc.AllowedRoles != null && (doc.AllowedRoles.Contains(assignment.User.RoleId) || doc.AllowedRoles.Contains(assignment.EngagementRoleId)));
             }
 
             if (canAccess)
@@ -299,7 +298,7 @@ public class DocumentService(
 
         var userRoleId = currentUserService.GetRoleId();
         var isAdmin = currentUserService.IsAdmin();
-        var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
+        var isPm = await engagementAccessService.HasEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager);
         var docs = (await repository.GetByEngagementIdAsync(engagementId, userRoleId, isAdmin, isPm)).ToList();
 
         var uploaderNames = await GetUploaderNamesAsync(docs.Select(d => d.CreatedBy));
@@ -321,7 +320,7 @@ public class DocumentService(
             throw new DocumentFileMissingException();
         }
 
-        if (!CanAccessDocument(doc))
+        if (!await CanAccessDocumentAsync(doc))
         {
             throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.DownloadDenied);
         }
@@ -356,7 +355,7 @@ public class DocumentService(
         bool isUploader = string.Equals(doc.CreatedBy, userIdStr, StringComparison.OrdinalIgnoreCase)
             || (userEmail != null && string.Equals(doc.CreatedBy, userEmail, StringComparison.OrdinalIgnoreCase));
 
-        bool isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
+        bool isPm = await engagementAccessService.HasEngagementRoleAsync(doc.EngagementId, EngagementRoleEnum.ProjectManager);
         bool isAdmin = currentUserService.IsAdmin();
 
         if (!isUploader && !isPm && !isAdmin)
@@ -396,15 +395,16 @@ public class DocumentService(
 
     public async Task<DocumentResponseDto> UpdateDocumentVisibilityAsync(int id, UpdateDocumentVisibilityDto dto)
     {
-        if (!CanManageDocumentVisibility())
-        {
-            throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.VisibilityChangeDenied);
-        }
-
         var doc = await repository.GetByIdAsync(id);
         if (doc == null)
         {
             throw new DocumentNotFoundException(id);
+        }
+
+        var canManage = await engagementAccessService.HasEngagementRoleAsync(doc.EngagementId, EngagementRoleEnum.ProjectManager) || currentUserService.IsAdmin();
+        if (!canManage)
+        {
+            throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.VisibilityChangeDenied);
         }
 
         await engagementRepository.EnsureNotSignedOffAsync(doc.EngagementId);
@@ -454,7 +454,7 @@ public class DocumentService(
 
         await engagementRepository.EnsureNotSignedOffAsync(doc.EngagementId);
 
-        if (!CanAccessDocument(doc))
+        if (!await CanAccessDocumentAsync(doc))
         {
             throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.UploadVersionDenied);
         }
@@ -520,7 +520,7 @@ public class DocumentService(
             throw new DocumentNotFoundException(documentId);
         }
 
-        if (!CanAccessDocument(doc))
+        if (!await CanAccessDocumentAsync(doc))
         {
             throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.DownloadDenied);
         }
@@ -547,7 +547,7 @@ public class DocumentService(
             throw new DocumentNotFoundException(documentId);
         }
 
-        if (!CanAccessDocument(doc))
+        if (!await CanAccessDocumentAsync(doc))
         {
             throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.DownloadDenied);
         }

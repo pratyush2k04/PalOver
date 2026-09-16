@@ -71,7 +71,7 @@ public class ResourceRequestRepository(AppDbContext context) : IResourceRequestR
         return await context.EngagementAssignments
             .AsNoTracking()
             .Include(a => a.User).ThenInclude(u => u.Role)
-            .Where(a => a.EngagementId == engagementId && a.User.RoleId == (int)RoleEnum.Leadership)
+            .Where(a => a.EngagementId == engagementId && (a.EngagementRoleId == (int)EngagementRoleEnum.Leadership || a.User.RoleId == (int)RoleEnum.Leadership))
             .ToListAsync();
     }
 
@@ -81,7 +81,8 @@ public class ResourceRequestRepository(AppDbContext context) : IResourceRequestR
             .AsNoTracking()
             .Include(a => a.User).ThenInclude(u => u.Role)
             .Where(a => a.EngagementId == engagementId &&
-                        (a.User.RoleId == (int)RoleEnum.Leadership || a.User.RoleId == (int)RoleEnum.ProjectManagement) &&
+                        (a.EngagementRoleId == (int)EngagementRoleEnum.Leadership || a.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager ||
+                         a.User.RoleId == (int)RoleEnum.Leadership || a.User.RoleId == (int)RoleEnum.ProjectManagement) &&
                         !a.User.IsDeleted)
             .ToListAsync();
     }

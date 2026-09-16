@@ -13,4 +13,9 @@ public class AuthorizeRolesAttribute : AuthorizeAttribute
     {
         Roles = string.Join(",", roles.Select(r => r.ToRoleName()));
     }
+
+    public AuthorizeRolesAttribute(params UserRoleEnum[] roles)
+    {
+        Roles = string.Join(",", roles.Select(r => r.ToRoleName()));
+    }
 }

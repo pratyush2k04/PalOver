@@ -163,7 +163,14 @@ public class BlockerEscalationService(
         int unresolvedDays,
         DateTime timestamp)
     {
-        var pmOrLeadershipAssignment = await engagementRepository.GetAssignmentByRoleIdAsync(engagement.EngagementId, (int)targetRole);
+        var targetEngagementRoleId = targetRole switch
+        {
+            RoleEnum.ProjectManagement => (int)EngagementRoleEnum.ProjectManager,
+            RoleEnum.Leadership => (int)EngagementRoleEnum.Leadership,
+            _ => (int)targetRole
+        };
+
+        var pmOrLeadershipAssignment = await engagementRepository.GetAssignmentByEngagementRoleIdAsync(engagement.EngagementId, targetEngagementRoleId);
 
         var historyRecord = new RiskEscalationHistory
         {

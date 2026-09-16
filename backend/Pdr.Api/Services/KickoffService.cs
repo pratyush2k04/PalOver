@@ -4,6 +4,7 @@ using Pdr.Api.DTOs.Kickoff;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models;
 using Pdr.Api.Models.Kickoff;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 using Pdr.Api.Services.Notifications.Mappers;
@@ -13,7 +14,8 @@ namespace Pdr.Api.Services;
 public class KickoffService(
     IKickoffRepository repository,
     IEngagementRepository engagementRepository,
-    INotificationService notificationService) : IKickoffService
+    INotificationService notificationService,
+    IEngagementAccessService engagementAccessService) : IKickoffService
 {
     public async Task<KickoffRecordDto> GetKickoffRecordAsync(int engagementId, string? currentUserId)
     {
@@ -35,6 +37,7 @@ public class KickoffService(
 
     public async Task<KickoffRecordDto> SaveKickoffRecordAsync(int engagementId, SaveKickoffRecordRequest request, string? currentUserId)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager);
         await ValidateUserAccessAsync(engagementId, currentUserId);
         await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
@@ -80,6 +83,7 @@ public class KickoffService(
 
     public async Task<KickoffActionItemDto> CreateActionItemAsync(int engagementId, KickoffActionItemDto dto, string? currentUserId)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager);
         await ValidateUserAccessAsync(engagementId, currentUserId);
         await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
@@ -172,6 +176,7 @@ public class KickoffService(
 
     public async Task<KickoffActionItemDto> UpdateActionItemAsync(int engagementId, int actionItemId, KickoffActionItemDto dto, string? currentUserId)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager);
         await ValidateUserAccessAsync(engagementId, currentUserId);
         await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 

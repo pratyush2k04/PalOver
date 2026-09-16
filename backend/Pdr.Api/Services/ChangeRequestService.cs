@@ -2,6 +2,7 @@ using Pdr.Api.Constants;
 using Pdr.Api.DTOs.ChangeRequests;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.ChangeRequest;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
@@ -11,10 +12,13 @@ public class ChangeRequestService(
     IChangeRequestRepository changeRequestRepository,
     IEngagementRepository engagementRepository,
     ICurrentUserService currentUserService,
-    ILogger<ChangeRequestService> logger) : IChangeRequestService
+    ILogger<ChangeRequestService> logger,
+    IEngagementAccessService engagementAccessService) : IChangeRequestService
 {
     public async Task<List<ChangeRequestDto>> GetChangeRequestsAsync(int engagementId, string? status = null)
     {
+        await engagementAccessService.ValidateAccessAsync(engagementId);
+
         var engagementExists = await changeRequestRepository.EngagementExistsAsync(engagementId);
         if (!engagementExists)
         {
@@ -29,6 +33,8 @@ public class ChangeRequestService(
 
     public async Task<ChangeRequestDto> CreateChangeRequestAsync(int engagementId, CreateChangeRequestDto dto)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager);
+
         var engagementExists = await changeRequestRepository.EngagementExistsAsync(engagementId);
         if (!engagementExists)
         {
@@ -59,6 +65,7 @@ public class ChangeRequestService(
         var changeRequest = await changeRequestRepository.GetByIdAsync(id)
             ?? throw new ChangeRequestNotFoundException(id);
 
+        await engagementAccessService.RequireEngagementRoleAsync(changeRequest.EngagementId, EngagementRoleEnum.Leadership);
         await engagementRepository.EnsureNotSignedOffAsync(changeRequest.EngagementId);
 
         if (changeRequest.Status != ChangeRequestStatus.UnderReview)
@@ -83,6 +90,7 @@ public class ChangeRequestService(
         var changeRequest = await changeRequestRepository.GetByIdAsync(id)
             ?? throw new ChangeRequestNotFoundException(id);
 
+        await engagementAccessService.RequireEngagementRoleAsync(changeRequest.EngagementId, EngagementRoleEnum.Leadership);
         await engagementRepository.EnsureNotSignedOffAsync(changeRequest.EngagementId);
 
         if (string.IsNullOrWhiteSpace(dto.RejectionReason))

@@ -3,6 +3,7 @@ using Pdr.Api.DTOs.ArchitectureValidation;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.ArchitectureValidation;
 using Pdr.Api.Models.Audit;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
@@ -13,10 +14,13 @@ public class ArchitectureValidationService(
     IArchitectureValidationRepository repository,
     IAuditLogService auditLogService,
     ICurrentUserService currentUserService,
-    ITechnicalReadinessNotificationService readinessNotificationService) : IArchitectureValidationService
+    ITechnicalReadinessNotificationService readinessNotificationService,
+    IEngagementAccessService engagementAccessService) : IArchitectureValidationService
 {
     public async Task<ArchitectureValidationDto> GetByEngagementIdAsync(int engagementId)
     {
+        await engagementAccessService.ValidateAccessAsync(engagementId);
+
         if (!await repository.EngagementExistsAsync(engagementId))
         {
             throw new EngagementNotFoundException(engagementId);
@@ -41,6 +45,8 @@ public class ArchitectureValidationService(
 
     public async Task<ArchitectureValidationDto> SaveValidationAsync(int engagementId, SaveArchitectureValidationRequest request)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.TechLead);
+
         if (!await repository.EngagementExistsAsync(engagementId))
         {
             throw new EngagementNotFoundException(engagementId);
@@ -82,6 +88,8 @@ public class ArchitectureValidationService(
 
     public async Task<DiscoveryFeatureItemDto> AddFeatureItemAsync(int engagementId, CreateDiscoveryFeatureItemRequest request)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.TechLead);
+
         if (!await repository.EngagementExistsAsync(engagementId))
         {
             throw new EngagementNotFoundException(engagementId);
@@ -142,6 +150,7 @@ public class ArchitectureValidationService(
         var engagementId = item.ArchitectureValidation?.EngagementId ?? 0;
         if (engagementId > 0)
         {
+            await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.TechLead);
             await engagementRepository.EnsureNotSignedOffAsync(engagementId);
         }
 
@@ -172,6 +181,7 @@ public class ArchitectureValidationService(
         var engagementId = item.ArchitectureValidation?.EngagementId ?? 0;
         if (engagementId > 0)
         {
+            await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.TechLead);
             await engagementRepository.EnsureNotSignedOffAsync(engagementId);
         }
 

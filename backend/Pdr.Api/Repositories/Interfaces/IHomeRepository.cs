@@ -7,6 +7,7 @@ public interface IHomeRepository
 {
     Task<User?> GetUserWithRoleAsync(int userId);
     Task<List<int>> GetUserEngagementIdsAsync(int userId);
+    Task<List<int>> GetUserEngagementIdsByRoleAsync(int userId, int engagementRoleId);
     Task<int> GetDraftHandoversCountAsync(List<int> engagementIds);
     Task<int> GetCompleteHandoversCountAsync(List<int> engagementIds);
     Task<int> GetIncompleteChecklistCountAsync(List<int> engagementIds);

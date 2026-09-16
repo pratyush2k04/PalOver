@@ -29,7 +29,6 @@ public class KickoffController(IKickoffService kickoffService) : ControllerBase
     /// <param name="engagementId">The engagement ID.</param>
     /// <returns>The kickoff record with action items and outcomes.</returns>
     [HttpGet]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.PreSales, RoleEnum.Leadership)]
     [EndpointSummary("Get kickoff record")]
     [ProducesResponseType(typeof(KickoffRecordDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -47,7 +46,6 @@ public class KickoffController(IKickoffService kickoffService) : ControllerBase
     /// <param name="request">The request containing meeting outcomes.</param>
     /// <returns>The updated kickoff record.</returns>
     [HttpPost]
-    [AuthorizeRoles(RoleEnum.ProjectManagement)]
     [EndpointSummary("Save kickoff meeting outcomes")]
     [ProducesResponseType(typeof(KickoffRecordDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -65,7 +63,6 @@ public class KickoffController(IKickoffService kickoffService) : ControllerBase
     /// <param name="engagementId">The engagement ID.</param>
     /// <returns>List of open action items.</returns>
     [HttpGet("actions/open")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.PreSales, RoleEnum.Leadership)]
     [EndpointSummary("Get open action items")]
     [ProducesResponseType(typeof(IEnumerable<KickoffActionItemDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -83,7 +80,6 @@ public class KickoffController(IKickoffService kickoffService) : ControllerBase
     /// <param name="dto">The action item details.</param>
     /// <returns>The created action item with assigned ID.</returns>
     [HttpPost("actions")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement)]
     [EndpointSummary("Create action item")]
     [ProducesResponseType(typeof(KickoffActionItemDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -123,7 +119,6 @@ public class KickoffController(IKickoffService kickoffService) : ControllerBase
     /// <param name="dto">The updated action item details.</param>
     /// <returns>The updated action item.</returns>
     [HttpPut("actions/{actionItemId:int}")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement)]
     [EndpointSummary("Update action item")]
     [ProducesResponseType(typeof(KickoffActionItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

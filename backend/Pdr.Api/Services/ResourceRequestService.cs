@@ -31,7 +31,7 @@ public class ResourceRequestService(
 
         var currentUserId = currentUserService.GetUserId();
         var assignment = await resourceRequestRepository.GetUserEngagementAssignmentAsync(engagementId, currentUserId);
-        if (assignment == null || assignment.User.RoleId != (int)RoleEnum.ProjectManagement)
+        if (assignment == null || assignment.EngagementRoleId != (int)EngagementRoleEnum.ProjectManager)
         {
             throw new ResourceRequestAccessDeniedException();
         }
@@ -195,7 +195,7 @@ public class ResourceRequestService(
         }
 
         var assignment = await resourceRequestRepository.GetUserEngagementAssignmentAsync(engagementId, currentUserService.GetUserId());
-        if (assignment == null || assignment.User.RoleId != (int)RoleEnum.Leadership)
+        if (assignment == null || assignment.EngagementRoleId != (int)EngagementRoleEnum.Leadership)
         {
             throw new ResourceAllocationAccessDeniedException();
         }

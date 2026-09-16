@@ -60,7 +60,6 @@ public class ResourceRequestsController(
     /// <param name="request">The resource request details including role, skills, headcount, required-by date, and job description.</param>
     /// <returns>The created resource request details.</returns>
     [HttpPost]
-    [AuthorizeRoles(RoleEnum.ProjectManagement)]
     [EndpointSummary("Raise a structured resource request (Project Manager only)")]
     [ProducesResponseType(typeof(ResourceRequestDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

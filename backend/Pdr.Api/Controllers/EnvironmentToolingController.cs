@@ -23,7 +23,6 @@ public class EnvironmentToolingController(IEnvironmentToolingService service) : 
     /// <param name="engagementId">The engagement ID.</param>
     /// <returns>A list of environment and tooling items.</returns>
     [HttpGet]
-    [AuthorizeRoles(RoleEnum.TechLead, RoleEnum.ProjectManagement, RoleEnum.Leadership)]
     [EndpointSummary("Get environment & tooling items")]
     [ProducesResponseType(typeof(EnvironmentToolingReadinessResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -42,7 +41,6 @@ public class EnvironmentToolingController(IEnvironmentToolingService service) : 
     /// <param name="request">The custom item request payload.</param>
     /// <returns>The created environment/tooling item.</returns>
     [HttpPost]
-    [AuthorizeRoles(RoleEnum.TechLead)]
     [EndpointSummary("Add custom environment item (Tech Lead only)")]
     [ProducesResponseType(typeof(EnvironmentToolingItemDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -72,7 +70,6 @@ public class EnvironmentToolingItemsController(IEnvironmentToolingService servic
     /// <param name="request">The status update payload.</param>
     /// <returns>The updated environment/tooling item.</returns>
     [HttpPatch("{id:int}/status")]
-    [AuthorizeRoles(RoleEnum.TechLead)]
     [EndpointSummary("Update environment item status (Tech Lead only)")]
     [ProducesResponseType(typeof(EnvironmentToolingItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -92,7 +89,6 @@ public class EnvironmentToolingItemsController(IEnvironmentToolingService servic
     /// <param name="request">The owner update payload.</param>
     /// <returns>The updated environment/tooling item.</returns>
     [HttpPatch("{id:int}/owner")]
-    [AuthorizeRoles(RoleEnum.TechLead)]
     [EndpointSummary("Update environment item owner (Tech Lead only)")]
     [ProducesResponseType(typeof(EnvironmentToolingItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -111,7 +107,6 @@ public class EnvironmentToolingItemsController(IEnvironmentToolingService servic
     /// <param name="id">The item ID.</param>
     /// <returns>204 No Content.</returns>
     [HttpDelete("{id:int}")]
-    [AuthorizeRoles(RoleEnum.TechLead)]
     [EndpointSummary("Delete environment item (Tech Lead only)")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

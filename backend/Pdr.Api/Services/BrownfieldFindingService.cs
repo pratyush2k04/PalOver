@@ -2,6 +2,7 @@ using Pdr.Api.DTOs.BrownField;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.BrownField;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
@@ -12,10 +13,13 @@ public class BrownfieldFindingService(
     IBrownfieldFindingRepository repository,
     IAuditLogService auditLogService,
     ICurrentUserService currentUserService,
-    ITechnicalReadinessNotificationService readinessNotificationService) : IBrownfieldFindingService
+    ITechnicalReadinessNotificationService readinessNotificationService,
+    IEngagementAccessService engagementAccessService) : IBrownfieldFindingService
 {
     public async Task<BrownfieldReadinessResponse> GetFindingsByEngagementIdAsync(int engagementId)
     {
+        await engagementAccessService.ValidateAccessAsync(engagementId);
+
         if (!await repository.EngagementExistsAsync(engagementId))
         {
             throw new EngagementNotFoundException(engagementId);
@@ -38,6 +42,8 @@ public class BrownfieldFindingService(
 
     public async Task<BrownfieldFindingDto> CreateFindingAsync(int engagementId, CreateBrownfieldFindingRequest request)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.TechLead);
+
         if (!await repository.EngagementExistsAsync(engagementId))
         {
             throw new EngagementNotFoundException(engagementId);
@@ -92,6 +98,7 @@ public class BrownfieldFindingService(
             throw new BrownfieldFindingNotFoundException(findingId);
         }
 
+        await engagementAccessService.RequireEngagementRoleAsync(finding.EngagementId, EngagementRoleEnum.TechLead);
         await engagementRepository.EnsureNotSignedOffAsync(finding.EngagementId);
 
         var wasReady = await readinessNotificationService.IsReadyAsync(finding.EngagementId);
@@ -112,6 +119,7 @@ public class BrownfieldFindingService(
             throw new BrownfieldFindingNotFoundException(findingId);
         }
 
+        await engagementAccessService.RequireEngagementRoleAsync(finding.EngagementId, EngagementRoleEnum.TechLead);
         await engagementRepository.EnsureNotSignedOffAsync(finding.EngagementId);
 
         var wasReady = await readinessNotificationService.IsReadyAsync(finding.EngagementId);

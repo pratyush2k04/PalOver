@@ -15,7 +15,6 @@ namespace Pdr.Api.Controllers;
 [Route("api/engagements/{engagementId:int}/workspace/assumptions")]
 [Authorize]
 [Produces("application/json")]
-[AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.PreSales, RoleEnum.Leadership)]
 public class AssumptionController(IAssumptionService assumptionService) : ControllerBase
 {
     /// <summary>

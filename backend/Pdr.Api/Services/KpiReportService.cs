@@ -92,7 +92,7 @@ public class KpiReportService(
         var allEngagementTypes = await engagementService.GetEngagementTypesAsync();
 
         var availablePms = assignments
-            .Where(a => a.User.RoleId == (int)RoleEnum.ProjectManagement)
+            .Where(a => a.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager)
             .Select(a => new SimpleUserDto { Id = a.User.Id, Name = a.User.FullName })
             .DistinctBy(u => u.Id)
             .OrderBy(u => u.Name)
@@ -112,7 +112,7 @@ public class KpiReportService(
         if (request.PmUserIds is { Count: > 0 })
         {
             var pmEngagementIds = assignments
-                .Where(a => a.User.RoleId == (int)RoleEnum.ProjectManagement && request.PmUserIds.Contains(a.UserId))
+                .Where(a => a.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager && request.PmUserIds.Contains(a.UserId))
                 .Select(a => a.EngagementId)
                 .ToHashSet();
             relevant.IntersectWith(pmEngagementIds);

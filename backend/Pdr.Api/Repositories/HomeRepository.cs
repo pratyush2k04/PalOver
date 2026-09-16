@@ -25,6 +25,16 @@ public class HomeRepository(AppDbContext db) : IHomeRepository
         return await db.EngagementAssignments
             .Where(ea => ea.UserId == userId)
             .Select(ea => ea.EngagementId)
+            .Distinct()
+            .ToListAsync();
+    }
+
+    public async Task<List<int>> GetUserEngagementIdsByRoleAsync(int userId, int engagementRoleId)
+    {
+        return await db.EngagementAssignments
+            .Where(ea => ea.UserId == userId && ea.EngagementRoleId == engagementRoleId)
+            .Select(ea => ea.EngagementId)
+            .Distinct()
             .ToListAsync();
     }
 

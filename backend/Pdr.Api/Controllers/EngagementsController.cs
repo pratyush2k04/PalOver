@@ -19,7 +19,8 @@ namespace Pdr.Api.Controllers;
 public class EngagementsController(
     IEngagementService engagementService,
     IKickoffReadinessService kickoffReadinessService,
-    IKickoffReminderService kickoffReminderService) : ControllerBase
+    IKickoffReminderService kickoffReminderService,
+    IEngagementAccessService engagementAccessService) : ControllerBase
 {
     /// <summary>
     /// Retrieves engagements assigned to the logged-in user.
@@ -206,7 +207,6 @@ public class EngagementsController(
     }
 
     [HttpGet("{id:int}/kickoff-readiness")]
-    [AuthorizeRoles(RoleEnum.PreSales, RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.Leadership)]
     public async Task<ActionResult<KickoffReadinessDto>> GetKickoffReadiness(int id)
     {
         var readiness = await kickoffReadinessService.GetReadinessAsync(id);
@@ -215,7 +215,6 @@ public class EngagementsController(
     }
 
     [HttpGet("{id:int}/readiness-one-pager")]
-    [AuthorizeRoles(RoleEnum.PreSales, RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.Leadership)]
     public async Task<ActionResult<ReadinessOnePagerDto>> GetReadinessOnePager(int id)
     {
         var onePager = await kickoffReadinessService.GetOnePagerAsync(id);
@@ -223,18 +222,19 @@ public class EngagementsController(
     }
 
     [HttpPost("{id:int}/kickoff-ready")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.Leadership)]
     public async Task<IActionResult> MarkKickoffReady(int id)
     {
-        var isLeadership = User.IsInRole(RoleEnum.Leadership.ToRoleName());
+        await engagementAccessService.RequireEngagementRoleAsync(id, EngagementRoleEnum.ProjectManager, EngagementRoleEnum.TechLead, EngagementRoleEnum.Leadership);
+        var isLeadership = User.IsInRole(UserRoleEnum.Leadership.ToRoleName()) ||
+                           await engagementAccessService.HasEngagementRoleAsync(id, EngagementRoleEnum.Leadership);
         await kickoffReadinessService.MarkKickoffReadyAsync(id, isLeadership);
         return NoContent();
     }
 
     [HttpDelete("{id:int}/kickoff-ready")]
-    [AuthorizeRoles(RoleEnum.Leadership)]
     public async Task<IActionResult> RevertKickoffReady(int id)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(id, EngagementRoleEnum.Leadership);
         await kickoffReadinessService.RevertKickoffReadyAsync(id);
         return NoContent();
     }
@@ -376,7 +376,6 @@ public class EngagementsController(
     /// <param name="request">Sign-off payload referencing the billing start date and optional leadership exception.</param>
     /// <returns>The recorded Day-1 sign-off details.</returns>
     [HttpPost("{id:int}/day-one-sign-off")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.Leadership)]
     [EndpointSummary("Sign off Day-1 readiness for billing")]
     [ProducesResponseType(typeof(DayOneSignOffDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -635,7 +635,7 @@ public class EngagementService(
         foreach (var engagement in activeEngagements)
         {
             var assignments = await engagementRepository.GetAssignmentsAsync(engagement.EngagementId);
-            var pmUser = assignments.FirstOrDefault(a => a.User.RoleId == (int)RoleEnum.ProjectManagement)?.User;
+            var pmUser = assignments.FirstOrDefault(a => a.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager)?.User;
 
             var readiness = await kickoffReadinessService.GetReadinessAsync(engagement.EngagementId);
             var readinessScore = readiness.Score;
@@ -690,6 +690,8 @@ public class EngagementService(
 
     public async Task<DayOneSignOffDto> SignOffDayOneAsync(int engagementId, DayOneSignOffRequest request)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager, EngagementRoleEnum.Leadership);
+
         var engagement = await engagementRepository.GetByIdAsync(engagementId)
             ?? throw new EngagementNotFoundException(engagementId);
 
@@ -702,7 +704,8 @@ public class EngagementService(
             if (!request.IsException)
                 throw new DayOneTechnicalBlockersRemainingException();
 
-            var isLeadership = currentUserService.IsInRole(RoleEnum.Leadership);
+            var isLeadership = currentUserService.IsInUserRole(UserRoleEnum.Leadership) ||
+                               await engagementAccessService.HasEngagementRoleAsync(engagementId, EngagementRoleEnum.Leadership);
             if (!isLeadership)
                 throw new DayOneLeadershipExceptionForbiddenException();
 

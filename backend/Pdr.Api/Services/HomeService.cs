@@ -28,9 +28,7 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
 
         var myEngagementIds = await homeRepository.GetUserEngagementIdsAsync(user.Id);
 
-        var effectiveRole = (RoleEnum)user.RoleId;
-
-        var cards = await GetDashboardCardsAsync(user.Id, effectiveRole, myEngagementIds);
+        var cards = await GetDashboardCardsAsync(user.Id, (UserRoleEnum)user.RoleId, myEngagementIds);
         var (upcomingEngagements, totalUpcomingEngagements) = await GetUpcomingEngagementsAsync(myEngagementIds);
         var (blockers, totalBlockers) = await GetDashboardBlockersAsync(user.Id);
 
@@ -46,16 +44,35 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
         return new HomeResponseDto { User = userDto, Home = homeDto };
     }
 
-    private async Task<List<DashboardCardsDto>> GetDashboardCardsAsync(int userId, RoleEnum role, List<int> engagementIds)
+    private async Task<List<DashboardCardsDto>> GetDashboardCardsAsync(int userId, UserRoleEnum role, List<int> engagementIds)
     {
         return role switch
         {
-            RoleEnum.PreSales => await GetPreSalesCardsAsync(engagementIds),
-            RoleEnum.ProjectManagement => await GetProjectManagerCardsAsync(engagementIds),
-            RoleEnum.TechLead => await GetTechLeadCardsAsync(engagementIds),
-            RoleEnum.Leadership => await GetLeadershipCardsAsync(userId, engagementIds),
+            UserRoleEnum.PreSales => await GetPreSalesCardsAsync(engagementIds),
+            UserRoleEnum.Leadership => await GetLeadershipCardsAsync(userId, engagementIds),
+            UserRoleEnum.Delivery => await GetDeliveryCardsAsync(userId, engagementIds),
             _ => []
         };
+    }
+
+    private async Task<List<DashboardCardsDto>> GetDeliveryCardsAsync(int userId, List<int> engagementIds)
+    {
+        var myEngagementsCount = engagementIds.Count;
+
+        var pmEngagementIds = await homeRepository.GetUserEngagementIdsByRoleAsync(userId, (int)EngagementRoleEnum.ProjectManager);
+        var checklistCount = await homeRepository.GetIncompleteChecklistCountAsync(pmEngagementIds);
+
+        var tlEngagementIds = await homeRepository.GetUserEngagementIdsByRoleAsync(userId, (int)EngagementRoleEnum.TechLead);
+        var openAccessItemsCount = await homeRepository.GetOpenAccessItemsCountAsync(tlEngagementIds);
+
+        var openBlockersCount = await homeRepository.GetOpenBlockersCountAsync(engagementIds);
+
+        return [
+            new DashboardCardsDto { Type = HomeConstants.CardTypes.Engagement, Count = myEngagementsCount },
+            new DashboardCardsDto { Type = HomeConstants.CardTypes.Checklist, Count = checklistCount },
+            new DashboardCardsDto { Type = HomeConstants.CardTypes.AccessItem, Count = openAccessItemsCount },
+            new DashboardCardsDto { Type = HomeConstants.CardTypes.Blocker, Count = openBlockersCount }
+        ];
     }
 
     private async Task<List<DashboardCardsDto>> GetPreSalesCardsAsync(List<int> engagementIds)

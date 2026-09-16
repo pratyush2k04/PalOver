@@ -15,7 +15,6 @@ namespace Pdr.Api.Controllers;
 [Route("api/engagements/{engagementId}/workspace/dependencies")]
 [Authorize]
 [Produces("application/json")]
-[AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.PreSales, RoleEnum.Leadership)]
 public class DependenciesController(IDependencyService dependencyService) : ControllerBase
 {
     /// <summary>

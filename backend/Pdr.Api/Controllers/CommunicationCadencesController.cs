@@ -64,7 +64,6 @@ public class CommunicationCadencesController : ControllerBase
     /// <param name="request">The cadence creation request payload.</param>
     /// <returns>The created communication cadence.</returns>
     [HttpPost]
-    [AuthorizeRoles(RoleEnum.ProjectManagement)]
     [EndpointSummary("Create a communication cadence (Project Manager only)")]
     [ProducesResponseType(typeof(CommunicationCadenceResponseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
