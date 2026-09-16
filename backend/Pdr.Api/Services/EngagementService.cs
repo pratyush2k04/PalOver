@@ -100,7 +100,7 @@ public class EngagementService(
                 var hasAssignment = await engagementRepository.IsUserAssignedAsync(engagement.EngagementId, currentUserId);
                 if (!hasAssignment)
                 {
-                    await engagementRepository.AddAssignmentAsync(engagement.EngagementId, currentUserId);
+                    await engagementRepository.AddAssignmentAsync(engagement.EngagementId, currentUserId, (int)EngagementRoleEnum.PreSales);
 
                     var creator = await userRepository.GetByIdAsync(currentUserId);
                     if (creator is not null && creator.RoleId == (int)RoleEnum.PreSales)
@@ -149,7 +149,18 @@ public class EngagementService(
     public async Task<EngagementInfoDto?> GetEngagementInfoAsync(int id)
     {
         await engagementAccessService.ValidateAccessAsync(id);
-        return await engagementRepository.GetEngagementInfoAsync(id);
+        var info = await engagementRepository.GetEngagementInfoAsync(id);
+        if (info == null) return null;
+
+        var currentUserId = currentUserService.GetUserId();
+        var assignments = await engagementRepository.GetAssignmentsAsync(id);
+        var userRoles = assignments
+            .Where(a => a.UserId == currentUserId)
+            .Select(a => a.EngagementRole != null ? a.EngagementRole.Name : ((EngagementRoleEnum)a.EngagementRoleId).ToRoleName())
+            .Distinct()
+            .ToList();
+
+        return info with { CurrentUserEngagementRoles = userRoles };
     }
 
     public async Task<IEnumerable<EngagementInfoDto>> GetAllEngagementsAsync() =>
@@ -307,12 +318,12 @@ public class EngagementService(
     }
 
     public async Task<EngagementOwnersDto> AssignProjectManagerAsync(int engagementId, int userId) =>
-        await AssignOwnerAsync(engagementId, userId, RoleEnum.ProjectManagement);
+        await AssignOwnerAsync(engagementId, userId, EngagementRoleEnum.ProjectManager);
 
     public async Task<EngagementOwnersDto> AssignTechLeadAsync(int engagementId, int userId) =>
-        await AssignOwnerAsync(engagementId, userId, RoleEnum.TechLead);
+        await AssignOwnerAsync(engagementId, userId, EngagementRoleEnum.TechLead);
 
-    private async Task<EngagementOwnersDto> AssignOwnerAsync(int engagementId, int userId, RoleEnum requiredRole)
+    private async Task<EngagementOwnersDto> AssignOwnerAsync(int engagementId, int userId, EngagementRoleEnum requiredRole)
     {
         if (!await engagementRepository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
@@ -322,10 +333,9 @@ public class EngagementService(
         var user = await userRepository.GetByIdAsync(userId)
             ?? throw new UserNotFoundException(userId);
 
-        if (user.RoleId != (int)requiredRole)
-            throw new InvalidOwnerRoleException(userId, requiredRole.ToRoleName());
+        RoleMappingConstants.ValidateMapping((UserRoleEnum)user.RoleId, requiredRole);
 
-        var existingAssignment = await engagementRepository.GetAssignmentByRoleIdAsync(engagementId, (int)requiredRole);
+        var existingAssignment = await engagementRepository.GetAssignmentByEngagementRoleIdAsync(engagementId, (int)requiredRole);
         var isReassignment = existingAssignment is not null;
         if (existingAssignment is not null)
         {
@@ -333,7 +343,7 @@ public class EngagementService(
             await engagementRepository.RemoveAssignmentAsync(existingAssignment);
         }
 
-        await engagementRepository.AddAssignmentAsync(engagementId, userId);
+        await engagementRepository.AddAssignmentAsync(engagementId, userId, (int)requiredRole);
         await SyncOwnerPersonAsync(engagementId, user, requiredRole);
 
         var actorUserId = currentUserService.GetUserId();
@@ -347,7 +357,7 @@ public class EngagementService(
             engagementId: engagementId,
             actingUserId: actorUserId > 0 ? actorUserId : null);
 
-        if (requiredRole == RoleEnum.ProjectManagement)
+        if (requiredRole == EngagementRoleEnum.ProjectManager)
         {
             await notificationService.CreateFromTemplateAsync(
                 NotificationConstants.TemplateKeys.PMAllocated,
@@ -380,7 +390,7 @@ public class EngagementService(
             if (engagementForReminder is not null)
                 await kickoffReminderService.ScheduleRemindersAsync(engagementId, engagementForReminder.KickoffDate);
         }
-        else if (requiredRole == RoleEnum.TechLead)
+        else if (requiredRole == EngagementRoleEnum.TechLead)
         {
             await notificationService.CreateFromTemplateAsync(
                 NotificationConstants.TemplateKeys.TechLeadAssigned,
@@ -398,7 +408,7 @@ public class EngagementService(
         return await GetEngagementOwnersAsync(engagementId);
     }
 
-    private async Task SyncOwnerPersonAsync(int engagementId, User user, RoleEnum role)
+    private async Task SyncOwnerPersonAsync(int engagementId, User user, EngagementRoleEnum role)
     {
         var previousPerson = await personRepository.GetBySourceRoleAsync(engagementId, (int)role);
         if (previousPerson is not null)
@@ -423,7 +433,7 @@ public class EngagementService(
 
     private async Task InitializeTechnicalReadinessItemsAsync(int engagementId)
     {
-        var techLeadAssignment = await engagementRepository.GetAssignmentByRoleIdAsync(engagementId, (int)RoleEnum.TechLead);
+        var techLeadAssignment = await engagementRepository.GetAssignmentByEngagementRoleIdAsync(engagementId, (int)EngagementRoleEnum.TechLead);
 
         int ownerId = techLeadAssignment?.UserId ?? 0;
         if (ownerId == 0)
@@ -432,9 +442,9 @@ public class EngagementService(
             {
                 ownerId = currentUserService.GetUserId();
             }
-            catch (InvalidOperationException)
+            catch
             {
-                ownerId = 1;
+                ownerId = 0;
             }
         }
         if (ownerId == 0) ownerId = 1;
@@ -444,10 +454,10 @@ public class EngagementService(
 
     private static EngagementOwnersDto BuildOwnersDto(List<EngagementAssignment> assignments)
     {
-        var pm = assignments.FirstOrDefault(a => a.User.RoleId == (int)RoleEnum.ProjectManagement);
-        var techLead = assignments.FirstOrDefault(a => a.User.RoleId == (int)RoleEnum.TechLead);
+        var pm = assignments.FirstOrDefault(a => a.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager || a.User.RoleId == (int)RoleEnum.ProjectManagement);
+        var techLead = assignments.FirstOrDefault(a => a.EngagementRoleId == (int)EngagementRoleEnum.TechLead || a.User.RoleId == (int)RoleEnum.TechLead);
         var leadership = assignments
-            .Where(a => a.User.RoleId == (int)RoleEnum.Leadership)
+            .Where(a => a.EngagementRoleId == (int)EngagementRoleEnum.Leadership || a.User.RoleId == (int)RoleEnum.Leadership)
             .Select(a => new LeadershipUserDto(a.UserId, a.User.FullName, a.User.Email))
             .ToList();
 

@@ -96,6 +96,7 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
         await context.EngagementAssignments
             .AsNoTracking()
             .Include(a => a.User).ThenInclude(u => u.Role)
+            .Include(a => a.EngagementRole)
             .Where(a => a.EngagementId == engagementId)
             .ToListAsync();
 
@@ -103,17 +104,26 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
         await context.EngagementAssignments
             .AsNoTracking()
             .Include(a => a.User).ThenInclude(u => u.Role)
-            .Where(a => a.EngagementId == engagementId && a.User.RoleId == (int)RoleEnum.Leadership)
+            .Include(a => a.EngagementRole)
+            .Where(a => a.EngagementId == engagementId && (a.EngagementRoleId == (int)EngagementRoleEnum.Leadership || a.User.RoleId == (int)RoleEnum.Leadership))
             .ToListAsync();
 
     public async Task<EngagementAssignment?> GetAssignmentByRoleIdAsync(int engagementId, int roleId) =>
         await context.EngagementAssignments
             .Include(a => a.User).ThenInclude(u => u.Role)
-            .FirstOrDefaultAsync(a => a.EngagementId == engagementId && a.User.RoleId == roleId);
+            .Include(a => a.EngagementRole)
+            .FirstOrDefaultAsync(a => a.EngagementId == engagementId && (a.EngagementRoleId == roleId || a.User.RoleId == roleId));
+
+    public async Task<EngagementAssignment?> GetAssignmentByEngagementRoleIdAsync(int engagementId, int engagementRoleId) =>
+        await context.EngagementAssignments
+            .Include(a => a.User).ThenInclude(u => u.Role)
+            .Include(a => a.EngagementRole)
+            .FirstOrDefaultAsync(a => a.EngagementId == engagementId && a.EngagementRoleId == engagementRoleId);
 
     public async Task<EngagementAssignment?> GetAssignmentByUserAsync(int engagementId, int userId) =>
         await context.EngagementAssignments
             .Include(a => a.User).ThenInclude(u => u.Role)
+            .Include(a => a.EngagementRole)
             .FirstOrDefaultAsync(a => a.EngagementId == engagementId && a.UserId == userId);
 
     public async Task RemoveAssignmentAsync(EngagementAssignment assignment)
@@ -383,6 +393,7 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
         await context.EngagementAssignments
             .AsNoTracking()
             .Include(a => a.User)
+            .Include(a => a.EngagementRole)
             .Where(a => engagementIds.Contains(a.EngagementId))
             .ToListAsync();
 
