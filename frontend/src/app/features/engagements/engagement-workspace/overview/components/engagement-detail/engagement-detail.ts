@@ -198,11 +198,14 @@ export class EngagementDetailComponent implements OnInit {
 
     request$.subscribe({
       next: () => {
-        this.isSubmitting.set(false);
-        this.showAssignModal.set(false);
         this.currentConfirmation.set(null);
         this.toastService.success(ENGAGEMENT_MESSAGES.ASSIGNMENT_SUCCESS(change.userName, change.label));
-        this.processNextChange();
+        if (this.pendingChanges.length === 0) {
+          this.isSubmitting.set(false);
+          this.showAssignModal.set(false);
+        } else {
+          this.processNextChange();
+        }
       },
       error: (err) => {
         this.isSubmitting.set(false);
