@@ -18,7 +18,4 @@ public class Assumption : BaseAuditableEntity
     public User? Owner { get; set; }
 
     public AssumptionStatus Status { get; set; } = AssumptionStatus.Unvalidated;
-
-    public int? LinkedRiskId { get; set; }
-    public Risk? LinkedRisk { get; set; }
 }

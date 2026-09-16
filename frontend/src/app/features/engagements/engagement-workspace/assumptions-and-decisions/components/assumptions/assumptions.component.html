@@ -45,7 +45,7 @@
 
                 <div class="item-actions">
                   @if (canEdit(item)) {
-                    <app-button variant="icon" size="sm" (click)="openAssumptionDialog(item)" title="Edit Assumption" ariaLabel="Edit Assumption">
+                    <app-button variant="icon" size="sm" (click)="openAssumptionDialog(item)" appTooltip="Edit Assumption" tooltipPosition="bottom" ariaLabel="Edit Assumption">
                       <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
                     </app-button>
                   }

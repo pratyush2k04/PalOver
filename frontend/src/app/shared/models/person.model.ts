@@ -10,4 +10,7 @@ export interface PersonDto {
   role: string;
   personType: PersonType | string;
   userId?: number | null;
+  clientBackground?: string | null;
+  clientSentiment?: string | null;
+  email?: string | null;
 }

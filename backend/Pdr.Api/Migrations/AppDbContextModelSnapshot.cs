@@ -1223,9 +1223,6 @@ namespace Pdr.Api.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("LinkedRiskId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("OwnerId")
                         .HasColumnType("integer");
 
@@ -1247,8 +1244,6 @@ namespace Pdr.Api.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EngagementId");
-
-                    b.HasIndex("LinkedRiskId");
 
                     b.HasIndex("OwnerId");
 
@@ -1893,6 +1888,16 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("engagement_id");
 
+                    b.Property<string>("IncomingContactBackground")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("incoming_contact_background");
+
+                    b.Property<string>("IncomingContactEmail")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("incoming_contact_email");
+
                     b.Property<string>("IncomingContactName")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -1904,6 +1909,10 @@ namespace Pdr.Api.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("incoming_contact_role");
+
+                    b.Property<string>("IncomingContactSentiment")
+                        .HasColumnType("text")
+                        .HasColumnName("incoming_contact_sentiment");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -4377,6 +4386,15 @@ namespace Pdr.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("PersonId"));
 
+                    b.Property<string>("ClientBackground")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("client_background");
+
+                    b.Property<string>("ClientSentiment")
+                        .HasColumnType("text")
+                        .HasColumnName("client_sentiment");
+
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -4387,6 +4405,11 @@ namespace Pdr.Api.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("created_by");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("email");
 
                     b.Property<int>("EngagementId")
                         .HasColumnType("integer")
@@ -5058,10 +5081,6 @@ namespace Pdr.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Pdr.Api.Models.Risks.Risk", "LinkedRisk")
-                        .WithMany()
-                        .HasForeignKey("LinkedRiskId");
-
                     b.HasOne("Pdr.Api.Models.LoginEntity.User", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId")
@@ -5069,8 +5088,6 @@ namespace Pdr.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Engagement");
-
-                    b.Navigation("LinkedRisk");
 
                     b.Navigation("Owner");
                 });

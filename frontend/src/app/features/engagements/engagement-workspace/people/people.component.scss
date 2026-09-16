@@ -118,6 +118,29 @@
   .col-name {
     font-weight: 500;
     color: $color-slate-800;
+
+    .name-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+
+      .info-icon {
+        display: inline-flex;
+        color: $color-slate-500;
+        cursor: pointer;
+        transition: color $transition-base;
+
+        &:hover {
+          color: $color-primary;
+        }
+        
+        ::ng-deep svg {
+          width: 0.9rem;
+          height: 0.9rem;
+          display: block;
+        }
+      }
+    }
   }
 
   .col-role {

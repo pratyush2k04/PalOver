@@ -42,6 +42,9 @@ public class ClientContactTransitionService(
             OutgoingContactRole = request.OutgoingContactRole.Trim(),
             IncomingContactName = request.IncomingContactName.Trim(),
             IncomingContactRole = request.IncomingContactRole.Trim(),
+            IncomingContactEmail = request.IncomingContactEmail?.Trim(),
+            IncomingContactBackground = request.IncomingContactBackground?.Trim(),
+            IncomingContactSentiment = request.IncomingContactSentiment?.Trim(),
             CreatedBy = currentUserId,
             UpdatedBy = currentUserId
         };
@@ -56,6 +59,9 @@ public class ClientContactTransitionService(
         {
             outgoingPerson.Name = request.IncomingContactName.Trim();
             outgoingPerson.Role = request.IncomingContactRole.Trim();
+            outgoingPerson.Email = request.IncomingContactEmail?.Trim();
+            outgoingPerson.ClientBackground = request.IncomingContactBackground?.Trim();
+            outgoingPerson.ClientSentiment = request.IncomingContactSentiment?.Trim();
             outgoingPerson.UpdatedAt = DateTime.UtcNow;
             outgoingPerson.UpdatedBy = currentUserId;
             personRepository.Update(outgoingPerson);
@@ -86,6 +92,9 @@ public class ClientContactTransitionService(
             OutgoingContactName = transition.OutgoingContactName,
             OutgoingContactRole = transition.OutgoingContactRole,
             IncomingContactName = transition.IncomingContactName,
-            IncomingContactRole = transition.IncomingContactRole
+            IncomingContactRole = transition.IncomingContactRole,
+            IncomingContactEmail = transition.IncomingContactEmail,
+            IncomingContactBackground = transition.IncomingContactBackground,
+            IncomingContactSentiment = transition.IncomingContactSentiment
         };
 }

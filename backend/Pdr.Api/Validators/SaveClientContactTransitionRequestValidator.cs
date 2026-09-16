@@ -23,5 +23,13 @@ public class SaveClientContactTransitionRequestValidator : AbstractValidator<Sav
         RuleFor(x => x.IncomingContactRole)
             .NotEmpty().WithMessage(ClientContactTransitionValidationConstants.IncomingContactRoleRequired)
             .MaximumLength(ClientContactTransitionValidationConstants.MaxRoleLength).WithMessage(ClientContactTransitionValidationConstants.RoleMaxLength);
+
+        RuleFor(x => x.IncomingContactEmail)
+            .MaximumLength(255).WithMessage("Email must not exceed 255 characters.")
+            .EmailAddress().WithMessage("A valid email address is required.")
+            .When(x => !string.IsNullOrEmpty(x.IncomingContactEmail));
+
+        RuleFor(x => x.IncomingContactBackground)
+            .MaximumLength(2000).WithMessage("Background must not exceed 2000 characters.");
     }
 }
