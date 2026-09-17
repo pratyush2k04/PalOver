@@ -36,9 +36,6 @@ public class EngagementService(
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
 
-    private const string InvalidMappingErrorMessageTemplate =
-        "User with role '{0}' cannot be assigned to engagement role '{1}'. Allowed mappings are: Pre Sales -> Pre Sales, Leadership -> Leadership, Delivery -> Project Manager / Tech Lead.";
-
     private static readonly IReadOnlyDictionary<UserRoleEnum, IReadOnlyList<EngagementRoleEnum>> AllowedMappings =
         new Dictionary<UserRoleEnum, IReadOnlyList<EngagementRoleEnum>>
         {
@@ -51,11 +48,7 @@ public class EngagementService(
     {
         if (!AllowedMappings.TryGetValue(userRole, out var allowed) || !allowed.Contains(engagementRole))
         {
-            var message = string.Format(
-                InvalidMappingErrorMessageTemplate,
-                userRole.ToRoleName(),
-                engagementRole.ToRoleName());
-            throw new InvalidOperationException(message);
+            throw new InvalidRoleMappingException(userRole.ToRoleName(), engagementRole.ToRoleName());
         }
     }
 

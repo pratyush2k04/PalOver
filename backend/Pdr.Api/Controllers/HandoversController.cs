@@ -4,8 +4,8 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Handovers;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Controllers;
@@ -71,7 +71,7 @@ public class HandoversController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<HandoverInfoDto>> SaveDraft(int engagementId, [FromBody] SaveHandoverDraftRequest request)
     {
-        await _accessService.CanAccessHandoverAsync(engagementId, GetUserId(), EngagementRoleConstants.PreSales);
+        await _accessService.CanAccessHandoverAsync(engagementId, GetUserId(), EngagementRoleEnum.PreSales);
 
         var dto = await _handoverService.SaveHandoverDraftAsync(engagementId, request, GetUserIdString());
         return Ok(dto);
@@ -91,7 +91,7 @@ public class HandoversController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<HandoverInfoDto>> Submit(int engagementId)
     {
-        await _accessService.CanAccessHandoverAsync(engagementId, GetUserId(), EngagementRoleConstants.PreSales);
+        await _accessService.CanAccessHandoverAsync(engagementId, GetUserId(), EngagementRoleEnum.PreSales);
 
         var dto = await _handoverService.SubmitHandoverAsync(engagementId, GetUserIdString());
         return Ok(dto);
@@ -111,7 +111,7 @@ public class HandoversController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<HandoverInfoDto>> MarkReviewed(int engagementId)
     {
-        await _accessService.CanAccessHandoverAsync(engagementId, GetUserId(), EngagementRoleConstants.ProjectManager);
+        await _accessService.CanAccessHandoverAsync(engagementId, GetUserId(), EngagementRoleEnum.ProjectManager);
 
         var dto = await _handoverService.MarkReviewedAsync(engagementId, GetUserIdString());
         return Ok(dto);

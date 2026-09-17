@@ -73,4 +73,10 @@ public class HandoverAccessService : IHandoverAccessService
 
         return true;
     }
+
+    public Task<bool> CanAccessHandoverAsync(int engagementId, int userId, EngagementRoleEnum requiredRole) =>
+        CanAccessHandoverAsync(engagementId, userId, requiredRole.ToRoleName());
+
+    public Task<bool> CanAccessHandoverAsync(int engagementId, int userId, params EngagementRoleEnum[] requiredRoles) =>
+        CanAccessHandoverAsync(engagementId, userId, requiredRoles.Select(r => r.ToRoleName()).ToArray());
 }

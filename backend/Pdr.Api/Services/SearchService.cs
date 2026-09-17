@@ -1,4 +1,3 @@
-using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Search;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
@@ -46,7 +45,7 @@ public class SearchService(
         var shouldSearchChecklists = !isFiltered || filterTypes.Contains("checklist") || filterTypes.Contains("checklistitem") || filterTypes.Contains("checklistitems") || filterTypes.Contains("checklist-item");
 
         var isAdmin = currentUserService.IsAdmin();
-        var isPm = currentUserService.IsInRole(EngagementRoleConstants.ProjectManager);
+        var isPm = currentUserService.IsInRole(EngagementRoleEnum.ProjectManager.ToRoleName());
         var roleId = currentUserService.GetRoleId();
 
         // Sequential, not Task.WhenAll: all queries share one scoped AppDbContext instance,
