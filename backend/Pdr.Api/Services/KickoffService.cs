@@ -19,7 +19,7 @@ public class KickoffService(
 {
     public async Task<KickoffRecordDto> GetKickoffRecordAsync(int engagementId, string? currentUserId)
     {
-        await ValidateUserAccessAsync(engagementId, currentUserId);
+        await EnsureEngagementExistsAsync(engagementId);
 
         var record = await repository.GetByEngagementIdAsync(engagementId);
         if (record is null)
@@ -38,7 +38,7 @@ public class KickoffService(
     public async Task<KickoffRecordDto> SaveKickoffRecordAsync(int engagementId, SaveKickoffRecordRequest request, string? currentUserId)
     {
         await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager);
-        await ValidateUserAccessAsync(engagementId, currentUserId);
+        await EnsureEngagementExistsAsync(engagementId);
         await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var existingRecord = await repository.GetByEngagementIdAsync(engagementId);
@@ -75,7 +75,7 @@ public class KickoffService(
 
     public async Task<IEnumerable<KickoffActionItemDto>> GetOpenActionItemsAsync(int engagementId, string? currentUserId)
     {
-        await ValidateUserAccessAsync(engagementId, currentUserId);
+        await EnsureEngagementExistsAsync(engagementId);
 
         var actions = await repository.GetOpenActionItemsByEngagementIdAsync(engagementId);
         return actions.Select(MapActionItemToDto);
@@ -84,7 +84,7 @@ public class KickoffService(
     public async Task<KickoffActionItemDto> CreateActionItemAsync(int engagementId, KickoffActionItemDto dto, string? currentUserId)
     {
         await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager);
-        await ValidateUserAccessAsync(engagementId, currentUserId);
+        await EnsureEngagementExistsAsync(engagementId);
         await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var record = await repository.GetByEngagementIdAsync(engagementId);
@@ -150,7 +150,7 @@ public class KickoffService(
 
     public async Task<KickoffActionItemDto> UpdateActionItemStatusAsync(int engagementId, int actionItemId, KickoffActionItemStatus status, string? currentUserId)
     {
-        await ValidateUserAccessAsync(engagementId, currentUserId);
+        await EnsureEngagementExistsAsync(engagementId);
         await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var item = await repository.GetActionItemByIdAsync(actionItemId);
@@ -177,7 +177,7 @@ public class KickoffService(
     public async Task<KickoffActionItemDto> UpdateActionItemAsync(int engagementId, int actionItemId, KickoffActionItemDto dto, string? currentUserId)
     {
         await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager);
-        await ValidateUserAccessAsync(engagementId, currentUserId);
+        await EnsureEngagementExistsAsync(engagementId);
         await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var item = await repository.GetActionItemByIdAsync(actionItemId);
@@ -211,21 +211,12 @@ public class KickoffService(
         return MapActionItemToDto(item);
     }
 
-    private async Task ValidateUserAccessAsync(int engagementId, string? currentUserId)
+    private async Task EnsureEngagementExistsAsync(int engagementId)
     {
         var exists = await repository.EngagementExistsAsync(engagementId);
         if (!exists)
         {
             throw new EngagementNotFoundException(engagementId);
-        }
-
-        if (int.TryParse(currentUserId, out int userId) && userId > 0)
-        {
-            var hasAccess = await repository.UserHasAccessToEngagementAsync(engagementId, userId);
-            if (!hasAccess)
-            {
-                throw new HandoverAccessDeniedException("You do not have access to this engagement.");
-            }
         }
     }
 

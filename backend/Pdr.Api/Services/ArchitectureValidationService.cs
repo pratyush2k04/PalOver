@@ -148,13 +148,14 @@ public class ArchitectureValidationService(
         }
 
         var engagementId = item.ArchitectureValidation?.EngagementId ?? 0;
-        if (engagementId > 0)
+        if (engagementId <= 0)
         {
-            await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.TechLead);
-            await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+            throw new DiscoveryFeatureItemNotFoundException(featureId);
         }
 
-        var wasReady = engagementId > 0 && await readinessNotificationService.IsReadyAsync(engagementId);
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
+        var wasReady = await readinessNotificationService.IsReadyAsync(engagementId);
 
         item.FeatureName = request.FeatureName.Trim();
         item.EstimateWeeks = request.EstimateWeeks;
@@ -162,10 +163,7 @@ public class ArchitectureValidationService(
 
         await repository.SaveChangesAsync();
 
-        if (engagementId > 0)
-        {
-            await readinessNotificationService.CheckAndNotifyIfReadyAsync(engagementId, wasReady);
-        }
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(engagementId, wasReady);
 
         return MapFeatureToDto(item);
     }
@@ -179,21 +177,19 @@ public class ArchitectureValidationService(
         }
 
         var engagementId = item.ArchitectureValidation?.EngagementId ?? 0;
-        if (engagementId > 0)
+        if (engagementId <= 0)
         {
-            await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.TechLead);
-            await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+            throw new DiscoveryFeatureItemNotFoundException(featureId);
         }
 
-        var wasReady = engagementId > 0 && await readinessNotificationService.IsReadyAsync(engagementId);
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
+        var wasReady = await readinessNotificationService.IsReadyAsync(engagementId);
 
         item.IsDeleted = true;
         await repository.SaveChangesAsync();
 
-        if (engagementId > 0)
-        {
-            await readinessNotificationService.CheckAndNotifyIfReadyAsync(engagementId, wasReady);
-        }
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(engagementId, wasReady);
     }
 
     private static ArchitectureValidationDto BuildDto(ArchitectureValidation? validation, int engagementId, decimal committedTimelineWeeks)
