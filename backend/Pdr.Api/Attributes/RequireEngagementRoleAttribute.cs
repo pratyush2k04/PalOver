@@ -1,5 +1,8 @@
 using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Pdr.Api.Models.LoginEntity;
+using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Attributes;
 
@@ -9,16 +12,29 @@ namespace Pdr.Api.Attributes;
 /// Rejects unauthorized requests with 403 Forbidden.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
-public class RequireEngagementRoleAttribute : RequireEngagementAccessAttribute
+public class RequireEngagementRoleAttribute : EngagementAuthorizationAttributeBase
 {
+    public EngagementRoleEnum[] RequiredRoles { get; }
+
     public RequireEngagementRoleAttribute(params EngagementRoleEnum[] requiredRoles)
-        : base(requiredRoles)
+        : base("engagementId")
     {
+        RequiredRoles = requiredRoles;
     }
 
     public RequireEngagementRoleAttribute(string routeParameterName, params EngagementRoleEnum[] requiredRoles)
-        : base(routeParameterName, requiredRoles)
+        : base(routeParameterName)
     {
+        RequiredRoles = requiredRoles;
+    }
+
+    protected override async Task AuthorizeAsync(
+        ActionExecutingContext context,
+        IEngagementAccessService accessService,
+        int engagementId)
+    {
+        await accessService.RequireEngagementRoleAsync(engagementId, RequiredRoles);
     }
 }
+
 
