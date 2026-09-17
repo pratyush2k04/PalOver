@@ -131,7 +131,7 @@ public class RequireItemEngagementRoleAttribute : Attribute, IAsyncActionFilter
             ItemEntityType.ChangeRequest => new ChangeRequestNotFoundException(id),
             ItemEntityType.BrownfieldFinding => new BrownfieldFindingNotFoundException(id),
             ItemEntityType.DiscoveryFeature => new DiscoveryFeatureItemNotFoundException(id),
-            _ => new InvalidOperationException($"Item with ID {id} not found.")
+            _ => new ItemNotFoundException(entityType.ToString(), id)
         };
     }
 }
