@@ -225,8 +225,7 @@ public class EngagementsController(
     public async Task<IActionResult> MarkKickoffReady(int id)
     {
         await engagementAccessService.RequireEngagementRoleAsync(id, EngagementRoleEnum.ProjectManager, EngagementRoleEnum.TechLead, EngagementRoleEnum.Leadership);
-        var isLeadership = User.IsInRole(UserRoleEnum.Leadership.ToRoleName()) ||
-                           await engagementAccessService.HasEngagementRoleAsync(id, EngagementRoleEnum.Leadership);
+        var isLeadership = await engagementAccessService.HasEngagementRoleAsync(id, EngagementRoleEnum.Leadership);
         await kickoffReadinessService.MarkKickoffReadyAsync(id, isLeadership);
         return NoContent();
     }

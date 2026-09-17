@@ -35,6 +35,23 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
         return await query.ToListAsync();
     }
 
+    public async Task<List<Engagement>> GetAllActiveEngagementsAsync(string sortBy = "kickoff")
+    {
+        IQueryable<Engagement> query = context.Engagements
+            .AsNoTracking()
+            .Include(e => e.EngagementType)
+            .Include(e => e.CommercialModel)
+            .Include(e => e.DayOneSignOffRecord);
+
+        query = sortBy switch
+        {
+            "client" => query.OrderBy(e => e.ClientName),
+            _ => query.OrderBy(e => e.KickoffDate)
+        };
+
+        return await query.ToListAsync();
+    }
+
     private IQueryable<Engagement> BuildMyEngagementsQuery(int userId, bool isSignedOff)
     {
         return context.Engagements

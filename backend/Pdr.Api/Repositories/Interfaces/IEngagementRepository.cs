@@ -12,6 +12,7 @@ public interface IEngagementRepository
     Task<(List<Engagement> Items, int TotalCount)> GetEngagementsForUserPageAsync(int userId, bool isSignedOff, string sortBy, int page, int pageSize);
     Task<List<Engagement>> GetEngagementsForUserFilteredAsync(int userId, bool isSignedOff, string sortBy);
     Task<int> GetEngagementsForUserStatusCountAsync(int userId, bool isSignedOff);
+    Task<List<Engagement>> GetAllActiveEngagementsAsync(string sortBy = "kickoff");
     Task<List<int>> GetEngagementIdsForUserAsync(int userId);
     Task<Engagement?> GetByIdAsync(int engagementId);
     Task SaveChangesAsync();

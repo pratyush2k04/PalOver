@@ -22,7 +22,7 @@ public class EngagementAccessService(
 
     public async Task<bool> CanAccessAsync(int engagementId)
     {
-        if (currentUserService.IsAdmin() || currentUserService.IsInUserRole(UserRoleEnum.Leadership)) return true;
+        if (currentUserService.IsAdmin()) return true;
         var userId = currentUserService.GetUserId();
         return await engagementRepository.IsUserAssignedAsync(engagementId, userId);
     }
@@ -42,11 +42,6 @@ public class EngagementAccessService(
     public async Task<bool> HasEngagementRoleAsync(int engagementId, params EngagementRoleEnum[] roles)
     {
         if (currentUserService.IsAdmin()) return true;
-
-        if (roles.Contains(EngagementRoleEnum.Leadership) && currentUserService.IsInUserRole(UserRoleEnum.Leadership))
-        {
-            return true;
-        }
 
         var userId = currentUserService.GetUserId();
         var assignments = await engagementRepository.GetAssignmentsAsync(engagementId);

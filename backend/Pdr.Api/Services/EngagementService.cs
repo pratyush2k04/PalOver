@@ -341,6 +341,8 @@ public class EngagementService(
 
     private async Task<EngagementOwnersDto> AssignOwnerAsync(int engagementId, int userId, EngagementRoleEnum requiredRole)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.Leadership);
+
         if (!await engagementRepository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
@@ -641,8 +643,11 @@ public class EngagementService(
     public async Task<List<LeadershipEngagementListItemDto>> GetLeadershipDashboardAsync()
     {
         var currentUserId = currentUserService.GetUserId();
+        var isAdmin = currentUserService.IsAdmin();
 
-        var engagements = await engagementRepository.GetEngagementsForUserAsync(currentUserId, "kickoff");
+        var engagements = isAdmin
+            ? await engagementRepository.GetAllActiveEngagementsAsync("kickoff")
+            : await engagementRepository.GetEngagementsForUserAsync(currentUserId, "kickoff");
         var activeEngagements = engagements.OrderBy(e => e.KickoffDate).ToList();
 
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
@@ -720,8 +725,7 @@ public class EngagementService(
             if (!request.IsException)
                 throw new DayOneTechnicalBlockersRemainingException();
 
-            var isLeadership = currentUserService.IsInUserRole(UserRoleEnum.Leadership) ||
-                               await engagementAccessService.HasEngagementRoleAsync(engagementId, EngagementRoleEnum.Leadership);
+            var isLeadership = await engagementAccessService.HasEngagementRoleAsync(engagementId, EngagementRoleEnum.Leadership);
             if (!isLeadership)
                 throw new DayOneLeadershipExceptionForbiddenException();
 

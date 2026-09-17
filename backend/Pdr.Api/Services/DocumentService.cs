@@ -46,7 +46,7 @@ public class DocumentService(
         }
 
         if (doc.Visibility == DocumentVisibilityNames.PmOnly &&
-            (currentUserService.IsInUserRole(UserRoleEnum.Leadership) || await engagementAccessService.HasEngagementRoleAsync(doc.EngagementId, EngagementRoleEnum.Leadership)))
+            await engagementAccessService.HasEngagementRoleAsync(doc.EngagementId, EngagementRoleEnum.Leadership))
         {
             return true;
         }
@@ -82,14 +82,12 @@ public class DocumentService(
             else if (doc.Visibility == DocumentVisibilityNames.PmOnly)
             {
                 canAccess = assignment.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager ||
-                            assignment.EngagementRoleId == (int)EngagementRoleEnum.Leadership ||
-                            assignment.User.RoleId == (int)UserRoleEnum.Leadership;
+                            assignment.EngagementRoleId == (int)EngagementRoleEnum.Leadership;
             }
             else if (doc.Visibility == DocumentVisibilityNames.Custom)
             {
                 canAccess = assignment.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager
                     || assignment.EngagementRoleId == (int)EngagementRoleEnum.Leadership
-                    || assignment.User.RoleId == (int)UserRoleEnum.Leadership
                     || (doc.AllowedRoles != null && (doc.AllowedRoles.Contains(assignment.User.RoleId) || doc.AllowedRoles.Contains(assignment.EngagementRoleId)));
             }
 

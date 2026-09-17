@@ -177,7 +177,6 @@ public class KickoffReadinessService(
         var dayOneSignOffIsException = engagement.DayOneSignOffRecord != null && engagement.DayOneSignOffRecord.IsException;
 
         var isCommercialVisible = await engagementAccessService.HasEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager, EngagementRoleEnum.Leadership) ||
-                                  currentUserService.IsInUserRole(UserRoleEnum.Leadership) ||
                                   currentUserService.IsAdmin();
 
         CommercialDetailDto? commercial = null;
