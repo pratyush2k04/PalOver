@@ -61,7 +61,7 @@ export class ResourcesComponent {
   readonly constants = RESOURCE_REQUEST_CONSTANTS;
 
   readonly isLeadershipOrAdmin = computed(
-    () => this.authService.hasRole(USER_ROLES.LEADERSHIP) || this.authService.isAdmin(),
+    () => this.engagementService.isWorkspaceLeadership() || this.authService.isAdmin(),
   );
   readonly isProjectManager = computed(() => this.engagementService.isWorkspacePm());
 

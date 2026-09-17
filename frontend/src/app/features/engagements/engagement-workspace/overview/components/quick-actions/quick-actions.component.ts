@@ -44,7 +44,8 @@ export class QuickActionsComponent {
       (this.isPm() ||
         this.isTechLead() ||
         this.hasRole(USER_ROLES.PRE_SALES) ||
-        this.hasRole(USER_ROLES.LEADERSHIP))
+        this.engagementService.isWorkspaceLeadership() ||
+        this.authService.isAdmin())
   );
 
   readonly canAddCommitment = computed(

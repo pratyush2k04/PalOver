@@ -17,7 +17,7 @@ import {
   DayOneSignOffRequest
 } from '../models/engagement.model';
 import { EvidenceSnapshot } from '../models/evidence-snapshot.model';
-import { ENGAGEMENT_API_ENDPOINTS } from '@shared/constants/app.constants';
+import { ENGAGEMENT_API_ENDPOINTS, ENGAGEMENT_ROLES } from '@shared/constants/app.constants';
 import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 
 export interface EngagementOpenItemsSummary {
@@ -51,6 +51,11 @@ export class EngagementService {
     const currentUserId = this.authService.getUserId();
     const tlId = this.owners()?.techLeadId;
     return !!currentUserId && !!tlId && currentUserId === tlId;
+  });
+
+  readonly isWorkspaceLeadership = computed(() => {
+    const roles = this.currentEngagementState()?.currentUserEngagementRoles;
+    return !!roles && roles.some((r) => r.toLowerCase() === ENGAGEMENT_ROLES.LEADERSHIP.toLowerCase());
   });
 
   readonly isDualDeliveryRole = computed(() => this.isWorkspacePm() && this.isWorkspaceTechLead());

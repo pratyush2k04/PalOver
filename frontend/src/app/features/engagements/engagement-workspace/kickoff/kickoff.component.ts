@@ -45,7 +45,7 @@ export class KickoffComponent {
   message = signal('');
   isError = signal(false);
 
-  isLeadership = computed(() => this.authService.hasRole(USER_ROLES.LEADERSHIP));
+  isLeadership = computed(() => this.engagementService.isWorkspaceLeadership() || this.authService.isAdmin());
   canMarkReady = computed(() =>
     this.engagementService.isWorkspacePm() ||
     this.engagementService.isWorkspaceTechLead() ||

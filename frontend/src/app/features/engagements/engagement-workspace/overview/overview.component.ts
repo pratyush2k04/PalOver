@@ -20,7 +20,7 @@ export class OverviewComponent {
   private authService = inject(AuthService);
   private engagementService = inject(EngagementService);
 
-  readonly isLeadership = computed(() => this.authService.hasRole(USER_ROLES.LEADERSHIP));
+  readonly isLeadership = computed(() => this.engagementService.isWorkspaceLeadership() || this.authService.isAdmin());
   readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
   engagementId = signal<number | null>(null);
 

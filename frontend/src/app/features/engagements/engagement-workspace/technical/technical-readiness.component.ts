@@ -43,7 +43,7 @@ export class TechnicalReadinessComponent {
   isDeliveryOrLeadership = computed(() =>
     this.engagementService.isWorkspacePm() ||
     this.engagementService.isWorkspaceTechLead() ||
-    this.authService.hasRole(USER_ROLES.LEADERSHIP) ||
+    this.engagementService.isWorkspaceLeadership() ||
     this.authService.isAdmin()
   );
 

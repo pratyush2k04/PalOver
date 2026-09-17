@@ -33,7 +33,7 @@ export class EngagementDetailComponent implements OnInit {
 
   engagement = signal<EngagementInfo | null>(null);
   readonly owners = this.engagementService.owners;
-  canAssignOwners = computed(() => this.authService.hasRole(USER_ROLES.LEADERSHIP) && !this.engagementService.isSignedOff());
+  canAssignOwners = computed(() => (this.engagementService.isWorkspaceLeadership() || this.authService.isAdmin()) && !this.engagementService.isSignedOff());
 
   showAssignModal = signal(false);
   errorMessage = signal<string | null>(null);

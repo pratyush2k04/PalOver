@@ -67,7 +67,7 @@ export class PeopleComponent {
   personToDelete = signal<PersonDto | null>(null);
   isImporting = signal(false);
   
-  isLeadership = computed(() => this.authService.hasRole(USER_ROLES.LEADERSHIP));
+  isLeadership = computed(() => this.engagementService.isWorkspaceLeadership() || this.authService.isAdmin());
   canManage = computed(() => !this.engagementService.isSignedOff());
 
   constructor() {
