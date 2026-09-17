@@ -1,5 +1,5 @@
 import { DocumentCategoryId } from '../../features/engagements/models/document.model';
-import { EngagementRoleId } from './users.constants';
+import { EngagementRoleId, ENGAGEMENT_ROLES } from './users.constants';
 
 export const DOCUMENT_API_ENDPOINTS = {
   BY_ENGAGEMENT: (engagementId: number) => `/api/documents/engagement/${engagementId}`,
@@ -70,8 +70,8 @@ export const DOCUMENT_CONFIG = {
     DocumentCategoryId.Commercial
   ] as readonly number[],
   AVAILABLE_CUSTOM_VISIBILITY_ROLES: [
-    { id: EngagementRoleId.Leadership, name: 'Leadership', label: 'Leadership' },
-    { id: EngagementRoleId.TechLead, name: 'Tech Lead', label: 'Tech Lead' },
-    { id: EngagementRoleId.PreSales, name: 'Pre Sales', label: 'Pre Sales' }
+    { id: EngagementRoleId.Leadership, name: ENGAGEMENT_ROLES.LEADERSHIP, label: ENGAGEMENT_ROLES.LEADERSHIP },
+    { id: EngagementRoleId.TechLead, name: ENGAGEMENT_ROLES.TECH_LEAD, label: ENGAGEMENT_ROLES.TECH_LEAD },
+    { id: EngagementRoleId.PreSales, name: ENGAGEMENT_ROLES.PRE_SALES, label: ENGAGEMENT_ROLES.PRE_SALES }
   ]
 } as const;
