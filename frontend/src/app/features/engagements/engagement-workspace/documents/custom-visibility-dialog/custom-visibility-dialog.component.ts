@@ -11,6 +11,7 @@ import { SelectOption } from '@common/components/form/select/select';
 import { MultiSelectListComponent } from '@common/components/multi-select-list/multi-select-list';
 import { DocumentItem, DocumentVisibility, UpdateDocumentVisibilityRequest } from '../../../models/document.model';
 import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from '@shared/constants/document.constants';
+import { EngagementRoleId } from '@shared/constants/users.constants';
 import { DocumentService } from '../../../services/document.service';
 
 export interface CustomVisibilityDialogData {
@@ -47,10 +48,10 @@ export class CustomVisibilityDialogComponent implements OnInit {
   ngOnInit(): void {
     const roles = this.data.document.allowedRoles;
     if (roles && roles.length > 0) {
-      const nonPmRoles = roles.filter(r => r !== DOCUMENT_CONFIG.ROLE_IDS.PROJECT_MANAGEMENT);
-      this.selectedRoles.set(nonPmRoles.length > 0 ? nonPmRoles : [DOCUMENT_CONFIG.ROLE_IDS.LEADERSHIP]);
+      const nonPmRoles = roles.filter(r => r !== EngagementRoleId.ProjectManager);
+      this.selectedRoles.set(nonPmRoles.length > 0 ? nonPmRoles : [EngagementRoleId.Leadership]);
     } else {
-      this.selectedRoles.set([DOCUMENT_CONFIG.ROLE_IDS.LEADERSHIP]);
+      this.selectedRoles.set([EngagementRoleId.Leadership]);
     }
   }
 
