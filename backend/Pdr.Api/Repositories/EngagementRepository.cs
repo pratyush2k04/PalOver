@@ -108,11 +108,15 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
             .Where(a => a.EngagementId == engagementId && a.EngagementRoleId == (int)EngagementRoleEnum.Leadership)
             .ToListAsync();
 
-    public async Task<EngagementAssignment?> GetAssignmentByRoleIdAsync(int engagementId, int roleId) =>
+    public async Task<List<EngagementAssignment>> GetPmAndLeadershipAssignmentsAsync(int engagementId) =>
         await context.EngagementAssignments
+            .AsNoTracking()
             .Include(a => a.User).ThenInclude(u => u.Role)
             .Include(a => a.EngagementRole)
-            .FirstOrDefaultAsync(a => a.EngagementId == engagementId && a.EngagementRoleId == roleId);
+            .Where(a => a.EngagementId == engagementId &&
+                        (a.EngagementRoleId == (int)EngagementRoleEnum.Leadership || a.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager) &&
+                        !a.User.IsDeleted)
+            .ToListAsync();
 
     public async Task<EngagementAssignment?> GetAssignmentByEngagementRoleIdAsync(int engagementId, int engagementRoleId) =>
         await context.EngagementAssignments

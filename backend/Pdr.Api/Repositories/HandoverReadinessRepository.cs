@@ -57,21 +57,6 @@ public class HandoverReadinessRepository(AppDbContext context) : IHandoverReadin
         return await context.Engagements.AnyAsync(e => e.EngagementId == engagementId && !e.IsDeleted);
     }
 
-    public async Task<int?> GetPreSalesOwnerIdAsync(int engagementId)
-    {
-        var preSalesAssignment = await context.EngagementAssignments
-            .FirstOrDefaultAsync(a => a.EngagementId == engagementId && a.EngagementRoleId == (int)EngagementRoleEnum.PreSales);
-
-        if (preSalesAssignment != null)
-            return preSalesAssignment.UserId;
-
-        var preSalesUser = await context.Users.FirstOrDefaultAsync(u => u.RoleId == (int)UserRoleEnum.PreSales);
-        if (preSalesUser != null)
-            return preSalesUser.Id;
-
-        return 1;
-    }
-
     public async Task SaveChangesAsync()
     {
         await context.SaveChangesAsync();

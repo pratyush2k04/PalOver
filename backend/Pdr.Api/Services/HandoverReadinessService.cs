@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Pdr.Api.DTOs.HandoverReadiness;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.HandoverReadiness;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
@@ -27,7 +28,8 @@ public class HandoverReadinessService(
         if (items.Count == 0)
         {
             var definitions = await repository.GetActiveDefinitionsAsync();
-            var preSalesOwnerId = await repository.GetPreSalesOwnerIdAsync(engagementId) ?? 1;
+            var preSalesAssignment = await engagementRepository.GetAssignmentByEngagementRoleIdAsync(engagementId, (int)EngagementRoleEnum.PreSales);
+            var preSalesOwnerId = preSalesAssignment?.UserId ?? 1;
 
             var newItems = definitions.Select(def => new HandoverReadinessItem
             {
@@ -60,7 +62,8 @@ public class HandoverReadinessService(
         if (string.IsNullOrWhiteSpace(request.Name))
             throw new HandoverReadinessItemNameRequiredException();
 
-        var preSalesOwnerId = await repository.GetPreSalesOwnerIdAsync(engagementId) ?? 1;
+        var preSalesAssignment = await engagementRepository.GetAssignmentByEngagementRoleIdAsync(engagementId, (int)EngagementRoleEnum.PreSales);
+        var preSalesOwnerId = preSalesAssignment?.UserId ?? 1;
         var targetArea = string.IsNullOrWhiteSpace(request.Area) ? "HANDOVER" : request.Area.Trim().ToUpperInvariant();
 
         var item = new HandoverReadinessItem

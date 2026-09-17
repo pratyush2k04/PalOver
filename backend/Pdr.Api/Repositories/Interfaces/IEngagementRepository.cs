@@ -18,7 +18,7 @@ public interface IEngagementRepository
     //assignment details
     Task<List<EngagementAssignment>> GetAssignmentsAsync(int engagementId);
     Task<List<EngagementAssignment>> GetLeadershipAssignmentsAsync(int engagementId);
-    Task<EngagementAssignment?> GetAssignmentByRoleIdAsync(int engagementId, int roleId);
+    Task<List<EngagementAssignment>> GetPmAndLeadershipAssignmentsAsync(int engagementId);
     Task<EngagementAssignment?> GetAssignmentByEngagementRoleIdAsync(int engagementId, int engagementRoleId);
     Task<EngagementAssignment?> GetAssignmentByUserAsync(int engagementId, int userId);
     Task RemoveAssignmentAsync(EngagementAssignment assignment);

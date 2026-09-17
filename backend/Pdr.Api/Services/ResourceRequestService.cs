@@ -227,7 +227,7 @@ public class ResourceRequestService(
 
     private async Task NotifyLeadershipAsync(int engagementId, int resourceRequestId)
     {
-        var leadershipAssignments = await resourceRequestRepository.GetLeadershipAssignmentsAsync(engagementId);
+        var leadershipAssignments = await engagementRepository.GetLeadershipAssignmentsAsync(engagementId);
         if (leadershipAssignments.Count == 0)
         {
             return;
@@ -341,7 +341,7 @@ public class ResourceRequestService(
                 },
                 engagementId: engagementId);
 
-            var assignments = await resourceRequestRepository.GetPmAndLeadershipAssignmentsAsync(engagementId);
+            var assignments = await engagementRepository.GetPmAndLeadershipAssignmentsAsync(engagementId);
             var notifData = JsonSerializer.Serialize(
                 new ResourcingGapFlaggedNotificationMapper.ResourcingGapFlaggedNotificationData(
                     engagementId,
