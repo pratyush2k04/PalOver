@@ -15,6 +15,7 @@ namespace Pdr.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/engagements/{engagementId:int}/cadences")]
+[RequireEngagementAccess]
 [Produces("application/json")]
 public class CommunicationCadencesController : ControllerBase
 {
@@ -64,6 +65,7 @@ public class CommunicationCadencesController : ControllerBase
     /// <param name="request">The cadence creation request payload.</param>
     /// <returns>The created communication cadence.</returns>
     [HttpPost]
+    [RequireEngagementRole(EngagementRoleEnum.ProjectManager)]
     [EndpointSummary("Create a communication cadence (Project Manager only)")]
     [ProducesResponseType(typeof(CommunicationCadenceResponseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

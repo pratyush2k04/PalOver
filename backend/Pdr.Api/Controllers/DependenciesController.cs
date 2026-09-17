@@ -12,8 +12,9 @@ namespace Pdr.Api.Controllers;
 /// Manages the dependencies register for an engagement.
 /// </summary>
 [ApiController]
-[Route("api/engagements/{engagementId}/workspace/dependencies")]
+[Route("api/engagements/{engagementId:int}/workspace/dependencies")]
 [Authorize]
+[RequireEngagementAccess]
 [Produces("application/json")]
 public class DependenciesController(IDependencyService dependencyService) : ControllerBase
 {

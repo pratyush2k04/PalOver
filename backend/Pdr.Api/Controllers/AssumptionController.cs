@@ -14,6 +14,7 @@ namespace Pdr.Api.Controllers;
 [ApiController]
 [Route("api/engagements/{engagementId:int}/workspace/assumptions")]
 [Authorize]
+[RequireEngagementAccess]
 [Produces("application/json")]
 public class AssumptionController(IAssumptionService assumptionService) : ControllerBase
 {
@@ -80,9 +81,10 @@ public class AssumptionController(IAssumptionService assumptionService) : Contro
     }
 
     /// <summary>
-    /// Validates or invalidates an assumption. Requires PM or Owner permissions.
+    /// Validates or invalidates an assumption. Requires PM permissions.
     /// </summary>
     [HttpPut("{assumptionId:int}/validate")]
+    [RequireEngagementRole(EngagementRoleEnum.ProjectManager)]
     [EndpointSummary("Validate assumption")]
     [ProducesResponseType(typeof(AssumptionDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

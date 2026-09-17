@@ -14,6 +14,7 @@ namespace Pdr.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/engagements/{engagementId:int}/brownfield-findings")]
+[RequireEngagementAccess]
 [Produces("application/json")]
 public class BrownfieldFindingController(IBrownfieldFindingService service) : ControllerBase
 {
@@ -41,6 +42,7 @@ public class BrownfieldFindingController(IBrownfieldFindingService service) : Co
     /// <param name="request">The finding creation request payload.</param>
     /// <returns>The created finding.</returns>
     [HttpPost]
+    [RequireEngagementRole(EngagementRoleEnum.TechLead)]
     [EndpointSummary("Create brownfield finding (Tech Lead only)")]
     [ProducesResponseType(typeof(BrownfieldFindingDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -70,6 +72,7 @@ public class BrownfieldFindingItemController(IBrownfieldFindingService service) 
     /// <param name="request">The decision update payload (AcceptNow = 1, DeferLater = 2).</param>
     /// <returns>The updated finding.</returns>
     [HttpPatch("{id:int}/decision")]
+    [RequireItemEngagementRole(ItemEntityType.BrownfieldFinding, EngagementRoleEnum.TechLead)]
     [EndpointSummary("Update client decision for finding (Tech Lead only)")]
     [ProducesResponseType(typeof(BrownfieldFindingDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -88,6 +91,7 @@ public class BrownfieldFindingItemController(IBrownfieldFindingService service) 
     /// <param name="id">The finding ID.</param>
     /// <returns>204 No Content.</returns>
     [HttpDelete("{id:int}")]
+    [RequireItemEngagementRole(ItemEntityType.BrownfieldFinding, EngagementRoleEnum.TechLead)]
     [EndpointSummary("Delete brownfield finding (Tech Lead only)")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

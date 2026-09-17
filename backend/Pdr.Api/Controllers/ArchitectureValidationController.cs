@@ -14,6 +14,7 @@ namespace Pdr.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/engagements/{engagementId:int}/architecture-validation")]
+[RequireEngagementAccess]
 [Produces("application/json")]
 public class ArchitectureValidationController(IArchitectureValidationService service) : ControllerBase
 {
@@ -41,6 +42,7 @@ public class ArchitectureValidationController(IArchitectureValidationService ser
     /// <param name="request">The validation payload containing status and rationale.</param>
     /// <returns>The updated architecture validation details.</returns>
     [HttpPut]
+    [RequireEngagementRole(EngagementRoleEnum.TechLead)]
     [EndpointSummary("Save architecture validation status & rationale (Tech Lead only)")]
     [ProducesResponseType(typeof(ArchitectureValidationDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -62,6 +64,7 @@ public class ArchitectureValidationController(IArchitectureValidationService ser
     /// <param name="request">The discovery feature item payload.</param>
     /// <returns>The created discovery feature item.</returns>
     [HttpPost("features")]
+    [RequireEngagementRole(EngagementRoleEnum.TechLead)]
     [EndpointSummary("Add discovery feature item (Tech Lead only)")]
     [ProducesResponseType(typeof(DiscoveryFeatureItemDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
