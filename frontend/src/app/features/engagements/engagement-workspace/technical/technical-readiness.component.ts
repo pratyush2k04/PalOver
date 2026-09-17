@@ -40,14 +40,18 @@ export class TechnicalReadinessComponent {
 
   private parentParamMap = toSignal(this.route.parent!.paramMap);
 
-  isPreSales = computed(() => this.authService.hasRole(USER_ROLES.PRE_SALES));
-  isTechLead = computed(() => this.engagementService.isWorkspaceTechLead());
+  isDeliveryOrLeadership = computed(() =>
+    this.engagementService.isWorkspacePm() ||
+    this.engagementService.isWorkspaceTechLead() ||
+    this.authService.hasRole(USER_ROLES.LEADERSHIP) ||
+    this.authService.isAdmin()
+  );
 
-  canViewDayOneBanner = computed(() => !this.isPreSales());
-  canViewAccessTracker = computed(() => !this.isPreSales());
-  canViewEnvironmentTooling = computed(() => !this.isPreSales());
+  canViewDayOneBanner = computed(() => this.isDeliveryOrLeadership());
+  canViewAccessTracker = computed(() => this.isDeliveryOrLeadership());
+  canViewEnvironmentTooling = computed(() => this.isDeliveryOrLeadership());
   canViewArchitectureValidation = computed(() => true);
-  canViewBrownfieldReview = computed(() => !this.isPreSales() && this.isBrownfield());
+  canViewBrownfieldReview = computed(() => this.isDeliveryOrLeadership() && this.isBrownfield());
 
   engagementId = computed(() => {
     const idStr = this.parentParamMap()?.get('id');
