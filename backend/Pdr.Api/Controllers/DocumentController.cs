@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.Attributes;
 using Pdr.Api.DTOs.Documents;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -54,9 +55,11 @@ public class DocumentController(IDocumentService documentService) : ControllerBa
     /// <param name="engagementId">The engagement ID.</param>
     /// <returns>A list of accessible engagement documents.</returns>
     [HttpGet("engagement/{engagementId:int}")]
+    [RequireEngagementAccess]
     [EndpointSummary("Get documents by engagement ID")]
     [ProducesResponseType(typeof(List<DocumentResponseDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetEngagementDocuments(int engagementId)
     {
@@ -70,6 +73,7 @@ public class DocumentController(IDocumentService documentService) : ControllerBa
     /// <param name="id">The document ID.</param>
     /// <returns>The requested document file stream.</returns>
     [HttpGet("{id:int}/download")]
+    [RequireItemEngagementAccess(ItemEntityType.Document)]
     [EndpointSummary("Download a document file")]
     [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -102,6 +106,7 @@ public class DocumentController(IDocumentService documentService) : ControllerBa
     /// <param name="request">The removal reason payload.</param>
     /// <returns>No content on successful deletion.</returns>
     [HttpPost("{id:int}/remove")]
+    [RequireItemEngagementAccess(ItemEntityType.Document)]
     [EndpointSummary("Soft delete a document with reason")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -121,6 +126,7 @@ public class DocumentController(IDocumentService documentService) : ControllerBa
     /// <param name="request">The updated visibility payload.</param>
     /// <returns>The updated document details.</returns>
     [HttpPatch("{id:int}/visibility")]
+    [RequireItemEngagementRole(ItemEntityType.Document, EngagementRoleEnum.ProjectManager)]
     [EndpointSummary("Update document access visibility")]
     [ProducesResponseType(typeof(DocumentResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -140,6 +146,7 @@ public class DocumentController(IDocumentService documentService) : ControllerBa
     /// <param name="dto">The new file and optional change note.</param>
     /// <returns>The updated document with its new current version.</returns>
     [HttpPost("{id:int}/versions")]
+    [RequireItemEngagementAccess(ItemEntityType.Document)]
     [Consumes("multipart/form-data")]
     [RequestSizeLimit(50 * 1024 * 1024)]
     [RequestFormLimits(MultipartBodyLengthLimit = 50 * 1024 * 1024)]
@@ -161,9 +168,11 @@ public class DocumentController(IDocumentService documentService) : ControllerBa
     /// <param name="id">The document ID.</param>
     /// <returns>All versions of the document.</returns>
     [HttpGet("{id:int}/versions")]
+    [RequireItemEngagementAccess(ItemEntityType.Document)]
     [EndpointSummary("Get document version history")]
     [ProducesResponseType(typeof(List<DocumentVersionResponseDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetVersionHistory(int id)
     {
@@ -178,6 +187,7 @@ public class DocumentController(IDocumentService documentService) : ControllerBa
     /// <param name="versionId">The version ID to download.</param>
     /// <returns>The requested version's file stream.</returns>
     [HttpGet("{id:int}/versions/{versionId:int}/download")]
+    [RequireItemEngagementAccess(ItemEntityType.Document)]
     [EndpointSummary("Download a specific document version")]
     [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
