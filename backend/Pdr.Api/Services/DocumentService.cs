@@ -171,11 +171,11 @@ public class DocumentService(
 
     // ── CRUD ────────────────────────────────────────────────────────────────
 
-    public async Task<DocumentResponseDto> UploadDocumentAsync(DocumentUploadDto dto)
+    public async Task<DocumentResponseDto> UploadDocumentAsync(int engagementId, DocumentUploadDto dto)
     {
-        await engagementRepository.EnsureNotSignedOffAsync(dto.EngagementId);
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
-        var engagementFolder = Path.Combine(environment.ContentRootPath, DocumentValidationConstants.UploadsFolder, dto.EngagementId.ToString());
+        var engagementFolder = Path.Combine(environment.ContentRootPath, DocumentValidationConstants.UploadsFolder, engagementId.ToString());
         if (!Directory.Exists(engagementFolder))
         {
             Directory.CreateDirectory(engagementFolder);
@@ -197,7 +197,7 @@ public class DocumentService(
 
         var document = new Document
         {
-            EngagementId = dto.EngagementId,
+            EngagementId = engagementId,
             CategoryId = dto.CategoryId,
             FileName = dto.File.FileName,
             FilePath = filePath,
@@ -231,7 +231,7 @@ public class DocumentService(
                 ["ActorUserId"] = actorUserId,
                 ["DocumentName"] = reloaded.FileName,
             },
-            engagementId: dto.EngagementId,
+            engagementId: engagementId,
             actingUserId: actorUserId);
 
         var uploaderNames = await GetUploaderNamesAsync([reloaded.CreatedBy]);
@@ -243,12 +243,14 @@ public class DocumentService(
     /// A `List&lt;DocumentUploadDto&gt;` argument doesn't match any registered `IValidator&lt;List&lt;T&gt;&gt;`, so the
     /// global ValidationFilter can't validate per-item — each file is validated here instead.
     /// </summary>
-    public async Task<List<DocumentUploadResultDto>> UploadDocumentsAsync(List<DocumentUploadDto> dtos)
+    public async Task<List<DocumentUploadResultDto>> UploadDocumentsAsync(int engagementId, List<DocumentUploadDto> dtos)
     {
         if (dtos == null || dtos.Count == 0)
         {
             throw new NoDocumentsProvidedException();
         }
+
+        await engagementAccessService.ValidateAccessAsync(engagementId);
 
         var results = new List<DocumentUploadResultDto>();
 
@@ -268,7 +270,7 @@ public class DocumentService(
 
             try
             {
-                var uploaded = await UploadDocumentAsync(dto);
+                var uploaded = await UploadDocumentAsync(engagementId, dto);
                 results.Add(new DocumentUploadResultDto
                 {
                     FileName = dto.File?.FileName,

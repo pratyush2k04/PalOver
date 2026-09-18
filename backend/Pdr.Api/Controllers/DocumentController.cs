@@ -20,9 +20,10 @@ public class DocumentController(IDocumentService documentService) : ControllerBa
     /// <summary>
     /// Uploads one or more documents for an engagement.
     /// </summary>
+    /// <param name="engagementId">The engagement ID.</param>
     /// <param name="dtos">The list of document upload payloads.</param>
     /// <returns>Upload processing results for each document.</returns>
-    [HttpPost("upload")]
+    [HttpPost("{engagementId:int}/upload")]
     [Consumes("multipart/form-data")]
     [RequestSizeLimit(50 * 1024 * 1024)]
     [RequestFormLimits(MultipartBodyLengthLimit = 50 * 1024 * 1024)]
@@ -31,9 +32,9 @@ public class DocumentController(IDocumentService documentService) : ControllerBa
     [ProducesResponseType(typeof(List<DocumentUploadResultDto>), StatusCodes.Status207MultiStatus)]
     [ProducesResponseType(typeof(List<DocumentUploadResultDto>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> UploadDocuments([FromForm] List<DocumentUploadDto> dtos)
+    public async Task<IActionResult> UploadDocuments(int engagementId, [FromForm] List<DocumentUploadDto> dtos)
     {
-        var results = await documentService.UploadDocumentsAsync(dtos);
+        var results = await documentService.UploadDocumentsAsync(engagementId, dtos);
 
         var hasErrors = results.Any(r => !r.Success);
         if (hasErrors && results.Any(r => r.Success))
