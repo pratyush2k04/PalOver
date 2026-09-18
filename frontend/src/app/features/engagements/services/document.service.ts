@@ -27,11 +27,10 @@ export class DocumentService {
     const formData = new FormData();
     files.forEach((file, i) => {
       formData.append(`[${i}].File`, file, file.name);
-      formData.append(`[${i}].EngagementId`, engagementId.toString());
       formData.append(`[${i}].CategoryId`, categoryId.toString());
       formData.append(`[${i}].Visibility`, visibility);
     });
-    return this.http.post<DocumentUploadResult[]>(DOCUMENT_API_ENDPOINTS.UPLOAD, formData, {
+    return this.http.post<DocumentUploadResult[]>(DOCUMENT_API_ENDPOINTS.UPLOAD(engagementId), formData, {
       context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
     });
   }
