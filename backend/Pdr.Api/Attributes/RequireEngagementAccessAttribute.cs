@@ -6,7 +6,7 @@ using Pdr.Api.Services.Interfaces;
 namespace Pdr.Api.Attributes;
 
 /// <summary>
-/// Enforces that the authenticated caller is assigned to the specified engagement (or is a System Admin).
+/// Enforces that the authenticated caller is assigned to the specified engagement (unless explicitly annotated with [AllowAdmin]).
 /// Rejects unauthorized requests with 403 Forbidden.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +24,17 @@ public abstract class EngagementAuthorizationAttributeBase : Attribute, IAsyncAc
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
+        var allowsAdmin = context.ActionDescriptor.EndpointMetadata.OfType<AllowAdminAttribute>().Any();
+        if (allowsAdmin)
+        {
+            var currentUserService = context.HttpContext.RequestServices.GetRequiredService<ICurrentUserService>();
+            if (currentUserService.IsAdmin())
+            {
+                await next();
+                return;
+            }
+        }
+
         var engagementId = ExtractEngagementId(context, RouteParameterName);
         var accessService = context.HttpContext.RequestServices.GetRequiredService<IEngagementAccessService>();
 

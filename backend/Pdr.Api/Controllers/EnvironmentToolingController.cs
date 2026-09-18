@@ -24,6 +24,7 @@ public class EnvironmentToolingController(IEnvironmentToolingService service) : 
     /// <param name="engagementId">The engagement ID.</param>
     /// <returns>A list of environment and tooling items.</returns>
     [HttpGet]
+    [RequireEngagementRole(EngagementRoleEnum.TechLead, EngagementRoleEnum.ProjectManager, EngagementRoleEnum.Leadership)]
     [EndpointSummary("Get environment & tooling items")]
     [ProducesResponseType(typeof(EnvironmentToolingReadinessResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

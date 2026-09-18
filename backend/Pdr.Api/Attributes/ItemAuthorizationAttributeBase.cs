@@ -46,6 +46,17 @@ public abstract class ItemAuthorizationAttributeBase : Attribute, IAsyncActionFi
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
+        var allowsAdmin = context.ActionDescriptor.EndpointMetadata.OfType<AllowAdminAttribute>().Any();
+        if (allowsAdmin)
+        {
+            var currentUserService = context.HttpContext.RequestServices.GetRequiredService<ICurrentUserService>();
+            if (currentUserService.IsAdmin())
+            {
+                await next();
+                return;
+            }
+        }
+
         var itemId = ExtractItemId(context, RouteParameterName);
         if (itemId <= 0)
         {
