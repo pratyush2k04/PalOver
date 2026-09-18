@@ -252,8 +252,8 @@ public class EngagementsController(
     /// <response code="200">List of assigned Leadership users returned successfully.</response>
     /// <response code="404">Engagement was not found.</response>
     [HttpGet("{id:int}/leadership-users")]
-    [RequireEngagementAccess("id")]
     [ProducesResponseType(typeof(IEnumerable<LeadershipUserDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<LeadershipUserDto>>> GetLeadershipUsers(int id)
     {

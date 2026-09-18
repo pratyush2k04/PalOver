@@ -643,11 +643,8 @@ public class EngagementService(
     public async Task<List<LeadershipEngagementListItemDto>> GetLeadershipDashboardAsync()
     {
         var currentUserId = currentUserService.GetUserId();
-        var isAdmin = currentUserService.IsAdmin();
 
-        var engagements = isAdmin
-            ? await engagementRepository.GetAllActiveEngagementsAsync("kickoff")
-            : await engagementRepository.GetEngagementsForUserAsync(currentUserId, "kickoff");
+        var engagements = await engagementRepository.GetEngagementsForUserAsync(currentUserId, "kickoff");
         var activeEngagements = engagements.OrderBy(e => e.KickoffDate).ToList();
 
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
