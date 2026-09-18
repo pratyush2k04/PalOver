@@ -250,8 +250,6 @@ public class DocumentService(
             throw new NoDocumentsProvidedException();
         }
 
-        await engagementAccessService.ValidateAccessAsync(engagementId);
-
         var results = new List<DocumentUploadResultDto>();
 
         foreach (var dto in dtos)
@@ -294,8 +292,6 @@ public class DocumentService(
 
     public async Task<IEnumerable<DocumentResponseDto>> GetDocumentsByEngagementAsync(int engagementId)
     {
-        await engagementAccessService.ValidateAccessAsync(engagementId);
-
         var userRoleId = currentUserService.GetRoleId();
         var isAdmin = currentUserService.IsAdmin();
         var isPm = await engagementAccessService.HasEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager);
@@ -312,8 +308,6 @@ public class DocumentService(
         {
             throw new DocumentNotFoundException(id);
         }
-
-        await engagementAccessService.ValidateAccessAsync(doc.EngagementId);
 
         if (!File.Exists(doc.FilePath))
         {
@@ -399,12 +393,6 @@ public class DocumentService(
         if (doc == null)
         {
             throw new DocumentNotFoundException(id);
-        }
-
-        var canManage = await engagementAccessService.HasEngagementRoleAsync(doc.EngagementId, EngagementRoleEnum.ProjectManager) || currentUserService.IsAdmin();
-        if (!canManage)
-        {
-            throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.VisibilityChangeDenied);
         }
 
         await engagementRepository.EnsureNotSignedOffAsync(doc.EngagementId);
