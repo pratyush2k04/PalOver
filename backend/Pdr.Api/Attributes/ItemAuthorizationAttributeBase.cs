@@ -20,7 +20,8 @@ public enum ItemEntityType
     ChangeRequest,
     BrownfieldFinding,
     DiscoveryFeature,
-    Document
+    Document,
+    HandoverReadinessItem
 }
 
 /// <summary>
@@ -120,6 +121,11 @@ public abstract class ItemAuthorizationAttributeBase : Attribute, IAsyncActionFi
                 .Select(x => x.EngagementId)
                 .FirstOrDefaultAsync(),
 
+            ItemEntityType.HandoverReadinessItem => await db.HandoverReadinessItems
+                .Where(x => x.Id == itemId)
+                .Select(x => x.EngagementId)
+                .FirstOrDefaultAsync(),
+
             _ => 0
         };
     }
@@ -159,6 +165,7 @@ public abstract class ItemAuthorizationAttributeBase : Attribute, IAsyncActionFi
             ItemEntityType.BrownfieldFinding => new BrownfieldFindingNotFoundException(id),
             ItemEntityType.DiscoveryFeature => new DiscoveryFeatureItemNotFoundException(id),
             ItemEntityType.Document => new DocumentNotFoundException(id),
+            ItemEntityType.HandoverReadinessItem => new HandoverReadinessItemNotFoundException(id),
             _ => new ItemNotFoundException(entityType.ToString(), id)
         };
     }
