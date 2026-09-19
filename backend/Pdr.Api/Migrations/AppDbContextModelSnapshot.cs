@@ -978,9 +978,7 @@ namespace Pdr.Api.Migrations
                         .HasColumnName("engagement_id");
 
                     b.Property<int>("EngagementRoleId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasDefaultValue(1)
                         .HasColumnName("engagement_role_id");
 
                     b.HasKey("UserId", "EngagementId", "EngagementRoleId");

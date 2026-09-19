@@ -29,7 +29,7 @@ namespace Pdr.Api.Migrations
                 table: "engagement_assignments",
                 type: "integer",
                 nullable: false,
-                defaultValue: 1);
+                defaultValue: 0);
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_engagement_assignments",
