@@ -5,6 +5,8 @@ import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
+import { TextareaComponent } from '@common/components/form/textarea/textarea';
+import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { PersonDto, PersonType } from '@shared/models/person.model';
 
 export interface PersonFormDialogData {
@@ -15,12 +17,15 @@ export interface PersonFormDialogResult {
   name: string;
   role: string;
   personType: number;
+  clientBackground?: string | null;
+  clientSentiment?: string | null;
+  email?: string | null;
 }
 
 @Component({
   selector: 'app-person-form-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, InputComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, InputComponent, TextareaComponent, SelectComponent],
   templateUrl: './person-form-dialog.component.html',
   styleUrl: './person-form-dialog.component.scss'
 })
@@ -32,7 +37,18 @@ export class PersonFormDialogComponent {
   form = this.fb.group({
     name: ['', [Validators.required, Validators.maxLength(200)]],
     role: ['', [Validators.required, Validators.maxLength(200)]],
+    email: ['', [Validators.email, Validators.maxLength(255)]],
+    clientBackground: ['', [Validators.maxLength(2000)]],
+    clientSentiment: ['']
   });
+
+  sentimentOptions: SelectOption[] = [
+    { value: 'Highly Collaborative', label: 'Highly Collaborative' },
+    { value: 'Collaborative', label: 'Collaborative' },
+    { value: 'Responsive', label: 'Responsive' },
+    { value: 'Slow to Respond', label: 'Slow to Respond' },
+    { value: 'Frequently Changes Requirements', label: 'Frequently Changes Requirements' }
+  ];
 
   get isEditing(): boolean {
     return !!this.data.person;
@@ -43,6 +59,9 @@ export class PersonFormDialogComponent {
       this.form.patchValue({
         name: this.data.person.name,
         role: this.data.person.role,
+        email: this.data.person.email || '',
+        clientBackground: this.data.person.clientBackground || '',
+        clientSentiment: this.data.person.clientSentiment || ''
       });
       this.form.markAsPristine();
     }
@@ -66,7 +85,10 @@ export class PersonFormDialogComponent {
     this.dialogRef.close({
       name: this.form.value.name!.trim(),
       role: this.form.value.role!.trim(),
-      personType: PersonType.Client
+      personType: PersonType.Client,
+      email: this.form.value.email?.trim() || null,
+      clientBackground: this.form.value.clientBackground?.trim() || null,
+      clientSentiment: this.form.value.clientSentiment?.trim() || null
     });
   }
 }

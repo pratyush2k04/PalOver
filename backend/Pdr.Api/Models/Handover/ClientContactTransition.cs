@@ -17,4 +17,10 @@ public class ClientContactTransition : BaseAuditableEntity
     public string IncomingContactName { get; set; } = string.Empty;
 
     public string IncomingContactRole { get; set; } = string.Empty;
+
+    public string? IncomingContactEmail { get; set; }
+
+    public string? IncomingContactBackground { get; set; }
+
+    public string? IncomingContactSentiment { get; set; }
 }

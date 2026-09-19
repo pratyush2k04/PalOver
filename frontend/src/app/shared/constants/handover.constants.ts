@@ -118,7 +118,7 @@ export const HANDOVER_READINESS_LABELS = {
   COMMERCIAL: 'COMMERCIAL',
   HANDOVER: 'HANDOVER',
   ITEMS: 'Items',
-  ADD_ITEM: '+ Add Item',
+  ADD_ITEM: 'Add Item',
   ITEM: 'Item',
   OWNER: 'Owner',
   EVIDENCE: 'Evidence',

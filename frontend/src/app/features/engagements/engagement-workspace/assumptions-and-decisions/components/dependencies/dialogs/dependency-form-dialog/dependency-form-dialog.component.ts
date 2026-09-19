@@ -132,8 +132,11 @@ export class DependencyFormDialogComponent implements OnInit {
       value: p.personId,
       label: p.name
     })));
+  }
 
-    if (filtered.length === 0) {
+  onOwnerSelectClick(): void {
+    if (this.ownerOptions().length === 0) {
+      const type = this.form.value.type as DependencyType;
       this.toastService.warning(`No ${type} owners are available to assign. Please add them first.`);
     }
   }

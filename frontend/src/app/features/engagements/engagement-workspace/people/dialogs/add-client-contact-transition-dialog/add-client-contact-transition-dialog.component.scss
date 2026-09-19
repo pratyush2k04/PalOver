@@ -1,9 +1,18 @@
 @use 'styles/tokens' as *;
 
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   width: 31.25rem;
   max-width: calc(100vw - 3rem);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 
 .form-section {

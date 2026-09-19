@@ -7,6 +7,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { AlertComponent } from '@common/components/alert/alert';
+import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { AddClientContactTransitionDialogData, AddTransitionRequest } from '@features/engagements/models/client-contact-transition.model';
 import { ClientContactTransitionService } from '@features/engagements/services/client-contact-transition.service';
 import { PersonType } from '@shared/models/person.model';
@@ -30,6 +31,7 @@ import {
     InputComponent,
     SelectComponent,
     AlertComponent,
+    TextareaComponent
   ],
   templateUrl: './add-client-contact-transition-dialog.component.html',
   styleUrl: './add-client-contact-transition-dialog.component.scss',
@@ -54,7 +56,18 @@ export class AddClientContactTransitionDialogComponent {
     outgoingContactRole: ['', [Validators.required, Validators.maxLength(200)]],
     incomingContactName: ['', [Validators.required, Validators.maxLength(200)]],
     incomingContactRole: ['', [Validators.required, Validators.maxLength(200)]],
+    incomingContactEmail: ['', [Validators.email, Validators.maxLength(255)]],
+    incomingContactBackground: ['', [Validators.maxLength(2000)]],
+    incomingContactSentiment: [''],
   });
+
+  sentimentOptions: SelectOption[] = [
+    { value: 'Highly Collaborative', label: 'Highly Collaborative' },
+    { value: 'Collaborative', label: 'Collaborative' },
+    { value: 'Responsive', label: 'Responsive' },
+    { value: 'Slow to Respond', label: 'Slow to Respond' },
+    { value: 'Frequently Changes Requirements', label: 'Frequently Changes Requirements' }
+  ];
 
   showConfirm = signal(false);
   outgoingContactOptions = signal<SelectOption[]>([]);
@@ -89,7 +102,7 @@ export class AddClientContactTransitionDialogComponent {
 
   onOutgoingSelectClick(): void {
     if (this.outgoingContactOptions().length === 0) {
-      this.toastService.info(this.validationMessages.NO_OUTGOING_CONTACTS);
+      this.toastService.warning(this.validationMessages.NO_OUTGOING_CONTACTS);
     }
   }
 

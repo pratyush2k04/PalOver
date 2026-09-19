@@ -12,7 +12,6 @@ export interface AssumptionDto {
   ownerId: number;
   ownerName: string;
   status: AssumptionStatus;
-  linkedRiskId?: number | null;
 }
 
 export interface CreateAssumptionDto {

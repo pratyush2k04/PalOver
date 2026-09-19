@@ -11,5 +11,4 @@ public class AssumptionDto
     public int OwnerId { get; set; }
     public string OwnerName { get; set; } = string.Empty;
     public AssumptionStatus Status { get; set; }
-    public int? LinkedRiskId { get; set; }
 }

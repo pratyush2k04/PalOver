@@ -28,7 +28,7 @@ public class AssumptionService(
 
         var assumptions = await assumptionRepository.GetByEngagementIdAsync(engagementId);
         return assumptions
-            .OrderByDescending(a => a.Status == AssumptionStatus.Unvalidated || (a.Status == AssumptionStatus.Invalid && a.LinkedRiskId == null))
+            .OrderByDescending(a => a.Status == AssumptionStatus.Unvalidated || a.Status == AssumptionStatus.Invalid)
             .Select(MapToDto)
             .ToList();
     }
@@ -175,8 +175,7 @@ public class AssumptionService(
             Rationale = assumption.Rationale,
             OwnerId = assumption.OwnerId,
             OwnerName = assumption.Owner?.FullName ?? string.Empty,
-            Status = assumption.Status,
-            LinkedRiskId = assumption.LinkedRiskId
+            Status = assumption.Status
         };
     }
 }
