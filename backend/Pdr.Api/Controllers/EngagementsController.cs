@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.Attributes;
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.LoginEntity;
@@ -269,7 +270,7 @@ public class EngagementsController(
     /// <response code="200">Handover draft status returned successfully.</response>
     /// <response code="404">Engagement was not found.</response>
     [HttpGet("{id:int}/handover-draft-status")]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [ProducesResponseType(typeof(HandoverDraftStatusDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<HandoverDraftStatusDto>> GetHandoverDraftStatus(int id)
@@ -288,7 +289,7 @@ public class EngagementsController(
     /// <response code="400">User is already assigned to engagement or invalid role.</response>
     /// <response code="404">Engagement or User was not found.</response>
     [HttpPost("{id:int}/leadership-users")]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [ProducesResponseType(typeof(IEnumerable<LeadershipUserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -314,7 +315,7 @@ public class EngagementsController(
     /// <response code="400">Attempted to remove the last remaining Leadership contact.</response>
     /// <response code="404">Engagement or User assignment was not found.</response>
     [HttpDelete("{id:int}/leadership-users/{userId:int}")]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [ProducesResponseType(typeof(IEnumerable<LeadershipUserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -334,7 +335,7 @@ public class EngagementsController(
     /// <response code="400">Attempted to remove the last remaining Leadership contact, or invalid request.</response>
     /// <response code="404">Engagement or User was not found.</response>
     [HttpPut("{id:int}/leadership-users")]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [ProducesResponseType(typeof(IEnumerable<LeadershipUserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
