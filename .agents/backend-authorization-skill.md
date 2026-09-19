@@ -4,10 +4,10 @@ This guide explains how to make full use of the declarative authorization attrib
 
 The authorization system provides a layered, declarative security model covering:
 1. **Authentication:** Ensuring the caller has a valid JWT (`[Authorize]`).
-2. **System-Level Roles:** Enforcing platform-wide roles (`[AuthorizeRoles]`, `[AuthorizeRolesWithAdminBypass]`).
-3. **Engagement-Level Access & Roles:** Verifying membership or specific roles on the target engagement (`[RequireEngagementAccess]`, `[RequireEngagementRole]`).
-4. **Item-Level Engagement Access & Roles:** Verifying permissions on the engagement that *owns* a specific sub-entity (`[RequireItemEngagementAccess]`, `[RequireItemEngagementRole]`).
-5. **System Administrator Bypass:** Allowing system administrators to bypass engagement-level restrictions (`[AllowAdmin]`).
+2. **User Roles:** Enforcing user roles on endpoints (`[AuthorizeRoles]`, `[AuthorizeRolesWithAdminBypass]`).
+3. **Engagement Access & Engagement Roles:** Verifying assignment or specific engagement roles on the target engagement (`[RequireEngagementAccess]`, `[RequireEngagementRole]`).
+4. **Item Engagement Access & Engagement Roles:** Verifying engagement assignment or engagement roles on the engagement that *owns* a specific sub-entity (`[RequireItemEngagementAccess]`, `[RequireItemEngagementRole]`).
+5. **Admin Bypass:** Allowing administrators to bypass user role or engagement role restrictions (`[AllowAdmin]`, `[AuthorizeRolesWithAdminBypass]`).
 
 ---
 
@@ -15,13 +15,13 @@ The authorization system provides a layered, declarative security model covering
 
 | Attribute | Scope | Target | Pipeline | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| `[AuthorizeRoles(params UserRoleEnum[])]` | System | Class / Method | ASP.NET Middleware | Requires caller to have at least one of the specified system roles (`PreSales`, `Leadership`, `Delivery`). Returns **401** if unauthenticated, **403** if role missing. |
-| `[AuthorizeRolesWithAdminBypass(params UserRoleEnum[])]` | System + Admin | Class / Method | Middleware + Action Filter | Requires caller to have one of the specified system roles **OR** have the system administrator claim (`isAdmin = true`). |
-| `[AllowAdmin]` | Admin Marker | Class / Method | Action Filter Metadata | Marker attribute. When placed on a controller or action, any subsequent engagement/item authorization check is bypassed if `currentUserService.IsAdmin() == true`. |
-| `[RequireEngagementAccess(routeParam?)]` | Engagement | Class / Method | Action Filter | Enforces that the caller is assigned to the engagement identified by the route parameter (default: `"engagementId"`). Returns **403** if unassigned. |
-| `[RequireEngagementRole(params EngagementRoleEnum[])]` | Engagement | Class / Method | Action Filter | Enforces that the caller holds at least one of the specified engagement roles on the target engagement. Returns **403** if caller lacks the role. |
-| `[RequireItemEngagementAccess(ItemEntityType, routeParam?)]` | Item / Entity | Method | Action Filter | Resolves the owning engagement of the specified item entity via `IEngagementAccessService` and verifies that the caller is assigned to that engagement. Returns **404** if item missing, **403** if unassigned. |
-| `[RequireItemEngagementRole(ItemEntityType, params EngagementRoleEnum[])]` | Item / Entity | Method | Action Filter | Resolves the owning engagement of the specified item entity via `IEngagementAccessService` and verifies that the caller holds at least one of the required engagement roles. Returns **404** if item missing, **403** if role missing. |
+| `[AuthorizeRoles(params UserRoleEnum[])]` | User Role | Class / Method | ASP.NET Middleware | Requires caller to have at least one of the specified user roles (`PreSales`, `Leadership`, `Delivery`). Returns **401** if unauthenticated, **403** if user role is missing. |
+| `[AuthorizeRolesWithAdminBypass(params UserRoleEnum[])]` | User Role + Admin | Class / Method | Middleware + Action Filter | Requires caller to have one of the specified user roles **OR** have the admin claim (`isAdmin = true`). |
+| `[AllowAdmin]` | Admin Marker | Class / Method | Action Filter Metadata | Marker attribute. When placed on a controller or action, any subsequent engagement access, engagement role, or item check is bypassed if `currentUserService.IsAdmin() == true`. |
+| `[RequireEngagementAccess(routeParam?)]` | Engagement Access | Class / Method | Action Filter | Enforces that the caller is assigned to the engagement identified by the route parameter (default: `"engagementId"`). Returns **403** if unassigned. |
+| `[RequireEngagementRole(params EngagementRoleEnum[])]` | Engagement Role | Class / Method | Action Filter | Enforces that the caller holds at least one of the specified engagement roles on the target engagement. Returns **403** if caller lacks the engagement role. |
+| `[RequireItemEngagementAccess(ItemEntityType, routeParam?)]` | Item Engagement Access | Method | Action Filter | Resolves the owning engagement of the specified item entity via `IEngagementAccessService` and verifies that the caller is assigned to that engagement. Returns **404** if item missing/deleted, **403** if unassigned. |
+| `[RequireItemEngagementRole(ItemEntityType, params EngagementRoleEnum[])]` | Item Engagement Role | Method | Action Filter | Resolves the owning engagement of the specified item entity via `IEngagementAccessService` and verifies that the caller holds at least one of the required engagement roles on the owning engagement. Returns **404** if item missing/deleted, **403** if engagement role is missing. |
 
 ---
 
@@ -33,14 +33,14 @@ When all endpoints in a controller operate within an engagement route (e.g. `/ap
 ```csharp
 [ApiController]
 [Authorize]
-[RequireEngagementAccess] // Enforces assignment for ALL actions in this controller
+[RequireEngagementAccess] // Enforces engagement assignment for ALL actions in this controller
 [Route("api/engagements/{engagementId:int}/checklist")]
 public class EngagementChecklistController : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetChecklist(int engagementId) => ...;
 
-    // Elevate permission for sensitive operations:
+    // Elevate permission for sensitive operations requiring specific engagement roles:
     [HttpPost("sign-off")]
     [RequireEngagementRole(EngagementRoleEnum.TechLead, EngagementRoleEnum.ProjectManager)]
     public async Task<IActionResult> SignOff(int engagementId) => ...;
@@ -48,19 +48,19 @@ public class EngagementChecklistController : ControllerBase
 ```
 
 ### Pattern B: Allowing Administrators to Bypass Engagement Checks
-Engagement managers and team leads might only be allowed on engagements they are assigned to, but system administrators often need access to troubleshoot or configure items:
+Engagement managers and team leads might only be allowed on engagements they are assigned to, but administrators often need access to troubleshoot or configure items:
 
 ```csharp
 [ApiController]
 [Authorize]
 [Route("api/engagements/{engagementId:int}/kickoff")]
 [RequireEngagementAccess]
-[AllowAdmin] // System admins can access even if not assigned to this engagement
+[AllowAdmin] // Administrators can access even if not assigned to this engagement
 public class KickoffController : ControllerBase
 {
     [HttpPut("status")]
     [RequireEngagementRole(EngagementRoleEnum.ProjectManager)]
-    [AllowAdmin] // System admin can update status even without the ProjectManager role
+    [AllowAdmin] // Administrator can update status even without the ProjectManager engagement role
     public async Task<IActionResult> UpdateStatus(int engagementId) => ...;
 }
 ```
@@ -82,13 +82,13 @@ public class DocumentController : ControllerBase
     // Only Tech Leads or PMs on the parent engagement can remove documents:
     [HttpDelete("{id:int}")]
     [RequireItemEngagementRole(ItemEntityType.Document, EngagementRoleEnum.TechLead, EngagementRoleEnum.ProjectManager)]
-    [AllowAdmin] // Admins can delete any document
+    [AllowAdmin] // Administrators can delete any document
     public async Task<IActionResult> DeleteDocument(int id) => ...;
 }
 ```
 
-### Pattern D: System-Level Roles with Admin Bypass
-When a feature is reserved for leadership or pre-sales users, but system administrators should also manage it:
+### Pattern D: User Roles with Admin Bypass
+When a feature requires specific user roles (e.g. Leadership, PreSales), but administrators can also access it:
 
 ```csharp
 [ApiController]
@@ -165,11 +165,12 @@ If a new entity is created that belongs to an engagement (e.g., `Risk`, `Kickoff
 ## 5. Best Practices & Rules
 
 1. **Always pair with `[Authorize]`:**
-   Engagement and item authorization filters assume the user identity is already verified. Always place `[Authorize]` at the controller level.
-2. **Do not use `[AuthorizeRoles]` for engagement permissions:**
-   `UserRoleEnum` represents system-wide roles (`Leadership`, `PreSales`, `Delivery`). Engagement permissions must use `EngagementRoleEnum` with `[RequireEngagementRole]` or `[RequireItemEngagementRole]`.
+   Engagement access and engagement role filters assume the user identity is already authenticated. Always place `[Authorize]` at the controller level.
+2. **Do not confuse user roles with engagement roles:**
+   - `UserRoleEnum` represents **user roles** (`Leadership`, `PreSales`, `Delivery`), enforced via `[AuthorizeRoles]` or `[AuthorizeRolesWithAdminBypass]`.
+   - `EngagementRoleEnum` represents **engagement roles** (`ProjectManager`, `TechLead`, `FullStackLead`, `DataArchitect`, etc.), enforced on specific engagements via `[RequireEngagementRole]` or `[RequireItemEngagementRole]`.
 3. **Prefer Controller-level `[RequireEngagementAccess]`:**
-   Placing `[RequireEngagementAccess]` on the controller class establishes a safe default so new action methods are secured automatically.
+   Placing `[RequireEngagementAccess]` on the controller class establishes a safe default so new action methods require engagement assignment automatically.
 4. **`AllowMultiple = false`:**
    Do not stack multiple instances of `[AuthorizeRoles]` or `[RequireEngagementRole]` on the same endpoint. Combine the required roles into the `params` argument:
    ```csharp
