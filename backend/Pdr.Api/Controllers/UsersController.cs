@@ -25,6 +25,7 @@ public class UsersController(IUserManagementService userManagementService) : Con
     /// <param name="pageSize">Page size (default: 20).</param>
     /// <returns>A paginated list of system users.</returns>
     [HttpGet]
+    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [EndpointSummary("Get paginated users (Admin only)")]
     [ProducesResponseType(typeof(PagedResult<UserListItemDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
