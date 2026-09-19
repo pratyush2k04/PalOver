@@ -9,4 +9,5 @@ public interface IEngagementAccessService
     Task<bool> CanAccessAsync(int engagementId);
     Task RequireEngagementRoleAsync(int engagementId, params EngagementRoleEnum[] requiredRoles);
     Task<bool> HasEngagementRoleAsync(int engagementId, params EngagementRoleEnum[] roles);
+    Task<int> ResolveItemEngagementIdAsync(ItemEntityType entityType, int itemId);
 }

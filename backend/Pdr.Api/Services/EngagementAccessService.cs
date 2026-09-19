@@ -9,8 +9,41 @@ namespace Pdr.Api.Services;
 
 public class EngagementAccessService(
     IEngagementRepository engagementRepository,
+    IItemEngagementRepository itemEngagementRepository,
     ICurrentUserService currentUserService) : IEngagementAccessService
 {
+    public async Task<int> ResolveItemEngagementIdAsync(ItemEntityType entityType, int itemId)
+    {
+        if (itemId <= 0)
+        {
+            ThrowNotFound(entityType, itemId);
+        }
+
+        var engagementId = await itemEngagementRepository.GetEngagementIdAsync(entityType, itemId);
+        if (!engagementId.HasValue || engagementId.Value <= 0)
+        {
+            ThrowNotFound(entityType, itemId);
+        }
+
+        return engagementId.Value;
+    }
+
+    [System.Diagnostics.CodeAnalysis.DoesNotReturn]
+    private static void ThrowNotFound(ItemEntityType entityType, int id)
+    {
+        throw entityType switch
+        {
+            ItemEntityType.AccessItem => new AccessItemNotFoundException(id),
+            ItemEntityType.EnvironmentTooling => new EnvironmentToolingItemNotFoundException(id),
+            ItemEntityType.ChangeRequest => new ChangeRequestNotFoundException(id),
+            ItemEntityType.BrownfieldFinding => new BrownfieldFindingNotFoundException(id),
+            ItemEntityType.DiscoveryFeature => new DiscoveryFeatureItemNotFoundException(id),
+            ItemEntityType.Document => new DocumentNotFoundException(id),
+            ItemEntityType.HandoverReadinessItem => new HandoverReadinessItemNotFoundException(id),
+            _ => new ItemNotFoundException(entityType.ToString(), id)
+        };
+    }
+
     public async Task ValidateAccessAsync(int engagementId)
     {
         var hasAccess = await CanAccessAsync(engagementId);
