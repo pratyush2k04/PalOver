@@ -6,7 +6,7 @@ using Pdr.Api.Models.LoginEntity;
 
 namespace Pdr.Api.Attributes;
 
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
 public class AuthorizeRolesAttribute : AuthorizeAttribute
 {
     public AuthorizeRolesAttribute(params UserRoleEnum[] roles)

@@ -10,19 +10,6 @@ using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Attributes;
 
-/// <summary>
-/// Supported entity types for item-level engagement authorization.
-/// </summary>
-public enum ItemEntityType
-{
-    AccessItem,
-    EnvironmentTooling,
-    ChangeRequest,
-    BrownfieldFinding,
-    DiscoveryFeature,
-    Document,
-    HandoverReadinessItem
-}
 
 /// <summary>
 /// Abstract base class for action filters that enforce item-level engagement authorization.
