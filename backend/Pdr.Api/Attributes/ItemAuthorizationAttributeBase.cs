@@ -2,18 +2,15 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Pdr.Api.Data;
-using Pdr.Api.Exceptions;
+using Pdr.Api.Models;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Attributes;
 
-
 /// <summary>
 /// Abstract base class for action filters that enforce item-level engagement authorization.
-/// Resolves the parent engagement ID by looking up the item by ID in the database before the action method executes.
+/// Resolves the parent engagement ID via the service layer before the action method executes.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
 public abstract class ItemAuthorizationAttributeBase : Attribute, IAsyncActionFilter
@@ -46,20 +43,9 @@ public abstract class ItemAuthorizationAttributeBase : Attribute, IAsyncActionFi
         }
 
         var itemId = ExtractItemId(context, RouteParameterName);
-        if (itemId <= 0)
-        {
-            ThrowNotFound(EntityType, itemId);
-        }
-
-        var db = context.HttpContext.RequestServices.GetRequiredService<AppDbContext>();
         var engagementAccessService = context.HttpContext.RequestServices.GetRequiredService<IEngagementAccessService>();
 
-        int engagementId = await ResolveEngagementIdAsync(db, EntityType, itemId);
-
-        if (engagementId <= 0)
-        {
-            ThrowNotFound(EntityType, itemId);
-        }
+        int engagementId = await engagementAccessService.ResolveItemEngagementIdAsync(EntityType, itemId);
 
         await AuthorizeAsync(context, engagementAccessService, engagementId);
 
@@ -73,49 +59,6 @@ public abstract class ItemAuthorizationAttributeBase : Attribute, IAsyncActionFi
         ActionExecutingContext context,
         IEngagementAccessService accessService,
         int engagementId);
-
-    private static async Task<int> ResolveEngagementIdAsync(AppDbContext db, ItemEntityType entityType, int itemId)
-    {
-        return entityType switch
-        {
-            ItemEntityType.AccessItem => await db.AccessItems
-                .Where(x => x.Id == itemId)
-                .Select(x => x.EngagementId)
-                .FirstOrDefaultAsync(),
-
-            ItemEntityType.EnvironmentTooling => await db.EnvironmentToolingItems
-                .Where(x => x.Id == itemId)
-                .Select(x => x.EngagementId)
-                .FirstOrDefaultAsync(),
-
-            ItemEntityType.ChangeRequest => await db.ChangeRequests
-                .Where(x => x.Id == itemId)
-                .Select(x => x.EngagementId)
-                .FirstOrDefaultAsync(),
-
-            ItemEntityType.BrownfieldFinding => await db.BrownfieldFindings
-                .Where(x => x.Id == itemId)
-                .Select(x => x.EngagementId)
-                .FirstOrDefaultAsync(),
-
-            ItemEntityType.DiscoveryFeature => await db.DiscoveryFeatureItems
-                .Where(x => x.Id == itemId)
-                .Select(x => x.ArchitectureValidation != null ? x.ArchitectureValidation.EngagementId : 0)
-                .FirstOrDefaultAsync(),
-
-            ItemEntityType.Document => await db.Documents
-                .Where(x => x.Id == itemId && !x.IsDeleted)
-                .Select(x => x.EngagementId)
-                .FirstOrDefaultAsync(),
-
-            ItemEntityType.HandoverReadinessItem => await db.HandoverReadinessItems
-                .Where(x => x.Id == itemId)
-                .Select(x => x.EngagementId)
-                .FirstOrDefaultAsync(),
-
-            _ => 0
-        };
-    }
 
     private static int ExtractItemId(ActionExecutingContext context, string routeParam)
     {
@@ -140,20 +83,5 @@ public abstract class ItemAuthorizationAttributeBase : Attribute, IAsyncActionFi
         }
 
         return 0;
-    }
-
-    private static void ThrowNotFound(ItemEntityType entityType, int id)
-    {
-        throw entityType switch
-        {
-            ItemEntityType.AccessItem => new AccessItemNotFoundException(id),
-            ItemEntityType.EnvironmentTooling => new EnvironmentToolingItemNotFoundException(id),
-            ItemEntityType.ChangeRequest => new ChangeRequestNotFoundException(id),
-            ItemEntityType.BrownfieldFinding => new BrownfieldFindingNotFoundException(id),
-            ItemEntityType.DiscoveryFeature => new DiscoveryFeatureItemNotFoundException(id),
-            ItemEntityType.Document => new DocumentNotFoundException(id),
-            ItemEntityType.HandoverReadinessItem => new HandoverReadinessItemNotFoundException(id),
-            _ => new ItemNotFoundException(entityType.ToString(), id)
-        };
     }
 }
