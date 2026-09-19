@@ -35,7 +35,12 @@ public class DocumentService(
 
     private async Task<bool> CanAccessDocumentAsync(Document doc)
     {
-        if (currentUserService.IsAdmin() || await engagementAccessService.HasEngagementRoleAsync(doc.EngagementId, EngagementRoleEnum.ProjectManager))
+        if (currentUserService.IsAdmin())
+        {
+            return await engagementAccessService.CanAccessAsync(doc.EngagementId);
+        }
+
+        if (await engagementAccessService.HasEngagementRoleAsync(doc.EngagementId, EngagementRoleEnum.ProjectManager))
         {
             return true;
         }
