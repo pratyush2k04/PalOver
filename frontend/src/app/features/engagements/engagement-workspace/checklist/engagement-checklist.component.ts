@@ -136,7 +136,7 @@ export class EngagementChecklistComponent {
   ]);
 
   rowOwnerOptions = computed<SelectOption[]>(() => [
-    { value: null, label: 'Unassigned' },
+    { value: null, label: '--Select Option --' },
     ...this.assignedUsers().map((u) => ({ value: u.userId, label: u.fullName }))
   ]);
 
