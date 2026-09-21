@@ -4041,6 +4041,19 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
+                            Id = 23,
+                            Body = "Technical readiness for {EngagementName} has dropped below 100% ({Reason}). Day 1 sign-off has been disabled until all technical blockers are resolved.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 3,
+                            IsDeleted = false,
+                            Key = "TechnicalReadinessRegressed",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/technical-readiness",
+                            Title = "Technical Readiness Dropped Below 100% — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
                             Id = 471928,
                             Body = "{ActorName} removed {DocumentName} from {EngagementName}.",
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
