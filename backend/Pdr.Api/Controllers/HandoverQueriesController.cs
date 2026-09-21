@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Pdr.Api.Attributes;
 using Pdr.Api.DTOs.Handovers;
 using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Services.Interfaces;
@@ -13,26 +14,24 @@ namespace Pdr.Api.Controllers;
 /// Manages PM-raised queries and conversational discussion turns between Project Management and Pre Sales on a submitted handover.
 /// </summary>
 [ApiController]
-[Authorize]
 [Route("api/engagements/{engagementId:int}/handover/queries")]
+[Authorize]
+[RequireEngagementAccess]
 [Produces("application/json")]
 public class HandoverQueriesController : ControllerBase
 {
     private readonly IHandoverQueriesService _handoverQueriesService;
-    private readonly IHandoverAccessService _handoverAccessService;
     private readonly ICurrentUserService _currentUserService;
     private readonly IValidator<CreateHandoverQueryRequest> _createValidator;
     private readonly IValidator<AddHandoverQueryMessageRequest> _messageValidator;
 
     public HandoverQueriesController(
         IHandoverQueriesService handoverQueriesService,
-        IHandoverAccessService handoverAccessService,
         ICurrentUserService currentUserService,
         IValidator<CreateHandoverQueryRequest> createValidator,
         IValidator<AddHandoverQueryMessageRequest> messageValidator)
     {
         _handoverQueriesService = handoverQueriesService;
-        _handoverAccessService = handoverAccessService;
         _currentUserService = currentUserService;
         _createValidator = createValidator;
         _messageValidator = messageValidator;
@@ -51,8 +50,6 @@ public class HandoverQueriesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<List<HandoverQueryDto>>> GetQueries(int engagementId)
     {
-        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId());
-
         var dtos = await _handoverQueriesService.GetQueriesAsync(engagementId);
         return Ok(dtos);
     }
@@ -64,6 +61,7 @@ public class HandoverQueriesController : ControllerBase
     /// <param name="request">The query to raise.</param>
     /// <returns>The created query thread with initial question.</returns>
     [HttpPost]
+    [RequireEngagementRole(EngagementRoleEnum.ProjectManager)]
     [EndpointSummary("Raise a handover query (Project Management only)")]
     [ProducesResponseType(typeof(HandoverQueryDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -72,8 +70,6 @@ public class HandoverQueriesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<HandoverQueryDto>> RaiseQuery(int engagementId, [FromBody] CreateHandoverQueryRequest request)
     {
-        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId(), EngagementRoleEnum.ProjectManager);
-
         await _createValidator.ValidateAndThrowAsync(request);
 
         var dto = await _handoverQueriesService.RaiseQueryAsync(engagementId, request, _currentUserService.GetUserId().ToString());
@@ -88,6 +84,7 @@ public class HandoverQueriesController : ControllerBase
     /// <param name="request">The message text payload.</param>
     /// <returns>The updated query with new message in history.</returns>
     [HttpPost("{queryId:int}/messages")]
+    [RequireEngagementRole(EngagementRoleEnum.PreSales, EngagementRoleEnum.ProjectManager)]
     [EndpointSummary("Add a message turn to a handover query (Pre Sales response or PM follow-up)")]
     [ProducesResponseType(typeof(HandoverQueryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -97,8 +94,6 @@ public class HandoverQueriesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<HandoverQueryDto>> AddMessage(int engagementId, int queryId, [FromBody] AddHandoverQueryMessageRequest request)
     {
-        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId(), EngagementRoleEnum.PreSales, EngagementRoleEnum.ProjectManager);
-
         await _messageValidator.ValidateAndThrowAsync(request);
 
         var dto = await _handoverQueriesService.AddMessageAsync(engagementId, queryId, request, _currentUserService.GetUserId().ToString());
@@ -112,6 +107,7 @@ public class HandoverQueriesController : ControllerBase
     /// <param name="queryId">The unique identifier of the query.</param>
     /// <returns>The updated query.</returns>
     [HttpPut("{queryId:int}/toggle-resolution")]
+    [RequireEngagementRole(EngagementRoleEnum.PreSales, EngagementRoleEnum.ProjectManager)]
     [EndpointSummary("Toggle resolved/reopened state of a handover query (Pre Sales or Project Management)")]
     [ProducesResponseType(typeof(HandoverQueryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -120,8 +116,6 @@ public class HandoverQueriesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<HandoverQueryDto>> ToggleResolution(int engagementId, int queryId)
     {
-        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId(), EngagementRoleEnum.PreSales, EngagementRoleEnum.ProjectManager);
-
         var dto = await _handoverQueriesService.ToggleResolutionAsync(engagementId, queryId, _currentUserService.GetUserId().ToString());
         return Ok(dto);
     }
@@ -133,6 +127,7 @@ public class HandoverQueriesController : ControllerBase
     /// <param name="queryId">The unique identifier of the query.</param>
     /// <returns>No content on success.</returns>
     [HttpDelete("{queryId:int}")]
+    [RequireEngagementRole(EngagementRoleEnum.ProjectManager)]
     [EndpointSummary("Delete a handover query (Project Management only)")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -140,8 +135,6 @@ public class HandoverQueriesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteQuery(int engagementId, int queryId)
     {
-        await _handoverAccessService.CanAccessHandoverAsync(engagementId, _currentUserService.GetUserId(), EngagementRoleEnum.ProjectManager);
-
         await _handoverQueriesService.DeleteQueryAsync(engagementId, queryId, _currentUserService.GetUserId().ToString());
         return NoContent();
     }

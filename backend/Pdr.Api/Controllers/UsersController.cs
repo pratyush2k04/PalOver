@@ -13,7 +13,7 @@ namespace Pdr.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
 [Produces("application/json")]
 public class UsersController(IUserManagementService userManagementService) : ControllerBase
 {
@@ -25,7 +25,6 @@ public class UsersController(IUserManagementService userManagementService) : Con
     /// <param name="pageSize">Page size (default: 20).</param>
     /// <returns>A paginated list of system users.</returns>
     [HttpGet]
-    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [EndpointSummary("Get paginated users (Admin only)")]
     [ProducesResponseType(typeof(PagedResult<UserListItemDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -43,7 +42,6 @@ public class UsersController(IUserManagementService userManagementService) : Con
     /// <param name="request">The request payload containing the new role ID.</param>
     /// <returns>The updated user details.</returns>
     [HttpPatch("{id:int}/role")]
-    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [EndpointSummary("Change user role (Admin only)")]
     [ProducesResponseType(typeof(UserListItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

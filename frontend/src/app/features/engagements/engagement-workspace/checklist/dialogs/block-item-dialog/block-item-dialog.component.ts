@@ -32,8 +32,8 @@ export class BlockItemDialogComponent {
   readonly data = inject<BlockItemDialogData>(DIALOG_DATA);
 
   readonly ownerOptions: SelectOption[] = [
-    { value: null, label: 'Unassigned' },
-    ...(this.data.assignedUsers || []).map((user) => ({
+    { value: null, label: '-- Select Owner --' },
+    ...Array.from(new Map((this.data.assignedUsers || []).map((u) => [u.userId, u])).values()).map((user) => ({
       value: Number(user.userId),
       label: user.fullName
     }))

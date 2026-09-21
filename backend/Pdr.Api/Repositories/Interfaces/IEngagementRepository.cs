@@ -9,9 +9,9 @@ namespace Pdr.Api.Repositories.Interfaces;
 public interface IEngagementRepository
 {
     Task<List<Engagement>> GetEngagementsForUserAsync(int userId, string sortBy);
-    Task<(List<Engagement> Items, int TotalCount)> GetEngagementsForUserPageAsync(int userId, bool isSignedOff, string sortBy, int page, int pageSize);
-    Task<List<Engagement>> GetEngagementsForUserFilteredAsync(int userId, bool isSignedOff, string sortBy);
-    Task<int> GetEngagementsForUserStatusCountAsync(int userId, bool isSignedOff);
+    Task<(List<Engagement> Items, int TotalCount)> GetEngagementsForUserPageAsync(int userId, bool isSignedOff, string sortBy, int page, int pageSize, string? role = null);
+    Task<List<Engagement>> GetEngagementsForUserFilteredAsync(int userId, bool isSignedOff, string sortBy, string? role = null);
+    Task<int> GetEngagementsForUserStatusCountAsync(int userId, bool isSignedOff, string? role = null);
     Task<List<Engagement>> GetAllActiveEngagementsAsync(string sortBy = "kickoff");
     Task<List<int>> GetEngagementIdsForUserAsync(int userId);
     Task<Engagement?> GetByIdAsync(int engagementId);

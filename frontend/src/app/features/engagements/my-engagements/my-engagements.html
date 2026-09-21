@@ -25,6 +25,18 @@
           <app-engagements (engagementCreated)="loadEngagements()" />
         }
 
+        @if (isDelivery()) {
+          <div class="role-filter-control">
+            <label for="assignedAs">Assigned as</label>
+            <app-select
+              id="assignedAs"
+              [options]="roleFilterOptions"
+              [ngModel]="selectedRole()"
+              (ngModelChange)="onRoleFilterChange($event)"
+            />
+          </div>
+        }
+
         <div class="sort-control">
           <label for="sortBy">Sort by</label>
           <app-select
@@ -58,6 +70,9 @@
                 </div>
                 <div class="engagement-meta">
                   {{ engagement.engagementTypeName }} &middot; {{ engagement.commercialModelName }} &middot; Kickoff {{ formatKickoffDate(engagement.kickoffDate) }}
+                  @if (engagement.userRoles && engagement.userRoles.length > 0) {
+                    &middot; <span class="role-badge">{{ engagement.userRoles.join(' & ') }}</span>
+                  }
                   @if (engagement.isOverdue) {
                     <app-status-badge tone="danger">Overdue</app-status-badge>
                   }

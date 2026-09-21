@@ -219,11 +219,16 @@ export class RisksComponent implements OnInit {
         }
 
         if (owners?.techLeadId && owners?.techLeadName) {
-          options.push({
-            id: owners.techLeadId,
-            name: owners.techLeadName,
-            role: 'Technical Lead'
-          });
+          const existing = options.find((o) => o.id === owners.techLeadId);
+          if (existing) {
+            existing.role = 'Project Manager & Technical Lead';
+          } else {
+            options.push({
+              id: owners.techLeadId,
+              name: owners.techLeadName,
+              role: 'Technical Lead'
+            });
+          }
         }
 
         if (leadership && leadership.length > 0) {
