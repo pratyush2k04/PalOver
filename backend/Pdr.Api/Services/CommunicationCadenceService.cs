@@ -53,6 +53,7 @@ public class CommunicationCadenceService(
 
         var assignments = await engagementRepository.GetAssignmentsAsync(engagementId);
         var assignedUsers = assignments
+            .DistinctBy(a => a.UserId)
             .Select(a => new EngagementParticipantDto(a.User.Id, a.User.FullName))
             .ToList();
 
@@ -60,6 +61,7 @@ public class CommunicationCadenceService(
         {
             var activeUsers = await userRepository.GetAllActiveAsync();
             assignedUsers = activeUsers
+                .DistinctBy(u => u.Id)
                 .Select(u => new EngagementParticipantDto(u.Id, u.FullName))
                 .ToList();
         }

@@ -45,6 +45,7 @@ public class EngagementsController(
     /// <param name="sortBy">Sort field ("kickoff", "readiness", or "client").</param>
     /// <param name="page">Page number (1-based).</param>
     /// <param name="pageSize">Number of items per page.</param>
+    /// <param name="role">Optional engagement role filter ("Project Manager", "Tech Lead", or "Both").</param>
     /// <returns>A page of assigned engagements, plus Active/Past tab counts.</returns>
     [HttpGet("my-engagements/page")]
     [EndpointSummary("Get a paged page of my assigned engagements")]
@@ -54,9 +55,10 @@ public class EngagementsController(
         [FromQuery] string status = "Active",
         [FromQuery] string sortBy = "kickoff",
         [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 5)
+        [FromQuery] int pageSize = 5,
+        [FromQuery] string? role = null)
     {
-        var result = await engagementService.GetMyEngagementsPageAsync(status, sortBy, page, pageSize);
+        var result = await engagementService.GetMyEngagementsPageAsync(status, sortBy, page, pageSize, role);
         return Ok(result);
     }
 

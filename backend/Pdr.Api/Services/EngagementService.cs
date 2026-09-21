@@ -240,21 +240,21 @@ public class EngagementService(
         return new EngagementListResponse(items);
     }
 
-    public async Task<MyEngagementsPageDto> GetMyEngagementsPageAsync(string status, string sortBy, int page, int pageSize)
+    public async Task<MyEngagementsPageDto> GetMyEngagementsPageAsync(string status, string sortBy, int page, int pageSize, string? role = null)
     {
         var userId = currentUserService.GetUserId();
         var isSignedOff = status == "Past";
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
         // The selected tab's count comes for free as totalCount below; only the other tab needs its own query.
-        var otherStatusCount = await engagementRepository.GetEngagementsForUserStatusCountAsync(userId, isSignedOff: !isSignedOff);
+        var otherStatusCount = await engagementRepository.GetEngagementsForUserStatusCountAsync(userId, isSignedOff: !isSignedOff, role);
 
         List<EngagementListItemDto> items;
         int totalCount;
 
         if (sortBy == "readiness")
         {
-            var all = await engagementRepository.GetEngagementsForUserFilteredAsync(userId, isSignedOff, sortBy);
+            var all = await engagementRepository.GetEngagementsForUserFilteredAsync(userId, isSignedOff, sortBy, role);
 
             var scored = new List<(Engagement Engagement, int Score)>();
             foreach (var e in all)
@@ -269,19 +269,19 @@ public class EngagementService(
                 .OrderByDescending(s => s.Score)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .Select(s => ToEngagementListItemDto(s.Engagement, today, s.Score))
+                .Select(s => ToEngagementListItemDto(s.Engagement, today, s.Score, userId))
                 .ToList();
         }
         else
         {
-            var (pageEngagements, count) = await engagementRepository.GetEngagementsForUserPageAsync(userId, isSignedOff, sortBy, page, pageSize);
+            var (pageEngagements, count) = await engagementRepository.GetEngagementsForUserPageAsync(userId, isSignedOff, sortBy, page, pageSize, role);
             totalCount = count;
 
             items = new List<EngagementListItemDto>();
             foreach (var e in pageEngagements)
             {
                 var readiness = await kickoffReadinessService.GetReadinessAsync(e.EngagementId);
-                items.Add(ToEngagementListItemDto(e, today, readiness.Score));
+                items.Add(ToEngagementListItemDto(e, today, readiness.Score, userId));
             }
         }
 
@@ -296,8 +296,15 @@ public class EngagementService(
         };
     }
 
-    private static EngagementListItemDto ToEngagementListItemDto(Engagement e, DateOnly today, int readinessScore) =>
-        new(
+    private static EngagementListItemDto ToEngagementListItemDto(Engagement e, DateOnly today, int readinessScore, int userId)
+    {
+        var userRoles = e.EngagementAssignments?
+            .Where(a => a.UserId == userId && a.EngagementRole != null)
+            .Select(a => a.EngagementRole.Name)
+            .Distinct()
+            .ToList();
+
+        return new(
             e.EngagementId,
             e.EngagementName,
             e.ClientName,
@@ -306,7 +313,9 @@ public class EngagementService(
             e.KickoffDate,
             e.KickoffDate.DayNumber - today.DayNumber,
             ReadinessScore: readinessScore,
-            IsSignedOff: e.DayOneSignOffRecord != null);
+            IsSignedOff: e.DayOneSignOffRecord != null,
+            UserRoles: userRoles);
+    }
 
     public async Task<EngagementOwnersDto> GetEngagementOwnersAsync(int engagementId)
     {
@@ -323,14 +332,16 @@ public class EngagementService(
             throw new EngagementNotFoundException(engagementId);
 
         var assignments = await engagementRepository.GetAssignmentsAsync(engagementId);
-        return assignments.Select(a => new Pdr.Api.DTOs.Users.UserListItemDto
-        {
-            Id = a.User.Id,
-            FullName = a.User.FullName,
-            Email = a.User.Email,
-            RoleId = a.User.RoleId,
-            RoleName = a.User.Role.Name
-        }).ToList();
+        return assignments
+            .DistinctBy(a => a.UserId)
+            .Select(a => new Pdr.Api.DTOs.Users.UserListItemDto
+            {
+                Id = a.User.Id,
+                FullName = a.User.FullName,
+                Email = a.User.Email,
+                RoleId = a.User.RoleId,
+                RoleName = a.User.Role.Name
+            }).ToList();
     }
 
     public async Task<EngagementOwnersDto> AssignProjectManagerAsync(int engagementId, int userId) =>
