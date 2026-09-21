@@ -23,7 +23,8 @@ public class KickoffReadinessService(
     IRiskRepository riskRepository,
     IResourceRequestRepository resourceRequestRepository,
     IDocumentRepository documentRepository,
-    IEngagementChecklistRepository checklistRepository) : IKickoffReadinessService
+    IEngagementChecklistRepository checklistRepository,
+    IEngagementAccessService engagementAccessService) : IKickoffReadinessService
 {
     private readonly record struct ReadinessCheck(int Applicable, int Passed, List<int> FailingIds, List<string> FailingFieldLabels);
 
@@ -175,8 +176,7 @@ public class KickoffReadinessService(
         var isDayOneSignedOff = engagement.DayOneSignOffRecord != null;
         var dayOneSignOffIsException = engagement.DayOneSignOffRecord != null && engagement.DayOneSignOffRecord.IsException;
 
-        var isCommercialVisible = currentUserService.IsInRole(RoleEnum.ProjectManagement) ||
-                                  currentUserService.IsInRole(RoleEnum.Leadership) ||
+        var isCommercialVisible = await engagementAccessService.HasEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager, EngagementRoleEnum.Leadership) ||
                                   currentUserService.IsAdmin();
 
         CommercialDetailDto? commercial = null;

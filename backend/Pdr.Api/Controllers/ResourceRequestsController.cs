@@ -16,6 +16,7 @@ namespace Pdr.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/engagements/{engagementId:int}/resource-requests")]
+[RequireEngagementAccess]
 [Produces("application/json")]
 public class ResourceRequestsController(
     IResourceRequestService resourceRequestService,
@@ -60,7 +61,7 @@ public class ResourceRequestsController(
     /// <param name="request">The resource request details including role, skills, headcount, required-by date, and job description.</param>
     /// <returns>The created resource request details.</returns>
     [HttpPost]
-    [AuthorizeRoles(RoleEnum.ProjectManagement)]
+    [RequireEngagementRole(EngagementRoleEnum.ProjectManager)]
     [EndpointSummary("Raise a structured resource request (Project Manager only)")]
     [ProducesResponseType(typeof(ResourceRequestDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -86,6 +87,7 @@ public class ResourceRequestsController(
     /// <param name="request">The names to save — one per person needed, blank entries left unfilled.</param>
     /// <returns>The updated resource request, including its named allocations.</returns>
     [HttpPost("{id:int}/allocations")]
+    [RequireEngagementRole(EngagementRoleEnum.Leadership)]
     [EndpointSummary("Save named resources for a request (Leadership or Admin only)")]
     [ProducesResponseType(typeof(ResourceRequestDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -111,6 +113,7 @@ public class ResourceRequestsController(
     /// <param name="request">The reason for removal.</param>
     /// <returns>The updated resource request.</returns>
     [HttpPost("{id:int}/allocations/{allocationId:int}/remove")]
+    [RequireEngagementRole(EngagementRoleEnum.Leadership)]
     [EndpointSummary("Remove a confirmed resource with a reason, reopening the request (Leadership or Admin only)")]
     [ProducesResponseType(typeof(ResourceRequestDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

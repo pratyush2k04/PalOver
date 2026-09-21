@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Pdr.Api.Constants;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 using Pdr.Api.Services.Notifications.Mappers;
@@ -25,7 +26,8 @@ public class KickoffReminderService(
         {
             // CreateFromTemplateAsync silently no-ops if this role is unfilled - check up front so we
             // don't attempt to schedule a notification for a role with no assignment.
-            var assignment = assignments.FirstOrDefault(a => a.User.RoleId == (int)role);
+            var targetEngagementRoleId = (int)role;
+            var assignment = assignments.FirstOrDefault(a => a.EngagementRoleId == targetEngagementRoleId);
             if (assignment is null) continue;
 
             foreach (var (thresholdDays, priority) in KickoffReminderConstants.Thresholds)

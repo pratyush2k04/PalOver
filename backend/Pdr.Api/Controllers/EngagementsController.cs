@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.Attributes;
+using Pdr.Api.Constants;
 using Pdr.Api.DTOs.Engagements;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.LoginEntity;
@@ -19,7 +20,8 @@ namespace Pdr.Api.Controllers;
 public class EngagementsController(
     IEngagementService engagementService,
     IKickoffReadinessService kickoffReadinessService,
-    IKickoffReminderService kickoffReminderService) : ControllerBase
+    IKickoffReminderService kickoffReminderService,
+    IEngagementAccessService engagementAccessService) : ControllerBase
 {
     /// <summary>
     /// Retrieves engagements assigned to the logged-in user.
@@ -77,6 +79,7 @@ public class EngagementsController(
     /// <param name="id">The engagement ID.</param>
     /// <returns>Engagement information details.</returns>
     [HttpGet("{id:int}")]
+    [RequireEngagementAccess("id")]
     [EndpointSummary("Get engagement details by ID")]
     [ProducesResponseType(typeof(EngagementInfoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -94,6 +97,7 @@ public class EngagementsController(
     /// <param name="request">The edit payload.</param>
     /// <returns>No content on success.</returns>
     [HttpPut("{id:int}")]
+    [RequireEngagementRole("id", EngagementRoleEnum.ProjectManager, EngagementRoleEnum.Leadership)]
     [EndpointSummary("Edit engagement information")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -118,7 +122,7 @@ public class EngagementsController(
     /// <param name="request">The mark SOW signed request payload.</param>
     /// <returns>The updated SOW signed status response.</returns>
     [HttpPost("mark-sow-signed")]
-    [AuthorizeRoles(RoleEnum.PreSales)]
+    [AuthorizeRoles(UserRoleEnum.PreSales)]
     [EndpointSummary("Mark SOW as signed (Pre Sales only)")]
     [ProducesResponseType(typeof(MarkSowSignedResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -137,6 +141,7 @@ public class EngagementsController(
     /// <param name="id">The engagement ID.</param>
     /// <returns>Engagement owner details.</returns>
     [HttpGet("{id:int}/owners")]
+    [RequireEngagementAccess("id")]
     [EndpointSummary("Get engagement owners")]
     [ProducesResponseType(typeof(EngagementOwnersDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -154,6 +159,7 @@ public class EngagementsController(
     /// <param name="id">The engagement ID.</param>
     /// <returns>A list of users assigned to the engagement.</returns>
     [HttpGet("{id:int}/users")]
+    [RequireEngagementAccess("id")]
     [EndpointSummary("Get all assigned users")]
     [ProducesResponseType(typeof(IEnumerable<Pdr.Api.DTOs.Users.UserListItemDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -172,7 +178,7 @@ public class EngagementsController(
     /// <param name="request">The assigned user payload.</param>
     /// <returns>The updated engagement owners.</returns>
     [HttpPut("{id:int}/project-manager")]
-    [AuthorizeRoles(RoleEnum.Leadership)]
+    [AuthorizeRoles(UserRoleEnum.Leadership)]
     [EndpointSummary("Assign Project Manager (Leadership only)")]
     [ProducesResponseType(typeof(EngagementOwnersDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -192,7 +198,7 @@ public class EngagementsController(
     /// <param name="request">The assigned user payload.</param>
     /// <returns>The updated engagement owners.</returns>
     [HttpPut("{id:int}/tech-lead")]
-    [AuthorizeRoles(RoleEnum.Leadership)]
+    [AuthorizeRoles(UserRoleEnum.Leadership)]
     [EndpointSummary("Assign Tech Lead (Leadership only)")]
     [ProducesResponseType(typeof(EngagementOwnersDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -206,7 +212,7 @@ public class EngagementsController(
     }
 
     [HttpGet("{id:int}/kickoff-readiness")]
-    [AuthorizeRoles(RoleEnum.PreSales, RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.Leadership)]
+    [RequireEngagementAccess("id")]
     public async Task<ActionResult<KickoffReadinessDto>> GetKickoffReadiness(int id)
     {
         var readiness = await kickoffReadinessService.GetReadinessAsync(id);
@@ -215,7 +221,7 @@ public class EngagementsController(
     }
 
     [HttpGet("{id:int}/readiness-one-pager")]
-    [AuthorizeRoles(RoleEnum.PreSales, RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.Leadership)]
+    [RequireEngagementAccess("id")]
     public async Task<ActionResult<ReadinessOnePagerDto>> GetReadinessOnePager(int id)
     {
         var onePager = await kickoffReadinessService.GetOnePagerAsync(id);
@@ -223,16 +229,16 @@ public class EngagementsController(
     }
 
     [HttpPost("{id:int}/kickoff-ready")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.Leadership)]
+    [RequireEngagementRole("id", EngagementRoleEnum.ProjectManager, EngagementRoleEnum.TechLead, EngagementRoleEnum.Leadership)]
     public async Task<IActionResult> MarkKickoffReady(int id)
     {
-        var isLeadership = User.IsInRole(RoleEnum.Leadership.ToRoleName());
+        var isLeadership = await engagementAccessService.HasEngagementRoleAsync(id, EngagementRoleEnum.Leadership);
         await kickoffReadinessService.MarkKickoffReadyAsync(id, isLeadership);
         return NoContent();
     }
 
     [HttpDelete("{id:int}/kickoff-ready")]
-    [AuthorizeRoles(RoleEnum.Leadership)]
+    [RequireEngagementRole("id", EngagementRoleEnum.Leadership)]
     public async Task<IActionResult> RevertKickoffReady(int id)
     {
         await kickoffReadinessService.RevertKickoffReadyAsync(id);
@@ -248,6 +254,7 @@ public class EngagementsController(
     /// <response code="404">Engagement was not found.</response>
     [HttpGet("{id:int}/leadership-users")]
     [ProducesResponseType(typeof(IEnumerable<LeadershipUserDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<LeadershipUserDto>>> GetLeadershipUsers(int id)
     {
@@ -263,7 +270,7 @@ public class EngagementsController(
     /// <response code="200">Handover draft status returned successfully.</response>
     /// <response code="404">Engagement was not found.</response>
     [HttpGet("{id:int}/handover-draft-status")]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [ProducesResponseType(typeof(HandoverDraftStatusDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<HandoverDraftStatusDto>> GetHandoverDraftStatus(int id)
@@ -282,7 +289,7 @@ public class EngagementsController(
     /// <response code="400">User is already assigned to engagement or invalid role.</response>
     /// <response code="404">Engagement or User was not found.</response>
     [HttpPost("{id:int}/leadership-users")]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [ProducesResponseType(typeof(IEnumerable<LeadershipUserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -308,7 +315,7 @@ public class EngagementsController(
     /// <response code="400">Attempted to remove the last remaining Leadership contact.</response>
     /// <response code="404">Engagement or User assignment was not found.</response>
     [HttpDelete("{id:int}/leadership-users/{userId:int}")]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [ProducesResponseType(typeof(IEnumerable<LeadershipUserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -328,7 +335,7 @@ public class EngagementsController(
     /// <response code="400">Attempted to remove the last remaining Leadership contact, or invalid request.</response>
     /// <response code="404">Engagement or User was not found.</response>
     [HttpPut("{id:int}/leadership-users")]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = MasterChecklistConstants.Policies.AdminOnly)]
     [ProducesResponseType(typeof(IEnumerable<LeadershipUserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -343,7 +350,7 @@ public class EngagementsController(
     /// </summary>
     /// <returns>Leadership dashboard data with readiness score, open blocker count, days-to-kickoff, and computed status.</returns>
     [HttpGet("leadership-dashboard")]
-    [AuthorizeRoles(RoleEnum.Leadership)]
+    [AuthorizeRoles(UserRoleEnum.Leadership)]
     [EndpointSummary("Get leadership portfolio dashboard engagements")]
     [ProducesResponseType(typeof(IEnumerable<LeadershipEngagementListItemDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -359,6 +366,7 @@ public class EngagementsController(
     /// </summary>
     /// <param name="id">The engagement ID.</param>
     [HttpGet("{id:int}/open-items-summary")]
+    [RequireEngagementAccess("id")]
     [EndpointSummary("Get open items summary")]
     [ProducesResponseType(typeof(EngagementOpenItemsSummaryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -376,7 +384,7 @@ public class EngagementsController(
     /// <param name="request">Sign-off payload referencing the billing start date and optional leadership exception.</param>
     /// <returns>The recorded Day-1 sign-off details.</returns>
     [HttpPost("{id:int}/day-one-sign-off")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.Leadership)]
+    [RequireEngagementRole("id", EngagementRoleEnum.ProjectManager, EngagementRoleEnum.Leadership)]
     [EndpointSummary("Sign off Day-1 readiness for billing")]
     [ProducesResponseType(typeof(DayOneSignOffDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -395,6 +403,7 @@ public class EngagementsController(
     /// <param name="id">The engagement ID.</param>
     /// <returns>The immutable evidence snapshot, including every evidence-required checklist item's status at sign-off.</returns>
     [HttpGet("{id:int}/evidence-snapshot")]
+    [RequireEngagementAccess("id")]
     [EndpointSummary("Get the Day-1 sign-off evidence snapshot")]
     [ProducesResponseType(typeof(EvidenceSnapshotDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

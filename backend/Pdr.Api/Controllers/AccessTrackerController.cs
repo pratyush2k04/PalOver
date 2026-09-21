@@ -15,6 +15,7 @@ namespace Pdr.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/engagements/{engagementId:int}/access-items")]
+[RequireEngagementAccess]
 [Produces("application/json")]
 public class AccessTrackerController(IAccessTrackerService accessTrackerService) : ControllerBase
 {
@@ -24,7 +25,6 @@ public class AccessTrackerController(IAccessTrackerService accessTrackerService)
     /// <param name="engagementId">The ID of the engagement.</param>
     /// <returns>A list of access items.</returns>
     [HttpGet]
-    [AuthorizeRoles(RoleEnum.TechLead, RoleEnum.ProjectManagement, RoleEnum.Leadership)]
     [EndpointSummary("Get all access items for an engagement")]
     [ProducesResponseType(typeof(List<AccessItemDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -43,7 +43,7 @@ public class AccessTrackerController(IAccessTrackerService accessTrackerService)
     /// <param name="request">The custom access item request payload.</param>
     /// <returns>The created access item.</returns>
     [HttpPost]
-    [AuthorizeRoles(RoleEnum.TechLead)]
+    [RequireEngagementRole(EngagementRoleEnum.TechLead)]
     [EndpointSummary("Add custom access item (Tech Lead only)")]
     [ProducesResponseType(typeof(AccessItemDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -62,7 +62,7 @@ public class AccessTrackerController(IAccessTrackerService accessTrackerService)
     /// <param name="engagementId">The ID of the engagement.</param>
     /// <returns>Confirmation message on completing risk evaluation.</returns>
     [HttpPost("evaluate-risks")]
-    [AuthorizeRoles(RoleEnum.TechLead)]
+    [RequireEngagementRole(EngagementRoleEnum.TechLead)]
     [EndpointSummary("Evaluate client-side risks (Tech Lead only)")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -91,7 +91,7 @@ public class AccessItemsController(IAccessTrackerService accessTrackerService) :
     /// <param name="request">The status update payload.</param>
     /// <returns>The updated access item.</returns>
     [HttpPatch("{id:int}/status")]
-    [AuthorizeRoles(RoleEnum.TechLead)]
+    [RequireItemEngagementRole(ItemEntityType.AccessItem, EngagementRoleEnum.TechLead)]
     [EndpointSummary("Update access item status (Tech Lead only)")]
     [ProducesResponseType(typeof(AccessItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -111,7 +111,7 @@ public class AccessItemsController(IAccessTrackerService accessTrackerService) :
     /// <param name="request">The owner update payload.</param>
     /// <returns>The updated access item.</returns>
     [HttpPatch("{id:int}/owner")]
-    [AuthorizeRoles(RoleEnum.TechLead)]
+    [RequireItemEngagementRole(ItemEntityType.AccessItem, EngagementRoleEnum.TechLead)]
     [EndpointSummary("Update access item owner (Tech Lead only)")]
     [ProducesResponseType(typeof(AccessItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -130,7 +130,7 @@ public class AccessItemsController(IAccessTrackerService accessTrackerService) :
     /// <param name="id">The access item ID.</param>
     /// <returns>204 No Content.</returns>
     [HttpDelete("{id:int}")]
-    [AuthorizeRoles(RoleEnum.TechLead)]
+    [RequireItemEngagementRole(ItemEntityType.AccessItem, EngagementRoleEnum.TechLead)]
     [EndpointSummary("Delete access item (Tech Lead only)")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

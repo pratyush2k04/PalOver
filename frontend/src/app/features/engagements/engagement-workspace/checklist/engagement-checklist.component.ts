@@ -9,6 +9,7 @@ import { EngagementChecklistService } from '@features/engagements/services/engag
 import { DocumentService } from '@features/engagements/services/document.service';
 import { EngagementChecklist, EngagementChecklistItem } from '../../models/engagement-checklist.model';
 import { ENGAGEMENT_CHECKLIST_MESSAGES } from '@shared/constants/engagements.constants';
+import { USER_ROLES } from '@shared/constants/users.constants';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { ToastService } from '@common/services/toast/toast';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
@@ -94,9 +95,9 @@ export class EngagementChecklistComponent {
 
   // Role permissions & sign-off state
   readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
-  isProjectManager = computed(() => this.authService.hasRole('Project Management'));
-  isLeadership = computed(() => this.authService.hasRole('Leadership'));
-  isTechLead = computed(() => this.authService.hasRole('Tech Lead'));
+  isProjectManager = computed(() => this.engagementService.isWorkspacePm());
+  isLeadership = computed(() => this.engagementService.isWorkspaceLeadership() || this.authService.isAdmin());
+  isTechLead = computed(() => this.engagementService.isWorkspaceTechLead());
 
   canToggleStatus = computed(() => !this.isSignedOff() && this.isProjectManager());
   canChangeApplicability = computed(() => !this.isSignedOff() && this.isProjectManager());

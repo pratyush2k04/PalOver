@@ -54,7 +54,8 @@ public class AssumptionService(
 
         await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
-        var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
+        var assignments = await engagementRepository.GetAssignmentsAsync(engagementId);
+        var isPm = assignments.Any(a => a.UserId == currentUserService.GetUserId() && a.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager);
 
         var assumption = new Assumption
         {
@@ -75,7 +76,7 @@ public class AssumptionService(
             await notificationService.CreateFromTemplateAsync(
                 NotificationConstants.TemplateKeys.AssumptionNeedsValidation,
                 engagementId,
-                RoleEnum.ProjectManagement,
+                EngagementRoleEnum.ProjectManager,
                 data,
                 DateTime.UtcNow);
         }
@@ -136,7 +137,8 @@ public class AssumptionService(
         if (assumption == null || assumption.EngagementId != engagementId)
             throw new AssumptionNotFoundException(assumptionId);
 
-        var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
+        var assignments = await engagementRepository.GetAssignmentsAsync(engagementId);
+        var isPm = assignments.Any(a => a.UserId == currentUserService.GetUserId() && a.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager);
 
         if (!isPm)
             throw new AssumptionUnauthorizedException();

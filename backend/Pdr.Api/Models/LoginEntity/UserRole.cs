@@ -1,8 +1,10 @@
+global using Role = Pdr.Api.Models.LoginEntity.UserRole;
+
 namespace Pdr.Api.Models.LoginEntity;
 
 using Pdr.Api.Models;
 
-public class Role : BaseAuditableEntity
+public class UserRole : BaseAuditableEntity
 {
     public int Id { get; set; }
 

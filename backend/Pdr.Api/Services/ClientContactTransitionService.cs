@@ -2,6 +2,7 @@ using Pdr.Api.DTOs.ClientContactTransitions;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Handover;
 using Pdr.Api.Models.Audit;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
@@ -12,7 +13,8 @@ public class ClientContactTransitionService(
     IEngagementRepository engagementRepository,
     IAuditLogService auditLogService,
     IPersonRepository personRepository,
-    ICurrentUserService currentUserService) : IClientContactTransitionService
+    ICurrentUserService currentUserService,
+    IEngagementAccessService engagementAccessService) : IClientContactTransitionService
 {
     public async Task<ClientContactTransitionResponseDto> GetByEngagementIdAsync(int engagementId)
     {
@@ -33,6 +35,7 @@ public class ClientContactTransitionService(
 
     public async Task<ClientContactTransitionResponseDto> SaveTransitionAsync(int engagementId, SaveClientContactTransitionRequest request, string? currentUserId)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.PreSales, EngagementRoleEnum.ProjectManager);
         await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var transition = new ClientContactTransition

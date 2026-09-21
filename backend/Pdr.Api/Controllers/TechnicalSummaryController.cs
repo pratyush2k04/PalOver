@@ -13,6 +13,7 @@ namespace Pdr.Api.Controllers;
 /// </summary>
 [ApiController]
 [Authorize]
+[RequireEngagementAccess]
 [Route("api/engagements/{engagementId:int}/technical-readiness/summary")]
 [Produces("application/json")]
 public class TechnicalSummaryController(ITechnicalSummaryService service) : ControllerBase
@@ -24,7 +25,6 @@ public class TechnicalSummaryController(ITechnicalSummaryService service) : Cont
     /// <param name="engagementId">The engagement ID.</param>
     /// <returns>The consolidated Day-1 readiness summary.</returns>
     [HttpGet]
-    [AuthorizeRoles(RoleEnum.TechLead, RoleEnum.ProjectManagement, RoleEnum.Leadership)]
     [EndpointSummary("Get consolidated Day-1 technical readiness summary")]
     [ProducesResponseType(typeof(DayOneReadinessSummaryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

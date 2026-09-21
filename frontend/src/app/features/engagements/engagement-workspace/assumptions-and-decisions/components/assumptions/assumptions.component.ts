@@ -117,7 +117,7 @@ export class AssumptionsComponent implements OnInit {
   }
 
   isPm(): boolean {
-    return this.authService.hasRole('Project Management');
+    return this.engagementService.isWorkspacePm();
   }
 
   openAssumptionDialog(assumption?: AssumptionDto) {

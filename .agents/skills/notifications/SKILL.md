@@ -1,3 +1,9 @@
+---
+name: notifications
+description: >-
+  Reference for adding and handling notification events in Pdr.Api, including template seeding, mapper registration, and firing notifications.
+---
+
 # Notification System – Reference for Adding a New Notification Type
 
 This guide explains how to introduce a new notification event into the backend.

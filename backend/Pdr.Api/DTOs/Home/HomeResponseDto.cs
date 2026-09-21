@@ -27,6 +27,7 @@ public class DashboardEngagementDto
     public int DaysToGo { get; set; }
     public int ReadinessPercentage { get; set; }
     public string Status { get; set; } = string.Empty;
+    public List<string> UserRoles { get; set; } = [];
 }
 
 public class DashboardBlockerDto

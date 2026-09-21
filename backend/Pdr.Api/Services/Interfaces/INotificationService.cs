@@ -10,7 +10,7 @@ public interface INotificationService
     Task CreateFromTemplateAsync(
         string templateKey,
         int engagementId,
-        RoleEnum receiverRole,
+        EngagementRoleEnum receiverRole,
         string data,
         DateTime scheduledFor,
         NotificationPriority? priorityOverride = null,

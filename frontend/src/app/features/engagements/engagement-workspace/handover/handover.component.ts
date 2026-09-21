@@ -28,6 +28,7 @@ import {
   HANDOVER_BUTTONS,
   MAX_FREE_TEXT_LENGTH,
 } from '@shared/constants/handover.constants';
+import { USER_ROLES } from '@shared/constants/users.constants';
 import {
   HandoverInfoDto,
   SaveHandoverDraftRequest,
@@ -271,8 +272,8 @@ export class HandoverComponent {
   hasHandoverDraft = computed(() => !!this.handover()?.handoverId);
 
   readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
-  isPreSales = computed(() => !this.isSignedOff() && this.authService.hasRole('Pre Sales'));
-  isProjectManagement = computed(() => !this.isSignedOff() && this.authService.hasRole('Project Management'));
+  isPreSales = computed(() => !this.isSignedOff() && this.authService.hasRole(USER_ROLES.PRE_SALES));
+  isProjectManagement = computed(() => !this.isSignedOff() && this.engagementService.isWorkspacePm());
 
 
 

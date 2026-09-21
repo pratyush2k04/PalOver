@@ -49,7 +49,7 @@ public class DocumentRepository(AppDbContext context) : IDocumentRepository
         {
             query = query.Where(d =>
                 d.Visibility == DocumentVisibilityNames.TeamWide
-                || (d.Visibility == DocumentVisibilityNames.PmOnly && userRoleId == (int)RoleEnum.Leadership)
+                || (d.Visibility == DocumentVisibilityNames.PmOnly && userRoleId == (int)UserRoleEnum.Leadership)
                 || (d.Visibility == DocumentVisibilityNames.Custom && userRoleId.HasValue && d.AllowedRoles.Contains(userRoleId.Value)));
         }
 

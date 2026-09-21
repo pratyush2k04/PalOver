@@ -41,7 +41,7 @@ public class SearchRepository(AppDbContext context) : ISearchRepository
         {
             query = query.Where(d =>
                 d.Visibility == DocumentVisibilityNames.TeamWide
-                || (d.Visibility == DocumentVisibilityNames.PmOnly && roleId == (int)RoleEnum.Leadership)
+                || (d.Visibility == DocumentVisibilityNames.PmOnly && roleId == (int)UserRoleEnum.Leadership)
                 || (d.Visibility == DocumentVisibilityNames.Custom && roleId.HasValue && d.AllowedRoles.Contains(roleId.Value)));
         }
 

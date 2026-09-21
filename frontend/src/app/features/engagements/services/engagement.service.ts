@@ -1,6 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Observable, map, tap } from 'rxjs';
+import { AuthService } from '@shared/services/auth';
 import {
   CommercialModelOption,
   EngagementInfo,
@@ -16,7 +17,7 @@ import {
   DayOneSignOffRequest
 } from '../models/engagement.model';
 import { EvidenceSnapshot } from '../models/evidence-snapshot.model';
-import { ENGAGEMENT_API_ENDPOINTS } from '@shared/constants/app.constants';
+import { ENGAGEMENT_API_ENDPOINTS, ENGAGEMENT_ROLES } from '@shared/constants/app.constants';
 import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 
 export interface EngagementOpenItemsSummary {
@@ -31,6 +32,7 @@ export interface EngagementOpenItemsSummary {
 })
 export class EngagementService {
   private http = inject(HttpClient);
+  private authService = inject(AuthService);
 
   private currentEngagementState = signal<EngagementInfo | null>(null);
   readonly currentEngagement = this.currentEngagementState.asReadonly();
@@ -38,6 +40,25 @@ export class EngagementService {
 
   private ownersState = signal<EngagementOwners | null>(null);
   readonly owners = this.ownersState.asReadonly();
+
+  readonly isWorkspacePm = computed(() => {
+    const currentUserId = this.authService.getUserId();
+    const pmId = this.owners()?.projectManagerId;
+    return !!currentUserId && !!pmId && currentUserId === pmId;
+  });
+
+  readonly isWorkspaceTechLead = computed(() => {
+    const currentUserId = this.authService.getUserId();
+    const tlId = this.owners()?.techLeadId;
+    return !!currentUserId && !!tlId && currentUserId === tlId;
+  });
+
+  readonly isWorkspaceLeadership = computed(() => {
+    const roles = this.currentEngagementState()?.currentUserEngagementRoles;
+    return !!roles && roles.some((r) => r.toLowerCase() === ENGAGEMENT_ROLES.LEADERSHIP.toLowerCase());
+  });
+
+  readonly isDualDeliveryRole = computed(() => this.isWorkspacePm() && this.isWorkspaceTechLead());
 
   setCurrentEngagement(info: EngagementInfo | null): void {
     this.currentEngagementState.set(info);

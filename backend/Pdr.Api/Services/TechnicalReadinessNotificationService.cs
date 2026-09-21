@@ -43,7 +43,7 @@ public class TechnicalReadinessNotificationService(
             await notificationService.CreateFromTemplateAsync(
                 NotificationConstants.TemplateKeys.TechnicalReadinessComplete,
                 engagementId,
-                RoleEnum.ProjectManagement,
+                EngagementRoleEnum.ProjectManager,
                 payload,
                 DateTime.UtcNow);
         }

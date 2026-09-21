@@ -71,6 +71,7 @@ export interface EngagementInfo {
   status: string;
   isKickoffReady: boolean;
   dayOneSignOff?: DayOneSignOffDto;
+  currentUserEngagementRoles?: string[];
 }
 
 export interface EngagementInfoDto {
@@ -87,6 +88,7 @@ export interface EngagementInfoDto {
   handoverReviewedAt?: string;
   handoverReviewedByName?: string;
   dayOneSignOff?: DayOneSignOffDto;
+  currentUserEngagementRoles?: string[];
 }
 
 export interface EngagementOwners {

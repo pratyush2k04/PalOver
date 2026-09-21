@@ -4,11 +4,11 @@ using Pdr.Api.Models.LoginEntity;
 
 namespace Pdr.Api.Data.Configuration;
 
-public class RoleConfiguration : IEntityTypeConfiguration<Role>
+public class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
 {
-    public void Configure(EntityTypeBuilder<Role> builder)
+    public void Configure(EntityTypeBuilder<UserRole> builder)
     {
-        builder.ToTable("roles");
+        builder.ToTable("user_roles");
 
         builder.HasKey(r => r.Id);
 
@@ -48,39 +48,30 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
         // Fixed baseline date for seed data
         var seededAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        // Seed System Roles with static values
+        // Seed System Roles (Pre Sales = 1, Leadership = 2, Delivery = 3)
         builder.HasData(
-            new Role
+            new UserRole
             {
-                Id = 1,
-                Name = "Pre Sales",
+                Id = (int)UserRoleEnum.PreSales,
+                Name = UserRoleEnum.PreSales.ToRoleName(),
                 IsDeleted = false,
                 CreatedBy = "System",
                 CreatedAt = seededAt,
                 UpdatedAt = seededAt
             },
-            new Role
+            new UserRole
             {
-                Id = 2,
-                Name = "Project Management",
+                Id = (int)UserRoleEnum.Leadership,
+                Name = UserRoleEnum.Leadership.ToRoleName(),
                 IsDeleted = false,
                 CreatedBy = "System",
                 CreatedAt = seededAt,
                 UpdatedAt = seededAt
             },
-            new Role
+            new UserRole
             {
-                Id = 3,
-                Name = "Tech Lead",
-                IsDeleted = false,
-                CreatedBy = "System",
-                CreatedAt = seededAt,
-                UpdatedAt = seededAt
-            },
-            new Role
-            {
-                Id = 4,
-                Name = "Leadership",
+                Id = (int)UserRoleEnum.Delivery,
+                Name = UserRoleEnum.Delivery.ToRoleName(),
                 IsDeleted = false,
                 CreatedBy = "System",
                 CreatedAt = seededAt,

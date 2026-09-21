@@ -11,6 +11,7 @@ import { LoadingSpinnerComponent } from '@common/components/loading-spinner/load
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { ToastService } from '@common/services/toast/toast';
 import { RESOURCE_REQUEST_CONSTANTS } from '@shared/constants/app.constants';
+import { USER_ROLES } from '@shared/constants/users.constants';
 import {
   AllocateResourcesPayload,
   CreateResourceRequestPayload,
@@ -60,11 +61,9 @@ export class ResourcesComponent {
   readonly constants = RESOURCE_REQUEST_CONSTANTS;
 
   readonly isLeadershipOrAdmin = computed(
-    () => this.authService.hasRole('Leadership') || this.authService.isAdmin(),
+    () => this.engagementService.isWorkspaceLeadership() || this.authService.isAdmin(),
   );
-  // Raising a request has no Admin bypass on the backend (CreateResourceRequestAsync requires
-  // the current user to actually be the PM assigned to the engagement) — gate the button to match.
-  readonly isProjectManager = computed(() => this.authService.hasRole('Project Management'));
+  readonly isProjectManager = computed(() => this.engagementService.isWorkspacePm());
 
   readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
   readonly canRaiseRequest = computed(() => !this.isSignedOff() && this.isProjectManager());

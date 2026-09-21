@@ -14,6 +14,7 @@ import { TooltipDirective } from '@common/directives/tooltip.directive';
   styleUrl: './dashboard-engagements-list.scss'
 })
 export class DashboardEngagementsListComponent {
+  title = input<string>('Engagements approaching kickoff');
   engagements = input.required<DashboardEngagement[]>();
   totalCount = input.required<number>();
 

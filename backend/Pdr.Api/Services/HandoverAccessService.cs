@@ -19,9 +19,8 @@ public class HandoverAccessService : IHandoverAccessService
 
     public async Task<bool> CanAccessHandoverAsync(int engagementId, int userId)
     {
-        var assignment = await _engagementRepository.GetAssignmentByUserAsync(engagementId, userId);
-
-        if (assignment == null)
+        var assignments = await _engagementRepository.GetAssignmentsAsync(engagementId);
+        if (!assignments.Any(a => a.UserId == userId))
         {
             throw new HandoverAccessDeniedException(HandoverValidationConstants.AccessDenied);
         }
@@ -31,15 +30,20 @@ public class HandoverAccessService : IHandoverAccessService
 
     public async Task<bool> CanAccessHandoverAsync(int engagementId, int userId, string requiredRole)
     {
-        var assignment = await _engagementRepository.GetAssignmentByUserAsync(engagementId, userId);
+        var assignments = await _engagementRepository.GetAssignmentsAsync(engagementId);
+        var userAssignments = assignments.Where(a => a.UserId == userId).ToList();
 
-        if (assignment == null)
+        if (userAssignments.Count == 0)
         {
             throw new HandoverAccessDeniedException(HandoverValidationConstants.AccessDenied);
         }
 
-        var roleName = assignment.User.Role.Name;
-        if (roleName != requiredRole)
+        var hasRole = userAssignments.Any(a =>
+            (a.EngagementRole != null && string.Equals(a.EngagementRole.Name, requiredRole, StringComparison.OrdinalIgnoreCase)) ||
+            string.Equals(((EngagementRoleEnum)a.EngagementRoleId).ToRoleName(), requiredRole, StringComparison.OrdinalIgnoreCase) ||
+            (a.User?.Role != null && string.Equals(a.User.Role.Name, requiredRole, StringComparison.OrdinalIgnoreCase)));
+
+        if (!hasRole)
         {
             throw new HandoverAccessDeniedException(HandoverValidationConstants.ActionRequiresRole(requiredRole));
         }
@@ -49,19 +53,30 @@ public class HandoverAccessService : IHandoverAccessService
 
     public async Task<bool> CanAccessHandoverAsync(int engagementId, int userId, params string[] requiredRoles)
     {
-        var assignment = await _engagementRepository.GetAssignmentByUserAsync(engagementId, userId);
+        var assignments = await _engagementRepository.GetAssignmentsAsync(engagementId);
+        var userAssignments = assignments.Where(a => a.UserId == userId).ToList();
 
-        if (assignment == null)
+        if (userAssignments.Count == 0)
         {
             throw new HandoverAccessDeniedException(HandoverValidationConstants.AccessDenied);
         }
 
-        var roleName = assignment.User.Role.Name;
-        if (!requiredRoles.Contains(roleName))
+        var hasRole = userAssignments.Any(a =>
+            (a.EngagementRole != null && requiredRoles.Any(r => string.Equals(r, a.EngagementRole.Name, StringComparison.OrdinalIgnoreCase))) ||
+            requiredRoles.Any(r => string.Equals(r, ((EngagementRoleEnum)a.EngagementRoleId).ToRoleName(), StringComparison.OrdinalIgnoreCase)) ||
+            (a.User?.Role != null && requiredRoles.Any(r => string.Equals(r, a.User.Role.Name, StringComparison.OrdinalIgnoreCase))));
+
+        if (!hasRole)
         {
             throw new HandoverAccessDeniedException(HandoverValidationConstants.ActionRequiresAnyRole(requiredRoles));
         }
 
         return true;
     }
+
+    public Task<bool> CanAccessHandoverAsync(int engagementId, int userId, EngagementRoleEnum requiredRole) =>
+        CanAccessHandoverAsync(engagementId, userId, requiredRole.ToRoleName());
+
+    public Task<bool> CanAccessHandoverAsync(int engagementId, int userId, params EngagementRoleEnum[] requiredRoles) =>
+        CanAccessHandoverAsync(engagementId, userId, requiredRoles.Select(r => r.ToRoleName()).ToArray());
 }

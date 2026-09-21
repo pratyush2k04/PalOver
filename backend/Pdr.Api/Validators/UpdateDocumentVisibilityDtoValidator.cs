@@ -27,7 +27,7 @@ public class UpdateDocumentVisibilityDtoValidator : AbstractValidator<UpdateDocu
                     .NotNull().WithMessage(DocumentValidationConstants.Messages.CustomVisibilityRolesRequired)
                     .Must(roles => roles != null && roles.Count > 0)
                     .WithMessage(DocumentValidationConstants.Messages.CustomVisibilityAtLeastOneRole)
-                    .Must(roles => roles == null || roles.All(r => Enum.IsDefined(typeof(RoleEnum), r)))
+                    .Must(roles => roles == null || roles.All(r => Enum.IsDefined(typeof(UserRoleEnum), r) || Enum.IsDefined(typeof(EngagementRoleEnum), r)))
                     .WithMessage(DocumentValidationConstants.Messages.InvalidRoleIds);
             });
         });

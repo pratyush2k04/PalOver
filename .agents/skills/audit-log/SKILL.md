@@ -1,3 +1,9 @@
+---
+name: audit-log
+description: >-
+  Reference for recording and reading audit events in Pdr.Api, including seeding new action types, injecting IAuditLogService, and message templating.
+---
+
 # Audit Log – Reference for Recording and Reading Audit Events
 
 This guide explains how to use the central audit log: seeding a new action type, logging an event from any service, and how reads resolve and render the final message.

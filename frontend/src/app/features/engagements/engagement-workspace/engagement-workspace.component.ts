@@ -68,21 +68,22 @@ export class EngagementWorkspaceComponent {
     const user = this.authService.currentUser();
     if (!user) return false;
     return (
-      this.authService.hasRole(USER_ROLES.LEADERSHIP) ||
-      this.authService.hasRole(USER_ROLES.PROJECT_MANAGEMENT)
+      this.engagementService.isWorkspaceLeadership() ||
+      this.engagementService.isWorkspacePm() ||
+      this.authService.isAdmin()
     );
   });
 
   readonly isLeadership = computed(() => {
     const user = this.authService.currentUser();
     if (!user) return false;
-    return this.authService.hasRole(USER_ROLES.LEADERSHIP);
+    return this.engagementService.isWorkspaceLeadership() || this.authService.isAdmin();
   });
 
   readonly isProjectManager = computed(() => {
     const user = this.authService.currentUser();
     if (!user) return false;
-    return this.authService.hasRole(USER_ROLES.PROJECT_MANAGEMENT);
+    return this.engagementService.isWorkspacePm();
   });
 
   readonly isTechnicalReady = computed(() => {

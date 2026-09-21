@@ -36,6 +36,7 @@ export interface DashboardEngagement {
   daysToGo: number;
   readinessPercentage: number;
   status: string;
+  userRoles?: string[];
 }
 
 export interface DashboardBlocker {

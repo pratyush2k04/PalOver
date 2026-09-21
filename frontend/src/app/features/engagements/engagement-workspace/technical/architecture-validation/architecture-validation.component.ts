@@ -13,9 +13,8 @@ import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status
 import { ButtonComponent } from '@common/components/button/button';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { DialogService } from '@common/services/dialog/dialog.service';
-import { AuthService } from '@shared/services/auth';
 import { EngagementService } from '@features/engagements/services/engagement.service';
-import { TECHNICAL_READINESS_ROLES, TECHNICAL_READINESS_MESSAGES } from '@shared/constants/technical-readiness.constants';
+import { TECHNICAL_READINESS_MESSAGES } from '@shared/constants/technical-readiness.constants';
 import {
   ArchitectureValidationDto,
   DiscoveryFeatureItemDto
@@ -52,7 +51,6 @@ export class ArchitectureValidationComponent {
 
   private service = inject(ArchitectureValidationService);
   private toastService = inject(ToastService);
-  private authService = inject(AuthService);
   private engagementService = inject(EngagementService);
   private dialog = inject(DialogService);
   private destroyRef = inject(DestroyRef);
@@ -68,7 +66,7 @@ export class ArchitectureValidationComponent {
   rationale = signal<string>('');
   rationaleError = signal<string>('');
 
-  isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+  isTechLead = computed(() => this.engagementService.isWorkspaceTechLead());
   canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
   features = computed(() => this.validation()?.features ?? []);
   committedTimelineWeeks = computed(() => this.validation()?.committedTimelineWeeks ?? 0);

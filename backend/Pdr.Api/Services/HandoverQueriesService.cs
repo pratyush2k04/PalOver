@@ -120,7 +120,7 @@ public class HandoverQueriesService : IHandoverQueriesService
         await _notificationService.CreateFromTemplateAsync(
             "HandoverQueryRaised",
             engagementId,
-            RoleEnum.PreSales,
+            EngagementRoleEnum.PreSales,
             JsonSerializer.Serialize(new HandoverQueryRaisedMapper.HandoverQueryRaisedData(
                 QueryId: query.Id, HandoverId: handover.HandoverId, TriggerUserId: actorUserId, EngagementId: engagementId)),
             DateTime.UtcNow);
@@ -145,7 +145,7 @@ public class HandoverQueriesService : IHandoverQueriesService
         var actorUser = await _userRepository.GetByIdAsync(actorUserId)
             ?? throw new UserNotFoundException(actorUserId);
 
-        var messageType = actorUser.Role.Name == RoleConstants.PreSales
+        var messageType = actorUser.Role.Name == UserRoleEnum.PreSales.ToRoleName()
             ? HandoverQueryMessageType.Response
             : HandoverQueryMessageType.Question;
 
@@ -183,7 +183,7 @@ public class HandoverQueriesService : IHandoverQueriesService
             await _notificationService.CreateFromTemplateAsync(
                 "HandoverQueryRaised",
                 engagementId,
-                RoleEnum.ProjectManagement,
+                EngagementRoleEnum.ProjectManager,
                 JsonSerializer.Serialize(new HandoverQueryRaisedMapper.HandoverQueryRaisedData(
                     QueryId: queryId, HandoverId: handover.HandoverId, TriggerUserId: actorUserId, EngagementId: engagementId)),
                 DateTime.UtcNow);
@@ -204,7 +204,7 @@ public class HandoverQueriesService : IHandoverQueriesService
             await _notificationService.CreateFromTemplateAsync(
                 "HandoverQueryRaised",
                 engagementId,
-                RoleEnum.PreSales,
+                EngagementRoleEnum.PreSales,
                 JsonSerializer.Serialize(new HandoverQueryRaisedMapper.HandoverQueryRaisedData(
                     QueryId: queryId, HandoverId: handover.HandoverId, TriggerUserId: actorUserId, EngagementId: engagementId)),
                 DateTime.UtcNow);

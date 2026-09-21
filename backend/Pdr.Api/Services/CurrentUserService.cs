@@ -40,24 +40,24 @@ public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICur
         var roleName = GetRole();
         if (roleName != null)
         {
-            if (string.Equals(roleName, RoleConstants.PreSales, StringComparison.OrdinalIgnoreCase))
-                return (int)RoleEnum.PreSales;
-            if (string.Equals(roleName, RoleConstants.ProjectManagement, StringComparison.OrdinalIgnoreCase))
-                return (int)RoleEnum.ProjectManagement;
-            if (string.Equals(roleName, RoleConstants.TechLead, StringComparison.OrdinalIgnoreCase))
-                return (int)RoleEnum.TechLead;
-            if (string.Equals(roleName, RoleConstants.Leadership, StringComparison.OrdinalIgnoreCase))
-                return (int)RoleEnum.Leadership;
+            if (string.Equals(roleName, UserRoleEnum.PreSales.ToRoleName(), StringComparison.OrdinalIgnoreCase))
+                return (int)UserRoleEnum.PreSales;
+            if (string.Equals(roleName, UserRoleEnum.Leadership.ToRoleName(), StringComparison.OrdinalIgnoreCase))
+                return (int)UserRoleEnum.Leadership;
+            if (string.Equals(roleName, UserRoleEnum.Delivery.ToRoleName(), StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(roleName, EngagementRoleEnum.ProjectManager.ToRoleName(), StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(roleName, EngagementRoleEnum.TechLead.ToRoleName(), StringComparison.OrdinalIgnoreCase))
+                return (int)UserRoleEnum.Delivery;
         }
 
         return null;
     }
 
-    public RoleEnum? GetRoleEnum()
+    public UserRoleEnum? GetUserRole()
     {
         var id = GetRoleId();
-        return id.HasValue && Enum.IsDefined(typeof(RoleEnum), id.Value)
-            ? (RoleEnum)id.Value
+        return id.HasValue && Enum.IsDefined(typeof(UserRoleEnum), id.Value)
+            ? (UserRoleEnum)id.Value
             : null;
     }
 
@@ -78,14 +78,14 @@ public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICur
         return User.IsInRole(role) || string.Equals(GetRole(), role, StringComparison.OrdinalIgnoreCase);
     }
 
-    public bool IsInRole(RoleEnum role)
-    {
-        return IsInRole((int)role);
-    }
-
     public bool IsInRole(int roleId)
     {
         return GetRoleId() == roleId;
+    }
+
+    public bool IsInUserRole(UserRoleEnum role)
+    {
+        return GetRoleId() == (int)role;
     }
 
     public bool IsAdmin()

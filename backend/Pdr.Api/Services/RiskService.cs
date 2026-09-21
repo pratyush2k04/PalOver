@@ -109,7 +109,7 @@ public class RiskService(
             throw new ResolutionNoteRequiredException();
         }
 
-        var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement) || currentUserService.IsAdmin();
+        var isPm = await engagementAccessService.HasEngagementRoleAsync(risk.EngagementId, EngagementRoleEnum.ProjectManager) || currentUserService.IsAdmin();
         var currentUserId = currentUserService.GetUserId();
         var isOwner = risk.OwnerId.HasValue && risk.OwnerId.Value == currentUserId;
 
