@@ -3097,16 +3097,6 @@ namespace Pdr.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            CategoryName = "Commercial"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CategoryName = "Handover"
-                        },
-                        new
-                        {
                             Id = 3,
                             CategoryName = "Scope"
                         },
@@ -3119,11 +3109,6 @@ namespace Pdr.Api.Migrations
                         {
                             Id = 5,
                             CategoryName = "Resourcing"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CategoryName = "Technical Readiness"
                         });
                 });
 
@@ -3215,101 +3200,11 @@ namespace Pdr.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Confirm the signed commercial contract is on file before kickoff.",
-                            DisplayOrder = 1,
-                            EvidenceRequired = true,
-                            IsDeleted = false,
-                            IsMandatory = true,
-                            IsRetired = false,
-                            Title = "Sign commercial contract",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Verify the approved budget matches the statement of work.",
-                            DisplayOrder = 2,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Confirm engagement budget",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Agree invoicing milestones and payment terms with the client.",
-                            DisplayOrder = 3,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Confirm billing schedule",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 1
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Sales team walks delivery team through client history and expectations.",
-                            DisplayOrder = 4,
-                            EvidenceRequired = true,
-                            IsDeleted = false,
-                            IsMandatory = true,
-                            IsRetired = false,
-                            Title = "Complete sales-to-delivery handover call",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 1
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Ensure delivery has access to all pre-sales notes and correspondence.",
-                            DisplayOrder = 5,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Share CRM opportunity notes",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 1
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Confirm delivery team has contact details for all client stakeholders.",
-                            DisplayOrder = 6,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Transfer key client contacts",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 1
-                        },
-                        new
-                        {
                             Id = 7,
                             CategoryId = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Capture in-scope and out-of-scope items in the kickoff scope document.",
-                            DisplayOrder = 7,
+                            DisplayOrder = 1,
                             EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -3324,7 +3219,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "List and confirm all deliverables committed to the client.",
-                            DisplayOrder = 8,
+                            DisplayOrder = 2,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3339,7 +3234,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Record assumptions made during the sales cycle that affect scope.",
-                            DisplayOrder = 9,
+                            DisplayOrder = 3,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3354,7 +3249,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Agree recurring status meetings and escalation paths.",
-                            DisplayOrder = 10,
+                            DisplayOrder = 4,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3369,7 +3264,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Identify decision-makers on both client and delivery sides.",
-                            DisplayOrder = 11,
+                            DisplayOrder = 5,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3384,7 +3279,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Agree how scope changes will be raised, approved, and tracked.",
-                            DisplayOrder = 12,
+                            DisplayOrder = 6,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3399,7 +3294,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Assign an owner to maintain the Risks, Assumptions, Issues, and Dependencies log.",
-                            DisplayOrder = 13,
+                            DisplayOrder = 7,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3414,7 +3309,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 5,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Confirm named resources are assigned and available for the engagement.",
-                            DisplayOrder = 14,
+                            DisplayOrder = 8,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3429,7 +3324,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 5,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Check assigned resources have capacity for the engagement duration.",
-                            DisplayOrder = 15,
+                            DisplayOrder = 9,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3444,7 +3339,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 5,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Name backup resources in case of absence during the engagement.",
-                            DisplayOrder = 16,
+                            DisplayOrder = 10,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3455,161 +3350,11 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            Id = 17,
-                            CategoryId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Request and confirm access to required client systems and environments.",
-                            DisplayOrder = 17,
-                            EvidenceRequired = true,
-                            IsDeleted = false,
-                            IsMandatory = true,
-                            IsRetired = false,
-                            Title = "Provision environment access",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 1
-                        },
-                        new
-                        {
-                            Id = 18,
-                            CategoryId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Confirm client infrastructure and tooling meet engagement requirements.",
-                            DisplayOrder = 18,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Verify technical prerequisites",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 1
-                        },
-                        new
-                        {
-                            Id = 19,
-                            CategoryId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Ensure delivery team has access to repositories and pipelines.",
-                            DisplayOrder = 19,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Set up source control and CI/CD access",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 1
-                        },
-                        new
-                        {
-                            Id = 20,
-                            CategoryId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Review any client-specific security or compliance obligations.",
-                            DisplayOrder = 20,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Confirm security and compliance requirements",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 1
-                        },
-                        new
-                        {
-                            Id = 21,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Confirm the signed commercial contract is on file before kickoff.",
-                            DisplayOrder = 1,
-                            EvidenceRequired = true,
-                            IsDeleted = false,
-                            IsMandatory = true,
-                            IsRetired = false,
-                            Title = "Sign commercial contract",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 2
-                        },
-                        new
-                        {
-                            Id = 22,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Verify the approved budget matches the statement of work.",
-                            DisplayOrder = 2,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Confirm engagement budget",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 2
-                        },
-                        new
-                        {
-                            Id = 23,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Agree invoicing milestones and payment terms with the client.",
-                            DisplayOrder = 3,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Confirm billing schedule",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 2
-                        },
-                        new
-                        {
-                            Id = 24,
-                            CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Sales team walks delivery team through client history and expectations.",
-                            DisplayOrder = 4,
-                            EvidenceRequired = true,
-                            IsDeleted = false,
-                            IsMandatory = true,
-                            IsRetired = false,
-                            Title = "Complete sales-to-delivery handover call",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 2
-                        },
-                        new
-                        {
-                            Id = 25,
-                            CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Ensure delivery has access to all pre-sales notes and correspondence.",
-                            DisplayOrder = 5,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Share CRM opportunity notes",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 2
-                        },
-                        new
-                        {
-                            Id = 26,
-                            CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Confirm delivery team has contact details for all client stakeholders.",
-                            DisplayOrder = 6,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Transfer key client contacts",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 2
-                        },
-                        new
-                        {
                             Id = 27,
                             CategoryId = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Capture in-scope and out-of-scope items in the kickoff scope document.",
-                            DisplayOrder = 7,
+                            DisplayOrder = 1,
                             EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -3624,7 +3369,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "List and confirm all deliverables committed to the client.",
-                            DisplayOrder = 8,
+                            DisplayOrder = 2,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3639,7 +3384,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Record assumptions made during the sales cycle that affect scope.",
-                            DisplayOrder = 9,
+                            DisplayOrder = 3,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3654,7 +3399,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Agree recurring status meetings and escalation paths.",
-                            DisplayOrder = 10,
+                            DisplayOrder = 4,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3669,7 +3414,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Identify decision-makers on both client and delivery sides.",
-                            DisplayOrder = 11,
+                            DisplayOrder = 5,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3684,7 +3429,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Agree how scope changes will be raised, approved, and tracked.",
-                            DisplayOrder = 12,
+                            DisplayOrder = 6,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3699,7 +3444,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Assign an owner to maintain the Risks, Assumptions, Issues, and Dependencies log.",
-                            DisplayOrder = 13,
+                            DisplayOrder = 7,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3714,7 +3459,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 5,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Confirm named resources are assigned and available for the engagement.",
-                            DisplayOrder = 14,
+                            DisplayOrder = 8,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3729,7 +3474,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 5,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Check assigned resources have capacity for the engagement duration.",
-                            DisplayOrder = 15,
+                            DisplayOrder = 9,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3744,72 +3489,12 @@ namespace Pdr.Api.Migrations
                             CategoryId = 5,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Name backup resources in case of absence during the engagement.",
-                            DisplayOrder = 16,
+                            DisplayOrder = 10,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
                             IsRetired = false,
                             Title = "Identify backup/on-call resources",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 2
-                        },
-                        new
-                        {
-                            Id = 37,
-                            CategoryId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Request and confirm access to required client systems and environments.",
-                            DisplayOrder = 17,
-                            EvidenceRequired = true,
-                            IsDeleted = false,
-                            IsMandatory = true,
-                            IsRetired = false,
-                            Title = "Provision environment access",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 2
-                        },
-                        new
-                        {
-                            Id = 38,
-                            CategoryId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Confirm client infrastructure and tooling meet engagement requirements.",
-                            DisplayOrder = 18,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Verify technical prerequisites",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 2
-                        },
-                        new
-                        {
-                            Id = 39,
-                            CategoryId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Ensure delivery team has access to repositories and pipelines.",
-                            DisplayOrder = 19,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Set up source control and CI/CD access",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 2
-                        },
-                        new
-                        {
-                            Id = 40,
-                            CategoryId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Review any client-specific security or compliance obligations.",
-                            DisplayOrder = 20,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Confirm security and compliance requirements",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             VersionId = 2
                         });
