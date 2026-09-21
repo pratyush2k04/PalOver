@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Pdr.Api.Attributes;
 using Pdr.Api.DTOs.Risks;
 using Pdr.Api.Models.Risks;
 using Pdr.Api.Services.Interfaces;
@@ -13,6 +14,7 @@ namespace Pdr.Api.Controllers;
 [ApiController]
 [Route("api/engagements/{engagementId:int}/workspace/risks")]
 [Authorize]
+[RequireEngagementAccess]
 [Produces("application/json")]
 public class RisksController(IRiskService riskService) : ControllerBase
 {

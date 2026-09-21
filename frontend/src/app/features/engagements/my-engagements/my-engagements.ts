@@ -6,7 +6,7 @@ import { EngagementService } from '../services/engagement.service';
 import { EngagementSortBy, EngagementListItem } from '../models/engagement.model';
 import { AppContextService } from '@shared/services/app-context';
 import { EngagementsComponent } from '../pages/createengagment/engagements';
-import { ENGAGEMENT_MESSAGES, USER_ROLES, APP_ROUTES, ENGAGEMENT_ROUTES } from '@shared/constants/app.constants';
+import { ENGAGEMENT_MESSAGES, USER_ROLES, APP_ROUTES, ENGAGEMENT_ROUTES, ENGAGEMENT_ROLES } from '@shared/constants/app.constants';
 import { AlertComponent } from '@common/components/alert/alert';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
 import { ButtonComponent } from '@common/components/button/button';
@@ -27,6 +27,13 @@ type SortOption = 'kickoff' | 'readiness' | 'client';
 const SORT_OPTIONS: SelectOption[] = [
   { value: 'kickoff', label: 'Kickoff date' },
   { value: 'readiness', label: 'Readiness score' }
+];
+
+const ROLE_FILTER_OPTIONS: SelectOption[] = [
+  { value: 'All', label: 'All Roles' },
+  { value: ENGAGEMENT_ROLES.PROJECT_MANAGER, label: 'Project Manager' },
+  { value: ENGAGEMENT_ROLES.TECH_LEAD, label: 'Tech Lead' },
+  { value: 'Both', label: 'Both (PM & Tech Lead)' }
 ];
 
 @Component({
@@ -54,9 +61,12 @@ export class MyEngagementsComponent implements OnInit {
   private router = inject(Router);
 
   readonly isPreSales = computed(() => this.appContext.user()?.role === USER_ROLES.PRE_SALES);
+  readonly isDelivery = computed(() => this.appContext.user()?.role === USER_ROLES.DELIVERY);
   readonly sortOptions = SORT_OPTIONS;
+  readonly roleFilterOptions = ROLE_FILTER_OPTIONS;
   readonly pageSizeOptions = [5, 10, 15];
 
+  selectedRole = signal<string>('All');
   sortBy = signal<SortOption>('kickoff');
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
@@ -94,8 +104,9 @@ export class MyEngagementsComponent implements OnInit {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
+    const role = this.selectedRole() === 'All' ? null : this.selectedRole();
     this.engagementService
-      .getMyEngagementsPage(this.activeTab(), this.sortBy() as EngagementSortBy, this.page(), this.pageSize())
+      .getMyEngagementsPage(this.activeTab(), this.sortBy() as EngagementSortBy, this.page(), this.pageSize(), role)
       .subscribe({
         next: (result) => {
           this.pagedEngagements.set(
@@ -115,6 +126,12 @@ export class MyEngagementsComponent implements OnInit {
           this.errorMessage.set(ENGAGEMENT_MESSAGES.LOAD_ENGAGEMENTS_ERROR);
         }
       });
+  }
+
+  onRoleFilterChange(role: unknown): void {
+    this.selectedRole.set(role as string);
+    this.page.set(1);
+    this.loadEngagements();
   }
 
   onSortChange(sortBy: unknown): void {

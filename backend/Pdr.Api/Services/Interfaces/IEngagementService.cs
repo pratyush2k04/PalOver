@@ -11,7 +11,7 @@ public interface IEngagementService
     Task<IEnumerable<EngagementInfoDto>> GetAllEngagementsAsync();
     Task<bool> EditEngagementAsync(int id, EditEngagementRequest request);
     Task<EngagementListResponse> GetMyEngagementsAsync(string sortBy);
-    Task<MyEngagementsPageDto> GetMyEngagementsPageAsync(string status, string sortBy, int page, int pageSize);
+    Task<MyEngagementsPageDto> GetMyEngagementsPageAsync(string status, string sortBy, int page, int pageSize, string? role = null);
     //assigning
     Task<EngagementOwnersDto> GetEngagementOwnersAsync(int engagementId);
 
