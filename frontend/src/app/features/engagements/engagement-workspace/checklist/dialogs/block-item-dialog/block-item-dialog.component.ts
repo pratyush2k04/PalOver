@@ -33,7 +33,7 @@ export class BlockItemDialogComponent {
 
   readonly ownerOptions: SelectOption[] = [
     { value: null, label: '-- Select Owner --' },
-    ...(this.data.assignedUsers || []).map((user) => ({
+    ...Array.from(new Map((this.data.assignedUsers || []).map((u) => [u.userId, u])).values()).map((user) => ({
       value: Number(user.userId),
       label: user.fullName
     }))
