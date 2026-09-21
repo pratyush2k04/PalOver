@@ -48,9 +48,9 @@ public class MasterChecklistItemConfiguration : IEntityTypeConfiguration<MasterC
     {
         var items = new (int IdOffset, string Title, string Description, int CategoryId, bool IsMandatory, bool EvidenceRequired)[]
         {
-            (1, "Sign commercial contract", "Confirm the signed commercial contract is on file before kickoff.", 1, true, true),
-            (2, "Confirm engagement budget", "Verify the approved budget matches the statement of work.", 1, false, false),
-            (3, "Confirm billing schedule", "Agree invoicing milestones and payment terms with the client.", 1, false, false),
+            (7, "Document engagement scope", "Capture in-scope and out-of-scope items in the kickoff scope document.", 3, true, true),
+            (8, "Confirm deliverables list", "List and confirm all deliverables committed to the client.", 3, false, false),
+            (9, "Identify scope assumptions and exclusions", "Record assumptions made during the sales cycle that affect scope.", 3, false, false),
             (10, "Set up engagement governance cadence", "Agree recurring status meetings and escalation paths.", 4, false, false),
             (11, "Assign engagement steering committee", "Identify decision-makers on both client and delivery sides.", 4, false, false),
             (12, "Define change control process", "Agree how scope changes will be raised, approved, and tracked.", 4, false, false),
