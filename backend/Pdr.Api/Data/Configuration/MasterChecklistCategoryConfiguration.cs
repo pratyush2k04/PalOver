@@ -24,11 +24,8 @@ namespace Pdr.Api.Data.Configuration
             // Seed Data
             builder.HasData(
                 new MasterChecklistCategory { Id = 1, CategoryName = "Commercial" },
-                new MasterChecklistCategory { Id = 2, CategoryName = "Handover" },
-                new MasterChecklistCategory { Id = 3, CategoryName = "Scope" },
                 new MasterChecklistCategory { Id = 4, CategoryName = "Governance" },
-                new MasterChecklistCategory { Id = 5, CategoryName = "Resourcing" },
-                new MasterChecklistCategory { Id = 6, CategoryName = "Technical Readiness" }
+                new MasterChecklistCategory { Id = 5, CategoryName = "Resourcing" }
             );
         }
     }

@@ -46,41 +46,30 @@ public class MasterChecklistItemConfiguration : IEntityTypeConfiguration<MasterC
 
     private static object[] GetMasterChecklistItemSeedData()
     {
-        var items = new (string Title, string Description, int CategoryId, bool IsMandatory, bool EvidenceRequired)[]
+        var items = new (int IdOffset, string Title, string Description, int CategoryId, bool IsMandatory, bool EvidenceRequired)[]
         {
-            ("Sign commercial contract", "Confirm the signed commercial contract is on file before kickoff.", 1, true, true),
-            ("Confirm engagement budget", "Verify the approved budget matches the statement of work.", 1, false, false),
-            ("Confirm billing schedule", "Agree invoicing milestones and payment terms with the client.", 1, false, false),
-            ("Complete sales-to-delivery handover call", "Sales team walks delivery team through client history and expectations.", 2, true, true),
-            ("Share CRM opportunity notes", "Ensure delivery has access to all pre-sales notes and correspondence.", 2, false, false),
-            ("Transfer key client contacts", "Confirm delivery team has contact details for all client stakeholders.", 2, false, false),
-            ("Document engagement scope", "Capture in-scope and out-of-scope items in the kickoff scope document.", 3, true, true),
-            ("Confirm deliverables list", "List and confirm all deliverables committed to the client.", 3, false, false),
-            ("Identify scope assumptions and exclusions", "Record assumptions made during the sales cycle that affect scope.", 3, false, false),
-            ("Set up engagement governance cadence", "Agree recurring status meetings and escalation paths.", 4, false, false),
-            ("Assign engagement steering committee", "Identify decision-makers on both client and delivery sides.", 4, false, false),
-            ("Define change control process", "Agree how scope changes will be raised, approved, and tracked.", 4, false, false),
-            ("Confirm RAID log owner", "Assign an owner to maintain the Risks, Assumptions, Issues, and Dependencies log.", 4, false, false),
-            ("Allocate delivery team members", "Confirm named resources are assigned and available for the engagement.", 5, false, false),
-            ("Confirm resource availability calendar", "Check assigned resources have capacity for the engagement duration.", 5, false, false),
-            ("Identify backup/on-call resources", "Name backup resources in case of absence during the engagement.", 5, false, false),
-            ("Provision environment access", "Request and confirm access to required client systems and environments.", 6, true, true),
-            ("Verify technical prerequisites", "Confirm client infrastructure and tooling meet engagement requirements.", 6, false, false),
-            ("Set up source control and CI/CD access", "Ensure delivery team has access to repositories and pipelines.", 6, false, false),
-            ("Confirm security and compliance requirements", "Review any client-specific security or compliance obligations.", 6, false, false)
+            (1, "Sign commercial contract", "Confirm the signed commercial contract is on file before kickoff.", 1, true, true),
+            (2, "Confirm engagement budget", "Verify the approved budget matches the statement of work.", 1, false, false),
+            (3, "Confirm billing schedule", "Agree invoicing milestones and payment terms with the client.", 1, false, false),
+            (10, "Set up engagement governance cadence", "Agree recurring status meetings and escalation paths.", 4, false, false),
+            (11, "Assign engagement steering committee", "Identify decision-makers on both client and delivery sides.", 4, false, false),
+            (12, "Define change control process", "Agree how scope changes will be raised, approved, and tracked.", 4, false, false),
+            (13, "Confirm RAID log owner", "Assign an owner to maintain the Risks, Assumptions, Issues, and Dependencies log.", 4, false, false),
+            (14, "Allocate delivery team members", "Confirm named resources are assigned and available for the engagement.", 5, false, false),
+            (15, "Confirm resource availability calendar", "Check assigned resources have capacity for the engagement duration.", 5, false, false),
+            (16, "Identify backup/on-call resources", "Name backup resources in case of absence during the engagement.", 5, false, false)
         };
 
         var seed = new List<object>();
-        var versionIds = new[] { 1, 2 };
-        var nextId = 1;
-        foreach (var versionId in versionIds)
+        var versions = new[] { (VersionId: 1, BaseId: 0), (VersionId: 2, BaseId: 20) };
+        foreach (var (versionId, baseId) in versions)
         {
             for (var i = 0; i < items.Length; i++)
             {
-                var (title, description, categoryId, isMandatory, evidenceRequired) = items[i];
+                var (idOffset, title, description, categoryId, isMandatory, evidenceRequired) = items[i];
                 seed.Add(new
                 {
-                    Id = nextId++,
+                    Id = baseId + idOffset,
                     VersionId = versionId,
                     Title = title,
                     Description = description,
