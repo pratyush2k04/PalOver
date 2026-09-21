@@ -32,7 +32,7 @@ export class BlockItemDialogComponent {
   readonly data = inject<BlockItemDialogData>(DIALOG_DATA);
 
   readonly ownerOptions: SelectOption[] = [
-    { value: null, label: '--Select Option --' },
+    { value: null, label: '-- Select Owner --' },
     ...(this.data.assignedUsers || []).map((user) => ({
       value: Number(user.userId),
       label: user.fullName
