@@ -61,6 +61,8 @@ public class AccessTrackerService(
         if (!await repository.UserExistsAsync(request.OwnerId))
             throw new UserNotFoundException(request.OwnerId);
 
+        var wasReady = await readinessNotificationService.IsReadyAsync(engagementId);
+
         var item = new AccessItem
         {
             EngagementId = engagementId,
@@ -75,6 +77,8 @@ public class AccessTrackerService(
 
         await repository.AddAccessItemAsync(item);
         await repository.SaveChangesAsync();
+
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(engagementId, wasReady);
 
         // Reload with Owner navigation populated for the response
         var created = await repository.GetAccessItemByIdAsync(item.Id)
