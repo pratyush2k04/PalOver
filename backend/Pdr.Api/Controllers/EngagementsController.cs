@@ -180,8 +180,8 @@ public class EngagementsController(
     /// <param name="request">The assigned user payload.</param>
     /// <returns>The updated engagement owners.</returns>
     [HttpPut("{id:int}/project-manager")]
-    [AuthorizeRolesWithAdminBypass(UserRoleEnum.Leadership)]
-    [EndpointSummary("Assign Project Manager (Leadership or Admin)")]
+    [RequireEngagementRole("id", EngagementRoleEnum.Leadership)]
+    [EndpointSummary("Assign Project Manager (Assigned Leadership only)")]
     [ProducesResponseType(typeof(EngagementOwnersDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -200,8 +200,8 @@ public class EngagementsController(
     /// <param name="request">The assigned user payload.</param>
     /// <returns>The updated engagement owners.</returns>
     [HttpPut("{id:int}/tech-lead")]
-    [AuthorizeRolesWithAdminBypass(UserRoleEnum.Leadership)]
-    [EndpointSummary("Assign Tech Lead (Leadership or Admin)")]
+    [RequireEngagementRole("id", EngagementRoleEnum.Leadership)]
+    [EndpointSummary("Assign Tech Lead (Assigned Leadership only)")]
     [ProducesResponseType(typeof(EngagementOwnersDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -255,6 +255,7 @@ public class EngagementsController(
     /// <response code="200">List of assigned Leadership users returned successfully.</response>
     /// <response code="404">Engagement was not found.</response>
     [HttpGet("{id:int}/leadership-users")]
+    [RequireEngagementAccess("id")]
     [ProducesResponseType(typeof(IEnumerable<LeadershipUserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

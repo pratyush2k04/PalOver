@@ -53,7 +53,7 @@ export class RiskFormDialogComponent {
     { value: null, label: '-- Select Owner --' },
     ...this.data.owners.map((o) => ({
       value: o.id,
-      label: o.role ? `${o.name} (${o.role})` : o.name
+      label: o.name
     }))
   ];
 
