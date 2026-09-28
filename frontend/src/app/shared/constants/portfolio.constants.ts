@@ -21,9 +21,6 @@ export const PORTFOLIO_MESSAGES = {
 } as const;
 
 export const PORTFOLIO_BADGE_CLASSES = {
-  DAYS_URGENT: 'days-badge--urgent',
-  DAYS_WARNING: 'days-badge--warning',
-  DAYS_NORMAL: 'days-badge--normal',
   READINESS_SUCCESS: 'readiness--success',
   READINESS_INFO: 'readiness--info',
   READINESS_WARNING: 'readiness--warning',

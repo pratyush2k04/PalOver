@@ -156,10 +156,10 @@ export class PortfolioDashboardComponent implements OnInit {
     return `${daysToKickoff} ${PORTFOLIO_MESSAGES.DAYS_SUFFIX}`;
   }
 
-  getDaysBadgeClass(daysToKickoff: number): string {
-    if (daysToKickoff <= 0 || daysToKickoff <= 3) return PORTFOLIO_BADGE_CLASSES.DAYS_URGENT;
-    if (daysToKickoff <= 7) return PORTFOLIO_BADGE_CLASSES.DAYS_WARNING;
-    return PORTFOLIO_BADGE_CLASSES.DAYS_NORMAL;
+  getDaysBadgeTone(daysToKickoff: number): StatusBadgeTone {
+    if (daysToKickoff <= 3) return 'danger';
+    if (daysToKickoff <= 7) return 'warning';
+    return 'neutral';
   }
 
   getReadinessToneClass(score: number): string {

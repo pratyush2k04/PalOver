@@ -5,7 +5,7 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
 import { UserService } from './services/user.service';
 import { ToastService } from '@common/services/toast/toast';
 import { UserListItem } from './models/user.model';
-import { Role } from './models/role.model';
+import { Role } from '@shared/models/role.model';
 import { ConfirmDialogComponent } from '@common/components/confirm-dialog/confirm-dialog';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { USER_MESSAGES } from '@shared/constants/app.constants';

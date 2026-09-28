@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PagedResult, UserListItem } from '../models/user.model';
-import { Role } from '../models/role.model';
+import { Role } from '@shared/models/role.model';
 import { API_ENDPOINTS } from '@shared/constants/app.constants';
 import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 

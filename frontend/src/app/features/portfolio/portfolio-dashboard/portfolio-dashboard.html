@@ -129,19 +129,19 @@
               <!-- Days to Billing -->
               <td>
                 @if (item.daysToBilling !== null) {
-                  <span class="days-badge" [ngClass]="getDaysBadgeClass(item.daysToBilling)">
+                  <app-status-badge [tone]="getDaysBadgeTone(item.daysToBilling)">
                     {{ getDaysLabel(item.daysToBilling) }}
-                  </span>
+                  </app-status-badge>
                 } @else {
-                  <span class="days-badge days-badge--none">—</span>
+                  <span class="days-badge--none">—</span>
                 }
               </td>
 
               <!-- Days to Kickoff -->
               <td>
-                <span class="days-badge" [ngClass]="getDaysBadgeClass(item.daysToKickoff)">
+                <app-status-badge [tone]="getDaysBadgeTone(item.daysToKickoff)">
                   {{ getDaysLabel(item.daysToKickoff) }}
-                </span>
+                </app-status-badge>
               </td>
 
               <!-- Readiness Score -->
@@ -162,15 +162,15 @@
               <!-- Day-1 Sign-Off -->
               <td>
                 @if (item.isDayOneSignedOff) {
-                  <span class="day-one-status-badge" [class.day-one-status-badge--exception]="item.dayOneSignOffIsException">
+                  <app-status-badge [tone]="item.dayOneSignOffIsException ? 'warning' : 'success'">
                     <span
                       class="badge-icon"
                       [inlineSVG]="item.dayOneSignOffIsException ? 'assets/icons/alert-circle.svg' : 'assets/icons/check-circle.svg'"
                     ></span>
                     <span>{{ item.dayOneSignOffIsException ? 'Signed (Exception)' : 'Signed Off' }}</span>
-                  </span>
+                  </app-status-badge>
                 } @else {
-                  <span class="day-one-status-badge day-one-status-badge--pending">Pending</span>
+                  <app-status-badge tone="neutral">Pending</app-status-badge>
                 }
               </td>
 
@@ -179,7 +179,7 @@
                 @if (item.openBlockerCount > 0) {
                   <app-badge [text]="item.openBlockerCount + ' Blockers'" />
                 } @else {
-                  <span class="blocker-badge blocker-badge--zero">0 Blockers</span>
+                  <app-status-badge tone="neutral">0 Blockers</app-status-badge>
                 }
               </td>
 
