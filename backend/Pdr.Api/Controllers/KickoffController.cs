@@ -16,6 +16,7 @@ namespace Pdr.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/engagements/{engagementId:int}/workspace/kickoff")]
+[RequireEngagementAccess]
 [Produces("application/json")]
 public class KickoffController(IKickoffService kickoffService) : ControllerBase
 {
@@ -29,7 +30,6 @@ public class KickoffController(IKickoffService kickoffService) : ControllerBase
     /// <param name="engagementId">The engagement ID.</param>
     /// <returns>The kickoff record with action items and outcomes.</returns>
     [HttpGet]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.PreSales, RoleEnum.Leadership)]
     [EndpointSummary("Get kickoff record")]
     [ProducesResponseType(typeof(KickoffRecordDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -41,13 +41,13 @@ public class KickoffController(IKickoffService kickoffService) : ControllerBase
     }
 
     /// <summary>
-    /// Saves outcomes and notes for the kickoff meeting record.
+    /// Saves outcomes and notes for the kickoff meeting record (Project Manager only).
     /// </summary>
     /// <param name="engagementId">The engagement ID.</param>
     /// <param name="request">The request containing meeting outcomes.</param>
     /// <returns>The updated kickoff record.</returns>
     [HttpPost]
-    [AuthorizeRoles(RoleEnum.ProjectManagement)]
+    [RequireEngagementRole(EngagementRoleEnum.ProjectManager)]
     [EndpointSummary("Save kickoff meeting outcomes")]
     [ProducesResponseType(typeof(KickoffRecordDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -65,7 +65,6 @@ public class KickoffController(IKickoffService kickoffService) : ControllerBase
     /// <param name="engagementId">The engagement ID.</param>
     /// <returns>List of open action items.</returns>
     [HttpGet("actions/open")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.PreSales, RoleEnum.Leadership)]
     [EndpointSummary("Get open action items")]
     [ProducesResponseType(typeof(IEnumerable<KickoffActionItemDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -77,18 +76,19 @@ public class KickoffController(IKickoffService kickoffService) : ControllerBase
     }
 
     /// <summary>
-    /// Creates a new kickoff action item for an engagement.
+    /// Creates a new kickoff action item for an engagement (Project Manager only).
     /// </summary>
     /// <param name="engagementId">The engagement ID.</param>
     /// <param name="dto">The action item details.</param>
     /// <returns>The created action item with assigned ID.</returns>
     [HttpPost("actions")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement)]
+    [RequireEngagementRole(EngagementRoleEnum.ProjectManager)]
     [EndpointSummary("Create action item")]
     [ProducesResponseType(typeof(KickoffActionItemDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<KickoffActionItemDto>> CreateActionItem(int engagementId, [FromBody] KickoffActionItemDto dto)
     {
         var created = await kickoffService.CreateActionItemAsync(engagementId, dto, GetUserId());
@@ -116,14 +116,14 @@ public class KickoffController(IKickoffService kickoffService) : ControllerBase
     }
 
     /// <summary>
-    /// Updates an existing kickoff action item.
+    /// Updates an existing kickoff action item (Project Manager only).
     /// </summary>
     /// <param name="engagementId">The engagement ID.</param>
     /// <param name="actionItemId">The action item ID.</param>
     /// <param name="dto">The updated action item details.</param>
     /// <returns>The updated action item.</returns>
     [HttpPut("actions/{actionItemId:int}")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement)]
+    [RequireEngagementRole(EngagementRoleEnum.ProjectManager)]
     [EndpointSummary("Update action item")]
     [ProducesResponseType(typeof(KickoffActionItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

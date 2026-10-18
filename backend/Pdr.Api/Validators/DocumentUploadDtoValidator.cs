@@ -25,9 +25,6 @@ public class DocumentUploadDtoValidator : AbstractValidator<DocumentUploadDto>
             .Must(f => DocumentValidationConstants.AllowedExtensions.Contains(Path.GetExtension(f.FileName).ToLowerInvariant()))
             .WithMessage(DocumentValidationConstants.Messages.FileTypeNotSupported);
 
-        RuleFor(x => x.EngagementId)
-            .GreaterThan(0).WithMessage(DocumentValidationConstants.Messages.EngagementIdRequired);
-
         RuleFor(x => x.CategoryId)
             .GreaterThan(0).WithMessage(DocumentValidationConstants.Messages.CategoryIdRequired);
 

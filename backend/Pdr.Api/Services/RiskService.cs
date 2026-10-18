@@ -20,7 +20,6 @@ public class RiskService(
 {
     public async Task<List<RiskDto>> GetRisksByEngagementAsync(int engagementId, RiskStatus? status = null, int? ownerId = null)
     {
-        await engagementAccessService.ValidateAccessAsync(engagementId);
         await SyncAutoCreatedRisksAsync(engagementId);
         var risks = await riskRepository.GetByEngagementIdAsync(engagementId, status, ownerId);
         if (!risks.Any())
@@ -109,7 +108,7 @@ public class RiskService(
             throw new ResolutionNoteRequiredException();
         }
 
-        var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement) || currentUserService.IsAdmin();
+        var isPm = await engagementAccessService.HasEngagementRoleAsync(risk.EngagementId, EngagementRoleEnum.ProjectManager) || currentUserService.IsAdmin();
         var currentUserId = currentUserService.GetUserId();
         var isOwner = risk.OwnerId.HasValue && risk.OwnerId.Value == currentUserId;
 

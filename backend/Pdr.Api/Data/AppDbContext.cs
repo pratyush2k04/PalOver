@@ -47,7 +47,8 @@ public class AppDbContext : DbContext
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public DbSet<Role> Roles => Set<Role>();
+    public DbSet<UserRole> UserRoles => Set<UserRole>();
+    public DbSet<EngagementRole> EngagementRoles => Set<EngagementRole>();
     public DbSet<User> Users => Set<User>();
     public DbSet<EngagementAssignment> EngagementAssignments => Set<EngagementAssignment>();
 

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '@shared/services/auth';
-import { TECHNICAL_READINESS_ROLES } from '@shared/constants/technical-readiness.constants';
+import { USER_ROLES } from '@shared/constants/users.constants';
 import { AccessItemDto } from '@features/engagements/models/access-tracker/access-tracker.dtos';
 import { AccessItemStatus } from '@features/engagements/models/access-tracker/access-tracker.enums';
 import { EnvironmentToolingItemDto } from '@features/engagements/models/environment-tooling/environment-tooling.dtos';
@@ -40,14 +40,18 @@ export class TechnicalReadinessComponent {
 
   private parentParamMap = toSignal(this.route.parent!.paramMap);
 
-  isPreSales = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.PRE_SALES));
-  isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+  isDeliveryOrLeadership = computed(() =>
+    this.engagementService.isWorkspacePm() ||
+    this.engagementService.isWorkspaceTechLead() ||
+    this.engagementService.isWorkspaceLeadership() ||
+    this.authService.isAdmin()
+  );
 
-  canViewDayOneBanner = computed(() => !this.isPreSales());
-  canViewAccessTracker = computed(() => !this.isPreSales());
-  canViewEnvironmentTooling = computed(() => !this.isPreSales());
+  canViewDayOneBanner = computed(() => this.isDeliveryOrLeadership());
+  canViewAccessTracker = computed(() => this.isDeliveryOrLeadership());
+  canViewEnvironmentTooling = computed(() => this.isDeliveryOrLeadership());
   canViewArchitectureValidation = computed(() => true);
-  canViewBrownfieldReview = computed(() => !this.isPreSales() && this.isBrownfield());
+  canViewBrownfieldReview = computed(() => this.isDeliveryOrLeadership() && this.isBrownfield());
 
   engagementId = computed(() => {
     const idStr = this.parentParamMap()?.get('id');

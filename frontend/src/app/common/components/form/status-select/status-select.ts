@@ -3,21 +3,24 @@ import {
   ElementRef,
   HostListener,
   computed,
-  effect,
+  forwardRef,
   inject,
   input,
+  model,
+  output,
   signal,
   OnDestroy
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { InlineSVGModule } from 'ng-inline-svg-2';
-import { BaseControlComponent } from '../base-control';
 import { StatusBadgeTone } from '../../status-badge/status-badge';
 
 export interface StatusSelectOption {
   value: unknown;
   label: string;
   tone?: StatusBadgeTone;
+  disabled?: boolean;
 }
 
 @Component({
@@ -25,22 +28,59 @@ export interface StatusSelectOption {
   standalone: true,
   imports: [CommonModule, InlineSVGModule],
   templateUrl: './status-select.html',
-  styleUrl: './status-select.scss'
+  styleUrl: './status-select.scss',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => StatusSelectComponent),
+      multi: true
+    }
+  ]
 })
-export class StatusSelectComponent extends BaseControlComponent<unknown> implements OnDestroy {
+export class StatusSelectComponent implements ControlValueAccessor, OnDestroy {
   private readonly elementRef = inject(ElementRef);
 
   readonly options = input.required<StatusSelectOption[]>();
   readonly placeholder = input<string>('Select status');
   readonly id = input<string>('');
+  readonly disabled = model<boolean>(false);
+
+  // Controlled mode input & output
+  readonly value = input<unknown>(undefined);
+  readonly statusChange = output<unknown>();
+
+  // CVA mode internal value
+  private readonly cvaValue = signal<unknown>(undefined);
 
   readonly isOpen = signal<boolean>(false);
-  value: unknown = null;
-  readonly selectedIndex = signal<number | null>(null);
   
   readonly dropdownTop = signal<number>(0);
   readonly dropdownLeft = signal<number>(0);
   readonly dropdownMinWidth = signal<number>(0);
+
+  private onChange: (value: unknown) => void = () => {};
+  private onTouched: () => void = () => {};
+
+  readonly effectiveValue = computed(() => {
+    const valInput = this.value();
+    if (valInput !== undefined) {
+      return valInput;
+    }
+    return this.cvaValue();
+  });
+
+  readonly selectedIndex = computed(() => {
+    const opts = this.options();
+    const val = this.effectiveValue();
+    if (!opts || opts.length === 0 || val === undefined || val === null) {
+      return null;
+    }
+    const idx = opts.findIndex((option) =>
+      option.value === val ||
+      (option.value != null && val != null && String(option.value) === String(val))
+    );
+    return idx >= 0 ? idx : null;
+  });
 
   private onScrollFn = (event: Event) => {
     const dropdown = this.elementRef.nativeElement.querySelector('.status-select-dropdown');
@@ -79,14 +119,6 @@ export class StatusSelectComponent extends BaseControlComponent<unknown> impleme
     return this.selectedOption()?.tone || 'neutral';
   });
 
-  constructor() {
-    super();
-    effect(() => {
-      this.options();
-      this.syncSelectedIndex();
-    });
-  }
-
   ngOnDestroy(): void {
     window.removeEventListener('scroll', this.onScrollFn, true);
     window.removeEventListener('resize', this.onResizeFn);
@@ -106,25 +138,25 @@ export class StatusSelectComponent extends BaseControlComponent<unknown> impleme
     }
   }
 
-  override writeValue(value: unknown): void {
-    this.value = value;
-    this.syncSelectedIndex();
+  // ControlValueAccessor implementation
+  writeValue(value: unknown): void {
+    this.cvaValue.set(value);
   }
 
-  private syncSelectedIndex(): void {
-    const opts = this.options();
-    if (!opts || opts.length === 0) {
-      this.selectedIndex.set(null);
-      return;
-    }
+  registerOnChange(fn: (value: unknown) => void): void {
+    this.onChange = fn;
+  }
 
-    const val = this.value;
-    const idx = opts.findIndex((option) =>
-      option.value === val ||
-      (option.value != null && val != null && String(option.value) === String(val))
-    );
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
 
-    this.selectedIndex.set(idx >= 0 ? idx : null);
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled.set(isDisabled);
+  }
+
+  private markTouched(): void {
+    this.onTouched();
   }
 
   private closeDropdown(): void {
@@ -182,10 +214,18 @@ export class StatusSelectComponent extends BaseControlComponent<unknown> impleme
     if (this.disabled()) {
       return;
     }
-    this.selectedIndex.set(index);
     const option = this.options()[index];
-    this.value = option ? option.value : null;
-    this.onChange(this.value);
+    if (!option || option.disabled) {
+      return;
+    }
+
     this.closeDropdown();
+
+    if (this.value() === undefined) {
+      this.cvaValue.set(option.value);
+    }
+
+    this.statusChange.emit(option.value);
+    this.onChange(option.value);
   }
 }

@@ -1,9 +1,10 @@
 import { DocumentCategoryId } from '../../features/engagements/models/document.model';
+import { EngagementRoleId, ENGAGEMENT_ROLES } from './users.constants';
 
 export const DOCUMENT_API_ENDPOINTS = {
   BY_ENGAGEMENT: (engagementId: number) => `/api/documents/engagement/${engagementId}`,
   CATEGORIES: '/api/documents/categories',
-  UPLOAD: '/api/documents/upload',
+  UPLOAD: (engagementId: number) => `/api/documents/${engagementId}/upload`,
   DOWNLOAD: (id: number) => `/api/documents/${id}/download`,
   REMOVE: (id: number) => `/api/documents/${id}/remove`,
   VISIBILITY: (id: number) => `/api/documents/${id}/visibility`,
@@ -68,15 +69,9 @@ export const DOCUMENT_CONFIG = {
     DocumentCategoryId.Proposal,
     DocumentCategoryId.Commercial
   ] as readonly number[],
-  ROLE_IDS: {
-    PRE_SALES: 1,
-    PROJECT_MANAGEMENT: 2,
-    TECH_LEAD: 3,
-    LEADERSHIP: 4
-  },
   AVAILABLE_CUSTOM_VISIBILITY_ROLES: [
-    { id: 4, name: 'Leadership', label: 'Leadership' },
-    { id: 3, name: 'Tech Lead', label: 'Tech Lead' },
-    { id: 1, name: 'Pre Sales', label: 'Pre Sales' }
+    { id: EngagementRoleId.Leadership, name: ENGAGEMENT_ROLES.LEADERSHIP, label: ENGAGEMENT_ROLES.LEADERSHIP },
+    { id: EngagementRoleId.TechLead, name: ENGAGEMENT_ROLES.TECH_LEAD, label: ENGAGEMENT_ROLES.TECH_LEAD },
+    { id: EngagementRoleId.PreSales, name: ENGAGEMENT_ROLES.PRE_SALES, label: ENGAGEMENT_ROLES.PRE_SALES }
   ]
 } as const;

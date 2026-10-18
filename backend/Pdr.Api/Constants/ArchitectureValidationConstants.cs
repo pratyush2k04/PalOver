@@ -6,10 +6,6 @@ public static class ArchitectureValidationConstants
 
     public static class Messages
     {
-        public const string ValidationSaved = "Architecture validation details saved successfully.";
-        public const string FeatureAdded = "Discovery feature item added successfully.";
-        public const string FeatureUpdated = "Discovery feature item updated successfully.";
-        public const string FeatureDeleted = "Discovery feature item deleted successfully.";
         public const string RationaleRequiredWhenModified = "Rationale is required when the proposed architecture is modified.";
         public const string FeatureNameRequired = "Feature name is required.";
         public const string FeatureNameMaxLength = "Feature name cannot exceed 200 characters.";

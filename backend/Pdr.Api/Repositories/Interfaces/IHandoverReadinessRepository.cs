@@ -12,6 +12,5 @@ public interface IHandoverReadinessRepository
     Task AddItemAsync(HandoverReadinessItem item);
     Task AddItemsAsync(IEnumerable<HandoverReadinessItem> items);
     Task<bool> EngagementExistsAsync(int engagementId);
-    Task<int?> GetPreSalesOwnerIdAsync(int engagementId);
     Task SaveChangesAsync();
 }

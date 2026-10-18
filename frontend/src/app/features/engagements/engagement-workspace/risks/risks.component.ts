@@ -12,7 +12,7 @@ import {
 import { forkJoin, of, catchError } from 'rxjs';
 import { EngagementService } from '../../services/engagement.service';
 import { EngagementAllocationService } from '../../../engagement-allocation/services/engagement-allocation.service';
-import { UserService } from '../../../users/services/user.service';
+import { CommunicationCadenceService } from '../../services/communication-cadence.service';
 import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { ButtonComponent } from '@common/components/button/button';
 import { AlertComponent } from '@common/components/alert/alert';
@@ -29,6 +29,7 @@ import { AuthService } from '@shared/services/auth';
 import { USER_ROLES } from '@shared/constants/users.constants';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
 import { RiskCommentsComponent } from './components/risk-comments/risk-comments.component';
 import { RiskFormDialogComponent, RiskFormDialogResult } from './components/risk-form-dialog/risk-form-dialog.component';
 import { RISK_STATUSES } from '@shared/constants/risk.constants';
@@ -49,7 +50,8 @@ import { RISK_STATUSES } from '@shared/constants/risk.constants';
     SelectComponent,
     TextareaComponent,
     RiskCommentsComponent,
-    SectionHeaderComponent
+    SectionHeaderComponent,
+    TooltipDirective
   ],
   templateUrl: './risks.component.html',
   styleUrl: './risks.component.scss'
@@ -59,7 +61,7 @@ export class RisksComponent implements OnInit {
   private riskService = inject(RiskService);
   private engagementService = inject(EngagementService);
   private engagementAllocationService = inject(EngagementAllocationService);
-  private userService = inject(UserService);
+  private cadenceService = inject(CommunicationCadenceService);
   private fb = inject(FormBuilder);
   private toastService = inject(ToastService);
   private dialogService = inject(DialogService);
@@ -79,7 +81,7 @@ export class RisksComponent implements OnInit {
       return false;
     }
 
-    if (this.authService.hasRole(USER_ROLES.PROJECT_MANAGEMENT)) {
+    if (this.engagementService.isWorkspacePm()) {
       return true;
     }
 
@@ -106,7 +108,7 @@ export class RisksComponent implements OnInit {
     { value: 'ALL', label: 'All Owners' },
     ...this.owners().map(o => ({
       value: o.id,
-      label: o.role ? `${o.name} (${o.role})` : o.name
+      label: o.name
     }))
   ]);
 
@@ -201,11 +203,9 @@ export class RisksComponent implements OnInit {
     forkJoin({
       owners: this.engagementService.getEngagementOwners(engagementId).pipe(catchError(() => of(null))),
       leadership: this.engagementAllocationService.getLeadershipUsers(engagementId).pipe(catchError(() => of([]))),
-      projectManagers: this.userService.getUsersInRole(2).pipe(catchError(() => of([]))),
-      techLeads: this.userService.getUsersInRole(3).pipe(catchError(() => of([]))),
-      preSales: this.userService.getUsersInRole(1).pipe(catchError(() => of([])))
+      participants: this.cadenceService.getAssignedParticipants(engagementId).pipe(catchError(() => of([])))
     }).subscribe({
-      next: ({ owners, leadership, projectManagers, techLeads, preSales }) => {
+      next: ({ owners, leadership, participants }) => {
         const options: OwnerOption[] = [];
 
         if (owners?.projectManagerId && owners?.projectManagerName) {
@@ -217,11 +217,16 @@ export class RisksComponent implements OnInit {
         }
 
         if (owners?.techLeadId && owners?.techLeadName) {
-          options.push({
-            id: owners.techLeadId,
-            name: owners.techLeadName,
-            role: 'Technical Lead'
-          });
+          const existing = options.find((o) => o.id === owners.techLeadId);
+          if (existing) {
+            existing.role = 'Project Manager & Technical Lead';
+          } else {
+            options.push({
+              id: owners.techLeadId,
+              name: owners.techLeadName,
+              role: 'Technical Lead'
+            });
+          }
         }
 
         if (leadership && leadership.length > 0) {
@@ -236,37 +241,12 @@ export class RisksComponent implements OnInit {
           });
         }
 
-        if (projectManagers && projectManagers.length > 0) {
-          projectManagers.forEach((user) => {
-            if (!options.some((o) => o.id === user.id)) {
+        if (participants && participants.length > 0) {
+          participants.forEach((user) => {
+            if (!options.some((o) => o.id === user.userId)) {
               options.push({
-                id: user.id,
-                name: user.fullName,
-                role: 'Project Manager'
-              });
-            }
-          });
-        }
-
-        if (techLeads && techLeads.length > 0) {
-          techLeads.forEach((user) => {
-            if (!options.some((o) => o.id === user.id)) {
-              options.push({
-                id: user.id,
-                name: user.fullName,
-                role: 'Technical Lead'
-              });
-            }
-          });
-        }
-
-        if (preSales && preSales.length > 0) {
-          preSales.forEach((user) => {
-            if (!options.some((o) => o.id === user.id)) {
-              options.push({
-                id: user.id,
-                name: user.fullName,
-                role: 'PreSales'
+                id: user.userId,
+                name: user.fullName
               });
             }
           });

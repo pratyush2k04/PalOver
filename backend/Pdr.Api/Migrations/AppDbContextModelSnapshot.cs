@@ -977,9 +977,15 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("engagement_id");
 
-                    b.HasKey("UserId", "EngagementId");
+                    b.Property<int>("EngagementRoleId")
+                        .HasColumnType("integer")
+                        .HasColumnName("engagement_role_id");
+
+                    b.HasKey("UserId", "EngagementId", "EngagementRoleId");
 
                     b.HasIndex("EngagementId");
+
+                    b.HasIndex("EngagementRoleId");
 
                     b.ToTable("engagement_assignments", (string)null);
                 });
@@ -1223,9 +1229,6 @@ namespace Pdr.Api.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("LinkedRiskId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("OwnerId")
                         .HasColumnType("integer");
 
@@ -1247,8 +1250,6 @@ namespace Pdr.Api.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EngagementId");
-
-                    b.HasIndex("LinkedRiskId");
 
                     b.HasIndex("OwnerId");
 
@@ -1713,6 +1714,15 @@ namespace Pdr.Api.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("is_deleted");
 
+                    b.Property<int?>("OwnerId")
+                        .HasColumnType("integer")
+                        .HasColumnName("owner_id");
+
+                    b.Property<string>("OwnerName")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("owner_name");
+
                     b.Property<int?>("SourceChecklistItemId")
                         .HasColumnType("integer")
                         .HasColumnName("source_checklist_item_id");
@@ -1884,6 +1894,16 @@ namespace Pdr.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("engagement_id");
 
+                    b.Property<string>("IncomingContactBackground")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("incoming_contact_background");
+
+                    b.Property<string>("IncomingContactEmail")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("incoming_contact_email");
+
                     b.Property<string>("IncomingContactName")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -1895,6 +1915,10 @@ namespace Pdr.Api.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("incoming_contact_role");
+
+                    b.Property<string>("IncomingContactSentiment")
+                        .HasColumnType("text")
+                        .HasColumnName("incoming_contact_sentiment");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -2729,7 +2753,7 @@ namespace Pdr.Api.Migrations
                     b.ToTable("kickoff_records", (string)null);
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.LoginEntity.Role", b =>
+            modelBuilder.Entity("Pdr.Api.Models.LoginEntity.EngagementRole", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("integer")
@@ -2774,7 +2798,7 @@ namespace Pdr.Api.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("roles", (string)null);
+                    b.ToTable("engagement_roles", (string)null);
 
                     b.HasData(
                         new
@@ -2792,7 +2816,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
                             IsDeleted = false,
-                            Name = "Project Management",
+                            Name = "Leadership",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -2801,7 +2825,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
                             IsDeleted = false,
-                            Name = "Tech Lead",
+                            Name = "Project Manager",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -2810,7 +2834,7 @@ namespace Pdr.Api.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
                             IsDeleted = false,
-                            Name = "Leadership",
+                            Name = "Tech Lead",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
@@ -2927,7 +2951,7 @@ namespace Pdr.Api.Migrations
                             IsAdmin = false,
                             IsDeleted = false,
                             Password = "Password@123",
-                            RoleId = 2,
+                            RoleId = 3,
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -2955,7 +2979,7 @@ namespace Pdr.Api.Migrations
                             IsAdmin = false,
                             IsDeleted = false,
                             Password = "Password@123",
-                            RoleId = 4,
+                            RoleId = 2,
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -2969,7 +2993,84 @@ namespace Pdr.Api.Migrations
                             IsAdmin = true,
                             IsDeleted = false,
                             Password = "Password@123",
-                            RoleId = 4,
+                            RoleId = 2,
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.LoginEntity.UserRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("name");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("user_roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            IsDeleted = false,
+                            Name = "Pre Sales",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            IsDeleted = false,
+                            Name = "Leadership",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            IsDeleted = false,
+                            Name = "Delivery",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
@@ -2996,16 +3097,6 @@ namespace Pdr.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            CategoryName = "Commercial"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CategoryName = "Handover"
-                        },
-                        new
-                        {
                             Id = 3,
                             CategoryName = "Scope"
                         },
@@ -3018,11 +3109,6 @@ namespace Pdr.Api.Migrations
                         {
                             Id = 5,
                             CategoryName = "Resourcing"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CategoryName = "Technical Readiness"
                         });
                 });
 
@@ -3114,101 +3200,11 @@ namespace Pdr.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Confirm the signed commercial contract is on file before kickoff.",
-                            DisplayOrder = 1,
-                            EvidenceRequired = true,
-                            IsDeleted = false,
-                            IsMandatory = true,
-                            IsRetired = false,
-                            Title = "Sign commercial contract",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Verify the approved budget matches the statement of work.",
-                            DisplayOrder = 2,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Confirm engagement budget",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Agree invoicing milestones and payment terms with the client.",
-                            DisplayOrder = 3,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Confirm billing schedule",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 1
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Sales team walks delivery team through client history and expectations.",
-                            DisplayOrder = 4,
-                            EvidenceRequired = true,
-                            IsDeleted = false,
-                            IsMandatory = true,
-                            IsRetired = false,
-                            Title = "Complete sales-to-delivery handover call",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 1
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Ensure delivery has access to all pre-sales notes and correspondence.",
-                            DisplayOrder = 5,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Share CRM opportunity notes",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 1
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Confirm delivery team has contact details for all client stakeholders.",
-                            DisplayOrder = 6,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Transfer key client contacts",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 1
-                        },
-                        new
-                        {
                             Id = 7,
                             CategoryId = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Capture in-scope and out-of-scope items in the kickoff scope document.",
-                            DisplayOrder = 7,
+                            DisplayOrder = 1,
                             EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -3223,7 +3219,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "List and confirm all deliverables committed to the client.",
-                            DisplayOrder = 8,
+                            DisplayOrder = 2,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3238,7 +3234,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Record assumptions made during the sales cycle that affect scope.",
-                            DisplayOrder = 9,
+                            DisplayOrder = 3,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3253,7 +3249,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Agree recurring status meetings and escalation paths.",
-                            DisplayOrder = 10,
+                            DisplayOrder = 4,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3268,7 +3264,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Identify decision-makers on both client and delivery sides.",
-                            DisplayOrder = 11,
+                            DisplayOrder = 5,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3283,7 +3279,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Agree how scope changes will be raised, approved, and tracked.",
-                            DisplayOrder = 12,
+                            DisplayOrder = 6,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3298,7 +3294,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Assign an owner to maintain the Risks, Assumptions, Issues, and Dependencies log.",
-                            DisplayOrder = 13,
+                            DisplayOrder = 7,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3313,7 +3309,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 5,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Confirm named resources are assigned and available for the engagement.",
-                            DisplayOrder = 14,
+                            DisplayOrder = 8,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3328,7 +3324,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 5,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Check assigned resources have capacity for the engagement duration.",
-                            DisplayOrder = 15,
+                            DisplayOrder = 9,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3343,7 +3339,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 5,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Name backup resources in case of absence during the engagement.",
-                            DisplayOrder = 16,
+                            DisplayOrder = 10,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3354,161 +3350,11 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
-                            Id = 17,
-                            CategoryId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Request and confirm access to required client systems and environments.",
-                            DisplayOrder = 17,
-                            EvidenceRequired = true,
-                            IsDeleted = false,
-                            IsMandatory = true,
-                            IsRetired = false,
-                            Title = "Provision environment access",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 1
-                        },
-                        new
-                        {
-                            Id = 18,
-                            CategoryId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Confirm client infrastructure and tooling meet engagement requirements.",
-                            DisplayOrder = 18,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Verify technical prerequisites",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 1
-                        },
-                        new
-                        {
-                            Id = 19,
-                            CategoryId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Ensure delivery team has access to repositories and pipelines.",
-                            DisplayOrder = 19,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Set up source control and CI/CD access",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 1
-                        },
-                        new
-                        {
-                            Id = 20,
-                            CategoryId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Review any client-specific security or compliance obligations.",
-                            DisplayOrder = 20,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Confirm security and compliance requirements",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 1
-                        },
-                        new
-                        {
-                            Id = 21,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Confirm the signed commercial contract is on file before kickoff.",
-                            DisplayOrder = 1,
-                            EvidenceRequired = true,
-                            IsDeleted = false,
-                            IsMandatory = true,
-                            IsRetired = false,
-                            Title = "Sign commercial contract",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 2
-                        },
-                        new
-                        {
-                            Id = 22,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Verify the approved budget matches the statement of work.",
-                            DisplayOrder = 2,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Confirm engagement budget",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 2
-                        },
-                        new
-                        {
-                            Id = 23,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Agree invoicing milestones and payment terms with the client.",
-                            DisplayOrder = 3,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Confirm billing schedule",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 2
-                        },
-                        new
-                        {
-                            Id = 24,
-                            CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Sales team walks delivery team through client history and expectations.",
-                            DisplayOrder = 4,
-                            EvidenceRequired = true,
-                            IsDeleted = false,
-                            IsMandatory = true,
-                            IsRetired = false,
-                            Title = "Complete sales-to-delivery handover call",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 2
-                        },
-                        new
-                        {
-                            Id = 25,
-                            CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Ensure delivery has access to all pre-sales notes and correspondence.",
-                            DisplayOrder = 5,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Share CRM opportunity notes",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 2
-                        },
-                        new
-                        {
-                            Id = 26,
-                            CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Confirm delivery team has contact details for all client stakeholders.",
-                            DisplayOrder = 6,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Transfer key client contacts",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 2
-                        },
-                        new
-                        {
                             Id = 27,
                             CategoryId = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Capture in-scope and out-of-scope items in the kickoff scope document.",
-                            DisplayOrder = 7,
+                            DisplayOrder = 1,
                             EvidenceRequired = true,
                             IsDeleted = false,
                             IsMandatory = true,
@@ -3523,7 +3369,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "List and confirm all deliverables committed to the client.",
-                            DisplayOrder = 8,
+                            DisplayOrder = 2,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3538,7 +3384,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Record assumptions made during the sales cycle that affect scope.",
-                            DisplayOrder = 9,
+                            DisplayOrder = 3,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3553,7 +3399,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Agree recurring status meetings and escalation paths.",
-                            DisplayOrder = 10,
+                            DisplayOrder = 4,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3568,7 +3414,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Identify decision-makers on both client and delivery sides.",
-                            DisplayOrder = 11,
+                            DisplayOrder = 5,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3583,7 +3429,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Agree how scope changes will be raised, approved, and tracked.",
-                            DisplayOrder = 12,
+                            DisplayOrder = 6,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3598,7 +3444,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Assign an owner to maintain the Risks, Assumptions, Issues, and Dependencies log.",
-                            DisplayOrder = 13,
+                            DisplayOrder = 7,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3613,7 +3459,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 5,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Confirm named resources are assigned and available for the engagement.",
-                            DisplayOrder = 14,
+                            DisplayOrder = 8,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3628,7 +3474,7 @@ namespace Pdr.Api.Migrations
                             CategoryId = 5,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Check assigned resources have capacity for the engagement duration.",
-                            DisplayOrder = 15,
+                            DisplayOrder = 9,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
@@ -3643,72 +3489,12 @@ namespace Pdr.Api.Migrations
                             CategoryId = 5,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Name backup resources in case of absence during the engagement.",
-                            DisplayOrder = 16,
+                            DisplayOrder = 10,
                             EvidenceRequired = false,
                             IsDeleted = false,
                             IsMandatory = false,
                             IsRetired = false,
                             Title = "Identify backup/on-call resources",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 2
-                        },
-                        new
-                        {
-                            Id = 37,
-                            CategoryId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Request and confirm access to required client systems and environments.",
-                            DisplayOrder = 17,
-                            EvidenceRequired = true,
-                            IsDeleted = false,
-                            IsMandatory = true,
-                            IsRetired = false,
-                            Title = "Provision environment access",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 2
-                        },
-                        new
-                        {
-                            Id = 38,
-                            CategoryId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Confirm client infrastructure and tooling meet engagement requirements.",
-                            DisplayOrder = 18,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Verify technical prerequisites",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 2
-                        },
-                        new
-                        {
-                            Id = 39,
-                            CategoryId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Ensure delivery team has access to repositories and pipelines.",
-                            DisplayOrder = 19,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Set up source control and CI/CD access",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            VersionId = 2
-                        },
-                        new
-                        {
-                            Id = 40,
-                            CategoryId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Review any client-specific security or compliance obligations.",
-                            DisplayOrder = 20,
-                            EvidenceRequired = false,
-                            IsDeleted = false,
-                            IsMandatory = false,
-                            IsRetired = false,
-                            Title = "Confirm security and compliance requirements",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             VersionId = 2
                         });
@@ -4255,6 +4041,19 @@ namespace Pdr.Api.Migrations
                         },
                         new
                         {
+                            Id = 23,
+                            Body = "Technical readiness for {EngagementName} has dropped below 100% ({Reason}). Day 1 sign-off has been disabled until all technical blockers are resolved.",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            DefaultPriority = 3,
+                            IsDeleted = false,
+                            Key = "TechnicalReadinessRegressed",
+                            LinkPattern = "/engagements/{EngagementId}/workspace/technical-readiness",
+                            Title = "Technical Readiness Dropped Below 100% — {EngagementName}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
                             Id = 471928,
                             Body = "{ActorName} removed {DocumentName} from {EngagementName}.",
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -4368,6 +4167,15 @@ namespace Pdr.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("PersonId"));
 
+                    b.Property<string>("ClientBackground")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("client_background");
+
+                    b.Property<string>("ClientSentiment")
+                        .HasColumnType("text")
+                        .HasColumnName("client_sentiment");
+
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -4378,6 +4186,11 @@ namespace Pdr.Api.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("created_by");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("email");
 
                     b.Property<int>("EngagementId")
                         .HasColumnType("integer")
@@ -4979,6 +4792,12 @@ namespace Pdr.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Pdr.Api.Models.LoginEntity.EngagementRole", "EngagementRole")
+                        .WithMany("EngagementAssignments")
+                        .HasForeignKey("EngagementRoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Pdr.Api.Models.LoginEntity.User", "User")
                         .WithMany("EngagementAssignments")
                         .HasForeignKey("UserId")
@@ -4986,6 +4805,8 @@ namespace Pdr.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Engagement");
+
+                    b.Navigation("EngagementRole");
 
                     b.Navigation("User");
                 });
@@ -5049,10 +4870,6 @@ namespace Pdr.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Pdr.Api.Models.Risks.Risk", "LinkedRisk")
-                        .WithMany()
-                        .HasForeignKey("LinkedRiskId");
-
                     b.HasOne("Pdr.Api.Models.LoginEntity.User", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId")
@@ -5060,8 +4877,6 @@ namespace Pdr.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Engagement");
-
-                    b.Navigation("LinkedRisk");
 
                     b.Navigation("Owner");
                 });
@@ -5376,7 +5191,7 @@ namespace Pdr.Api.Migrations
 
             modelBuilder.Entity("Pdr.Api.Models.LoginEntity.User", b =>
                 {
-                    b.HasOne("Pdr.Api.Models.LoginEntity.Role", "Role")
+                    b.HasOne("Pdr.Api.Models.LoginEntity.UserRole", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -5612,9 +5427,9 @@ namespace Pdr.Api.Migrations
                     b.Navigation("ActionItems");
                 });
 
-            modelBuilder.Entity("Pdr.Api.Models.LoginEntity.Role", b =>
+            modelBuilder.Entity("Pdr.Api.Models.LoginEntity.EngagementRole", b =>
                 {
-                    b.Navigation("Users");
+                    b.Navigation("EngagementAssignments");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.LoginEntity.User", b =>
@@ -5626,6 +5441,11 @@ namespace Pdr.Api.Migrations
                     b.Navigation("EnvironmentToolingItems");
 
                     b.Navigation("HandoverReadinessItems");
+                });
+
+            modelBuilder.Entity("Pdr.Api.Models.LoginEntity.UserRole", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Pdr.Api.Models.MasterChecklist.MasterChecklistVersion", b =>

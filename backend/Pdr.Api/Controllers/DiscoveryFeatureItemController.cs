@@ -24,7 +24,7 @@ public class DiscoveryFeatureItemController(IArchitectureValidationService servi
     /// <param name="request">The update payload.</param>
     /// <returns>The updated discovery feature item.</returns>
     [HttpPut("{featureId:int}")]
-    [AuthorizeRoles(RoleEnum.TechLead)]
+    [RequireItemEngagementRole(ItemEntityType.DiscoveryFeature, EngagementRoleEnum.TechLead)]
     [EndpointSummary("Update discovery feature item (Tech Lead only)")]
     [ProducesResponseType(typeof(DiscoveryFeatureItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -45,7 +45,7 @@ public class DiscoveryFeatureItemController(IArchitectureValidationService servi
     /// <param name="featureId">The feature item ID.</param>
     /// <returns>204 No Content.</returns>
     [HttpDelete("{featureId:int}")]
-    [AuthorizeRoles(RoleEnum.TechLead)]
+    [RequireItemEngagementRole(ItemEntityType.DiscoveryFeature, EngagementRoleEnum.TechLead)]
     [EndpointSummary("Delete discovery feature item (Tech Lead only)")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

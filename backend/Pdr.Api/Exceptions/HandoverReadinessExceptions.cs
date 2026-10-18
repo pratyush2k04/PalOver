@@ -8,6 +8,3 @@ public class HandoverReadinessItemNameRequiredException()
 
 public class HandoverReadinessBlockReasonRequiredException()
     : AppException("Block reason is required when status is set to Blocked.", 400);
-
-public class HandoverReadinessAccessDeniedException()
-    : AppException("Only Pre-Sales can modify Handover Readiness items.", 403);

@@ -4,6 +4,7 @@ using Pdr.Api.DTOs.EngagementChecklist;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Audit;
 using Pdr.Api.Models.EngagementChecklist;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
@@ -79,6 +80,7 @@ public class EngagementChecklistService(
 
     public async Task<EngagementChecklistResponseDto> UpdateItemStatusAsync(int engagementId, int itemId, UpdateItemStatusRequestDto dto)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager);
         await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var item = await checklistRepository.GetItemByIdAsync(engagementId, itemId)
@@ -124,6 +126,7 @@ public class EngagementChecklistService(
 
     public async Task<EngagementChecklistResponseDto> UpdateItemApplicabilityAsync(int engagementId, int itemId, UpdateItemApplicabilityRequestDto dto)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager);
         await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var item = await checklistRepository.GetItemByIdAsync(engagementId, itemId)
@@ -192,6 +195,7 @@ public class EngagementChecklistService(
 
     public async Task<EngagementChecklistResponseDto> ReviewExemptionAsync(int engagementId, int itemId, ReviewExemptionRequestDto dto)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.Leadership);
         await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var item = await checklistRepository.GetItemByIdAsync(engagementId, itemId)
@@ -235,6 +239,7 @@ public class EngagementChecklistService(
 
     public async Task<EngagementChecklistResponseDto> UpdateItemOwnerAsync(int engagementId, int itemId, UpdateItemOwnerRequestDto dto)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager);
         await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var item = await checklistRepository.GetItemByIdAsync(engagementId, itemId)
@@ -266,6 +271,7 @@ public class EngagementChecklistService(
 
     public async Task<EngagementChecklistResponseDto> BlockItemAsync(int engagementId, int itemId, BlockChecklistItemRequestDto dto)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager);
         await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var item = await checklistRepository.GetItemByIdAsync(engagementId, itemId)
@@ -301,6 +307,7 @@ public class EngagementChecklistService(
 
     public async Task<EngagementChecklistResponseDto> UnblockItemAsync(int engagementId, int itemId)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager);
         await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var item = await checklistRepository.GetItemByIdAsync(engagementId, itemId)
@@ -328,6 +335,7 @@ public class EngagementChecklistService(
 
     public async Task<EngagementChecklistResponseDto> SaveItemEvidenceAsync(int engagementId, int itemId, SaveChecklistItemEvidenceRequestDto dto)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager);
         await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var item = await checklistRepository.GetItemByIdAsync(engagementId, itemId)

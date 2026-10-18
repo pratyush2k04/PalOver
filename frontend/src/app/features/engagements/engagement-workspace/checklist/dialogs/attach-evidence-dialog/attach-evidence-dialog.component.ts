@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { EngagementChecklistItem } from '@features/engagements/models/engagement-checklist.model';
-import { DocumentCategory, DocumentItem, DocumentVisibility } from '@features/engagements/models/document.model';
+import { DocumentCategory, DocumentCategoryId, DocumentItem, DocumentVisibility } from '@features/engagements/models/document.model';
 import { DocumentService } from '@features/engagements/services/document.service';
 import { EngagementChecklistService } from '@features/engagements/services/engagement-checklist.service';
 import { DOCUMENT_CONFIG, DOCUMENT_MESSAGES } from '@shared/constants/document.constants';
@@ -112,24 +112,27 @@ export class AttachEvidenceDialogComponent implements OnInit {
   }
 
   private loadCategories(): void {
-    this.documentService.getCategories().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.documentService.getCategories(true).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (cats) => {
         this.categories.set(cats);
-        if (cats.length > 0) {
-          this.selectedCategoryId.set(cats[0].id);
-        }
+        this.setDefaultCategoryId(cats);
       },
       error: () => {
         const defaults: DocumentCategory[] = [...DOCUMENT_CONFIG.DEFAULT_CATEGORIES];
         this.categories.set(defaults);
-        this.selectedCategoryId.set(defaults[0].id);
+        this.setDefaultCategoryId(defaults);
       }
     });
   }
 
+  private setDefaultCategoryId(cats: DocumentCategory[]): void {
+    const defaultCategoryId = cats.find((cat) => cat.id === DocumentCategoryId.Other)?.id ?? cats[0]?.id ?? null;
+    this.selectedCategoryId.set(defaultCategoryId);
+  }
+
   private loadExistingDocuments(): void {
     this.isLoadingDocuments.set(true);
-    this.documentService.getEngagementDocuments(this.data.engagementId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.documentService.getEngagementDocuments(this.data.engagementId, true).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (docs) => {
         this.existingDocuments.set(docs);
         this.isLoadingDocuments.set(false);

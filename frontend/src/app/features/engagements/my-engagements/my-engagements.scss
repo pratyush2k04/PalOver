@@ -69,7 +69,8 @@
   }
 }
 
-.sort-control {
+.sort-control,
+.role-filter-control {
   @include flex-center;
   gap: $spacing-2;
 
@@ -86,6 +87,18 @@
       margin-bottom: 0;
     }
   }
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: $font-weight-medium;
+  color: $color-primary;
+  background-color: $color-primary-light;
+  padding: 0.1rem 0.45rem;
+  border-radius: $radius-full;
+  line-height: 1.2;
 }
 
 .engagement-list-card {

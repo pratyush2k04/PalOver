@@ -1,4 +1,5 @@
 import { ENGAGEMENT_ROUTES } from './routes.constants';
+import { UserRoleId } from './users.constants';
 
 export const ENGAGEMENT_API_ENDPOINTS = {
   MARK_SOW_SIGNED: '/api/Engagements/mark-sow-signed',
@@ -6,7 +7,6 @@ export const ENGAGEMENT_API_ENDPOINTS = {
   COMMERCIAL_MODELS: '/api/CommercialModels',
   ENGAGEMENT_INFO: (id: number) => `/api/Engagements/${id}`,
   ENGAGEMENT_OWNERS: (id: number) => `/api/Engagements/${id}/owners`,
-  ENGAGEMENT_USERS: (id: number) => `/api/Engagements/${id}/users`,
   ASSIGN_PROJECT_MANAGER: (id: number) => `/api/Engagements/${id}/project-manager`,
   ASSIGN_TECH_LEAD: (id: number) => `/api/Engagements/${id}/tech-lead`,
   MY_ENGAGEMENTS: '/api/Engagements/my-engagements',
@@ -15,34 +15,26 @@ export const ENGAGEMENT_API_ENDPOINTS = {
   ALL_ENGAGEMENTS: '/api/Engagements',
   LEADERSHIP_USERS: (id: number) => `/api/Engagements/${id}/leadership-users`,
   UPDATE_LEADERSHIP_USERS: (id: number) => `/api/Engagements/${id}/leadership-users`,
-  LEADERSHIP_ROLE_USERS: '/api/Roles/4/users',
-  DELETE_LEADERSHIP_USER: (id: number, userId: number) => `/api/Engagements/${id}/leadership-users/${userId}`,
+  LEADERSHIP_ROLE_USERS: `/api/Roles/${UserRoleId.Leadership}/users`,
   HANDOVER_DRAFT_STATUS: (id: number) => `/api/Engagements/${id}/handover-draft-status`,
   ENGAGEMENT_CHECKLIST: (id: number) => `/api/engagements/${id}/workspace/checklist`,
   CHECKLIST_ITEM_EVIDENCE: (engagementId: number, itemId: number) => `/api/engagements/${engagementId}/workspace/checklist/items/${itemId}/evidence`,
-  ENGAGEMENT_DOCUMENTS: (id: number) => `/api/documents/engagement/${id}`,
-  DOCUMENT_CATEGORIES: '/api/documents/categories',
-  DOCUMENT_UPLOAD: '/api/documents/upload',
-  DOCUMENT_DOWNLOAD: (id: number) => `/api/documents/${id}/download`,
-  DOCUMENT_DELETE: (id: number) => `/api/documents/${id}`,
   OPEN_ITEMS_SUMMARY: (id: number) => `/api/Engagements/${id}/open-items-summary`,
   DAY_ONE_SIGN_OFF: (id: number) => `/api/Engagements/${id}/day-one-sign-off`,
   EVIDENCE_SNAPSHOT: (id: number) => `/api/Engagements/${id}/evidence-snapshot`,
 } as const;
 
 export const ENGAGEMENT_CONSTANTS = {
-  PROJECT_MANAGEMENT_ROLE_ID: 2,
-  TECH_LEAD_ROLE_ID: 3,
+  DELIVERY_ROLE_ID: UserRoleId.Delivery,
+  PROJECT_MANAGEMENT_ROLE_ID: UserRoleId.Delivery,
+  TECH_LEAD_ROLE_ID: UserRoleId.Delivery,
+  LEADERSHIP_ROLE_ID: UserRoleId.Leadership,
   KICKOFF_PENDING_STATUS: 'KickoffPending',
 } as const;
 
 export const ENGAGEMENT_MESSAGES = {
   LOAD_ENGAGEMENTS_ERROR: 'Failed to load your engagements. Please try again.',
   CREATE_ENGAGEMENT_ERROR: 'Failed to create engagement. Please try again.',
-  LOAD_CHECKLIST_ERROR: 'Failed to load the engagement checklist. Please try again.',
-  LOAD_DOCUMENTS_ERROR: 'Failed to load documents. Please try again.',
-  UPLOAD_DOCUMENT_ERROR: 'Failed to upload document. Please try again.',
-  DELETE_DOCUMENT_ERROR: 'Failed to delete document. Please try again.',
   ASSIGNMENT_SUCCESS: (name: string, label: string) => `${name} assigned as ${label}.`,
   ASSIGNMENT_ERROR: 'Failed to save assignment. Please try again.',
 } as const;
@@ -68,7 +60,7 @@ export const ENGAGEMENT_WORKSPACE_CONFIG = {
     { label: 'Resources', route: ENGAGEMENT_ROUTES.RESOURCES, enabled: true },
     { label: 'Technical Readiness', route: ENGAGEMENT_ROUTES.TECHNICAL_READINESS, enabled: true },
     { label: 'Risks', route: ENGAGEMENT_ROUTES.RISKS, enabled: true },
-    { label: 'Assumptions & Decisions', route: ENGAGEMENT_ROUTES.ASSUMPTIONS, enabled: true },
+    { label: 'Assumptions & Dependencies', route: ENGAGEMENT_ROUTES.ASSUMPTIONS, enabled: true },
     { label: 'Audits', route: ENGAGEMENT_ROUTES.AUDITS, enabled: true },
     { label: 'Sign Off', route: ENGAGEMENT_ROUTES.SIGN_OFF, enabled: false }
   ]

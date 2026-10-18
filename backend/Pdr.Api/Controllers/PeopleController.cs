@@ -15,6 +15,7 @@ namespace Pdr.Api.Controllers;
 /// </summary>
 [ApiController]
 [Authorize]
+[RequireEngagementAccess]
 [Route("api/engagements/{engagementId:int}/people")]
 [Produces("application/json")]
 public class PeopleController(IPersonService personService) : ControllerBase

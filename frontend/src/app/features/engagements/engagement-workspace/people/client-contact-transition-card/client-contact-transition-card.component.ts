@@ -1,14 +1,17 @@
 import { Component, inject, input, output, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonComponent } from '@common/components/button/button';
-import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
+
 
 import { ClientContactTransitionService } from '../../../services/client-contact-transition.service';
 import { TransitionResponse, AddClientContactTransitionDialogData } from '../../../models/client-contact-transition.model';
 
+import { PersonDto } from '@shared/models/person.model';
 import { AuthService } from '@shared/services/auth';
+import { EngagementService } from '../../../services/engagement.service';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { ToastService } from '@common/services/toast/toast';
+import { USER_ROLES } from '@shared/constants/app.constants';
 import {
   FORM_LABELS,
   BUTTON_LABELS,
@@ -31,11 +34,13 @@ export class ClientContactTransitionCardComponent {
   engagementId = input.required<number>();
   clientName = input<string>('');
   isSubmitted = input<boolean>(false);
+  people = input<PersonDto[]>([]);
   onSaved = output<void>();
   transitionsLoaded = output<TransitionResponse[]>();
 
   private transitionService = inject(ClientContactTransitionService);
   private authService = inject(AuthService);
+  private engagementService = inject(EngagementService);
   private dialog = inject(DialogService);
   private toastService = inject(ToastService);
 
@@ -47,8 +52,8 @@ export class ClientContactTransitionCardComponent {
   transitions = signal<TransitionResponse[]>([]);
   isLoading = signal(false);
 
-  isPm = computed(() => this.authService.hasRole('Project Management'));
-  isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
+  isPm = computed(() => this.engagementService.isWorkspacePm());
+  isPreSales = computed(() => this.authService.hasRole(USER_ROLES.PRE_SALES));
 
   constructor() {
     effect(() => {
@@ -80,6 +85,7 @@ export class ClientContactTransitionCardComponent {
     const data: AddClientContactTransitionDialogData = {
       engagementId: this.engagementId(),
       activeTransitions: this.transitions(),
+      people: this.people(),
     };
 
     const dialogRef = this.dialog.open<AddClientContactTransitionDialogComponent, AddClientContactTransitionDialogData, boolean>(

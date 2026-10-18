@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import {
-  TECHNICAL_READINESS_ROUTES,
   MASTER_CHECKLIST_ROUTES,
   AUDIT_LOG_ROUTES,
   USERS_ROUTES,
@@ -73,12 +72,6 @@ export const routes: Routes = [
         canActivate: [workspaceRedirectGuard],
         children: [],
       },
-
-      // // Dashboard
-      // {
-      //   path: 'dashboard',
-      //   component: DashboardComponent,
-      // },
 
       // Role dashboards (Home feature)
       {

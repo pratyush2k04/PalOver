@@ -3,6 +3,7 @@ using Pdr.Api.DTOs.ArchitectureValidation;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.ArchitectureValidation;
 using Pdr.Api.Models.Audit;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
@@ -13,10 +14,13 @@ public class ArchitectureValidationService(
     IArchitectureValidationRepository repository,
     IAuditLogService auditLogService,
     ICurrentUserService currentUserService,
-    ITechnicalReadinessNotificationService readinessNotificationService) : IArchitectureValidationService
+    ITechnicalReadinessNotificationService readinessNotificationService,
+    IEngagementAccessService engagementAccessService) : IArchitectureValidationService
 {
     public async Task<ArchitectureValidationDto> GetByEngagementIdAsync(int engagementId)
     {
+        await engagementAccessService.ValidateAccessAsync(engagementId);
+
         if (!await repository.EngagementExistsAsync(engagementId))
         {
             throw new EngagementNotFoundException(engagementId);
@@ -41,6 +45,8 @@ public class ArchitectureValidationService(
 
     public async Task<ArchitectureValidationDto> SaveValidationAsync(int engagementId, SaveArchitectureValidationRequest request)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.TechLead);
+
         if (!await repository.EngagementExistsAsync(engagementId))
         {
             throw new EngagementNotFoundException(engagementId);
@@ -82,6 +88,8 @@ public class ArchitectureValidationService(
 
     public async Task<DiscoveryFeatureItemDto> AddFeatureItemAsync(int engagementId, CreateDiscoveryFeatureItemRequest request)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.TechLead);
+
         if (!await repository.EngagementExistsAsync(engagementId))
         {
             throw new EngagementNotFoundException(engagementId);
@@ -140,12 +148,14 @@ public class ArchitectureValidationService(
         }
 
         var engagementId = item.ArchitectureValidation?.EngagementId ?? 0;
-        if (engagementId > 0)
+        if (engagementId <= 0)
         {
-            await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+            throw new DiscoveryFeatureItemNotFoundException(featureId);
         }
 
-        var wasReady = engagementId > 0 && await readinessNotificationService.IsReadyAsync(engagementId);
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
+        var wasReady = await readinessNotificationService.IsReadyAsync(engagementId);
 
         item.FeatureName = request.FeatureName.Trim();
         item.EstimateWeeks = request.EstimateWeeks;
@@ -153,10 +163,7 @@ public class ArchitectureValidationService(
 
         await repository.SaveChangesAsync();
 
-        if (engagementId > 0)
-        {
-            await readinessNotificationService.CheckAndNotifyIfReadyAsync(engagementId, wasReady);
-        }
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(engagementId, wasReady);
 
         return MapFeatureToDto(item);
     }
@@ -170,20 +177,19 @@ public class ArchitectureValidationService(
         }
 
         var engagementId = item.ArchitectureValidation?.EngagementId ?? 0;
-        if (engagementId > 0)
+        if (engagementId <= 0)
         {
-            await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+            throw new DiscoveryFeatureItemNotFoundException(featureId);
         }
 
-        var wasReady = engagementId > 0 && await readinessNotificationService.IsReadyAsync(engagementId);
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
+        var wasReady = await readinessNotificationService.IsReadyAsync(engagementId);
 
         item.IsDeleted = true;
         await repository.SaveChangesAsync();
 
-        if (engagementId > 0)
-        {
-            await readinessNotificationService.CheckAndNotifyIfReadyAsync(engagementId, wasReady);
-        }
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(engagementId, wasReady);
     }
 
     private static ArchitectureValidationDto BuildDto(ArchitectureValidation? validation, int engagementId, decimal committedTimelineWeeks)

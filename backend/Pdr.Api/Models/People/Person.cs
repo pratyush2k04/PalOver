@@ -21,4 +21,10 @@ public class Person : BaseAuditableEntity
     public int? UserId { get; set; }
 
     public int? SourceRoleId { get; set; }
+
+    public string? ClientBackground { get; set; }
+
+    public string? ClientSentiment { get; set; }
+
+    public string? Email { get; set; }
 }

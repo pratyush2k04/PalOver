@@ -31,7 +31,7 @@ public class ResourceRequestService(
 
         var currentUserId = currentUserService.GetUserId();
         var assignment = await resourceRequestRepository.GetUserEngagementAssignmentAsync(engagementId, currentUserId);
-        if (assignment == null || assignment.User.RoleId != (int)RoleEnum.ProjectManagement)
+        if (assignment == null || assignment.EngagementRoleId != (int)EngagementRoleEnum.ProjectManager)
         {
             throw new ResourceRequestAccessDeniedException();
         }
@@ -195,7 +195,7 @@ public class ResourceRequestService(
         }
 
         var assignment = await resourceRequestRepository.GetUserEngagementAssignmentAsync(engagementId, currentUserService.GetUserId());
-        if (assignment == null || assignment.User.RoleId != (int)RoleEnum.Leadership)
+        if (assignment == null || assignment.EngagementRoleId != (int)EngagementRoleEnum.Leadership)
         {
             throw new ResourceAllocationAccessDeniedException();
         }
@@ -227,7 +227,7 @@ public class ResourceRequestService(
 
     private async Task NotifyLeadershipAsync(int engagementId, int resourceRequestId)
     {
-        var leadershipAssignments = await resourceRequestRepository.GetLeadershipAssignmentsAsync(engagementId);
+        var leadershipAssignments = await engagementRepository.GetLeadershipAssignmentsAsync(engagementId);
         if (leadershipAssignments.Count == 0)
         {
             return;
@@ -341,7 +341,7 @@ public class ResourceRequestService(
                 },
                 engagementId: engagementId);
 
-            var assignments = await resourceRequestRepository.GetPmAndLeadershipAssignmentsAsync(engagementId);
+            var assignments = await engagementRepository.GetPmAndLeadershipAssignmentsAsync(engagementId);
             var notifData = JsonSerializer.Serialize(
                 new ResourcingGapFlaggedNotificationMapper.ResourcingGapFlaggedNotificationData(
                     engagementId,

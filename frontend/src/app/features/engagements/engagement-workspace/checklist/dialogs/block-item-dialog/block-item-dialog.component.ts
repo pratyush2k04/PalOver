@@ -33,7 +33,7 @@ export class BlockItemDialogComponent {
 
   readonly ownerOptions: SelectOption[] = [
     { value: null, label: '-- Select Owner --' },
-    ...(this.data.assignedUsers || []).map((user) => ({
+    ...Array.from(new Map((this.data.assignedUsers || []).map((u) => [u.userId, u])).values()).map((user) => ({
       value: Number(user.userId),
       label: user.fullName
     }))
@@ -42,12 +42,16 @@ export class BlockItemDialogComponent {
   readonly form = this.fb.group({
     reason: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
     personId: [
-      this.data.currentOwnerId != null
-        ? Number(this.data.currentOwnerId)
-        : (this.data.assignedUsers?.[0]?.userId != null ? Number(this.data.assignedUsers[0].userId) : null),
+      this.data.currentOwnerId != null ? Number(this.data.currentOwnerId) : null,
       [Validators.required]
     ]
   });
+
+  constructor() {
+    if (this.data.currentOwnerId != null) {
+      this.form.get('personId')!.disable();
+    }
+  }
 
   get reasonControl() {
     return this.form.get('reason')!;

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Pdr.Api.DTOs.Engagements;
@@ -10,6 +11,7 @@ namespace Pdr.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 [Produces("application/json")]
 public class CommercialModelsController(IEngagementService engagementService) : ControllerBase
 {
@@ -20,6 +22,7 @@ public class CommercialModelsController(IEngagementService engagementService) : 
     [HttpGet]
     [EndpointSummary("Get all commercial models")]
     [ProducesResponseType(typeof(GetCommercialModelsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<GetCommercialModelsResponse>> GetAll()
     {
         var models = await engagementService.GetCommercialModelsAsync();

@@ -18,6 +18,7 @@
             <thead>
               <tr>
                 <th>Checklist Item</th>
+                <th>Owner</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -25,6 +26,7 @@
               @for (item of s.items; track item.title) {
                 <tr>
                   <td>{{ item.title }}</td>
+                  <td>{{ item.ownerName || '—' }}</td>
                   <td><app-status-badge [tone]="statusTone(item.statusAtSignOff)">{{ statusLabel(item.statusAtSignOff) }}</app-status-badge></td>
                 </tr>
               }

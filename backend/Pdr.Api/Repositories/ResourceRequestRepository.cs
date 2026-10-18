@@ -66,26 +66,6 @@ public class ResourceRequestRepository(AppDbContext context) : IResourceRequestR
             .FirstOrDefaultAsync(a => a.EngagementId == engagementId && a.UserId == userId);
     }
 
-    public async Task<List<EngagementAssignment>> GetLeadershipAssignmentsAsync(int engagementId)
-    {
-        return await context.EngagementAssignments
-            .AsNoTracking()
-            .Include(a => a.User).ThenInclude(u => u.Role)
-            .Where(a => a.EngagementId == engagementId && a.User.RoleId == (int)RoleEnum.Leadership)
-            .ToListAsync();
-    }
-
-    public async Task<List<EngagementAssignment>> GetPmAndLeadershipAssignmentsAsync(int engagementId)
-    {
-        return await context.EngagementAssignments
-            .AsNoTracking()
-            .Include(a => a.User).ThenInclude(u => u.Role)
-            .Where(a => a.EngagementId == engagementId &&
-                        (a.User.RoleId == (int)RoleEnum.Leadership || a.User.RoleId == (int)RoleEnum.ProjectManagement) &&
-                        !a.User.IsDeleted)
-            .ToListAsync();
-    }
-
     public async Task<int> GetUnconfirmedCountByEngagementIdAsync(int engagementId)
     {
         return await context.ResourceRequests

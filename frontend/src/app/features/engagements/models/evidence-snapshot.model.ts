@@ -8,6 +8,8 @@ export interface EvidenceSnapshotItem {
   evidenceDocumentFileName: string | null;
   evidenceSubmittedAt: string | null;
   evidenceSubmittedByName: string | null;
+  ownerId: number | null;
+  ownerName: string | null;
 }
 
 export interface EvidenceSnapshot {

@@ -12,10 +12,6 @@ public class HomeUserDto
 
 public class HomeDashboardDto
 {
-    public string Route { get; set; } = string.Empty;
-    public string Title { get; set; } = string.Empty;
-    public string WelcomeMessage { get; set; } = string.Empty;
-    public string EmptyState { get; set; } = string.Empty;
     public List<DashboardCardsDto> Cards { get; set; } = [];
     public List<DashboardEngagementDto> UpcomingEngagements { get; set; } = [];
     public int TotalUpcomingEngagements { get; set; }
@@ -31,6 +27,7 @@ public class DashboardEngagementDto
     public int DaysToGo { get; set; }
     public int ReadinessPercentage { get; set; }
     public string Status { get; set; } = string.Empty;
+    public List<string> UserRoles { get; set; } = [];
 }
 
 public class DashboardBlockerDto

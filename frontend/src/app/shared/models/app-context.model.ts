@@ -36,6 +36,7 @@ export interface DashboardEngagement {
   daysToGo: number;
   readinessPercentage: number;
   status: string;
+  userRoles?: string[];
 }
 
 export interface DashboardBlocker {
@@ -45,12 +46,26 @@ export interface DashboardBlocker {
   link: string | null;
 }
 
+export interface RawDashboardCard {
+  type: string;
+  count: number;
+}
+
+export interface RawHomeDashboard {
+  cards: RawDashboardCard[];
+  upcomingEngagements: DashboardEngagement[];
+  totalUpcomingEngagements: number;
+  criticalBlockers: DashboardBlocker[];
+  totalCriticalBlockers: number;
+}
+
 export interface HomeResponse {
   user: HomeUser;
-  home: WorkspaceMetadata;
+  home: RawHomeDashboard;
 }
 
 export interface AppContext {
   user: HomeUser;
   workspace: WorkspaceMetadata;
+  rawDashboard?: RawHomeDashboard;
 }

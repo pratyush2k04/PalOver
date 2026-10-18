@@ -11,7 +11,8 @@ public record EngagementListItemDto(
     DateOnly KickoffDate,
     int DaysToKickoff,
     int? ReadinessScore,
-    bool IsSignedOff);
+    bool IsSignedOff,
+    List<string>? UserRoles = null);
 
 public record EngagementListResponse(List<EngagementListItemDto> Engagements);
 

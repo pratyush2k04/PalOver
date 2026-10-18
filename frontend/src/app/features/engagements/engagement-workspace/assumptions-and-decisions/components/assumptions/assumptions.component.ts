@@ -17,6 +17,7 @@ import { ASSUMPTION_MESSAGES } from '@shared/constants/app.constants';
 import { AuthService } from '@shared/services/auth';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
 
 @Component({
   selector: 'app-assumptions',
@@ -28,7 +29,8 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
     ButtonComponent,
     StatusBadgeComponent,
     EmptyStateComponent,
-    InlineSVGModule
+    InlineSVGModule,
+    TooltipDirective
   ],
   templateUrl: './assumptions.component.html',
   styleUrl: './assumptions.component.scss'
@@ -115,7 +117,7 @@ export class AssumptionsComponent implements OnInit {
   }
 
   isPm(): boolean {
-    return this.authService.hasRole('Project Management');
+    return this.engagementService.isWorkspacePm();
   }
 
   openAssumptionDialog(assumption?: AssumptionDto) {

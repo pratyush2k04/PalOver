@@ -4,8 +4,9 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Pdr.Api.Constants;
+using Pdr.Api.Attributes;
 using Pdr.Api.DTOs.Handovers;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Controllers;
@@ -15,23 +16,14 @@ namespace Pdr.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/engagements/{engagementId:int}/handover")]
+[Authorize]
+[RequireEngagementAccess]
 [Produces("application/json")]
-public class HandoversController : ControllerBase
+public class HandoversController(
+    IHandoverService handoverService,
+    ICurrentUserService currentUserService) : ControllerBase
 {
-    private readonly IHandoverService _handoverService;
-    private readonly IHandoverAccessService _accessService;
-
-    public HandoversController(
-        IHandoverService handoverService,
-        IHandoverAccessService accessService)
-    {
-        _handoverService = handoverService;
-        _accessService = accessService;
-    }
-
-    private int GetUserId() => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-
-    private string GetUserIdString() => User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+    private string GetUserIdString() => currentUserService.GetUserId().ToString();
 
     /// <summary>
     /// Retrieves handover details and commitments for a specific engagement.
@@ -46,9 +38,7 @@ public class HandoversController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<HandoverInfoDto>> GetHandover(int engagementId)
     {
-        await _accessService.CanAccessHandoverAsync(engagementId, GetUserId());
-
-        var dto = await _handoverService.GetHandoverAsync(engagementId);
+        var dto = await handoverService.GetHandoverAsync(engagementId);
         return Ok(dto);
     }
 
@@ -59,6 +49,7 @@ public class HandoversController : ControllerBase
     /// <param name="request">The draft data to save.</param>
     /// <returns>The updated handover details.</returns>
     [HttpPut("draft")]
+    [RequireEngagementRole(EngagementRoleEnum.PreSales)]
     [EndpointSummary("Save handover draft")]
     [ProducesResponseType(typeof(HandoverInfoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -67,9 +58,7 @@ public class HandoversController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<HandoverInfoDto>> SaveDraft(int engagementId, [FromBody] SaveHandoverDraftRequest request)
     {
-        await _accessService.CanAccessHandoverAsync(engagementId, GetUserId(), RoleConstants.PreSales);
-
-        var dto = await _handoverService.SaveHandoverDraftAsync(engagementId, request, GetUserIdString());
+        var dto = await handoverService.SaveHandoverDraftAsync(engagementId, request, GetUserIdString());
         return Ok(dto);
     }
 
@@ -79,6 +68,7 @@ public class HandoversController : ControllerBase
     /// <param name="engagementId">The unique identifier of the engagement.</param>
     /// <returns>The submitted handover details.</returns>
     [HttpPost("submit")]
+    [RequireEngagementRole(EngagementRoleEnum.PreSales)]
     [EndpointSummary("Submit handover (finalizing state)")]
     [ProducesResponseType(typeof(HandoverInfoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -87,9 +77,7 @@ public class HandoversController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<HandoverInfoDto>> Submit(int engagementId)
     {
-        await _accessService.CanAccessHandoverAsync(engagementId, GetUserId(), RoleConstants.PreSales);
-
-        var dto = await _handoverService.SubmitHandoverAsync(engagementId, GetUserIdString());
+        var dto = await handoverService.SubmitHandoverAsync(engagementId, GetUserIdString());
         return Ok(dto);
     }
 
@@ -99,6 +87,7 @@ public class HandoversController : ControllerBase
     /// <param name="engagementId">The unique identifier of the engagement.</param>
     /// <returns>The handover details.</returns>
     [HttpPost("review")]
+    [RequireEngagementRole(EngagementRoleEnum.ProjectManager)]
     [EndpointSummary("Mark handover reviewed (Project Manager only)")]
     [ProducesResponseType(typeof(HandoverInfoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -107,9 +96,7 @@ public class HandoversController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<HandoverInfoDto>> MarkReviewed(int engagementId)
     {
-        await _accessService.CanAccessHandoverAsync(engagementId, GetUserId(), RoleConstants.ProjectManagement);
-
-        var dto = await _handoverService.MarkReviewedAsync(engagementId, GetUserIdString());
+        var dto = await handoverService.MarkReviewedAsync(engagementId, GetUserIdString());
         return Ok(dto);
     }
 }

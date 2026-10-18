@@ -1,0 +1,28 @@
+<div class="home-workspace">
+  <app-page-header [title]="workspace()?.welcomeMessage || ''" />
+
+  @if (workspace(); as data) {
+    <!-- Row 1: KPI Cards -->
+    <div class="kpi-cards-grid">
+      @for (card of data.cards; track card.title) {
+        <app-dashboard-kpi-card [card]="card"></app-dashboard-kpi-card>
+      }
+    </div>
+
+    <!-- Row 2: Main Content (2-Column Layout) -->
+    <div class="main-content-grid">
+      <div class="main-left">
+        <app-dashboard-engagements-list
+          [engagements]="data.upcomingEngagements"
+          [totalCount]="data.totalUpcomingEngagements"
+        ></app-dashboard-engagements-list>
+      </div>
+      <div class="main-right">
+        <app-dashboard-critical-blockers
+          [blockers]="data.criticalBlockers"
+          [totalCount]="data.totalCriticalBlockers"
+        ></app-dashboard-critical-blockers>
+      </div>
+    </div>
+  }
+</div>

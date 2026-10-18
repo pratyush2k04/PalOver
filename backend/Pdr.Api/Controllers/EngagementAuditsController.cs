@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Pdr.Api.Attributes;
 using Pdr.Api.DTOs.Audit;
 using Pdr.Api.DTOs.Common;
 using Pdr.Api.Models.Audit;
@@ -14,6 +15,7 @@ namespace Pdr.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/engagementaudits")]
+[RequireEngagementAccess]
 [Produces("application/json")]
 public class EngagementAuditsController(IAuditLogService auditLogService) : ControllerBase
 {
@@ -29,6 +31,7 @@ public class EngagementAuditsController(IAuditLogService auditLogService) : Cont
     [HttpGet]
     [ProducesResponseType(typeof(PagedResult<EngagementAuditLogDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetEngagementAuditLogs([FromQuery] int engagementId, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, [FromQuery] int? userId = null, [FromQuery] List<AuditCategoryEnum>? categories = null)
     {
         var result = await auditLogService.GetEngagementAuditLogsAsync(engagementId, page, pageSize, userId, categories);
@@ -43,6 +46,7 @@ public class EngagementAuditsController(IAuditLogService auditLogService) : Cont
     [HttpGet("users")]
     [ProducesResponseType(typeof(List<SimpleUserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetEngagementAuditUsers([FromQuery] int engagementId)
     {
         var result = await auditLogService.GetEngagementAuditUsersAsync(engagementId);

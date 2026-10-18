@@ -15,7 +15,6 @@ public interface IResourceRequestRepository
     Task<List<ResourceRequest>> GetByEngagementIdAsync(int engagementId);
     Task<Engagement?> GetEngagementAsync(int engagementId);
     Task<EngagementAssignment?> GetUserEngagementAssignmentAsync(int engagementId, int userId);
-    Task<List<EngagementAssignment>> GetLeadershipAssignmentsAsync(int engagementId);
-    Task<List<EngagementAssignment>> GetPmAndLeadershipAssignmentsAsync(int engagementId);
     Task<int> GetUnconfirmedCountByEngagementIdAsync(int engagementId);
-    Task SaveChangesAsync();}
+    Task SaveChangesAsync();
+}

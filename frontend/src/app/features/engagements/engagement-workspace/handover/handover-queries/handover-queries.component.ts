@@ -2,6 +2,7 @@ import { Component, inject, input, output, signal, computed, effect } from '@ang
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '@shared/services/auth';
+import { EngagementService } from '../../../services/engagement.service';
 import { DialogService } from '@common/services/dialog/dialog.service';
 import { HandoverQueryService } from '../../../services/handover-query.service';
 import {
@@ -27,6 +28,7 @@ import {
   HANDOVER_MESSAGES,
   HANDOVER_QUERY_FIELD_LABELS
 } from '@shared/constants/handover.constants';
+import { USER_ROLES } from '@shared/constants/users.constants';
 
 @Component({
   selector: 'app-handover-queries',
@@ -55,6 +57,7 @@ export class HandoverQueriesComponent {
   private handoverQueryService = inject(HandoverQueryService);
   private authService = inject(AuthService);
   private dialogService = inject(DialogService);
+  private engagementService = inject(EngagementService);
 
   queries = signal<HandoverQueryDto[]>([]);
   isLoading = signal(true);
@@ -71,8 +74,8 @@ export class HandoverQueriesComponent {
   pendingDeleteQuery = signal<HandoverQueryDto | null>(null);
   isDeletingQuery = signal<boolean>(false);
 
-  isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
-  isProjectManagement = computed(() => this.authService.hasRole('Project Management'));
+  isPreSales = computed(() => this.authService.hasRole(USER_ROLES.PRE_SALES));
+  isProjectManagement = computed(() => this.engagementService.isWorkspacePm());
 
   openQueries = computed(() =>
     this.queries()

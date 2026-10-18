@@ -36,6 +36,22 @@ public class EngagementService(
 {
     private static readonly string DefaultEngagementStatus = EngagementStatusEnum.KickoffPending.ToString();
 
+    private static readonly IReadOnlyDictionary<UserRoleEnum, IReadOnlyList<EngagementRoleEnum>> AllowedMappings =
+        new Dictionary<UserRoleEnum, IReadOnlyList<EngagementRoleEnum>>
+        {
+            [UserRoleEnum.PreSales] = [EngagementRoleEnum.PreSales],
+            [UserRoleEnum.Leadership] = [EngagementRoleEnum.Leadership],
+            [UserRoleEnum.Delivery] = [EngagementRoleEnum.ProjectManager, EngagementRoleEnum.TechLead]
+        };
+
+    private static void ValidateMapping(UserRoleEnum userRole, EngagementRoleEnum engagementRole)
+    {
+        if (!AllowedMappings.TryGetValue(userRole, out var allowed) || !allowed.Contains(engagementRole))
+        {
+            throw new InvalidRoleMappingException(userRole.ToRoleName(), engagementRole.ToRoleName());
+        }
+    }
+
     public async Task<MarkSowSignedResponse> MarkSowSignedAsync(MarkSowSignedRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.EngagementName))
@@ -100,19 +116,19 @@ public class EngagementService(
                 var hasAssignment = await engagementRepository.IsUserAssignedAsync(engagement.EngagementId, currentUserId);
                 if (!hasAssignment)
                 {
-                    await engagementRepository.AddAssignmentAsync(engagement.EngagementId, currentUserId);
+                    await engagementRepository.AddAssignmentAsync(engagement.EngagementId, currentUserId, (int)EngagementRoleEnum.PreSales);
 
                     var creator = await userRepository.GetByIdAsync(currentUserId);
-                    if (creator is not null && creator.RoleId == (int)RoleEnum.PreSales)
+                    if (creator is not null && creator.RoleId == (int)UserRoleEnum.PreSales)
                     {
                         await personRepository.AddAsync(new Person
                         {
                             EngagementId = engagement.EngagementId,
                             Name = creator.FullName,
-                            Role = RoleEnum.PreSales.ToRoleName(),
+                            Role = EngagementRoleEnum.PreSales.ToRoleName(),
                             PersonType = PersonType.Internal,
                             UserId = creator.Id,
-                            SourceRoleId = (int)RoleEnum.PreSales,
+                            SourceRoleId = (int)EngagementRoleEnum.PreSales,
                             CreatedAt = DateTime.UtcNow,
                             UpdatedAt = DateTime.UtcNow
                         });
@@ -149,7 +165,18 @@ public class EngagementService(
     public async Task<EngagementInfoDto?> GetEngagementInfoAsync(int id)
     {
         await engagementAccessService.ValidateAccessAsync(id);
-        return await engagementRepository.GetEngagementInfoAsync(id);
+        var info = await engagementRepository.GetEngagementInfoAsync(id);
+        if (info == null) return null;
+
+        var currentUserId = currentUserService.GetUserId();
+        var assignments = await engagementRepository.GetAssignmentsAsync(id);
+        var userRoles = assignments
+            .Where(a => a.UserId == currentUserId)
+            .Select(a => a.EngagementRole != null ? a.EngagementRole.Name : ((EngagementRoleEnum)a.EngagementRoleId).ToRoleName())
+            .Distinct()
+            .ToList();
+
+        return info with { CurrentUserEngagementRoles = userRoles };
     }
 
     public async Task<IEnumerable<EngagementInfoDto>> GetAllEngagementsAsync() =>
@@ -213,21 +240,21 @@ public class EngagementService(
         return new EngagementListResponse(items);
     }
 
-    public async Task<MyEngagementsPageDto> GetMyEngagementsPageAsync(string status, string sortBy, int page, int pageSize)
+    public async Task<MyEngagementsPageDto> GetMyEngagementsPageAsync(string status, string sortBy, int page, int pageSize, string? role = null)
     {
         var userId = currentUserService.GetUserId();
         var isSignedOff = status == "Past";
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
         // The selected tab's count comes for free as totalCount below; only the other tab needs its own query.
-        var otherStatusCount = await engagementRepository.GetEngagementsForUserStatusCountAsync(userId, isSignedOff: !isSignedOff);
+        var otherStatusCount = await engagementRepository.GetEngagementsForUserStatusCountAsync(userId, isSignedOff: !isSignedOff, role);
 
         List<EngagementListItemDto> items;
         int totalCount;
 
         if (sortBy == "readiness")
         {
-            var all = await engagementRepository.GetEngagementsForUserFilteredAsync(userId, isSignedOff, sortBy);
+            var all = await engagementRepository.GetEngagementsForUserFilteredAsync(userId, isSignedOff, sortBy, role);
 
             var scored = new List<(Engagement Engagement, int Score)>();
             foreach (var e in all)
@@ -242,19 +269,19 @@ public class EngagementService(
                 .OrderByDescending(s => s.Score)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .Select(s => ToEngagementListItemDto(s.Engagement, today, s.Score))
+                .Select(s => ToEngagementListItemDto(s.Engagement, today, s.Score, userId))
                 .ToList();
         }
         else
         {
-            var (pageEngagements, count) = await engagementRepository.GetEngagementsForUserPageAsync(userId, isSignedOff, sortBy, page, pageSize);
+            var (pageEngagements, count) = await engagementRepository.GetEngagementsForUserPageAsync(userId, isSignedOff, sortBy, page, pageSize, role);
             totalCount = count;
 
             items = new List<EngagementListItemDto>();
             foreach (var e in pageEngagements)
             {
                 var readiness = await kickoffReadinessService.GetReadinessAsync(e.EngagementId);
-                items.Add(ToEngagementListItemDto(e, today, readiness.Score));
+                items.Add(ToEngagementListItemDto(e, today, readiness.Score, userId));
             }
         }
 
@@ -269,8 +296,15 @@ public class EngagementService(
         };
     }
 
-    private static EngagementListItemDto ToEngagementListItemDto(Engagement e, DateOnly today, int readinessScore) =>
-        new(
+    private static EngagementListItemDto ToEngagementListItemDto(Engagement e, DateOnly today, int readinessScore, int userId)
+    {
+        var userRoles = e.EngagementAssignments?
+            .Where(a => a.UserId == userId && a.EngagementRole != null)
+            .Select(a => a.EngagementRole.Name)
+            .Distinct()
+            .ToList();
+
+        return new(
             e.EngagementId,
             e.EngagementName,
             e.ClientName,
@@ -279,7 +313,9 @@ public class EngagementService(
             e.KickoffDate,
             e.KickoffDate.DayNumber - today.DayNumber,
             ReadinessScore: readinessScore,
-            IsSignedOff: e.DayOneSignOffRecord != null);
+            IsSignedOff: e.DayOneSignOffRecord != null,
+            UserRoles: userRoles);
+    }
 
     public async Task<EngagementOwnersDto> GetEngagementOwnersAsync(int engagementId)
     {
@@ -296,24 +332,28 @@ public class EngagementService(
             throw new EngagementNotFoundException(engagementId);
 
         var assignments = await engagementRepository.GetAssignmentsAsync(engagementId);
-        return assignments.Select(a => new Pdr.Api.DTOs.Users.UserListItemDto
-        {
-            Id = a.User.Id,
-            FullName = a.User.FullName,
-            Email = a.User.Email,
-            RoleId = a.User.RoleId,
-            RoleName = a.User.Role.Name
-        }).ToList();
+        return assignments
+            .DistinctBy(a => a.UserId)
+            .Select(a => new Pdr.Api.DTOs.Users.UserListItemDto
+            {
+                Id = a.User.Id,
+                FullName = a.User.FullName,
+                Email = a.User.Email,
+                RoleId = a.User.RoleId,
+                RoleName = a.User.Role.Name
+            }).ToList();
     }
 
     public async Task<EngagementOwnersDto> AssignProjectManagerAsync(int engagementId, int userId) =>
-        await AssignOwnerAsync(engagementId, userId, RoleEnum.ProjectManagement);
+        await AssignOwnerAsync(engagementId, userId, EngagementRoleEnum.ProjectManager);
 
     public async Task<EngagementOwnersDto> AssignTechLeadAsync(int engagementId, int userId) =>
-        await AssignOwnerAsync(engagementId, userId, RoleEnum.TechLead);
+        await AssignOwnerAsync(engagementId, userId, EngagementRoleEnum.TechLead);
 
-    private async Task<EngagementOwnersDto> AssignOwnerAsync(int engagementId, int userId, RoleEnum requiredRole)
+    private async Task<EngagementOwnersDto> AssignOwnerAsync(int engagementId, int userId, EngagementRoleEnum requiredRole)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.Leadership);
+
         if (!await engagementRepository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
@@ -322,10 +362,9 @@ public class EngagementService(
         var user = await userRepository.GetByIdAsync(userId)
             ?? throw new UserNotFoundException(userId);
 
-        if (user.RoleId != (int)requiredRole)
-            throw new InvalidOwnerRoleException(userId, requiredRole.ToRoleName());
+        ValidateMapping((UserRoleEnum)user.RoleId, requiredRole);
 
-        var existingAssignment = await engagementRepository.GetAssignmentByRoleIdAsync(engagementId, (int)requiredRole);
+        var existingAssignment = await engagementRepository.GetAssignmentByEngagementRoleIdAsync(engagementId, (int)requiredRole);
         var isReassignment = existingAssignment is not null;
         if (existingAssignment is not null)
         {
@@ -333,7 +372,7 @@ public class EngagementService(
             await engagementRepository.RemoveAssignmentAsync(existingAssignment);
         }
 
-        await engagementRepository.AddAssignmentAsync(engagementId, userId);
+        await engagementRepository.AddAssignmentAsync(engagementId, userId, (int)requiredRole);
         await SyncOwnerPersonAsync(engagementId, user, requiredRole);
 
         var actorUserId = currentUserService.GetUserId();
@@ -347,12 +386,12 @@ public class EngagementService(
             engagementId: engagementId,
             actingUserId: actorUserId > 0 ? actorUserId : null);
 
-        if (requiredRole == RoleEnum.ProjectManagement)
+        if (requiredRole == EngagementRoleEnum.ProjectManager)
         {
             await notificationService.CreateFromTemplateAsync(
                 NotificationConstants.TemplateKeys.PMAllocated,
                 engagementId,
-                RoleEnum.PreSales,
+                EngagementRoleEnum.PreSales,
                 System.Text.Json.JsonSerializer.Serialize(new PMAllocatedMapper.PMAllocatedData(AssignedUserId: userId, EngagementId: engagementId)),
                 DateTime.UtcNow);
 
@@ -380,7 +419,7 @@ public class EngagementService(
             if (engagementForReminder is not null)
                 await kickoffReminderService.ScheduleRemindersAsync(engagementId, engagementForReminder.KickoffDate);
         }
-        else if (requiredRole == RoleEnum.TechLead)
+        else if (requiredRole == EngagementRoleEnum.TechLead)
         {
             await notificationService.CreateFromTemplateAsync(
                 NotificationConstants.TemplateKeys.TechLeadAssigned,
@@ -398,7 +437,7 @@ public class EngagementService(
         return await GetEngagementOwnersAsync(engagementId);
     }
 
-    private async Task SyncOwnerPersonAsync(int engagementId, User user, RoleEnum role)
+    private async Task SyncOwnerPersonAsync(int engagementId, User user, EngagementRoleEnum role)
     {
         var previousPerson = await personRepository.GetBySourceRoleAsync(engagementId, (int)role);
         if (previousPerson is not null)
@@ -423,7 +462,7 @@ public class EngagementService(
 
     private async Task InitializeTechnicalReadinessItemsAsync(int engagementId)
     {
-        var techLeadAssignment = await engagementRepository.GetAssignmentByRoleIdAsync(engagementId, (int)RoleEnum.TechLead);
+        var techLeadAssignment = await engagementRepository.GetAssignmentByEngagementRoleIdAsync(engagementId, (int)EngagementRoleEnum.TechLead);
 
         int ownerId = techLeadAssignment?.UserId ?? 0;
         if (ownerId == 0)
@@ -432,9 +471,9 @@ public class EngagementService(
             {
                 ownerId = currentUserService.GetUserId();
             }
-            catch (InvalidOperationException)
+            catch
             {
-                ownerId = 1;
+                ownerId = 0;
             }
         }
         if (ownerId == 0) ownerId = 1;
@@ -444,10 +483,10 @@ public class EngagementService(
 
     private static EngagementOwnersDto BuildOwnersDto(List<EngagementAssignment> assignments)
     {
-        var pm = assignments.FirstOrDefault(a => a.User.RoleId == (int)RoleEnum.ProjectManagement);
-        var techLead = assignments.FirstOrDefault(a => a.User.RoleId == (int)RoleEnum.TechLead);
+        var pm = assignments.FirstOrDefault(a => a.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager);
+        var techLead = assignments.FirstOrDefault(a => a.EngagementRoleId == (int)EngagementRoleEnum.TechLead);
         var leadership = assignments
-            .Where(a => a.User.RoleId == (int)RoleEnum.Leadership)
+            .Where(a => a.EngagementRoleId == (int)EngagementRoleEnum.Leadership)
             .Select(a => new LeadershipUserDto(a.UserId, a.User.FullName, a.User.Email))
             .ToList();
 
@@ -501,23 +540,23 @@ public class EngagementService(
         var user = await userRepository.GetByIdAsync(userId)
             ?? throw new UserNotFoundException(userId);
 
-        if (user.RoleId != (int)RoleEnum.Leadership)
-            throw new InvalidOwnerRoleException(userId, RoleEnum.Leadership.ToRoleName());
+        if (user.RoleId != (int)UserRoleEnum.Leadership)
+            throw new InvalidOwnerRoleException(userId, UserRoleEnum.Leadership.ToRoleName());
 
         var existingAssignment = await engagementRepository.GetAssignmentByUserAsync(engagementId, userId);
         if (existingAssignment is not null)
             throw new LeadershipUserAlreadyAssignedException();
 
-        await engagementRepository.AddAssignmentAsync(engagementId, userId);
+        await engagementRepository.AddAssignmentAsync(engagementId, userId, (int)EngagementRoleEnum.Leadership);
 
         await personRepository.AddAsync(new Person
         {
             EngagementId = engagementId,
             Name = user.FullName,
-            Role = RoleEnum.Leadership.ToRoleName(),
+            Role = EngagementRoleEnum.Leadership.ToRoleName(),
             PersonType = PersonType.Internal,
             UserId = user.Id,
-            SourceRoleId = (int)RoleEnum.Leadership,
+            SourceRoleId = (int)EngagementRoleEnum.Leadership,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         });
@@ -575,7 +614,7 @@ public class EngagementService(
 
         await engagementRepository.RemoveAssignmentAsync(assignmentToRemove);
 
-        var person = await personRepository.GetByUserAndSourceRoleAsync(engagementId, userId, (int)RoleEnum.Leadership);
+        var person = await personRepository.GetByUserAndSourceRoleAsync(engagementId, userId, (int)EngagementRoleEnum.Leadership);
         if (person is not null)
         {
             personRepository.Delete(person);
@@ -625,7 +664,7 @@ public class EngagementService(
         foreach (var engagement in activeEngagements)
         {
             var assignments = await engagementRepository.GetAssignmentsAsync(engagement.EngagementId);
-            var pmUser = assignments.FirstOrDefault(a => a.User.RoleId == (int)RoleEnum.ProjectManagement)?.User;
+            var pmUser = assignments.FirstOrDefault(a => a.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager)?.User;
 
             var readiness = await kickoffReadinessService.GetReadinessAsync(engagement.EngagementId);
             var readinessScore = readiness.Score;
@@ -680,6 +719,8 @@ public class EngagementService(
 
     public async Task<DayOneSignOffDto> SignOffDayOneAsync(int engagementId, DayOneSignOffRequest request)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager, EngagementRoleEnum.Leadership);
+
         var engagement = await engagementRepository.GetByIdAsync(engagementId)
             ?? throw new EngagementNotFoundException(engagementId);
 
@@ -692,7 +733,7 @@ public class EngagementService(
             if (!request.IsException)
                 throw new DayOneTechnicalBlockersRemainingException();
 
-            var isLeadership = currentUserService.IsInRole(RoleEnum.Leadership);
+            var isLeadership = await engagementAccessService.HasEngagementRoleAsync(engagementId, EngagementRoleEnum.Leadership);
             if (!isLeadership)
                 throw new DayOneLeadershipExceptionForbiddenException();
 
@@ -743,7 +784,9 @@ public class EngagementService(
                         EvidenceDocumentId = i.EvidenceDocumentId,
                         EvidenceDocumentFileName = i.EvidenceDocument != null ? i.EvidenceDocument.FileName : null,
                         EvidenceSubmittedAt = i.EvidenceSubmittedAt,
-                        EvidenceSubmittedByName = i.EvidenceSubmittedBy?.FullName
+                        EvidenceSubmittedByName = i.EvidenceSubmittedBy?.FullName,
+                        OwnerId = i.OwnerId,
+                        OwnerName = i.Owner?.FullName
                     }).ToList()
             };
         }

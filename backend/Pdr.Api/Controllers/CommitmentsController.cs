@@ -3,8 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Pdr.Api.Constants;
+using Pdr.Api.Attributes;
 using Pdr.Api.DTOs.Handovers;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Services.Interfaces;
 
 namespace Pdr.Api.Controllers;
@@ -14,19 +15,13 @@ namespace Pdr.Api.Controllers;
 /// </summary>
 [ApiController]
 [Authorize]
+[RequireEngagementAccess]
 [Route("api/engagements/{engagementId:int}/handover/commitments")]
 [Produces("application/json")]
 public class CommitmentsController(
     ICommitmentService commitmentService,
-    IRealisticCommitmentService realisticCommitmentService,
-    IHandoverAccessService accessService) : ControllerBase
+    IRealisticCommitmentService realisticCommitmentService) : ControllerBase
 {
-    private async Task CheckAccessAsync(int engagementId, string requiredRole)
-    {
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        await accessService.CanAccessHandoverAsync(engagementId, userId, requiredRole);
-    }
-
     private string GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
     /// <summary>
@@ -36,6 +31,7 @@ public class CommitmentsController(
     /// <param name="request">The commitment data to add.</param>
     /// <returns>The created commitment.</returns>
     [HttpPost]
+    [RequireEngagementRole(EngagementRoleEnum.PreSales)]
     [EndpointSummary("Add commitment to handover (Pre Sales only)")]
     [ProducesResponseType(typeof(CommitmentDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -45,8 +41,6 @@ public class CommitmentsController(
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<CommitmentDto>> AddCommitment(int engagementId, [FromBody] CreateCommitmentRequest request)
     {
-        await CheckAccessAsync(engagementId, RoleConstants.PreSales);
-
         var dto = await commitmentService.AddCommitmentAsync(engagementId, request, GetUserId());
         return CreatedAtAction(nameof(AddCommitment), new { engagementId, commitmentId = dto.CommitmentId }, dto);
     }
@@ -59,6 +53,7 @@ public class CommitmentsController(
     /// <param name="request">The updated commitment data.</param>
     /// <returns>The updated commitment.</returns>
     [HttpPut("{commitmentId:int}")]
+    [RequireEngagementRole(EngagementRoleEnum.PreSales)]
     [EndpointSummary("Update commitment (Pre Sales only)")]
     [ProducesResponseType(typeof(CommitmentDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -67,8 +62,6 @@ public class CommitmentsController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CommitmentDto>> UpdateCommitment(int engagementId, int commitmentId, [FromBody] UpdateCommitmentRequest request)
     {
-        await CheckAccessAsync(engagementId, RoleConstants.PreSales);
-
         var dto = await commitmentService.UpdateCommitmentAsync(engagementId, commitmentId, request, GetUserId());
         return Ok(dto);
     }
@@ -80,6 +73,7 @@ public class CommitmentsController(
     /// <param name="commitmentId">The unique identifier of the commitment to delete.</param>
     /// <returns>No content on success.</returns>
     [HttpDelete("{commitmentId:int}")]
+    [RequireEngagementRole(EngagementRoleEnum.PreSales)]
     [EndpointSummary("Delete commitment (Pre Sales only)")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -87,8 +81,6 @@ public class CommitmentsController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteCommitment(int engagementId, int commitmentId)
     {
-        await CheckAccessAsync(engagementId, RoleConstants.PreSales);
-
         await commitmentService.DeleteCommitmentAsync(engagementId, commitmentId);
         return NoContent();
     }
@@ -101,6 +93,7 @@ public class CommitmentsController(
     /// <param name="request">The realistic commitment data.</param>
     /// <returns>The created realistic commitment.</returns>
     [HttpPost("{commitmentId:int}/realistic")]
+    [RequireEngagementRole(EngagementRoleEnum.ProjectManager)]
     [EndpointSummary("Create realistic commitment (Project Manager only)")]
     [ProducesResponseType(typeof(RealisticCommitmentDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -110,8 +103,6 @@ public class CommitmentsController(
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<RealisticCommitmentDto>> CreateRealisticCommitment(int engagementId, int commitmentId, [FromBody] CreateRealisticCommitmentRequest request)
     {
-        await CheckAccessAsync(engagementId, RoleConstants.ProjectManagement);
-
         var dto = await realisticCommitmentService.CreateRealisticCommitmentAsync(engagementId, commitmentId, request, GetUserId());
         return CreatedAtAction(nameof(CreateRealisticCommitment), new { engagementId, commitmentId }, dto);
     }
@@ -124,6 +115,7 @@ public class CommitmentsController(
     /// <param name="request">The updated realistic commitment data.</param>
     /// <returns>The updated realistic commitment.</returns>
     [HttpPut("{commitmentId:int}/realistic")]
+    [RequireEngagementRole(EngagementRoleEnum.ProjectManager)]
     [EndpointSummary("Update realistic commitment (Project Manager only)")]
     [ProducesResponseType(typeof(RealisticCommitmentDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -132,8 +124,6 @@ public class CommitmentsController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<RealisticCommitmentDto>> UpdateRealisticCommitment(int engagementId, int commitmentId, [FromBody] UpdateRealisticCommitmentRequest request)
     {
-        await CheckAccessAsync(engagementId, RoleConstants.ProjectManagement);
-
         var dto = await realisticCommitmentService.UpdateRealisticCommitmentAsync(engagementId, commitmentId, request, GetUserId());
         return Ok(dto);
     }

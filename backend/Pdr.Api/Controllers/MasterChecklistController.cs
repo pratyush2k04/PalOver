@@ -46,7 +46,6 @@ public class MasterChecklistController(IMasterChecklistService checklistService)
     /// </summary>
     /// <returns>The published master checklist version.</returns>
     [HttpGet("published")]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.TechLead, RoleEnum.Leadership, RoleEnum.PreSales)]
     [EndpointSummary("Get published master checklist")]
     [ProducesResponseType(typeof(MasterChecklistVersionResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

@@ -30,7 +30,7 @@
                     <span class="edited-badge" [appTooltip]="'This comment was edited'">(edited)</span>
                   }
                   @if (comment.canEdit && !isSignedOff() && editingCommentId() !== comment.id) {
-                    <app-button variant="icon" size="sm" (click)="startEditing(comment)" title="Edit comment" ariaLabel="Edit comment">
+                    <app-button variant="icon" size="sm" (click)="startEditing(comment)" [appTooltip]="'Edit comment'" ariaLabel="Edit comment">
                       <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
                     </app-button>
                   }

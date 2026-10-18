@@ -1,10 +1,10 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { ButtonComponent } from '@common/components/button/button';
 import { AlertComponent } from '@common/components/alert/alert';
 import { DatepickerComponent } from '@common/components/form/datepicker/datepicker';
+import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { DayOneSignOffRequest } from '@features/engagements/models/engagement.model';
 import { EngagementService } from '@features/engagements/services/engagement.service';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
@@ -14,7 +14,7 @@ import { futureDateValidator } from '@common/validators/date.validators';
 @Component({
   selector: 'app-day-one-sign-off-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, AlertComponent, DatepickerComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, AlertComponent, DatepickerComponent, TextareaComponent],
   templateUrl: './day-one-sign-off-dialog.component.html',
   styleUrl: './day-one-sign-off-dialog.component.scss'
 })
@@ -35,12 +35,6 @@ export class DayOneSignOffDialogComponent {
   readonly form: FormGroup = this.fb.group({
     billingStartDate: [this.data.initialBillingStartDate || '', [Validators.required, futureDateValidator]],
     exceptionJustification: ['']
-  });
-
-  private readonly formValue = toSignal(this.form.valueChanges, { initialValue: this.form.value });
-
-  readonly justificationLength = computed(() => {
-    return this.formValue()?.exceptionJustification?.length ?? 0;
   });
 
   readonly canAttemptSubmit = computed(() => !(this.isException() && !this.data.isLeadership));

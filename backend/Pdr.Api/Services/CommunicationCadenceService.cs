@@ -1,6 +1,7 @@
 using Pdr.Api.DTOs.CommunicationCadences;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Cadence;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
@@ -9,7 +10,8 @@ namespace Pdr.Api.Services;
 public class CommunicationCadenceService(
     IEngagementRepository engagementRepository,
     IUserRepository userRepository,
-    ICommunicationCadenceRepository cadenceRepository) : ICommunicationCadenceService
+    ICommunicationCadenceRepository cadenceRepository,
+    IEngagementAccessService engagementAccessService) : ICommunicationCadenceService
 {
     public async Task<List<CommunicationCadenceResponseDto>> GetCadencesAsync(int engagementId)
     {
@@ -21,7 +23,9 @@ public class CommunicationCadenceService(
 
     public async Task<CommunicationCadenceResponseDto> AddCadenceAsync(int engagementId, CreateCommunicationCadenceRequest request)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager);
         await EnsureEngagementExistsAsync(engagementId);
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
         var roleName = request.StakeholderRole.Trim();
         if (await cadenceRepository.ExistsByRoleAsync(engagementId, roleName))
@@ -49,6 +53,7 @@ public class CommunicationCadenceService(
 
         var assignments = await engagementRepository.GetAssignmentsAsync(engagementId);
         var assignedUsers = assignments
+            .DistinctBy(a => a.UserId)
             .Select(a => new EngagementParticipantDto(a.User.Id, a.User.FullName))
             .ToList();
 
@@ -56,6 +61,7 @@ public class CommunicationCadenceService(
         {
             var activeUsers = await userRepository.GetAllActiveAsync();
             assignedUsers = activeUsers
+                .DistinctBy(u => u.Id)
                 .Select(u => new EngagementParticipantDto(u.Id, u.FullName))
                 .ToList();
         }

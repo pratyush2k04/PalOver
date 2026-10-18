@@ -47,7 +47,7 @@
               <div class="item-right">
                 <div class="item-actions">
                   @if (canEdit(item)) {
-                    <app-button variant="icon" size="sm" (click)="openDependencyDialog(item)" title="Edit Dependency" ariaLabel="Edit Dependency">
+                    <app-button variant="icon" size="sm" (click)="openDependencyDialog(item)" appTooltip="Edit Dependency" tooltipPosition="bottom" ariaLabel="Edit Dependency">
                       <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
                     </app-button>
                   }

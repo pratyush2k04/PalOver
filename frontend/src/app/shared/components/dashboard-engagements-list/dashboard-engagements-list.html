@@ -1,6 +1,6 @@
 <div class="list-card">
   <div class="list-header">
-    <h3>Engagements approaching kickoff <span class="header-subtitle">({{ totalCount() }} total)</span></h3>
+    <h3>{{ title() }} <span class="header-subtitle">({{ totalCount() }} total)</span></h3>
     <a routerLink="/my-engagements" class="view-all-link">View all &rarr;</a>
   </div>
 
@@ -17,6 +17,10 @@
             <span class="days-to-go">
               @if (engagement.daysToGo < 0) { {{ -engagement.daysToGo }} days ago } @else if (engagement.daysToGo===0) {
                 Today } @else { In {{ engagement.daysToGo }} days } </span>
+            @if (engagement.userRoles && engagement.userRoles.length > 0) {
+              <span class="dot-separator">&bull;</span>
+              <span class="role-badge">{{ engagement.userRoles.join(' & ') }}</span>
+            }
           </div>
         </div>
 
@@ -26,7 +30,7 @@
           </span>
         </div>
 
-        <div class="engagement-progress-col">
+        <div class="engagement-progress-col" appTooltip="Readiness score" tooltipPosition="bottom">
           <div class="progress-bar">
             <div class="progress-fill" [style.width.%]="engagement.readinessPercentage"
               [ngClass]="getStatusFillClass(engagement.status)"></div>

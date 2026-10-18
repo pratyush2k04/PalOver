@@ -33,14 +33,14 @@ public class DocumentService(
 {
     // ── Helper methods ──────────────────────────────────────────────────────
 
-    /// <summary>Only PM and Admin can change a document's visibility.</summary>
-    private bool CanManageDocumentVisibility() =>
-        currentUserService.IsInRole(RoleEnum.ProjectManagement)
-        || currentUserService.IsAdmin();
-
-    private bool CanAccessDocument(Document doc)
+    private async Task<bool> CanAccessDocumentAsync(Document doc)
     {
-        if (currentUserService.IsAdmin() || currentUserService.IsInRole(RoleEnum.ProjectManagement))
+        if (currentUserService.IsAdmin())
+        {
+            return true;
+        }
+
+        if (await engagementAccessService.HasEngagementRoleAsync(doc.EngagementId, EngagementRoleEnum.ProjectManager))
         {
             return true;
         }
@@ -50,7 +50,8 @@ public class DocumentService(
             return true;
         }
 
-        if (doc.Visibility == DocumentVisibilityNames.PmOnly && currentUserService.IsInRole(RoleEnum.Leadership))
+        if (doc.Visibility == DocumentVisibilityNames.PmOnly &&
+            await engagementAccessService.HasEngagementRoleAsync(doc.EngagementId, EngagementRoleEnum.Leadership))
         {
             return true;
         }
@@ -85,13 +86,14 @@ public class DocumentService(
             }
             else if (doc.Visibility == DocumentVisibilityNames.PmOnly)
             {
-                canAccess = assignment.User.RoleId == (int)RoleEnum.ProjectManagement || assignment.User.RoleId == (int)RoleEnum.Leadership;
+                canAccess = assignment.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager ||
+                            assignment.EngagementRoleId == (int)EngagementRoleEnum.Leadership;
             }
             else if (doc.Visibility == DocumentVisibilityNames.Custom)
             {
-                canAccess = assignment.User.RoleId == (int)RoleEnum.ProjectManagement
-                    || assignment.User.RoleId == (int)RoleEnum.Leadership
-                    || (doc.AllowedRoles != null && doc.AllowedRoles.Contains(assignment.User.RoleId));
+                canAccess = assignment.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager
+                    || assignment.EngagementRoleId == (int)EngagementRoleEnum.Leadership
+                    || (doc.AllowedRoles != null && (doc.AllowedRoles.Contains(assignment.User.RoleId) || doc.AllowedRoles.Contains(assignment.EngagementRoleId)));
             }
 
             if (canAccess)
@@ -174,11 +176,11 @@ public class DocumentService(
 
     // ── CRUD ────────────────────────────────────────────────────────────────
 
-    public async Task<DocumentResponseDto> UploadDocumentAsync(DocumentUploadDto dto)
+    public async Task<DocumentResponseDto> UploadDocumentAsync(int engagementId, DocumentUploadDto dto)
     {
-        await engagementRepository.EnsureNotSignedOffAsync(dto.EngagementId);
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
 
-        var engagementFolder = Path.Combine(environment.ContentRootPath, DocumentValidationConstants.UploadsFolder, dto.EngagementId.ToString());
+        var engagementFolder = Path.Combine(environment.ContentRootPath, DocumentValidationConstants.UploadsFolder, engagementId.ToString());
         if (!Directory.Exists(engagementFolder))
         {
             Directory.CreateDirectory(engagementFolder);
@@ -200,7 +202,7 @@ public class DocumentService(
 
         var document = new Document
         {
-            EngagementId = dto.EngagementId,
+            EngagementId = engagementId,
             CategoryId = dto.CategoryId,
             FileName = dto.File.FileName,
             FilePath = filePath,
@@ -234,7 +236,7 @@ public class DocumentService(
                 ["ActorUserId"] = actorUserId,
                 ["DocumentName"] = reloaded.FileName,
             },
-            engagementId: dto.EngagementId,
+            engagementId: engagementId,
             actingUserId: actorUserId);
 
         var uploaderNames = await GetUploaderNamesAsync([reloaded.CreatedBy]);
@@ -246,7 +248,7 @@ public class DocumentService(
     /// A `List&lt;DocumentUploadDto&gt;` argument doesn't match any registered `IValidator&lt;List&lt;T&gt;&gt;`, so the
     /// global ValidationFilter can't validate per-item — each file is validated here instead.
     /// </summary>
-    public async Task<List<DocumentUploadResultDto>> UploadDocumentsAsync(List<DocumentUploadDto> dtos)
+    public async Task<List<DocumentUploadResultDto>> UploadDocumentsAsync(int engagementId, List<DocumentUploadDto> dtos)
     {
         if (dtos == null || dtos.Count == 0)
         {
@@ -271,7 +273,7 @@ public class DocumentService(
 
             try
             {
-                var uploaded = await UploadDocumentAsync(dto);
+                var uploaded = await UploadDocumentAsync(engagementId, dto);
                 results.Add(new DocumentUploadResultDto
                 {
                     FileName = dto.File?.FileName,
@@ -295,11 +297,9 @@ public class DocumentService(
 
     public async Task<IEnumerable<DocumentResponseDto>> GetDocumentsByEngagementAsync(int engagementId)
     {
-        await engagementAccessService.ValidateAccessAsync(engagementId);
-
         var userRoleId = currentUserService.GetRoleId();
         var isAdmin = currentUserService.IsAdmin();
-        var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
+        var isPm = await engagementAccessService.HasEngagementRoleAsync(engagementId, EngagementRoleEnum.ProjectManager);
         var docs = (await repository.GetByEngagementIdAsync(engagementId, userRoleId, isAdmin, isPm)).ToList();
 
         var uploaderNames = await GetUploaderNamesAsync(docs.Select(d => d.CreatedBy));
@@ -314,14 +314,12 @@ public class DocumentService(
             throw new DocumentNotFoundException(id);
         }
 
-        await engagementAccessService.ValidateAccessAsync(doc.EngagementId);
-
         if (!File.Exists(doc.FilePath))
         {
             throw new DocumentFileMissingException();
         }
 
-        if (!CanAccessDocument(doc))
+        if (!await CanAccessDocumentAsync(doc))
         {
             throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.DownloadDenied);
         }
@@ -356,7 +354,7 @@ public class DocumentService(
         bool isUploader = string.Equals(doc.CreatedBy, userIdStr, StringComparison.OrdinalIgnoreCase)
             || (userEmail != null && string.Equals(doc.CreatedBy, userEmail, StringComparison.OrdinalIgnoreCase));
 
-        bool isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
+        bool isPm = await engagementAccessService.HasEngagementRoleAsync(doc.EngagementId, EngagementRoleEnum.ProjectManager);
         bool isAdmin = currentUserService.IsAdmin();
 
         if (!isUploader && !isPm && !isAdmin)
@@ -396,11 +394,6 @@ public class DocumentService(
 
     public async Task<DocumentResponseDto> UpdateDocumentVisibilityAsync(int id, UpdateDocumentVisibilityDto dto)
     {
-        if (!CanManageDocumentVisibility())
-        {
-            throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.VisibilityChangeDenied);
-        }
-
         var doc = await repository.GetByIdAsync(id);
         if (doc == null)
         {
@@ -454,7 +447,7 @@ public class DocumentService(
 
         await engagementRepository.EnsureNotSignedOffAsync(doc.EngagementId);
 
-        if (!CanAccessDocument(doc))
+        if (!await CanAccessDocumentAsync(doc))
         {
             throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.UploadVersionDenied);
         }
@@ -488,6 +481,8 @@ public class DocumentService(
             IsCurrent = true
         };
 
+        doc.FileName = dto.File.FileName;
+
         var updated = await repository.AddVersionAsync(doc, newVersion);
         var reloaded = await repository.GetByIdAsync(updated.Id) ?? updated;
 
@@ -518,7 +513,7 @@ public class DocumentService(
             throw new DocumentNotFoundException(documentId);
         }
 
-        if (!CanAccessDocument(doc))
+        if (!await CanAccessDocumentAsync(doc))
         {
             throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.DownloadDenied);
         }
@@ -545,7 +540,7 @@ public class DocumentService(
             throw new DocumentNotFoundException(documentId);
         }
 
-        if (!CanAccessDocument(doc))
+        if (!await CanAccessDocumentAsync(doc))
         {
             throw new DocumentAccessDeniedException(DocumentValidationConstants.Messages.DownloadDenied);
         }

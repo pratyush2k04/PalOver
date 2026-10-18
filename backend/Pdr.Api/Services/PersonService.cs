@@ -43,6 +43,9 @@ public class PersonService(
             Name = dto.Name.Trim(),
             Role = dto.Role.Trim(),
             PersonType = dto.PersonType,
+            ClientBackground = dto.PersonType == PersonType.Client ? dto.ClientBackground : null,
+            ClientSentiment = dto.PersonType == PersonType.Client ? dto.ClientSentiment : null,
+            Email = dto.PersonType == PersonType.Client ? dto.Email : null,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             CreatedBy = currentUserId,
@@ -93,6 +96,9 @@ public class PersonService(
         person.Name = dto.Name.Trim();
         person.Role = dto.Role.Trim();
         person.PersonType = dto.PersonType;
+        person.ClientBackground = dto.PersonType == PersonType.Client ? dto.ClientBackground : null;
+        person.ClientSentiment = dto.PersonType == PersonType.Client ? dto.ClientSentiment : null;
+        person.Email = dto.PersonType == PersonType.Client ? dto.Email : null;
         person.UpdatedAt = DateTime.UtcNow;
         person.UpdatedBy = currentUserId;
 
@@ -248,7 +254,10 @@ public class PersonService(
             Name = person.Name,
             Role = person.Role,
             PersonType = person.PersonType,
-            UserId = person.UserId
+            UserId = person.UserId,
+            ClientBackground = person.ClientBackground,
+            ClientSentiment = person.ClientSentiment,
+            Email = person.Email
         };
     }
 }
