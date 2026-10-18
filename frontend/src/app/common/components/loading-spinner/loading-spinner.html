@@ -1,0 +1,6 @@
+<div class="loading-spinner" [class.inline]="inline()" [class.sm]="size() === 'sm'">
+  <span class="spinner"></span>
+  @if (label()) {
+    <span class="label">{{ label() }}</span>
+  }
+</div>

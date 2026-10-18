@@ -1,0 +1,52 @@
+<h2 class="app-dialog__title">{{ isEditing ? 'Edit Dependency' : 'Add Dependency' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
+    <app-textarea
+      id="description"
+      label="Description"
+      placeholder="Enter dependency description..."
+      [required]="true"
+      formControlName="description"
+    />
+
+    <div class="form-row">
+      <div class="flex-1">
+        <app-select
+          id="type"
+          label="Type"
+          [options]="typeOptions"
+          [required]="true"
+          formControlName="type"
+        />
+      </div>
+      <div class="flex-1">
+        <app-select
+          id="ownerId"
+          label="Owner"
+          [options]="ownerOptions()"
+          [required]="true"
+          formControlName="ownerId"
+          placeholder="Select an owner"
+        />
+      </div>
+    </div>
+
+    <app-datepicker
+      id="neededByDate"
+      label="Needed By Date"
+      [min]="minDate"
+      [max]="billingStartDate()"
+      [required]="true"
+      formControlName="neededByDate"
+      [errorMessages]="{ required: 'Needed by date is required.', pastDate: 'Date cannot be in the past.' }"
+    />
+  </div>
+
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+    <app-button type="submit" variant="flat">
+      {{ isEditing ? 'Update' : 'Save' }}
+    </app-button>
+  </div>
+</form>

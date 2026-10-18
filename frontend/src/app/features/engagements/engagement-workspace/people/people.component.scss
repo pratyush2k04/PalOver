@@ -1,0 +1,187 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+.people-directory {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+  font-family: $font-family-base;
+
+  &__card {
+    background-color: $color-surface;
+    border: 1px solid $color-slate-200;
+    border-radius: $radius-2xl;
+    box-shadow: $shadow-card;
+    overflow: hidden;
+
+    .card-inner-header {
+      --section-title-size: 1.25rem;
+      padding-bottom: $spacing-3;
+      border-bottom: 1px solid $color-slate-200;
+      margin: 0;
+    }
+  }
+
+  &__loading {
+    padding: 2.5rem;
+    text-align: center;
+    color: $color-slate-500;
+    font-size: 0.875rem;
+  }
+}
+
+.people-layout-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: $spacing-6;
+  align-items: flex-start;
+
+  @include respond-to-down('lg') {
+    grid-template-columns: 1fr;
+  }
+}
+
+.people-directory__card{
+  padding: $spacing-4;
+}
+.btn-icon {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.people-table {
+  width: 100%;
+  min-width: 36rem;
+  border-collapse: collapse;
+  text-align: left;
+
+  thead {
+    background-color: $color-slate-100;
+    border-bottom: 1px solid $color-slate-200;
+
+    tr {
+      th {
+        padding: 0.875rem 1.25rem;
+        @include text-overline;
+        color: $color-slate-500;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid $color-slate-100;
+      transition: background-color $transition-base;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background-color: $color-slate-50;
+      }
+
+      td {
+        padding: 1rem 1.25rem;
+        font-size: 0.875rem;
+        color: $color-slate-700;
+        vertical-align: middle;
+      }
+    }
+  }
+
+  .th-name {
+    width: 35%;
+  }
+
+  .th-role {
+    width: 35%;
+  }
+
+  .th-org {
+    width: 18%;
+  }
+
+  .th-actions {
+    width: 12%;
+    text-align: right;
+  }
+
+  .col-name {
+    font-weight: 500;
+    color: $color-slate-800;
+  }
+
+  .col-role {
+    color: $color-slate-600;
+  }
+
+  .col-actions {
+    text-align: right;
+    white-space: nowrap;
+
+    .action-buttons {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.375rem;
+    }
+
+    .edit-btn {
+      --btn-color: #{$color-slate-500};
+      --btn-color-hover: #{$color-primary};
+      --btn-bg-hover: #{$color-primary-light};
+    }
+
+    .delete-btn {
+      --btn-color: #{$color-slate-500};
+      --btn-color-hover: #{$color-danger};
+      --btn-bg-hover: #{$color-danger-light};
+    }
+  }
+}
+
+.action-buttons {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.375rem;
+
+  .edit-btn {
+    --btn-color: #{$color-slate-500};
+    --btn-color-hover: #{$color-primary};
+    --btn-bg-hover: #{$color-primary-light};
+  }
+
+  .delete-btn {
+    --btn-color: #{$color-slate-500};
+    --btn-color-hover: #{$color-danger};
+    --btn-bg-hover: #{$color-danger-light};
+  }
+}
+
+.action-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2.5rem 1.25rem;
+  color: $color-slate-400;
+  font-style: italic;
+  font-size: 0.875rem;
+}
+
+

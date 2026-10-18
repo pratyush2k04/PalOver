@@ -1,0 +1,18 @@
+<div class="main-layout">
+  <app-sidebar />
+
+  <div class="main-column">
+    <app-header />
+
+    <div class="content">
+      <router-outlet />
+    </div>
+  </div>
+
+  @if (layoutService.isMobileSidebarOpen()) {
+    <div class="mobile-sidebar-backdrop" (click)="layoutService.closeSidebar()"></div>
+  }
+
+  <app-toast />
+  <app-global-loader />
+</div>

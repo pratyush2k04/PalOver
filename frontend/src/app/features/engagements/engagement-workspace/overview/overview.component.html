@@ -1,0 +1,12 @@
+<div class="overview-page">
+  
+  @if (engagementId(); as id) {
+    <app-open-items-by-area [engagementId]="id" />
+  }
+  <div class="detail-row">
+    @if (isLeadership()) {
+      <app-engagement-detail />
+    }
+    <app-quick-actions />
+  </div>
+</div>

@@ -1,0 +1,77 @@
+@use 'styles/mixins' as *;
+
+.open-items-card {
+  background-color: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-2xl;
+  padding: $spacing-6;
+  box-shadow: $shadow-card;
+}
+
+.card-header {
+  @include flex-between;
+  margin-bottom: $spacing-4;
+}
+
+.section-title {
+  font-size: 1.35rem;
+  font-weight: $font-weight-bold;
+  color: $color-text;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+
+  @include respond-to-down('md') {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include respond-to-down('xs') {
+    grid-template-columns: 1fr;
+  }
+}
+
+.item-card {
+  background-color: $color-slate-50;
+  border: 1px solid $color-slate-100;
+  border-radius: $radius-xl;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: all $transition-base;
+
+  &.clickable {
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+      background-color: $color-slate-100;
+      border-color: $color-slate-300;
+      transform: translateY(-0.125rem);
+      box-shadow: $shadow-hover;
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: $shadow-none;
+    }
+  }
+}
+
+.count-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: $color-slate-800;
+  line-height: 1.1;
+}
+
+.count-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $color-slate-500;
+}

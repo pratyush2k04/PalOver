@@ -1,0 +1,257 @@
+<div class="architecture-validation-card">
+  <!-- Card Header -->
+  <div class="card-header">
+    <div class="title-group">
+      <h3>Architecture Validation & Discovery</h3>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <app-loading-spinner label="Loading architecture validation details..." />
+  } @else {
+    <!-- SECTION 1: Pre-sales Proposed Architecture Status -->
+    <div class="section-container status-section">
+      <div class="section-header">
+        <h4>Proposed Architecture Validation</h4>
+        <!-- <p class="section-desc">Verify whether the pre-sales architecture holds or has been modified based on discovery findings.</p> -->
+      </div>
+
+      <div class="status-selector-row">
+        @if (canManage()) {
+          <div class="status-options">
+            <label
+              class="status-option-label"
+              [class.selected]="!isModified()"
+              (click)="onStatusSelect(ArchitectureStatus.StillValid)">
+              <input
+                type="radio"
+                name="archStatus"
+                [value]="ArchitectureStatus.StillValid"
+                [checked]="!isModified()"
+              />
+              <span class="radio-custom"></span>
+              <div class="option-text">
+                <strong>Still Valid</strong>
+                <span>Pre-sales architecture remains accurate</span>
+              </div>
+            </label>
+
+            <label
+              class="status-option-label"
+              [class.selected]="isModified()"
+              (click)="onStatusSelect(ArchitectureStatus.Modified)">
+              <input
+                type="radio"
+                name="archStatus"
+                [value]="ArchitectureStatus.Modified"
+                [checked]="isModified()"
+              />
+              <span class="radio-custom"></span>
+              <div class="option-text">
+                <strong>Modified</strong>
+                <span>Architecture updated during discovery</span>
+              </div>
+            </label>
+          </div>
+
+          @if (hasStatusChanged()) {
+            <div class="save-status-action">
+              <app-button
+                type="button"
+                variant="flat"
+                (click)="onSaveStatus()">
+                Save Status
+              </app-button>
+            </div>
+          }
+        } @else {
+          <!-- Read-only view for PM, Leadership, or Signed-off state: Displays only the selected status -->
+          <div class="status-readonly-display">
+            @if (!isModified()) {
+              <div class="status-readonly-card valid">
+                <div class="status-readonly-header">
+                  <span class="status-dot valid"></span>
+                  <strong>Still Valid</strong>
+                </div>
+                <span class="status-readonly-desc">Pre-sales architecture remains accurate</span>
+              </div>
+            } @else {
+              <div class="status-readonly-card modified">
+                <div class="status-readonly-header">
+                  <span class="status-dot modified"></span>
+                  <strong>Modified</strong>
+                </div>
+                <span class="status-readonly-desc">Architecture updated during discovery</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      @if (isModified()) {
+        <div class="rationale-container">
+          <app-textarea
+            id="arch-rationale"
+            label="Rationale"
+            [maxLength]="500"
+            [ngModel]="rationale()"
+            (ngModelChange)="onRationaleChange($event)"
+            name="archRationale"
+            placeholder="Explain why the architecture was modified, key design trade-offs, and new decisions..."
+            [extraError]="rationaleError() || null"
+            [disabled]="!canManage()"
+          />
+        </div>
+      }
+    </div>
+
+    <!-- SECTION 2: Timeline Sizing Comparison KPIs -->
+    <div class="section-container sizing-kpi-section">
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <span class="kpi-label">Initial Commitment Timeline</span>
+          <div class="kpi-value">{{ committedTimelineWeeks() }} <span class="kpi-unit">wks</span></div>
+          <span class="kpi-subtext">Handover commitment</span>
+        </div>
+
+        <div class="kpi-card">
+          <span class="kpi-label">Discovery Estimate</span>
+          <div class="kpi-value">{{ totalEstimatedWeeks() }} <span class="kpi-unit">wks</span></div>
+          <span class="kpi-subtext">{{ features().length }} feature(s) sized</span>
+        </div>
+
+        <div class="kpi-card" [class.risk-border]="isRiskRaised()">
+          <span class="kpi-label">Sizing Variance (Delta)</span>
+          <div class="kpi-value-row">
+            <div class="kpi-value">
+              @if (sizingDeltaWeeks() > 0) { + }{{ sizingDeltaWeeks() }} <span class="kpi-unit">wks</span>
+            </div>
+            <app-status-badge [tone]="deltaBadgeTone()">
+              @if (sizingDeltaPercentage() > 0) { + }{{ sizingDeltaPercentage() }}%
+            </app-status-badge>
+          </div>
+          <span class="kpi-subtext">
+            @if (isRiskRaised()) {
+              Exceeds timeline by &gt; 20%
+            } @else if (sizingDeltaWeeks() <= 0) {
+              Within committed timeline
+            } @else {
+              Within &le; 20% margin
+            }
+          </span>
+        </div>
+      </div>
+
+      @if (isRiskRaised() && riskSummary()) {
+        <div class="sizing-risk-alert">
+          <span class="alert-icon" [inlineSVG]="'assets/icons/clock.svg'"></span>
+          <div class="alert-content">
+            <strong>Sizing Variance Risk Raised (&gt; 20% Threshold)</strong>
+            <p>{{ riskSummary() }}</p>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- SECTION 3: Discovery Feature Breakdown Table (Tech Lead Only) -->
+    @if (isTechLead()) {
+      <div class="section-container table-section">
+        <div class="section-header">
+          <div class="section-header-row">
+            <div class="section-title-text">
+              <h4>Discovery Feature Breakdown</h4>
+              <!-- <p class="section-desc">Individual feature scope breakdown sized into sprint deliverables.</p> -->
+            </div>
+            @if (canManage()) {
+              <app-button
+                type="button"
+                variant="flat"
+                (click)="onAddFeature()">
+                <span>Add Feature</span>
+              </app-button>
+            }
+          </div>
+        </div>
+
+        @if (features().length === 0) {
+          <div class="empty-state">
+            <p>No discovery feature items added yet.</p>
+            @if (canManage()) {
+              <p>Click the "Add Feature" button to get started.</p>
+            }
+          </div>
+        } @else {
+          <div class="table-responsive">
+            <table class="features-table">
+              <thead>
+                <tr>
+                  <th class="feature-th">FEATURE NAME</th>
+                  <th class="estimate-th">ESTIMATE (WEEKS)</th>
+                  <th class="sprint-th">TARGET SPRINT</th>
+                  @if (canManage()) {
+                    <th class="actions-col">ACTIONS</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of features(); track item.id) {
+                  <tr>
+                    <td class="feature-name-cell">
+                      <strong>{{ item.featureName }}</strong>
+                    </td>
+                    <td class="estimate-cell">
+                      <span class="weeks-badge">{{ item.estimateWeeks }} wks</span>
+                    </td>
+                    <td class="sprint-cell">
+                      <span class="sprint-tag">{{ item.targetSprint }}</span>
+                    </td>
+                    @if (canManage()) {
+                      <td class="actions-col">
+                        <div class="action-btn-group">
+                          <app-button
+                            type="button"
+                            variant="icon"
+                            class="btn-action"
+                            ariaLabel="Edit feature"
+                            [appTooltip]="'Edit feature'"
+                            (click)="onEditFeature(item)">
+                            <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                          </app-button>
+                          <app-button
+                            type="button"
+                            variant="icon"
+                            class="btn-action btn-danger"
+                            ariaLabel="Delete feature"
+                            [appTooltip]="'Delete feature'"
+                            (click)="onDeleteFeature(item)">
+                            <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
+                          </app-button>
+                        </div>
+                      </td>
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
+
+<!-- Delete Confirmation Dialog -->
+@if (featureToDelete(); as feature) {
+  <app-confirm-dialog
+    title="Delete Feature"
+    confirmLabel="Delete"
+    [isDestructive]="true"
+    [isBusy]="isLoading()"
+    (confirmed)="confirmDeleteFeature()"
+    (cancelled)="cancelDeleteFeature()">
+    Are you sure you want to delete <strong>{{ feature.featureName }}</strong>? This action cannot be undone.
+    @if (errorMessage()) {
+      <app-alert>{{ errorMessage() }}</app-alert>
+    }
+  </app-confirm-dialog>
+}

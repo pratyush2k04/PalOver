@@ -1,0 +1,198 @@
+<div class="portfolio-dashboard">
+  <!-- Dashboard Header -->
+  <app-page-header
+    title="Portfolio Readiness Dashboard"
+    description="Overview of active engagements, readiness scores, open blockers, and kickoff timelines."
+  />
+
+  <!-- Error Alert -->
+  @if (errorMessage()) {
+    <app-alert variant="danger">
+      {{ errorMessage() }}
+    </app-alert>
+  }
+
+  <!-- KPI Metric Cards (Non-clickable) -->
+  <div class="kpi-grid">
+    <div class="kpi-card kpi-card--total">
+      <div class="kpi-icon">
+        <span [inlineSVG]="'assets/icons/briefcase.svg'"></span>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-value">{{ totalCount() }}</span>
+        <span class="kpi-label">Total Engagements</span>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-card--ready">
+      <div class="kpi-icon">
+        <span [inlineSVG]="'assets/icons/check-circle.svg'"></span>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-value">{{ kickoffReadyCount() }}</span>
+        <span class="kpi-label">Kickoff Ready</span>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-card--progress">
+      <div class="kpi-icon">
+        <span [inlineSVG]="'assets/icons/clock.svg'"></span>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-value">{{ inProgressCount() }}</span>
+        <span class="kpi-label">In Progress</span>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-card--atrisk">
+      <div class="kpi-icon">
+        <span [inlineSVG]="'assets/icons/alert-circle.svg'"></span>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-value">{{ atRiskCount() }}</span>
+        <span class="kpi-label">At Risk</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Toolbar -->
+  <div class="filter-toolbar">
+    <div class="filter-group">
+      <app-select
+        id="statusFilter"
+        label="Status"
+        [options]="statusOptions"
+        [ngModel]="statusFilter()"
+        (ngModelChange)="setStatusFilter($event)"
+      />
+    </div>
+
+    <div class="filter-group">
+      <app-select
+        id="daysFilter"
+        label="Days to Kickoff"
+        [options]="daysOptions"
+        [ngModel]="daysFilter()"
+        (ngModelChange)="setDaysFilter($event)"
+      />
+    </div>
+
+    <div class="filter-group">
+      <app-select
+        id="resourcingFilter"
+        label="Resourcing"
+        [options]="resourcingOptions"
+        [ngModel]="resourcingFilter()"
+        (ngModelChange)="setResourcingFilter($event)"
+      />
+    </div>
+  </div>
+
+  <!-- Table Listing / Loading / Empty -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <app-loading-spinner label="Loading portfolio dashboard..." />
+    </div>
+  } @else if (filteredEngagements().length === 0) {
+    <app-empty-state
+      [message]="MESSAGES.NO_ENGAGEMENTS_DESC"
+    />
+  } @else {
+    <div class="table-card">
+      <table class="portfolio-table">
+        <thead>
+          <tr>
+            <th>Engagement / Client</th>
+            <th>Days to Billing</th>
+            <th>Days to Kickoff</th>
+            <th>Readiness Score</th>
+            <th>Day-1 Sign-Off</th>
+            <th>Open Blockers</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of filteredEngagements(); track item.engagementId) {
+            <tr class="table-row" (click)="openWorkspace(item.engagementId)">
+              <!-- Engagement & Client -->
+              <td class="cell-primary">
+                <div class="engagement-name">{{ item.engagementName }}</div>
+                <div class="client-name">{{ item.clientName }}</div>
+                @if (item.hasResourcingGap) {
+                  <div class="resourcing-gap-flag" [title]="item.unconfirmedResourceCount + ' unconfirmed resource' + (item.unconfirmedResourceCount === 1 ? '' : 's')">
+                    <span>⚑</span>
+                    <span>{{ item.unconfirmedResourceCount }} unconfirmed resource{{ item.unconfirmedResourceCount === 1 ? '' : 's' }}</span>
+                  </div>
+                }
+              </td>
+
+              <!-- Days to Billing -->
+              <td>
+                @if (item.daysToBilling !== null) {
+                  <span class="days-badge" [ngClass]="getDaysBadgeClass(item.daysToBilling)">
+                    {{ getDaysLabel(item.daysToBilling) }}
+                  </span>
+                } @else {
+                  <span class="days-badge days-badge--none">—</span>
+                }
+              </td>
+
+              <!-- Days to Kickoff -->
+              <td>
+                <span class="days-badge" [ngClass]="getDaysBadgeClass(item.daysToKickoff)">
+                  {{ getDaysLabel(item.daysToKickoff) }}
+                </span>
+              </td>
+
+              <!-- Readiness Score -->
+              <td>
+                <div class="readiness-cell" [ngClass]="getReadinessToneClass(item.readinessScore)">
+                  <div class="readiness-bar-bg">
+                    <div
+                      class="readiness-bar-fill"
+                      [style.width.%]="item.readinessScore"
+                    ></div>
+                  </div>
+                  <span class="readiness-score">
+                    {{ item.readinessScore }}%
+                  </span>
+                </div>
+              </td>
+
+              <!-- Day-1 Sign-Off -->
+              <td>
+                @if (item.isDayOneSignedOff) {
+                  <span class="day-one-status-badge" [class.day-one-status-badge--exception]="item.dayOneSignOffIsException">
+                    <span
+                      class="badge-icon"
+                      [inlineSVG]="item.dayOneSignOffIsException ? 'assets/icons/alert-circle.svg' : 'assets/icons/check-circle.svg'"
+                    ></span>
+                    <span>{{ item.dayOneSignOffIsException ? 'Signed (Exception)' : 'Signed Off' }}</span>
+                  </span>
+                } @else {
+                  <span class="day-one-status-badge day-one-status-badge--pending">Pending</span>
+                }
+              </td>
+
+              <!-- Open Blockers -->
+              <td>
+                @if (item.openBlockerCount > 0) {
+                  <app-badge [text]="item.openBlockerCount + ' Blockers'" />
+                } @else {
+                  <span class="blocker-badge blocker-badge--zero">0 Blockers</span>
+                }
+              </td>
+
+              <!-- Status -->
+              <td>
+                <app-status-badge [tone]="getStatusBadgeTone(item.status)">
+                  {{ item.status }}
+                </app-status-badge>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

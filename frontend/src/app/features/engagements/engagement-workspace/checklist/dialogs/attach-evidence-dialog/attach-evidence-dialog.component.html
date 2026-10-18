@@ -1,0 +1,110 @@
+<h2 class="app-dialog__title">{{ dialogTitle }}</h2>
+
+<div class="app-dialog__content">
+  <div class="item-title-preview">
+    <strong>Item:</strong> {{ data.item.title }}
+  </div>
+
+  @if (hasExistingEvidence) {
+    <div class="current-evidence">
+      <span>Current evidence:</span>
+      <button type="button" class="btn-file-link" (click)="downloadCurrentEvidence()" [disabled]="isDownloading()">
+        {{ data.item.evidenceDocumentFileName }}
+      </button>
+    </div>
+  }
+
+  @if (data.item.evidenceSubmittedByName && data.item.evidenceSubmittedAt) {
+    <div class="submitted-metadata">
+      <span>Submitted by <strong>{{ data.item.evidenceSubmittedByName }}</strong> on {{ data.item.evidenceSubmittedAt | date:'mediumDate' }}</span>
+    </div>
+  }
+
+  @if (!isReadOnly) {
+    @if (errorMessage()) {
+      <app-alert>{{ errorMessage() }}</app-alert>
+    }
+
+    <div class="dialog-tabs">
+      <app-tabs
+        [tabs]="evidenceTabs"
+        [activeId]="mode()"
+        (tabChange)="onTabChange($event)"
+      />
+    </div>
+
+    @if (mode() === 'upload') {
+      <div class="form-group">
+        <label for="evidence-file-picker">Select File <span class="required-asterisk">*</span></label>
+        <input
+          id="evidence-file-picker"
+          type="file"
+          class="file-input"
+          accept=".pdf,.docx,.xlsx,.pptx,.png,.jpg,.jpeg,.msg,.eml"
+          (change)="onFileSelected($event)"
+        />
+      </div>
+
+      <app-input
+        id="evidence-file-name"
+        label="Rename File"
+        [ngModel]="renamedFileName()"
+        (ngModelChange)="onRenamedFileNameChange($event)"
+        placeholder="e.g. Document.pdf"
+      />
+
+      <app-select
+        id="evidence-doc-category"
+        label="Category"
+        [required]="true"
+        [ngModel]="selectedCategoryId()"
+        (ngModelChange)="onCategoryChange($event)"
+        [options]="categoryOptions()"
+      />
+
+      <app-select
+        id="evidence-doc-visibility"
+        label="Visibility"
+        [required]="true"
+        [ngModel]="selectedVisibility()"
+        (ngModelChange)="onVisibilityChange($event)"
+        [options]="visibilityOptions"
+      />
+
+      <p class="format-note">
+        Accepted formats: PDF, DOCX, XLSX, PPTX, PNG, JPG, MSG, EML up to 50 MB.
+      </p>
+    } @else {
+      @if (isLoadingDocuments()) {
+        <p class="format-note">Loading documents...</p>
+      } @else if (existingDocuments().length === 0) {
+        <p class="format-note">No documents have been uploaded to this engagement yet.</p>
+      } @else {
+        <div class="document-picker-list">
+          @for (doc of existingDocuments(); track doc.id) {
+            <button
+              type="button"
+              class="document-picker-item"
+              [class.selected]="selectedDocumentId() === doc.id"
+              (click)="selectExistingDocument(doc)"
+            >
+              <span class="doc-name">{{ doc.fileName }}</span>
+              <span class="doc-meta">{{ doc.categoryName }} &bull; v{{ doc.currentVersionNumber }}</span>
+            </button>
+          }
+        </div>
+      }
+    }
+  }
+</div>
+
+<div class="app-dialog__actions">
+  @if (isReadOnly) {
+    <app-button type="button" variant="stroked" (click)="onCancel()">Close</app-button>
+  } @else {
+    <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="onCancel()">Cancel</app-button>
+    <app-button type="button" variant="flat" [disabled]="isSubmitting()" (click)="onSubmit()">
+      {{ isSubmitting() ? 'Saving...' : submitButtonText }}
+    </app-button>
+  }
+</div>

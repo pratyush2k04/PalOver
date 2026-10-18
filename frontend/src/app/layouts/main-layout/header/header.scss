@@ -1,0 +1,217 @@
+@use 'styles/mixins' as *;
+
+:host {
+  display: block;
+  width: 100%;
+  position: relative;
+  z-index: 500;
+}
+
+.header {
+  @include flex-between;
+  height: 4rem;
+  background-color: $color-surface;
+  border-bottom: 1px solid $color-border-soft;
+  padding: 0 $spacing-8;
+  box-sizing: border-box;
+  font-family: $font-family-base;
+  position: relative;
+  z-index: 500;
+
+  @include respond-to-down('md') {
+    padding: 0 $spacing-3;
+    gap: $spacing-2;
+  }
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  min-width: 0;
+  flex: 1;
+
+  @include respond-to-down('md') {
+    gap: $spacing-2;
+  }
+}
+
+.mobile-logo-btn {
+  display: none;
+  background-color: $color-brand-dark;
+  border: none;
+  padding: 0.3125rem;
+  cursor: pointer;
+  border-radius: 0.625rem;
+  outline: none;
+  box-shadow: 0 2px 6px rgba($color-brand-dark, 0.25);
+  transition: transform $transition-fast, opacity $transition-fast;
+
+  &:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  @include respond-to-down('md') {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.mobile-logo-img {
+  width: 1.875rem;
+  height: 1.875rem;
+  object-fit: contain;
+  border-radius: 0.375rem;
+  display: block;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: $spacing-5;
+  flex-shrink: 0;
+
+  @include respond-to-down('md') {
+    gap: $spacing-2;
+  }
+}
+
+.welcome-message {
+  font-size: $font-size-sm;
+  color: $color-gray-600;
+  white-space: nowrap;
+  font-weight: $font-weight-medium;
+
+  @include respond-to-down('lg') {
+    display: none;
+  }
+}
+
+.user-menu-container {
+  position: relative;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: $spacing-1 $spacing-2;
+  border-radius: $radius-lg;
+  cursor: pointer;
+  transition: background-color $transition-fast;
+
+  &:hover,
+  &.active {
+    background-color: $color-bg;
+  }
+
+  @include respond-to-down('xs') {
+    gap: 0;
+    padding: $spacing-1;
+
+    .user-text,
+    .chevron {
+      display: none;
+    }
+  }
+}
+
+.user-text {
+  @include flex-column;
+  line-height: 1.2;
+}
+
+.user-name {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text;
+}
+
+.user-role {
+  font-size: $font-size-xs;
+  color: $color-text-fainter;
+}
+
+.chevron {
+  @include flex-center;
+  color: $color-text-fainter;
+  transition: transform $transition-base;
+
+  &.open {
+    transform: rotate(180deg);
+  }
+
+  ::ng-deep svg,
+  svg {
+    width: $font-size-sm;
+    height: $font-size-sm;
+  }
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + #{$spacing-2});
+  right: 0;
+  width: 14rem;
+  background: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: 0.75rem;
+  box-shadow: $shadow-modal;
+  padding: $spacing-2;
+  z-index: $z-index-dropdown;
+  animation: dropdown-fade $transition-fast;
+}
+
+@keyframes dropdown-fade {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.user-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  width: 100%;
+  padding: 0.625rem $spacing-3;
+  border: none;
+  background: transparent;
+  border-radius: $radius-lg;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: all $transition-fast;
+  text-align: left;
+  box-sizing: border-box;
+
+  .dropdown-icon {
+    @include flex-center;
+    width: 1.125rem;
+    height: 1.125rem;
+
+    ::ng-deep svg,
+    svg {
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+  }
+
+  &.sign-out-btn {
+    color: $color-danger;
+
+    &:hover {
+      background-color: $color-danger-bg;
+    }
+  }
+}

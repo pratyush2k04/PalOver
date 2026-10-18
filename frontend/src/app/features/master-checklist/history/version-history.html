@@ -1,0 +1,50 @@
+<div class="version-history">
+  @if (loading()) {
+    <app-loading-spinner label="Loading version history..." />
+  } @else if (error()) {
+    <app-alert variant="danger">{{ error() }}</app-alert>
+  } @else {
+    <div class="version-history__card">
+      <div class="version-history__header">
+        <h1>Version History</h1>
+      </div>
+
+      <div class="version-history__table-wrapper">
+      <div class="table-responsive">
+        <table class="version-history__table">
+          <thead>
+            <tr>
+              <th>Version</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Published</th>
+              <th aria-label="view"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (v of versions(); track v.id) {
+              <tr>
+                <td>v{{ v.versionNumber }}</td>
+                <td>
+                  <app-status-badge [tone]="statusTone(v.statusName)">
+                    {{ v.statusName }}
+                  </app-status-badge>
+                </td>
+                <td>{{ v.createdAt | date: 'mediumDate' }}</td>
+                <td>{{ publishedAt(v) ? (publishedAt(v) | date: 'mediumDate') : '—' }}</td>
+                <td>
+                  <app-button type="button" variant="stroked" (click)="onView(v)">View</app-button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (versions().length === 0) {
+        <app-empty-state message="No version history records found." />
+      }
+    </div>
+  </div>
+}
+</div>

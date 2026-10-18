@@ -1,0 +1,64 @@
+@use 'styles/tokens' as *;
+
+:host {
+  display: block;
+  width: 28rem;
+  max-width: calc(100vw - 3rem);
+}
+
+.form-group {
+  label {
+    display: block;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+    color: $color-text-faint;
+    margin-bottom: $spacing-1;
+  }
+
+  .file-input {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    font-size: $font-size-sm;
+    color: $color-text;
+    background-color: $color-surface;
+    border: 1px solid $color-border-input;
+    border-radius: $radius-md;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: border-color $transition-fast, box-shadow $transition-fast;
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+      box-shadow: 0 0 0 2px $color-primary-focus-ring;
+    }
+  }
+}
+
+.format-note {
+  margin: 0;
+  font-size: $font-size-xs;
+  line-height: 1.4;
+  color: $color-text-muted;
+}
+
+.rename-files-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
+
+  .form-group {
+    background-color: $color-slate-50;
+    border: 1px solid $color-slate-200;
+    border-radius: $radius-lg;
+    padding: 0.625rem 0.875rem;
+  }
+
+  .original-file-name {
+    margin: 0 0 0.375rem;
+    font-size: $font-size-xs;
+    font-weight: 600;
+    color: $color-slate-500;
+    word-break: break-all;
+  }
+}

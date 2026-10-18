@@ -1,0 +1,41 @@
+<h2 class="app-dialog__title">Mark as Not Applicable</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
+    <p class="item-title-preview">
+      <strong>Item:</strong> {{ data.itemTitle }}
+    </p>
+
+    @if (data.isMandatory) {
+      <div class="alert alert-warning">
+        <span class="alert-icon">⚠️</span>
+        <div class="alert-content">
+          <strong>Leadership Approval Required</strong>
+          <p>This is a mandatory item. Requesting to mark it Not Applicable requires Leadership approval before it is confirmed.</p>
+        </div>
+      </div>
+    }
+
+    <app-textarea
+      id="na-reason"
+      label="Reason for marking Not Applicable"
+      [required]="true"
+      formControlName="reason"
+      [rows]="4"
+      [maxLength]="500"
+      placeholder="Enter a brief justification why this item does not apply to this engagement..."
+      [errorMessages]="{
+        required: 'A reason is required.',
+        minlength: 'Reason must be at least 5 characters long.',
+        maxlength: 'Reason cannot exceed 500 characters.'
+      }"
+    />
+  </div>
+
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+    <app-button type="submit" variant="flat">
+      {{ data.isMandatory ? 'Request Exemption' : 'Confirm Not Applicable' }}
+    </app-button>
+  </div>
+</form>

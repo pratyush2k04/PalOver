@@ -1,0 +1,111 @@
+<div class="card access-tracker-card">
+  <!-- Card Header -->
+  <div class="card-header">
+    <div class="title-group">
+      <h3>Access Tracker</h3>
+    </div>
+    <div class="action-group">
+      @if (canManage()) {
+        <app-button variant="flat" (click)="openAddModal()">
+          <span>Add item</span>
+        </app-button>
+      }
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-responsive">
+      <table class="access-table">
+        <thead>
+          <tr>
+            <th class="item-th">ITEM</th>
+            <th class="owner-th">OWNER</th>
+            <th class="client-side-th">CLIENT-SIDE</th>
+            <th class="status-th">STATUS</th>
+            @if (canManage()) {
+              <th class="actions-th">ACTIONS</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of accessItems(); track item.id) {
+            <tr>
+              <td class="item-name-cell">
+                {{ item.name }}
+              </td>
+              <td class="owner-cell">
+                <div class="owner-content">
+                  <span>{{ item.ownerFullName || 'Unassigned' }}</span>
+                </div>
+              </td>
+              <td class="client-side-cell">
+                <div class="cell-content">
+                  @if (item.isClientSide) {
+                    <app-status-badge tone="warning">Client-side</app-status-badge>
+                  } @else {
+                    <app-status-badge tone="neutral">Internal</app-status-badge>
+                  }
+                  @if (item.isOverdueWithClient) {
+                    <app-status-badge tone="warning">Overdue</app-status-badge>
+                  }
+                  @if (item.timeZoneNote) {
+                    <span class="note-text">{{ item.timeZoneNote }}</span>
+                  }
+                </div>
+              </td>
+              <td class="status-cell">
+                @if (canManage()) {
+                  <app-status-select
+                    [options]="statusOptions"
+                    [ngModel]="getStatusNumericValue(item.status)"
+                    (ngModelChange)="onStatusChange(item, $event)"
+                  />
+                } @else {
+                  <app-status-badge [tone]="getStatusTone(item.status)">
+                    {{ getStatusLabel(item.status) }}
+                  </app-status-badge>
+                }
+              </td>
+              @if (canManage()) {
+                <td class="actions-cell">
+                  <div class="action-btn-group">
+                    <app-button
+                      type="button"
+                      variant="icon"
+                      class="btn-action btn-danger"
+                      ariaLabel="Delete access item"
+                      [appTooltip]="'Delete access item'"
+                      (click)="onDeleteItem(item)">
+                      <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
+                    </app-button>
+                  </div>
+                </td>
+              }
+            </tr>
+          } @empty {
+            <tr>
+              <td [attr.colspan]="canManage() ? 5 : 4" class="empty-cell">
+                No access items found for this engagement.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+<!-- Delete Confirmation Dialog -->
+@if (itemToDelete(); as item) {
+  <app-confirm-dialog
+    title="Delete Access Item"
+    confirmLabel="Delete"
+    [isDestructive]="true"
+    [isBusy]="isSubmitting()"
+    (confirmed)="confirmDelete()"
+    (cancelled)="cancelDelete()">
+    Are you sure you want to delete <strong>{{ item.name }}</strong>? This action cannot be undone.
+    @if (errorMessage()) {
+      <app-alert>{{ errorMessage() }}</app-alert>
+    }
+  </app-confirm-dialog>
+}

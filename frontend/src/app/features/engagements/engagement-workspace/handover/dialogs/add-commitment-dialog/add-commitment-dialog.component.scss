@@ -1,0 +1,30 @@
+@use 'styles/tokens' as *;
+
+:host {
+  display: block;
+  width: 35rem;
+  max-width: calc(100vw - 3rem);
+}
+
+.form-row,
+.form-row-timeline {
+  display: flex;
+  gap: $spacing-4;
+  align-items: flex-start;
+  width: 100%;
+
+  .flex-1 {
+    flex: 1;
+  }
+
+  .flex-2 {
+    flex: 2;
+  }
+
+  app-input {
+    --input-height: 2.375rem;
+    --input-padding: #{$spacing-2} #{$spacing-3};
+    --input-padding-left: #{$spacing-3};
+    --input-border-radius: #{$radius-md};
+  }
+}

@@ -1,0 +1,55 @@
+<h2 class="app-dialog__title">{{ dialogTitle() }}</h2>
+
+<form (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
+    <app-input
+      id="feature-name"
+      label="Feature Name"
+      [required]="true"
+      [maxLength]="200"
+      [ngModel]="featureName()"
+      (ngModelChange)="onFeatureNameChange($event)"
+      name="featureName"
+      placeholder="e.g., SSO Authentication & RBAC"
+      [extraError]="featureNameError() || null"
+    />
+
+    <div class="form-row">
+      <div class="flex-1">
+        <app-input
+          id="estimate-weeks"
+          label="Estimate (Weeks)"
+          [required]="true"
+          type="number"
+          [min]="0"
+          step="any"
+          [ngModel]="estimateWeeks()"
+          (ngModelChange)="onEstimateWeeksChange($event)"
+          name="estimateWeeks"
+          placeholder="e.g., 2.5"
+          [extraError]="estimateWeeksError() || null"
+        />
+      </div>
+
+      <div class="flex-1">
+        <app-input
+          id="target-sprint"
+          label="Target Sprint"
+          [required]="true"
+          type="number"
+          [min]="1"
+          [ngModel]="targetSprint()"
+          (ngModelChange)="onTargetSprintChange($event)"
+          name="targetSprint"
+          placeholder="e.g., 1"
+          [extraError]="targetSprintError() || null"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+    <app-button type="submit" variant="flat">{{ submitButtonText() }}</app-button>
+  </div>
+</form>

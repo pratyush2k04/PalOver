@@ -1,0 +1,85 @@
+<div class="people-directory">
+  <div class="people-layout-grid">
+    <!-- Table Card Section -->
+    <div class="people-directory__card">
+      <app-section-header title="People Directory" class="card-inner-header">
+        @if (canManage()) {
+          <app-button type="button" variant="flat" (click)="onAddPerson()">
+            <span>Add person</span>
+          </app-button>
+        }
+      </app-section-header>
+
+      @if (isLoading()) {
+      <div class="people-directory__loading">
+        <p>Loading people directory...</p>
+      </div>
+      } @else {
+      <div class="table-responsive">
+        <table class="people-table">
+          <thead>
+            <tr>
+              <th scope="col" class="th-name">NAME</th>
+              <th scope="col" class="th-role">ROLE</th>
+              <th scope="col" class="th-org">ORG</th>
+              @if (canManage()) {
+                <th scope="col" class="th-actions">ACTIONS</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (person of filteredPeople(); track person.personId) {
+            <tr>
+              <td class="col-name">{{ person.name }}</td>
+              <td class="col-role">{{ person.role }}</td>
+              <td class="col-org">{{ getOrgLabel(person.personType) }}</td>
+              @if (canManage()) {
+                <td class="col-actions">
+                  <div class="action-buttons">
+                    @if (canEditPerson(person)) {
+                      <app-button type="button" variant="icon" class="edit-btn" ariaLabel="Edit person" [appTooltip]="'Edit person'"
+                        (click)="onEditPerson(person)">
+                        <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                      </app-button>
+                    }
+                    <app-button type="button" variant="icon" class="delete-btn" ariaLabel="Delete person"
+                      [appTooltip]="'Delete person'" (click)="onDeletePerson(person)">
+                      <span class="action-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
+                    </app-button>
+                  </div>
+                </td>
+              }
+            </tr>
+            } @empty {
+            <tr>
+              <td [attr.colspan]="canManage() ? 4 : 3" class="empty-state">
+                No contacts found for this engagement.
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      }
+    </div>
+
+    <!-- Client Contact Transition Section -->
+    @if (engagementId()) {
+      <div class="people-directory__transition-section">
+        <app-client-contact-transition-card
+          [engagementId]="engagementId()!"
+          (onSaved)="onTransitionSaved()"
+          (transitionsLoaded)="onTransitionsLoaded($event)"
+        ></app-client-contact-transition-card>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Delete Confirmation Dialog -->
+@if (personToDelete(); as person) {
+<app-confirm-dialog title="Delete Person" confirmLabel="Delete" (confirmed)="confirmDelete()"
+  (cancelled)="cancelDelete()">
+  Are you sure you want to remove <strong>{{ person.name }}</strong> from the people directory?
+</app-confirm-dialog>
+}

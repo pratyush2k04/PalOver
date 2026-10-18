@@ -1,0 +1,122 @@
+<div class="user-directory">
+  <!-- Top Header -->
+  <app-page-header
+    title="User Management"
+    description="Manage system users and assign access roles across the organization."
+  >
+    <div class="total-users-card">
+      <div class="card-icon">
+        <span [inlineSVG]="'assets/icons/users.svg'"></span>
+      </div>
+      <div class="card-content">
+        <span class="card-value">{{ totalCount() }}</span>
+        <span class="card-label">Total Users</span>
+      </div>
+    </div>
+  </app-page-header>
+
+  <!-- Controls Row (Search & Role Filter) -->
+  <div class="controls-row">
+    <div class="search-box">
+      <span class="search-icon" [inlineSVG]="'assets/icons/search.svg'"></span>
+      <app-input
+        id="user-search"
+        placeholder="Search by name or email..."
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange()"
+      />
+    </div>
+
+    <div class="role-filter-box">
+      <app-select
+        id="user-role-filter"
+        [options]="roleFilterOptions()"
+        [ngModel]="selectedRoleFilter()"
+        (ngModelChange)="selectedRoleFilter.set($event)"
+      />
+    </div>
+  </div>
+
+  @if (errorMessage()) {
+    <app-alert>{{ errorMessage() }}</app-alert>
+  }
+
+  <!-- Content Section -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <app-loading-spinner label="Loading users..."></app-loading-spinner>
+    </div>
+  } @else {
+    @if (filteredUsers().length === 0) {
+      <div class="empty-state-wrapper">
+        <app-empty-state message="No users found matching your criteria." />
+      </div>
+    } @else {
+      <div class="table-card">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>NAME</th>
+              <th>EMAIL</th>
+              <th class="col-role">ROLE</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of filteredUsers(); track user.id) {
+              <tr>
+                <td>
+                  <div class="user-name-cell">
+                    <app-avatar [name]="user.fullName" size="sm" />
+                    <span class="name">{{ user.fullName }}</span>
+                  </div>
+                </td>
+                <td class="col-email">{{ user.email }}</td>
+                <td class="col-role" [attr.data-role]="user.roleName">
+                  <app-select
+                    [id]="'user-role-' + user.id"
+                    [options]="roleOptions()"
+                    [ngModel]="user.roleId"
+                    (ngModelChange)="onRoleSelected(user, $event)"
+                  />
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        <!-- Table Footer -->
+        <div class="table-footer">
+          <div class="showing-text">
+            Showing {{ showingStart() }} to {{ showingEnd() }} of {{ totalCount() }} users
+          </div>
+          @if (totalCount() > 0) {
+            <div class="pagination-controls">
+              <app-paginator
+                [page]="page()"
+                [totalPages]="totalPages()"
+                [pageSize]="pageSize()"
+                [pageSizeOptions]="pageSizeOptions"
+                (pageChange)="goToPage($event)"
+                (pageSizeChange)="onPageSizeChange($event)"
+              />
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>
+
+@if (pendingChange(); as pending) {
+  <app-confirm-dialog
+    confirmLabel="Confirm"
+    [isBusy]="isSubmitting()"
+    (confirmed)="confirmRoleChange()"
+    (cancelled)="cancelRoleChange()"
+  >
+    Change {{ pending.user.fullName }} from {{ pending.user.roleName }} to {{ pending.newRoleName }}?
+    @if (errorMessage()) {
+      <app-alert>{{ errorMessage() }}</app-alert>
+    }
+  </app-confirm-dialog>
+}

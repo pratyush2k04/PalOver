@@ -1,0 +1,31 @@
+<div class="paginator">
+  @if (pageSizeOptions(); as sizes) {
+    <div class="paginator__page-size">
+      <label for="paginator-page-size">Items per page:</label>
+      <app-select
+        id="paginator-page-size"
+        [options]="selectOptions()"
+        [ngModel]="pageSize()"
+        (ngModelChange)="onPageSizeChange($event)"
+      />
+    </div>
+  }
+
+  <div class="paginator__actions">
+    @if (showFirstLast()) {
+      <button type="button" (click)="goToFirst()" [disabled]="page() === 1" aria-label="First page">&laquo;</button>
+      <button type="button" (click)="goToPrevious()" [disabled]="page() === 1" aria-label="Previous page">&lsaquo;</button>
+    } @else {
+      <button type="button" (click)="goToPrevious()" [disabled]="page() === 1">Previous</button>
+    }
+
+    <span class="paginator__status">Page {{ page() }} of {{ totalPages() }}</span>
+
+    @if (showFirstLast()) {
+      <button type="button" (click)="goToNext()" [disabled]="page() === totalPages()" aria-label="Next page">&rsaquo;</button>
+      <button type="button" (click)="goToLast()" [disabled]="page() === totalPages()" aria-label="Last page">&raquo;</button>
+    } @else {
+      <button type="button" (click)="goToNext()" [disabled]="page() === totalPages()">Next</button>
+    }
+  </div>
+</div>

@@ -1,0 +1,59 @@
+@use 'styles/tokens' as *;
+
+:host {
+  display: block;
+  width: 31.25rem;
+  max-width: calc(100vw - 3rem);
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
+
+  h4 {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-bold;
+    color: $color-text;
+    margin: 0;
+  }
+}
+
+.confirm-section {
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-md;
+  padding: $spacing-4;
+  background-color: $color-bg;
+}
+
+.confirm-message {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  margin: 0 0 $spacing-3 0;
+  line-height: 1.5;
+  font-weight: $font-weight-medium;
+}
+
+.confirm-details {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-3;
+  margin: 0;
+  font-size: $font-size-sm;
+
+  .label {
+    font-weight: $font-weight-semibold;
+    color: $color-text-muted;
+    min-width: 4rem;
+  }
+
+  .contact-info {
+    color: $color-text;
+  }
+}

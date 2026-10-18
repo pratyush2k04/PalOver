@@ -1,0 +1,111 @@
+<div class="technical-readiness-container">
+  <!-- Day-1 Readiness Banner (Delivery Roles Only) -->
+  @if (canViewDayOneBanner()) {
+    <div class="readiness-banner" [ngClass]="isDayOneReady() ? 'readiness-ready' : 'readiness-incomplete'">
+      <div class="banner-header">
+        <div class="banner-title-group">
+          @if (isDayOneReady()) {
+            <svg class="banner-icon-svg ready-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span class="banner-title">Ready for Day-1</span>
+          } @else {
+            <svg class="banner-icon-svg warning-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <span class="banner-title">Not yet able to start Day-1</span>
+          }
+        </div>
+
+        <button type="button" class="share-btn" (click)="shareSummary()">
+          <span [inlineSVG]="'assets/icons/share.svg'"></span>
+          Share Summary
+        </button>
+      </div>
+
+      <ul class="readiness-bullets">
+        <li class="bullet-item">
+          <span class="bullet-label">Access Tracker:</span>
+          <span class="bullet-value">
+            {{ accessGrantedCount() }}/{{ accessTotalCount() }} granted@if (accessInProgressCount() > 0) {, {{ accessInProgressCount() }} in progress}
+          </span>
+          @if (accessBlockedCount() > 0) {
+            <span class="bullet-danger">({{ accessBlockedCount() }} blocked)</span>
+          }
+        </li>
+
+        <li class="bullet-item">
+          <span class="bullet-label">Environment & Tooling:</span>
+          <span class="bullet-value">
+            {{ toolingReadyCount() }}/{{ toolingTotalCount() }} granted@if (toolingNotReadyCount() > 0) {, {{ toolingNotReadyCount() }} in progress}
+          </span>
+          @if (toolingBlockedCount() > 0) {
+            <span class="bullet-danger">({{ toolingBlockedCount() }} blocked)</span>
+          }
+        </li>
+
+        @if (sizingDeltaPercentage() >= 20) {
+          <li class="bullet-item">
+            <span class="bullet-label">Architecture Validation:</span>
+            <span class="bullet-danger">Discovery estimates exceed the commitment estimates by {{ sizingDeltaPercentage() }}%</span>
+          </li>
+        }
+
+        @if (isBrownfield()) {
+          <li class="bullet-item">
+            <span class="bullet-label">Code Review & Architecture Analysis:</span>
+            @if (brownfieldHighPriorityCount() > 0) {
+              <span class="bullet-danger">{{ brownfieldHighPriorityCount() }} high priority findings pending decision</span>
+            } @else {
+              <span class="bullet-value">All findings resolved</span>
+            }
+          </li>
+        }
+      </ul>
+    </div>
+  }
+
+  @if (engagementId()) {
+    <!-- Access Tracker Section -->
+    @if (canViewAccessTracker()) {
+      <div class="readiness-section">
+        <app-access-tracker
+          [engagementId]="engagementId()!"
+          (itemsUpdated)="onAccessItemsUpdated($event)">
+        </app-access-tracker>
+      </div>
+    }
+
+    <!-- Environment & Tooling Section -->
+    @if (canViewEnvironmentTooling()) {
+      <div class="readiness-section">
+        <app-environment-tooling
+          [engagementId]="engagementId()!"
+          (itemsUpdated)="onToolingItemsUpdated($event)">
+        </app-environment-tooling>
+      </div>
+    }
+
+    <!-- Architecture Validation & Discovery Section -->
+    @if (canViewArchitectureValidation()) {
+      <div class="readiness-section">
+        <app-architecture-validation
+          [engagementId]="engagementId()!"
+          (validationUpdated)="onArchitectureValidationUpdated($event)">
+        </app-architecture-validation>
+      </div>
+    }
+
+    <!-- Code Review & Architecture Analysis Card (Brownfield Only) -->
+    @if (canViewBrownfieldReview()) {
+      <div class="readiness-section">
+        <app-brownfield-review
+          [engagementId]="engagementId()!"
+          (readinessUpdated)="onBrownfieldReadinessUpdated($event)">
+        </app-brownfield-review>
+      </div>
+    }
+  }
+</div>

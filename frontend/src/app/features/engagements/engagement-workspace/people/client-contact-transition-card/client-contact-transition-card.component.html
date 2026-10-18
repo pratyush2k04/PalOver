@@ -1,0 +1,62 @@
+<div class="section transition-section">
+  <!-- Section Header -->
+  <div class="transition-header">
+    <h3>{{ formLabels.CARD_TITLE }}</h3>
+    @if ((isPm() || isPreSales()) && !isSubmitted()) {
+      <app-button
+        variant="flat"
+        [disabled]="isLoading()"
+        (click)="openAddTransitionDialog()"
+        class="add-button"
+      >
+        {{ buttonLabels.ADD_TRANSITION }}
+      </app-button>
+    }
+  </div>
+
+  <!-- Section Content -->
+  <div class="transition-cards">
+      @if (transitions().length > 0) {
+        @for (t of transitions(); track t.id) {
+          <div class="transition-flow-card">
+            <!-- Outgoing Contact -->
+            <div class="contact-party outgoing-party">
+              <div class="avatar avatar-teal">
+                {{ getInitials(t.outgoingContactName) }}
+              </div>
+              <div class="contact-details">
+                <span class="party-label">{{ dialogLabels.OUTGOING }}</span>
+                <strong class="contact-name">{{ t.outgoingContactName }}</strong>
+                @if (t.outgoingContactRole) {
+                  <span class="contact-role">{{ t.outgoingContactRole }}</span>
+                }
+              </div>
+            </div>
+
+            <!-- Flow Connector Line -->
+            <div class="flow-connector">
+              <div class="small-line"></div>
+            </div>
+
+            <!-- Incoming Contact -->
+            <div class="contact-party incoming-party">
+              <div class="avatar avatar-purple">
+                {{ getInitials(t.incomingContactName) }}
+              </div>
+              <div class="contact-details">
+                <span class="party-label">{{ dialogLabels.INCOMING }}</span>
+                <strong class="contact-name">{{ t.incomingContactName }}</strong>
+                @if (t.incomingContactRole) {
+                  <span class="contact-role">{{ t.incomingContactRole }}</span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      } @else {
+        <div class="empty-state">
+          No client contact transition added.
+        </div>
+      }
+    </div>
+</div>

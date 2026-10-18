@@ -1,0 +1,21 @@
+@use 'styles/tokens' as *;
+
+:host {
+  display: block;
+  width: 32.5rem;
+  max-width: calc(100vw - 3rem);
+}
+
+.item-title-preview {
+  font-size: $font-size-sm;
+  color: $color-gray-700;
+  margin: 0;
+  padding: $spacing-3 $spacing-4;
+  background: $color-gray-100;
+  border-radius: $radius-lg;
+  border-left: 3px solid $color-primary-active;
+
+  strong {
+    color: $color-gray-900;
+  }
+}

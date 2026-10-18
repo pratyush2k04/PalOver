@@ -1,0 +1,66 @@
+<div class="panel-card">
+  @if (atRiskCount() > 0) {
+    <div class="banner-alert">
+      <span [inlineSVG]="'assets/icons/alert-triangle.svg'"></span>
+      <span>{{ atRiskCount() }} dependency(s) at risk</span>
+    </div>
+  }
+
+  <div class="panel-header">
+    <div class="title-section">
+      <h2>Dependencies</h2>
+    </div>
+    @if (canAdd()) {
+      <app-button class="btn-add" variant="flat" (click)="openDependencyDialog()"> Add</app-button>
+    }
+  </div>
+
+  @if (isLoading()) {
+    <app-loading-spinner></app-loading-spinner>
+  } @else {
+    <div class="panel-content">
+      @if (dependencies().length === 0) {
+        <div>
+          <app-empty-state title="No Dependencies Found" message="Click '+ Add' to create your first dependency."></app-empty-state>
+        </div>
+      } @else {
+        <div class="list-container">
+          @for (item of dependencies(); track item.id) {
+            <div class="list-item" [ngClass]="'status-' + DependencyStatus[item.status].toLowerCase()">
+              
+              <div class="item-main">
+                <div class="item-text">
+                  <span class="description">{{ item.description }}</span>
+                  <app-status-badge [tone]="getStatusTone(item.status)">{{ getStatusLabel(item.status) }}</app-status-badge>
+                  <span class="type-badge">{{ item.type }}</span>
+                </div>
+                
+                <div class="item-meta" style="flex-direction: row; align-items: center; gap: 0.4rem; display: flex;">
+                  <span class="rationale">Needed By: {{ item.neededByDate | date:'mediumDate' }}</span>
+                  @if (item.ownerName) {
+                    <span class="rationale" style="opacity: 0.4;">|</span>
+                    <span class="rationale">Depended On: {{ item.ownerName }}</span>
+                  }
+                </div>
+              </div>
+
+              <div class="item-right">
+                <div class="item-actions">
+                  @if (canEdit(item)) {
+                    <app-button variant="icon" size="sm" (click)="openDependencyDialog(item)" title="Edit Dependency" ariaLabel="Edit Dependency">
+                      <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                    </app-button>
+                  }
+                  @if (item.status !== DependencyStatus.Met && canMarkMet(item)) {
+                    <app-button class="btn-met" type="button" variant="flat" (click)="markAsMet(item)">Mark Met</app-button>
+                  }
+                </div>
+              </div>
+
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

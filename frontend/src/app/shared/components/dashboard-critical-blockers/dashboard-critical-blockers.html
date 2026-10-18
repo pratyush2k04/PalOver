@@ -1,0 +1,28 @@
+<div class="list-card">
+  <div class="list-header">
+    <h3>Needs attention <span class="header-subtitle">({{ totalCount() }} total)</span></h3>
+    <a routerLink="/notifications" class="view-all-link">View all &rarr;</a>
+  </div>
+
+  <div class="list-content custom-scrollbar">
+    <div class="blockers-list">
+      @for (blocker of blockers(); track blocker.riskId) {
+      <div class="blocker-item clickable" (click)="onBlockerClick(blocker)">
+
+        <div class="blocker-details">
+          <div class="engagement-header">
+            <span class="engagement-name">{{ getEngagementName(blocker.projectName) }}</span>
+            <span class="time-ago">{{ getRelativeTime(blocker.dueDate.toString()) }}</span>
+          </div>
+
+          <div class="blocker-meta-row">
+            <span class="category-name">{{ getCategory(blocker.projectName) }}</span>
+          </div>
+        </div>
+      </div>
+      } @empty {
+      <app-empty-state message="No items need attention!" />
+      }
+    </div>
+  </div>
+</div>

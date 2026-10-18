@@ -1,0 +1,17 @@
+@use 'styles/tokens' as *;
+
+:host {
+  display: block;
+  width: 34rem;
+  max-width: calc(100vw - 3rem);
+}
+
+.form-row {
+  display: flex;
+  gap: $spacing-4;
+  width: 100%;
+
+  .flex-1 {
+    flex: 1;
+  }
+}

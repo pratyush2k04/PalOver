@@ -1,0 +1,113 @@
+<div class="cr-section">
+  <!-- Section Header -->
+  <div class="section-header">
+    <div class="header-title-group">
+      <h2 class="section-title">{{ constants.TITLE }}</h2>
+      
+    </div>
+
+    @if (isProjectManager()) {
+      <app-button type="button" variant="flat" [disabled]="isLoading()" (click)="openLogModal()">
+        {{ constants.BTN_LOG_CR }}
+      </app-button>
+    }
+  </div>
+
+  <!-- Status Filters -->
+  <div class="filter-tabs">
+    <button 
+      type="button" 
+      class="filter-tab" 
+      [class.active]="selectedStatusFilter() === 'All'" 
+      (click)="setFilter('All')">
+      {{ constants.STATUS_ALL }}
+    </button>
+    <button 
+      type="button" 
+      class="filter-tab" 
+      [class.active]="selectedStatusFilter() === 'Under Review'" 
+      (click)="setFilter('Under Review')">
+      {{ constants.STATUS_UNDER_REVIEW }}
+    </button>
+    <button 
+      type="button" 
+      class="filter-tab" 
+      [class.active]="selectedStatusFilter() === 'Approved'" 
+      (click)="setFilter('Approved')">
+      {{ constants.STATUS_APPROVED }}
+    </button>
+    <button 
+      type="button" 
+      class="filter-tab" 
+      [class.active]="selectedStatusFilter() === 'Rejected'" 
+      (click)="setFilter('Rejected')">
+      {{ constants.STATUS_REJECTED }}
+    </button>
+  </div>
+
+  <!-- Table View -->
+  <div class="table-container">
+    @if (isLoading()) {
+      <app-loading-spinner label="Loading change requests..." />
+    } @else if (filteredChangeRequests().length > 0) {
+      <table class="cr-table">
+        <thead>
+          <tr>
+            <th class="col-desc">{{ constants.TABLE_HEADER_DESCRIPTION }}</th>
+            <th class="col-impact">{{ constants.TABLE_HEADER_IMPACT }}</th>
+            <th class="col-status">{{ constants.TABLE_HEADER_STATUS }}</th>
+            @if (isLeadership()) {
+              <th class="col-actions"></th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (cr of filteredChangeRequests(); track cr.id) {
+            <tr class="cr-row">
+              <td class="cell-desc">{{ cr.description }}</td>
+              <td class="cell-impact">{{ cr.impact }}</td>
+              <td class="cell-status">
+                <div class="status-badge-wrapper">
+                  <app-status-badge [tone]="getStatusTone(cr.status)">
+                    {{ cr.status }}
+                  </app-status-badge>
+
+                  @if (cr.status === 'Rejected' && cr.rejectionReason) {
+                    <app-button
+                      type="button"
+                      variant="icon"
+                      (click)="openReasonModal(cr.rejectionReason)"
+                      ariaLabel="View rejection reason"
+                      [appTooltip]="'View rejection reason'"
+                    >
+                      <span class="info-icon" [inlineSVG]="'assets/icons/info.svg'"></span>
+                    </app-button>
+                  }
+                </div>
+              </td>
+              @if (isLeadership()) {
+                <td class="cell-actions">
+                  @if (cr.status === 'Under Review') {
+                    <div class="action-buttons">
+                      <app-button type="button" variant="stroked" (click)="onApprove(cr)">
+                        {{ constants.BTN_APPROVE }}
+                      </app-button>
+                      <app-button type="button" variant="danger" [disabled]="isLoading()" (click)="openRejectModal(cr)">
+                        {{ constants.BTN_REJECT }}
+                      </app-button>
+                    </div>
+                  }
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else {
+      <div class="empty-state">
+        <p class="empty-title">{{ constants.EMPTY_STATE_TITLE }}</p>
+        <p class="empty-subtitle">{{ constants.EMPTY_STATE_SUBTITLE }}</p>
+      </div>
+    }
+  </div>
+</div>

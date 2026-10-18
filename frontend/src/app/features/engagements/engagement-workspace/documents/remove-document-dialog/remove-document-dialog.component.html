@@ -1,0 +1,39 @@
+<h2 class="app-dialog__title">Remove document</h2>
+
+<div class="app-dialog__content">
+  <div class="confirmation-warning">
+    <p>Are you sure you want to remove <strong>{{ data.documentName }}</strong>?</p>
+    <p class="sub-text">The document will be preserved in history but hidden from normal lists.</p>
+  </div>
+
+  <app-textarea
+    id="remove-reason"
+    label="Reason for removal"
+    [required]="true"
+    [rows]="4"
+    [maxLength]="500"
+    [ngModel]="reason()"
+    (ngModelChange)="onReasonChange($event)"
+    placeholder="Please enter a short reason for removing this document (minimum 10 characters)..."
+    [extraError]="reasonError()"
+  />
+
+  @if (errorMessage()) {
+    <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+  }
+</div>
+
+<div class="app-dialog__actions">
+  <app-button type="button" variant="stroked" (click)="onClose()" [disabled]="isSubmitting()">
+    Cancel
+  </app-button>
+  <app-button
+    type="button"
+    variant="danger"
+    (click)="onSubmit()"
+    [disabled]="isSubmitting()"
+    [loading]="isSubmitting()"
+  >
+    Remove Document
+  </app-button>
+</div>

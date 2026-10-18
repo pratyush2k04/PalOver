@@ -1,0 +1,124 @@
+@use 'styles/mixins' as *;
+
+.accordion-card {
+  background: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-lg;
+  margin-top: $spacing-4;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+  transition: all $transition-fast;
+
+  .accordion-header {
+    @include flex-between;
+    padding: $spacing-3 $spacing-5;
+    cursor: pointer;
+    user-select: none;
+    background: $color-surface-hover;
+    border-bottom: 1px solid transparent;
+    transition: background-color $transition-fast;
+    outline: none;
+
+    &:hover {
+      background: $color-bg;
+    }
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px $color-primary-light;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: $spacing-2;
+
+      .header-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.125rem;
+        height: 1.125rem;
+        color: $color-text-muted;
+
+        ::ng-deep svg,
+        svg {
+          display: block;
+          width: 100%;
+          height: 100%;
+        }
+      }
+
+      .header-title {
+        font-size: $font-size-sm;
+        font-weight: $font-weight-semibold;
+        color: $color-text;
+      }
+
+      .header-badge {
+        font-size: $font-size-xs;
+        font-weight: $font-weight-medium;
+        color: $color-text-faint;
+      }
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+
+      .chevron-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.125rem;
+        height: 1.125rem;
+        color: $color-text-muted;
+        transition: transform $transition-fast, color $transition-fast;
+
+        ::ng-deep svg,
+        svg {
+          display: block;
+          width: 100%;
+          height: 100%;
+        }
+
+        &.expanded {
+          transform: rotate(180deg);
+          color: $color-primary;
+        }
+      }
+    }
+  }
+
+  &:not(.is-collapsed) {
+    .accordion-header {
+      border-bottom-color: $color-border-soft;
+    }
+  }
+
+  &.is-disabled {
+    opacity: 0.7;
+    border-color: $color-border-soft;
+    box-shadow: none;
+
+    .accordion-header {
+      cursor: not-allowed;
+      background: $color-surface-hover;
+
+      &:hover {
+        background: $color-surface-hover;
+      }
+
+      &:focus-visible {
+        box-shadow: none;
+      }
+
+      .header-title {
+        color: $color-text-muted;
+      }
+    }
+  }
+
+  .accordion-body {
+    padding: $spacing-4 $spacing-5;
+  }
+}

@@ -1,0 +1,79 @@
+@use 'styles/tokens' as *;
+
+:host {
+  display: block;
+  font-family: $font-family-base;
+}
+
+.version-history {
+  padding: 0;
+
+  
+
+  &__card {
+    background-color: $color-surface;
+    border: 1px solid $color-border-soft;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  &__header {
+    padding: $spacing-5 $spacing-6;
+    background-color: $color-surface;
+
+    h1 {
+      color: $color-text;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-bold;
+      margin: 0;
+    }
+  }
+
+  &__table-wrapper {
+    background-color: $color-surface;
+    border: none;
+    border-radius: 0;
+    overflow: hidden;
+  }
+
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: inherit;
+    min-width: 32rem;
+
+    th,
+    td {
+      text-align: left;
+      padding: $spacing-4 $spacing-6;
+      font-size: $font-size-sm;
+    }
+
+    th {
+      color: $color-text;
+      font-weight: $font-weight-semibold;
+      border-top: 1px solid $color-border-soft;
+      border-bottom: 1px solid $color-border-soft;
+      white-space: nowrap;
+      background-color: $color-surface-hover;
+    }
+
+    td {
+      color: $color-text-muted;
+      border-bottom: 1px solid $color-border-soft;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+  }
+}
+

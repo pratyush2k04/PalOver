@@ -1,0 +1,164 @@
+<div class="documents-container">
+  <app-section-header title="Documents">
+    @if (canUpload()) {
+      <app-button type="button" variant="flat" [disabled]="isLoading()" (click)="openUploadModal()">
+        <span class="upload-icon" [inlineSVG]="'assets/icons/upload.svg'"></span>
+        Upload
+      </app-button>
+    }
+  </app-section-header>
+
+  @if (errorMessage()) {
+    <app-alert>{{ errorMessage() }}</app-alert>
+  }
+
+  <div class="documents-filters">
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Search by file name"
+      [(ngModel)]="searchTerm"
+    />
+    <app-select
+      id="category-filter"
+      class="category-select"
+      [options]="categoryFilterOptions()"
+      [ngModel]="selectedCategoryId()"
+      (ngModelChange)="selectedCategoryId.set($event)"
+    />
+  </div>
+
+  <div class="table-card">
+    @if (documents().length === 0 && !isLoading()) {
+      <app-empty-state icon="assets/icons/empty-doc.svg" message="No documents uploaded yet." />
+    } @else if (filteredDocuments().length === 0) {
+      <app-empty-state icon="assets/icons/empty-doc.svg" [message]="DOCUMENT_MESSAGES.NO_SEARCH_RESULTS" />
+    } @else {
+      <div class="table-responsive">
+        <table class="documents-table">
+          <thead>
+            <tr>
+              <th>NAME</th>
+              <th>CATEGORY</th>
+              <th class="col-nowrap">VISIBILITY</th>
+              <th class="col-nowrap">VERSION</th>
+              <th>UPLOADER</th>
+              <th>DATE</th>
+              @if (canUpload()) {
+                <th class="col-actions">ACTIONS</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (doc of filteredDocuments(); track doc.id) {
+              <tr class="document-row">
+                <td>
+                  <button type="button" class="btn-file-link" (click)="onDownload(doc)" [disabled]="downloadingId() === doc.id">
+                    <span class="file-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
+                    <span class="file-name">{{ doc.fileName }}</span>
+                    @if (downloadingId() === doc.id) {
+                      <app-loading-spinner size="sm" [inline]="true" label="" />
+                    }
+                  </button>
+                </td>
+                <td>
+                  <span class="category-label">{{ doc.categoryName || 'Other' }}</span>
+                </td>
+                <td class="col-nowrap">
+                  @if (canManageVisibility()) {
+                    <!-- PM / Admin: inline editable dropdown & custom edit trigger -->
+                    <div class="visibility-cell-wrapper">
+                      <app-select
+                        [id]="'doc-visibility-' + doc.id"
+                        [options]="visibilityOptions"
+                        [ngModel]="doc.visibility === 'Custom' ? 'Custom' : doc.visibility"
+                        (ngModelChange)="onVisibilityChange(doc, $event)"
+                        class="visibility-app-select"
+                        [attr.aria-label]="'Visibility for ' + doc.fileName"
+                      />
+                      @if (doc.visibility === 'Custom') {
+                        <app-button
+                          type="button"
+                          variant="icon"
+                          ariaLabel="Edit allowed roles"
+                          [appTooltip]="'Edit allowed roles'"
+                          [disabled]="isLoading()"
+                          (click)="openCustomVisibilityModal(doc)"
+                        >
+                          <span class="edit-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                        </app-button>
+                      }
+                    </div>
+                  } @else {
+                    <!-- Viewers: read-only badge -->
+                    @if (doc.visibility === 'Custom') {
+                      <app-status-badge tone="info">
+                        <span class="badge-icon" [inlineSVG]="'assets/icons/lock.svg'"></span>
+                        Custom visibility
+                      </app-status-badge>
+                    } @else if (doc.visibility === 'PM-only') {
+                      <app-status-badge tone="warning">
+                        <span class="badge-icon" [inlineSVG]="'assets/icons/lock.svg'"></span>
+                        PM-only
+                      </app-status-badge>
+                    } @else {
+                      <app-status-badge tone="neutral">Team-wide</app-status-badge>
+                    }
+                  }
+                </td>
+                <td class="col-nowrap">
+                  <span class="version-number">v{{ doc.currentVersionNumber }}</span>
+                  @if (doc.currentVersionNumber > 1) {
+                    <button type="button" class="btn-version-history" (click)="openVersionHistoryModal(doc)">
+                      history
+                    </button>
+                  }
+                </td>
+                <td>
+                  <span class="uploader-name">{{ doc.uploadedBy || 'N/A' }}</span>
+                </td>
+                <td>
+                  <span class="upload-date">{{ doc.uploadedAt | date:'dd MMM y' }}</span>
+                </td>
+                @if (canUpload()) {
+                  <td class="col-actions">
+                    <app-button
+                      type="button"
+                      variant="icon"
+                      class="btn-upload-version"
+                      ariaLabel="Upload new version"
+                      [appTooltip]="'Upload new version'"
+                      [disabled]="isLoading()"
+                      (click)="triggerVersionUpload(doc)"
+                    >
+                      <span class="upload-version-icon" [inlineSVG]="'assets/icons/upload.svg'"></span>
+                    </app-button>
+                    <app-button
+                      type="button"
+                      variant="icon"
+                      class="btn-remove"
+                      ariaLabel="Remove document"
+                      [appTooltip]="'Remove document'"
+                      [disabled]="isLoading()"
+                      (click)="openRemoveModal(doc)"
+                    >
+                      <span class="remove-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
+                    </app-button>
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+  <input
+    #versionFileInput
+    type="file"
+    accept=".pdf,.docx,.xlsx,.pptx,.png,.jpg,.jpeg,.msg,.eml"
+    hidden
+    (change)="onVersionFileSelected($event)"
+  />
+</div>

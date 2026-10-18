@@ -1,0 +1,245 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+:host {
+  position: relative;
+  display: block;
+  flex: 1;
+  max-width: 30rem;
+  min-width: 0;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: $color-text-placeholder;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+
+  ::ng-deep svg,
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  @include respond-to-down('xs') {
+    left: 0.5rem;
+  }
+}
+
+.global-search__input {
+  width: 100%;
+  max-width: 28rem;
+  padding: 0.5rem 1rem 0.5rem 2.5rem;
+  font-size: 0.875rem;
+  color: $color-text;
+  background: $color-bg;
+  border: 1px solid $color-border-soft;
+  border-radius: 0.5rem;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+
+  &::placeholder {
+    color: $color-text-placeholder;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+    background: $color-surface;
+    box-shadow: 0 0 0 2px $color-primary-focus-ring;
+  }
+
+  @include respond-to-down('md') {
+    max-width: 100%;
+    padding: 0.4375rem 0.75rem 0.4375rem 2.125rem;
+    font-size: 0.8125rem;
+  }
+
+  @include respond-to-down('xs') {
+    padding: 0.375rem 0.5rem 0.375rem 1.875rem;
+    font-size: 0.75rem;
+  }
+}
+
+.global-search__panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  max-height: 28rem;
+  overflow-y: auto;
+  background: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 30px rgba($color-slate-900, 0.12);
+  z-index: 50;
+  padding: 0.5rem 0;
+}
+
+.global-search__hint {
+  padding: 0.75rem 1rem;
+  font-size: 0.8125rem;
+  color: $color-text-fainter;
+}
+
+.global-search__filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  background: $color-slate-50;
+  border-bottom: 1px solid $color-border-divider;
+}
+
+.global-search__filters-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: $color-slate-700;
+  margin-right: 0.25rem;
+}
+
+.global-search__filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: $color-slate-600;
+  background: $color-surface;
+  border: 1px solid $color-slate-200;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: $color-slate-100;
+    border-color: $color-slate-300;
+    color: $color-slate-800;
+  }
+
+  &--active {
+    background: $color-primary;
+    border-color: $color-primary;
+    color: $color-surface;
+
+    &:hover {
+      background: $color-primary-hover;
+      border-color: $color-primary-hover;
+      color: $color-surface;
+    }
+
+    .global-search__filter-count {
+      color: $color-primary-border;
+    }
+  }
+}
+
+.global-search__filter-count {
+  font-size: 0.6875rem;
+  color: $color-slate-400;
+}
+
+.global-search__active-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  padding: 0.375rem 1rem;
+  background: $color-primary-light;
+  border-bottom: 1px solid $color-primary-subtle;
+}
+
+.global-search__active-label {
+  @include text-overline;
+  font-size: 0.6875rem;
+  color: $color-primary-dark;
+}
+
+.global-search__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.4375rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: $color-primary-dark;
+  background: $color-primary-subtle;
+  border-radius: 0.25rem;
+}
+
+.global-search__chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: $color-primary-active;
+  font-size: 0.6875rem;
+  line-height: 1;
+
+  &:hover {
+    color: $color-primary-darkest;
+  }
+}
+
+.global-search__clear-all-btn {
+  margin-left: auto;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: $color-primary;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 0.25rem;
+
+  &:hover {
+    text-decoration: underline;
+    color: $color-primary-hover;
+  }
+}
+
+.global-search__group + .global-search__group {
+  border-top: 1px solid $color-bg;
+}
+
+.global-search__group-header {
+  padding: 0.625rem 1rem 0.25rem;
+  @include text-overline;
+  color: $color-slate-900;
+}
+
+.global-search__row {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: $color-slate-50;
+
+    .global-search__row-title {
+      color: $color-slate-900;
+    }
+  }
+}
+
+.global-search__row-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $color-slate-600;
+  transition: color 0.15s ease;
+}
+
+.global-search__row-subtitle {
+  font-size: 0.75rem;
+  color: $color-slate-400;
+}

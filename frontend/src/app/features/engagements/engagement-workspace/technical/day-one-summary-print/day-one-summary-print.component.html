@@ -1,0 +1,79 @@
+<div class="print-page-wrapper">
+  <!-- Interactive Action Header (Hidden during printing) -->
+  <div class="action-header no-print">
+    <div class="action-header-content">
+      <div class="action-header-info">
+        <span class="report-tag">Technical Summary</span>
+        <h2>{{ summary()?.engagementName || 'Day-1 Readiness Summary' }}</h2>
+      </div>
+      <div class="action-buttons">
+        <app-button variant="stroked" (click)="onClose()">Close</app-button>
+        <app-button variant="flat" (click)="onPrint()">Print / Save as PDF</app-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <app-loading-spinner label="Loading Day-1 Readiness Summary..." />
+  }
+
+  <!-- Error State -->
+  @if (error() && !isLoading()) {
+    <div class="error-state">
+      <h3>Error</h3>
+      <p>{{ error() }}</p>
+      <app-button variant="stroked" (click)="onClose()">Close Window</app-button>
+    </div>
+  }
+
+  <!-- Print Document -->
+  @if (summary(); as s) {
+    <div class="print-document">
+      <!-- 1. Document Header -->
+      <app-summary-print-header [summary]="s"></app-summary-print-header>
+
+      <!-- 2. Overall Status Hero Banner -->
+      <app-summary-print-hero
+        [isAbleToStart]="s.isAbleToStartDayOne"
+        [message]="s.overallStatusMessage"
+        [statusTone]="statusTone()">
+      </app-summary-print-hero>
+
+      <!-- 3. 4 Pillars Readiness Breakdown -->
+      <app-summary-print-pillars [summary]="s"></app-summary-print-pillars>
+
+      <!-- 4. Outstanding Blockers & Action Items -->
+      <app-summary-print-blockers [blockers]="s.outstandingBlockers"></app-summary-print-blockers>
+
+      <!-- 5. Documentation & Brief Reference -->
+      <section class="section-container doc-reference-box">
+        <div class="doc-ref-content">
+          <span class="doc-ref-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
+          <div class="doc-ref-text">
+            <h4>Engagement Documentation & Scope</h4>
+            @if (s.isBrownfieldApplicable && s.brownfieldDocumentNames && s.brownfieldDocumentNames.length > 0) {
+              <p class="doc-names-intro">Refer to the following review document(s):</p>
+              <ul class="doc-names-list">
+                @for (docName of s.brownfieldDocumentNames; track docName) {
+                  <li class="doc-name-item">
+                    <span class="doc-item-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
+                    <span class="doc-name-text">{{ docName }}</span>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p>For technical design, architecture specifications, and handover documents, refer to <strong>Engagement Brief & Documents</strong> in the PDR workspace.</p>
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- Document Footer -->
+      <footer class="doc-footer">
+        <p>Project Delivery Readiness (PDR) System • Consolidated Technical Delivery Summary • Confidential</p>
+        <p>Note: This report contains technical delivery metrics only. PM commercial, financial, and pricing information is excluded.</p>
+      </footer>
+    </div>
+  }
+</div>

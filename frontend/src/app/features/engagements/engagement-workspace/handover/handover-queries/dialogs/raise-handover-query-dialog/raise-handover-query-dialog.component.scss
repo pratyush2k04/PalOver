@@ -1,0 +1,7 @@
+@use 'styles/tokens' as *;
+
+:host {
+  display: block;
+  width: 31.25rem;
+  max-width: calc(100vw - 3rem);
+}

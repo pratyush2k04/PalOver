@@ -1,0 +1,42 @@
+@use 'styles/tokens' as *;
+
+:host {
+  display: block;
+  width: 32.5rem;
+  max-width: calc(100vw - 3rem);
+}
+
+.item-title-preview {
+  font-size: $font-size-sm;
+  color: $color-gray-700;
+  padding: $spacing-3 $spacing-4;
+  background: $color-gray-100;
+  border-radius: $radius-lg;
+  border-left: 3px solid $color-primary-active;
+
+  strong {
+    color: $color-gray-900;
+  }
+}
+
+.reason-card {
+  background: $color-amber-50;
+  border: 1px solid $color-warning-border;
+  border-radius: $radius-lg;
+  padding: $spacing-4;
+
+  .reason-label {
+    font-size: $font-size-xs;
+    font-weight: 700;
+    color: $color-amber-700;
+    margin-bottom: $spacing-2;
+  }
+
+  .reason-text {
+    font-size: $font-size-sm;
+    color: $color-warning-dark;
+    margin: 0;
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+}

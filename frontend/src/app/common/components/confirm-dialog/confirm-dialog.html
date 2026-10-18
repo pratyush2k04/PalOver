@@ -1,0 +1,24 @@
+<div class="modal-backdrop" (click)="onBackdropClick()">
+  <div class="modal-card" (click)="onDialogClick($event)">
+    <h2 class="app-dialog__title">{{ title() }}</h2>
+
+    <div class="app-dialog__content">
+      <p><ng-content /></p>
+    </div>
+
+    <div class="app-dialog__actions">
+      <app-button type="button" variant="stroked" [disabled]="isBusy()" (click)="cancelled.emit()">
+        {{ cancelLabel() }}
+      </app-button>
+      <app-button
+        type="button"
+        [variant]="isDestructive() ? 'danger' : 'flat'"
+        [disabled]="isBusy()"
+        [loading]="isBusy()"
+        (click)="confirmed.emit()"
+      >
+        {{ confirmLabel() }}
+      </app-button>
+    </div>
+  </div>
+</div>

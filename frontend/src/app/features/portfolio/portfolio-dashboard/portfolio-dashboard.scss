@@ -1,0 +1,394 @@
+@use 'styles/mixins' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.portfolio-dashboard {
+  padding: $spacing-8;
+  font-family: $font-family-base;
+  color: $color-text;
+
+  @include respond-to-down('md') {
+    padding: $spacing-4;
+  }
+}
+
+/* KPI Cards Grid using tokens & mixins */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16.25rem, 1fr));
+  gap: $spacing-5;
+  margin-bottom: $spacing-8;
+}
+
+.kpi-card {
+  background: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-2xl;
+  padding: $spacing-5 $spacing-6;
+  display: flex;
+  align-items: center;
+  gap: $spacing-5;
+  box-shadow: $shadow-card;
+
+  .kpi-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: $radius-md;
+    @include flex-center;
+    flex-shrink: 0;
+
+    ::ng-deep span,
+    ::ng-deep svg,
+    svg {
+      display: block;
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+
+  .kpi-content {
+    @include flex-column(0);
+
+    .kpi-value {
+      font-size: 1.75rem;
+      font-weight: $font-weight-bold;
+      color: $color-text;
+      line-height: 1.2;
+    }
+
+    .kpi-label {
+      font-size: $font-size-xs;
+      font-weight: $font-weight-medium;
+      color: $color-text-faint;
+      margin-top: $spacing-1;
+    }
+  }
+
+  &--total .kpi-icon {
+    background: $color-primary-light;
+    color: $color-primary;
+  }
+
+  &--ready .kpi-icon {
+    background: $color-success-bg;
+    color: $color-success;
+  }
+
+  &--progress .kpi-icon {
+    background: $color-primary-light;
+    color: $color-primary;
+  }
+
+  &--atrisk .kpi-icon {
+    background: $color-danger-bg;
+    color: $color-danger;
+  }
+}
+
+/* Filter Toolbar */
+.filter-toolbar {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: $spacing-5;
+  border-radius: $radius-2xl;
+  border: 1px solid $color-border-soft;
+  margin-bottom: $spacing-6;
+
+  @include respond-to-down('xs') {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+  flex-grow: 1;
+  flex-shrink: 1;
+  max-width: 12rem;
+
+  app-select {
+    width: 100%;
+    max-width: 11.25rem;
+    min-width: 7rem;
+
+    ::ng-deep .app-field {
+      margin-bottom: 0;
+    }
+  }
+
+  @include respond-to-down('xs') {
+    width: 100%;
+    max-width: 100%;
+
+    app-select {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+  }
+}
+
+/* Table Card */
+.table-card {
+  background: $color-surface;
+  border-radius: $radius-2xl;
+  border: 1px solid $color-border-soft;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  box-shadow: $shadow-card;
+}
+
+.portfolio-table {
+  width: 100%;
+  min-width: 50rem;
+  border-collapse: collapse;
+  text-align: left;
+
+  th {
+    background: $color-surface-hover;
+    color: $color-text-muted;
+    @include text-overline;
+    padding: $spacing-4 $spacing-5;
+    border-bottom: 1px solid $color-border-soft;
+    vertical-align: middle;
+  }
+
+  td {
+    padding: $spacing-4 $spacing-5;
+    border-bottom: 1px solid $color-border-soft;
+    vertical-align: middle;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+  }
+
+  .table-row {
+    cursor: pointer;
+    transition: background-color $transition-fast;
+
+    &:last-child td {
+      border-bottom: none;
+    }
+
+    &:hover {
+      td {
+        background-color: $color-surface-hover;
+      }
+
+      .engagement-name {
+        color: $color-primary;
+      }
+    }
+
+    &:active {
+      .engagement-name {
+        color: $color-primary-hover;
+      }
+    }
+  }
+
+  .cell-primary {
+    .engagement-name {
+      font-weight: $font-weight-medium;
+      color: $color-text;
+      font-size: $font-size-sm;
+      transition: color $transition-fast;
+      @include text-truncate;
+    }
+
+    .client-name {
+      font-size: $font-size-xs;
+      color: $color-text-faint;
+      margin-top: 0.15rem;
+      @include text-truncate;
+      font-weight: $font-weight-normal;
+    }
+
+    .resourcing-gap-flag {
+      display: inline-flex;
+      align-items: center;
+      gap: $spacing-1;
+      font-size: 0.7rem;
+      font-weight: $font-weight-medium;
+      color: $color-warning-text;
+      background: $color-warning-bg;
+      border: 1px solid $color-warning-border;
+      border-radius: $radius-sm;
+      padding: 0.1rem $spacing-2;
+      margin-top: $spacing-1;
+    }
+  }
+
+  .days-badge {
+    display: inline-block;
+    padding: $spacing-1 $spacing-3;
+    border-radius: $radius-sm;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+
+    &--urgent {
+      background: $color-danger-bg;
+      color: $color-danger;
+      border: 1px solid $color-danger-border;
+    }
+
+    &--warning {
+      background: $color-warning-bg;
+      color: $color-warning-text;
+      border: 1px solid $color-warning-border;
+    }
+
+    &--normal {
+      background: $color-bg;
+      color: $color-text-muted;
+      border: 1px solid $color-border-soft;
+    }
+
+    &--none {
+      color: $color-text-fainter;
+      font-style: italic;
+    }
+  }
+
+  .readiness-cell {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+
+    .readiness-bar-bg {
+      flex: 1;
+      max-width: 6rem;
+      height: 0.5rem;
+      background: $color-border-soft;
+      border-radius: $radius-full;
+      overflow: hidden;
+
+      .readiness-bar-fill {
+        height: 100%;
+        border-radius: $radius-full;
+        transition: width 0.4s ease;
+      }
+    }
+
+    .readiness-score {
+      font-weight: $font-weight-medium;
+      font-size: $font-size-xs;
+      min-width: 2.25rem;
+    }
+
+    &.readiness--success {
+      .readiness-bar-fill {
+        background-color: $color-success;
+      }
+      .readiness-score {
+        color: $color-success;
+      }
+    }
+
+    &.readiness--info {
+      .readiness-bar-fill {
+        background-color: $color-primary;
+      }
+      .readiness-score {
+        color: $color-primary;
+      }
+    }
+
+    &.readiness--warning {
+      .readiness-bar-fill {
+        background-color: $color-accent-amber;
+      }
+      .readiness-score {
+        color: $color-accent-amber;
+      }
+    }
+
+    &.readiness--danger {
+      .readiness-bar-fill {
+        background-color: $color-danger;
+      }
+      .readiness-score {
+        color: $color-danger;
+      }
+    }
+  }
+
+  .day-one-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-1;
+    padding: $spacing-1 $spacing-2;
+    border-radius: $radius-sm;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    background: $color-success-bg;
+    color: $color-success-text;
+    border: 1px solid $color-success-border;
+
+    .badge-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 0.875rem;
+      height: 0.875rem;
+      flex-shrink: 0;
+
+      ::ng-deep span,
+      ::ng-deep svg,
+      svg {
+        display: block;
+        width: 0.875rem;
+        height: 0.875rem;
+        stroke-width: 2.25;
+      }
+    }
+
+    &--exception {
+      background: $color-warning-bg;
+      color: $color-warning-text;
+      border-color: $color-warning-border;
+    }
+
+    &--pending {
+      background: $color-bg;
+      color: $color-text-faint;
+      border: 1px solid $color-border-soft;
+      font-weight: $font-weight-normal;
+    }
+  }
+
+  .blocker-badge {
+    display: inline-block;
+    padding: $spacing-1 $spacing-3;
+    border-radius: $radius-sm;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+
+    &--active {
+      background: $color-danger-bg;
+      color: $color-danger-text;
+      border: 1px solid $color-danger-border;
+    }
+
+    &--zero {
+      background: $color-surface-hover;
+      color: $color-text-faint;
+    }
+  }
+}
+
+/* Loading State */
+.loading-state {
+  @include flex-column($spacing-4);
+  @include flex-center;
+  padding: $spacing-8 $spacing-6;
+  background: $color-surface;
+  border-radius: $radius-2xl;
+  border: 1px solid $color-border-soft;
+  color: $color-text-faint;
+}

@@ -1,0 +1,36 @@
+@use 'styles/tokens' as *;
+
+:host {
+  display: block;
+}
+
+.alert {
+  padding: $spacing-3 $spacing-4;
+  margin-bottom: $spacing-4;
+  border-radius: $radius-lg;
+  font-size: $font-size-sm;
+
+  &--danger {
+    background-color: $color-danger-bg;
+    border: 1px solid $color-danger-border;
+    color: $color-danger-text;
+  }
+
+  &--warning {
+    background-color: $color-amber-50;
+    border: 1px solid $color-warning-border;
+    color: $color-warning-dark;
+  }
+
+  &--neutral {
+    background-color: $color-bg;
+    border: 1px solid $color-border-soft;
+    color: $color-text-muted;
+  }
+
+  &--success {
+    background-color: $color-success-bg-alt;
+    border: 1px solid $color-success-border-alt;
+    color: $color-emerald-700;
+  }
+}

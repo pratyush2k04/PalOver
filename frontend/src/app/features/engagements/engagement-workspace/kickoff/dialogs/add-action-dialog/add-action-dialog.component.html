@@ -1,0 +1,37 @@
+<h2 class="app-dialog__title">Add action item</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
+    <app-input
+      id="action-title"
+      label="Action"
+      [required]="true"
+      formControlName="title"
+      [errorMessages]="{ required: messages.ACTION_TITLE_REQUIRED }"
+    />
+
+    <app-select
+      id="action-owner"
+      label="Owner"
+      [required]="true"
+      formControlName="ownerId"
+      [options]="ownerOptions()"
+      [errorMessages]="{ required: messages.OWNER_NAME_REQUIRED }"
+    />
+
+    <app-datepicker
+      id="action-due-date"
+      label="Due date"
+      [min]="minDate"
+      [max]="billingStartDate()"
+      [required]="true"
+      formControlName="dueDate"
+      [errorMessages]="{ required: messages.DUE_DATE_REQUIRED, pastDate: 'Date cannot be in the past.' }"
+    />
+  </div>
+
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+    <app-button type="submit" variant="flat">Add</app-button>
+  </div>
+</form>

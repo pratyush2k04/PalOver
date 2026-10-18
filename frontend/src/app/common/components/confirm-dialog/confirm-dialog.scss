@@ -1,0 +1,36 @@
+@use 'styles/tokens' as *;
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba($color-black, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $z-index-modal;
+  font-family: $font-family-base;
+}
+
+.modal-card {
+  width: 28.75rem;
+  max-width: calc(100vw - 3rem);
+  background: $color-surface;
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-modal;
+  overflow: hidden;
+
+  p {
+    margin: 0;
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+
+    strong {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+  }
+}
+

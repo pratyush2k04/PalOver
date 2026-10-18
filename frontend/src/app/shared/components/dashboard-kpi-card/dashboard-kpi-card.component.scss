@@ -1,0 +1,111 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+.kpi-card {
+  height: 100%;
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-card;
+  border: 1px solid $color-border-soft;
+  background-color: $color-surface;
+  transition: transform $transition-base, box-shadow $transition-base;
+  position: relative;
+  overflow: hidden;
+
+  .card-body {
+    padding: $spacing-6;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .kpi-header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-5;
+    margin-bottom: $spacing-2;
+    z-index: 2;
+  }
+
+  .icon-wrapper {
+    width: 3.75rem;
+    height: 3.75rem;
+    border-radius: $radius-3xl;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    span {
+      display: flex;
+    }
+
+    ::ng-deep svg {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
+
+    &.text-primary {
+      background-color: $color-primary-light;
+
+      ::ng-deep svg {
+        stroke: $color-primary;
+        fill: none;
+      }
+    }
+
+    &.text-danger {
+      background-color: $color-danger-bg;
+
+      ::ng-deep svg {
+        stroke: $color-danger;
+        fill: none;
+      }
+    }
+
+    &.text-success {
+      background-color: $color-success-bg;
+
+      ::ng-deep svg {
+        stroke: $color-success;
+        fill: none;
+      }
+    }
+
+    &.text-warning {
+      background-color: $color-warning-bg;
+
+      ::ng-deep svg {
+        stroke: $color-warning;
+        fill: none;
+      }
+    }
+
+    &.text-info {
+      background-color: $color-info-bg;
+
+      ::ng-deep svg {
+        stroke: $color-info;
+        fill: none;
+      }
+    }
+  }
+
+  .kpi-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .count {
+    font-size: 2.25rem;
+    font-weight: $font-weight-bold;
+    line-height: 1;
+    color: $color-text;
+    margin-bottom: 0.15rem;
+  }
+
+  .title {
+    font-size: 0.95rem;
+    font-weight: $font-weight-semibold;
+    color: $color-text-faint;
+  }
+}

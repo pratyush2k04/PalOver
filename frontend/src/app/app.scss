@@ -1,0 +1,50 @@
+@use 'styles/tokens' as *;
+
+.container {
+  max-width: 40rem;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  font-family: system-ui, sans-serif;
+}
+
+.subtitle {
+  color: $color-text-subdued;
+}
+
+.note-form {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+
+  input {
+    flex: 1;
+    padding: 0.5rem;
+  }
+
+  button {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+  }
+}
+
+.error {
+  color: $color-danger-crimson;
+}
+
+.notes {
+  list-style: none;
+  padding: 0;
+
+  li {
+    padding: 0.75rem;
+    border: 1px solid $color-border-default;
+    border-radius: $radius-md;
+    margin-bottom: 0.5rem;
+
+    small {
+      display: block;
+      color: $color-text-light;
+      margin-top: 0.25rem;
+    }
+  }
+}

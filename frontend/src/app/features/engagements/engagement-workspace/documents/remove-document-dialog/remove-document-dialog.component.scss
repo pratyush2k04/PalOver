@@ -1,0 +1,31 @@
+@use 'styles/tokens' as *;
+
+:host {
+  display: block;
+  width: 32.5rem;
+  max-width: calc(100vw - 3rem);
+}
+
+.confirmation-warning {
+  background-color: $color-danger-bg;
+  border-left: 4px solid $color-danger-500;
+  padding: $spacing-3 $spacing-4;
+  border-radius: $radius-md;
+
+  p {
+    margin: 0;
+    color: $color-danger-text;
+    font-size: $font-size-sm;
+    line-height: 1.4;
+
+    strong {
+      word-break: break-all;
+    }
+  }
+
+  .sub-text {
+    margin-top: 0.35rem;
+    font-size: $font-size-xs;
+    color: $color-danger-hover;
+  }
+}

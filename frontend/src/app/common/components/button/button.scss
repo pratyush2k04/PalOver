@@ -1,0 +1,135 @@
+@use 'styles/tokens' as *;
+
+:host {
+  display: inline-block;
+}
+
+:host(.full-width) {
+  display: block;
+}
+
+.btn {
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-2;
+  width: var(--btn-width, auto);
+  height: var(--btn-height, auto);
+  min-height: var(--btn-min-height, auto);
+  font-size: var(--btn-font-size, #{$font-size-sm});
+  font-weight: var(--btn-font-weight, #{$font-weight-medium});
+  line-height: var(--btn-line-height, normal);
+  border-radius: var(--btn-border-radius, #{$radius-md});
+  padding: var(--btn-padding, #{$spacing-2} #{$spacing-4});
+  cursor: pointer;
+  border: 1px solid var(--btn-border, transparent);
+  background-color: var(--btn-bg, transparent);
+  color: var(--btn-color, #{$color-text-muted});
+  transition: background-color $transition-base, color $transition-base, border-color $transition-base;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &--sm {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  &--full-width {
+    width: 100%;
+  }
+
+  &--stroked {
+    border-color: var(--btn-border, #{$color-border-input});
+    background-color: var(--btn-bg, #{$color-surface});
+    color: var(--btn-color, #{$color-text-muted});
+
+    &:hover:not(:disabled) {
+      background-color: var(--btn-bg-hover, #{$color-bg});
+      color: var(--btn-color-hover, var(--btn-color, #{$color-text-muted}));
+      border-color: var(--btn-border-hover, var(--btn-border, #{$color-border-input}));
+    }
+  }
+
+  &--flat {
+    background-color: var(--btn-bg, #{$color-primary});
+    color: var(--btn-color, #{$color-surface});
+
+    &:hover:not(:disabled) {
+      background-color: var(--btn-bg-hover, #{$color-primary-hover});
+    }
+  }
+
+  &--accent {
+    background-color: $color-orange-brand;
+    color: $color-surface;
+
+    &:hover:not(:disabled) {
+      background-color: $color-accent-amber-hover;
+    }
+  }
+
+  &--danger {
+    background-color: $color-danger-bg;
+    color: $color-danger;
+    border-color: $color-danger-border;
+
+    &:hover:not(:disabled) {
+      background-color: $color-danger-light;
+    }
+  }
+
+  &--icon {
+    width: var(--btn-width, 1.75rem);
+    height: var(--btn-height, 1.75rem);
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--btn-color, #{$color-text-fainter});
+
+    &:hover:not(:disabled) {
+      background-color: var(--btn-bg-hover, #{$color-bg});
+      color: var(--btn-color-hover, #{$color-text});
+    }
+  }
+
+  &--success {
+    background-color: $color-success;
+    color: $color-surface;
+
+    &:hover:not(:disabled) {
+      background-color: $color-success-text;
+    }
+  }
+
+  &--warning {
+    background-color: $color-warning-bg;
+    color: $color-warning-text;
+    border-color: $color-warning-border;
+
+    &:hover:not(:disabled) {
+      background-color: $color-warning;
+      color: $color-surface;
+    }
+  }
+}
+
+.spinner {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  border: $radius-xs solid currentColor;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

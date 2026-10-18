@@ -1,0 +1,173 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: $font-family-base;
+  color: $color-text;
+}
+
+.audit-log {
+  padding: $spacing-8;
+  font-family: $font-family-base;
+  color: $color-text;
+
+  @include respond-to-down('md') {
+    padding: $spacing-4;
+  }
+
+  &.workspace-tab {
+    padding: 0;
+    max-width: none;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-3;
+  }
+}
+
+.header-actions-group {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  flex-wrap: wrap;
+
+  @include respond-to-down('md') {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-2;
+    width: fit-content;
+    max-width: 100%;
+
+    .to-fro-date-group {
+      width: fit-content;
+      max-width: 100%;
+      gap: $spacing-2;
+
+      app-datepicker {
+        min-width: 0;
+      }
+    }
+
+    app-select,
+    app-input,
+    app-button {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+
+  .to-fro-date-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: $spacing-3;
+  }
+
+  app-input,
+  app-datepicker,
+  app-button {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  app-select,
+  app-input,
+  app-datepicker {
+    --field-margin-bottom: 0;
+  }
+
+  app-select {
+    display: block;
+    min-width: 8.5rem;
+
+    &.audit-category-select {
+      min-width: 11.5rem;
+    }
+  }
+
+  app-input {
+    min-width: 8.75rem;
+    --input-height: 2.375rem;
+  }
+
+  app-datepicker {
+    min-width: 9.5rem;
+  }
+
+  app-button {
+    --btn-height: 2.375rem;
+  }
+}
+
+.table-card {
+  background: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-card;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+  min-width: 48rem;
+  border-collapse: collapse;
+}
+
+thead th {
+  text-align: left;
+  padding: $spacing-4 $spacing-6;
+  @include text-overline;
+  color: $color-text-muted;
+  background: $color-surface-hover;
+  border-bottom: 1px solid $color-border-soft;
+}
+
+tbody tr {
+  border-bottom: 1px solid $color-border-soft;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: $color-surface-hover;
+  }
+}
+
+td {
+  padding: $spacing-4 $spacing-6;
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  vertical-align: middle;
+}
+
+.col-date {
+  white-space: nowrap;
+  color: $color-text-faint;
+}
+
+.col-user {
+  font-weight: $font-weight-medium;
+  color: $color-text;
+
+  .user-cell {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    white-space: nowrap;
+
+    .user-name {
+      font-weight: $font-weight-medium;
+      color: $color-text;
+    }
+  }
+}
+
+.empty-row {
+  padding: $spacing-6;
+  text-align: center;
+}

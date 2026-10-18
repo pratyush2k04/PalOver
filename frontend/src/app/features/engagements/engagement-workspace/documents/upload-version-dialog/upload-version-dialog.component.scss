@@ -1,0 +1,15 @@
+@use 'styles/tokens' as *;
+
+:host {
+  display: block;
+  width: 32.5rem;
+  max-width: calc(100vw - 3rem);
+}
+
+.file-preview {
+  margin: 0;
+  font-size: $font-size-sm;
+  font-weight: 500;
+  color: $color-text;
+  word-break: break-all;
+}

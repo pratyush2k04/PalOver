@@ -1,0 +1,101 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+:host {
+  display: block;
+}
+
+.section-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: $color-slate-900;
+}
+
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+
+  @include respond-to-down('md') {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+.pillar-card {
+  background: $color-slate-50;
+  border: 0.0625rem solid $color-slate-200;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  &.ready { border-left: 0.25rem solid $color-success; }
+  &.attention { border-left: 0.25rem solid $color-accent-amber; }
+}
+
+.pillar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  h4 { margin: 0; font-size: 0.95rem; font-weight: 600; color: $color-slate-900; }
+}
+
+.pillar-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+
+  .metric-number {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: $color-slate-900;
+    line-height: 1.1;
+    &.text-danger { color: $color-danger; }
+    &.text-muted { color: $color-slate-400; }
+  }
+  .metric-caption { font-size: 0.8rem; color: $color-slate-500; }
+}
+
+.pillar-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  border-top: 0.0625rem dashed $color-slate-200;
+  padding-top: 0.5rem;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: $color-slate-500;
+  .font-medium { font-weight: 500; color: $color-slate-800; }
+  .text-danger { color: $color-danger; font-weight: 600; }
+}
+
+@media print {
+  .section-container {
+    gap: 0.5rem !important;
+  }
+  .pillars-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.625rem !important;
+  }
+  .pillar-card {
+    padding: 0.75rem 1rem !important;
+    gap: 0.5rem !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

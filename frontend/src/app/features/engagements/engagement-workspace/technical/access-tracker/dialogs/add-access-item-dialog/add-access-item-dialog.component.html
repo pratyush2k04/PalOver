@@ -1,0 +1,39 @@
+<h2 class="app-dialog__title">Add New Access Item</h2>
+
+<form (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
+    <app-input
+      id="item-name"
+      label="Item Name"
+      [required]="true"
+      [maxLength]="200"
+      [ngModel]="name()"
+      (ngModelChange)="onNameChange($event)"
+      name="itemName"
+      placeholder="e.g., Client VPN access"
+      [extraError]="nameError() || null"
+    />
+
+    <app-checkbox
+      label="Client-side dependency"
+      [ngModel]="isClientSide()"
+      (ngModelChange)="isClientSide.set($event)"
+      name="isClientSide"
+    />
+
+    <app-input
+      id="tz-note"
+      label="Notes / Timezone"
+      [maxLength]="100"
+      [ngModel]="timeZoneNote()"
+      (ngModelChange)="timeZoneNote.set($event)"
+      name="timeZoneNote"
+      placeholder="e.g., Client is IST"
+    />
+  </div>
+
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+    <app-button type="submit" variant="flat">Save</app-button>
+  </div>
+</form>

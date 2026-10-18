@@ -1,0 +1,11 @@
+<h2 class="app-dialog__title">{{ constants.MODAL_REASON_VIEW_TITLE }}</h2>
+
+<div class="app-dialog__content">
+  <p class="reason-text">{{ data.reason }}</p>
+</div>
+
+<div class="app-dialog__actions">
+  <app-button type="button" variant="stroked" (click)="onClose()">
+    {{ constants.BTN_CLOSE }}
+  </app-button>
+</div>

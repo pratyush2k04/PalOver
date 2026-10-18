@@ -1,0 +1,460 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+.architecture-validation-card {
+  background-color: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-card;
+  padding: $spacing-6;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid $color-gray-100;
+
+    .title-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: $color-gray-900;
+        margin: 0;
+      }
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+  }
+
+  .loading-state {
+    padding: 2rem;
+    text-align: center;
+    color: $color-gray-500;
+  }
+}
+
+.section-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  .section-header {
+    .section-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+
+      .btn-icon {
+        width: 1rem;
+        height: 1rem;
+      }
+    }
+
+    h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: $color-gray-700;
+      margin: 0 0 0.2rem 0;
+    }
+
+    .section-desc {
+      font-size: 0.825rem;
+      color: $color-gray-500;
+      margin: 0;
+    }
+  }
+}
+
+/* Section 1: Architecture Status */
+.status-section {
+  background-color: $color-gray-50;
+  border: 1px solid $color-gray-100;
+  border-radius: $radius-lg;
+  padding: 1.25rem;
+
+  .status-selector-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.5rem;
+
+    .status-options {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+  }
+
+  .status-option-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    background-color: $color-surface;
+    border: 1.5px solid $color-gray-200;
+    border-radius: $radius-lg;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    min-width: 13.75rem;
+
+    input[type='radio'] {
+      display: none;
+    }
+
+    .radio-custom {
+      width: 1.125rem;
+      height: 1.125rem;
+      border-radius: 50%;
+      border: $radius-xs solid $color-gray-300;
+      display: inline-block;
+      margin-top: 0.125rem;
+      flex-shrink: 0;
+      position: relative;
+      transition: all 0.15s ease;
+    }
+
+    .option-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+
+      strong {
+        font-size: 0.875rem;
+        color: $color-gray-800;
+      }
+
+      span {
+        font-size: 0.75rem;
+        color: $color-gray-500;
+      }
+    }
+
+    &.selected {
+      border-color: $color-primary;
+      background-color: $color-primary-light;
+
+      .radio-custom {
+        border-color: $color-primary;
+        background-color: $color-primary;
+        box-shadow: inset 0 0 0 3px $color-surface;
+      }
+
+      .option-text strong {
+        color: $color-primary-dark;
+      }
+    }
+
+    &.disabled {
+      cursor: default;
+      opacity: 0.85;
+    }
+  }
+
+  .status-readonly-display {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .status-readonly-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: $radius-md;
+    border: 1.5px solid $color-gray-200;
+    background-color: $color-surface;
+    min-width: 15rem;
+
+    &.valid {
+      border-color: $color-success-border;
+      background-color: $color-success-bg;
+      strong {
+        color: $color-success-dark;
+      }
+    }
+
+    &.modified {
+      border-color: $color-primary-border;
+      background-color: $color-primary-light;
+      strong {
+        color: $color-primary-dark;
+      }
+    }
+
+    .status-readonly-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      strong {
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+    }
+
+    .status-dot {
+      width: 0.625rem;
+      height: 0.625rem;
+      border-radius: 50%;
+      display: inline-block;
+
+      &.valid {
+        background-color: $color-success;
+      }
+
+      &.modified {
+        background-color: $color-primary;
+      }
+    }
+
+    .status-readonly-desc {
+      font-size: 0.8rem;
+      color: $color-gray-500;
+    }
+  }
+
+  .rationale-container {
+    margin-top: 0.75rem;
+  }
+}
+
+/* Section 2: Sizing KPIs */
+.sizing-kpi-section {
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
+    gap: 1rem;
+
+    .kpi-card {
+      background-color: $color-gray-50;
+      border: 1px solid $color-gray-200;
+      border-radius: $radius-lg;
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+
+      &.risk-border {
+        border-color: $color-danger-border-alt;
+        background-color: $color-danger-bg;
+      }
+
+      .kpi-label {
+        @include text-overline;
+        color: $color-gray-500;
+      }
+
+      .kpi-value-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .kpi-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: $color-gray-900;
+
+        .kpi-unit {
+          font-size: 0.95rem;
+          font-weight: 500;
+          color: $color-gray-500;
+        }
+      }
+
+      .kpi-subtext {
+        font-size: 0.75rem;
+        color: $color-gray-500;
+      }
+    }
+  }
+
+  .sizing-risk-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    background-color: $color-rose-50;
+    border: 1px solid $color-rose-200;
+    border-radius: $radius-lg;
+    padding: 0.875rem 1rem;
+    color: $color-rose-800;
+    margin-top: 0.5rem;
+
+    .alert-icon {
+      margin-top: 0.125rem;
+      flex-shrink: 0;
+    }
+
+    .alert-content {
+      font-size: 0.85rem;
+
+      strong {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+      }
+
+      p {
+        margin: 0;
+        color: $color-rose-900;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+    }
+  }
+}
+
+/* Section 3: Feature Table */
+.table-section {
+  .empty-state {
+    text-align: center;
+    padding: 2.5rem;
+    border: 1px dashed $color-gray-300;
+    border-radius: $radius-lg;
+    background-color: $color-surface-gray;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+
+    p {
+      margin: 0;
+      color: $color-gray-500;
+      font-size: 0.875rem;
+    }
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    border: 1px solid $color-gray-200;
+    border-radius: $radius-lg;
+
+    .features-table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.875rem;
+
+      th {
+        @include text-overline;
+        color: $color-gray-500;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid $color-gray-200;
+        background-color: $color-gray-50;
+
+        &.feature-th {
+          width: 48%;
+        }
+
+        &.estimate-th {
+          width: 22%;
+        }
+
+        &.sprint-th {
+          width: 18%;
+        }
+
+        &.actions-col {
+          width: 12%;
+          min-width: 6.25rem;
+          text-align: right;
+        }
+      }
+
+      td {
+        padding: 0.875rem 1rem;
+        border-bottom: 1px solid $color-gray-100;
+        color: $color-gray-700;
+        vertical-align: top;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      .feature-name-cell {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+
+        strong {
+          color: $color-gray-900;
+          font-weight: 500;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          display: block;
+        }
+      }
+
+      .estimate-cell {
+        .weeks-badge {
+          display: inline-block;
+          font-weight: 600;
+          color: $color-primary-dark;
+          background-color: $color-primary-light;
+          padding: 0.2rem 0.5rem;
+          border-radius: $radius-sm;
+          font-size: 0.8rem;
+        }
+      }
+
+      .sprint-cell {
+        .sprint-tag {
+          display: inline-block;
+          font-weight: 500;
+          color: $color-gray-600;
+          background-color: $color-gray-100;
+          padding: 0.2rem 0.5rem;
+          border-radius: $radius-sm;
+          font-size: 0.8rem;
+        }
+      }
+
+      .actions-col {
+        text-align: right;
+        width: 6.25rem;
+      }
+
+      .action-btn-group {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .btn-action {
+        --btn-color: #{$color-gray-500};
+        --btn-color-hover: #{$color-primary};
+        --btn-bg-hover: #{$color-primary-light};
+
+        &.btn-danger {
+          --btn-color-hover: #{$color-danger};
+          --btn-bg-hover: #{$color-danger-light};
+        }
+      }
+
+      .action-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1rem;
+        height: 1rem;
+      }
+    }
+  }
+}

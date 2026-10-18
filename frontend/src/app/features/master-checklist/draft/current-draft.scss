@@ -1,0 +1,215 @@
+@use 'styles/mixins' as *;
+
+:host {
+  display: block;
+  font-family: $font-family-base;
+}
+
+.current-draft {
+  padding: 0;
+
+  &__card {
+    background-color: $color-surface;
+    border: 1px solid $color-border-soft;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+    overflow: hidden;
+  }
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: $spacing-3;
+    padding: $spacing-5 $spacing-6;
+    background-color: $color-surface;
+
+    @include respond-to('sm') {
+      flex-direction: row;
+      align-items: center;
+      gap: $spacing-4;
+    }
+
+    h1 {
+      color: $color-text;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-bold;
+      margin: 0 0 $spacing-1;
+    }
+  }
+
+  &__header-title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-3;
+    width: 100%;
+    flex-wrap: wrap;
+
+    @include respond-to('sm') {
+      width: auto;
+      flex-wrap: nowrap;
+    }
+  }
+
+  &__list-header {
+    @include flex-between;
+    padding: $spacing-3 $spacing-6;
+    background-color: $color-surface;
+    border-top: 1px solid $color-border-soft;
+    border-bottom: 1px solid $color-border-soft;
+    color: $color-text;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-bold;
+
+    &--retired {
+      background-color: $color-surface-hover;
+      border-top: 1px solid $color-border-soft;
+    }
+  }
+
+  &__hint {
+    color: $color-text-fainter;
+    font-weight: $font-weight-normal;
+    font-size: $font-size-xs;
+  }
+
+  &__row {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-4;
+    padding: $spacing-4 $spacing-6;
+    border-bottom: 1px solid $color-border-soft;
+    background-color: $color-surface;
+    transition: opacity $transition-fast, background-color $transition-fast;
+
+    @include respond-to-down('sm') {
+      padding: $spacing-3 $spacing-4;
+      gap: $spacing-3;
+      flex-wrap: wrap;
+
+      .current-draft__row-actions {
+        width: 100%;
+        justify-content: flex-end;
+        border-top: 1px dashed $color-border-soft;
+        padding-top: $spacing-2;
+      }
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &--retired {
+      background-color: $color-surface-hover;
+    }
+
+    &--dragging {
+      opacity: 0.4;
+    }
+
+    &--drag-over {
+      background-color: $color-primary-light;
+      box-shadow: inset 0 2px 0 $color-primary;
+    }
+  }
+
+  &__drag-handle {
+    display: flex;
+    align-items: center;
+    color: $color-text-fainter;
+    cursor: grab;
+    padding-top: 0.125rem;
+    font-size: $font-size-base;
+  }
+
+  &__row-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__row-title {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    color: $color-text;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    flex-wrap: wrap;
+  }
+
+  &__row-meta {
+    color: $color-text-fainter;
+    font-size: $font-size-xs;
+    margin-top: 0.125rem;
+  }
+
+  &__row-description {
+    color: $color-text-faint;
+    font-size: $font-size-sm;
+    margin-top: $spacing-1;
+    line-height: 1.4;
+  }
+
+  &__row-actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-1;
+  }
+
+  &__action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: $color-text-faint;
+    transition: color $transition-fast, transform $transition-fast;
+
+    ::ng-deep svg,
+    svg {
+      width: 1.1rem;
+      height: 1.1rem;
+      stroke: currentColor;
+      transition: stroke $transition-fast;
+    }
+  }
+
+  app-button.current-draft__action-btn--edit {
+    &:hover:not([disabled]) {
+      .current-draft__action-icon {
+        color: $color-primary;
+
+        ::ng-deep svg,
+        svg {
+          stroke: $color-primary;
+        }
+      }
+    }
+  }
+
+  app-button.current-draft__action-btn--retire {
+    &:hover:not([disabled]) {
+      .current-draft__action-icon {
+        color: $color-accent-orange;
+
+        ::ng-deep svg,
+        svg {
+          stroke: $color-accent-orange;
+        }
+      }
+    }
+  }
+
+  &__empty {
+    color: $color-text-fainter;
+    font-size: $font-size-sm;
+    text-align: center;
+    padding: $spacing-6 0;
+  }
+}
+

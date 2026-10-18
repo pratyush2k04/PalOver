@@ -1,0 +1,66 @@
+@use 'styles/mixins' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.page-header {
+  @include flex-between;
+  align-items: flex-start;
+  gap: $spacing-6;
+  margin-bottom: var(--page-header-margin-bottom, #{$spacing-6});
+  flex-wrap: wrap;
+
+  @include respond-to-down('md') {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-4;
+    margin-bottom: $spacing-4;
+  }
+
+  .header-titles {
+    flex: 1;
+    min-width: 16.25rem;
+
+    @include respond-to-down('md') {
+      min-width: 0;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: $font-weight-bold;
+      color: $color-text;
+      margin: 0 0 $spacing-2 0;
+      letter-spacing: -0.02em;
+
+      @include respond-to-down('md') {
+        font-size: 1.35rem;
+      }
+    }
+
+    .subtitle {
+      font-size: $font-size-sm;
+      color: $color-text-faint;
+      margin: 0;
+      line-height: 1.5;
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-4;
+    flex-shrink: 0;
+
+    @include respond-to-down('md') {
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    &:empty {
+      display: none;
+    }
+  }
+}

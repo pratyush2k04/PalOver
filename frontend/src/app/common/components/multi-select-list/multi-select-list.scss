@@ -1,0 +1,85 @@
+@use 'styles/tokens' as *;
+
+:host {
+  display: block;
+}
+
+.multi-select-empty {
+  font-size: 0.875rem;
+  color: $color-slate-500;
+  font-style: italic;
+  margin: 0;
+}
+
+.multi-select-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 10rem;
+  overflow-y: auto;
+  border: 1px solid $color-slate-300;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  background-color: $color-surface-gray;
+
+  &--cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    max-height: none;
+    overflow-y: visible;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+  }
+}
+
+.multi-select-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: $color-slate-700;
+  cursor: pointer;
+  user-select: none;
+
+  input[type='checkbox'] {
+    width: 1rem;
+    height: 1rem;
+    accent-color: $color-primary;
+    cursor: pointer;
+  }
+
+  .multi-select-list--cards & {
+    gap: 0.625rem;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid $color-slate-200;
+    border-radius: $radius-lg;
+    transition: all 0.15s ease;
+
+    input[type='checkbox'] {
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+
+    &:hover {
+      border-color: $color-slate-300;
+      background-color: $color-slate-50;
+    }
+
+    &.is-selected {
+      border-color: $color-primary;
+      background-color: $color-primary-light;
+
+      .multi-select-item__label {
+        color: $color-primary-hover;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+.multi-select-item__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}

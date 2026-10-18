@@ -1,0 +1,100 @@
+using Microsoft.Extensions.DependencyInjection;
+using Pdr.Api.Repositories;
+using Pdr.Api.Repositories.Interfaces;
+using Pdr.Api.Services;
+using Pdr.Api.Services.Audit;
+using Pdr.Api.Services.Interfaces;
+using Pdr.Api.Services.Notifications;
+using Pdr.Api.Services.Templating;
+
+namespace Pdr.Api.Extensions;
+
+public static class DependencyInjectionExtensions
+{
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    {
+        services.AddHttpContextAccessor();
+
+        // Repositories
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddScoped<IEngagementRepository, EngagementRepository>();
+        services.AddScoped<IDocumentRepository, DocumentRepository>();
+        services.AddScoped<IHandoverRepository, HandoverRepository>();
+        services.AddScoped<IHandoverReadinessRepository, HandoverReadinessRepository>();
+        services.AddScoped<ICommitmentRepository, CommitmentRepository>();
+        services.AddScoped<IRealisticCommitmentRepository, RealisticCommitmentRepository>();
+        services.AddScoped<IHandoverQueryRepository, HandoverQueryRepository>();
+        services.AddScoped<IHandoverQueryMessageRepository, HandoverQueryMessageRepository>();
+        services.AddScoped<IMasterChecklistRepository, MasterChecklistRepository>();
+        services.AddScoped<ICommunicationCadenceRepository, CommunicationCadenceRepository>();
+        services.AddScoped<IEngagementChecklistRepository, EngagementChecklistRepository>();
+        services.AddScoped<IAccessTrackerRepository, AccessTrackerRepository>();
+        services.AddScoped<IEnvironmentToolingRepository, EnvironmentToolingRepository>();
+        services.AddScoped<IBrownfieldFindingRepository, BrownfieldFindingRepository>();
+        services.AddScoped<IChangeRequestRepository, ChangeRequestRepository>();
+        services.AddScoped<IPersonRepository, PersonRepository>();
+        services.AddScoped<IClientContactTransitionRepository, ClientContactTransitionRepository>();
+        services.AddScoped<IRiskRepository, RiskRepository>();
+        services.AddScoped<IRiskCommentRepository, RiskCommentRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<IKickoffReminderRepository, KickoffReminderRepository>();
+        services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+        services.AddScoped<IArchitectureValidationRepository, ArchitectureValidationRepository>();
+        services.AddScoped<ISearchRepository, SearchRepository>();
+        services.AddScoped<IResourceRequestRepository, ResourceRequestRepository>();
+        services.AddScoped<IDependencyRepository, DependencyRepository>();
+        services.AddScoped<IAssumptionRepository, AssumptionRepository>();
+        services.AddScoped<IHomeRepository, HomeRepository>();
+
+        // Services
+        services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IUserManagementService, UserManagementService>();
+        services.AddScoped<IProfileService, ProfileService>();
+        services.AddScoped<IEngagementAccessService, EngagementAccessService>();
+        services.AddScoped<IEngagementService, EngagementService>();
+        services.AddScoped<IHandoverAccessService, HandoverAccessService>();
+        services.AddScoped<IHandoverService, HandoverService>();
+        services.AddScoped<IHandoverReadinessService, HandoverReadinessService>();
+        services.AddScoped<ICommitmentService, CommitmentService>();
+        services.AddScoped<IRealisticCommitmentService, RealisticCommitmentService>();
+        services.AddScoped<IHandoverQueriesService, HandoverQueriesService>();
+        services.AddScoped<IKickoffReadinessService, KickoffReadinessService>();
+        services.AddScoped<IKickoffReminderService, KickoffReminderService>();
+        services.AddScoped<IMasterChecklistService, MasterChecklistService>();
+        services.AddScoped<IHomeService, HomeService>();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<IDocumentService, DocumentService>();
+        services.AddScoped<ICommunicationCadenceService, CommunicationCadenceService>();
+        services.AddScoped<IEngagementChecklistService, EngagementChecklistService>();
+        services.AddScoped<IAccessTrackerService, AccessTrackerService>();
+        services.AddScoped<IEnvironmentToolingService, EnvironmentToolingService>();
+        services.AddScoped<IBrownfieldFindingService, BrownfieldFindingService>();
+        services.AddScoped<IChangeRequestService, ChangeRequestService>();
+        services.AddScoped<IPersonService, PersonService>();
+        services.AddScoped<IClientContactTransitionService, ClientContactTransitionService>();
+        services.AddScoped<IRiskService, RiskService>();
+        services.AddScoped<IRiskCommentService, RiskCommentService>();
+        services.AddScoped<IKickoffRepository, KickoffRepository>();
+        services.AddScoped<IKickoffService, KickoffService>();
+        services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IBlockerEscalationService, BlockerEscalationService>();
+        services.AddHostedService<BlockerEscalationBackgroundService>();
+        services.AddScoped<IAuditLogService, AuditLogService>();
+        services.AddScoped<IArchitectureValidationService, ArchitectureValidationService>();
+        services.AddScoped<ISearchService, SearchService>();
+        services.AddScoped<IResourceRequestService, ResourceRequestService>();
+        services.AddScoped<ITechnicalSummaryService, TechnicalSummaryService>();
+        services.AddScoped<ITechnicalReadinessNotificationService, TechnicalReadinessNotificationService>();
+        services.AddScoped<IDependencyService, DependencyService>();
+        services.AddScoped<IAssumptionService, AssumptionService>();
+        services.AddScoped<IKpiReportService, KpiReportService>();
+        services.AddScoped<TemplateMapperResolver<INotificationTemplateMapper>>();
+        services.AddScoped<TemplateMapperResolver<IAuditTemplateMapper>>();
+        services.AddScoped<IBatchDataPreloader, BatchDataPreloader>();
+        services.AddSingleton<TemplateRenderer>();
+
+        return services;
+    }
+}

@@ -1,0 +1,145 @@
+<div class="allocation-page">
+  <!-- Page Header -->
+  <app-page-header
+    title="Leadership Allocation"
+    description="Assign and manage Leadership contacts for all active engagements across the organization."
+  />
+
+  <!-- Summary Metric Cards -->
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-icon total">
+        <span [inlineSVG]="'assets/icons/users.svg'"></span>
+      </div>
+      <div class="metric-content">
+        <span class="metric-value">{{ totalCount() }}</span>
+        <span class="metric-label">Total Engagements</span>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-icon warning">
+        <span [inlineSVG]="'assets/icons/alert-circle.svg'"></span>
+      </div>
+      <div class="metric-content">
+        <span class="metric-value">{{ needingCount() }}</span>
+        <span class="metric-label">Needing Leadership Contact</span>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-icon success">
+        <span [inlineSVG]="'assets/icons/check-circle.svg'"></span>
+      </div>
+      <div class="metric-content">
+        <span class="metric-value">{{ allocatedCount() }}</span>
+        <span class="metric-label">Allocated Engagements</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search & Filter Controls -->
+  <div class="controls-bar">
+    <div class="search-box">
+      <span class="search-icon" [inlineSVG]="'assets/icons/search.svg'"></span>
+      <input
+        type="text"
+        placeholder="Search by engagement or client name..."
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+      />
+    </div>
+
+    <div class="filter-tabs">
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="filterMode() === 'all'"
+        (click)="setFilterMode('all')"
+      >
+        All Engagements
+      </button>
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="filterMode() === 'needing'"
+        (click)="setFilterMode('needing')"
+      >
+        Needing Allocation ({{ needingCount() }})
+      </button>
+    </div>
+  </div>
+
+  <!-- Content Section -->
+  @if (loading()) {
+    <div class="loading-container">
+      <app-loading-spinner></app-loading-spinner>
+      <p>Loading engagements...</p>
+    </div>
+  } @else {
+    @if (filteredEngagements().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">
+          <span [inlineSVG]="'assets/icons/clipboard.svg'"></span>
+        </div>
+        <h3>No engagements found</h3>
+        <p>No engagements match your current search or filter criteria.</p>
+      </div>
+    } @else {
+      <div class="table-card">
+        <table class="engagements-table">
+          <thead>
+            <tr>
+              <th class="col-engagement">Engagement & Client</th>
+              <th class="col-type">Type / Model</th>
+              <th class="col-contacts">Assigned Leadership Contacts</th>
+              <th class="col-actions">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (eng of filteredEngagements(); track eng.engagementId) {
+              <tr>
+                <td class="engagement-name-cell col-engagement">
+                  <div class="eng-title">{{ eng.engagementName }}</div>
+                  <div class="client-name">{{ eng.clientName }}</div>
+                </td>
+                <td class="type-cell col-type" [attr.data-type]="eng.engagementType">
+                  <app-status-badge [tone]="getTypeTone(eng.engagementType)">{{ eng.engagementType }}</app-status-badge>
+                  <div class="model-sub">{{ eng.commercialModel }}</div>
+                </td>
+                <td class="col-contacts">
+                  @if (eng.leadershipUsers && eng.leadershipUsers.length > 0) {
+                    <div class="contacts-chips">
+                      @for (user of eng.leadershipUsers; track user.id) {
+                        <span class="leadership-chip">
+                          <span [inlineSVG]="'assets/icons/user.svg'"></span>
+                          {{ user.fullName }}
+                        </span>
+                      }
+                    </div>
+                  }
+                </td>
+                <td class="actions-col">
+                  @if (eng.hasHandoverDraft) {
+                    <app-button
+                      type="button"
+                      variant="flat"
+                      (click)="openAssignModal(eng)"
+                    >
+                      <span class="assign-icon" [inlineSVG]="'assets/icons/user-plus.svg'"></span>
+                      Assign Leadership
+                    </app-button>
+                  } @else {
+                    <app-status-badge tone="warning">
+                      Handover Not Submitted
+                    </app-status-badge>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>

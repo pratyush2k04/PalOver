@@ -1,0 +1,9 @@
+<label class="app-checkbox">
+  <input
+    type="checkbox"
+    [checked]="value"
+    [disabled]="disabled()"
+    (change)="onCheckboxChange($any($event.target).checked)"
+  />
+  {{ label() }}
+</label>

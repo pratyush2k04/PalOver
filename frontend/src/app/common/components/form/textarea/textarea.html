@@ -1,0 +1,33 @@
+<div class="app-field" [class.app-field--invalid]="showError">
+  @if (label()) {
+    <label [for]="id()">
+      {{ label() }}
+      @if (required()) {
+        <span class="required-asterisk">*</span>
+      }
+    </label>
+  }
+  <textarea
+    [id]="id()"
+    [rows]="rows()"
+    [placeholder]="placeholder()"
+    [attr.maxlength]="maxLength()"
+    [disabled]="disabled()"
+    [class.is-invalid]="showError"
+    [value]="value"
+    (input)="onInput($any($event.target).value)"
+    (blur)="markTouched()"
+  ></textarea>
+  @if (showError || showCounter()) {
+    <div class="app-field__footer">
+      @if (showError) {
+        <span class="app-field__error">{{ errorMessage }}</span>
+      }
+      @if (showCounter()) {
+        <div class="char-counter" [class.char-counter--danger]="counterDanger()">
+          {{ value.length }}/{{ maxLength() }}
+        </div>
+      }
+    </div>
+  }
+</div>

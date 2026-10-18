@@ -1,0 +1,21 @@
+<button
+  [type]="type()"
+  class="btn"
+  [class.btn--flat]="variant() === 'flat'"
+  [class.btn--stroked]="variant() === 'stroked'"
+  [class.btn--accent]="variant() === 'accent'"
+  [class.btn--danger]="variant() === 'danger'"
+  [class.btn--icon]="variant() === 'icon'"
+  [class.btn--success]="variant() === 'success'"
+  [class.btn--warning]="variant() === 'warning'"
+  [class.btn--sm]="size() === 'sm'"
+  [class.btn--full-width]="fullWidth()"
+  [attr.aria-label]="ariaLabel()"
+  [attr.title]="title()"
+  [disabled]="disabled() || loading()"
+>
+  @if (loading()) {
+    <span class="spinner"></span>
+  }
+  <ng-content />
+</button>

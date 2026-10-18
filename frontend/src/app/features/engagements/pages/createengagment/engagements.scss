@@ -1,0 +1,88 @@
+@use 'styles/mixins' as *;
+
+.engagements-page {
+  display: inline-block;
+}
+
+.mark-as-sow-btn {
+  display: inline-flex;
+  white-space: nowrap;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: $color-text;
+  }
+}
+
+.modal-overlay {
+  @include modal-overlay;
+}
+
+.modal-card {
+  @include modal-card(35rem);
+  padding: 0;
+
+  .modal-header {
+    @include flex-between;
+    padding: $spacing-4 $spacing-5;
+    border-bottom: 1px solid $color-border-soft;
+    background: $color-surface-hover;
+
+    h3 {
+      margin: 0;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-semibold;
+      color: $color-text;
+    }
+
+    .btn-close {
+      background: transparent;
+      border: none;
+      font-size: $font-size-xl;
+      color: $color-text-faint;
+      cursor: pointer;
+      &:hover {
+        color: $color-text;
+      }
+    }
+  }
+
+  .modal-body {
+    padding: $spacing-5;
+    @include flex-column($spacing-4);
+  }
+
+  .modal-footer {
+    padding: $spacing-3 $spacing-5;
+    border-top: 1px solid $color-border-soft;
+    background: $color-surface-hover;
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-3;
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: $spacing-4;
+
+  @include respond-to-down('sm') {
+    flex-direction: column;
+    gap: $spacing-3;
+  }
+
+  .col {
+    flex: 1;
+  }
+}
+
+.form-group {
+  @include flex-column($spacing-1);
+}

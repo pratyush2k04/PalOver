@@ -1,0 +1,32 @@
+<div class="governance-section">
+  <div class="section-header">
+    <div class="header-title-group">
+      <h2 class="section-title">{{ constants.TITLE }}</h2>
+    </div>
+    @if (isProjectManager()) {
+      <app-button type="button" variant="flat" [disabled]="isLoadingCadences()" (click)="openAddCadenceModal()">
+        <span class="plus-icon"></span> {{ constants.BTN_ADD_CADENCE }}
+      </app-button>
+    }
+  </div>
+
+  <!-- Cadences List -->
+  <div class="cadence-list">
+    @if (cadences().length === 0) {
+      <app-empty-state [message]="constants.EMPTY_STATE" />
+    } @else {
+      @for (cadence of cadences(); track cadence.id) {
+        <div class="cadence-item">
+          <div class="role-name">{{ cadence.stakeholderRole }}</div>
+          <div class="cadence-details">
+            <span class="cadence-freq">{{ cadence.cadence }}</span>
+            @if (cadence.participants) {
+              <span class="dot-separator">·</span>
+              <span class="participants-text">{{ cadence.participants }}</span>
+            }
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>

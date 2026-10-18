@@ -1,0 +1,65 @@
+<div class="panel-card">
+  <div class="panel-header">
+    <div class="title-section">
+      <h2>Assumptions</h2>
+    </div>
+    @if (canAdd()) {
+      <app-button class="btn-add" variant="flat" (click)="openAssumptionDialog()"> Add</app-button>
+    }
+  </div>
+
+  @if (isLoading()) {
+    <app-loading-spinner></app-loading-spinner>
+  } @else {
+    <div class="panel-content">
+      @if (assumptions().length === 0) {
+        <div>
+          <app-empty-state title="No Assumptions Found"
+            message="Click '+ Add' to create your first assumption."></app-empty-state>
+        </div>
+      } @else {
+        <div class="list-container">
+          @for (item of assumptions(); track item.id) {
+            <div class="list-item" [ngClass]="'status-' + AssumptionStatus[item.status].toLowerCase()">
+
+              <div class="item-main">
+                <div class="item-text">
+                  <span class="description">{{ item.description }}</span>
+                  <app-status-badge [tone]="getStatusTone(item.status)">{{ getStatusLabel(item.status) }}</app-status-badge>
+                </div>
+
+                @if (item.rationale) {
+                  <div class="item-meta">
+                    <span class="rationale">{{ item.rationale }}</span>
+                  </div>
+                }
+              </div>
+
+              <div class="item-right">
+                @if (item.ownerName) {
+                  <div class="owner-container">
+                    <span class="owner-icon" [inlineSVG]="'assets/icons/user.svg'"></span>
+                    {{ item.ownerName }}
+                  </div>
+                }
+
+                <div class="item-actions">
+                  @if (canEdit(item)) {
+                    <app-button variant="icon" size="sm" (click)="openAssumptionDialog(item)" title="Edit Assumption" ariaLabel="Edit Assumption">
+                      <span class="action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+                    </app-button>
+                  }
+                  @if (item.status === AssumptionStatus.Unvalidated && isPm()) {
+                    <app-button class="btn-validate" variant="flat" (click)="validateAssumption(item.id, AssumptionStatus.Validated)">Validate</app-button>
+                    <app-button variant="danger" (click)="markInvalid(item.id)">Mark invalid</app-button>
+                  }
+                </div>
+              </div>
+
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

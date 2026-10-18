@@ -1,0 +1,19 @@
+<div class="toast-container">
+  @for (toast of toasts(); track toast.id) {
+    <div
+      class="toast"
+      [class]="toast.type"
+      [class.is-leaving]="toast.leaving"
+    >
+      <div class="toast-content">
+        <div class="icon-circle">
+          <span class="toast-icon-svg" [inlineSVG]="iconMap[toast.type] || iconMap['info']"></span>
+        </div>
+        <span class="message">{{ toast.message }}</span>
+      </div>
+      <button type="button" class="close-btn" (click)="dismiss(toast.id, $event)" aria-label="Dismiss toast">
+        <span class="close-icon-svg" [inlineSVG]="'assets/icons/close.svg'"></span>
+      </button>
+    </div>
+  }
+</div>

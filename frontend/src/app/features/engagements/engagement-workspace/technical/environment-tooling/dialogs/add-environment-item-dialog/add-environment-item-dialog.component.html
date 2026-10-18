@@ -1,0 +1,22 @@
+<h2 class="app-dialog__title">Add New Tooling Item</h2>
+
+<form (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
+    <app-input
+      id="env-item-name"
+      label="Item Name"
+      [required]="true"
+      [maxLength]="200"
+      [ngModel]="name()"
+      (ngModelChange)="onNameChange($event)"
+      name="itemName"
+      placeholder="e.g., Staging Server provisioned"
+      [extraError]="nameError() || null"
+    />
+  </div>
+
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+    <app-button type="submit" variant="flat">Save</app-button>
+  </div>
+</form>

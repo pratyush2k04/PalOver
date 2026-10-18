@@ -1,0 +1,74 @@
+<h2 class="app-dialog__title">Upload document</h2>
+
+<div class="app-dialog__content">
+  @if (errorMessage()) {
+    <app-alert>{{ errorMessage() }}</app-alert>
+  }
+
+  <div class="form-group">
+    <label for="file-picker">Select File(s) <span class="required-asterisk">*</span></label>
+    <input
+      id="file-picker"
+      type="file"
+      class="file-input"
+      multiple
+      accept=".pdf,.docx,.xlsx,.pptx,.png,.jpg,.jpeg,.msg,.eml"
+      (change)="onFileSelected($event)"
+    />
+  </div>
+
+  <!-- One rename field per selected file -->
+  @if (selectedFiles().length > 0) {
+    <div class="rename-files-list">
+      @for (file of selectedFiles(); track $index; let i = $index) {
+        <div class="form-group">
+          <p class="original-file-name">{{ file.name }}</p>
+          <app-input
+            [id]="'file-name-' + i"
+            label="Rename File"
+            [ngModel]="renamedFileNames()[i]"
+            (ngModelChange)="onRenamedFileNameChange(i, $event)"
+            placeholder="e.g. Document.pdf"
+          />
+        </div>
+      }
+    </div>
+  }
+
+  <app-select
+    id="doc-category"
+    label="Category"
+    [required]="true"
+    [ngModel]="selectedCategoryId()"
+    (ngModelChange)="onCategoryChange($event)"
+    [options]="categoryOptions()"
+  />
+
+  <app-select
+    id="doc-visibility"
+    label="Visibility"
+    [required]="true"
+    [ngModel]="selectedVisibility()"
+    (ngModelChange)="onVisibilityChange($event)"
+    [options]="visibilityOptions"
+  />
+
+  <p class="format-note">
+    Accepted formats: PDF, DOCX, XLSX, PPTX, PNG, JPG, MSG, EML up to 50 MB each.
+  </p>
+</div>
+
+<div class="app-dialog__actions">
+  <app-button type="button" variant="stroked" (click)="onClose()" [disabled]="isSubmitting()">
+    Cancel
+  </app-button>
+  <app-button
+    type="button"
+    variant="flat"
+    (click)="onSubmit()"
+    [disabled]="isSubmitting()"
+    [loading]="isSubmitting()"
+  >
+    Upload
+  </app-button>
+</div>

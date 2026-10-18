@@ -1,0 +1,26 @@
+<h2 class="app-dialog__title">Reason for Blocking</h2>
+
+<form (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
+    <p class="app-dialog__hint">
+      Please specify why <strong>{{ data.itemName }}</strong> is blocked.
+    </p>
+
+    <app-textarea
+      id="block-reason"
+      label="Block Reason"
+      [required]="true"
+      [rows]="3"
+      [ngModel]="reason()"
+      (ngModelChange)="onReasonChange($event)"
+      name="reason"
+      placeholder="Explain why this readiness item is blocked..."
+      [extraError]="reasonError() || null"
+    />
+  </div>
+
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+    <app-button type="submit" variant="flat">Confirm Block</app-button>
+  </div>
+</form>

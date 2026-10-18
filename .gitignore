@@ -1,0 +1,27 @@
+# ---- .NET ----
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+.vs/
+appsettings.*.local.json
+Pdr.Api.http
+backend/Pdr.Api/Uploads/Documents/*
+.misc/
+
+# ---- Node / Angular ----
+node_modules/
+frontend/dist/
+frontend/.angular/
+npm-debug.log*
+
+# ---- Secrets (local dev only) ----
+.env
+!.env.example
+
+# ---- OS / editor ----
+.DS_Store
+Thumbs.db
+*.swp
+
+Uploads/Documents/*

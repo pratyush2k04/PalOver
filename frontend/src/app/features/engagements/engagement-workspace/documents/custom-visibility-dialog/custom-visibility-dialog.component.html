@@ -1,0 +1,64 @@
+<h2 class="app-dialog__title">Custom Document Visibility</h2>
+
+<div class="app-dialog__content">
+  <div class="doc-info-banner">
+    <div class="doc-name-row">
+      <span class="file-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
+      <span class="file-name">{{ data.document.fileName }}</span>
+    </div>
+    <div class="doc-meta">
+      <span class="meta-item">Category: <strong>{{ data.document.categoryName || 'Other' }}</strong></span>
+      <span class="meta-item">Category default: <strong>{{ data.document.categoryDefaultVisibility || 'Team-wide' }}</strong></span>
+    </div>
+  </div>
+
+  @if (errorMessage()) {
+    <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+  }
+
+  <div class="form-group">
+    <label class="section-label">Select Allowed Roles</label>
+    <p class="section-hint">Restrict access to specific roles. Project Managers and Admins always have access.</p>
+
+    <div class="always-granted-notice">
+      <span class="shield-icon" [inlineSVG]="'assets/icons/shield.svg'"></span>
+      <span>Project Management &amp; Admin — always granted</span>
+    </div>
+
+    <app-multi-select-list
+      [options]="roleOptions"
+      [selectedValues]="selectedRoles()"
+      variant="cards"
+      (selectedValuesChange)="onRoleSelectionChange($event)"
+    />
+  </div>
+</div>
+
+<div class="app-dialog__actions custom-visibility-actions">
+  @if (data.document.visibility === 'Custom' || (data.document.allowedRoles && data.document.allowedRoles!.length > 0)) {
+    <app-button
+      type="button"
+      variant="warning"
+      (click)="onRemoveOverride()"
+      [disabled]="isSubmitting()"
+      [loading]="isSubmitting()"
+    >
+      Remove Override
+    </app-button>
+  }
+
+  <div class="footer-actions">
+    <app-button type="button" variant="stroked" (click)="onCancel()" [disabled]="isSubmitting()">
+      Cancel
+    </app-button>
+    <app-button
+      type="button"
+      variant="accent"
+      (click)="onSave()"
+      [disabled]="isSubmitting()"
+      [loading]="isSubmitting()"
+    >
+      Apply Restriction
+    </app-button>
+  </div>
+</div>

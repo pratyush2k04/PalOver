@@ -1,0 +1,140 @@
+<div class="current-draft">
+  @if (loading()) {
+    <app-loading-spinner label="Loading current draft..." />
+  } @else if (error()) {
+    <app-alert variant="danger">{{ error() }}</app-alert>
+  } @else if (notFound()) {
+    <app-empty-state message="No draft version exists yet. Contact an administrator to create one." />
+  } @else {
+    <div class="current-draft__card">
+      <div class="current-draft__header">
+        <div class="current-draft__header-title">
+          <h1>Current Draft</h1>
+          @if (draft(); as d) {
+            <app-badge [text]="d.statusName + ' · v' + d.versionNumber" />
+          }
+        </div>
+
+        <div class="current-draft__actions">
+          <app-button type="button" variant="stroked" (click)="onAddItem()">Add Item</app-button>
+          <app-button
+            type="button"
+            variant="flat"
+            (click)="onPublish()"
+            [disabled]="!draft()"
+          >
+            Publish Version
+          </app-button>
+        </div>
+      </div>
+
+      <div class="current-draft__list-header">
+        <span>Active Items</span>
+        <span class="current-draft__hint">Drag to reorder</span>
+      </div>
+
+      <div class="current-draft__list">
+        @for (item of activeItems(); track item.id) {
+          <div
+            class="current-draft__row"
+            [class.current-draft__row--dragging]="draggedItemId() === item.id"
+            [class.current-draft__row--drag-over]="dragOverItemId() === item.id"
+            draggable="true"
+            (dragstart)="onDragStart(item)"
+            (dragenter)="onDragEnter(item)"
+            (dragover)="$event.preventDefault()"
+            (dragend)="onDragEnd()"
+            (drop)="onDrop(item)"
+          >
+            <div class="current-draft__drag-handle">&#9776;</div>
+
+            <div class="current-draft__row-body">
+              <div class="current-draft__row-title">
+                {{ item.title }}
+                @if (item.isMandatory) {
+                  <app-status-badge tone="info">Mandatory</app-status-badge>
+                }
+                @if (item.evidenceRequired) {
+                  <app-status-badge tone="warning">Evidence: Required</app-status-badge>
+                }
+              </div>
+              <div class="current-draft__row-meta">{{ item.categoryName }}</div>
+              @if (item.description) {
+                <div class="current-draft__row-description">{{ item.description }}</div>
+              }
+            </div>
+
+            <div class="current-draft__row-actions">
+              <app-button
+                type="button"
+                variant="icon"
+                class="current-draft__action-btn current-draft__action-btn--edit"
+                ariaLabel="Edit item"
+                [appTooltip]="'Edit item'"
+                (click)="onEditItem(item)"
+              >
+                <span class="current-draft__action-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
+              </app-button>
+              <app-button
+                type="button"
+                variant="icon"
+                class="current-draft__action-btn current-draft__action-btn--retire"
+                ariaLabel="Retire item"
+                [appTooltip]="'Retire item'"
+                (click)="onRetireItem(item)"
+              >
+                <span class="current-draft__action-icon" [inlineSVG]="'assets/icons/archive.svg'"></span>
+              </app-button>
+            </div>
+          </div>
+        }
+
+        @if (activeItems().length === 0) {
+          <div class="current-draft__empty">No active items yet. Add one to get started.</div>
+        }
+      </div>
+
+      @if (retiredItems().length > 0) {
+        <div class="current-draft__list-header current-draft__list-header--retired">
+          <span>Retired Items</span>
+        </div>
+
+        @for (item of retiredItems(); track item.id) {
+          <div class="current-draft__row current-draft__row--retired">
+            <div class="current-draft__row-body">
+              <div class="current-draft__row-title">
+                {{ item.title }}
+                <app-status-badge tone="danger">Retired</app-status-badge>
+              </div>
+              <div class="current-draft__row-meta">{{ item.categoryName }}</div>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+
+  @if (pendingRetireItem(); as item) {
+    <app-confirm-dialog
+      title="Retire this item?"
+      confirmLabel="Retire"
+      [isDestructive]="true"
+      (confirmed)="confirmRetireItem()"
+      (cancelled)="cancelRetireItem()"
+    >
+      "{{ item.title }}" will be marked as retired and removed from the active list.
+    </app-confirm-dialog>
+  }
+
+  @if (pendingPublish()) {
+    <app-confirm-dialog
+      title="Publish this version?"
+      confirmLabel="Publish"
+      [isDestructive]="false"
+      (confirmed)="confirmPublishVersion()"
+      (cancelled)="cancelPublishVersion()"
+    >
+      Version {{ draft()?.versionNumber }} with {{ activeItems().length }} active item(s) will be published and become visible to everyone. A new draft version will be created automatically.
+    </app-confirm-dialog>
+  }
+</div>

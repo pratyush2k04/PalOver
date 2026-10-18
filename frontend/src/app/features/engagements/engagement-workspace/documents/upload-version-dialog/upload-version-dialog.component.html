@@ -1,0 +1,34 @@
+<h2 class="app-dialog__title">Upload new version</h2>
+
+<div class="app-dialog__content">
+  <p class="file-preview">{{ data.file.name }}</p>
+
+  <app-textarea
+    id="change-note"
+    label="What changed"
+    [rows]="4"
+    [maxLength]="200"
+    [ngModel]="changeNote()"
+    (ngModelChange)="onChangeNoteChange($event)"
+    placeholder="Describe what changed in this version..."
+  />
+
+  @if (errorMessage()) {
+    <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+  }
+</div>
+
+<div class="app-dialog__actions">
+  <app-button type="button" variant="stroked" (click)="onClose()" [disabled]="isSubmitting()">
+    Cancel
+  </app-button>
+  <app-button
+    type="button"
+    variant="flat"
+    (click)="onSubmit()"
+    [disabled]="isSubmitting()"
+    [loading]="isSubmitting()"
+  >
+    Upload version
+  </app-button>
+</div>

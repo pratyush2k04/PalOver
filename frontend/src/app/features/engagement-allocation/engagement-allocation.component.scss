@@ -1,0 +1,291 @@
+@use 'styles/mixins' as *;
+
+.allocation-page {
+  padding: $spacing-8;
+  font-family: $font-family-base;
+  color: $color-text;
+
+  @include respond-to-down('md') {
+    padding: $spacing-4;
+  }
+}
+
+/* Summary Metrics */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16.25rem, 1fr));
+  gap: $spacing-5;
+  margin-bottom: $spacing-8;
+
+  .metric-card {
+    background: $color-surface;
+    border: 1px solid $color-border-soft;
+    border-radius: $radius-lg;
+    padding: $spacing-5 $spacing-6;
+    display: flex;
+    align-items: center;
+    gap: $spacing-5;
+    box-shadow: $shadow-sm;
+
+    .metric-icon {
+      width: 3rem;
+      height: 3rem;
+      border-radius: $radius-md;
+      @include flex-center;
+
+      ::ng-deep svg,
+      svg {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+
+      &.total {
+        background: $color-primary-light;
+        color: $color-primary;
+      }
+      &.warning {
+        background: $color-warning-bg;
+        color: $color-warning-text;
+      }
+      &.success {
+        background: $color-success-bg;
+        color: $color-success;
+      }
+    }
+
+    .metric-content {
+      @include flex-column;
+
+      .metric-value {
+        font-size: 1.75rem;
+        font-weight: $font-weight-bold;
+        color: $color-text;
+        line-height: 1.2;
+      }
+
+      .metric-label {
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        color: $color-text-faint;
+        margin-top: $spacing-1;
+      }
+    }
+  }
+}
+
+/* Controls Bar */
+.controls-bar {
+  @include flex-between;
+  gap: $spacing-4;
+  margin-bottom: $spacing-6;
+  flex-wrap: wrap;
+
+  .search-box {
+    position: relative;
+    flex: 1;
+    min-width: 18.75rem;
+    max-width: 30rem;
+
+    .search-icon {
+      position: absolute;
+      left: $spacing-4;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $color-text-fainter;
+      display: flex;
+      align-items: center;
+
+      ::ng-deep svg,
+      svg {
+        width: 1.125rem;
+        height: 1.125rem;
+      }
+    }
+
+    input {
+      width: 100%;
+      padding: 0.65rem $spacing-4 0.65rem 2.75rem;
+      border: 1px solid $color-border-input;
+      border-radius: $radius-md;
+      font-size: $font-size-sm;
+      color: $color-text;
+      background: $color-surface;
+      outline: none;
+      transition: border-color $transition-fast, box-shadow $transition-fast;
+
+      &:focus {
+        border-color: $color-primary;
+        box-shadow: 0 0 0 3px $color-primary-focus-ring;
+      }
+    }
+  }
+
+  .filter-tabs {
+    display: flex;
+    background: $color-surface-hover;
+    padding: $spacing-1;
+    border-radius: $radius-md;
+    gap: $spacing-1;
+
+    .tab-btn {
+      padding: $spacing-2 $spacing-4;
+      border: none;
+      background: transparent;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      color: $color-text-faint;
+      border-radius: $radius-sm;
+      cursor: pointer;
+      transition: all $transition-fast;
+
+      &.active {
+        background: $color-surface;
+        color: $color-primary;
+        box-shadow: $shadow-sm;
+      }
+
+      &:hover:not(.active) {
+        color: $color-text;
+      }
+    }
+  }
+}
+
+/* Table Card */
+.table-card {
+  background: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  .engagements-table {
+    width: 100%;
+    min-width: 48rem;
+    border-collapse: collapse;
+    text-align: left;
+
+    th {
+      background: $color-surface-hover;
+      padding: $spacing-4 $spacing-5;
+      @include text-overline;
+      color: $color-text-muted;
+      border-bottom: 1px solid $color-border-soft;
+      vertical-align: middle;
+    }
+
+    td {
+      padding: $spacing-4 $spacing-5;
+      border-bottom: 1px solid $color-border-soft;
+      vertical-align: middle;
+      font-size: $font-size-sm;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: $color-surface-hover;
+    }
+
+    .engagement-name-cell {
+      .eng-title {
+        font-weight: $font-weight-semibold;
+        color: $color-text;
+      }
+      .client-name {
+        font-size: $font-size-xs;
+        color: $color-text-faint;
+        margin-top: 0.15rem;
+      }
+    }
+
+    .model-sub {
+      font-size: $font-size-xs;
+      color: $color-text-faint;
+      margin-top: 0.2rem;
+    }
+
+    .contacts-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: $spacing-2;
+
+      .leadership-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: $spacing-1;
+        padding: $spacing-1 $spacing-2;
+        background: $color-primary-light;
+        color: $color-primary-hover;
+        border: 1px solid $color-primary-disabled;
+        border-radius: $radius-sm;
+        font-size: $font-size-xs;
+        font-weight: $font-weight-medium;
+
+        ::ng-deep svg,
+        svg {
+          width: $font-size-xs;
+          height: $font-size-xs;
+        }
+      }
+    }
+
+    .col-engagement {
+      width: 26%;
+    }
+
+    .col-type {
+      width: 22%;
+    }
+
+    .col-contacts {
+      width: 36%;
+    }
+
+    .col-actions,
+    .actions-col {
+      width: 16%;
+      text-align: left;
+    }
+
+    .assign-icon {
+      @include flex-center;
+
+      ::ng-deep svg,
+      svg {
+        width: $font-size-sm;
+        height: $font-size-sm;
+      }
+    }
+  }
+}
+
+/* Loading & Empty States */
+.loading-container,
+.empty-state {
+  text-align: center;
+  padding: $spacing-8 $spacing-6;
+  background: $color-surface;
+  border-radius: $radius-lg;
+  border: 1px solid $color-border-soft;
+
+  p {
+    color: $color-text-faint;
+    margin-top: $spacing-4;
+  }
+
+  .empty-icon {
+    @include flex-center;
+    color: $color-text-fainter;
+    margin-bottom: $spacing-2;
+
+    ::ng-deep svg,
+    svg {
+      width: 3rem;
+      height: 3rem;
+    }
+  }
+}

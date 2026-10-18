@@ -1,0 +1,35 @@
+<h2 class="app-dialog__title">{{ constants.MODAL_TITLE_REMOVE }}</h2>
+
+<form (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
+    <div class="confirmation-warning">
+      <p>Are you sure you want to remove <strong>{{ data.allocationName }}</strong>?</p>
+      <p class="sub-text">This reopens the request to Raised so a replacement can be named.</p>
+    </div>
+
+    <app-textarea
+      id="remove-allocation-reason"
+      name="reason"
+      [label]="constants.LABEL_REMOVAL_REASON"
+      [rows]="4"
+      [maxLength]="500"
+      [ngModel]="reason()"
+      (ngModelChange)="onReasonChange($event)"
+      placeholder="Please enter a short reason for removing this resource (minimum 10 characters)..."
+      [extraError]="minLengthError()"
+    />
+
+    @if (errorMessage()) {
+      <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+    }
+  </div>
+
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" (click)="onCancel()" [disabled]="isSubmitting()">
+      {{ constants.BTN_CANCEL }}
+    </app-button>
+    <app-button type="submit" variant="danger" [disabled]="isSubmitting()" [loading]="isSubmitting()">
+      {{ constants.BTN_REMOVE }}
+    </app-button>
+  </div>
+</form>

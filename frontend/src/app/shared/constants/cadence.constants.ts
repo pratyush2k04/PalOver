@@ -1,0 +1,24 @@
+export const CADENCE_CONSTANTS = {
+  // API Endpoint Paths
+  API_GET_CADENCES: (engagementId: number) => `/api/engagements/${engagementId}/cadences`,
+  API_GET_ASSIGNED_PARTICIPANTS: (engagementId: number) => `/api/engagements/${engagementId}/cadences/assigned-participants`,
+  API_ADD_CADENCE: (engagementId: number) => `/api/engagements/${engagementId}/cadences`,
+
+  // UI Strings
+  TITLE: 'Governance & Change-Request Process',
+  BTN_ADD_CADENCE: 'Add cadence',
+  EMPTY_STATE: 'No governance added.',
+  MODAL_TITLE: 'Add communication cadence',
+  LABEL_STAKEHOLDER_ROLE: 'Stakeholder role',
+  PLACEHOLDER_STAKEHOLDER_ROLE: 'e.g. Client Sponsor, Steering Committee',
+  LABEL_CADENCE: 'Cadence',
+  LABEL_PARTICIPANTS: 'Participants',
+  NO_PARTICIPANTS_NOTE: 'No assigned team members found for this engagement.',
+  ERROR_ROLE_REQUIRED: 'Stakeholder role is required.',
+  ERROR_PARTICIPANT_REQUIRED: 'At least one participant must be selected.',
+  ERROR_GENERIC: 'Failed to add communication cadence.',
+  MSG_SUCCESS_ADDED: 'Communication cadence added successfully.',
+  BTN_CANCEL: 'Cancel',
+  BTN_ADD: 'Add',
+  BTN_ADDING: 'Adding...'
+};

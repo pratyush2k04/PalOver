@@ -1,0 +1,84 @@
+<h2 class="app-dialog__title">Day-1 Readiness Sign-Off</h2>
+
+<div class="app-dialog__content">
+  @if (data.isAbleToStartDayOne) {
+    <app-alert variant="neutral">
+      All technical readiness criteria are met. You may proceed with the standard Day-1 sign-off.
+    </app-alert>
+  } @else {
+    @if (data.isLeadership) {
+      <app-alert variant="warning">
+        <strong>Technical Blockers Exist:</strong> As Leadership, you can override and sign off as an exception. Please provide a clear justification (minimum 20 characters).
+      </app-alert>
+    } @else {
+      <app-alert variant="danger">
+        <strong>Technical Blockers Exist:</strong> This engagement has open technical readiness blockers. Only members of Leadership can sign off with an exception.
+      </app-alert>
+    }
+  }
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="sign-off-form">
+    <app-datepicker
+      id="billingStartDate"
+      label="Billing Start Date"
+      [required]="true"
+      [min]="minDate"
+      formControlName="billingStartDate"
+      [errorMessages]="{
+        required: 'Billing start date is required.',
+        pastDate: 'Date cannot be in the past.'
+      }"
+    />
+
+    @if (isException() && data.isLeadership) {
+      <div class="form-group">
+        <label for="exceptionJustification">Exception Justification <span class="required-asterisk">*</span></label>
+        <textarea
+          id="exceptionJustification"
+          class="form-control textarea"
+          rows="3"
+          maxlength="500"
+          placeholder="State the rationale and risk mitigation plan for signing off with blockers (min 20 characters)..."
+          formControlName="exceptionJustification"
+        ></textarea>
+        <div class="field-hint">
+          <span>Minimum 20 characters required.</span>
+          <span>{{ justificationLength() }}/500</span>
+        </div>
+        @if (form.get('exceptionJustification')?.invalid && (form.get('exceptionJustification')?.touched || form.get('exceptionJustification')?.dirty)) {
+          <span class="error-text">
+            @if (form.get('exceptionJustification')?.errors?.['required']) {
+              Justification is required for exceptions.
+            } @else if (form.get('exceptionJustification')?.errors?.['minlength']) {
+              Justification must be at least 20 characters.
+            }
+          </span>
+        }
+      </div>
+    }
+  </form>
+
+  @if (errorMessage()) {
+    <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+  }
+</div>
+
+<div class="app-dialog__actions">
+  <app-button
+    type="button"
+    variant="stroked"
+    [disabled]="isSubmitting()"
+    (click)="onCancel()"
+  >
+    Cancel
+  </app-button>
+  <app-button
+    type="button"
+    [variant]="isException() && data.isLeadership ? 'warning' : 'flat'"
+    [loading]="isSubmitting()"
+    [disabled]="!canAttemptSubmit() || isSubmitting()"
+    (click)="onSubmit()"
+  >
+    {{ isSubmitting() ? 'Submitting...' : (isException() && data.isLeadership ? 'Sign Off with Exception' : 'Confirm Sign-Off') }}
+  </app-button>
+</div>

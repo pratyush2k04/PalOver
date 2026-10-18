@@ -1,0 +1,25 @@
+@use 'styles/tokens' as *;
+
+:host {
+  display: inline-block;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background-color: $color-accent-orange;
+  color: $color-surface;
+  font-size: 0.8rem;
+  font-weight: 600;
+  flex-shrink: 0;
+
+  &--sm {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.75rem;
+  }
+}

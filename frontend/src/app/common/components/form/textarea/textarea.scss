@@ -1,0 +1,81 @@
+@use 'styles/tokens' as *;
+
+:host {
+  display: block;
+}
+
+.app-field {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+  margin-bottom: var(--field-margin-bottom, #{$spacing-3});
+
+  label {
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+    color: $color-text-faint;
+  }
+}
+
+textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: $font-size-sm;
+  color: $color-text;
+  background-color: $color-surface;
+  border: 1px solid $color-border-input;
+  border-radius: var(--textarea-border-radius, #{$radius-md});
+  padding: var(--textarea-padding, #{$spacing-2} #{$spacing-3});
+  field-sizing: var(--textarea-field-sizing, fixed);
+  min-height: var(--textarea-min-height, auto);
+  max-height: var(--textarea-max-height, none);
+  outline: none;
+  resize: var(--textarea-resize, vertical);
+  box-sizing: border-box;
+
+  &:focus {
+    border-color: $color-primary;
+    box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
+  }
+
+  &.is-invalid {
+    border-color: $color-danger;
+
+    &:focus {
+      box-shadow: 0 0 0 2px rgba($color-danger, 0.15);
+    }
+  }
+
+  &:disabled {
+    background-color: $color-bg;
+    cursor: not-allowed;
+  }
+}
+
+.app-field__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 0.125rem;
+
+  &:empty {
+    display: none;
+    margin-top: 0;
+  }
+}
+
+.char-counter {
+  display: var(--char-counter-display, block);
+  font-size: $font-size-xs;
+  color: $color-text-fainter;
+  margin-left: auto;
+
+  &--danger {
+    color: $color-danger;
+  }
+}
+
+.app-field__error {
+  color: $color-danger;
+  font-size: $font-size-xs;
+}

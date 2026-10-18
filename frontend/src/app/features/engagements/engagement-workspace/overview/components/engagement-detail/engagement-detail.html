@@ -1,0 +1,86 @@
+@if (engagement(); as info) {
+  <div class="team-card">
+    <div class="team-card-header">
+      <h3>Team</h3>
+      @if (canAssignOwners()) {
+        <app-button type="button" variant="flat" (click)="openAssignModal()">
+          {{ assignButtonLabel }}
+        </app-button>
+      }
+    </div>
+
+    <div class="team-row">
+      <span class="team-role">Project Manager</span>
+      @if (owners()?.projectManagerName; as name) {
+        <span class="team-owner">{{ name }}</span>
+      } @else {
+        <span class="team-owner unassigned">Unassigned</span>
+      }
+    </div>
+
+    <div class="team-row">
+      <span class="team-role">Tech Lead</span>
+      @if (owners()?.techLeadName; as name) {
+        <span class="team-owner">{{ name }}</span>
+      } @else {
+        <span class="team-owner unassigned">Unassigned</span>
+      }
+    </div>
+  </div>
+}
+
+@if (showAssignModal()) {
+  <div class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Assign Project Manager and Tech Lead</h3>
+      </div>
+
+      <form [formGroup]="assignForm" (ngSubmit)="onSubmitAssignment()" novalidate>
+        @if (errorMessage()) {
+          <app-alert>{{ errorMessage() }}</app-alert>
+        }
+
+        <app-select
+          id="projectManagerId"
+          label="Project Manager"
+          placeholder="Select Project Manager"
+          formControlName="projectManagerId"
+          [options]="projectManagerOptions()"
+          [required]="true"
+          [errorMessages]="{ required: 'Project Manager is required.' }"
+        />
+
+        <app-select
+          id="techLeadId"
+          label="Tech Lead"
+          placeholder="Select Tech Lead"
+          formControlName="techLeadId"
+          [options]="techLeadOptions()"
+          [required]="true"
+          [errorMessages]="{ required: 'Tech Lead is required.' }"
+        />
+
+        <div class="modal-actions">
+          <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="closeAssignModal()">Cancel</app-button>
+          <app-button type="submit" variant="flat" [loading]="isSubmitting()" [disabled]="isSubmitting()">Save assignment</app-button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+@if (currentConfirmation(); as change) {
+  <app-confirm-dialog
+    title="Reassign mid-engagement?"
+    confirmLabel="Reassign"
+    [isBusy]="isSubmitting()"
+    (confirmed)="confirmPendingChange()"
+    (cancelled)="cancelPendingChange()"
+  >
+    {{ change.userName }} will take over open items.
+    @if (errorMessage()) {
+      <app-alert>{{ errorMessage() }}</app-alert>
+    }
+  </app-confirm-dialog>
+}

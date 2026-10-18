@@ -1,0 +1,43 @@
+<div class="open-items-card">
+  <div class="card-header">
+    <h3 class="section-title">Open items by area</h3>
+  </div>
+
+  @if (error()) {
+    <app-alert variant="danger">{{ error() }}</app-alert>
+  } @else {
+    <div class="cards-grid">
+      <div
+        class="item-card clickable"
+        [routerLink]="[APP_ROUTES.ENGAGEMENTS, engagementId(), ENGAGEMENT_ROUTES.WORKSPACE, ENGAGEMENT_ROUTES.CHECKLIST]"
+      >
+        <div class="count-value">{{ summary()?.checklistOpenCount ?? 0 }}</div>
+        <div class="count-label">Checklist open</div>
+      </div>
+
+      <div
+        class="item-card clickable"
+        [routerLink]="[APP_ROUTES.ENGAGEMENTS, engagementId(), ENGAGEMENT_ROUTES.WORKSPACE, TECHNICAL_READINESS_ROUTES.BASE]"
+      >
+        <div class="count-value">{{ summary()?.accessOpenCount ?? 0 }}</div>
+        <div class="count-label">Access open</div>
+      </div>
+
+      <div
+        class="item-card clickable"
+        [routerLink]="[APP_ROUTES.ENGAGEMENTS, engagementId(), ENGAGEMENT_ROUTES.WORKSPACE, RISK_ROUTES.BASE]"
+      >
+        <div class="count-value">{{ summary()?.openRisksCount ?? 0 }}</div>
+        <div class="count-label">Open risks</div>
+      </div>
+
+      <div
+        class="item-card clickable"
+        [routerLink]="[APP_ROUTES.ENGAGEMENTS, engagementId(), ENGAGEMENT_ROUTES.WORKSPACE, ENGAGEMENT_ROUTES.RESOURCES]"
+      >
+        <div class="count-value">{{ summary()?.resourcingOpenCount ?? 0 }}</div>
+        <div class="count-label">Resourcing open</div>
+      </div>
+    </div>
+  }
+</div>

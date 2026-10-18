@@ -1,0 +1,133 @@
+<div class="card-container">
+  <div class="card-header">
+    <div class="header-title-group">
+      <h3>Code Review & Architecture Analysis</h3>
+      <div class="badge-group">
+        <app-status-badge tone="neutral">{{ totalCount() }} Findings</app-status-badge>
+        @if (highSeverityPendingCount() > 0) {
+          <app-status-badge tone="danger">{{ highSeverityPendingCount() }} Decision needed</app-status-badge>
+        }
+      </div>
+    </div>
+
+    @if (canManage()) {
+      <app-button type="button" variant="flat" (click)="onAddFinding()">
+        <span class="btn-icon" [inlineSVG]="'assets/icons/plus.svg'"></span>
+        <span>Add Finding</span>
+      </app-button>
+    }
+  </div>
+
+  @if (isLoading()) {
+    <app-loading-spinner label="Loading findings..." />
+  } @else if (findings().length === 0) {
+    <div class="empty-state">
+      <p>No code review findings recorded yet.</p>
+    </div>
+  } @else {
+    <div class="table-wrapper">
+      <table class="findings-table">
+        <thead>
+          <tr>
+            <th class="title-col">TITLE & DESCRIPTION</th>
+            <th class="severity-col">SEVERITY</th>
+            <th class="doc-col">LINKED DOCUMENT</th>
+            <th class="decision-col">CLIENT DECISION</th>
+            @if (canManage()) {
+              <th class="actions-col">ACTIONS</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of findings(); track item.id) {
+            <tr>
+              <td class="title-col">
+                <div class="finding-info">
+                  <strong>{{ item.title }}</strong>
+                  @if (item.description) {
+                    <p>{{ item.description }}</p>
+                  }
+                </div>
+              </td>
+              <td class="severity-col">
+                <app-status-badge [tone]="getSeverityTone(item.severity)">
+                  {{ getSeverityLabel(item.severity) }}
+                </app-status-badge>
+              </td>
+              <td class="doc-col">
+                @if (item.documentName) {
+                  <span class="doc-link">
+                    <span class="file-icon" [inlineSVG]="'assets/icons/file.svg'"></span>
+                    {{ item.documentName }}
+                  </span>
+                } @else {
+                  <span class="no-doc">None</span>
+                }
+              </td>
+              <td class="decision-col">
+                @if (item.isDecisionNeeded) {
+                  <app-status-badge tone="danger">Decision needed</app-status-badge>
+                } @else if (item.clientDecision && +item.clientDecision === 1) {
+                  <app-status-badge tone="success">Accepted</app-status-badge>
+                } @else if (item.clientDecision && +item.clientDecision === 2) {
+                  <app-status-badge tone="warning">Deferred</app-status-badge>
+                } @else if (!item.clientDecision) {
+                  <app-status-badge tone="neutral">Open</app-status-badge>
+                }
+              </td>
+              @if (canManage()) {
+                <td class="actions-col">
+                  <div class="actions-group">
+                    <app-button
+                      type="button"
+                      variant="stroked"
+                      size="sm"
+                      class="btn-accept"
+                      [disabled]="item.clientDecision !== null && item.clientDecision !== undefined && +item.clientDecision === 1"
+                      (click)="onUpdateDecision(item.id, 1)">
+                      Accept
+                    </app-button>
+                    <app-button
+                      type="button"
+                      variant="stroked"
+                      size="sm"
+                      class="btn-defer"
+                      [disabled]="item.clientDecision !== null && item.clientDecision !== undefined && +item.clientDecision === 2"
+                      (click)="onUpdateDecision(item.id, 2)">
+                      Defer
+                    </app-button>
+                    <app-button
+                      type="button"
+                      variant="icon"
+                      class="btn-remove"
+                      ariaLabel="Delete finding"
+                      [appTooltip]="'Delete finding'"
+                      (click)="onDeleteFinding(item)">
+                      <span class="remove-icon" [inlineSVG]="'assets/icons/trash.svg'"></span>
+                    </app-button>
+                  </div>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+<!-- Delete Confirmation Dialog -->
+@if (findingToDelete(); as finding) {
+  <app-confirm-dialog
+    title="Delete Finding"
+    confirmLabel="Delete"
+    [isDestructive]="true"
+    [isBusy]="isLoading()"
+    (confirmed)="confirmDeleteFinding()"
+    (cancelled)="cancelDeleteFinding()">
+    Are you sure you want to delete <strong>{{ finding.title }}</strong>? This action cannot be undone.
+    @if (errorMessage()) {
+      <app-alert>{{ errorMessage() }}</app-alert>
+    }
+  </app-confirm-dialog>
+}

@@ -1,0 +1,16 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+    extra_hosts:
+      # Lets the container reach a Postgres instance running on your host machine
+      # (e.g. ConnectionStrings__DefaultConnection=Host=host.docker.internal;...).
+      # Docker Desktop (Windows/Mac) already resolves this; needed explicitly on Linux.
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "80:80"

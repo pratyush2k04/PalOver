@@ -1,0 +1,92 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+:host {
+  display: block;
+}
+
+.doc-header {
+  border-bottom: 0.125rem solid $color-slate-200;
+  padding-bottom: 1.5rem;
+}
+
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.25rem;
+}
+
+.doc-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: $color-slate-900;
+  letter-spacing: -0.02em;
+}
+
+.doc-subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.95rem;
+  color: $color-slate-600;
+}
+
+.brand-badge {
+  @include text-overline;
+  font-size: 0.75rem;
+  color: $color-slate-500;
+  background: $color-slate-100;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.25rem;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  background: $color-slate-50;
+  padding: 1rem 1.25rem;
+  border-radius: 0.5rem;
+  border: 0.0625rem solid $color-slate-200;
+
+  @include respond-to-down('md') {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+  }
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.meta-label {
+  @include text-overline;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: $color-slate-500;
+}
+
+.meta-value {
+  font-size: 0.9rem;
+  color: $color-slate-800;
+  &.font-semibold { font-weight: 600; }
+}
+
+@media print {
+  .doc-header {
+    padding-bottom: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .brand-section {
+    margin-bottom: 0.75rem;
+  }
+  .meta-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    padding: 0.75rem 1rem !important;
+    gap: 0.75rem !important;
+  }
+}

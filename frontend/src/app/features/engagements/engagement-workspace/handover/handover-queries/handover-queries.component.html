@@ -1,0 +1,174 @@
+<div class="handover-queries-container">
+  <div class="queries-header">
+    <div class="header-title-section">
+      <h3 class="queries-title">Handover Queries</h3>
+      @if (queries().length > 0) {
+        <span class="count-badge">{{ openQueries().length }} Open / {{ queries().length }} Total</span>
+      }
+    </div>
+    @if (!loadError() && isProjectManagement() && !isReviewed()) {
+      <app-button variant="flat" [disabled]="isLoading()" (click)="openRaiseQueryDialog()">
+        Raise Query
+      </app-button>
+    }
+  </div>
+
+  @if (message() && isError()) {
+    <app-alert variant="danger">
+      {{ message() }}
+    </app-alert>
+  }
+
+  @if (!isLoading() && !loadError() && queries().length === 0) {
+    <app-empty-state message="No handover queries have been raised yet." />
+  }
+
+  @if (!loadError() && queries().length > 0) {
+    <div class="queries-grid">
+      @for (query of sortedQueries(); track query.id) {
+        <div class="query-card" [class.resolved]="query.isResolved">
+          <!-- Card Header -->
+          <div class="query-card-header">
+            <div class="title-section">
+              <h4
+                class="query-field-title clickable"
+                [title]="'Jump to ' + fieldSectionLabel(query)"
+                (click)="jumpToField(query)"
+              >
+                {{ fieldSectionLabel(query) }}
+              </h4>
+            </div>
+
+            <div class="right-section">
+              <app-status-badge [tone]="query.isResolved ? 'success' : 'warning'">
+                {{ query.isResolved ? 'Resolved' : 'Open' }}
+              </app-status-badge>
+            </div>
+          </div>
+
+          <!-- Card Body -->
+          <div class="query-card-body">
+            <!-- Initial Question Description -->
+            <p class="query-description">{{ getInitialQuestion(query) }}</p>
+
+            <div class="query-meta-info">
+              <span class="meta-author">Raised by {{ query.raisedByName }}</span>
+              <span class="meta-dot">•</span>
+              <span class="meta-time">{{ getRelativeTime(query.raisedAt) }}</span>
+            </div>
+
+            <!-- Discussion Accordion -->
+            <app-accordion
+              [title]="getDiscussionTitle(query)"
+              [badge]="hasNoDiscussion(query) ? undefined : getReplies(query).length"
+              [disabled]="hasNoDiscussion(query)"
+              [expanded]="hasNoDiscussion(query) ? false : isExpanded(query.id)"
+              (expandedChange)="toggleExpand(query.id, $event)"
+            >
+              <div class="discussion-container">
+                @if (getReplies(query).length === 0) {
+                  <div class="no-replies-msg">
+                    <span>No responses yet.</span>
+                  </div>
+                } @else {
+                  <div class="comments-list">
+                    @for (msg of getReplies(query); track msg.id) {
+                      <div class="chat-bubble-wrapper">
+                        <div class="comment-avatar">
+                          <app-avatar [name]="msg.senderName" size="sm" />
+                        </div>
+                        <div class="chat-bubble">
+                          <div class="bubble-header">
+                            <div class="author-info">
+                              <span class="author-name">{{ msg.senderName }}</span>
+                              <span
+                                class="role-pill"
+                                [class.role-pm]="msg.senderRole === 'Project Management' || msg.messageType === 'Question'"
+                                [class.role-ps]="msg.senderRole === 'Pre Sales' || msg.messageType === 'Response'"
+                              >
+                                {{ msg.senderRole || msg.messageType }}
+                              </span>
+                            </div>
+                            <span class="bubble-time">{{ getRelativeTime(msg.createdAt) }}</span>
+                          </div>
+                          <div class="bubble-body">{{ msg.messageText }}</div>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+
+                <!-- Add Comment / Reply Row (Plain message, supports consecutive replies) -->
+                @if (!query.isResolved && canSubmitMessage()) {
+                  <div class="add-reply-row">
+                    <div class="textarea-container">
+                      <app-textarea
+                        [id]="'reply-' + query.id"
+                        [rows]="1"
+                        [placeholder]="isPreSales() ? 'Type a response from Pre Sales...' : 'Type a follow-up or reply...'"
+                        [maxLength]="500"
+                        [ngModel]="messageDraft(query.id)"
+                        (ngModelChange)="updateMessageDraft(query.id, $event)"
+                        (keydown)="onTextareaKeyDown($event, query)"
+                      />
+                    </div>
+                    <div class="post-button-wrapper">
+                      <app-button
+                        variant="flat"
+                        size="sm"
+                        [disabled]="isSubmitting(query.id) || !messageDraft(query.id).trim()"
+                        (click)="submitMessage(query)"
+                      >
+                        {{ isSubmitting(query.id) ? 'Posting...' : 'Post' }}
+                      </app-button>
+                    </div>
+                  </div>
+                }
+              </div>
+            </app-accordion>
+          </div>
+
+          <!-- Card Footer Actions -->
+          <div class="query-card-footer">
+            <div class="action-buttons">
+              @if (isProjectManagement()) {
+                <app-button
+                  variant="danger"
+                  size="sm"
+                  (click)="openDeleteConfirm(query)"
+                >
+                  Delete
+                </app-button>
+              }
+
+              @if (isProjectManagement() || isPreSales()) {
+                <app-button
+                  variant="stroked"
+                  size="sm"
+                  [disabled]="pendingResolutionToggles().has(query.id)"
+                  (click)="toggleResolve(query)"
+                >
+                  {{ query.isResolved ? 'Reopen' : 'Resolve' }}
+                </app-button>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+@if (pendingDeleteQuery(); as queryToDelete) {
+  <app-confirm-dialog
+    title="Delete Query"
+    message="Destructive Action! Query once deleted cant be recovered."
+    confirmLabel="Delete"
+    [isBusy]="isDeletingQuery()"
+    [isDestructive]="true"
+    (confirmed)="confirmDeleteQuery(queryToDelete)"
+    (cancelled)="cancelDeleteQuery()"
+  >
+    Destructive Action! Query once deleted cant be recovered.
+  </app-confirm-dialog>
+}

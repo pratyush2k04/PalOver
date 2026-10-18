@@ -1,0 +1,150 @@
+@use 'styles/mixins' as *;
+
+:host {
+  display: block;
+  height: 100%;
+  flex-shrink: 0;
+
+  @include respond-to-down('md') {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: $z-index-modal;
+    pointer-events: none;
+  }
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  width: 6rem;
+  padding: 1.25rem 0;
+  background-color: $color-brand-dark;
+  box-sizing: border-box;
+  user-select: none;
+
+  @include respond-to-down('md') {
+    box-shadow: $shadow-modal;
+    transform: translateX(-100%);
+    transition: transform $transition-base;
+    pointer-events: auto;
+
+    &.mobile-open {
+      transform: translateX(0);
+    }
+  }
+}
+
+.logo {
+  margin-bottom: 1.5rem;
+
+  @include respond-to-down('md') {
+    display: none;
+  }
+}
+
+.logo-image {
+  width: 2.75rem;
+  height: 2.75rem;
+  object-fit: contain;
+  border-radius: $radius-xl;
+  display: block;
+}
+
+.nav-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-3;
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+
+  /* Hide scrollbar */
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  width: calc(100% - 1rem);
+  margin: 0 0.5rem;
+  padding: 0.5rem 0.25rem;
+  border-radius: $radius-2xl;
+  cursor: pointer;
+  color: $color-indigo-300;
+  text-decoration: none;
+  transition: background-color $transition-base, color $transition-base, transform $transition-fast;
+
+  .label {
+    font-size: 0.6875rem;
+    font-weight: $font-weight-medium;
+    text-align: center;
+    line-height: 1.15;
+    white-space: pre-line;
+    max-width: 5.25rem;
+  }
+
+  &:hover {
+    color: $color-surface;
+
+    .icon-wrapper {
+      color: $color-surface;
+    }
+  }
+
+  &.active {
+    background-color: transparent;
+    padding: 0.25rem 0;
+
+    .icon-wrapper {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: $radius-2xl;
+      background-color: $color-surface;
+      color: $color-brand-dark;
+      box-shadow: $shadow-sm;
+    }
+
+    .label {
+      display: none;
+    }
+  }
+}
+
+.icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  transition: all $transition-base;
+
+  ::ng-deep svg,
+  svg {
+    display: block;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.badge-dot {
+  position: absolute;
+  top: -0.125rem;
+  right: -0.125rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: $radius-full;
+  background-color: $color-accent-orange;
+  border: 1px solid $color-brand-dark;
+}

@@ -1,0 +1,39 @@
+<h2 class="app-dialog__title">Override to be Kickoff Ready</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
+    <p class="item-title-preview">
+      <strong>Engagement:</strong> {{ data.engagementName }}
+    </p>
+
+    <div class="alert alert-warning">
+      <span class="alert-icon">⚠️</span>
+      <div class="alert-content">
+        <strong>Current readiness score: {{ data.score }}%</strong>
+        <p>Mandatory items may still be incomplete. As Leadership, you can override the gate and mark this engagement kickoff-ready anyway.</p>
+      </div>
+    </div>
+
+    <app-textarea
+      id="override-reason"
+      label="Reason for override"
+      [required]="true"
+      formControlName="reason"
+      [rows]="4"
+      [maxLength]="500"
+      placeholder="Enter a brief justification for overriding the kickoff-readiness gate..."
+      [errorMessages]="{
+        required: 'A reason is required.',
+        minlength: 'Reason must be at least 5 characters long.',
+        maxlength: 'Reason cannot exceed 500 characters.'
+      }"
+    />
+  </div>
+
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" (click)="onCancel()">Cancel</app-button>
+    <app-button type="submit" variant="flat">
+      Confirm Override
+    </app-button>
+  </div>
+</form>

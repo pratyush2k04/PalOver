@@ -1,0 +1,15 @@
+@use 'styles/tokens' as *;
+
+:host {
+  display: block;
+  width: 26rem;
+  max-width: calc(100vw - 3rem);
+}
+
+.reason-text {
+  font-size: $font-size-sm;
+  color: $color-text;
+  line-height: 1.5;
+  margin: 0;
+  word-break: break-word;
+}

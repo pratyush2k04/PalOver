@@ -1,0 +1,49 @@
+<h2 class="app-dialog__title">{{ constants.MODAL_TITLE }}</h2>
+
+<form [formGroup]="cadenceForm" (ngSubmit)="onSubmit()">
+  <div class="app-dialog__content">
+    <!-- Stakeholder Role -->
+    <app-input
+      id="stakeholderRole"
+      [label]="constants.LABEL_STAKEHOLDER_ROLE"
+      [required]="true"
+      formControlName="stakeholderRole"
+      [placeholder]="constants.PLACEHOLDER_STAKEHOLDER_ROLE"
+      [errorMessages]="{ required: constants.ERROR_ROLE_REQUIRED }"
+    />
+
+    <!-- Cadence Dropdown -->
+    <app-select
+      id="cadenceSelect"
+      [label]="constants.LABEL_CADENCE"
+      [required]="true"
+      formControlName="cadence"
+      [options]="cadenceOptions"
+    />
+
+    <!-- Participants Multi-Select -->
+    <div class="form-group">
+      <label class="form-label">{{ constants.LABEL_PARTICIPANTS }} <span class="required-asterisk">*</span></label>
+      <app-multi-select-list
+        [options]="participantOptions"
+        [selectedValues]="selectedParticipantUserIds()"
+        [emptyMessage]="constants.NO_PARTICIPANTS_NOTE"
+        (selectedValuesChange)="onParticipantSelectionChange($event)"
+      />
+      @if (cadenceForm.get('participantUserIds')?.touched && selectedParticipantUserIds().length === 0) {
+        <div class="error-text">{{ constants.ERROR_PARTICIPANT_REQUIRED }}</div>
+      }
+    </div>
+
+    @if (errorMessage()) {
+      <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+    }
+  </div>
+
+  <div class="app-dialog__actions">
+    <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="onCancel()">{{ constants.BTN_CANCEL }}</app-button>
+    <app-button type="submit" variant="flat" [disabled]="isSubmitting()" [loading]="isSubmitting()">
+      {{ isSubmitting() ? constants.BTN_ADDING : constants.BTN_ADD }}
+    </app-button>
+  </div>
+</form>

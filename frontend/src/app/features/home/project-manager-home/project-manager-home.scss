@@ -1,0 +1,67 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.home-workspace {
+  @include flex-column();
+  padding: $spacing-6 $spacing-8;
+  font-family: $font-family-base;
+  color: $color-text;
+
+  .kpi-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(17.5rem, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+    margin-bottom: 1.5rem;
+    
+    @include respond-to('lg') {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .main-content-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    width: 100%;
+
+    ::ng-deep .header-subtitle {
+      display: inline-block;
+    }
+
+    .main-left {
+      overflow: auto;
+
+      ::ng-deep .engagement-status-col {
+        display: none;
+
+        @include respond-to('sm') {
+          display: flex;
+        }
+      }
+    }
+
+    .main-left,
+    .main-right {
+      grid-column: span 1;
+    }
+
+    @include respond-to('lg') {
+      grid-template-columns: repeat(3, 1fr);
+
+      .main-left {
+        grid-column: span 2;
+      }
+      
+      .main-right {
+        grid-column: span 1;
+      }
+    }
+  }
+}

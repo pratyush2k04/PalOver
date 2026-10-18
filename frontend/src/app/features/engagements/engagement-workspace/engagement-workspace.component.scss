@@ -1,0 +1,432 @@
+@use 'styles/mixins' as *;
+
+.workspace-container {
+  @include flex-column($spacing-5);
+  padding: $spacing-6 $spacing-8;
+  background-color: $color-surface-subtle-alt;
+  min-height: 100%;
+  box-sizing: border-box;
+  font-family: $font-family-base;
+
+  @include respond-to-down('md') {
+    padding: $spacing-3 $spacing-4;
+    gap: $spacing-3;
+  }
+}
+
+.workspace-header-card {
+  @include flex-between;
+  align-items: center;
+  padding: $spacing-6 $spacing-8;
+  background-color: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-sm;
+  gap: $spacing-6;
+
+  @media screen and (max-width: 1180px) and (min-width: 769px) {
+    flex-wrap: wrap;
+    padding: $spacing-5 $spacing-6;
+    gap: $spacing-4;
+
+    .header-main-info {
+      flex: 1 1 100%;
+      width: 100%;
+    }
+  }
+
+  @include respond-to-down('md') {
+    flex-direction: column;
+    align-items: stretch;
+    padding: $spacing-4;
+    gap: 0.875rem;
+  }
+}
+
+.header-main-info {
+  display: flex;
+  align-items: center;
+  gap: $spacing-6;
+  flex: 1;
+  min-width: 0;
+
+  @include respond-to-down('md') {
+    align-items: flex-start;
+    gap: $spacing-3;
+    width: 100%;
+  }
+}
+
+.briefcase-icon-box {
+  @include flex-center;
+  width: 3.75rem;
+  height: 3.75rem;
+  background-color: $color-primary-light;
+  border-radius: $radius-xl;
+  flex-shrink: 0;
+
+  .briefcase-icon {
+    @include flex-center;
+    width: 2rem;
+    height: 2rem;
+    color: $color-primary;
+
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+  }
+
+  @include respond-to-down('md') {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: $radius-lg;
+    margin-top: 0.125rem;
+
+    .briefcase-icon {
+      width: 1.375rem;
+      height: 1.375rem;
+    }
+  }
+}
+
+.title-and-metadata {
+  @include flex-column($spacing-3);
+  min-width: 0;
+
+  @include respond-to-down('md') {
+    flex: 1;
+    gap: $spacing-2;
+  }
+
+  .title-with-badge {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    flex-wrap: wrap;
+    margin-bottom: $spacing-1;
+
+    .engagement-title {
+      margin: 0;
+      font-size: $font-size-2xl;
+      font-weight: $font-weight-bold;
+      color: $color-text;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+
+      @include respond-to-down('md') {
+        font-size: $font-size-xl;
+      }
+    }
+
+    .type-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: $spacing-1 $spacing-3;
+      background-color: $color-surface-hover;
+      color: $color-text-muted;
+      border: 1px solid $color-border-soft;
+      border-radius: $radius-full;
+      font-size: $font-size-xs;
+      font-weight: $font-weight-semibold;
+      line-height: 1.2;
+
+      &--brownfield {
+        background-color: $color-warning-bg;
+        color: $color-warning-text;
+        border-color: $color-warning-border;
+      }
+
+      &--greenfield {
+        background-color: $color-success-bg;
+        color: $color-success-text;
+        border-color: $color-success-border;
+      }
+    }
+  }
+}
+
+.metadata-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $spacing-3;
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+
+  @include respond-to-down('md') {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.375rem;
+
+    .meta-dot {
+      display: none;
+    }
+
+    .meta-item {
+      font-size: $font-size-xs;
+      gap: 0.375rem;
+    }
+  }
+
+  .meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-1;
+    white-space: nowrap;
+
+    .meta-icon {
+      @include flex-center;
+      width: 1.125rem;
+      height: 1.125rem;
+      color: $color-text-faint;
+      flex-shrink: 0;
+
+      svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+    }
+
+    .meta-label {
+      font-weight: $font-weight-medium;
+      color: $color-text-muted;
+    }
+
+    .meta-val {
+      font-weight: $font-weight-normal;
+      color: $color-text;
+      white-space: nowrap;
+    }
+  }
+
+  .meta-dot {
+    color: $color-border-soft;
+    font-weight: $font-weight-bold;
+    user-select: none;
+  }
+
+  &--owners {
+    gap: $spacing-8;
+    margin-top: $spacing-1;
+
+    @include respond-to-down('md') {
+      gap: 0.375rem;
+      margin-top: 0;
+    }
+  }
+}
+
+.header-right-panel {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  @media screen and (max-width: 1180px) and (min-width: 769px) {
+    width: 100%;
+    justify-content: flex-end;
+
+    > .header-divider:first-child {
+      display: none;
+    }
+  }
+
+  @include respond-to-down('md') {
+    flex-direction: column;
+    width: 100%;
+    border-top: 1px solid $color-border-soft;
+    padding-top: $spacing-3;
+    gap: $spacing-3;
+  }
+}
+
+.header-divider {
+  width: 0.0625rem;
+  height: 3.5rem;
+  background-color: $color-border-soft;
+  margin: 0 $spacing-6;
+  flex-shrink: 0;
+
+  @include respond-to-down('xl') {
+    margin: 0 $spacing-3;
+  }
+
+  @include respond-to-down('md') {
+    display: none;
+  }
+}
+
+.header-readiness-status {
+  display: flex;
+  align-items: center;
+  gap: $spacing-5;
+  flex-shrink: 0;
+  cursor: pointer;
+  border-radius: $radius-md;
+  transition: background-color $transition-base;
+
+  @include respond-to-down('md') {
+    width: 100%;
+    justify-content: center;
+    gap: $spacing-4;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background-color: $color-surface-hover;
+  }
+
+  &:focus-visible {
+    outline: 0.125rem solid $color-primary;
+    outline-offset: 0.125rem;
+  }
+}
+
+.readiness-details {
+  @include flex-column($spacing-1);
+
+  .readiness-label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text-muted;
+  }
+
+  .status-badge {
+    @include status-badge($color-danger-bg, $color-danger-text);
+    font-size: $font-size-xs;
+    padding: $spacing-1 $spacing-3;
+
+    &--not-ready {
+      background-color: $color-danger-bg;
+      color: $color-danger-text;
+    }
+
+    &--ready {
+      background-color: $color-success-bg;
+      color: $color-success-text;
+    }
+  }
+}
+
+.workspace-header-skeleton {
+  padding: $spacing-6 $spacing-8;
+  background-color: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-xl;
+  color: $color-text-muted;
+}
+
+.workspace-tabs-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: $color-surface-subtle-alt;
+  padding-top: $spacing-2;
+  padding-bottom: $spacing-2;
+  margin-top: -$spacing-1;
+}
+
+app-tabs {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+
+  /* Hide scrollbar for a clean horizontal tab scroll */
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.workspace-content {
+  flex-grow: 1;
+  padding-top: $spacing-2;
+}
+
+.header-day-one-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  .sign-off-btn-wrapper {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  @include respond-to-down('md') {
+    width: 100%;
+    justify-content: center;
+
+    .day-one-signed-badge {
+      justify-content: center;
+    }
+
+    .sign-off-btn-wrapper,
+    app-button {
+      width: 100%;
+    }
+  }
+}
+
+.day-one-signed-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-3;
+  padding: $spacing-2 $spacing-4;
+  background-color: $color-success-bg;
+  border: 1px solid $color-success-border;
+  border-radius: $radius-lg;
+  color: $color-success-text;
+  font-size: $font-size-sm;
+
+  .badge-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.125rem;
+    height: 1.125rem;
+    flex-shrink: 0;
+
+    ::ng-deep span,
+    ::ng-deep svg,
+    svg {
+      display: block;
+      width: 1.125rem;
+      height: 1.125rem;
+      stroke-width: 2.25;
+    }
+  }
+
+  .badge-content {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+
+    strong {
+      font-weight: $font-weight-bold;
+    }
+  }
+
+  &.exception-badge {
+    background-color: $color-warning-bg;
+    border-color: $color-warning-border;
+    color: $color-warning-text;
+  }
+}
+
+.exception-tag {
+  display: inline-block;
+  margin-top: 0.125rem;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-warning-text;
+  cursor: help;
+}
+
+.workspace-content {
+  position: relative;
+  min-height: 20rem;
+}

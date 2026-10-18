@@ -1,0 +1,168 @@
+@use 'styles/mixins' as *;
+@use 'styles/tokens' as *;
+
+:host {
+  position: fixed;
+  top: 4.5rem;
+  right: $spacing-6;
+  @include flex-column;
+  align-items: flex-end;
+  pointer-events: none;
+  z-index: $z-index-toast;
+}
+
+.toast-container {
+  @include flex-column($spacing-3);
+  align-items: flex-end;
+}
+
+.toast {
+  @include flex-between;
+  gap: $spacing-4;
+  min-width: 18rem;
+  max-width: min(28rem, calc(100vw - 2rem));
+  box-sizing: border-box;
+  padding: $spacing-3 $spacing-4;
+  border-radius: $radius-2xl;
+  font-family: inherit;
+  font-size: $font-size-sm;
+  box-shadow: $shadow-card;
+  pointer-events: auto;
+  animation: slideInRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: transform $transition-fast, opacity $transition-fast;
+
+  &.is-leaving {
+    animation: slideOutRight 0.25s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+  }
+
+  .toast-content {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    flex: 1;
+    min-width: 0;
+
+    .icon-circle {
+      @include flex-center;
+      width: $spacing-8;
+      height: $spacing-8;
+      border-radius: $radius-full;
+      flex-shrink: 0;
+
+      .toast-icon-svg {
+        @include flex-center;
+        width: 1.125rem;
+        height: 1.125rem;
+
+        ::ng-deep svg {
+          width: 1.125rem;
+          height: 1.125rem;
+          display: block;
+        }
+      }
+    }
+
+    .message {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+      color: $color-slate-900;
+      line-height: 1.4;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  .close-btn {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: $color-slate-500;
+    font-size: $font-size-base;
+    cursor: pointer;
+    padding: $spacing-1;
+    @include flex-center;
+    border-radius: $radius-md;
+    transition: color $transition-fast, background-color $transition-fast;
+    flex-shrink: 0;
+
+    .close-icon-svg {
+      @include flex-center;
+      width: $spacing-4;
+      height: $spacing-4;
+
+      ::ng-deep svg {
+        width: $spacing-4;
+        height: $spacing-4;
+        display: block;
+      }
+    }
+
+    &:hover {
+      color: $color-slate-900;
+      background-color: rgba($color-black, 0.05);
+    }
+  }
+
+  // Variant Themes (Pastel background + 1px border + shaded icon circle)
+  &.success {
+    background-color: $color-success-bg;
+    border: 1px solid $color-success;
+
+    .icon-circle {
+      background-color: $color-success-light;
+      color: $color-success-text;
+    }
+  }
+
+  &.error {
+    background-color: $color-danger-bg;
+    border: 1px solid $color-danger-500;
+
+    .icon-circle {
+      background-color: $color-danger-light;
+      color: $color-danger-text;
+    }
+  }
+
+  &.info {
+    background-color: $color-info-bg;
+    border: 1px solid $color-primary-active;
+
+    .icon-circle {
+      background-color: $color-primary-subtle;
+      color: $color-primary-hover;
+    }
+  }
+
+  &.warning {
+    background-color: $color-amber-50;
+    border: 1px solid $color-accent-amber;
+
+    .icon-circle {
+      background-color: $color-accent-amber-light;
+      color: $color-amber-700;
+    }
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(1.5rem) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(1.5rem) scale(0.96);
+  }
+}

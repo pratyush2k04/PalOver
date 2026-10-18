@@ -1,0 +1,46 @@
+<div class="notifications-dropdown">
+  <button class="notification-button" type="button" aria-label="Notifications" [appTooltip]="'Notifications'" (click)="toggle()" [class.has-dropdown]="isOpen()">
+    <span class="icon" [inlineSVG]="'assets/icons/bell.svg'"></span>
+    @if (unreadCount() > 0) {
+      <span class="badge">{{ unreadCount() }}</span>
+    }
+  </button>
+
+  @if (isOpen()) {
+    <div class="notifications-panel">
+      <div class="dropdown-header">
+        <span class="dropdown-title">Notifications</span>
+        @if (unreadCount() > 0) {
+          <app-button variant="stroked" size="sm" [disabled]="isMarkingAllRead()" [loading]="isMarkingAllRead()" (click)="markAllAsRead()">Mark all as read</app-button>
+        }
+      </div>
+
+      <div class="dropdown-list">
+        @if (loading() && notifications().length === 0) {
+          <app-loading-spinner label="Loading notifications..." />
+        } @else if (notifications().length === 0) {
+          <app-empty-state message="No unread notifications" />
+        } @else {
+          @for (notification of notifications(); track notification.id) {
+            <div
+              class="notification-item"
+              [class.unread]="!notification.readAt"
+              [class.has-link]="!!notification.link"
+              [attr.title]="notification.link ? 'Click here to redirect' : null"
+              (click)="onNotificationClick(notification)"
+            >
+              <div class="notification-content">
+                <span class="notification-title">{{ notification.title }}</span>
+                <span class="notification-body">{{ notification.body }}</span>
+              </div>
+            </div>
+          }
+        }
+      </div>
+
+      <div class="dropdown-footer">
+        <app-button variant="flat" size="sm" (click)="onViewAllClick()">View All Notifications</app-button>
+      </div>
+    </div>
+  }
+</div>

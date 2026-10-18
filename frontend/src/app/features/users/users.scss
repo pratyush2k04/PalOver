@@ -1,0 +1,288 @@
+@use 'styles/mixins' as *;
+
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: $font-family-base;
+  color: $color-text;
+}
+
+.user-directory {
+  box-sizing: border-box;
+  padding: $spacing-8;
+  font-family: $font-family-base;
+  color: $color-text;
+
+  @include respond-to-down('md') {
+    padding: $spacing-4;
+  }
+
+  app-page-header {
+    display: block;
+    --page-header-margin-bottom: 0;
+    margin-bottom: $spacing-2;
+  }
+
+  /* Header Controls & Cards */
+  .controls-row {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    flex-wrap: wrap;
+    margin-bottom: $spacing-4;
+
+    @include respond-to-down('md') {
+      flex-direction: column;
+      align-items: stretch;
+      gap: $spacing-2;
+    }
+
+    .search-box {
+      position: relative;
+      width: 17.5rem;
+      display: flex;
+      align-items: center;
+
+      @include respond-to-down('md') {
+        width: 100%;
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 0.85rem;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 2;
+        pointer-events: none;
+        color: $color-text-fainter;
+        display: flex;
+        align-items: center;
+        width: $font-size-base;
+        height: $font-size-base;
+      }
+
+      app-input {
+        width: 100%;
+        --field-margin-bottom: 0;
+        --input-padding-left: 2.5rem;
+        --input-height: 2.375rem;
+      }
+    }
+
+    .role-filter-box {
+      width: 11.25rem;
+      display: flex;
+      align-items: center;
+
+      @include respond-to-down('md') {
+        width: 100%;
+      }
+
+      app-select {
+        width: 100%;
+        --field-margin-bottom: 0;
+      }
+    }
+  }
+
+  .total-users-card {
+    background: $color-surface;
+    border: 1px solid $color-border-soft;
+    border-radius: $radius-2xl;
+    padding: $spacing-5 $spacing-6;
+    display: flex;
+    align-items: center;
+    gap: $spacing-5;
+    width: 16.25rem;
+    min-width: 16.25rem;
+    box-shadow: $shadow-card;
+
+    @include respond-to-down('md') {
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      padding: $spacing-4;
+    }
+
+    .card-icon {
+      width: 3rem;
+      height: 3rem;
+      border-radius: $radius-md;
+      @include flex-center;
+      background: $color-primary-light;
+      color: $color-primary;
+
+      span {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+    }
+
+    .card-content {
+      @include flex-column;
+
+      .card-value {
+        font-size: 1.75rem;
+        font-weight: $font-weight-bold;
+        color: $color-text;
+        line-height: 1.2;
+      }
+
+      .card-label {
+        font-size: $font-size-xs;
+        font-weight: $font-weight-medium;
+        color: $color-text-faint;
+        margin-top: $spacing-1;
+      }
+    }
+  }
+
+  /* Table Card */
+  .table-card {
+    background: $color-surface;
+    border: 1px solid $color-border-soft;
+    border-radius: $radius-2xl;
+    box-shadow: $shadow-card;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    .users-table {
+      width: 100%;
+      min-width: 44rem;
+      border-collapse: collapse;
+      text-align: left;
+
+      th {
+        background: $color-surface-hover;
+        padding: 0.65rem $spacing-5;
+        @include text-overline;
+        color: $color-text-muted;
+        border-bottom: 1px solid $color-border-soft;
+      }
+
+      td {
+        padding: 0.65rem $spacing-5;
+        border-bottom: 1px solid $color-border-soft;
+        vertical-align: middle;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      tr:hover td {
+        background: $color-surface-hover;
+      }
+
+      .user-name-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        white-space: nowrap;
+
+        .name {
+          font-weight: $font-weight-semibold;
+          color: $color-text;
+        }
+      }
+
+      .col-email {
+        color: $color-text-faint;
+      }
+
+      .col-role {
+        width: 17.5rem;
+        min-width: 17.5rem;
+
+        app-select {
+          --field-margin-bottom: 0;
+          --select-font-weight: #{$font-weight-semibold};
+          --select-border-radius: #{$radius-lg};
+          --select-padding: 0.4rem 1.85rem 0.4rem 0.85rem;
+        }
+
+        /* Distinct color schemes for each role */
+        &[data-role="Leadership"],
+        &[data-role="Admin"] {
+          app-select {
+            --select-bg: #{$color-role-admin-bg};
+            --select-color: #{$color-role-admin-text};
+            --select-border: #{$color-role-admin-border};
+          }
+        }
+
+        &[data-role="Project Management"] {
+          app-select {
+            --select-bg: #{$color-primary-light};
+            --select-color: #{$color-primary};
+            --select-border: #{$color-primary-border};
+          }
+        }
+
+        &[data-role="Pre Sales"] {
+          app-select {
+            --select-bg: #{$color-success-bg};
+            --select-color: #{$color-success};
+            --select-border: #{$color-success-border};
+          }
+        }
+
+        &[data-role="Tech Lead"] {
+          app-select {
+            --select-bg: #{$color-orange-50};
+            --select-color: #{$color-accent-amber-hover};
+            --select-border: #{$color-orange-200};
+          }
+        }
+      }
+    }
+
+    /* Table Footer */
+    .table-footer {
+      @include flex-between;
+      align-items: center;
+      padding: 0.65rem $spacing-5;
+      background: $color-surface;
+      border-top: 1px solid $color-border-soft;
+
+      @include respond-to-down('md') {
+        flex-direction: column;
+        align-items: center;
+        gap: $spacing-3;
+        padding: $spacing-4;
+
+        .showing-text {
+          text-align: center;
+          width: 100%;
+        }
+
+        .pagination-controls {
+          width: 100%;
+          display: flex;
+          justify-content: center;
+        }
+      }
+
+      .showing-text {
+        font-size: $font-size-sm;
+        color: $color-text-faint;
+        font-weight: $font-weight-medium;
+      }
+    }
+  }
+
+  /* Loading & Empty States */
+  .loading-container,
+  .empty-state-wrapper {
+    @include flex-column($spacing-4);
+    @include flex-center;
+    padding: $spacing-8 $spacing-6;
+    background: $color-surface;
+    border-radius: $radius-2xl;
+    border: 1px solid $color-border-soft;
+    color: $color-text-faint;
+  }
+}

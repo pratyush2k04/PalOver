@@ -1,0 +1,42 @@
+<div class="accordion-card" [class.is-collapsed]="!expanded()" [class.is-disabled]="disabled()">
+  <div
+    class="accordion-header"
+    (click)="toggle()"
+    role="button"
+    [attr.aria-expanded]="expanded()"
+    [attr.aria-disabled]="disabled()"
+    [tabindex]="disabled() ? -1 : 0"
+    (keydown.enter)="toggle()"
+    (keydown.space)="$event.preventDefault(); toggle()"
+  >
+    <div class="header-left">
+      @if (icon()) {
+        <span class="header-icon" [inlineSVG]="icon()!"></span>
+      }
+      @if (title()) {
+        <span class="header-title">{{ title() }}</span>
+        @if (badge() !== undefined && badge() !== null) {
+          <span class="header-badge">({{ badge() }})</span>
+        }
+      } @else {
+        <ng-content select="[accordion-header]" />
+      }
+    </div>
+
+    @if (!disabled()) {
+      <div class="header-right">
+        <span
+          class="chevron-icon"
+          [class.expanded]="expanded()"
+          [inlineSVG]="'assets/icons/chevron-down.svg'"
+        ></span>
+      </div>
+    }
+  </div>
+
+  @if (expanded() && !disabled()) {
+    <div class="accordion-body">
+      <ng-content />
+    </div>
+  }
+</div>

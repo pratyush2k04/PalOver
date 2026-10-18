@@ -1,0 +1,32 @@
+<div class="page-layout">
+  @if (invalidAssumptionsCount() > 0 || unvalidatedAssumptionsCount() > 0) {
+    <div class="readiness-banner" [class.readiness-incomplete]="invalidAssumptionsCount() > 0">
+      <div class="banner-header">
+        <span class="banner-icon-svg warning-icon" [inlineSVG]="'assets/icons/alert-triangle.svg'"></span>
+        <span class="banner-title">Action required on Assumptions</span>
+      </div>
+
+      <div class="readiness-metrics">
+        @if (unvalidatedAssumptionsCount() > 0) {
+          <div class="metric-item">
+            <span class="metric-label">Unvalidated assumptions:</span>
+            <span class="metric-value">{{ unvalidatedAssumptionsCount() }}/{{ totalAssumptionsCount() }}</span>
+          </div>
+        }
+        @if (invalidAssumptionsCount() > 0) {
+          <div class="metric-item metric-item-danger">
+            <span class="metric-label">Invalid assumptions:</span>
+            <span class="metric-value">{{ invalidAssumptionsCount() }}/{{ totalAssumptionsCount() }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+  <div class="cards-layout">
+    <!-- Left Panel: Assumptions -->
+    <app-assumptions class="panel-card-wrapper" (metricsChanged)="invalidAssumptionsCount.set($event.invalidCount); unvalidatedAssumptionsCount.set($event.unvalidatedCount); totalAssumptionsCount.set($event.totalCount)"></app-assumptions>
+
+    <!-- Right Panel: Dependencies -->
+    <app-dependencies class="panel-card-wrapper"></app-dependencies>
+  </div>
+</div>

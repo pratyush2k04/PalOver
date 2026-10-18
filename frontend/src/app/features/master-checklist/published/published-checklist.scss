@@ -1,0 +1,287 @@
+@use 'styles/mixins' as *;
+
+:host {
+  display: block;
+  font-family: $font-family-base;
+}
+
+.published-checklist {
+  padding: 0;
+
+  &__card {
+    background-color: $color-surface;
+    border: 1px solid $color-border-soft;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+    overflow: hidden;
+    padding: 0;
+
+    @include respond-to-down('md') {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      border-radius: 0;
+    }
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: $spacing-4;
+    padding: $spacing-5 $spacing-6;
+    background-color: $color-surface;
+
+    @include respond-to-down('md') {
+      flex-direction: column;
+      align-items: stretch;
+      padding: $spacing-4;
+      gap: $spacing-3;
+      border: 1px solid $color-border-soft;
+      border-radius: $radius-lg;
+      box-shadow: $shadow-sm;
+      margin-bottom: $spacing-4;
+    }
+
+    h1 {
+      color: $color-text;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-bold;
+      margin: 0 0 $spacing-1;
+    }
+  }
+
+  &__header-title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    gap: $spacing-4;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-1;
+    width: 100%;
+
+    @include respond-to('sm') {
+      width: auto;
+    }
+
+    label {
+      font-size: $font-size-xs;
+      font-weight: $font-weight-medium;
+      color: $color-text-faint;
+    }
+
+    input,
+    select {
+      @include form-input-base;
+    }
+  }
+
+  &__category {
+    flex: 1 1 100%;
+
+    @include respond-to('sm') {
+      flex: 0 1 13.75rem;
+      min-width: 11.25rem;
+    }
+
+    select,
+    app-select {
+      width: 100%;
+    }
+  }
+}
+
+.checklist-container {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  background: transparent;
+  min-height: auto;
+
+  @include respond-to-down('md') {
+    gap: $spacing-4;
+  }
+}
+
+// Category cards
+.category-card {
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  overflow: hidden;
+
+  @include respond-to-down('md') {
+    background: $color-surface;
+    border: 1px solid $color-border-soft;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+  }
+}
+
+.category-header {
+  @include flex-between;
+  padding: $spacing-3 $spacing-6;
+  background: $color-surface-hover;
+  border-top: 1px solid $color-border-soft;
+  border-bottom: 1px solid $color-border-soft;
+
+  @include respond-to-down('md') {
+    border-top: none;
+    padding: $spacing-3 $spacing-4;
+  }
+}
+
+.category-name {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  color: $color-text;
+  letter-spacing: 0.05em;
+}
+
+.category-count {
+  font-size: $font-size-xs;
+  color: $color-text-fainter;
+}
+
+// Table Container (Scrollable on small devices)
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+// Table
+.checklist-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 30rem;
+
+  thead tr {
+    border-bottom: 1px solid $color-border-soft;
+  }
+
+  th {
+    padding: $spacing-3 $spacing-6;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    color: $color-text-fainter;
+    letter-spacing: 0.05em;
+    text-align: left;
+    background: $color-surface;
+  }
+
+  tbody tr {
+    transition: background-color $transition-fast;
+
+    &.checklist-row {
+      border-bottom: 1px solid $color-border-soft;
+      cursor: pointer;
+
+      &:hover {
+        background: $color-surface-hover;
+      }
+    }
+  }
+
+  td {
+    padding: $spacing-3 $spacing-5;
+    vertical-align: middle;
+  }
+}
+
+.col-item {
+  width: 45%;
+}
+.col-evidence {
+  width: 25%;
+}
+.col-status {
+  width: 20%;
+}
+.col-actions {
+  width: 10%;
+  text-align: right;
+}
+
+.cell-item {
+  font-size: $font-size-sm;
+  color: $color-text;
+  line-height: 1.4;
+}
+
+.item-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  flex-wrap: wrap;
+}
+
+.item-title {
+  font-weight: $font-weight-medium;
+}
+
+.cell-status,
+.cell-actions {
+  font-size: $font-size-sm;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $color-text-fainter;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-1 $spacing-2;
+  font-size: $font-size-xs;
+  border-radius: $radius-sm;
+  transition: color $transition-fast, background-color $transition-fast;
+
+  &:hover {
+    color: $color-primary;
+    background-color: $color-primary-light;
+  }
+}
+
+// Detail Card
+.checklist-detail-row {
+  background: $color-surface-hover;
+
+  td {
+    padding: $spacing-4 $spacing-5;
+    border-bottom: 1px solid $color-border-soft;
+  }
+}
+
+.description-card {
+  background: $color-surface;
+  border: 1px solid $color-border-soft;
+  border-radius: $radius-lg;
+  padding: $spacing-4;
+  box-shadow: $shadow-sm;
+
+  h4 {
+    margin: 0 0 $spacing-2 0;
+    @include text-overline;
+    color: $color-text-muted;
+  }
+
+  p {
+    margin: 0;
+    font-size: $font-size-sm;
+    color: $color-text;
+    line-height: 1.5;
+  }
+}

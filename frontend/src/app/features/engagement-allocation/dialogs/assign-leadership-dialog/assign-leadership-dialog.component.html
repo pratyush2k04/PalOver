@@ -1,0 +1,80 @@
+<h2 class="app-dialog__title">
+  <div style="display: flex; align-items: center; gap: 0.5rem;">
+    Assign Leadership Contacts
+    @if (handover()?.clientSentiment) {
+      <app-status-badge tone="info">{{ handover()!.clientSentiment }}</app-status-badge>
+    }
+  </div>
+  <span class="eng-sub">({{ engagement.engagementName }} · {{ engagement.clientName }})</span>
+</h2>
+
+<div class="app-dialog__content">
+  <div class="handover-summary">
+   
+    @if (isLoadingHandover()) {
+      <app-loading-spinner size="sm" [inline]="true" label="Loading handover details..." />
+    } @else if (handover()?.hasHandoverDraft && handover()?.status?.toLowerCase() === 'submitted') {
+      <div class="handover-summary-grid">
+        @if (handover()!.clientBackground) {
+          <div class="handover-field">
+            <span class="handover-field-label">Client Background</span>
+            <p class="handover-field-value">{{ handover()!.clientBackground }}</p>
+          </div>
+        }
+        <div class="handover-field">
+          <span class="handover-field-label">Business Problem</span>
+          <p class="handover-field-value">{{ handover()!.businessProblem || '—' }}</p>
+        </div>
+        
+      </div>
+    } @else {
+      <app-alert variant="warning">Handover has not been submitted for this engagement yet.</app-alert>
+    }
+  </div>
+
+  <label class="input-label">Assigned Leadership Users</label>
+
+  <!-- Search & Multi-select Chips Container -->
+  <div class="tag-input-wrapper">
+    <!-- Selected User Tag Chips -->
+    <div class="chips-container">
+      @for (user of modalLeadershipUsers(); track user.id) {
+        <span class="tag-chip">
+          <span class="chip-text">{{ user.id }}-{{ user.fullName }}</span>
+          <button
+            type="button"
+            class="chip-remove"
+            aria-label="Remove User"
+            [appTooltip]="'Remove User'"
+            (click)="removeTagChip(user)"
+          >
+            &times;
+          </button>
+        </span>
+      }
+    </div>
+
+    <!-- Employee Search Input -->
+    <div class="search-input-container">
+      <app-autocomplete
+        placeholder="Search Employee"
+        [searchTerm]="modalSearchTerm()"
+        [options]="autocompleteOptions()"
+        emptyMessage="No matching Leadership users available"
+        (searchTermChange)="modalSearchTerm.set($event)"
+        (optionSelected)="onAutocompleteOptionSelected($event)"
+      />
+    </div>
+  </div>
+
+  <p class="app-dialog__hint">Select a Leadership user from the dropdown to assign. At least one Leadership user must remain assigned at all times.</p>
+
+  @if (errorMessage()) {
+    <app-alert variant="danger">{{ errorMessage() }}</app-alert>
+  }
+</div>
+
+<div class="app-dialog__actions">
+  <app-button type="button" variant="stroked" [disabled]="isSubmitting()" (click)="onClose()">Cancel</app-button>
+  <app-button type="button" variant="flat" [disabled]="isSubmitting()" (click)="saveAndClose()">{{ isSubmitting() ? 'Saving...' : 'Save' }}</app-button>
+</div>
