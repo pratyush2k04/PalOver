@@ -2,7 +2,6 @@ import { Component, inject, input, output, signal, computed, effect, DestroyRef 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TECHNICAL_READINESS_ROLES } from '@shared/constants/app.constants';
 import { EnvironmentToolingService } from '@features/engagements/services/environment-tooling.service';
 import { EngagementService } from '@features/engagements/services/engagement.service';
 import { AuthService } from '@shared/services/auth';
@@ -55,16 +54,57 @@ export class EnvironmentToolingComponent {
   private dialog = inject(DialogService);
 
   items = signal<EnvironmentToolingItemDto[]>([]);
-  isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+  isTechLead = computed(() => this.engagementService.isWorkspaceTechLead());
   canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
   itemToDelete = signal<EnvironmentToolingItemDto | null>(null);
   isDeleting = signal<boolean>(false);
 
-  readonly statusOptions: StatusSelectOption[] = [
-    { label: 'In Progress', value: EnvironmentToolingStatus.InProgress, tone: 'info' },
-    { label: 'Granted', value: EnvironmentToolingStatus.Granted, tone: 'success' },
-    { label: 'Blocked', value: EnvironmentToolingStatus.Blocked, tone: 'danger' }
-  ];
+  private static readonly ALLOWED_TRANSITIONS = new Set<string>([
+    `${EnvironmentToolingStatus.InProgress}->${EnvironmentToolingStatus.Granted}`,
+    `${EnvironmentToolingStatus.InProgress}->${EnvironmentToolingStatus.Blocked}`,
+    `${EnvironmentToolingStatus.Granted}->${EnvironmentToolingStatus.Blocked}`,
+    `${EnvironmentToolingStatus.Blocked}->${EnvironmentToolingStatus.InProgress}`,
+    `${EnvironmentToolingStatus.Blocked}->${EnvironmentToolingStatus.Granted}`,
+  ]);
+
+  getStatusNumericValue(status: EnvironmentToolingStatus | string | number | unknown): EnvironmentToolingStatus {
+    if (status === EnvironmentToolingStatus.Granted || status === 'Granted' || Number(status) === EnvironmentToolingStatus.Granted) {
+      return EnvironmentToolingStatus.Granted;
+    }
+    if (status === EnvironmentToolingStatus.Blocked || status === 'Blocked' || Number(status) === EnvironmentToolingStatus.Blocked) {
+      return EnvironmentToolingStatus.Blocked;
+    }
+    return EnvironmentToolingStatus.InProgress;
+  }
+
+  getStatusOptions(status: EnvironmentToolingStatus | number | string): StatusSelectOption[] {
+    const current = this.getStatusNumericValue(status);
+    return [
+      {
+        label: 'In Progress',
+        value: EnvironmentToolingStatus.InProgress,
+        tone: 'info',
+        disabled: current !== EnvironmentToolingStatus.InProgress && !this.isTransitionAllowed(current, EnvironmentToolingStatus.InProgress)
+      },
+      {
+        label: 'Granted',
+        value: EnvironmentToolingStatus.Granted,
+        tone: 'success',
+        disabled: current !== EnvironmentToolingStatus.Granted && !this.isTransitionAllowed(current, EnvironmentToolingStatus.Granted)
+      },
+      {
+        label: 'Blocked',
+        value: EnvironmentToolingStatus.Blocked,
+        tone: 'danger',
+        disabled: current !== EnvironmentToolingStatus.Blocked && !this.isTransitionAllowed(current, EnvironmentToolingStatus.Blocked)
+      }
+    ];
+  }
+
+  isTransitionAllowed(from: EnvironmentToolingStatus, to: EnvironmentToolingStatus): boolean {
+    if (from === to) return false;
+    return EnvironmentToolingComponent.ALLOWED_TRANSITIONS.has(`${from}->${to}`);
+  }
 
   constructor() {
     effect(() => {
@@ -93,15 +133,15 @@ export class EnvironmentToolingComponent {
   }
 
   onStatusChange(item: EnvironmentToolingItemDto, newStatus: unknown): void {
-    const statusVal = typeof newStatus === 'string' ? parseInt(newStatus, 10) : (newStatus as EnvironmentToolingStatus);
+    const currentStatus = this.getStatusNumericValue(item.status);
+    const statusVal = this.getStatusNumericValue(newStatus);
 
-    if (+item.status === statusVal) {
+    if (currentStatus === statusVal) {
       return;
     }
 
-    if (+item.status === EnvironmentToolingStatus.Granted && statusVal === EnvironmentToolingStatus.InProgress) {
-      this.toastService.error(`Cannot change status from Granted to In Progress for ${item.name}`);
-      this.items.update((items) => items.map((i) => i.id === item.id ? { ...i } : i));
+    if (!this.isTransitionAllowed(currentStatus, statusVal)) {
+      this.toastService.error(`Cannot change status from ${this.getStatusLabel(currentStatus)} to ${this.getStatusLabel(statusVal)} for ${item.name}`);
       return;
     }
 
@@ -121,8 +161,6 @@ export class EnvironmentToolingComponent {
 
     dialogRef.closed$.subscribe((result) => {
       if (!result) {
-        // Revert UI on dialog cancel
-        this.items.update((items) => items.map((i) => i.id === item.id ? { ...i } : i));
         return;
       }
       this.updateStatus(item, EnvironmentToolingStatus.Blocked, result.reason);
@@ -146,11 +184,8 @@ export class EnvironmentToolingComponent {
         this.itemsUpdated.emit(updatedList);
         this.toastService.success('Status updated');
       },
-      error: (err) => {
+      error: () => {
         this.toastService.error(`Failed to update status for ${item.name}`);
-        console.warn('API update environment status failed', err);
-        // Revert UI on error
-        this.items.update((items) => items.map((i) => i.id === item.id ? { ...i } : i));
       }
     });
   }

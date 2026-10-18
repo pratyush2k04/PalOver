@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,7 +6,7 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
 import { DialogRef } from '@common/services/dialog/dialog-ref';
 import { DIALOG_DATA } from '@common/services/dialog/dialog.service';
 import { DocumentService } from '../../../services/document.service';
-import { DocumentCategory, DocumentVisibility } from '../../../models/document.model';
+import { DocumentCategory, DocumentCategoryId, DocumentVisibility } from '../../../models/document.model';
 import { DOCUMENT_MESSAGES, DOCUMENT_CONFIG } from '@shared/constants/document.constants';
 import { AlertComponent } from '@common/components/alert/alert';
 import { ButtonComponent } from '@common/components/button/button';
@@ -15,6 +15,7 @@ import { SelectComponent, SelectOption } from '@common/components/form/select/se
 
 export interface UploadDocumentDialogData {
   engagementId: number;
+  categories: DocumentCategory[];
 }
 
 export interface UploadDocumentDialogResult {
@@ -38,14 +39,18 @@ export interface UploadDocumentDialogResult {
   templateUrl: './upload-document-dialog.component.html',
   styleUrl: './upload-document-dialog.component.scss'
 })
-export class UploadDocumentDialogComponent implements OnInit {
+export class UploadDocumentDialogComponent {
   private documentService = inject(DocumentService);
   private destroyRef = inject(DestroyRef);
   private dialogRef = inject<DialogRef<UploadDocumentDialogResult>>(DialogRef);
   private data = inject<UploadDocumentDialogData>(DIALOG_DATA);
 
-  categories = signal<DocumentCategory[]>([]);
-  selectedCategoryId = signal<number | null>(null);
+  categories = signal<DocumentCategory[]>(this.data.categories);
+  selectedCategoryId = signal<number | null>(
+    this.data.categories.find((cat) => cat.id === DocumentCategoryId.Other)?.id
+      ?? this.data.categories[0]?.id
+      ?? null
+  );
 
   /** All files selected by the user */
   selectedFiles = signal<File[]>([]);
@@ -65,26 +70,6 @@ export class UploadDocumentDialogComponent implements OnInit {
     { value: DOCUMENT_CONFIG.VISIBILITY.TEAM_WIDE, label: 'Team-wide' },
     { value: DOCUMENT_CONFIG.VISIBILITY.PM_ONLY, label: 'PM-only (restricted)' }
   ];
-
-  ngOnInit(): void {
-    this.loadCategories();
-  }
-
-  loadCategories(): void {
-    this.documentService.getCategories().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (cats) => {
-        this.categories.set(cats);
-        if (cats.length > 0) {
-          this.selectedCategoryId.set(cats[0].id);
-        }
-      },
-      error: () => {
-        const defaults: DocumentCategory[] = [...DOCUMENT_CONFIG.DEFAULT_CATEGORIES];
-        this.categories.set(defaults);
-        this.selectedCategoryId.set(defaults[0].id);
-      }
-    });
-  }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;

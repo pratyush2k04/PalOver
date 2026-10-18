@@ -13,9 +13,8 @@ import { StatusBadgeComponent, StatusBadgeTone } from '@common/components/status
 import { ButtonComponent } from '@common/components/button/button';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { DialogService } from '@common/services/dialog/dialog.service';
-import { AuthService } from '@shared/services/auth';
 import { EngagementService } from '@features/engagements/services/engagement.service';
-import { TECHNICAL_READINESS_ROLES } from '@shared/constants/technical-readiness.constants';
+import { TECHNICAL_READINESS_MESSAGES } from '@shared/constants/technical-readiness.constants';
 import {
   ArchitectureValidationDto,
   DiscoveryFeatureItemDto
@@ -52,7 +51,6 @@ export class ArchitectureValidationComponent {
 
   private service = inject(ArchitectureValidationService);
   private toastService = inject(ToastService);
-  private authService = inject(AuthService);
   private engagementService = inject(EngagementService);
   private dialog = inject(DialogService);
   private destroyRef = inject(DestroyRef);
@@ -68,7 +66,7 @@ export class ArchitectureValidationComponent {
   rationale = signal<string>('');
   rationaleError = signal<string>('');
 
-  isTechLead = computed(() => this.authService.hasRole(TECHNICAL_READINESS_ROLES.TECH_LEAD));
+  isTechLead = computed(() => this.engagementService.isWorkspaceTechLead());
   canManage = computed(() => this.isTechLead() && !this.engagementService.isSignedOff());
   features = computed(() => this.validation()?.features ?? []);
   committedTimelineWeeks = computed(() => this.validation()?.committedTimelineWeeks ?? 0);
@@ -134,6 +132,8 @@ export class ArchitectureValidationComponent {
 
   onStatusSelect(status: ArchitectureStatus): void {
     if (!this.isTechLead()) return;
+    if (+this.selectedStatus() === +status) return;
+
     this.selectedStatus.set(status);
     this.rationaleError.set('');
 
@@ -177,6 +177,7 @@ export class ArchitectureValidationComponent {
         this.selectedStatus.set(res.status);
         this.rationale.set(res.rationale ?? '');
         this.validationUpdated.emit(res);
+        this.toastService.success(TECHNICAL_READINESS_MESSAGES.ARCHITECTURE_VALIDATION_SAVED);
       }
     });
   }
@@ -194,7 +195,9 @@ export class ArchitectureValidationComponent {
       this.service.addFeatureItem(this.engagementId(), result).pipe(
         takeUntilDestroyed(this.destroyRef)
       ).subscribe({
-        next: () => this.loadValidation(this.engagementId(), true)
+        next: () => this.loadValidation(this.engagementId(), true, () =>
+          this.toastService.success(TECHNICAL_READINESS_MESSAGES.FEATURE_ADDED(result.featureName))
+        )
       });
     });
   }
@@ -212,7 +215,9 @@ export class ArchitectureValidationComponent {
       this.service.updateFeatureItem(feature.id, result).pipe(
         takeUntilDestroyed(this.destroyRef)
       ).subscribe({
-        next: () => this.loadValidation(this.engagementId(), true)
+        next: () => this.loadValidation(this.engagementId(), true, () =>
+          this.toastService.success(TECHNICAL_READINESS_MESSAGES.FEATURE_UPDATED(result.featureName))
+        )
       });
     });
   }
@@ -241,12 +246,12 @@ export class ArchitectureValidationComponent {
         this.featureToDelete.set(null);
         this.isLoading.set(false);
         this.loadValidation(this.engagementId(), true, () =>
-          this.toastService.success(`Feature "${feature.featureName}" deleted successfully`)
+          this.toastService.success(TECHNICAL_READINESS_MESSAGES.FEATURE_DELETED(feature.featureName))
         );
       },
       error: (err) => {
         this.isLoading.set(false);
-        this.errorMessage.set(`Failed to delete feature "${feature.featureName}"`);
+        this.errorMessage.set(TECHNICAL_READINESS_MESSAGES.FEATURE_DELETE_ERROR(feature.featureName));
         console.error('API delete feature failed', err);
       }
     });

@@ -6,7 +6,6 @@ import {
   CreateResourceRequestPayload,
   RemoveAllocationPayload,
   ResourceRequestItem,
-  ResourcingGapDto,
 } from '../models/resource-request.model';
 import { RESOURCE_REQUEST_CONSTANTS } from '@shared/constants/app.constants';
 import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
@@ -20,11 +19,6 @@ export class ResourceRequestService {
   getResourceRequests(engagementId: number): Observable<ResourceRequestItem[]> {
     const url = RESOURCE_REQUEST_CONSTANTS.API_ENGAGEMENT_RESOURCE_REQUESTS(engagementId);
     return this.http.get<ResourceRequestItem[]>(url);
-  }
-
-  getResourcingGap(engagementId: number): Observable<ResourcingGapDto> {
-    const url = `${RESOURCE_REQUEST_CONSTANTS.API_ENGAGEMENT_RESOURCE_REQUESTS(engagementId)}/gap`;
-    return this.http.get<ResourcingGapDto>(url);
   }
 
   createResourceRequest(

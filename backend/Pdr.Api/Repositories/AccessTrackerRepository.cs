@@ -61,14 +61,6 @@ public class AccessTrackerRepository(AppDbContext context) : IAccessTrackerRepos
             .AsNoTracking()
             .FirstOrDefaultAsync(e => e.EngagementId == engagementId);
 
-    // Returns the UserId of the Tech Lead assigned to this engagement (for US3 deadline calculation)
-    public async Task<int?> GetTechLeadUserIdAsync(int engagementId) =>
-        await context.EngagementAssignments
-            .AsNoTracking()
-            .Include(ea => ea.User)
-            .Where(ea => ea.EngagementId == engagementId && ea.User.RoleId == (int)RoleEnum.TechLead)
-            .Select(ea => (int?)ea.UserId)
-            .FirstOrDefaultAsync();
     // Access items that have left the pending state (Granted or Blocked), for the KPI access-delay report
     public async Task<List<AccessItemDelayInfoDto>> GetResolvedAccessItemsByEngagementIdsAsync(List<int> engagementIds) =>
         await context.AccessItems

@@ -15,8 +15,10 @@ export class EngagementAllocationService {
     return this.http.get<EngagementAllocationItem[]>(ENGAGEMENT_API_ENDPOINTS.ALL_ENGAGEMENTS);
   }
 
-  getLeadershipUsers(engagementId: number): Observable<LeadershipUserItem[]> {
-    return this.http.get<LeadershipUserItem[]>(ENGAGEMENT_API_ENDPOINTS.LEADERSHIP_USERS(engagementId));
+  getLeadershipUsers(engagementId: number, skipLoader = false): Observable<LeadershipUserItem[]> {
+    return this.http.get<LeadershipUserItem[]>(ENGAGEMENT_API_ENDPOINTS.LEADERSHIP_USERS(engagementId), {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
   getAvailableLeadershipUsers(): Observable<LeadershipUserItem[]> {
@@ -27,14 +29,6 @@ export class EngagementAllocationService {
     return this.http.get<HandoverDraftStatus>(ENGAGEMENT_API_ENDPOINTS.HANDOVER_DRAFT_STATUS(engagementId), {
       context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
     });
-  }
-
-  assignLeadershipUser(engagementId: number, userId: number): Observable<LeadershipUserItem[]> {
-    return this.http.post<LeadershipUserItem[]>(ENGAGEMENT_API_ENDPOINTS.LEADERSHIP_USERS(engagementId), { userId });
-  }
-
-  removeLeadershipUser(engagementId: number, userId: number): Observable<LeadershipUserItem[]> {
-    return this.http.delete<LeadershipUserItem[]>(ENGAGEMENT_API_ENDPOINTS.DELETE_LEADERSHIP_USER(engagementId, userId));
   }
 
   updateLeadershipUsers(engagementId: number, userIds: number[], skipLoader = false): Observable<LeadershipUserItem[]> {

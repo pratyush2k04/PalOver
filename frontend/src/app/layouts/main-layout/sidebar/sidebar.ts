@@ -66,13 +66,10 @@ export class SidebarComponent {
       let queueLabel = 'My\nEngagements';
       let icon = 'briefcase';
 
-      if (currentUser.role === USER_ROLES.TECH_LEAD) {
-        queueLabel = 'Tech\nQueue';
-        icon = 'briefcase';
-      } else if (currentUser.role === USER_ROLES.PRE_SALES) {
+      if (currentUser.role === USER_ROLES.PRE_SALES) {
         queueLabel = 'My\nHandovers';
         icon = 'clipboard';
-      } else if (currentUser.role === USER_ROLES.PROJECT_MANAGEMENT || currentUser.role === USER_ROLES.LEADERSHIP) {
+      } else if (currentUser.role === USER_ROLES.DELIVERY || currentUser.role === USER_ROLES.LEADERSHIP) {
         queueLabel = 'My\nEngagements';
         icon = 'briefcase';
       }

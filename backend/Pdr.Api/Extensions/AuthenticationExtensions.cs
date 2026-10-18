@@ -40,7 +40,7 @@ public static class AuthenticationExtensions
         services.AddAuthorization(options =>
         {
             options.AddPolicy(MasterChecklistConstants.Policies.AdminOnly, policy =>
-                policy.RequireClaim("isAdmin", "true"));
+                policy.RequireClaim(ClaimConstants.IsAdmin, "true"));
         });
 
         return services;

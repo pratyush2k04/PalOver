@@ -7,8 +7,8 @@ export const HOME_ROUTES: Routes = [
     path: HOME_ROUTES_CONFIG.ENGAGEMENT_DASHBOARD,
     canActivate: [workspaceGuard],
     loadComponent: () =>
-      import('./project-manager-home/project-manager-home').then(
-        (m) => m.ProjectManagerHomeComponent
+      import('./delivery-home/delivery-home').then(
+        (m) => m.DeliveryHomeComponent
       ),
   },
   {

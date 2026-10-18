@@ -45,10 +45,23 @@ export class TooltipDirective implements OnDestroy {
     this.hide(true);
   }
 
-  @HostListener('window:scroll')
-  onScroll(): void {
-    if (this.tooltipElement) {
-      this.hide(true);
+  private scrollListenerAttached = false;
+
+  private onScrollCaptured = () => {
+    this.hide(true);
+  };
+
+  private attachScrollListener(): void {
+    if (!this.scrollListenerAttached) {
+      window.addEventListener('scroll', this.onScrollCaptured, true);
+      this.scrollListenerAttached = true;
+    }
+  }
+
+  private detachScrollListener(): void {
+    if (this.scrollListenerAttached) {
+      window.removeEventListener('scroll', this.onScrollCaptured, true);
+      this.scrollListenerAttached = false;
     }
   }
 
@@ -58,6 +71,8 @@ export class TooltipDirective implements OnDestroy {
     if (!text || text.trim() === '') {
       return;
     }
+
+    this.attachScrollListener();
 
     this.showTimeout = setTimeout(() => {
       this.createAndPositionTooltip();
@@ -144,6 +159,7 @@ export class TooltipDirective implements OnDestroy {
   }
 
   hide(immediate = false): void {
+    this.detachScrollListener();
     this.clearTimers();
     if (!this.tooltipElement) return;
 
@@ -182,6 +198,7 @@ export class TooltipDirective implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.detachScrollListener();
     this.clearTimers();
     this.removeTooltipElement();
   }

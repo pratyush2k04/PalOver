@@ -33,13 +33,13 @@ public class RolesController(IRoleRepository roleRepository) : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves all users assigned to a specific role (Leadership only).
+    /// Retrieves all users assigned to a specific role for directory lookup.
     /// </summary>
     /// <param name="id">The role ID.</param>
     /// <returns>A list of users assigned to the specified role.</returns>
     [HttpGet("{id:int}/users")]
     [Authorize]
-    [EndpointSummary("Get all users assigned to a role (Leadership only)")]
+    [EndpointSummary("Get all users assigned to a role")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

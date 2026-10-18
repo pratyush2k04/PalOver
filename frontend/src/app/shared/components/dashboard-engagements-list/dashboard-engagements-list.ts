@@ -4,15 +4,17 @@ import { DashboardEngagement } from '@shared/models/app-context.model';
 import { RouterModule } from '@angular/router';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { EmptyStateComponent } from '@common/components/empty-state/empty-state';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
 
 @Component({
   selector: 'app-dashboard-engagements-list',
   standalone: true,
-  imports: [CommonModule, DatePipe, RouterModule, InlineSVGModule, EmptyStateComponent],
+  imports: [CommonModule, DatePipe, RouterModule, InlineSVGModule, EmptyStateComponent, TooltipDirective],
   templateUrl: './dashboard-engagements-list.html',
   styleUrl: './dashboard-engagements-list.scss'
 })
 export class DashboardEngagementsListComponent {
+  title = input<string>('Engagements approaching kickoff');
   engagements = input.required<DashboardEngagement[]>();
   totalCount = input.required<number>();
 

@@ -18,6 +18,7 @@ import { DatepickerComponent } from '@common/components/form/datepicker/datepick
 import { AlertComponent } from '@common/components/alert/alert';
 import { ToastService } from '@common/services/toast/toast';
 import { futureDateValidator } from '@common/validators/date.validators';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
 
 function billingNotBeforeKickoffValidator(group: AbstractControl): ValidationErrors | null {
   const kickoffDate = group.get('kickoffDate')?.value;
@@ -33,7 +34,7 @@ function billingNotBeforeKickoffValidator(group: AbstractControl): ValidationErr
 @Component({
   selector: 'app-engagements',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, InputComponent, TextareaComponent, SelectComponent, DatepickerComponent, AlertComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, InputComponent, TextareaComponent, SelectComponent, DatepickerComponent, AlertComponent, TooltipDirective],
   templateUrl: './engagements.html',
   styleUrl: './engagements.scss'
 })

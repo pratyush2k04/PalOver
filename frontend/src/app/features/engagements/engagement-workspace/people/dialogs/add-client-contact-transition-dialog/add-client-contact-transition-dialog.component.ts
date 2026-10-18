@@ -7,9 +7,9 @@ import { ButtonComponent } from '@common/components/button/button';
 import { InputComponent } from '@common/components/form/input/input';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
 import { AlertComponent } from '@common/components/alert/alert';
+import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { AddClientContactTransitionDialogData, AddTransitionRequest } from '@features/engagements/models/client-contact-transition.model';
 import { ClientContactTransitionService } from '@features/engagements/services/client-contact-transition.service';
-import { PersonService } from '@shared/services/person.service';
 import { PersonType } from '@shared/models/person.model';
 import { ToastService } from '@common/services/toast/toast';
 import {
@@ -31,13 +31,13 @@ import {
     InputComponent,
     SelectComponent,
     AlertComponent,
+    TextareaComponent
   ],
   templateUrl: './add-client-contact-transition-dialog.component.html',
   styleUrl: './add-client-contact-transition-dialog.component.scss',
 })
 export class AddClientContactTransitionDialogComponent {
   private dialogRef = inject<DialogRef<boolean>>(DialogRef);
-  private personService = inject(PersonService);
   private transitionService = inject(ClientContactTransitionService);
   private fb = inject(FormBuilder);
   private toastService = inject(ToastService);
@@ -56,7 +56,18 @@ export class AddClientContactTransitionDialogComponent {
     outgoingContactRole: ['', [Validators.required, Validators.maxLength(200)]],
     incomingContactName: ['', [Validators.required, Validators.maxLength(200)]],
     incomingContactRole: ['', [Validators.required, Validators.maxLength(200)]],
+    incomingContactEmail: ['', [Validators.email, Validators.maxLength(255)]],
+    incomingContactBackground: ['', [Validators.maxLength(2000)]],
+    incomingContactSentiment: [''],
   });
+
+  sentimentOptions: SelectOption[] = [
+    { value: 'Highly Collaborative', label: 'Highly Collaborative' },
+    { value: 'Collaborative', label: 'Collaborative' },
+    { value: 'Responsive', label: 'Responsive' },
+    { value: 'Slow to Respond', label: 'Slow to Respond' },
+    { value: 'Frequently Changes Requirements', label: 'Frequently Changes Requirements' }
+  ];
 
   showConfirm = signal(false);
   outgoingContactOptions = signal<SelectOption[]>([]);
@@ -66,19 +77,15 @@ export class AddClientContactTransitionDialogComponent {
   private peopleById = new Map<number, { name: string; role: string }>();
 
   constructor() {
-    this.personService.getPeopleByEngagement(this.data.engagementId).subscribe({
-      next: (people) => {
-        const outgoingNames = new Set(this.data.activeTransitions.map(t => t.outgoingContactName));
-        const clients = people.filter(
-          (p) => (p.personType === PersonType.Client || p.personType === 'Client' || Number(p.personType) === PersonType.Client)
-                 && !outgoingNames.has(p.name)
-        );
-        this.outgoingContactOptions.set(
-          clients.map((p) => ({ value: p.personId, label: `${p.name} - ${p.role}` }))
-        );
-        this.peopleById = new Map(clients.map((p) => [p.personId, { name: p.name, role: p.role }]));
-      },
-    });
+    const outgoingNames = new Set(this.data.activeTransitions.map(t => t.outgoingContactName));
+    const clients = this.data.people.filter(
+      (p) => (p.personType === PersonType.Client || p.personType === 'Client' || Number(p.personType) === PersonType.Client)
+             && !outgoingNames.has(p.name)
+    );
+    this.outgoingContactOptions.set(
+      clients.map((p) => ({ value: p.personId, label: `${p.name} - ${p.role}` }))
+    );
+    this.peopleById = new Map(clients.map((p) => [p.personId, { name: p.name, role: p.role }]));
 
     this.form.get('outgoingPersonId')!.valueChanges.subscribe((personId: number | null) => {
       const person = personId !== null ? this.peopleById.get(personId) : undefined;
@@ -95,7 +102,7 @@ export class AddClientContactTransitionDialogComponent {
 
   onOutgoingSelectClick(): void {
     if (this.outgoingContactOptions().length === 0) {
-      this.toastService.info(this.validationMessages.NO_OUTGOING_CONTACTS);
+      this.toastService.warning(this.validationMessages.NO_OUTGOING_CONTACTS);
     }
   }
 

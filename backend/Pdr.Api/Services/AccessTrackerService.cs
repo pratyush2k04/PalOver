@@ -17,7 +17,8 @@ public class AccessTrackerService(
     IRiskService riskService,
     ICurrentUserService currentUserService,
     IAuditLogService auditLogService,
-    ITechnicalReadinessNotificationService readinessNotificationService) : IAccessTrackerService
+    ITechnicalReadinessNotificationService readinessNotificationService,
+    IEngagementAccessService engagementAccessService) : IAccessTrackerService
 {
     // -------------------------------------------------------------------------
     // State machine: defines which transitions are allowed
@@ -36,6 +37,8 @@ public class AccessTrackerService(
     // -------------------------------------------------------------------------
     public async Task<List<AccessItemDto>> GetAccessItemsAsync(int engagementId)
     {
+        await engagementAccessService.ValidateAccessAsync(engagementId);
+
         if (!await repository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
@@ -48,6 +51,8 @@ public class AccessTrackerService(
     // -------------------------------------------------------------------------
     public async Task<AccessItemDto> AddCustomAccessItemAsync(int engagementId, AddCustomAccessItemRequest request)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.TechLead);
+
         if (!await repository.EngagementExistsAsync(engagementId))
             throw new EngagementNotFoundException(engagementId);
 
@@ -86,6 +91,7 @@ public class AccessTrackerService(
         var item = await repository.GetAccessItemByIdAsync(accessItemId)
             ?? throw new AccessItemNotFoundException(accessItemId);
 
+        await engagementAccessService.RequireEngagementRoleAsync(item.EngagementId, EngagementRoleEnum.TechLead);
         await engagementRepository.EnsureNotSignedOffAsync(item.EngagementId);
 
         // Guard: same-status transition is never allowed
@@ -149,6 +155,7 @@ public class AccessTrackerService(
         var item = await repository.GetAccessItemByIdAsync(accessItemId)
             ?? throw new AccessItemNotFoundException(accessItemId);
 
+        await engagementAccessService.RequireEngagementRoleAsync(item.EngagementId, EngagementRoleEnum.TechLead);
         await engagementRepository.EnsureNotSignedOffAsync(item.EngagementId);
 
         if (!await repository.UserExistsAsync(request.OwnerId))
@@ -172,6 +179,7 @@ public class AccessTrackerService(
         var item = await repository.GetAccessItemByIdAsync(accessItemId)
             ?? throw new AccessItemNotFoundException(accessItemId);
 
+        await engagementAccessService.RequireEngagementRoleAsync(item.EngagementId, EngagementRoleEnum.TechLead);
         await engagementRepository.EnsureNotSignedOffAsync(item.EngagementId);
 
         var wasReady = await readinessNotificationService.IsReadyAsync(item.EngagementId);
@@ -187,6 +195,8 @@ public class AccessTrackerService(
     // -------------------------------------------------------------------------
     public async Task EvaluateClientSideRisksAsync(int engagementId)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.TechLead);
+
         var engagement = await repository.GetEngagementAsync(engagementId)
             ?? throw new EngagementNotFoundException(engagementId);
 

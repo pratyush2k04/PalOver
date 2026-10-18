@@ -4,7 +4,6 @@ import {
   FormBuilder,
   FormGroup,
   FormsModule,
-  NgModel,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -29,6 +28,7 @@ import {
   HANDOVER_BUTTONS,
   MAX_FREE_TEXT_LENGTH,
 } from '@shared/constants/handover.constants';
+import { USER_ROLES } from '@shared/constants/users.constants';
 import {
   HandoverInfoDto,
   SaveHandoverDraftRequest,
@@ -62,12 +62,7 @@ function timelinesMatch(timeline1: number, unit1: string, timeline2: number, uni
   return timeline1 === timeline2 && unit1 === unit2;
 }
 
-interface RealisticEditForm {
-  description: string;
-  timeline: number;
-  timelineUnit: string;
-  acknowledgementMessage: string;
-}
+
 
 @Component({
   selector: 'app-handover',
@@ -239,19 +234,22 @@ export class HandoverComponent {
 
   commitments = signal<CommitmentDto[]>([]);
 
-  newCommitment = signal<CreateCommitmentRequest>(this.emptyCommitment());
   editingCommitmentId = signal<number | null>(null);
   editCommitment = signal<UpdateCommitmentRequest>(this.emptyCommitment());
   pendingDeleteId = signal<number | null>(null);
   deleteCommitmentError = signal<string | null>(null);
 
   editingRealisticCommitmentId = signal<number | null>(null);
-  realisticEditForm = signal<RealisticEditForm>(this.emptyRealisticEditForm());
+  realisticEditForm: FormGroup = this.fb.group({
+    description: ['', [Validators.required, Validators.maxLength(2000)]],
+    timeline: [1, [Validators.required, Validators.min(1)]],
+    timelineUnit: ['Weeks', [Validators.required]],
+    acknowledgementMessage: [''],
+  });
+  editingRealisticNeedsAck = signal(false);
 
   editCommitmentErrors = signal<string[]>([]);
-  realisticEditErrors = signal<string[]>([]);
   editCommitmentTouched = signal(false);
-  realisticEditTouched = signal(false);
 
   commitmentTypes = [
     { id: 1, name: HANDOVER_LABELS.SOFTWARE },
@@ -272,20 +270,12 @@ export class HandoverComponent {
   isReviewed = computed(() => this.handover()?.status === 'Reviewed');
   hasBeenSubmitted = computed(() => this.isSubmitted() || this.isReviewed());
   hasHandoverDraft = computed(() => !!this.handover()?.handoverId);
-  newCommitmentTouched = signal(false);
 
   readonly isSignedOff = computed(() => this.engagementService.isSignedOff());
-  isPreSales = computed(() => !this.isSignedOff() && this.authService.hasRole('Pre Sales'));
-  isProjectManagement = computed(() => !this.isSignedOff() && this.authService.hasRole('Project Management'));
+  isPreSales = computed(() => !this.isSignedOff() && this.authService.hasRole(USER_ROLES.PRE_SALES));
+  isProjectManagement = computed(() => !this.isSignedOff() && this.engagementService.isWorkspacePm());
 
-  originalAcknowledgementMessage = signal('');
 
-  acknowledgementWarningVisible = computed(() => {
-    return (
-      this.originalAcknowledgementMessage() !== '' &&
-      this.realisticEditForm().acknowledgementMessage === this.originalAcknowledgementMessage()
-    );
-  });
 
   constructor() {
     effect(() => {
@@ -294,6 +284,27 @@ export class HandoverComponent {
         this.loadHandover(id);
         this.kickoffReadinessService.track(id);
         this.loadEngagement(id);
+      }
+    });
+
+    this.realisticEditForm.valueChanges.subscribe(() => {
+      const commitmentId = this.editingRealisticCommitmentId();
+      if (!commitmentId) return;
+
+      const commitment = this.commitments().find((c) => c.commitmentId === commitmentId);
+      if (!commitment) return;
+
+      const formVal = this.realisticEditForm.getRawValue();
+      const needsAck = !timelinesMatch(
+        commitment.timeline,
+        commitment.timelineUnit,
+        Number(formVal.timeline),
+        formVal.timelineUnit
+      );
+
+      if (this.editingRealisticNeedsAck() !== needsAck) {
+        this.editingRealisticNeedsAck.set(needsAck);
+        this.updateRealisticAcknowledgementValidators(needsAck);
       }
     });
   }
@@ -308,14 +319,7 @@ export class HandoverComponent {
     return { description: '', commitmentTypeId: 1, title: '', timeline: 1, timelineUnit: 'Weeks' };
   }
 
-  private emptyRealisticEditForm(): RealisticEditForm {
-    return {
-      description: '',
-      timeline: 1,
-      timelineUnit: 'Weeks',
-      acknowledgementMessage: '',
-    };
-  }
+
 
   loadHandover(id: number) {
     this.isLoading.set(true);
@@ -545,23 +549,47 @@ export class HandoverComponent {
     });
   }
 
+  private updateRealisticAcknowledgementValidators(needsAck: boolean): void {
+    const ackControl = this.realisticEditForm.get('acknowledgementMessage');
+    if (!ackControl) return;
+
+    if (needsAck) {
+      ackControl.setValidators([Validators.required, Validators.maxLength(2000)]);
+    } else {
+      ackControl.clearValidators();
+      ackControl.setValue('', { emitEvent: false });
+    }
+    ackControl.updateValueAndValidity({ emitEvent: false });
+  }
+
   startEditRealisticCommitment(c: CommitmentDto) {
-    this.realisticEditTouched.set(false);
     this.editingRealisticCommitmentId.set(c.commitmentId);
     const existing = c.realisticCommitment;
-    const ackMessage = existing?.acknowledgementMessage || '';
-    this.originalAcknowledgementMessage.set(ackMessage);
-    this.realisticEditForm.set({
-      description: existing?.description || '',
-      timeline: existing?.timeline || c.timeline,
-      timelineUnit: existing?.timelineUnit || c.timelineUnit,
-      acknowledgementMessage: ackMessage,
+    const initialTimeline = existing?.timeline ?? c.timeline;
+    const initialUnit = existing?.timelineUnit ?? c.timelineUnit;
+    const initialAck = existing?.acknowledgementMessage ?? '';
+
+    const needsAck = !timelinesMatch(c.timeline, c.timelineUnit, initialTimeline, initialUnit);
+    this.editingRealisticNeedsAck.set(needsAck);
+    this.updateRealisticAcknowledgementValidators(needsAck);
+
+    this.realisticEditForm.reset({
+      description: existing?.description ?? '',
+      timeline: initialTimeline,
+      timelineUnit: initialUnit,
+      acknowledgementMessage: initialAck,
     });
   }
 
   cancelEditRealisticCommitment() {
     this.editingRealisticCommitmentId.set(null);
-    this.realisticEditTouched.set(false);
+    this.editingRealisticNeedsAck.set(false);
+    this.realisticEditForm.reset({
+      description: '',
+      timeline: 1,
+      timelineUnit: 'Weeks',
+      acknowledgementMessage: '',
+    });
   }
 
   commitmentNeedsAcknowledgement(c: CommitmentDto): boolean {
@@ -569,26 +597,23 @@ export class HandoverComponent {
     return !timelinesMatch(c.timeline, c.timelineUnit, c.realisticCommitment.timeline, c.realisticCommitment.timelineUnit);
   }
 
-  editFormNeedsAcknowledgement(c: CommitmentDto): boolean {
-    const form = this.realisticEditForm();
-    return !timelinesMatch(c.timeline, c.timelineUnit, form.timeline, form.timelineUnit);
-  }
-
   saveRealisticCommitment(c: CommitmentDto) {
     const id = this.engagementId();
     if (!id) return;
 
-    this.realisticEditTouched.set(true);
-    const form = this.realisticEditForm();
-    if (!form.description || (this.editFormNeedsAcknowledgement(c) && !form.acknowledgementMessage)) {
+    if (this.realisticEditForm.invalid) {
+      this.realisticEditForm.markAllAsTouched();
       return;
     }
 
+    const form = this.realisticEditForm.getRawValue();
+    const needsAck = this.editingRealisticNeedsAck();
+
     const payload = {
-      description: form.description,
-      timeline: form.timeline,
+      description: form.description?.trim() || '',
+      timeline: Number(form.timeline),
       timelineUnit: form.timelineUnit,
-      acknowledgementMessage: form.acknowledgementMessage || null,
+      acknowledgementMessage: needsAck ? form.acknowledgementMessage?.trim() || null : null,
     };
 
     const request$ = c.realisticCommitment
@@ -606,6 +631,7 @@ export class HandoverComponent {
     request$.subscribe({
       next: (data) => {
         this.editingRealisticCommitmentId.set(null);
+        this.editingRealisticNeedsAck.set(false);
         this.toastService.success(HANDOVER_MESSAGES.REALISTIC_SAVED);
         this.handoverService.getHandover(id).subscribe({
           next: (refreshed) => {

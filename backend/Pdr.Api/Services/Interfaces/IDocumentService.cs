@@ -5,9 +5,9 @@ namespace Pdr.Api.Services.Interfaces;
 
 public interface IDocumentService
 {
-    Task<DocumentResponseDto> UploadDocumentAsync(DocumentUploadDto dto);
+    Task<DocumentResponseDto> UploadDocumentAsync(int engagementId, DocumentUploadDto dto);
 
-    Task<List<DocumentUploadResultDto>> UploadDocumentsAsync(List<DocumentUploadDto> dtos);
+    Task<List<DocumentUploadResultDto>> UploadDocumentsAsync(int engagementId, List<DocumentUploadDto> dtos);
 
     Task<IEnumerable<DocumentResponseDto>> GetDocumentsByEngagementAsync(int engagementId);
 

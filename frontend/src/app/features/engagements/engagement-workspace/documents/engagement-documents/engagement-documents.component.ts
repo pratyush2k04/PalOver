@@ -103,6 +103,7 @@ export class EngagementDocumentsComponent {
   searchTerm = signal<string>('');
   selectedCategoryId = signal<number | 'all'>('all');
   categories = signal<DocumentCategory[]>([]);
+  categoriesLoaded = signal<boolean>(false);
 
   readonly visibilityOptions: SelectOption[] = [
     { value: 'Team-wide', label: 'Team-wide' },
@@ -134,7 +135,7 @@ export class EngagementDocumentsComponent {
 
   /** True for PM and Admin — can edit visibility inline */
   canManageVisibility = computed(
-    () => !this.isSignedOff() && (this.authService.hasRole('Project Management') || this.authService.isAdmin()),
+    () => !this.isSignedOff() && (this.engagementService.isWorkspacePm() || this.authService.isAdmin()),
   );
 
   constructor() {
@@ -142,15 +143,21 @@ export class EngagementDocumentsComponent {
       const id = this.engagementId();
       if (id) {
         this.loadDocuments(id);
-
-        if (this.route.snapshot.queryParamMap.get('action') === 'create') {
-          this.openUploadModal();
-        }
       } else {
         this.documents.set([]);
         this.isLoading.set(false);
       }
     });
+
+    // Deferred until categories have loaded, so an auto-opened dialog (via the
+    // "Upload Document" quick action's ?action=create) never gets an empty category list.
+    effect(() => {
+      const id = this.engagementId();
+      if (id && this.categoriesLoaded() && this.route.snapshot.queryParamMap.get('action') === 'create') {
+        this.openUploadModal();
+      }
+    });
+
     this.loadCategories();
   }
 
@@ -159,8 +166,14 @@ export class EngagementDocumentsComponent {
       .getCategories()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (cats) => this.categories.set(cats),
-        error: () => this.categories.set([...DOCUMENT_CONFIG.DEFAULT_CATEGORIES]),
+        next: (cats) => {
+          this.categories.set(cats);
+          this.categoriesLoaded.set(true);
+        },
+        error: () => {
+          this.categories.set([...DOCUMENT_CONFIG.DEFAULT_CATEGORIES]);
+          this.categoriesLoaded.set(true);
+        },
       });
   }
 
@@ -200,7 +213,7 @@ export class EngagementDocumentsComponent {
       UploadDocumentDialogComponent,
       UploadDocumentDialogData,
       UploadDocumentDialogResult
-    >(UploadDocumentDialogComponent, { data: { engagementId } });
+    >(UploadDocumentDialogComponent, { data: { engagementId, categories: this.categories() } });
 
     dialogRef.closed$.subscribe((result) => {
       if (!result) return;

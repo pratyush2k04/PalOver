@@ -76,8 +76,4 @@ export class KickoffReadinessService {
   markKickoffReady(engagementId: number): Observable<void> {
     return this.http.post<void>(`/api/Engagements/${engagementId}/kickoff-ready`, {});
   }
-
-  revertKickoffReady(engagementId: number): Observable<void> {
-    return this.http.delete<void>(`/api/Engagements/${engagementId}/kickoff-ready`);
-  }
 }

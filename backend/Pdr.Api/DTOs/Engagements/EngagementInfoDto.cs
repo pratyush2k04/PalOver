@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Pdr.Api.DTOs.Engagements;
 
@@ -16,4 +17,5 @@ public record EngagementInfoDto(
     string? HandoverStatus,
     DateTime? HandoverReviewedAt,
     string? HandoverReviewedByName,
-    DayOneSignOffDto? DayOneSignOff = null);
+    DayOneSignOffDto? DayOneSignOff = null,
+    List<string>? CurrentUserEngagementRoles = null);

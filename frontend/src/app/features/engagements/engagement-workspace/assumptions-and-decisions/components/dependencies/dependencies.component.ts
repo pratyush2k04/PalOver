@@ -16,6 +16,7 @@ import { AuthService } from '@shared/services/auth';
 import { EngagementService } from '../../../../services/engagement.service';
 
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { TooltipDirective } from '@common/directives/tooltip.directive';
 
 @Component({
   selector: 'app-dependencies',
@@ -27,7 +28,8 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
     ButtonComponent,
     StatusBadgeComponent,
     EmptyStateComponent,
-    InlineSVGModule
+    InlineSVGModule,
+    TooltipDirective
   ],
   templateUrl: './dependencies.component.html',
   styleUrl: './dependencies.component.scss'
@@ -153,7 +155,7 @@ export class DependenciesComponent implements OnInit {
   canMarkMet(dependency: DependencyDto): boolean {
     return !this.engagementService.isSignedOff() && (
       dependency.ownerUserId === this.authService.getUserId()
-      || this.authService.hasRole('Project Management')
+      || this.engagementService.isWorkspacePm()
     );
   }
 

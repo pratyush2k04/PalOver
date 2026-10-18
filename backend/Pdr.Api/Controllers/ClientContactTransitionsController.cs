@@ -15,6 +15,7 @@ namespace Pdr.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/engagements/{engagementId:int}/client-contact-transition")]
+[RequireEngagementAccess]
 [Produces("application/json")]
 public class ClientContactTransitionsController(IClientContactTransitionService transitionService) : ControllerBase
 {
@@ -49,10 +50,10 @@ public class ClientContactTransitionsController(IClientContactTransitionService 
     }
 
     /// <summary>
-    /// Records a new client contact transition for an engagement (Pre Sales only).
+    /// Records a new client contact transition for an engagement (Pre Sales or Project Manager only).
     /// </summary>
     [HttpPost]
-    [AuthorizeRoles(RoleEnum.ProjectManagement, RoleEnum.PreSales)]
+    [RequireEngagementRole(EngagementRoleEnum.PreSales, EngagementRoleEnum.ProjectManager)]
     [EndpointSummary("Record client contact transition")]
     [ProducesResponseType(typeof(ClientContactTransitionResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

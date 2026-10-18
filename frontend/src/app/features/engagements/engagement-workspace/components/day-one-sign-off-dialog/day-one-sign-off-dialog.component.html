@@ -31,30 +31,19 @@
     />
 
     @if (isException() && data.isLeadership) {
-      <div class="form-group">
-        <label for="exceptionJustification">Exception Justification <span class="required-asterisk">*</span></label>
-        <textarea
-          id="exceptionJustification"
-          class="form-control textarea"
-          rows="3"
-          maxlength="500"
-          placeholder="State the rationale and risk mitigation plan for signing off with blockers (min 20 characters)..."
-          formControlName="exceptionJustification"
-        ></textarea>
-        <div class="field-hint">
-          <span>Minimum 20 characters required.</span>
-          <span>{{ justificationLength() }}/500</span>
-        </div>
-        @if (form.get('exceptionJustification')?.invalid && (form.get('exceptionJustification')?.touched || form.get('exceptionJustification')?.dirty)) {
-          <span class="error-text">
-            @if (form.get('exceptionJustification')?.errors?.['required']) {
-              Justification is required for exceptions.
-            } @else if (form.get('exceptionJustification')?.errors?.['minlength']) {
-              Justification must be at least 20 characters.
-            }
-          </span>
-        }
-      </div>
+      <app-textarea
+        id="exceptionJustification"
+        label="Exception Justification"
+        [required]="true"
+        formControlName="exceptionJustification"
+        [rows]="3"
+        [maxLength]="500"
+        placeholder="State the rationale and risk mitigation plan for signing off with blockers (min 20 characters)..."
+        [errorMessages]="{
+          required: '',
+          minlength: 'Justification must be at least 20 characters.'
+        }"
+      />
     }
   </form>
 
@@ -74,7 +63,7 @@
   </app-button>
   <app-button
     type="button"
-    [variant]="isException() && data.isLeadership ? 'warning' : 'flat'"
+    variant="flat"
     [loading]="isSubmitting()"
     [disabled]="!canAttemptSubmit() || isSubmitting()"
     (click)="onSubmit()"

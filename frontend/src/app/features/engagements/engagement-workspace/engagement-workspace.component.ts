@@ -68,21 +68,22 @@ export class EngagementWorkspaceComponent {
     const user = this.authService.currentUser();
     if (!user) return false;
     return (
-      this.authService.hasRole(USER_ROLES.LEADERSHIP) ||
-      this.authService.hasRole(USER_ROLES.PROJECT_MANAGEMENT)
+      this.engagementService.isWorkspaceLeadership() ||
+      this.engagementService.isWorkspacePm() ||
+      this.authService.isAdmin()
     );
   });
 
   readonly isLeadership = computed(() => {
     const user = this.authService.currentUser();
     if (!user) return false;
-    return this.authService.hasRole(USER_ROLES.LEADERSHIP);
+    return this.engagementService.isWorkspaceLeadership() || this.authService.isAdmin();
   });
 
   readonly isProjectManager = computed(() => {
     const user = this.authService.currentUser();
     if (!user) return false;
-    return this.authService.hasRole(USER_ROLES.PROJECT_MANAGEMENT);
+    return this.engagementService.isWorkspacePm();
   });
 
   readonly isTechnicalReady = computed(() => {
@@ -90,12 +91,16 @@ export class EngagementWorkspaceComponent {
   });
 
   readonly isSignOffDisabled = computed(() => {
+    if (!this.isFullyReady()) return true;
     if (this.isLeadership()) return false;
     if (this.isProjectManager()) return !this.isTechnicalReady();
     return true;
   });
 
   readonly signOffTooltip = computed(() => {
+    if (!this.isFullyReady()) {
+      return 'Kickoff readiness is not 100%';
+    }
     if (this.isProjectManager() && !this.isTechnicalReady()) {
       return 'Technical readiness is not 100%';
     }
@@ -184,10 +189,12 @@ export class EngagementWorkspaceComponent {
       error: () => {}
     });
 
-    this.technicalReadinessService.getTechnicalSummary(id).subscribe({
-      next: (summary) => this.technicalSummary.set(summary),
-      error: () => this.technicalSummary.set(null)
-    });
+    if (this.isProjectManager()) {
+      this.technicalReadinessService.getTechnicalSummary(id).subscribe({
+        next: (summary) => this.technicalSummary.set(summary),
+        error: () => this.technicalSummary.set(null)
+      });
+    }
   }
 
   openSignOffDialog(): void {

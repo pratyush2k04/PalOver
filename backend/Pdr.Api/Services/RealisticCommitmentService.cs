@@ -181,7 +181,7 @@ private async Task EnsureNotSubmittedAsync(HandoverInfo handover)
             await _notificationService.CreateFromTemplateAsync(
                 NotificationConstants.TemplateKeys.CommitmentVarianceEscalated,
                 engagementId,
-                RoleEnum.Leadership,
+                EngagementRoleEnum.Leadership,
                 JsonSerializer.Serialize(notificationData),
                 DateTime.UtcNow);
         }
@@ -243,7 +243,7 @@ private async Task EnsureNotSubmittedAsync(HandoverInfo handover)
             await _notificationService.CreateFromTemplateAsync(
                 NotificationConstants.TemplateKeys.CommitmentVarianceEscalated,
                 engagementId,
-                RoleEnum.Leadership,
+                EngagementRoleEnum.Leadership,
                 JsonSerializer.Serialize(notificationData),
                 DateTime.UtcNow);
         }

@@ -18,6 +18,7 @@ public class HandoverQueriesService : IHandoverQueriesService
     private readonly IHandoverQueryRepository _queryRepository;
     private readonly IHandoverQueryMessageRepository _messageRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IEngagementRepository _engagementRepository;
     private readonly IAuditLogService _auditLogService;
     private readonly INotificationService _notificationService;
 
@@ -27,6 +28,7 @@ public class HandoverQueriesService : IHandoverQueriesService
         IHandoverQueryRepository queryRepository,
         IHandoverQueryMessageRepository messageRepository,
         IUserRepository userRepository,
+        IEngagementRepository engagementRepository,
         IAuditLogService auditLogService,
         INotificationService notificationService)
     {
@@ -35,6 +37,7 @@ public class HandoverQueriesService : IHandoverQueriesService
         _queryRepository = queryRepository;
         _messageRepository = messageRepository;
         _userRepository = userRepository;
+        _engagementRepository = engagementRepository;
         _auditLogService = auditLogService;
         _notificationService = notificationService;
     }
@@ -59,6 +62,8 @@ public class HandoverQueriesService : IHandoverQueriesService
 
     public async Task<HandoverQueryDto> RaiseQueryAsync(int engagementId, CreateHandoverQueryRequest request, string userIdStr)
     {
+        await _engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var handover = await GetHandoverOrThrowAsync(engagementId);
 
         var status = await _handoverRepository.GetStatusByIdAsync(handover.StatusId);
@@ -115,7 +120,7 @@ public class HandoverQueriesService : IHandoverQueriesService
         await _notificationService.CreateFromTemplateAsync(
             "HandoverQueryRaised",
             engagementId,
-            RoleEnum.PreSales,
+            EngagementRoleEnum.PreSales,
             JsonSerializer.Serialize(new HandoverQueryRaisedMapper.HandoverQueryRaisedData(
                 QueryId: query.Id, HandoverId: handover.HandoverId, TriggerUserId: actorUserId, EngagementId: engagementId)),
             DateTime.UtcNow);
@@ -125,6 +130,8 @@ public class HandoverQueriesService : IHandoverQueriesService
 
     public async Task<HandoverQueryDto> AddMessageAsync(int engagementId, int queryId, AddHandoverQueryMessageRequest request, string userIdStr)
     {
+        await _engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var handover = await GetHandoverOrThrowAsync(engagementId);
 
         var query = await _queryRepository.GetByIdAsync(queryId, handover.HandoverId);
@@ -138,7 +145,7 @@ public class HandoverQueriesService : IHandoverQueriesService
         var actorUser = await _userRepository.GetByIdAsync(actorUserId)
             ?? throw new UserNotFoundException(actorUserId);
 
-        var messageType = actorUser.Role.Name == RoleConstants.PreSales
+        var messageType = actorUser.Role.Name == UserRoleEnum.PreSales.ToRoleName()
             ? HandoverQueryMessageType.Response
             : HandoverQueryMessageType.Question;
 
@@ -176,7 +183,7 @@ public class HandoverQueriesService : IHandoverQueriesService
             await _notificationService.CreateFromTemplateAsync(
                 "HandoverQueryRaised",
                 engagementId,
-                RoleEnum.ProjectManagement,
+                EngagementRoleEnum.ProjectManager,
                 JsonSerializer.Serialize(new HandoverQueryRaisedMapper.HandoverQueryRaisedData(
                     QueryId: queryId, HandoverId: handover.HandoverId, TriggerUserId: actorUserId, EngagementId: engagementId)),
                 DateTime.UtcNow);
@@ -197,7 +204,7 @@ public class HandoverQueriesService : IHandoverQueriesService
             await _notificationService.CreateFromTemplateAsync(
                 "HandoverQueryRaised",
                 engagementId,
-                RoleEnum.PreSales,
+                EngagementRoleEnum.PreSales,
                 JsonSerializer.Serialize(new HandoverQueryRaisedMapper.HandoverQueryRaisedData(
                     QueryId: queryId, HandoverId: handover.HandoverId, TriggerUserId: actorUserId, EngagementId: engagementId)),
                 DateTime.UtcNow);
@@ -208,6 +215,8 @@ public class HandoverQueriesService : IHandoverQueriesService
 
     public async Task<HandoverQueryDto> ToggleResolutionAsync(int engagementId, int queryId, string userIdStr)
     {
+        await _engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var handover = await GetHandoverOrThrowAsync(engagementId);
 
         var query = await _queryRepository.GetByIdAsync(queryId, handover.HandoverId);
@@ -243,6 +252,8 @@ public class HandoverQueriesService : IHandoverQueriesService
 
     public async Task DeleteQueryAsync(int engagementId, int queryId, string userIdStr)
     {
+        await _engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var handover = await GetHandoverOrThrowAsync(engagementId);
 
         var query = await _queryRepository.GetByIdAsync(queryId, handover.HandoverId);

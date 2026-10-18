@@ -3,6 +3,7 @@ using Pdr.Api.DTOs.EnvironmentTooling;
 using Pdr.Api.Exceptions;
 
 using Pdr.Api.Models.EnvironmentTooling;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
@@ -12,10 +13,13 @@ public class EnvironmentToolingService(
     IEngagementRepository engagementRepository,
     IEnvironmentToolingRepository repository,
     IRiskService riskService,
-    ITechnicalReadinessNotificationService readinessNotificationService) : IEnvironmentToolingService
+    ITechnicalReadinessNotificationService readinessNotificationService,
+    IEngagementAccessService engagementAccessService) : IEnvironmentToolingService
 {
     public async Task<EnvironmentToolingReadinessResponse> GetItemsByEngagementIdAsync(int engagementId)
     {
+        await engagementAccessService.ValidateAccessAsync(engagementId);
+
         if (!await repository.EngagementExistsAsync(engagementId))
         {
             throw new EngagementNotFoundException(engagementId);
@@ -40,6 +44,8 @@ public class EnvironmentToolingService(
 
     public async Task<EnvironmentToolingItemDto> AddCustomItemAsync(int engagementId, AddCustomEnvironmentToolingItemRequest request)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.TechLead);
+
         if (!await repository.EngagementExistsAsync(engagementId))
         {
             throw new EngagementNotFoundException(engagementId);
@@ -85,6 +91,7 @@ public class EnvironmentToolingService(
             throw new EnvironmentToolingItemNotFoundException(id);
         }
 
+        await engagementAccessService.RequireEngagementRoleAsync(item.EngagementId, EngagementRoleEnum.TechLead);
         await engagementRepository.EnsureNotSignedOffAsync(item.EngagementId);
 
         // Guard: same-status transition is never allowed
@@ -133,6 +140,7 @@ public class EnvironmentToolingService(
             throw new EnvironmentToolingItemNotFoundException(id);
         }
 
+        await engagementAccessService.RequireEngagementRoleAsync(item.EngagementId, EngagementRoleEnum.TechLead);
         await engagementRepository.EnsureNotSignedOffAsync(item.EngagementId);
 
         if (!await repository.UserExistsAsync(request.OwnerId))
@@ -152,6 +160,7 @@ public class EnvironmentToolingService(
         var item = await repository.GetByIdAsync(id)
             ?? throw new EnvironmentToolingItemNotFoundException(id);
 
+        await engagementAccessService.RequireEngagementRoleAsync(item.EngagementId, EngagementRoleEnum.TechLead);
         await engagementRepository.EnsureNotSignedOffAsync(item.EngagementId);
 
         var wasReady = await readinessNotificationService.IsReadyAsync(item.EngagementId);

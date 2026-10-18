@@ -34,7 +34,6 @@ public static class RiskConstants
 
         public static string NotFound(int id) => $"Risk with ID {id} was not found.";
         public static string CommentNotFound(int id) => $"Risk comment with ID {id} was not found.";
-        public static string AutoCreatedPrefix(string title) => $"Blocked: {title.Trim()}";
     }
 
     public static class SourceTypes

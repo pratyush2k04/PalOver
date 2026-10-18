@@ -22,6 +22,7 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
 import { AddHandoverItemDialogComponent } from './dialogs/add-handover-item-dialog/add-handover-item-dialog.component';
 import { BlockHandoverItemDialogComponent } from './dialogs/block-handover-item-dialog/block-handover-item-dialog.component';
 import { DocumentService } from '../../../services/document.service';
+import { USER_ROLES } from '@shared/constants/users.constants';
 import {
   AttachEvidenceDialogComponent,
   AttachEvidenceDialogData,
@@ -70,7 +71,7 @@ export class HandoverReadinessComponent implements OnInit {
   isDeletingItem = signal<boolean>(false);
   errorMessage = signal<string>('');
 
-  readonly isPreSales = computed(() => this.authService.hasRole('Pre Sales'));
+  readonly isPreSales = computed(() => this.authService.hasRole(USER_ROLES.PRE_SALES));
 
   readonly blockedCount = computed(() =>
     this.items().filter(item => item.status === 'Blocked').length

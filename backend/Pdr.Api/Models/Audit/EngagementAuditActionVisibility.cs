@@ -8,16 +8,16 @@ namespace Pdr.Api.Models.Audit;
 /// Audits feed. <c>VisibleToRoles: null</c> means the action isn't engagement-scoped content (the
 /// role-matrix doesn't apply). 
 /// </summary>
-public record EngagementAuditActionVisibility(RoleEnum[]? VisibleToRoles);
+public record EngagementAuditActionVisibility(EngagementRoleEnum[]? VisibleToRoles);
 
 public static class EngagementAuditActionVisibilityRegistry
 {
-    private static readonly RoleEnum[] AllRoles = 
+    private static readonly EngagementRoleEnum[] AllRoles = 
     [
-        RoleEnum.PreSales, 
-        RoleEnum.ProjectManagement, 
-        RoleEnum.TechLead, 
-        RoleEnum.Leadership
+        EngagementRoleEnum.PreSales, 
+        EngagementRoleEnum.ProjectManager, 
+        EngagementRoleEnum.TechLead, 
+        EngagementRoleEnum.Leadership
     ];
 
     public static readonly IReadOnlyDictionary<AuditActionEnum, EngagementAuditActionVisibility> Entries = new Dictionary<AuditActionEnum, EngagementAuditActionVisibility>

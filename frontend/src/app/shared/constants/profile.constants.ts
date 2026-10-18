@@ -4,12 +4,6 @@ export const PROFILE_API_ENDPOINTS = {
   CHANGE_PASSWORD: '/api/profile/change-password',
 } as const;
 
-export const ME_API_ENDPOINTS = {
-  GET_ME: '/api/profile',
-  UPDATE_ME: '/api/profile',
-  CHANGE_PASSWORD: '/api/profile/change-password',
-} as const;
-
 export const PROFILE_MESSAGES = {
   PROFILE_UPDATED: 'Profile updated.',
   PASSWORD_CHANGED: 'Password changed.',

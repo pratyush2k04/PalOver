@@ -26,7 +26,7 @@
           </span>
         </div>
 
-        <div class="engagement-progress-col">
+        <div class="engagement-progress-col" appTooltip="Readiness score" tooltipPosition="bottom">
           <div class="progress-bar">
             <div class="progress-fill" [style.width.%]="engagement.readinessPercentage"
               [ngClass]="getStatusFillClass(engagement.status)"></div>

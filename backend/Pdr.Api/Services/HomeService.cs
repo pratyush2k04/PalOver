@@ -10,10 +10,15 @@ using Pdr.Api.Helpers;
 
 namespace Pdr.Api.Services;
 
-public class HomeService(IHomeRepository homeRepository, IKickoffReadinessService kickoffReadinessService, INotificationService notificationService) : IHomeService
+public class HomeService(
+    IHomeRepository homeRepository,
+    IKickoffReadinessService kickoffReadinessService,
+    INotificationService notificationService,
+    ICurrentUserService currentUserService) : IHomeService
 {
-    public async Task<HomeResponseDto> GetHomeAsync(int userId)
+    public async Task<HomeResponseDto> GetHomeAsync()
     {
+        var userId = currentUserService.GetUserId();
         var user = await homeRepository.GetUserWithRoleAsync(userId);
 
         if (user is null)
@@ -28,18 +33,12 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
 
         var myEngagementIds = await homeRepository.GetUserEngagementIdsAsync(user.Id);
 
-        var effectiveRole = (RoleEnum)user.RoleId;
-
-        var cards = await GetDashboardCardsAsync(user.Id, effectiveRole, myEngagementIds);
-        var (upcomingEngagements, totalUpcomingEngagements) = await GetUpcomingEngagementsAsync(myEngagementIds);
+        var cards = await GetDashboardCardsAsync(user.Id, (UserRoleEnum)user.RoleId, myEngagementIds);
+        var (upcomingEngagements, totalUpcomingEngagements) = await GetUpcomingEngagementsAsync(user.Id, myEngagementIds);
         var (blockers, totalBlockers) = await GetDashboardBlockersAsync(user.Id);
 
         var homeDto = new HomeDashboardDto
         {
-            Route = ResolveRoute(effectiveRole),
-            Title = ResolveTitle(effectiveRole),
-            WelcomeMessage = BuildWelcomeMessage(user),
-            EmptyState = ResolveEmptyState(effectiveRole),
             Cards = cards,
             UpcomingEngagements = upcomingEngagements,
             TotalUpcomingEngagements = totalUpcomingEngagements,
@@ -50,16 +49,35 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
         return new HomeResponseDto { User = userDto, Home = homeDto };
     }
 
-    private async Task<List<DashboardCardsDto>> GetDashboardCardsAsync(int userId, RoleEnum role, List<int> engagementIds)
+    private async Task<List<DashboardCardsDto>> GetDashboardCardsAsync(int userId, UserRoleEnum role, List<int> engagementIds)
     {
         return role switch
         {
-            RoleEnum.PreSales => await GetPreSalesCardsAsync(engagementIds),
-            RoleEnum.ProjectManagement => await GetProjectManagerCardsAsync(engagementIds),
-            RoleEnum.TechLead => await GetTechLeadCardsAsync(engagementIds),
-            RoleEnum.Leadership => await GetLeadershipCardsAsync(userId, engagementIds),
+            UserRoleEnum.PreSales => await GetPreSalesCardsAsync(engagementIds),
+            UserRoleEnum.Leadership => await GetLeadershipCardsAsync(userId, engagementIds),
+            UserRoleEnum.Delivery => await GetDeliveryCardsAsync(userId, engagementIds),
             _ => []
         };
+    }
+
+    private async Task<List<DashboardCardsDto>> GetDeliveryCardsAsync(int userId, List<int> engagementIds)
+    {
+        var myEngagementsCount = engagementIds.Count;
+
+        var pmEngagementIds = await homeRepository.GetUserEngagementIdsByRoleAsync(userId, (int)EngagementRoleEnum.ProjectManager);
+        var checklistCount = await homeRepository.GetIncompleteChecklistCountAsync(pmEngagementIds);
+
+        var tlEngagementIds = await homeRepository.GetUserEngagementIdsByRoleAsync(userId, (int)EngagementRoleEnum.TechLead);
+        var openAccessItemsCount = await homeRepository.GetOpenAccessItemsCountAsync(tlEngagementIds);
+
+        var openBlockersCount = await homeRepository.GetOpenBlockersCountAsync(engagementIds);
+
+        return [
+            new DashboardCardsDto { Type = HomeConstants.CardTypes.Engagement, Count = myEngagementsCount },
+            new DashboardCardsDto { Type = HomeConstants.CardTypes.Checklist, Count = checklistCount },
+            new DashboardCardsDto { Type = HomeConstants.CardTypes.AccessItem, Count = openAccessItemsCount },
+            new DashboardCardsDto { Type = HomeConstants.CardTypes.Blocker, Count = openBlockersCount }
+        ];
     }
 
     private async Task<List<DashboardCardsDto>> GetPreSalesCardsAsync(List<int> engagementIds)
@@ -69,9 +87,9 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
         var completeHandoversCount = await homeRepository.GetCompleteHandoversCountAsync(engagementIds);
 
         return [
-            new DashboardCardsDto { Title = HomeConstants.Titles.MyHandovers, Count = myHandoversCount, Type = HomeConstants.CardTypes.Engagement },
-            new DashboardCardsDto { Title = "Draft Handovers", Count = draftHandoversCount, Type = HomeConstants.CardTypes.DraftHandover },
-            new DashboardCardsDto { Title = "Completed Handovers", Count = completeHandoversCount, Type = HomeConstants.CardTypes.CompleteHandover }
+            new DashboardCardsDto { Type = HomeConstants.CardTypes.Engagement, Count = myHandoversCount },
+            new DashboardCardsDto { Type = HomeConstants.CardTypes.DraftHandover, Count = draftHandoversCount },
+            new DashboardCardsDto { Type = HomeConstants.CardTypes.CompleteHandover, Count = completeHandoversCount }
         ];
     }
 
@@ -82,9 +100,9 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
         var openBlockersCount = await homeRepository.GetOpenBlockersCountAsync(engagementIds);
 
         return [
-            new DashboardCardsDto { Title = HomeConstants.Titles.MyEngagements, Count = myEngagementsCount, Type = HomeConstants.CardTypes.Engagement },
-            new DashboardCardsDto { Title = "Checklist Actions", Count = checklistCount, Type = HomeConstants.CardTypes.Checklist },
-            new DashboardCardsDto { Title = "Open Blockers", Count = openBlockersCount, Type = HomeConstants.CardTypes.Blocker }
+            new DashboardCardsDto { Type = HomeConstants.CardTypes.Engagement, Count = myEngagementsCount },
+            new DashboardCardsDto { Type = HomeConstants.CardTypes.Checklist, Count = checklistCount },
+            new DashboardCardsDto { Type = HomeConstants.CardTypes.Blocker, Count = openBlockersCount }
         ];
     }
 
@@ -95,9 +113,9 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
         var openAccessItemsCount = await homeRepository.GetOpenAccessItemsCountAsync(engagementIds);
 
         return [
-            new DashboardCardsDto { Title = "My Tech Queue", Count = myTechQueueCount, Type = HomeConstants.CardTypes.TechQueue },
-            new DashboardCardsDto { Title = "Open Blockers", Count = openBlockersCount, Type = HomeConstants.CardTypes.Blocker },
-            new DashboardCardsDto { Title = "Open Access Items", Count = openAccessItemsCount, Type = HomeConstants.CardTypes.AccessItem }
+            new DashboardCardsDto { Type = HomeConstants.CardTypes.TechQueue, Count = myTechQueueCount },
+            new DashboardCardsDto { Type = HomeConstants.CardTypes.Blocker, Count = openBlockersCount },
+            new DashboardCardsDto { Type = HomeConstants.CardTypes.AccessItem, Count = openAccessItemsCount }
         ];
     }
 
@@ -108,54 +126,18 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
         var myEscalationsCount = await homeRepository.GetMyEscalationsCountAsync(userId);
 
         return [
-            new DashboardCardsDto { Title = HomeConstants.Titles.MyEngagements, Count = myEngagementsCount, Type = HomeConstants.CardTypes.Engagement },
-            new DashboardCardsDto { Title = "Open Blockers", Count = openBlockersCount, Type = HomeConstants.CardTypes.Blocker },
-            new DashboardCardsDto { Title = "My Escalations", Count = myEscalationsCount, Type = HomeConstants.CardTypes.Escalation }
+            new DashboardCardsDto { Type = HomeConstants.CardTypes.Engagement, Count = myEngagementsCount },
+            new DashboardCardsDto { Type = HomeConstants.CardTypes.Blocker, Count = openBlockersCount },
+            new DashboardCardsDto { Type = HomeConstants.CardTypes.Escalation, Count = myEscalationsCount }
         ];
     }
 
-    private static string ResolveRoute(RoleEnum effectiveRole)
-    {
-        return effectiveRole switch
-        {
-            RoleEnum.ProjectManagement => HomeConstants.FrontendRoutes.EngagementDashboard,
-            RoleEnum.PreSales => HomeConstants.FrontendRoutes.MyHandovers,
-            RoleEnum.TechLead => HomeConstants.FrontendRoutes.TechnicalReadiness,
-            RoleEnum.Leadership => HomeConstants.FrontendRoutes.PortfolioDashboard,
-            _ => throw new RoleNotFoundException((int)effectiveRole),
-        };
-    }
-
-    private static string ResolveTitle(RoleEnum effectiveRole)
-    {
-        return effectiveRole switch
-        {
-            RoleEnum.ProjectManagement => HomeConstants.Titles.MyEngagements,
-            RoleEnum.PreSales => HomeConstants.Titles.MyHandovers,
-            RoleEnum.TechLead => HomeConstants.Titles.TechnicalReadiness,
-            RoleEnum.Leadership => HomeConstants.Titles.PortfolioDashboard,
-            _ => throw new RoleNotFoundException((int)effectiveRole),
-        };
-    }
-
-    private static string ResolveEmptyState(RoleEnum effectiveRole)
-    {
-        return effectiveRole switch
-        {
-            RoleEnum.ProjectManagement => HomeConstants.EmptyStates.MyEngagements,
-            RoleEnum.PreSales => HomeConstants.EmptyStates.MyHandovers,
-            RoleEnum.TechLead => HomeConstants.EmptyStates.TechnicalReadiness,
-            RoleEnum.Leadership => HomeConstants.EmptyStates.PortfolioDashboard,
-            _ => string.Empty
-        };
-    }
-
-    private async Task<(List<DashboardEngagementDto> Items, int TotalCount)> GetUpcomingEngagementsAsync(List<int> engagementIds)
+    private async Task<(List<DashboardEngagementDto> Items, int TotalCount)> GetUpcomingEngagementsAsync(int userId, List<int> engagementIds)
     {
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         var sevenDaysFromNow = today.AddDays(7);
 
-        var (items, totalCount) = await homeRepository.GetTopUpcomingKickoffsAsync(engagementIds, sevenDaysFromNow, take: 5);
+        var (items, totalCount) = await homeRepository.GetTopUpcomingKickoffsAsync(userId, engagementIds, sevenDaysFromNow, take: 10);
 
         foreach (var e in items)
         {
@@ -188,11 +170,5 @@ public class HomeService(IHomeRepository homeRepository, IKickoffReadinessServic
             .ToList();
 
         return (blockers, result.TotalCount);
-    }
-
-    private static string BuildWelcomeMessage(User user)
-    {
-        var roleLabel = user.Role.Name;
-        return $"Welcome, {user.FullName} - {roleLabel}";
     }
 }

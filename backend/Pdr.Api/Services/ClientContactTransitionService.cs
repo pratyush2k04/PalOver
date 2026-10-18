@@ -2,6 +2,7 @@ using Pdr.Api.DTOs.ClientContactTransitions;
 using Pdr.Api.Exceptions;
 using Pdr.Api.Models.Handover;
 using Pdr.Api.Models.Audit;
+using Pdr.Api.Models.LoginEntity;
 using Pdr.Api.Repositories.Interfaces;
 using Pdr.Api.Services.Interfaces;
 
@@ -9,9 +10,11 @@ namespace Pdr.Api.Services;
 
 public class ClientContactTransitionService(
     IClientContactTransitionRepository repository,
+    IEngagementRepository engagementRepository,
     IAuditLogService auditLogService,
     IPersonRepository personRepository,
-    ICurrentUserService currentUserService) : IClientContactTransitionService
+    ICurrentUserService currentUserService,
+    IEngagementAccessService engagementAccessService) : IClientContactTransitionService
 {
     public async Task<ClientContactTransitionResponseDto> GetByEngagementIdAsync(int engagementId)
     {
@@ -32,6 +35,9 @@ public class ClientContactTransitionService(
 
     public async Task<ClientContactTransitionResponseDto> SaveTransitionAsync(int engagementId, SaveClientContactTransitionRequest request, string? currentUserId)
     {
+        await engagementAccessService.RequireEngagementRoleAsync(engagementId, EngagementRoleEnum.PreSales, EngagementRoleEnum.ProjectManager);
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var transition = new ClientContactTransition
         {
             EngagementId = engagementId,
@@ -39,6 +45,9 @@ public class ClientContactTransitionService(
             OutgoingContactRole = request.OutgoingContactRole.Trim(),
             IncomingContactName = request.IncomingContactName.Trim(),
             IncomingContactRole = request.IncomingContactRole.Trim(),
+            IncomingContactEmail = request.IncomingContactEmail?.Trim(),
+            IncomingContactBackground = request.IncomingContactBackground?.Trim(),
+            IncomingContactSentiment = request.IncomingContactSentiment?.Trim(),
             CreatedBy = currentUserId,
             UpdatedBy = currentUserId
         };
@@ -53,6 +62,9 @@ public class ClientContactTransitionService(
         {
             outgoingPerson.Name = request.IncomingContactName.Trim();
             outgoingPerson.Role = request.IncomingContactRole.Trim();
+            outgoingPerson.Email = request.IncomingContactEmail?.Trim();
+            outgoingPerson.ClientBackground = request.IncomingContactBackground?.Trim();
+            outgoingPerson.ClientSentiment = request.IncomingContactSentiment?.Trim();
             outgoingPerson.UpdatedAt = DateTime.UtcNow;
             outgoingPerson.UpdatedBy = currentUserId;
             personRepository.Update(outgoingPerson);
@@ -83,6 +95,9 @@ public class ClientContactTransitionService(
             OutgoingContactName = transition.OutgoingContactName,
             OutgoingContactRole = transition.OutgoingContactRole,
             IncomingContactName = transition.IncomingContactName,
-            IncomingContactRole = transition.IncomingContactRole
+            IncomingContactRole = transition.IncomingContactRole,
+            IncomingContactEmail = transition.IncomingContactEmail,
+            IncomingContactBackground = transition.IncomingContactBackground,
+            IncomingContactSentiment = transition.IncomingContactSentiment
         };
 }

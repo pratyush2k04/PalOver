@@ -55,7 +55,7 @@
           }
 
           @if (incompleteGateItems().length > 0) {
-            <h3 class="gate-group-title gate-group-title--amber">Incomplete</h3>
+            <h3 class="gate-group-title gate-group-title--amber">Mandatory to Complete</h3>
             <ul class="gate-incomplete-list gate-incomplete-list--amber">
               @for (gateItem of incompleteGateItems(); track gateItem.id) {
                 <li>
@@ -203,13 +203,16 @@
                             <span class="evidence-text">{{ item.evidenceDocumentFileName ? (item.evidenceDocumentFileName | slice:0:20) + (item.evidenceDocumentFileName.length > 20 ? '...' : '') : 'Download' }}</span>
                           </button>
                           @if (canToggleStatus()) {
-                            <button
+                            <app-button
                               type="button"
+                              variant="icon"
                               class="btn-evidence-details"
+                              ariaLabel="View or replace evidence"
+                              [appTooltip]="'View or replace evidence'"
                               (click)="openAttachEvidenceDialog(item, false)"
-                              title="View or replace evidence">
+                            >
                               <span class="view-icon" [inlineSVG]="'assets/icons/edit.svg'"></span>
-                            </button>
+                            </app-button>
                           }
                         </div>
                       } @else if (item.evidenceRequired) {

@@ -7,6 +7,7 @@ import { ButtonComponent } from '@common/components/button/button';
 import { TextareaComponent } from '@common/components/form/textarea/textarea';
 import { DatepickerComponent } from '@common/components/form/datepicker/datepicker';
 import { SelectComponent, SelectOption } from '@common/components/form/select/select';
+import { LoadingSpinnerComponent } from '@common/components/loading-spinner/loading-spinner';
 import { DependencyDto, DependencyType, DependencyStatus } from '../../../../../../models/dependency.model';
 import { PersonService } from '@shared/services/person.service';
 import { ToastService } from '@common/services/toast/toast';
@@ -31,7 +32,7 @@ export interface DependencyFormDialogResult {
 @Component({
   selector: 'app-dependency-form-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, TextareaComponent, SelectComponent, DatepickerComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, TextareaComponent, SelectComponent, DatepickerComponent, LoadingSpinnerComponent],
   templateUrl: './dependency-form-dialog.component.html',
   styleUrl: './dependency-form-dialog.component.scss'
 })
@@ -55,6 +56,7 @@ export class DependencyFormDialogComponent implements OnInit {
 
 
   ownerOptions = signal<SelectOption[]>([]);
+  peopleLoading = signal(false);
   allPeople: PersonDto[] = [];
 
   form = this.fb.group({
@@ -93,14 +95,17 @@ export class DependencyFormDialogComponent implements OnInit {
   }
 
   private loadPeople() {
-    this.personService.getPeopleByEngagement(this.data.engagementId).subscribe({
+    this.peopleLoading.set(true);
+    this.personService.getPeopleByEngagement(this.data.engagementId, true).subscribe({
       next: (people: PersonDto[]) => {
         this.allPeople = people;
         this.filterOwnerOptions(this.form.value.type as DependencyType);
+        this.peopleLoading.set(false);
       },
       error: (err: any) => {
         console.error('Failed to load people', err);
         this.toastService.error('Failed to load users for assignment.');
+        this.peopleLoading.set(false);
       }
     });
   }
@@ -127,8 +132,11 @@ export class DependencyFormDialogComponent implements OnInit {
       value: p.personId,
       label: p.name
     })));
+  }
 
-    if (filtered.length === 0) {
+  onOwnerSelectClick(): void {
+    if (this.ownerOptions().length === 0) {
+      const type = this.form.value.type as DependencyType;
       this.toastService.warning(`No ${type} owners are available to assign. Please add them first.`);
     }
   }

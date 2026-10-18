@@ -432,27 +432,14 @@
   }
 
   .btn-evidence-details {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.75rem;
-    height: 1.75rem;
-    padding: 0;
-    background: transparent;
-    border: 1px solid $color-border-input;
-    border-radius: $radius-sm;
-    color: $color-text-faint;
-    cursor: pointer;
+    --btn-color: #{$color-text-faint};
+    --btn-color-hover: #{$color-primary};
+    --btn-bg-hover: #{$color-primary-light};
     flex-shrink: 0;
 
     .view-icon {
-      width: 0.875rem;
-      height: 0.875rem;
-    }
-
-    &:hover {
-      border-color: $color-primary;
-      color: $color-primary;
+      width: 1.15rem;
+      height: 1.15rem;
     }
   }
 

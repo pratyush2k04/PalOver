@@ -14,10 +14,10 @@ public static class KickoffReminderConstants
         (1, NotificationPriority.High)
     ];
 
-    public static readonly IReadOnlyList<RoleEnum> ReceiverRoles =
+    public static readonly IReadOnlyList<EngagementRoleEnum> ReceiverRoles =
     [
-        RoleEnum.PreSales,
-        RoleEnum.ProjectManagement,
-        RoleEnum.TechLead
+        EngagementRoleEnum.PreSales,
+        EngagementRoleEnum.ProjectManager,
+        EngagementRoleEnum.TechLead
     ];
 }

@@ -45,7 +45,7 @@ public class SearchService(
         var shouldSearchChecklists = !isFiltered || filterTypes.Contains("checklist") || filterTypes.Contains("checklistitem") || filterTypes.Contains("checklistitems") || filterTypes.Contains("checklist-item");
 
         var isAdmin = currentUserService.IsAdmin();
-        var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
+        var isPm = currentUserService.IsInRole(EngagementRoleEnum.ProjectManager.ToRoleName());
         var roleId = currentUserService.GetRoleId();
 
         // Sequential, not Task.WhenAll: all queries share one scoped AppDbContext instance,

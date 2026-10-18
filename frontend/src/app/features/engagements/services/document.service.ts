@@ -11,27 +11,26 @@ import { SKIP_LOADER } from '@shared/interceptors/loader-interceptor';
 export class DocumentService {
   private http = inject(HttpClient);
 
-  getEngagementDocuments(engagementId: number): Observable<DocumentItem[]> {
-    return this.http.get<DocumentItem[]>(DOCUMENT_API_ENDPOINTS.BY_ENGAGEMENT(engagementId));
+  getEngagementDocuments(engagementId: number, skipLoader = false): Observable<DocumentItem[]> {
+    return this.http.get<DocumentItem[]>(DOCUMENT_API_ENDPOINTS.BY_ENGAGEMENT(engagementId), {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
-  getCategories(): Observable<DocumentCategory[]> {
-    return this.http.get<DocumentCategory[]>(DOCUMENT_API_ENDPOINTS.CATEGORIES);
-  }
-
-  uploadDocument(file: File, engagementId: number, categoryId: number, visibility: DocumentVisibility): Observable<DocumentUploadResult[]> {
-    return this.uploadDocuments([file], engagementId, categoryId, visibility);
+  getCategories(skipLoader = false): Observable<DocumentCategory[]> {
+    return this.http.get<DocumentCategory[]>(DOCUMENT_API_ENDPOINTS.CATEGORIES, {
+      context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
+    });
   }
 
   uploadDocuments(files: File[], engagementId: number, categoryId: number, visibility: DocumentVisibility, skipLoader = false): Observable<DocumentUploadResult[]> {
     const formData = new FormData();
     files.forEach((file, i) => {
       formData.append(`[${i}].File`, file, file.name);
-      formData.append(`[${i}].EngagementId`, engagementId.toString());
       formData.append(`[${i}].CategoryId`, categoryId.toString());
       formData.append(`[${i}].Visibility`, visibility);
     });
-    return this.http.post<DocumentUploadResult[]>(DOCUMENT_API_ENDPOINTS.UPLOAD, formData, {
+    return this.http.post<DocumentUploadResult[]>(DOCUMENT_API_ENDPOINTS.UPLOAD(engagementId), formData, {
       context: skipLoader ? new HttpContext().set(SKIP_LOADER, true) : undefined
     });
   }

@@ -116,7 +116,7 @@ public class DependencyService(
             await notificationService.CreateFromTemplateAsync(
                 NotificationConstants.TemplateKeys.DependencyAssignedExternal,
                 engagementId,
-                RoleEnum.ProjectManagement,
+                EngagementRoleEnum.ProjectManager,
                 data,
                 DateTime.UtcNow);
         }
@@ -135,7 +135,8 @@ public class DependencyService(
             throw new DependencyNotFoundException(id);
 
         var currentUserId = currentUserService.GetUserId();
-        var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
+        var assignments = await engagementRepository.GetAssignmentsAsync(engagementId);
+        var isPm = assignments.Any(a => a.UserId == currentUserId && a.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager);
         var isMarkingMet = dependency.Status != DependencyStatus.Met && dto.Status == DependencyStatus.Met;
 
         var isAuthorized = isMarkingMet
@@ -189,12 +190,15 @@ public class DependencyService(
         if (engagement == null)
             throw new EngagementNotFoundException(engagementId);
 
+        await engagementRepository.EnsureNotSignedOffAsync(engagementId);
+
         var dependency = await dependencyRepository.GetByIdAsync(id);
         if (dependency == null || dependency.EngagementId != engagementId)
             throw new DependencyNotFoundException(id);
 
         var currentUserId = currentUserService.GetUserId();
-        var isPm = currentUserService.IsInRole(RoleEnum.ProjectManagement);
+        var assignments = await engagementRepository.GetAssignmentsAsync(engagementId);
+        var isPm = assignments.Any(a => a.UserId == currentUserId && a.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager);
 
         if (dependency.OwnerId != currentUserId && !isPm)
             throw new DependencyUnauthorizedException();

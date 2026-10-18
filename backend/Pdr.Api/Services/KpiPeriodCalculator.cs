@@ -11,15 +11,15 @@ public static class KpiPeriodCalculator
         return preset switch
         {
             KpiReportDatePreset.AllTime => new KpiPeriodRange(null, null, null, null, HasPrior: false),
-            KpiReportDatePreset.LastMonth => FromLength(today, today.AddMonths(-1), today),
-            KpiReportDatePreset.Last6Months => FromLength(today, today.AddMonths(-6), today),
-            KpiReportDatePreset.LastYear => FromLength(today, today.AddYears(-1), today),
+            KpiReportDatePreset.LastMonth => FromLength(today.AddMonths(-1), today),
+            KpiReportDatePreset.Last6Months => FromLength(today.AddMonths(-6), today),
+            KpiReportDatePreset.LastYear => FromLength(today.AddYears(-1), today),
             KpiReportDatePreset.Custom => FromCustom(customFrom, customTo),
             _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, "Unrecognized KPI report date preset.")
         };
     }
 
-    private static KpiPeriodRange FromLength(DateOnly today, DateOnly from, DateOnly to)
+    private static KpiPeriodRange FromLength(DateOnly from, DateOnly to)
     {
         var lengthInDays = to.DayNumber - from.DayNumber;
         var priorTo = from;
