@@ -16,6 +16,7 @@ In technology delivery and client engagements, project friction, budget overruns
 - Sales promises and commitments that delivery was unaware of or never validated.
 - Misaligned client expectations, missing background context, or unvetted commercial terms.
 - Delayed access to client repositories, environments, VPNs, and tools on Day 1.
+- Incomplete documentation, unmanaged project risks, and unconfirmed staffing allocations.
 
 PDR addresses these challenges by instituting a structured, transparent, and auditable handover-to-kickoff lifecycle before teams meet with the client.
 
@@ -32,7 +33,7 @@ PDR addresses these challenges by instituting a structured, transparent, and aud
 1. **Pre-Sales Handover & Context Capture**
    - **Client Context**: Captures critical client background, the core business problem being solved, deal origin, and client sentiment (*New*, *Warm*, or *Strained*).
    - **Sales Commitments**: Catalogs promises made during the sales cycle across Software, Services, and Training, including committed timelines.
-   - **Commercial & Readiness Checklist**: Pre-sales attaches required commercial documentation and verifies handover readiness items before submission.
+   - **Commercial & Readiness Checklist**: Pre-sales verifies readiness criteria and attaches initial commercial agreements (e.g. SOW, proposal, RFP).
 
 2. **Delivery & PM Review (Reality Check & Alignment)**
    - **Promised vs. Realistic Estimates**: Project Managers and Tech Leads review commitments against delivery realities. Any timeline or scope variance is automatically calculated and flagged, requiring explicit acknowledgment, mitigation rationale, or escalation to leadership.
@@ -49,6 +50,28 @@ PDR addresses these challenges by instituting a structured, transparent, and aud
    - **Proximity-Based Health Tiers**: Dynamically evaluates readiness against required thresholds based on days remaining until kickoff (`>14 days`, `8–14 days`, `4–7 days`, `1–3 days`, `Day 0`).
    - **Kickoff-Ready Gate**: Prevents premature kickoffs. Engagements must reach 100% readiness (or obtain an authorized Leadership override) before being certified *Kickoff-Ready*.
    - **Client Kickoff Meeting & Day-1 Sign-Off**: Once cleared, the kickoff meeting with the client is held, recording agreed outcomes, actionable next steps, an audit-proof evidence snapshot, and Day-1 sign-off.
+
+### Core Engagement Capabilities
+
+Beyond the handover review and kickoff gating, PDR equips teams with dedicated modules to manage engagement assets, risk posture, and staffing:
+
+- **Document Management & Evidence Repository**:
+  - Upload, categorize, and organize critical engagement documents (*RFP*, *Proposal*, *Signed SOW*, *Commercial Agreements*, *Design or Approach*, and *Email Threads*).
+  - Multi-version document history with audit tracking and secure downloads.
+  - Role-based visibility controls (*Team-wide*, *PM-only*, or custom role-restricted access).
+  - Directly attaches uploaded documents as verifiable evidence for handover checklist items, technical prerequisites, and Day-1 sign-offs.
+
+- **Risk Management & Blocker Escalation**:
+  - Log and monitor engagement risks with structured impact and likelihood scoring (*Low*, *Medium*, *High*, *Critical*).
+  - Automatically captures blockers originating from the Checklist, Access Tracker, or Environment Tooling as formal risks.
+  - In-line collaboration with threaded discussions, mentions, and mitigation action tracking.
+  - One-click escalation to Leadership for urgent blockers that jeopardize kickoff readiness.
+
+- **Resource Requests & Team Allocation**:
+  - Raise structured staffing requests specifying standard roles (e.g. *Senior Developer*, *Developer*, *QA Engineer*, *Solution Architect*, *Business Analyst*) and specialized skill sets (e.g. *.NET*, *Angular*, *Cloud / DevOps*, *Data Engineering*).
+  - Define required headcount, job descriptions, and needed-by dates aligned with billing milestones.
+  - Track named resource allocations, fulfillment status, and reallocation history.
+  - Automated resourcing gap detection flags unconfirmed resource requests against upcoming billing start dates, alerting leadership to staffing deficits before kickoff.
 
 ## Layout
 
