@@ -8,6 +8,48 @@ Monorepo for the PDR application: a **.NET 10 Web API** (PostgreSQL via EF Core)
 - **Local dev:** run the API and Angular independently; `ng serve` proxies `/api` to the API
   for full hot-reload.
 
+## About the Project
+
+**PDR (Project Delivery Readiness)** is a governance and transition platform built to streamline the handover process from the **Pre-Sales / Deal Team** to the **Project Manager (PM) and Delivery Team** before client **Kickoff**.
+
+In technology delivery and client engagements, project friction, budget overruns, and Day-1 delivery failures frequently stem from:
+- Sales promises and commitments that delivery was unaware of or never validated.
+- Misaligned client expectations, missing background context, or unvetted commercial terms.
+- Delayed access to client repositories, environments, VPNs, and tools on Day 1.
+
+PDR addresses these challenges by instituting a structured, transparent, and auditable handover-to-kickoff lifecycle before teams meet with the client.
+
+### The Handover to Kickoff Lifecycle
+
+```
+[ Pre-Sales Deal ] ──> [ Pre-Sales Handover ] ──> [ Handover Submission ]
+                                                         │
+                                                         ▼
+[ Client Kickoff & Day-1 ] <── [ Kickoff-Ready Gate ] <── [ PM & Delivery Review ]
+                               (Readiness Scoring)      (Realistic Estimates & Queries)
+```
+
+1. **Pre-Sales Handover & Context Capture**
+   - **Client Context**: Captures critical client background, the core business problem being solved, deal origin, and client sentiment (*New*, *Warm*, or *Strained*).
+   - **Sales Commitments**: Catalogs promises made during the sales cycle across Software, Services, and Training, including committed timelines.
+   - **Commercial & Readiness Checklist**: Pre-sales attaches required commercial documentation and verifies handover readiness items before submission.
+
+2. **Delivery & PM Review (Reality Check & Alignment)**
+   - **Promised vs. Realistic Estimates**: Project Managers and Tech Leads review commitments against delivery realities. Any timeline or scope variance is automatically calculated and flagged, requiring explicit acknowledgment, mitigation rationale, or escalation to leadership.
+   - **In-Line Handover Queries**: Delivery raises threaded queries directly on specific fields or commitments. All queries must be resolved between Pre-Sales and Delivery before the handover can be accepted.
+   - **Formal Acceptance**: Once queries are settled and realistic commitments are established, the handover is marked as *Reviewed*.
+
+3. **Technical & Operational Readiness**
+   - **Access Tracker**: Tracks accounts, credentials, cloud access, repositories, and VPN permissions needed before Day 1.
+   - **Environment & Tooling**: Configures development environments, CI/CD pipelines, and project tools.
+   - **Architecture & Discovery**: Documents brownfield findings, technical debt, and architecture validations.
+
+4. **Kickoff Gate & Client Kickoff**
+   - **Readiness Scoring**: Continuously computes an objective readiness score across handover fields, commitment acknowledgments, and mandatory checklist gates.
+   - **Proximity-Based Health Tiers**: Dynamically evaluates readiness against required thresholds based on days remaining until kickoff (`>14 days`, `8–14 days`, `4–7 days`, `1–3 days`, `Day 0`).
+   - **Kickoff-Ready Gate**: Prevents premature kickoffs. Engagements must reach 100% readiness (or obtain an authorized Leadership override) before being certified *Kickoff-Ready*.
+   - **Client Kickoff Meeting & Day-1 Sign-Off**: Once cleared, the kickoff meeting with the client is held, recording agreed outcomes, actionable next steps, an audit-proof evidence snapshot, and Day-1 sign-off.
+
 ## Layout
 
 ```
