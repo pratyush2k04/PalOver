@@ -52,15 +52,32 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
         return await query.ToListAsync();
     }
 
-    private IQueryable<Engagement> BuildMyEngagementsQuery(int userId, bool isSignedOff)
+    private IQueryable<Engagement> BuildMyEngagementsQuery(int userId, bool isSignedOff, string? role = null)
     {
-        return context.Engagements
+        var query = context.Engagements
             .AsNoTracking()
             .Include(e => e.EngagementType)
             .Include(e => e.CommercialModel)
             .Include(e => e.DayOneSignOffRecord)
-            .Where(e => e.EngagementAssignments.Any(a => a.UserId == userId)
-                     && (isSignedOff ? e.DayOneSignOffRecord != null : e.DayOneSignOffRecord == null));
+            .Include(e => e.EngagementAssignments)
+                .ThenInclude(ea => ea.EngagementRole)
+            .Where(e => (isSignedOff ? e.DayOneSignOffRecord != null : e.DayOneSignOffRecord == null));
+
+        if (string.Equals(role, "Both", StringComparison.OrdinalIgnoreCase))
+        {
+            query = query.Where(e => e.EngagementAssignments.Any(a => a.UserId == userId && a.EngagementRole.Name == "Project Manager")
+                                  && e.EngagementAssignments.Any(a => a.UserId == userId && a.EngagementRole.Name == "Tech Lead"));
+        }
+        else if (!string.IsNullOrWhiteSpace(role) && !string.Equals(role, "All", StringComparison.OrdinalIgnoreCase))
+        {
+            query = query.Where(e => e.EngagementAssignments.Any(a => a.UserId == userId && a.EngagementRole.Name == role));
+        }
+        else
+        {
+            query = query.Where(e => e.EngagementAssignments.Any(a => a.UserId == userId));
+        }
+
+        return query;
     }
 
     private static IQueryable<Engagement> ApplySort(IQueryable<Engagement> query, string sortBy) =>
@@ -70,9 +87,9 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
             _ => query.OrderBy(e => e.KickoffDate)
         };
 
-    public async Task<(List<Engagement> Items, int TotalCount)> GetEngagementsForUserPageAsync(int userId, bool isSignedOff, string sortBy, int page, int pageSize)
+    public async Task<(List<Engagement> Items, int TotalCount)> GetEngagementsForUserPageAsync(int userId, bool isSignedOff, string sortBy, int page, int pageSize, string? role = null)
     {
-        var query = BuildMyEngagementsQuery(userId, isSignedOff);
+        var query = BuildMyEngagementsQuery(userId, isSignedOff, role);
 
         var totalCount = await query.CountAsync();
 
@@ -84,14 +101,14 @@ public class EngagementRepository(AppDbContext context) : IEngagementRepository
         return (items, totalCount);
     }
 
-    public async Task<List<Engagement>> GetEngagementsForUserFilteredAsync(int userId, bool isSignedOff, string sortBy)
+    public async Task<List<Engagement>> GetEngagementsForUserFilteredAsync(int userId, bool isSignedOff, string sortBy, string? role = null)
     {
-        var query = BuildMyEngagementsQuery(userId, isSignedOff);
+        var query = BuildMyEngagementsQuery(userId, isSignedOff, role);
         return await ApplySort(query, sortBy).ToListAsync();
     }
 
-    public async Task<int> GetEngagementsForUserStatusCountAsync(int userId, bool isSignedOff) =>
-        await BuildMyEngagementsQuery(userId, isSignedOff).CountAsync();
+    public async Task<int> GetEngagementsForUserStatusCountAsync(int userId, bool isSignedOff, string? role = null) =>
+        await BuildMyEngagementsQuery(userId, isSignedOff, role).CountAsync();
 
     public async Task<List<int>> GetEngagementIdsForUserAsync(int userId) =>
         await context.Engagements

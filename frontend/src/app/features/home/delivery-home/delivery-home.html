@@ -11,22 +11,11 @@
 
     <!-- Row 2: Main Content (2-Column Layout) -->
     <div class="main-content-grid">
-      <div class="main-left delivery-sections">
-        <div class="delivery-section">
-          <app-dashboard-engagements-list
-            title="Project Manager of Engagements"
-            [engagements]="pmEngagements()"
-            [totalCount]="pmEngagements().length"
-          ></app-dashboard-engagements-list>
-        </div>
-
-        <div class="delivery-section">
-          <app-dashboard-engagements-list
-            title="Tech Lead of Engagements"
-            [engagements]="tlEngagements()"
-            [totalCount]="tlEngagements().length"
-          ></app-dashboard-engagements-list>
-        </div>
+      <div class="main-left">
+        <app-dashboard-engagements-list
+          [engagements]="data.upcomingEngagements"
+          [totalCount]="data.totalUpcomingEngagements"
+        ></app-dashboard-engagements-list>
       </div>
       <div class="main-right">
         <app-dashboard-critical-blockers

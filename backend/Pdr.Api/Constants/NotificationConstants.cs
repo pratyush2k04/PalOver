@@ -25,6 +25,7 @@ public static class NotificationConstants
         public const string PresalesCommitmentAdded = "PresalesCommitmentAdded";
         public const string PendingCommitmentsSummary = "PendingCommitmentsSummary";
         public const string TechnicalReadinessComplete = "TechnicalReadinessComplete";
+        public const string TechnicalReadinessRegressed = "TechnicalReadinessRegressed";
         public const string KickoffActionItemAssigned = "KickoffActionItemAssigned";
         public const string AssumptionNeedsValidation = "AssumptionNeedsValidation";
         public const string DependencyAssignedToOwner = "DependencyAssignedToOwner";

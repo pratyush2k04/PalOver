@@ -136,7 +136,7 @@ export class EngagementChecklistComponent {
   ]);
 
   rowOwnerOptions = computed<SelectOption[]>(() => [
-    { value: null, label: 'Unassigned' },
+    { value: null, label: '-- Select Owner --' },
     ...this.assignedUsers().map((u) => ({ value: u.userId, label: u.fullName }))
   ]);
 
@@ -275,7 +275,10 @@ export class EngagementChecklistComponent {
 
   private loadAssignedUsers(engagementId: number): void {
     this.cadenceService.getAssignedParticipants(engagementId).subscribe({
-      next: (users) => this.assignedUsers.set(users ?? []),
+      next: (users) => {
+        const unique = Array.from(new Map((users ?? []).map((u) => [u.userId, u])).values());
+        this.assignedUsers.set(unique);
+      },
       error: () => this.assignedUsers.set([])
     });
   }

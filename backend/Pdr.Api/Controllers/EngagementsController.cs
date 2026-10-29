@@ -45,6 +45,7 @@ public class EngagementsController(
     /// <param name="sortBy">Sort field ("kickoff", "readiness", or "client").</param>
     /// <param name="page">Page number (1-based).</param>
     /// <param name="pageSize">Number of items per page.</param>
+    /// <param name="role">Optional engagement role filter ("Project Manager", "Tech Lead", or "Both").</param>
     /// <returns>A page of assigned engagements, plus Active/Past tab counts.</returns>
     [HttpGet("my-engagements/page")]
     [EndpointSummary("Get a paged page of my assigned engagements")]
@@ -54,9 +55,10 @@ public class EngagementsController(
         [FromQuery] string status = "Active",
         [FromQuery] string sortBy = "kickoff",
         [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 5)
+        [FromQuery] int pageSize = 5,
+        [FromQuery] string? role = null)
     {
-        var result = await engagementService.GetMyEngagementsPageAsync(status, sortBy, page, pageSize);
+        var result = await engagementService.GetMyEngagementsPageAsync(status, sortBy, page, pageSize, role);
         return Ok(result);
     }
 
@@ -122,8 +124,8 @@ public class EngagementsController(
     /// <param name="request">The mark SOW signed request payload.</param>
     /// <returns>The updated SOW signed status response.</returns>
     [HttpPost("mark-sow-signed")]
-    [AuthorizeRoles(UserRoleEnum.PreSales)]
-    [EndpointSummary("Mark SOW as signed (Pre Sales only)")]
+    [AuthorizeRolesWithAdminBypass(UserRoleEnum.PreSales)]
+    [EndpointSummary("Mark SOW as signed (Pre Sales or Admin)")]
     [ProducesResponseType(typeof(MarkSowSignedResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -178,8 +180,8 @@ public class EngagementsController(
     /// <param name="request">The assigned user payload.</param>
     /// <returns>The updated engagement owners.</returns>
     [HttpPut("{id:int}/project-manager")]
-    [AuthorizeRoles(UserRoleEnum.Leadership)]
-    [EndpointSummary("Assign Project Manager (Leadership only)")]
+    [RequireEngagementRole("id", EngagementRoleEnum.Leadership)]
+    [EndpointSummary("Assign Project Manager (Assigned Leadership only)")]
     [ProducesResponseType(typeof(EngagementOwnersDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -198,8 +200,8 @@ public class EngagementsController(
     /// <param name="request">The assigned user payload.</param>
     /// <returns>The updated engagement owners.</returns>
     [HttpPut("{id:int}/tech-lead")]
-    [AuthorizeRoles(UserRoleEnum.Leadership)]
-    [EndpointSummary("Assign Tech Lead (Leadership only)")]
+    [RequireEngagementRole("id", EngagementRoleEnum.Leadership)]
+    [EndpointSummary("Assign Tech Lead (Assigned Leadership only)")]
     [ProducesResponseType(typeof(EngagementOwnersDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -253,6 +255,7 @@ public class EngagementsController(
     /// <response code="200">List of assigned Leadership users returned successfully.</response>
     /// <response code="404">Engagement was not found.</response>
     [HttpGet("{id:int}/leadership-users")]
+    [RequireEngagementAccess("id")]
     [ProducesResponseType(typeof(IEnumerable<LeadershipUserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -350,8 +353,8 @@ public class EngagementsController(
     /// </summary>
     /// <returns>Leadership dashboard data with readiness score, open blocker count, days-to-kickoff, and computed status.</returns>
     [HttpGet("leadership-dashboard")]
-    [AuthorizeRoles(UserRoleEnum.Leadership)]
-    [EndpointSummary("Get leadership portfolio dashboard engagements")]
+    [AuthorizeRolesWithAdminBypass(UserRoleEnum.Leadership)]
+    [EndpointSummary("Get leadership portfolio dashboard engagements (Leadership or Admin)")]
     [ProducesResponseType(typeof(IEnumerable<LeadershipEngagementListItemDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

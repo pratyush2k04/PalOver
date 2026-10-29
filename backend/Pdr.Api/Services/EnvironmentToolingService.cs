@@ -58,6 +58,8 @@ public class EnvironmentToolingService(
             throw new UserNotFoundException(request.OwnerId);
         }
 
+        var wasReady = await readinessNotificationService.IsReadyAsync(engagementId);
+
         var item = new EnvironmentToolingItem
         {
             EngagementId = engagementId,
@@ -69,6 +71,8 @@ public class EnvironmentToolingService(
 
         await repository.AddAsync(item);
         await repository.SaveChangesAsync();
+
+        await readinessNotificationService.CheckAndNotifyIfReadyAsync(engagementId, wasReady);
 
         var createdItem = await repository.GetByIdAsync(item.Id);
         return MapToDto(createdItem!);

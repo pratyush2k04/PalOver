@@ -137,12 +137,6 @@ public class AssumptionService(
         if (assumption == null || assumption.EngagementId != engagementId)
             throw new AssumptionNotFoundException(assumptionId);
 
-        var assignments = await engagementRepository.GetAssignmentsAsync(engagementId);
-        var isPm = assignments.Any(a => a.UserId == currentUserService.GetUserId() && a.EngagementRoleId == (int)EngagementRoleEnum.ProjectManager);
-
-        if (!isPm)
-            throw new AssumptionUnauthorizedException();
-
         if (assumption.Status != AssumptionStatus.Unvalidated)
             throw new AssumptionAlreadyValidatedException(assumptionId);
 

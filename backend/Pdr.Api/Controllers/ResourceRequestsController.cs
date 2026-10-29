@@ -88,6 +88,7 @@ public class ResourceRequestsController(
     /// <returns>The updated resource request, including its named allocations.</returns>
     [HttpPost("{id:int}/allocations")]
     [RequireEngagementRole(EngagementRoleEnum.Leadership)]
+    [AllowAdmin]
     [EndpointSummary("Save named resources for a request (Leadership or Admin only)")]
     [ProducesResponseType(typeof(ResourceRequestDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -114,6 +115,7 @@ public class ResourceRequestsController(
     /// <returns>The updated resource request.</returns>
     [HttpPost("{id:int}/allocations/{allocationId:int}/remove")]
     [RequireEngagementRole(EngagementRoleEnum.Leadership)]
+    [AllowAdmin]
     [EndpointSummary("Remove a confirmed resource with a reason, reopening the request (Leadership or Admin only)")]
     [ProducesResponseType(typeof(ResourceRequestDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

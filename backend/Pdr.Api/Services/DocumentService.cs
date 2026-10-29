@@ -37,7 +37,7 @@ public class DocumentService(
     {
         if (currentUserService.IsAdmin())
         {
-            return await engagementAccessService.CanAccessAsync(doc.EngagementId);
+            return true;
         }
 
         if (await engagementAccessService.HasEngagementRoleAsync(doc.EngagementId, EngagementRoleEnum.ProjectManager))

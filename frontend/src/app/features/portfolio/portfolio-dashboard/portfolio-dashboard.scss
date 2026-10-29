@@ -224,35 +224,10 @@
     }
   }
 
-  .days-badge {
+  .days-badge--none {
     display: inline-block;
-    padding: $spacing-1 $spacing-3;
-    border-radius: $radius-sm;
-    font-size: $font-size-xs;
-    font-weight: $font-weight-medium;
-
-    &--urgent {
-      background: $color-danger-bg;
-      color: $color-danger;
-      border: 1px solid $color-danger-border;
-    }
-
-    &--warning {
-      background: $color-warning-bg;
-      color: $color-warning-text;
-      border: 1px solid $color-warning-border;
-    }
-
-    &--normal {
-      background: $color-bg;
-      color: $color-text-muted;
-      border: 1px solid $color-border-soft;
-    }
-
-    &--none {
-      color: $color-text-fainter;
-      font-style: italic;
-    }
+    color: $color-text-fainter;
+    font-style: italic;
   }
 
   .readiness-cell {
@@ -318,66 +293,21 @@
     }
   }
 
-  .day-one-status-badge {
+  .badge-icon {
     display: inline-flex;
     align-items: center;
-    gap: $spacing-1;
-    padding: $spacing-1 $spacing-2;
-    border-radius: $radius-sm;
-    font-size: $font-size-xs;
-    font-weight: $font-weight-semibold;
-    background: $color-success-bg;
-    color: $color-success-text;
-    border: 1px solid $color-success-border;
+    justify-content: center;
+    width: 0.875rem;
+    height: 0.875rem;
+    flex-shrink: 0;
 
-    .badge-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+    ::ng-deep span,
+    ::ng-deep svg,
+    svg {
+      display: block;
       width: 0.875rem;
       height: 0.875rem;
-      flex-shrink: 0;
-
-      ::ng-deep span,
-      ::ng-deep svg,
-      svg {
-        display: block;
-        width: 0.875rem;
-        height: 0.875rem;
-        stroke-width: 2.25;
-      }
-    }
-
-    &--exception {
-      background: $color-warning-bg;
-      color: $color-warning-text;
-      border-color: $color-warning-border;
-    }
-
-    &--pending {
-      background: $color-bg;
-      color: $color-text-faint;
-      border: 1px solid $color-border-soft;
-      font-weight: $font-weight-normal;
-    }
-  }
-
-  .blocker-badge {
-    display: inline-block;
-    padding: $spacing-1 $spacing-3;
-    border-radius: $radius-sm;
-    font-size: $font-size-xs;
-    font-weight: $font-weight-medium;
-
-    &--active {
-      background: $color-danger-bg;
-      color: $color-danger-text;
-      border: 1px solid $color-danger-border;
-    }
-
-    &--zero {
-      background: $color-surface-hover;
-      color: $color-text-faint;
+      stroke-width: 2.25;
     }
   }
 }

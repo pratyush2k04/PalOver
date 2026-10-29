@@ -66,7 +66,7 @@ public class KickoffReadinessService(
         var nextIncompleteTabKey =
             handoverCheck.Passed < handoverCheck.Applicable ? "handover" :
             commitmentsCheck.Passed < commitmentsCheck.Applicable ? "handover" :
-            checklistCheck.Passed < checklistCheck.Applicable ? "technical-readiness" :
+            checklistCheck.Passed < checklistCheck.Applicable ? "checklist" :
             null;
 
         var dto = new KickoffReadinessDto(

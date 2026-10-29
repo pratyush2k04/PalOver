@@ -36,14 +36,14 @@ public class EngagementChecklistController(IEngagementChecklistService engagemen
     }
 
     /// <summary>
-    /// Updates the completion status of a checklist item (Project Management &amp; Tech Lead).
+    /// Updates the completion status of a checklist item (Project Management only).
     /// </summary>
     /// <param name="engagementId">The engagement ID.</param>
     /// <param name="itemId">The checklist item ID.</param>
     /// <param name="dto">The status update payload.</param>
     /// <returns>The updated engagement checklist.</returns>
     [HttpPatch("items/{itemId:int}/status")]
-    [RequireEngagementRole(EngagementRoleEnum.ProjectManager, EngagementRoleEnum.TechLead)]
+    [RequireEngagementRole(EngagementRoleEnum.ProjectManager)]
     [EndpointSummary("Update checklist item completion status")]
     [ProducesResponseType(typeof(EngagementChecklistResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -109,7 +109,7 @@ public class EngagementChecklistController(IEngagementChecklistService engagemen
     }
 
     [HttpPatch("items/{itemId:int}/owner")]
-    [RequireEngagementRole(EngagementRoleEnum.ProjectManager, EngagementRoleEnum.TechLead)]
+    [RequireEngagementRole(EngagementRoleEnum.ProjectManager)]
     public async Task<ActionResult<EngagementChecklistResponseDto>> UpdateItemOwner(
         int engagementId,
         int itemId,
@@ -120,7 +120,7 @@ public class EngagementChecklistController(IEngagementChecklistService engagemen
     }
 
     [HttpPost("items/{itemId:int}/block")]
-    [RequireEngagementRole(EngagementRoleEnum.ProjectManager, EngagementRoleEnum.TechLead)]
+    [RequireEngagementRole(EngagementRoleEnum.ProjectManager)]
     public async Task<ActionResult<EngagementChecklistResponseDto>> BlockItem(
         int engagementId,
         int itemId,
@@ -131,7 +131,7 @@ public class EngagementChecklistController(IEngagementChecklistService engagemen
     }
 
     [HttpPost("items/{itemId:int}/unblock")]
-    [RequireEngagementRole(EngagementRoleEnum.ProjectManager, EngagementRoleEnum.TechLead)]
+    [RequireEngagementRole(EngagementRoleEnum.ProjectManager)]
     public async Task<ActionResult<EngagementChecklistResponseDto>> UnblockItem(int engagementId, int itemId)
     {
         var result = await engagementChecklistService.UnblockItemAsync(engagementId, itemId);
@@ -146,7 +146,7 @@ public class EngagementChecklistController(IEngagementChecklistService engagemen
     /// <param name="dto">The evidence payload.</param>
     /// <returns>The updated engagement checklist.</returns>
     [HttpPut("items/{itemId:int}/evidence")]
-    [RequireEngagementRole(EngagementRoleEnum.ProjectManager, EngagementRoleEnum.TechLead)]
+    [RequireEngagementRole(EngagementRoleEnum.ProjectManager)]
     [EndpointSummary("Attach or update checklist item evidence")]
     [ProducesResponseType(typeof(EngagementChecklistResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

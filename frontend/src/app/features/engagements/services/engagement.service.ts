@@ -118,12 +118,23 @@ export class EngagementService {
     });
   }
 
-  getMyEngagementsPage(status: 'Active' | 'Past', sortBy: EngagementSortBy, page: number, pageSize: number): Observable<MyEngagementsPage> {
-    const params = new HttpParams()
+  getMyEngagementsPage(
+    status: 'Active' | 'Past',
+    sortBy: EngagementSortBy,
+    page: number,
+    pageSize: number,
+    role?: string | null
+  ): Observable<MyEngagementsPage> {
+    let params = new HttpParams()
       .set('status', status)
       .set('sortBy', sortBy)
       .set('page', page)
       .set('pageSize', pageSize);
+
+    if (role && role !== 'All') {
+      params = params.set('role', role);
+    }
+
     return this.http.get<MyEngagementsPage>(ENGAGEMENT_API_ENDPOINTS.MY_ENGAGEMENTS_PAGE, { params });
   }
 

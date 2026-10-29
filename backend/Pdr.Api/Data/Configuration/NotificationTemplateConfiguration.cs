@@ -309,6 +309,19 @@ public class NotificationTemplateConfiguration : IEntityTypeConfiguration<Notifi
             },
             new NotificationTemplate
             {
+                Id = 23,
+                Key = NotificationConstants.TemplateKeys.TechnicalReadinessRegressed,
+                Title = "Technical Readiness Dropped Below 100% — {EngagementName}",
+                Body = "Technical readiness for {EngagementName} has dropped below 100% ({Reason}). Day 1 sign-off has been disabled until all technical blockers are resolved.",
+                DefaultPriority = NotificationPriority.High,
+                LinkPattern = "/engagements/{EngagementId}/workspace/technical-readiness",
+                CreatedAt = seedTimestamp,
+                UpdatedAt = seedTimestamp,
+                CreatedBy = "System",
+                IsDeleted = false
+            },
+            new NotificationTemplate
+            {
                 Id = 471928,
                 Key = NotificationConstants.TemplateKeys.DocumentDeleted,
                 Title = "Document removed — {DocumentName}",
